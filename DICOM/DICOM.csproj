@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D6E309B0-4837-459E-8C85-ABC268440D62}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dicom</RootNamespace>
+    <AssemblyName>Dicom</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DicomDataException.cs" />
+    <Compile Include="DicomDataset.cs" />
+    <Compile Include="DicomDatasetExtensions.cs" />
+    <Compile Include="DicomDatasetWalker.cs" />
+    <Compile Include="DicomDictionary.cs" />
+    <Compile Include="DicomDictionaryEntry.cs" />
+    <Compile Include="DicomDictionaryGenerated.cs" />
+    <Compile Include="DicomDictionaryReader.cs" />
+    <Compile Include="DicomFile.cs" />
+    <Compile Include="DicomFileMetaInformation.cs" />
+    <Compile Include="DicomFragmentSequence.cs" />
+    <Compile Include="DicomImplementation.cs" />
+    <Compile Include="DicomItem.cs" />
+    <Compile Include="DicomMaskedTag.cs" />
+    <Compile Include="DicomElement.cs" />
+    <Compile Include="DicomEncoding.cs" />
+    <Compile Include="DicomParseable.cs" />
+    <Compile Include="DicomPrivateCreator.cs" />
+    <Compile Include="DicomRange.cs" />
+    <Compile Include="DicomSequence.cs" />
+    <Compile Include="DicomTag.cs" />
+    <Compile Include="DicomTagGenerated.cs" />
+    <Compile Include="DicomTransferSyntax.cs" />
+    <Compile Include="DicomUID.cs" />
+    <Compile Include="DicomUIDGenerated.cs" />
+    <Compile Include="DicomVM.cs" />
+    <Compile Include="DicomVR.cs" />
+    <Compile Include="DicomException.cs" />
+    <Compile Include="EventAsyncResult.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Generators\DicomDictionaryGenerator.cs" />
+    <Compile Include="Generators\DicomTagGenerator.cs" />
+    <Compile Include="Imaging\BitDepth.cs" />
+    <Compile Include="Imaging\Codec\DicomCodecException.cs" />
+    <Compile Include="Imaging\Codec\DicomCodecExtensions.cs" />
+    <Compile Include="Imaging\Codec\DicomCodecParams.cs" />
+    <Compile Include="Imaging\Codec\DicomJpeg2000Codec.cs" />
+    <Compile Include="Imaging\Codec\DicomJpegCodec.cs" />
+    <Compile Include="Imaging\Codec\DicomJpegLsCodec.cs" />
+    <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
+    <Compile Include="Imaging\Codec\IDicomCodec.cs" />
+    <Compile Include="Imaging\ColorSpace.cs" />
+    <Compile Include="Imaging\DicomImage.cs" />
+    <Compile Include="Imaging\DicomImagingException.cs" />
+    <Compile Include="Imaging\DicomImagingExtensions.cs" />
+    <Compile Include="Imaging\DicomPixelData.cs" />
+    <Compile Include="Imaging\GrayscaleRenderOptions.cs" />
+    <Compile Include="Imaging\PhotometricInterpretation.cs" />
+    <Compile Include="Imaging\PixelDataConverter.cs" />
+    <Compile Include="Imaging\PixelRepresentation.cs" />
+    <Compile Include="Imaging\PlanarConfiguration.cs" />
+    <Compile Include="IO\Buffer\ByteBufferByteSource.cs" />
+    <Compile Include="IO\Buffer\ByteBufferEnumerator.cs" />
+    <Compile Include="IO\Buffer\ByteBufferExtensions.cs" />
+    <Compile Include="IO\Buffer\CompositeByteBuffer.cs" />
+    <Compile Include="IO\Buffer\EmptyBuffer.cs" />
+    <Compile Include="IO\Buffer\EndianByteBuffer.cs" />
+    <Compile Include="IO\Buffer\FileByteBuffer.cs" />
+    <Compile Include="IO\Buffer\RangeByteBuffer.cs" />
+    <Compile Include="IO\Buffer\SwapByteBuffer.cs" />
+    <Compile Include="IO\ByteConverter.cs" />
+    <Compile Include="IO\DicomIoException.cs" />
+    <Compile Include="IO\Endian.cs" />
+    <Compile Include="IO\Buffer\IByteBuffer.cs" />
+    <Compile Include="IO\Buffer\MemoryByteBuffer.cs" />
+    <Compile Include="IO\Buffer\StreamByteBuffer.cs" />
+    <Compile Include="IO\FileByteSource.cs" />
+    <Compile Include="IO\FileByteTarget.cs" />
+    <Compile Include="IO\FileReference.cs" />
+    <Compile Include="IO\IByteSource.cs" />
+    <Compile Include="IO\IByteTarget.cs" />
+    <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
+    <Compile Include="IO\Reader\DicomFileReader.cs" />
+    <Compile Include="IO\Reader\DicomReader.cs" />
+    <Compile Include="IO\Reader\DicomReaderCallbackObserver.cs" />
+    <Compile Include="IO\Reader\DicomReaderEventArgs.cs" />
+    <Compile Include="IO\Reader\DicomReaderException.cs" />
+    <Compile Include="IO\Reader\DicomReaderMultiObserver.cs" />
+    <Compile Include="IO\Reader\IDicomReader.cs" />
+    <Compile Include="IO\Reader\IDicomReaderObserver.cs" />
+    <Compile Include="IO\Reader\MockObserver.cs" />
+    <Compile Include="IO\PinnedArray.cs" />
+    <Compile Include="IO\StreamByteSource.cs" />
+    <Compile Include="IO\StreamByteTarget.cs" />
+    <Compile Include="IO\Writer\DicomFileWriter.cs" />
+    <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
+    <Compile Include="IO\Writer\DicomWriteOptions.cs" />
+    <Compile Include="IO\Writer\DicomWriter.cs" />
+    <Compile Include="Log\ConsoleLogger.cs" />
+    <Compile Include="Log\DicomDatasetLogger.cs" />
+    <Compile Include="Log\DicomLog.cs" />
+    <Compile Include="Log\DicomLogLevel.cs" />
+    <Compile Include="Log\DicomLogger.cs" />
+    <Compile Include="Log\DicomParserLogger.cs" />
+    <Compile Include="Log\Extensions.cs" />
+    <Compile Include="Log\FilterLogger.cs" />
+    <Compile Include="Log\HexWriter.cs" />
+    <Compile Include="Log\VoidLogger.cs" />
+    <Compile Include="Imaging\Mathematics\Extensions.cs" />
+    <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
+    <Compile Include="Imaging\Mathematics\Matrix.cs" />
+    <Compile Include="Imaging\Mathematics\Point2.cs" />
+    <Compile Include="Network\DicomServer.cs" />
+    <Compile Include="Network\IDicomCMoveProvider.cs" />
+    <Compile Include="Network\IDicomCFindProvider.cs" />
+    <Compile Include="Network\DicomCMoveRequest.cs" />
+    <Compile Include="Network\DicomCMoveResponse.cs" />
+    <Compile Include="Network\DicomCFindResponse.cs" />
+    <Compile Include="Network\DicomCFindRequest.cs" />
+    <Compile Include="Network\DicomAssociation.cs" />
+    <Compile Include="Network\DicomAssociationAbortedException.cs" />
+    <Compile Include="Network\DicomAssociationRejectedException.cs" />
+    <Compile Include="Network\DicomCEchoRequest.cs" />
+    <Compile Include="Network\DicomCEchoResponse.cs" />
+    <Compile Include="Network\DicomClient.cs" />
+    <Compile Include="Network\DicomCommandField.cs" />
+    <Compile Include="Network\DicomCStoreRequest.cs" />
+    <Compile Include="Network\DicomCStoreResponse.cs" />
+    <Compile Include="Network\DicomMessage.cs" />
+    <Compile Include="Network\DicomNetworkException.cs" />
+    <Compile Include="Network\DicomPresentationContext.cs" />
+    <Compile Include="Network\DicomPresentationContextCollection.cs" />
+    <Compile Include="Network\DicomPriority.cs" />
+    <Compile Include="Network\DicomService.cs" />
+    <Compile Include="Network\DicomStatus.cs" />
+    <Compile Include="Network\DicomTimeout.cs" />
+    <Compile Include="Network\DicomRequest.cs" />
+    <Compile Include="Network\DicomResponse.cs" />
+    <Compile Include="Network\IDicomCEchoProvider.cs" />
+    <Compile Include="Network\IDicomCStoreProvider.cs" />
+    <Compile Include="Network\IDicomServiceProvider.cs" />
+    <Compile Include="Network\IDicomServiceUser.cs" />
+    <Compile Include="Network\PDU.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

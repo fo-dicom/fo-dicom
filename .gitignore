@@ -1,0 +1,13 @@
+*.suo
+*.sdf
+*.opensdf
+*.user
+*.VisualState.xml
+obj/
+bin/
+Debug/
+Release/
+/_ReSharper.*
+*.ReSharper.*
+TestResult.xml
+*.StyleCop

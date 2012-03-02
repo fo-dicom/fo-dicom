@@ -1,0 +1,90 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM", "DICOM\DICOM.csproj", "{D6E309B0-4837-459E-8C85-ABC268440D62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{16FD143D-6E25-4CD9-AEC0-B096644B0045}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x86", "DICOM [Native]\x86\libijg8.x86.vcxproj", "{8DC28743-3826-453A-B400-B0AE7B2C04E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x86", "DICOM [Native]\x86\libijg12.x86.vcxproj", "{0331D451-7C7A-4DB7-A11D-61708F2E8D05}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x86", "DICOM [Native]\x86\libijg16.x86.vcxproj", "{63088DEC-9F99-404C-B4E8-D823D2A0018F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x64", "DICOM [Native]\x64\libijg8.x64.vcxproj", "{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x64", "DICOM [Native]\x64\libijg12.x64.vcxproj", "{1B3557D4-1146-428A-AEC9-12CADF994527}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x64", "DICOM [Native]\x64\libijg16.x64.vcxproj", "{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native Dependencies", "Native Dependencies", "{A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM [Native64]", "DICOM [Native]\x64\DICOM [Native64].vcxproj", "{FA9C7678-B9D9-46BC-8921-8152FD6787CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM [Native]", "DICOM [Native]\x86\DICOM [Native].vcxproj", "{C6148839-334D-4894-BDB9-E2D57438CF8A}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Debug|Any CPU.Build.0 = Debug|Win32
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Release|Any CPU.Build.0 = Release|Win32
+		{0331D451-7C7A-4DB7-A11D-61708F2E8D05}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0331D451-7C7A-4DB7-A11D-61708F2E8D05}.Debug|Any CPU.Build.0 = Debug|Win32
+		{0331D451-7C7A-4DB7-A11D-61708F2E8D05}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0331D451-7C7A-4DB7-A11D-61708F2E8D05}.Release|Any CPU.Build.0 = Release|Win32
+		{63088DEC-9F99-404C-B4E8-D823D2A0018F}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{63088DEC-9F99-404C-B4E8-D823D2A0018F}.Debug|Any CPU.Build.0 = Debug|Win32
+		{63088DEC-9F99-404C-B4E8-D823D2A0018F}.Release|Any CPU.ActiveCfg = Release|Win32
+		{63088DEC-9F99-404C-B4E8-D823D2A0018F}.Release|Any CPU.Build.0 = Release|Win32
+		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}.Debug|Any CPU.Build.0 = Debug|x64
+		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}.Release|Any CPU.ActiveCfg = Release|x64
+		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}.Release|Any CPU.Build.0 = Release|x64
+		{1B3557D4-1146-428A-AEC9-12CADF994527}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{1B3557D4-1146-428A-AEC9-12CADF994527}.Debug|Any CPU.Build.0 = Debug|x64
+		{1B3557D4-1146-428A-AEC9-12CADF994527}.Release|Any CPU.ActiveCfg = Release|x64
+		{1B3557D4-1146-428A-AEC9-12CADF994527}.Release|Any CPU.Build.0 = Release|x64
+		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}.Debug|Any CPU.Build.0 = Debug|x64
+		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}.Release|Any CPU.ActiveCfg = Release|x64
+		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}.Release|Any CPU.Build.0 = Release|x64
+		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Debug|Any CPU.Build.0 = Debug|x64
+		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Release|Any CPU.ActiveCfg = Release|x64
+		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Release|Any CPU.Build.0 = Release|x64
+		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Debug|Any CPU.Build.0 = Debug|Win32
+		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Release|Any CPU.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0331D451-7C7A-4DB7-A11D-61708F2E8D05} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{63088DEC-9F99-404C-B4E8-D823D2A0018F} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{1B3557D4-1146-428A-AEC9-12CADF994527} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_UseGlobalSettings = True
+	EndGlobalSection
+EndGlobal
