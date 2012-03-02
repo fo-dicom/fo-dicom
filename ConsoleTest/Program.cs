@@ -29,13 +29,17 @@ namespace ConsoleTest {
 				DicomLog.DefaultLogger = ConsoleLogger.Instance;
 				DicomTranscoder.LoadCodecs();
 
-				DicomClient client = new DicomClient();
-				client.AddRequest(new DicomCEchoRequest());
-				client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
+				var elem = new DicomDate(DicomTag.StudyDate, DateTime.Today);
+				var range = elem.Get<DicomDateRange>();
+				Console.WriteLine(range);
 
-				TcpClient tcp = new TcpClient("127.0.0.1", 12345);
-				client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
-				tcp.Close();
+				//DicomClient client = new DicomClient();
+				//client.AddRequest(new DicomCEchoRequest());
+				//client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
+
+				//TcpClient tcp = new TcpClient("127.0.0.1", 12345);
+				//client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
+				//tcp.Close();
 
 				//DicomFile df = DicomFile.Open(@"Z:\test6.dcm");
 

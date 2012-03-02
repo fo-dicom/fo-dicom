@@ -10,11 +10,6 @@ namespace Dicom {
 	public class DicomDataset : IEnumerable<DicomItem> {
 		private IDictionary<DicomTag, DicomItem> _items;
 
-		public DicomTransferSyntax InternalTransferSyntax {
-			get;
-			internal set;
-		}
-
 		public DicomDataset() {
 			_items = new SortedList<DicomTag, DicomItem>();
 			InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
@@ -28,6 +23,11 @@ namespace Dicom {
 		public DicomDataset(IEnumerable<DicomItem> items) : this() {
 			foreach (DicomItem item in items)
 				_items[item.Tag] = item;
+		}
+
+		public DicomTransferSyntax InternalTransferSyntax {
+			get;
+			internal set;
 		}
 
 		public bool Exists(DicomTag tag) {
@@ -107,6 +107,8 @@ namespace Dicom {
 			if (vr == DicomVR.DA) {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDate(tag, values.Cast<DateTime>().ToArray()));
+				if (typeof(T) == typeof(DicomDateRange))
+					return Add(new DicomDate(tag, values.Cast<DicomDateRange>().First()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomDate(tag, values.Cast<string>().ToArray()));
 			}
@@ -121,6 +123,8 @@ namespace Dicom {
 			if (vr == DicomVR.DT) {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDateTime(tag, values.Cast<DateTime>().ToArray()));
+				if (typeof(T) == typeof(DicomDateRange))
+					return Add(new DicomDateTime(tag, values.Cast<DicomDateRange>().First()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomDateTime(tag, values.Cast<string>().ToArray()));
 			}
@@ -195,6 +199,8 @@ namespace Dicom {
 			if (vr == DicomVR.TM) {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomTime(tag, values.Cast<DateTime>().ToArray()));
+				if (typeof(T) == typeof(DicomDateRange))
+					return Add(new DicomTime(tag, values.Cast<DicomDateRange>().First()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomTime(tag, values.Cast<string>().ToArray()));
 			}
@@ -229,26 +235,49 @@ namespace Dicom {
 			throw new InvalidOperationException(String.Format("Unable to create DICOM element of type {0} with values of type {1}", vr.Code, typeof(T).ToString()));
 		}
 
+		/// <summary>
+		/// Removes items for specified tags.
+		/// </summary>
+		/// <param name="tags">DICOM tags to remove</param>
+		/// <returns>Current Dataset</returns>
 		public DicomDataset Remove(params DicomTag[] tags) {
 			foreach (DicomTag tag in tags)
 				_items.Remove(tag);
 			return this;
 		}
 
+		/// <summary>
+		/// Removes items where the selector function returns true.
+		/// </summary>
+		/// <param name="selector">Selector function</param>
+		/// <returns>Current Dataset</returns>
 		public DicomDataset Remove(Func<DicomItem, bool> selector) {
 			foreach (DicomItem item in _items.Values.Where(selector).ToArray())
 				_items.Remove(item.Tag);
 			return this;
 		}
 
+		/// <summary>
+		/// Enumerates all DICOM items.
+		/// </summary>
+		/// <returns>Enumeration of DICOM items</returns>
 		public IEnumerator<DicomItem> GetEnumerator() {
 			return _items.Values.GetEnumerator();
 		}
 
+		/// <summary>
+		/// Enumerates all DICOM items.
+		/// </summary>
+		/// <returns>Enumeration of DICOM items</returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return _items.Values.GetEnumerator();
 		}
 
+		/// <summary>
+		/// Enumerates DICOM items for specified group.
+		/// </summary>
+		/// <param name="group">Group</param>
+		/// <returns>Enumeration of DICOM items</returns>
 		public IEnumerable<DicomItem> GetGroup(ushort group) {
 			return _items.Values.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
 		}

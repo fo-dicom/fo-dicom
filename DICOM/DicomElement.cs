@@ -135,22 +135,44 @@ namespace Dicom {
 	}
 
 	public abstract class DicomDateElement : DicomMultiStringElement {
-		protected DicomDateElement(DicomTag tag, params DateTime[] values) : base(tag) {
-			string[] vals = values.Select(x => x.ToString(DateFormats[0])).ToArray();
+		protected DicomDateElement(DicomTag tag, string[] dateFormats, params DateTime[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(dateFormats[0])).ToArray()) {
+			DateFormats = dateFormats;
 		}
 
-		protected DicomDateElement(DicomTag tag, params string[] values) : base(tag, DicomEncoding.Default, String.Join("\\", values)) {
+		protected DicomDateElement(DicomTag tag, string[] dateFormats, DicomDateRange range) : base(tag, DicomEncoding.Default, range.ToString(dateFormats[0])) {
+			DateFormats = dateFormats;
 		}
 
-		protected DicomDateElement(DicomTag tag, IByteBuffer buffer) : base(tag, DicomEncoding.Default, buffer) {
+		protected DicomDateElement(DicomTag tag, string[] dateFormats, params string[] values) : base(tag, DicomEncoding.Default, String.Join("\\", values)) {
+			DateFormats = dateFormats;
 		}
 
-		protected abstract string[] DateFormats {
+		protected DicomDateElement(DicomTag tag, string[] dateFormats, IByteBuffer buffer) : base(tag, DicomEncoding.Default, buffer) {
+			DateFormats = dateFormats;
+		}
+
+		protected string[] DateFormats {
 			get;
+			private set;
 		}
 
 		private DateTime[] _values = null;
 		public override T Get<T>(int item = -1) {
+			if (typeof(T) == typeof(DicomDateRange)) {
+				string[] vals = base.Get<string>(item).Split('-');
+				var range = new DicomDateRange();
+				if (vals.Length >= 2) {
+					if (!String.IsNullOrEmpty(vals[0]))
+						range.Minimum = DateTime.ParseExact(vals[0], DateFormats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+					if (!String.IsNullOrEmpty(vals[1]))
+						range.Maximum = DateTime.ParseExact(vals[1], DateFormats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+				} else if (vals.Length == 1) {
+					range.Minimum = DateTime.ParseExact(vals[0], DateFormats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+					range.Maximum = range.Minimum.AddDays(1).AddMilliseconds(-1);
+				}
+				return (T)(object)range;
+			}
+
 			if (_values == null) {
 				string[] vals = base.Get<string[]>();
 				_values = new DateTime[vals.Length];
@@ -306,13 +328,16 @@ namespace Dicom {
 	/// <summary>Date (DA)</summary>
 	public class DicomDate : DicomDateElement {
 		#region Public Constructors
-		public DicomDate(DicomTag tag, params DateTime[] values) : base(tag, values) {
+		public DicomDate(DicomTag tag, params DateTime[] values) : base(tag, PrivateDateFormats, values) {
 		}
 
-		public DicomDate(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomDate(DicomTag tag, DicomDateRange range) : base(tag, PrivateDateFormats, range) {
 		}
 
-		public DicomDate(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		public DicomDate(DicomTag tag, params string[] values) : base(tag, PrivateDateFormats, values) {
+		}
+
+		public DicomDate(DicomTag tag, IByteBuffer data) : base (tag, PrivateDateFormats, data) {
 		}
 		#endregion
 
@@ -322,7 +347,7 @@ namespace Dicom {
 		}
 
 		private static string[] _formats;
-		protected override string[] DateFormats {
+		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
 					_formats = new string[6];
@@ -381,13 +406,16 @@ namespace Dicom {
 	/// <summary>Date Time (DT)</summary>
 	public class DicomDateTime : DicomDateElement {
 		#region Public Constructors
-		public DicomDateTime(DicomTag tag, params DateTime[] values) : base(tag, values) {
+		public DicomDateTime(DicomTag tag, params DateTime[] values) : base(tag, PrivateDateFormats, values) {
 		}
 
-		public DicomDateTime(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomDateTime(DicomTag tag, DicomDateRange range) : base(tag, PrivateDateFormats, range) {
 		}
 
-		public DicomDateTime(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		public DicomDateTime(DicomTag tag, params string[] values) : base(tag, PrivateDateFormats, values) {
+		}
+
+		public DicomDateTime(DicomTag tag, IByteBuffer data) : base (tag, PrivateDateFormats, data) {
 		}
 		#endregion
 
@@ -397,7 +425,7 @@ namespace Dicom {
 		}
 
 		private static string[] _formats;
-		protected override string[] DateFormats {
+		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
 				    _formats = new string[8];
@@ -695,13 +723,16 @@ namespace Dicom {
 	/// <summary>Time (TM)</summary>
 	public class DicomTime : DicomDateElement {
 		#region Public Constructors
-		public DicomTime(DicomTag tag, params DateTime[] values) : base(tag, values) {
+		public DicomTime(DicomTag tag, params DateTime[] values) : base(tag, PrivateDateFormats, values) {
 		}
 
-		public DicomTime(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomTime(DicomTag tag, DicomDateRange range) : base(tag, PrivateDateFormats, range) {
 		}
 
-		public DicomTime(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		public DicomTime(DicomTag tag, params string[] values) : base(tag, PrivateDateFormats, values) {
+		}
+
+		public DicomTime(DicomTag tag, IByteBuffer data) : base (tag, PrivateDateFormats, data) {
 		}
 		#endregion
 
@@ -711,7 +742,7 @@ namespace Dicom {
 		}
 
 		private static string[] _formats;
-		protected override string[] DateFormats {
+		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
 					_formats = new string[37];
