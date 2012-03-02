@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 
 namespace Dicom {
+	/// <summary>DICOM Value Representation</summary>
 	public sealed class DicomVR {
 		private const byte PadZero = 0x00;
 		private const byte PadSpace = 0x20;
@@ -12,69 +13,94 @@ namespace Dicom {
 		private DicomVR() {
 		}
 
+		/// <summary>Code used to represent VR.</summary>
 		public string Code {
 			get;
 			private set;
 		}
 
+		/// <summary>Descriptive name of VR.</summary>
 		public string Name {
 			get;
 			private set;
 		}
 
+		/// <summary>Value is a string.</summary>
 		public bool IsString {
 			get;
 			private set;
 		}
 
+		/// <summary>String is encoded using the specified character set.</summary>
 		public bool IsStringEncoded {
 			get;
 			private set;
 		}
 
+		/// <summary>Length field of value is a 16-bit short integer.</summary>
 		public bool Is16bitLength {
 			get;
 			private set;
 		}
 
+		/// <summary>Value can contain multiple items.</summary>
 		public bool IsMultiValue {
 			get;
 			private set;
 		}
 
+		/// <summary>Byte value used to pad value to even length.</summary>
 		public byte PaddingValue {
 			get;
 			private set;
 		}
 
+		/// <summary>Maximum length of single value.</summary>
 		public uint MaximumLength {
 			get;
 			private set;
 		}
 
+		/// <summary>Size of each individual value unit.</summary>
 		public int UnitSize {
 			get;
 			private set;
 		}
 
+		/// <summary>Number of bytes to swap when changing endian representation of value.</summary>
 		public int ByteSwap {
 			get;
 			private set;
 		}
 
+		/// <summary>Type used to represent VR value.</summary>
 		public Type ValueType {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Serializes VR code
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("vr", Code);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString() {
 			return Code;
 		}
 
+		/// <summary>
+		/// Get VR for given string value.
+		/// </summary>
+		/// <param name="vr">String representation of VR</param>
+		/// <returns>VR</returns>
 		public static DicomVR Parse(string vr) {
 			switch (vr) {
 			case "NONE": return DicomVR.NONE;
@@ -110,7 +136,7 @@ namespace Dicom {
 			}
 		}
 
-		//public static DicomVR NONE = new DicomVR("NONE", "No VR", false, false, false, PadZero, 0, 0, DicomVrRestriction.NotApplicable);
+		/// <summary>No VR</summary>
 		public readonly static DicomVR NONE = new DicomVR {
 			Code = "NONE",
 			Name = "No Value Representation",
@@ -125,7 +151,7 @@ namespace Dicom {
 			ValueType = typeof(object)
 		};
 
-		//public static DicomVR AE = new DicomVR("AE", "Application Entity", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+		/// <summary>Application Entity</summary>
 		public readonly static DicomVR AE = new DicomVR {
 			Code = "AE",
 			Name = "Application Entity",
@@ -140,7 +166,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR AS = new DicomVR("AS", "Age String", true, false, true, PadSpace, 4, 1, DicomVrRestriction.Fixed);
+		/// <summary>Age String</summary>
 		public readonly static DicomVR AS = new DicomVR {
 			Code = "AS",
 			Name = "Age String",
@@ -155,7 +181,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR AT = new DicomVR("AT", "Attribute Tag", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+		/// <summary>Attribute Tag</summary>
 		public readonly static DicomVR AT = new DicomVR {
 			Code = "AT",
 			Name = "Attribute Tag",
@@ -170,7 +196,7 @@ namespace Dicom {
 			ValueType = typeof(DicomTag)
 		};
 
-		//public static DicomVR CS = new DicomVR("CS", "Code String", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+		/// <summary>Code String</summary>
 		public readonly static DicomVR CS = new DicomVR {
 			Code = "CS",
 			Name = "Code String",
@@ -185,7 +211,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR DA = new DicomVR("DA", "Date", true, false, true, PadSpace, 8, 1, DicomVrRestriction.Fixed);
+		/// <summary>Date</summary>
 		public readonly static DicomVR DA = new DicomVR {
 			Code = "DA",
 			Name = "Date",
@@ -200,7 +226,7 @@ namespace Dicom {
 			ValueType = typeof(DateTime)
 		};
 
-		//public static DicomVR DS = new DicomVR("DS", "Decimal String", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+		/// <summary>Decimal String</summary>
 		public readonly static DicomVR DS = new DicomVR {
 			Code = "DS",
 			Name = "Decimal String",
@@ -215,7 +241,7 @@ namespace Dicom {
 			ValueType = typeof(decimal)
 		};
 
-		//public static DicomVR DT = new DicomVR("DT", "Date Time", true, false, true, PadSpace, 26, 1, DicomVrRestriction.Maximum);
+		/// <summary>Date Time</summary>
 		public readonly static DicomVR DT = new DicomVR {
 			Code = "DT",
 			Name = "Date Time",
@@ -230,7 +256,7 @@ namespace Dicom {
 			ValueType = typeof(DateTime)
 		};
 
-		//public static DicomVR FD = new DicomVR("FD", "Floating Point Double", false, false, true, PadZero, 8, 8, DicomVrRestriction.Fixed);
+		/// <summary>Floating Point Double</summary>
 		public readonly static DicomVR FD = new DicomVR {
 			Code = "FD",
 			Name = "Floating Point Double",
@@ -245,7 +271,7 @@ namespace Dicom {
 			ValueType = typeof(double)
 		};
 
-		//public static DicomVR FL = new DicomVR("FL", "Floating Point Single", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+		/// <summary>Floating Point Single</summary>
 		public readonly static DicomVR FL = new DicomVR {
 			Code = "FL",
 			Name = "Floating Point Single",
@@ -260,7 +286,7 @@ namespace Dicom {
 			ValueType = typeof(float)
 		};
 
-		//public static DicomVR IS = new DicomVR("IS", "Integer String", true, false, true, PadSpace, 12, 1, DicomVrRestriction.Maximum);
+		/// <summary>Integer String</summary>
 		public readonly static DicomVR IS = new DicomVR {
 			Code = "IS",
 			Name = "Integer String",
@@ -275,7 +301,7 @@ namespace Dicom {
 			ValueType = typeof(int)
 		};
 
-		//public static DicomVR LO = new DicomVR("LO", "Long String", true, true, true, PadSpace, 64, 1, DicomVrRestriction.Maximum);
+		/// <summary>Long String</summary>
 		public readonly static DicomVR LO = new DicomVR {
 			Code = "LO",
 			Name = "Long String",
@@ -290,7 +316,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR LT = new DicomVR("LT", "Long Text", true, true, true, PadSpace, 10240, 1, DicomVrRestriction.Maximum);
+		/// <summary>Long Text</summary>
 		public readonly static DicomVR LT = new DicomVR {
 			Code = "LT",
 			Name = "Long Text",
@@ -305,7 +331,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR OB = new DicomVR("OB", "Other Byte", false, false, false, PadZero, 0, 1, DicomVrRestriction.Any);
+		/// <summary>Other Byte</summary>
 		public readonly static DicomVR OB = new DicomVR {
 			Code = "OB",
 			Name = "Other Byte",
@@ -320,7 +346,7 @@ namespace Dicom {
 			ValueType = typeof(byte[])
 		};
 
-		//public static DicomVR OF = new DicomVR("OF", "Other Float", false, false, false, PadZero, 0, 4, DicomVrRestriction.Any);
+		/// <summary>Other Float</summary>
 		public readonly static DicomVR OF = new DicomVR {
 			Code = "OF",
 			Name = "Other Float",
@@ -335,7 +361,7 @@ namespace Dicom {
 			ValueType = typeof(float[])
 		};
 
-		//public static DicomVR OW = new DicomVR("OW", "Other Word", false, false, false, PadZero, 0, 2, DicomVrRestriction.Any);
+		/// <summary>Other Word</summary>
 		public readonly static DicomVR OW = new DicomVR {
 			Code = "OW",
 			Name = "Other Word",
@@ -350,7 +376,7 @@ namespace Dicom {
 			ValueType = typeof(ushort)
 		};
 
-		//public static DicomVR PN = new DicomVR("PN", "Person Name", true, true, true, PadSpace, 64, 1, DicomVrRestriction.Maximum);
+		/// <summary>Person Name</summary>
 		public readonly static DicomVR PN = new DicomVR {
 			Code = "PN",
 			Name = "Person Name",
@@ -365,7 +391,7 @@ namespace Dicom {
 			ValueType = typeof(String)
 		};
 
-		//public static DicomVR SH = new DicomVR("SH", "Short String", true, true, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+		/// <summary>Short String</summary>
 		public readonly static DicomVR SH = new DicomVR {
 			Code = "SH",
 			Name = "Short String",
@@ -380,7 +406,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR SL = new DicomVR("SL", "Signed Long", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+		/// <summary>Signed Long</summary>
 		public readonly static DicomVR SL = new DicomVR {
 			Code = "SL",
 			Name = "Signed Long",
@@ -395,7 +421,7 @@ namespace Dicom {
 			ValueType = typeof(int)
 		};
 
-		//public static DicomVR SQ = new DicomVR("SQ", "Sequence of Items", false, false, false, PadZero, 0, 0, DicomVrRestriction.NotApplicable);
+		/// <summary>Sequence of Items</summary>
 		public readonly static DicomVR SQ = new DicomVR {
 			Code = "SQ",
 			Name = "Sequence of Items",
@@ -410,7 +436,7 @@ namespace Dicom {
 			//ValueType = typeof(IList<DicomDataset>)
 		};
 
-		//public static DicomVR SS = new DicomVR("SS", "Signed Short", false, false, true, PadZero, 2, 2, DicomVrRestriction.Fixed);
+		/// <summary>Signed Short</summary>
 		public readonly static DicomVR SS = new DicomVR {
 			Code = "SS",
 			Name = "Signed Short",
@@ -425,7 +451,7 @@ namespace Dicom {
 			ValueType = typeof(short)
 		};
 
-		//public static DicomVR ST = new DicomVR("ST", "Short Text", true, true, true, PadSpace, 1024, 1, DicomVrRestriction.Maximum);
+		/// <summary>Short Text</summary>
 		public readonly static DicomVR ST = new DicomVR {
 			Code = "ST",
 			Name = "Short Text",
@@ -440,7 +466,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR TM = new DicomVR("TM", "Time", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+		/// <summary>Time</summary>
 		public readonly static DicomVR TM = new DicomVR {
 			Code = "TM",
 			Name = "Time",
@@ -455,7 +481,7 @@ namespace Dicom {
 			ValueType = typeof(DateTime)
 		};
 
-		//public static DicomVR UI = new DicomVR("UI", "Unique Identifier", true, false, true, PadZero, 64, 1, DicomVrRestriction.Maximum);
+		/// <summary>Unique Identifier</summary>
 		public readonly static DicomVR UI = new DicomVR {
 			Code = "UI",
 			Name = "Unique Identifier",
@@ -470,7 +496,7 @@ namespace Dicom {
 			ValueType = typeof(string)
 		};
 
-		//public static DicomVR UL = new DicomVR("UL", "Unsigned Long", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+		/// <summary>Unsigned Long</summary>
 		public readonly static DicomVR UL = new DicomVR {
 			Code = "UL",
 			Name = "Unsigned Long",
@@ -485,7 +511,7 @@ namespace Dicom {
 			ValueType = typeof(uint)
 		};
 
-		//public static DicomVR UN = new DicomVR("UN", "Unknown", false, false, false, PadZero, 0, 1, DicomVrRestriction.Any);
+		/// <summary>Unknown</summary>
 		public readonly static DicomVR UN = new DicomVR {
 			Code = "UN",
 			Name = "Unknown",
@@ -500,7 +526,7 @@ namespace Dicom {
 			ValueType = typeof(byte[])
 		};
 
-		//public static DicomVR US = new DicomVR("US", "Unsigned Short", false, false, true, PadZero, 2, 2, DicomVrRestriction.Fixed);
+		/// <summary>Unsigned Short</summary>
 		public readonly static DicomVR US = new DicomVR {
 			Code = "US",
 			Name = "Unsigned Short",
@@ -515,7 +541,7 @@ namespace Dicom {
 			ValueType = typeof(ushort)
 		};
 
-		//public static DicomVR UT = new DicomVR("UT", "Unlimited Text", true, true, false, PadSpace, 0, 1, DicomVrRestriction.Any);
+		/// <summary>Unlimited Text</summary>
 		public readonly static DicomVR UT = new DicomVR {
 			Code = "UT",
 			Name = "Unlimited Text",
