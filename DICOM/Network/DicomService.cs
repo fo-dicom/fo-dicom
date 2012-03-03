@@ -64,10 +64,16 @@ namespace Dicom.Network {
 		}
 
 		private void BeginReadPDUHeader() {
-			_readLength = 6;
+			try {
+				_readLength = 6;
 
-			byte[] buffer = new byte[6];
-			_network.BeginRead(buffer, 0, 6, EndReadPDUHeader, buffer);
+				byte[] buffer = new byte[6];
+				_network.BeginRead(buffer, 0, 6, EndReadPDUHeader, buffer);
+			} catch (ObjectDisposedException) {
+				// silently ignore
+				_network.Close();
+				_isConnected = false;
+			}
 		}
 
 		private void EndReadPDUHeader(IAsyncResult result) {
