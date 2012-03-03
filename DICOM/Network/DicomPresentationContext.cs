@@ -93,11 +93,11 @@ namespace Dicom.Network {
 				_transferSyntaxes.Remove(ts);
 		}
 
-		public void ClearTransfers() {
+		public void ClearTransferSyntaxes() {
 			_transferSyntaxes.Clear();
 		}
 
-		public IList<DicomTransferSyntax> GetTransfers() {
+		public IList<DicomTransferSyntax> GetTransferSyntaxes() {
 			return _transferSyntaxes.AsReadOnly();
 		}
 

@@ -717,14 +717,14 @@ namespace Dicom.Network {
 		#region Send Methods
 		protected void SendAssociationRequest(DicomAssociation association) {
 			LogID = association.CalledAE;
-			Logger.Log(LogLevel.Info, "{0} -> Association request:\n{1}", LogID, association);
+			Logger.Log(LogLevel.Info, "{0} -> Association request:\n{1}", LogID, association.ToString());
 			Association = association;
 			SendPDU(new AAssociateRQ(Association));
 		}
 
 		protected void SendAssociationAccept(DicomAssociation association) {
 			Association = association;
-			Logger.Log(LogLevel.Info, "{0} -> Association accept:\n{1}", LogID, association);
+			Logger.Log(LogLevel.Info, "{0} -> Association accept:\n{1}", LogID, association.ToString());
 			SendPDU(new AAssociateAC(Association));
 		}
 

@@ -384,7 +384,7 @@ namespace Dicom.Network {
 				pdu.WriteLength16();
 
 				// Transfer Syntax
-				foreach (DicomTransferSyntax ts in pc.GetTransfers()) {
+				foreach (DicomTransferSyntax ts in pc.GetTransferSyntaxes()) {
 					pdu.Write("Item-Type", (byte)0x40);
 					pdu.Write("Reserved", (byte)0x00);
 					pdu.MarkLength16("Item-Length");

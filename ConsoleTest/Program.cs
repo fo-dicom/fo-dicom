@@ -43,17 +43,14 @@ namespace ConsoleTest {
 
 				DicomTranscoder.LoadCodecs();
 
-				var elem = new DicomDate(DicomTag.StudyDate, DateTime.Today);
-				var range = elem.Get<DicomDateRange>();
-				Console.WriteLine(range);
 
-				//DicomClient client = new DicomClient();
-				//client.AddRequest(new DicomCEchoRequest());
-				//client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
+				DicomClient client = new DicomClient();
+				client.AddRequest(new DicomCEchoRequest());
+				client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
 
-				//TcpClient tcp = new TcpClient("127.0.0.1", 12345);
-				//client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
-				//tcp.Close();
+				TcpClient tcp = new TcpClient("127.0.0.1", 12345);
+				client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
+				tcp.Close();
 
 				//DicomFile df = DicomFile.Open(@"Z:\test6.dcm");
 

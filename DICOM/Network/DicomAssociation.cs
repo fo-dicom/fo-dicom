@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Dicom.Network {
 	public sealed class DicomAssociation {
@@ -41,6 +42,24 @@ namespace Dicom.Network {
 		public DicomPresentationContextCollection PresentationContexts {
 			get;
 			private set;
+		}
+
+		public override string ToString() {
+			var sb = new StringBuilder();
+			sb.AppendFormat("Calling AE Title:       {0}\n", CallingAE);
+			sb.AppendFormat("Called AE Title:        {0}\n", CalledAE);
+			sb.AppendFormat("Implementation Class:   {0}\n", RemoteImplemetationClassUID ?? DicomImplementation.ClassUID);
+			sb.AppendFormat("Implementation Version: {0}\n", RemoteImplementationVersion ?? DicomImplementation.Version);
+			sb.AppendFormat("Presentation Contexts:  {0}\n", PresentationContexts.Count);
+			foreach (var pc in PresentationContexts) {
+				sb.AppendFormat("  Presentation Context:  {0} [{1}]\n", pc.ID, pc.Result);
+				sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
+				foreach (var tx in pc.GetTransferSyntaxes()) {
+					sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
+				}
+			}
+			sb.Length = sb.Length - 1;
+			return sb.ToString();
 		}
 	}
 }
