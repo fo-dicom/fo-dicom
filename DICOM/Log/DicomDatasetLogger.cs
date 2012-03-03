@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+
+using NLog;
 
 using Dicom.IO.Buffer;
 
 namespace Dicom.Log {
 	public class DicomDatasetLogger : IDicomDatasetWalker {
-		private DicomLogger _log;
-		private DicomLogLevel _level;
+		private Logger _log;
+		private LogLevel _level;
 		private int _width = 80;
 		private int _value = 60;
 		private int _depth = 0;
 		private string _pad = String.Empty;
 
-		public DicomDatasetLogger(DicomLogger logger, DicomLogLevel level) {
+		public DicomDatasetLogger(Logger logger, LogLevel level) {
 			_log = logger;
 			_level = level;
 		}

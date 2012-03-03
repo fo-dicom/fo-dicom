@@ -4,18 +4,19 @@ using System.Linq;
 using System.Text;
 
 using Dicom.IO;
-using Dicom.IO.Buffer;
+using NLog;
 
+using Dicom.IO.Buffer;
 using Dicom.IO.Reader;
 
 namespace Dicom.Log {
 	public class DicomParserLogger : IDicomReaderObserver {
-		private DicomLogger _log;
-		private DicomLogLevel _level;
+		private Logger _log;
+		private LogLevel _level;
 		private int _depth;
 		private string _pad;
 
-		public DicomParserLogger(DicomLogger log, DicomLogLevel level) {
+		public DicomParserLogger(Logger log, LogLevel level) {
 			_log = log;
 			_level = level;
 			_depth = 0;

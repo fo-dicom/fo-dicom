@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -131,16 +134,11 @@
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
     <Compile Include="IO\Writer\DicomWriter.cs" />
-    <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\DicomDatasetLogger.cs" />
     <Compile Include="Log\DicomLog.cs" />
-    <Compile Include="Log\DicomLogLevel.cs" />
-    <Compile Include="Log\DicomLogger.cs" />
     <Compile Include="Log\DicomParserLogger.cs" />
     <Compile Include="Log\Extensions.cs" />
-    <Compile Include="Log\FilterLogger.cs" />
     <Compile Include="Log\HexWriter.cs" />
-    <Compile Include="Log\VoidLogger.cs" />
     <Compile Include="Imaging\Mathematics\Extensions.cs" />
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
@@ -178,7 +176,9 @@
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>

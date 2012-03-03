@@ -5,6 +5,10 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+
 using Dicom;
 using Dicom.Imaging;
 using Dicom.Imaging.Codec;
@@ -26,7 +30,17 @@ namespace ConsoleTest {
 					Console.ForegroundColor = old;
 				};
 
-				DicomLog.DefaultLogger = ConsoleLogger.Instance;
+				LoggingConfiguration config = new LoggingConfiguration();
+
+				ColoredConsoleTarget ct = new ColoredConsoleTarget();
+				ct.Layout = "${message}";
+				config.AddTarget("Console", ct);
+
+				config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, ct));
+
+				LogManager.Configuration = config;
+
+
 				DicomTranscoder.LoadCodecs();
 
 				var elem = new DicomDate(DicomTag.StudyDate, DateTime.Today);
