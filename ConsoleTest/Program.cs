@@ -23,7 +23,7 @@ namespace ConsoleTest {
 	class Program {
 		static void Main(string[] args) {
 			try {
-				DicomLog.OnDicomException += delegate(object sender, DicomExceptionEventArgs ea) {
+				DicomException.OnException += delegate(object sender, DicomExceptionEventArgs ea) {
 					ConsoleColor old = Console.ForegroundColor;
 					Console.ForegroundColor = ConsoleColor.Yellow;
 					Console.WriteLine(ea.Exception);

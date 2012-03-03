@@ -135,7 +135,6 @@
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
     <Compile Include="IO\Writer\DicomWriter.cs" />
     <Compile Include="Log\DicomDatasetLogger.cs" />
-    <Compile Include="Log\DicomLog.cs" />
     <Compile Include="Log\DicomParserLogger.cs" />
     <Compile Include="Log\Extensions.cs" />
     <Compile Include="Log\HexWriter.cs" />
