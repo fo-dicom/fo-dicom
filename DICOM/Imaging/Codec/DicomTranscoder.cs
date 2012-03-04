@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
+using NLog;
+
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
 		#region Static
@@ -20,13 +22,15 @@ namespace Dicom.Imaging.Codec {
 			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+			var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+
 			var catalog = (search == null) ?
 				new DirectoryCatalog(path) :
 				new DirectoryCatalog(path, search);
 			var container = new CompositionContainer(catalog);
 			foreach (var lazy in container.GetExports<IDicomCodec>()) {
 				var codec = lazy.Value;
-				// log codec creation
+				log.Info("Codec: {0}", codec.TransferSyntax.UID.Name);
 				_codecs[codec.TransferSyntax] = codec;
 			}
 		}

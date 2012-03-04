@@ -279,7 +279,7 @@ namespace Dicom {
 		public readonly static DicomUID VerificationSOPClass = new DicomUID("1.2.840.10008.1.1", "Verification SOP Class", DicomUidType.SOPClass);
 
 		/// <summary>Transfer Syntax: Implicit VR Little Endian: Default Transfer Syntax for DICOM [PS 3.5]</summary>
-		public readonly static DicomUID ImplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2", "Implicit VR Little Endian: Default Transfer Syntax for DICOM", DicomUidType.TransferSyntax);
+		public readonly static DicomUID ImplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2", "Implicit VR Little Endian", DicomUidType.TransferSyntax);
 
 		/// <summary>Transfer Syntax: Explicit VR Little Endian [PS 3.5]</summary>
 		public readonly static DicomUID ExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1", "Explicit VR Little Endian", DicomUidType.TransferSyntax);
@@ -294,10 +294,10 @@ namespace Dicom {
 		public readonly static DicomUID MPEG2MainProfileMainLevel = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile @ Main Level", DicomUidType.TransferSyntax);
 
 		/// <summary>Transfer Syntax: JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression [PS 3.5]</summary>
-		public readonly static DicomUID JPEGBaselineProcess1 = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression", DicomUidType.TransferSyntax);
+		public readonly static DicomUID JPEGBaselineProcess1 = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1)", DicomUidType.TransferSyntax);
 
 		/// <summary>Transfer Syntax: JPEG Extended (Process 2 &amp; 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only) [PS 3.5]</summary>
-		public readonly static DicomUID JPEGExtendedProcess2_4 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax);
+		public readonly static DicomUID JPEGExtendedProcess2_4 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4)", DicomUidType.TransferSyntax);
 
 		/// <summary>Transfer Syntax: JPEG Extended (Process 3 &amp; 5) [PS 3.5] (Retired)</summary>
 		public readonly static DicomUID JPEGExtendedProcess3_5RETIRED = new DicomUID("1.2.840.10008.1.2.4.52", "JPEG Extended (Process 3 & 5)", DicomUidType.TransferSyntax);
