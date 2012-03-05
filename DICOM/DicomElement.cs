@@ -387,7 +387,7 @@ namespace Dicom {
 		private decimal[] _values;
 		public override T Get<T>(int item = -1) {
 			if (_values == null) {
-				_values = base.Get<string[]>().Select(x => decimal.Parse(x)).ToArray();
+				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any)).ToArray();
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
