@@ -32,8 +32,7 @@ namespace Dicom.Log {
 			sb.Append(' ');
 			if (element.Length == 0) {
 				sb.Append("(no value available)");
-			}
-			else if (element.ValueRepresentation.IsString) {
+			} else if (element.ValueRepresentation.IsString) {
 				sb.Append('[');
 				string val = element.Get<string>();
 				if (val.Length > (_value - 2 - sb.Length)) {
@@ -42,6 +41,15 @@ namespace Dicom.Log {
 				} else {
 					sb.Append(val);
 					sb.Append(']');
+				}
+			} else if (element.Length >= 1024) {
+				sb.Append("<skipping large element>");
+			} else {
+				var val = String.Join("/", element.Get<string[]>());
+				if (val.Length > (_value - sb.Length)) {
+					sb.Append(val.Substring(0, _value - sb.Length));
+				} else {
+					sb.Append(val);
 				}
 			}
 			while (sb.Length < _value)
