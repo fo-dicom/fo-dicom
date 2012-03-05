@@ -85,6 +85,7 @@
     <Compile Include="Imaging\Codec\DicomJpeg2000Codec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegCodec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegLsCodec.cs" />
+    <Compile Include="Imaging\Codec\DicomRleCodec.cs" />
     <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\IDicomCodec.cs" />
     <Compile Include="Imaging\ColorSpace.cs" />
