@@ -24,7 +24,6 @@ namespace Dicom.Network {
 		private Queue<PDU> _pduQueue;
 		private Queue<DicomMessage> _msgQueue;
 		private List<DicomRequest> _pending;
-		private int _asyncOpsWindow;
 		private DicomMessage _dimse;
 		private Stream _dimseStream;
 		private int _readLength;
@@ -36,7 +35,6 @@ namespace Dicom.Network {
 			_pduQueue = new Queue<PDU>();
 			_msgQueue = new Queue<DicomMessage>();
 			_pending = new List<DicomRequest>();
-			_asyncOpsWindow = 1;
 			_isConnected = true;
 			Logger = LogManager.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
@@ -473,7 +471,7 @@ namespace Dicom.Network {
 				if (_sending)
 					return;
 
-				if (_pending.Count == _asyncOpsWindow)
+				if (Association.MaxAsyncOpsInvoked > 0 && _pending.Count >= Association.MaxAsyncOpsInvoked)
 					return;
 
 				_sending = true;

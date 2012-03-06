@@ -9,9 +9,18 @@ namespace Dicom.Network {
 		private Exception _exception;
 		private List<DicomRequest> _requests;
 		private DicomServiceUser _service;
+		private int _asyncInvoked;
+		private int _asyncPerformed;
 
 		public DicomClient() {
 			_requests = new List<DicomRequest>();
+			_asyncInvoked = 1;
+			_asyncPerformed = 1;
+		}
+
+		public void NegotiateAsyncOps(int invoked = 0, int performed = 0) {
+			_asyncInvoked = invoked;
+			_asyncPerformed = performed;
 		}
 
 		public void AddRequest(DicomRequest request) {
@@ -24,6 +33,8 @@ namespace Dicom.Network {
 
 		public IAsyncResult BeginSend(Stream stream, string callingAe, string calledAe, AsyncCallback callback, object state) {
 			var assoc = new DicomAssociation(callingAe, calledAe);
+			assoc.MaxAsyncOpsInvoked = _asyncInvoked;
+			assoc.MaxAsyncOpsPerformed = _asyncPerformed;
 			foreach (var request in _requests)
 				assoc.PresentationContexts.AddFromRequest(request);
 

@@ -6,6 +6,8 @@ namespace Dicom.Network {
 	public sealed class DicomAssociation {
 		public DicomAssociation() {
 			PresentationContexts = new DicomPresentationContextCollection();
+			MaxAsyncOpsInvoked = 1;
+			MaxAsyncOpsPerformed = 1;
 		}
 
 		public DicomAssociation(string callingAe, string calledAe, uint maxPduLength = 16384) : this() {
@@ -22,6 +24,16 @@ namespace Dicom.Network {
 		public string CalledAE {
 			get;
 			internal set;
+		}
+
+		public int MaxAsyncOpsInvoked {
+			get;
+			set;
+		}
+
+		public int MaxAsyncOpsPerformed {
+			get;
+			set;
 		}
 
 		public DicomUID RemoteImplemetationClassUID {

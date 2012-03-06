@@ -47,6 +47,8 @@ namespace ConsoleTest {
 
 
 				var client = new DicomClient();
+				client.NegotiateAsyncOps();
+				for (int i = 0; i < 10; i++)
 				client.AddRequest(new DicomCEchoRequest());
 				//client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
 

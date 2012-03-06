@@ -414,13 +414,13 @@ namespace Dicom.Network {
 			pdu.WriteLength16();
 
 			// Asynchronous Operations Negotiation
-			//if (_assoc.NegotiateAsyncOps) {
-			//    pdu.Write("Item-Type", (byte)0x53);
-			//    pdu.Write("Reserved", (byte)0x00);
-			//    pdu.Write("Item-Length", (ushort)0x0004);
-			//    pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.AsyncOpsInvoked);
-			//    pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.AsyncOpsPerformed);
-			//}
+			if (_assoc.MaxAsyncOpsInvoked != 1 || _assoc.MaxAsyncOpsPerformed != 1) {
+			    pdu.Write("Item-Type", (byte)0x53);
+			    pdu.Write("Reserved", (byte)0x00);
+			    pdu.Write("Item-Length", (ushort)0x0004);
+			    pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
+			    pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
+			}
 
 			// Implementation Version
 			pdu.Write("Item-Type", (byte)0x55);
@@ -498,8 +498,8 @@ namespace Dicom.Network {
 								} else if (ut == 0x55) {
 									_assoc.RemoteImplementationVersion = raw.ReadString("Implementation Version", ul);
 								} else if (ut == 0x53) {
-									//_assoc.AsyncOpsInvoked = raw.ReadUInt16("Asynchronous Operations Invoked");
-									//_assoc.AsyncOpsPerformed = raw.ReadUInt16("Asynchronous Operations Performed");
+									_assoc.MaxAsyncOpsInvoked = raw.ReadUInt16("Asynchronous Operations Invoked");
+									_assoc.MaxAsyncOpsPerformed = raw.ReadUInt16("Asynchronous Operations Performed");
 								} else if (ut == 0x54) {
 									raw.SkipBytes("SCU/SCP Role Selection", ul);
 									/*
@@ -596,13 +596,11 @@ namespace Dicom.Network {
 			pdu.WriteLength16();
 
 			// Asynchronous Operations Negotiation
-			//if (_assoc.NegotiateAsyncOps) {
-			//    pdu.Write("Item-Type", (byte)0x53);
-			//    pdu.Write("Reserved", (byte)0x00);
-			//    pdu.Write("Item-Length", (ushort)0x0004);
-			//    pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.AsyncOpsInvoked);
-			//    pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.AsyncOpsPerformed);
-			//}
+			pdu.Write("Item-Type", (byte)0x53);
+			pdu.Write("Reserved", (byte)0x00);
+			pdu.Write("Item-Length", (ushort)0x0004);
+			pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
+			pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
 
 			// Implementation Version
 			pdu.Write("Item-Type", (byte)0x55);
@@ -679,9 +677,8 @@ namespace Dicom.Network {
 							} else if (ut == 0x52) {
 								_assoc.RemoteImplemetationClassUID = DicomUID.Parse(raw.ReadString("Implementation Class UID", ul));
 							} else if (ut == 0x53) {
-								//TODO: Implement Async Ops
-								raw.ReadUInt16("Asynchronous Operations Invoked");
-								raw.ReadUInt16("Asynchronous Operations Performed");
+								_assoc.MaxAsyncOpsInvoked = raw.ReadUInt16("Asynchronous Operations Invoked");
+								_assoc.MaxAsyncOpsPerformed = raw.ReadUInt16("Asynchronous Operations Performed");
 							} else if (ut == 0x55) {
 								_assoc.RemoteImplementationVersion = raw.ReadString("Implementation Version", ul);
 							} else {
