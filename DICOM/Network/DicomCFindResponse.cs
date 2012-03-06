@@ -8,7 +8,7 @@ namespace Dicom.Network {
 		public DicomCFindResponse(DicomDataset command) : base(command) {
 		}
 
-		public DicomCFindResponse(DicomCFindResponse request, DicomStatus status) : base(request, status) {
+		public DicomCFindResponse(DicomCFindRequest request, DicomStatus status) : base(request, status) {
 		}
 	}
 }

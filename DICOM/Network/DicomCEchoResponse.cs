@@ -8,7 +8,7 @@ namespace Dicom.Network {
 		public DicomCEchoResponse(DicomDataset command) : base(command) {
 		}
 
-		public DicomCEchoResponse(DicomCEchoResponse request, DicomStatus status) : base(request, status) {
+		public DicomCEchoResponse(DicomCEchoRequest request, DicomStatus status) : base(request, status) {
 		}
 	}
 }
