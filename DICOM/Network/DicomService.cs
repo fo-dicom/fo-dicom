@@ -746,7 +746,7 @@ namespace Dicom.Network {
 
 		protected void SendAssociationReleaseResponse() {
 			Logger.Log(LogLevel.Info, "{0} -> Association release response", LogID);
-			SendPDU(new AReleaseRQ());
+			SendPDU(new AReleaseRP());
 		}
 
 		protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) {
