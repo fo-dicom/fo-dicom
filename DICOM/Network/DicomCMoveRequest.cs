@@ -8,7 +8,28 @@ namespace Dicom.Network {
 		public DicomCMoveRequest(DicomDataset command) : base(command) {
 		}
 
-		public DicomCMoveRequest(DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.VerificationSOPClass, priority) {
+		public DicomCMoveRequest(string studyInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.VerificationSOPClass, priority) {
+			AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelMOVE;
+			Dataset = new DicomDataset();
+			Level = DicomQueryRetrieveLevel.Study;
+			Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
+		}
+
+		public DicomCMoveRequest(string studyInstanceUid, string seriesInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.VerificationSOPClass, priority) {
+			AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelMOVE;
+			Dataset = new DicomDataset();
+			Level = DicomQueryRetrieveLevel.Series;
+			Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
+			Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
+		}
+
+		public DicomQueryRetrieveLevel Level {
+			get { return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel); }
+			set {
+				Dataset.Remove(DicomTag.QueryRetrieveLevel);
+				if (value != DicomQueryRetrieveLevel.Worklist)
+					Dataset.Add(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+			}
 		}
 
 		public delegate void ResponseDelegate(DicomCMoveRequest request, DicomCMoveResponse response);
