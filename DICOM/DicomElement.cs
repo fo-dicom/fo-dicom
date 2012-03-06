@@ -48,7 +48,7 @@ namespace Dicom {
 
 		protected DicomStringElement(DicomTag tag, Encoding encoding, string value) : base(tag, EmptyBuffer.Value) {
 			Encoding = encoding;
-			Buffer = ByteConverter.ToByteBuffer(value, encoding, ValueRepresentation.PaddingValue);
+			Buffer = ByteConverter.ToByteBuffer(value ?? String.Empty, encoding, ValueRepresentation.PaddingValue);
 		}
 
 		protected DicomStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer) : base(tag, buffer) {
@@ -83,7 +83,7 @@ namespace Dicom {
 				return (T)DicomParseable.Parse<T>(StringValue);
 
 			if (typeof(T).IsEnum)
-				return (T)Enum.Parse(typeof(T), StringValue);
+				return (T)Enum.Parse(typeof(T), StringValue, true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
 		}
