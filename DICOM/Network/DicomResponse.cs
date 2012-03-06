@@ -32,5 +32,15 @@ namespace Dicom.Network {
 				Command.Add(DicomTag.ErrorComment, value.ErrorComment);
 			}
 		}
+
+		public override string ToString() {
+			StringBuilder sb = new StringBuilder();
+			sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
+			if (Status.State != DicomState.Pending && Status.State != DicomState.Success) {
+				if (!String.IsNullOrEmpty(Status.ErrorComment))
+					sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+			}
+			return sb.ToString();
+		}
 	}
 }

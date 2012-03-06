@@ -49,10 +49,7 @@ namespace Dicom.Network {
 		}
 
 		public override string ToString() {
-			switch (Type) {
-			default:
-				return String.Format("{0} [{1}]", ToString(Type), IsRequest(Type) ? MessageID : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
-			}
+			return String.Format("{0} [{1}]", ToString(Type), IsRequest(Type) ? MessageID : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
 		}
 
 		public static string ToString(DicomCommandField type) {
