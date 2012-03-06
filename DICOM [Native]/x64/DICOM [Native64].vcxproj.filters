@@ -239,12 +239,6 @@
     <ClInclude Include="..\CharLS\scan.h">
       <Filter>Header Files\CharLS</Filter>
     </ClInclude>
-    <ClInclude Include="..\CharLS\stdafx.h">
-      <Filter>Header Files\CharLS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CharLS\streams.h">
-      <Filter>Header Files\CharLS</Filter>
-    </ClInclude>
     <ClInclude Include="..\CharLS\util.h">
       <Filter>Header Files\CharLS</Filter>
     </ClInclude>

@@ -1,5 +1,5 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
 
@@ -37,7 +37,7 @@ public:
 
 	enum { cbit = 8 } ;
 
-	CTable()
+	CTable() 
 	{
 		::memset(rgtype, 0, sizeof(rgtype));
 	}

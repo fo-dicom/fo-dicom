@@ -1,5 +1,5 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
 
@@ -53,8 +53,7 @@ public:
 	
 	inlinehint LONG ComputeErrVal(LONG e) const
 	{
-		LONG q = Quantize(e);
-		return ModRange(q);
+	 	return ModRange(Quantize(e));
 	}
 	
 	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)

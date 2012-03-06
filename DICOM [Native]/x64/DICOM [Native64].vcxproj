@@ -56,7 +56,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>OPJ_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
@@ -68,7 +68,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>OPJ_STATIC;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -99,8 +99,6 @@
     <ClInclude Include="..\CharLS\losslesstraits.h" />
     <ClInclude Include="..\CharLS\processline.h" />
     <ClInclude Include="..\CharLS\scan.h" />
-    <ClInclude Include="..\CharLS\stdafx.h" />
-    <ClInclude Include="..\CharLS\streams.h" />
     <ClInclude Include="..\CharLS\util.h" />
     <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg.h" />
     <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg2000.h" />

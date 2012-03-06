@@ -1,12 +1,11 @@
 #include "Dicom.Imaging.Codec.JpegLs.h"
 
-#include "CharLS/stdafx.h"
 #include "CharLS/interface.h"
+#include "CharLS/publictypes.h"
 #include "CharLS/util.h"
 #include "CharLS/defaulttraits.h"
 #include "CharLS/losslesstraits.h"
 #include "CharLS/colortransform.h"
-#include "CharLS/streams.h"
 #include "CharLS/processline.h"
 
 using namespace System;
@@ -61,7 +60,7 @@ void DicomJpegLsNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData
 	if (jparams == nullptr)
 		jparams = (DicomJpegLsParams^)GetDefaultParameters();
 
-	JlsParamaters params = {0};
+	JlsParameters params = {0};
 	params.width = oldPixelData->Width;
 	params.height = oldPixelData->Height;
 	params.bitspersample = oldPixelData->BitsStored;
@@ -108,7 +107,9 @@ void DicomJpegLsNativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelData
 		array<unsigned char>^ frameData = gcnew array<unsigned char>(newPixelData->UncompressedFrameSize);
 		PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameData);
 
-		JLS_ERROR err = JpegLsDecode((void*)frameArray->Pointer, frameData->Length, (void*)jpegArray->Pointer, jpegData->Size);
+		JlsParameters params = {0};
+
+		JLS_ERROR err = JpegLsDecode((void*)frameArray->Pointer, frameData->Length, (void*)jpegArray->Pointer, jpegData->Size, &params);
 		if (err != OK) throw gcnew DicomJpegLsCodecException(err);
 
 		newPixelData->AddFrame(gcnew MemoryByteBuffer(frameData));

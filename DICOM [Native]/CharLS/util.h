@@ -1,5 +1,5 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
 
@@ -8,8 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "config.h"
-#include "interface.h"
+#include "publictypes.h"
 
 
 #ifndef MAX
@@ -20,8 +19,6 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-
-const LONG BASIC_RESET	= 64;
 
 inline LONG log_2(LONG n)
 {
@@ -130,12 +127,10 @@ struct FromBigEndian<4>
 template <>
 struct FromBigEndian<8>
 {
-	typedef unsigned long long UINT64;
-
-	inlinehint static UINT64 Read(BYTE* pbyte)
+	inlinehint static uint64_t Read(BYTE* pbyte)
 	{
-		return  (UINT64(pbyte[0]) << 56) + (UINT64(pbyte[1]) << 48) + (UINT64(pbyte[2]) << 40) + (UINT64(pbyte[3]) << 32) + 
-		  		(UINT64(pbyte[4]) << 24) + (UINT64(pbyte[5]) << 16) + (UINT64(pbyte[6]) <<  8) + (UINT64(pbyte[7]) << 0);
+		return  (uint64_t(pbyte[0]) << 56) + (uint64_t(pbyte[1]) << 48) + (uint64_t(pbyte[2]) << 40) + (uint64_t(pbyte[3]) << 32) + 
+		  		(uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);
 	}
 };
 

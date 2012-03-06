@@ -1,25 +1,28 @@
-// 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
-#include "stdafx.h"
+
+// Implement correct linkage for win32 dlls
+#if defined(WIN32) && defined(CHARLS_DLL)
+#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
+#else
+#define CHARLS_IMEXPORT(returntype) returntype
+#endif
+
+#include "config.h"
+#include "util.h"
 #include "interface.h"
 #include "header.h"
+#include <sstream>
 
 
-
-JLS_ERROR CheckInput(const void* pdataCompressed, size_t cbyteCompressed, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams)
+static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
 {
 	if (pparams == NULL)
 		return InvalidJlsParameters;
 
-	if (cbyteCompressed == 0)
-		return InvalidJlsParameters;
-
-	if (pdataCompressed == NULL)
-		return InvalidJlsParameters;
-
-	if (pdataUncompressed == NULL)
+	if (uncompressedStream.rawStream == NULL && uncompressedStream.rawData == NULL)
 		return InvalidJlsParameters;
 
 	if (pparams->width < 1 || pparams->width > 65535)
@@ -28,153 +31,203 @@ JLS_ERROR CheckInput(const void* pdataCompressed, size_t cbyteCompressed, const 
 	if (pparams->height < 1 || pparams->height > 65535)
 		return ParameterValueNotSupported;
 
-	int bytesperline = pparams->bytesperline < 0 ? -pparams->bytesperline : pparams->bytesperline;
-
-	if (cbyteUncompressed < size_t(bytesperline * pparams->height))
+	if (uncompressedStream.rawData != NULL)
+	{
+		if (uncompressedStream.count < size_t(pparams->height * pparams->width * pparams->components * (pparams->bitspersample > 8 ? 2 : 1)))
+			return UncompressedBufferTooSmall;
+	}
+	else if (uncompressedStream.rawStream == NULL)
 		return InvalidJlsParameters;
 
 	return CheckParameterCoherent(pparams);
 }
 
 
-
-extern "C"
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
 {
-
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams)
-{
-	JlsParamaters info = *pparams;
-	if(info.bytesperline == 0)
-	{
-		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
-		if (info.ilv != ILV_NONE)
-		{
-			info.bytesperline *= info.components;
-		}
-	}
-	
-	JLS_ERROR parameterError = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, &info);
-
-	if (parameterError != OK)
-		return parameterError;
-
 	if (pcbyteWritten == NULL)
 		return InvalidJlsParameters;
 
-	Size size = Size(info.width, info.height);
-	LONG cbit = info.bitspersample;
-	JLSOutputStream stream;
-	
-	stream.Init(size, info.bitspersample, info.components);
-	
-	if (info.colorTransform != 0)
-	{
-		stream.AddColorTransform(info.colorTransform);
-	}
-
-	if (info.ilv == ILV_NONE)
-	{
-		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
-		for (LONG icomp = 0; icomp < info.components; ++icomp)
-		{
-			const BYTE* pbyteComp = static_cast<const BYTE*>(pdataUncompressed) + icomp*cbyteComp;
-			stream.AddScan(pbyteComp, &info);
-		}
-	}
-	else 
-	{
-		stream.AddScan(pdataUncompressed, &info);
-	}
-
-	
-	stream.Write((BYTE*)pdataCompressed, cbyteBuffer);
-	
-	*pcbyteWritten = stream.GetBytesWritten();	
-	return OK;
-}
-
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info)
-{
-	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
-
-	if(info != NULL)
-	{
-	 	reader.SetInfo(info);
-	}
+	JLS_ERROR parameterError = CheckInput(rawStreamInfo, pparams);
+	if (parameterError != OK)
+		return parameterError;
 
 	try
 	{
-		reader.Read(pdataUncompressed, cbyteUncompressed);
+		JlsParameters info = *pparams;
+		if (info.bytesperline == 0)
+		{
+			info.bytesperline = info.width * ((info.bitspersample + 7)/8);
+			if (info.ilv != ILV_NONE)
+			{
+				info.bytesperline *= info.components;
+			}
+		}
+
+		Size size = Size(info.width, info.height);
+
+		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
+
+		if (info.colorTransform != 0)
+		{
+			writer.AddColorTransform(info.colorTransform);
+		}
+
+		if (info.ilv == ILV_NONE)
+		{
+			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
+			for (LONG component = 0; component < info.components; ++component)
+			{
+				writer.AddScan(rawStreamInfo, &info);
+				SkipBytes(&rawStreamInfo, cbyteComp);
+			}
+		}
+		else
+		{
+			writer.AddScan(rawStreamInfo, &info);
+		}
+	
+		writer.Write(compressedStreamInfo);
+		*pcbyteWritten = writer.GetBytesWritten();
 		return OK;
 	}
-	catch (JlsException& e)
+	catch (const JlsException& e)
 	{
 		return e._error;
 	}
 }
 
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteBuffer)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
 {
-	JlsParamaters params = JlsParamaters();
+	JpegMarkerReader reader(compressedStream);
 
-	JLS_ERROR error = JpegLsReadHeader(pdataCompressed, cbyteBuffer, &params);
-	if (error != OK)
-		return error;
-
-	error = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, &params);
-
-	if (error != OK)
-		return error;
-	
-	Size size = Size(params.width, params.height);
-	LONG cbit = params.bitspersample;
-	
-	JLSOutputStream stream;
-	
-	stream.Init(size, params.bitspersample, params.components);
-
-	if (params.ilv == ILV_NONE)
+	if (info != NULL)
 	{
-		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
-		for (LONG icomp = 0; icomp < params.components; ++icomp)
-		{
-			const BYTE* pbyteComp = static_cast<const BYTE*>(pdataUncompressed) + icomp*cbyteComp;
-			stream.AddScan(pbyteComp, &params);
-		}
-	}
-	else 
-	{
-		stream.AddScan(pdataUncompressed, &params);
+		reader.SetInfo(info);
 	}
 
-	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(cbyteBuffer + 16);
-	memcpy(&rgbyteCompressed[0], pdataCompressed, cbyteBuffer);
-	
-
-	stream.EnableCompare(true);
-	stream.Write(&rgbyteCompressed[0], cbyteBuffer);
-	
-	return OK;
-}
-
- 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* pparams)
-{
 	try
 	{
-		JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
-		reader.ReadHeader();	
-		JlsParamaters info = reader.GetMetadata();
-		*pparams = info;	
+		reader.Read(rawStream);
 		return OK;
 	}
-	catch (JlsException& e)
+	catch (const JlsException& e)
 	{
 		return e._error;
 	}
-
 }
 
+
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams)
+{
+	try
+	{
+		JpegMarkerReader reader(rawStreamInfo);
+		reader.ReadHeader();
+		reader.ReadStartOfScan(true);
+		JlsParameters info = reader.GetMetadata();
+		*pparams = info;
+		return OK;
+	}
+	catch (const JlsException& e)
+	{
+		return e._error;
+	}
+}
+
+extern "C"
+{
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* pparams)
+	{
+		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+		ByteStreamInfo compressedStreamInfo = FromByteArray(compressedData, compressedLength);
+
+		return JpegLsEncodeStream(compressedStreamInfo, pcbyteWritten, rawStreamInfo, pparams);
+	}
+
+
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParameters* info)
+	{
+		ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
+		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+
+		return JpegLsDecodeStream(rawStreamInfo, compressedStream, info);
+	}
+
+	
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams)
+	{
+		return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams);
+	}
+
+
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+	{
+		JlsParameters info = JlsParameters();
+
+		JLS_ERROR error = JpegLsReadHeader(compressedData, compressedLength, &info);
+		if (error != OK)
+			return error;
+
+		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+
+		error = CheckInput(rawStreamInfo, &info);
+
+		if (error != OK)
+			return error;
+
+		Size size = Size(info.width, info.height);
+
+		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
+
+		if (info.ilv == ILV_NONE)
+		{
+			LONG fieldLength = size.cx*size.cy*((info.bitspersample +7)/8);
+			for (LONG component = 0; component < info.components; ++component)
+			{
+				writer.AddScan(rawStreamInfo, &info);
+				SkipBytes(&rawStreamInfo, fieldLength);
+			}
+		}
+		else
+		{
+			writer.AddScan(rawStreamInfo, &info);
+		}
+
+		std::vector<BYTE> rgbyteCompressed(compressedLength + 16);
+
+		memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
+
+		writer.EnableCompare(true);
+		writer.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
+
+		return OK;
+	}
+
+
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
+	{
+		ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
+		JpegMarkerReader reader(compressedStream);
+
+		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+
+		if (info != NULL)
+		{
+			reader.SetInfo(info);
+		}
+
+		reader.SetRect(roi);
+
+		try
+		{
+			reader.Read(rawStreamInfo);
+			return OK;
+		}
+		catch (const JlsException& e)
+		{
+			return e._error;
+		}
+	}
 }

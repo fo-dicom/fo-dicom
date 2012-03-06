@@ -63,11 +63,11 @@ namespace ConsoleTest {
 				//Console.WriteLine(df.FileMetaInfo.Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID).UID.Name);
 				//Console.WriteLine(df.Dataset.Get<PlanarConfiguration>(DicomTag.PlanarConfiguration));
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
-				//df.Save(testDir + @"\test-jls.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
+				df.Save(testDir + @"\test-jls.dcm");
 
-				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
-				df.Save(testDir + @"\test-j2k.dcm");
+				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
+				//df.Save(testDir + @"\test-j2k.dcm");
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
 				//df.Save(testDir + @"\test-jll.dcm");
