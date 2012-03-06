@@ -390,11 +390,13 @@ namespace Dicom.Network {
 				throw new DicomNetworkException("Operation not implemented");
 			} finally {
 				if (dimse is DicomResponse) {
+					var rsp = dimse as DicomResponse;
 					lock (_lock) {
-						var req = _pending.FirstOrDefault(x => x.MessageID == (dimse as DicomResponse).RequestMessageID);
+						var req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
 						if (req != null) {
-							(req as DicomRequest).PostResponse(this, dimse as DicomResponse);
-							_pending.Remove(req);
+							(req as DicomRequest).PostResponse(this, rsp);
+							if (rsp.Status.State != DicomState.Pending)
+								_pending.Remove(req);
 						}
 					}
 				}
