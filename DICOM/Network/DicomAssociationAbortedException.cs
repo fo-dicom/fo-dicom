@@ -3,16 +3,16 @@
 namespace Dicom.Network {
 	public class DicomAssociationAbortedException : DicomNetworkException {
 		public DicomAssociationAbortedException(DicomAbortSource source, DicomAbortReason reason) : base("Association Abort [source: {0}; reason: {1}]", source, reason) {
-			Source = source;
-			Reason = reason;
+			AbortSource = source;
+			AbortReason = reason;
 		}
 
-		public DicomAbortSource Source {
+		public DicomAbortSource AbortSource {
 			get;
 			private set;
 		}
 
-		public DicomAbortReason Reason {
+		public DicomAbortReason AbortReason {
 			get;
 			private set;
 		}

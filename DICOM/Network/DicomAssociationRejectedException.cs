@@ -3,22 +3,22 @@
 namespace Dicom.Network {
 	public class DicomAssociationRejectedException : DicomNetworkException {
 		public DicomAssociationRejectedException(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) : base("Association rejected [result: {0}; source: {1}; reason: {2}]", result, source, reason) {
-			Result = result;
-			Source = source;
-			Reason = reason;
+			RejectResult = result;
+			RejectSource = source;
+			RejectReason = reason;
 		}
 
-		public DicomRejectResult Result {
+		public DicomRejectResult RejectResult {
 			get;
 			private set;
 		}
 
-		public DicomRejectSource Source {
+		public DicomRejectSource RejectSource {
 			get;
 			private set;
 		}
 
-		public DicomRejectReason Reason {
+		public DicomRejectReason RejectReason {
 			get;
 			private set;
 		}
