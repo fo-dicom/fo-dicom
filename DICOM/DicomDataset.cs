@@ -102,6 +102,8 @@ namespace Dicom {
 			if (vr == DicomVR.CS) {
 				if (typeof(T) == typeof(string))
 					return Add(new DicomCodeString(tag, values.Cast<string>().ToArray()));
+				if (typeof(T).IsEnum)
+					return Add(new DicomCodeString(tag, values.Select(x => x.ToString()).ToArray()));
 			}
 
 			if (vr == DicomVR.DA) {
