@@ -64,12 +64,12 @@ typedef struct v4dwt_local {
 	int		cas ;
 } v4dwt_t ;
 
-static const float dwt_alpha =  1.586134342f; //  12994
-static const float dwt_beta  =  0.052980118f; //    434
-static const float dwt_gamma = -0.882911075f; //  -7233
-static const float dwt_delta = -0.443506852f; //  -3633
+static const float dwt_alpha =  1.586134342f; /*  12994 */
+static const float dwt_beta  =  0.052980118f; /*    434 */
+static const float dwt_gamma = -0.882911075f; /*  -7233 */
+static const float dwt_delta = -0.443506852f; /*  -3633 */
 
-static const float K      = 1.230174105f; //  10078
+static const float K      = 1.230174105f; /*  10078 */
 /* FIXME: What is this constant? */
 static const float c13318 = 1.625732422f;
 
@@ -527,7 +527,7 @@ static void dwt_decode_tile(opj_tcd_tilecomp_t* tilec, int numres, DWT1DFN dwt_1
 
 	int w = tilec->x1 - tilec->x0;
 
-	h.mem = opj_aligned_malloc(dwt_decode_max_resolution(tr, numres) * sizeof(int));
+	h.mem = (int*)opj_aligned_malloc(dwt_decode_max_resolution(tr, numres) * sizeof(int));
 	v.mem = h.mem;
 
 	while( --numres) {
@@ -570,7 +570,7 @@ static void v4dwt_interleave_h(v4dwt_t* restrict w, float* restrict a, int x, in
 	int count = w->sn;
 	int i, k;
 	for(k = 0; k < 2; ++k){
-		if (count + 3 * x < size && ((int) a & 0x0f) == 0 && ((int) bi & 0x0f) == 0 && (x & 0x0f) == 0) {
+		if (count + 3 * x < size && ((size_t) a & 0x0f) == 0 && ((size_t) bi & 0x0f) == 0 && (x & 0x0f) == 0) {
 			/* Fast code path */
 			for(i = 0; i < count; ++i){
 				int j = i;

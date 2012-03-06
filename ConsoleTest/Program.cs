@@ -52,28 +52,34 @@ namespace ConsoleTest {
 				//client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
 				//tcp.Close();
 
-				var df = DicomFile.Open(@"C:\Development\fo-dicom-samples\test-rle.dcm");
+				var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
+				var testDir = Path.Combine(samplesDir, "Test");
+
+				if (!Directory.Exists(testDir))
+					Directory.CreateDirectory(testDir);
+
+				var df = DicomFile.Open(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105752.1.0.1.dcm");
 
 				//Console.WriteLine(df.FileMetaInfo.Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID).UID.Name);
 				//Console.WriteLine(df.Dataset.Get<PlanarConfiguration>(DicomTag.PlanarConfiguration));
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
-				//df.Save(@"C:\Development\fo-dicom-samples\test-jls.dcm");
+				//df.Save(testDir + @"\test-jls.dcm");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
-				//df.Save(@"C:\Development\fo-dicom-samples\test-j2k.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
+				df.Save(testDir + @"\test-j2k.dcm");
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
-				//df.Save(@"C:\Development\fo-dicom-samples\test-jll.dcm");
+				//df.Save(testDir + @"\test-jll.dcm");
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.RLELossless);
-				//df.Save(@"C:\Development\fo-dicom-samples\test-rle.dcm");
+				//df.Save(testDir + @"\test-rle.dcm");
 
 				df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
-				df.Save(@"C:\Development\fo-dicom-samples\test-ele.dcm");
+				df.Save(testDir + @"\test-ele.dcm");
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRBigEndian);
-				//df.Save(@"Z:\test_out.dcm");
+				//df.Save(testDir + @"\test_ebe.dcm");
 
 				//Console.WriteLine("End...");
 				//Console.ReadLine();

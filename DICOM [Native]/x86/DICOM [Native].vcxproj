@@ -56,7 +56,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OPJ_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
@@ -68,7 +68,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OPJ_STATIC;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -111,6 +111,10 @@
     <ClCompile Include="..\Dicom.Imaging.Codec.Rle.cpp" />
     <ClCompile Include="..\DicomNativeExt.cpp" />
     <ClCompile Include="..\OpenJPEG\bio.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\cidx_manager.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
@@ -158,7 +162,15 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="..\OpenJPEG\phix_manager.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+    </ClCompile>
     <ClCompile Include="..\OpenJPEG\pi.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\ppix_manager.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
@@ -179,6 +191,14 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="..\OpenJPEG\tgt.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\thix_manager.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\tpix_manager.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
@@ -205,11 +225,13 @@
     <ClInclude Include="..\Dicom.Imaging.Codec.JpegLS.h" />
     <ClInclude Include="..\Dicom.Imaging.Codec.Rle.h" />
     <ClInclude Include="..\OpenJPEG\bio.h" />
+    <ClInclude Include="..\OpenJPEG\cidx_manager.h" />
     <ClInclude Include="..\OpenJPEG\cio.h" />
     <ClInclude Include="..\OpenJPEG\dwt.h" />
     <ClInclude Include="..\OpenJPEG\event.h" />
     <ClInclude Include="..\OpenJPEG\fix.h" />
     <ClInclude Include="..\OpenJPEG\image.h" />
+    <ClInclude Include="..\OpenJPEG\indexbox_manager.h" />
     <ClInclude Include="..\OpenJPEG\int.h" />
     <ClInclude Include="..\OpenJPEG\j2k.h" />
     <ClInclude Include="..\OpenJPEG\j2k_lib.h" />
@@ -218,6 +240,7 @@
     <ClInclude Include="..\OpenJPEG\mct.h" />
     <ClInclude Include="..\OpenJPEG\mqc.h" />
     <ClInclude Include="..\OpenJPEG\openjpeg.h" />
+    <ClInclude Include="..\OpenJPEG\opj_config.h" />
     <ClInclude Include="..\OpenJPEG\opj_includes.h" />
     <ClInclude Include="..\OpenJPEG\opj_malloc.h" />
     <ClInclude Include="..\OpenJPEG\pi.h" />

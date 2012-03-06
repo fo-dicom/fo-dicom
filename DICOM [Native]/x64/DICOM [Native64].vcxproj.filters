@@ -111,6 +111,21 @@
     <ClCompile Include="..\Dicom.Imaging.Codec.Rle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\OpenJPEG\cidx_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\phix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\ppix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\thix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\tpix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg2000.h">
@@ -240,6 +255,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Dicom.Imaging.Codec.Rle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\opj_config.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\cidx_manager.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\indexbox_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

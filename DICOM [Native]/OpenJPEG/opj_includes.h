@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, Hervé Drolon, FreeImage Team
+ * Copyright (c) 2005, Herve Drolon, FreeImage Team
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,28 +88,26 @@ Most compilers implement their own version of this keyword ...
 
 /* MSVC and Borland C do not have lrintf */
 #if defined(_MSC_VER) || defined(__BORLANDC__)
+static INLINE long lrintf(float f){
 #ifdef _M_X64
-#include <emmintrin.h>
-static INLINE long lrintf(float f){
-	return _mm_cvtss_si32(_mm_load_ss(&f));
-}
+    return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f));
 #else
-static INLINE long lrintf(float f){
-	int i;
-
-	_asm{
-		fld f
-		fistp i
-	};
-
-	return i;
-}
+    int i;
+ 
+    _asm{
+        fld f
+        fistp i
+    };
+ 
+    return i;
 #endif
+}
 #endif
 
 #include "j2k_lib.h"
 #include "opj_malloc.h"
 #include "event.h"
+#include "bio.h"
 #include "cio.h"
 
 #include "image.h"
@@ -130,9 +128,12 @@ static INLINE long lrintf(float f){
 #include "int.h"
 #include "fix.h"
 
+#include "cidx_manager.h"
+#include "indexbox_manager.h"
+
 /* JPWL>> */
 #ifdef USE_JPWL
-#include "../jpwl/jpwl.h"
+#include "./jpwl/jpwl.h"
 #endif /* USE_JPWL */
 /* <<JPWL */
 

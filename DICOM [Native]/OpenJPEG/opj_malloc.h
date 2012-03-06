@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, Hervé Drolon, FreeImage Team
+ * Copyright (c) 2005, Herve Drolon, FreeImage Team
  * Copyright (c) 2007, Callum Lerwick <seg@haxxed.com>
  * All rights reserved.
  *
@@ -69,7 +69,7 @@ Allocate memory aligned to a 16 byte boundry
 @return Returns a void pointer to the allocated space, or NULL if there is insufficient memory available
 */
 /* FIXME: These should be set with cmake tests, but we're currently not requiring use of cmake */
-#ifdef WIN32
+#ifdef _WIN32
 	/* Someone should tell the mingw people that their malloc.h ought to provide _mm_malloc() */
 	#ifdef __GNUC__
 		#include <mm_malloc.h>
@@ -80,7 +80,7 @@ Allocate memory aligned to a 16 byte boundry
 			#define HAVE_MM_MALLOC
 		#endif
 	#endif
-#else /* Not WIN32 */
+#else /* Not _WIN32 */
 	#if defined(__sun)
 		#define HAVE_MEMALIGN
 	/* Linux x86_64 and OSX always align allocations to 16 bytes */
@@ -130,22 +130,22 @@ Allocate memory aligned to a 16 byte boundry
 
 /**
 Reallocate memory blocks.
-@param memblock Pointer to previously allocated memory block
-@param size New size in bytes
+@param m Pointer to previously allocated memory block
+@param s New size in bytes
 @return Returns a void pointer to the reallocated (and possibly moved) memory block
 */
 #ifdef ALLOC_PERF_OPT
-void * OPJ_CALLCONV opj_realloc(void * _Memory, size_t NewSize);
+void * OPJ_CALLCONV opj_realloc(void * m, size_t s);
 #else
 #define opj_realloc(m, s) realloc(m, s)
 #endif
 
 /**
 Deallocates or frees a memory block.
-@param memblock Previously allocated memory block to be freed
+@param m Previously allocated memory block to be freed
 */
 #ifdef ALLOC_PERF_OPT
-void OPJ_CALLCONV opj_free(void * _Memory);
+void OPJ_CALLCONV opj_free(void * m);
 #else
 #define opj_free(m) free(m)
 #endif
