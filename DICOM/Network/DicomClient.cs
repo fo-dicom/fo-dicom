@@ -16,6 +16,7 @@ namespace Dicom.Network {
 			_requests = new List<DicomRequest>();
 			_asyncInvoked = 1;
 			_asyncPerformed = 1;
+			Linger = 50;
 		}
 
 		public void NegotiateAsyncOps(int invoked = 0, int performed = 0) {
@@ -23,8 +24,19 @@ namespace Dicom.Network {
 			_asyncPerformed = performed;
 		}
 
+		/// <summary>
+		/// Time in milliseconds to keep connection alive for additional requests.
+		/// </summary>
+		public int Linger {
+			get;
+			set;
+		}
+
 		public void AddRequest(DicomRequest request) {
-			_requests.Add(request);
+			if (_service != null && _service.IsConnected)
+				_service.SendRequest(request);
+			else
+				_requests.Add(request);
 		}
 
 		public void Send(Stream stream, string callingAe, string calledAe) {
@@ -46,12 +58,17 @@ namespace Dicom.Network {
 
 		public void EndSend(IAsyncResult result) {
 			_async.AsyncWaitHandle.WaitOne();
+
+			_service = null;
+			_async = null;
+
 			if (_exception != null)
 				throw _exception;
 		}
 
 		private class DicomServiceUser : DicomService, IDicomServiceUser {
 			private DicomClient _client;
+			private Timer _timer;
 
 			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association) : base(stream) {
 				_client = client;
@@ -64,6 +81,15 @@ namespace Dicom.Network {
 			}
 
 			protected override void OnSendQueueEmpty() {
+				if (_timer == null)
+					_timer = new Timer(OnLingerTimeout);
+				if (_client.Linger == Timeout.Infinite)
+					SendAssociationReleaseRequest();
+				else
+					_timer.Change(_client.Linger, Timeout.Infinite);
+			}
+
+			private void OnLingerTimeout(object state) {
 				SendAssociationReleaseRequest();
 			}
 
