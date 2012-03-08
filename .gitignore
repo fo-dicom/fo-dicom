@@ -12,3 +12,4 @@ Release/
 TestResult.xml
 *.StyleCop
 ipch/
+Distribute/
