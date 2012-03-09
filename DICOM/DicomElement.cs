@@ -110,6 +110,9 @@ namespace Dicom {
 
 		private string[] _values = null;
 		public override T Get<T>(int item = -1) {
+			if (item == -1)
+				return (T)(object)StringValue;
+
 			if (_values == null)
 				_values = (StringValue ?? String.Empty).Split('\\');
 
