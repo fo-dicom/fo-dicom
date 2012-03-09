@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace Dicom.Network {
@@ -11,6 +16,7 @@ namespace Dicom.Network {
 		private DicomServiceUser _service;
 		private int _asyncInvoked;
 		private int _asyncPerformed;
+		private TcpClient _client;
 
 		public DicomClient() {
 			_requests = new List<DicomRequest>();
@@ -39,6 +45,24 @@ namespace Dicom.Network {
 				_requests.Add(request);
 		}
 
+		public void Send(string host, int port, bool useTls, string callingAe, string calledAe) {
+			EndSend(BeginSend(host, port, useTls, callingAe, calledAe, null, null));
+		}
+
+		public IAsyncResult BeginSend(string host, int port, bool useTls, string callingAe, string calledAe, AsyncCallback callback, object state) {
+			_client = new TcpClient(host, port);
+
+			Stream stream = _client.GetStream();
+
+			if (useTls) {
+				var ssl = new SslStream(stream);
+				ssl.AuthenticateAsClient(host);
+				stream = ssl;
+			}
+
+			return BeginSend(stream, callingAe, calledAe, callback, state);
+		}
+
 		public void Send(Stream stream, string callingAe, string calledAe) {
 			EndSend(BeginSend(stream, callingAe, calledAe, null, null));
 		}
@@ -58,6 +82,13 @@ namespace Dicom.Network {
 
 		public void EndSend(IAsyncResult result) {
 			_async.AsyncWaitHandle.WaitOne();
+
+			if (_client != null) {
+				try {
+					_client.Close();
+				} catch {
+				}
+			}
 
 			_service = null;
 			_async = null;
