@@ -17,6 +17,17 @@ namespace Dicom {
 		Unknown
 	}
 
+	public enum DicomStorageCategory {
+		None,
+		Image,
+		PresentationState,
+		StructuredReport,
+		Waveform,
+		Document,
+		Raw,
+		Other
+	}
+
 	public sealed partial class DicomUID : DicomParseable {
 		public readonly static DicomUID Implementation = new DicomUID("1.3.6.1.4.1.30071.7", "DICOM for .NET 4.0", DicomUidType.Unknown);
 
@@ -79,6 +90,58 @@ namespace Dicom {
 		static DicomUID() {
 			_uids = new ConcurrentDictionary<string, DicomUID>();
 			LoadInternalUIDs();
+		}
+
+		public bool IsImageStorage {
+			get {
+				return StorageCategory == DicomStorageCategory.Image;
+			}
+		}
+
+		public DicomStorageCategory StorageCategory {
+			get {
+				if (Type != DicomUidType.SOPClass || !Name.Contains("Storage"))
+					return DicomStorageCategory.None;
+
+				if (Name.Contains("Image Storage"))
+					return DicomStorageCategory.Image;
+
+				if (this == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass ||
+					this == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass ||
+					this == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass ||
+					this == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass)
+					return DicomStorageCategory.PresentationState;
+
+				if (this == DicomUID.AudioSRStorageTrialRETIRED ||
+					this == DicomUID.BasicTextSRStorage ||
+					this == DicomUID.ChestCADSRStorage ||
+					this == DicomUID.ComprehensiveSRStorage ||
+					this == DicomUID.ComprehensiveSRStorageTrialRETIRED ||
+					this == DicomUID.DetailSRStorageTrialRETIRED ||
+					this == DicomUID.EnhancedSRStorage ||
+					this == DicomUID.MammographyCADSRStorage ||
+					this == DicomUID.TextSRStorageTrialRETIRED ||
+					this == DicomUID.XRayRadiationDoseSRStorage)
+					return DicomStorageCategory.StructuredReport;
+
+				if (this == DicomUID.AmbulatoryECGWaveformStorage ||
+					this == DicomUID.BasicVoiceAudioWaveformStorage ||
+					this == DicomUID.CardiacElectrophysiologyWaveformStorage ||
+					this == DicomUID.GeneralECGWaveformStorage ||
+					this == DicomUID.HemodynamicWaveformStorage ||
+					this == DicomUID.TwelveLeadECGWaveformStorage ||
+					this == DicomUID.WaveformStorageTrialRETIRED)
+					return DicomStorageCategory.Waveform;
+
+				if (this == DicomUID.EncapsulatedCDAStorage ||
+					this == DicomUID.EncapsulatedPDFStorage)
+					return DicomStorageCategory.Document;
+
+				if (this == DicomUID.RawDataStorage)
+					return DicomStorageCategory.Raw;
+
+				return DicomStorageCategory.Other;
+			}
 		}
 
 		public static bool operator ==(DicomUID a, DicomUID b) {
