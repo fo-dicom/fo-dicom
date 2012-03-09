@@ -237,6 +237,10 @@ namespace Dicom {
 			throw new InvalidOperationException(String.Format("Unable to create DICOM element of type {0} with values of type {1}", vr.Code, typeof(T).ToString()));
 		}
 
+		public bool Contains(DicomTag tag) {
+			return _items.ContainsKey(tag);
+		}
+
 		/// <summary>
 		/// Removes items for specified tags.
 		/// </summary>
