@@ -2,28 +2,34 @@
 using System.IO;
 
 namespace Dicom.IO {
-	public class FileReference {
-		private string _name;
-
-		public FileReference(string fileName) {
-			_name = fileName;
+	public sealed class FileReference : IDisposable {
+		public FileReference(string fileName, bool isTempFile = false) {
+			Name = fileName;
+			IsTempFile = isTempFile;
 		}
 
 		public string Name {
-			get { return _name; }
+			get;
+			private set;
+		}
+
+		/// <summary>File will be delete when object is Disposed.</summary>
+		public bool IsTempFile {
+			get;
+			internal set;
 		}
 
 		public Stream OpenRead() {
-			return File.OpenRead(_name);
+			return File.OpenRead(Name);
 		}
 
 		public Stream OpenWrite() {
-			return File.OpenWrite(_name);
+			return File.OpenWrite(Name);
 		}
 
 		public void Delete() {
-			if (File.Exists(_name))
-				File.Delete(_name);
+			if (File.Exists(Name))
+				File.Delete(Name);
 		}
 
 		public byte[] GetByteRange(int offset, int count) {
@@ -35,6 +41,15 @@ namespace Dicom.IO {
 			}
 
 			return buffer;
+		}
+
+		public void Dispose() {
+			if (IsTempFile) {
+				try {
+					Delete();
+				} catch {
+				}
+			}
 		}
 	}
 }

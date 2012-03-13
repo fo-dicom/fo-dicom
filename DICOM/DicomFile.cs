@@ -6,7 +6,7 @@ using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 
 namespace Dicom {
-	public class DicomFile : IDisposable {
+	public class DicomFile {
 		public DicomFile() {
 			FileMetaInfo = new DicomFileMetaInformation();
 			Dataset = new DicomDataset();
@@ -32,17 +32,9 @@ namespace Dicom {
 			private set;
 		}
 
-		/// <summary>File will be delete when object is Disposed.</summary>
-		internal bool IsTempFile {
-			get;
-			set;
-		}
-
 		public void Save(string fileName) {
 			File = new FileReference(fileName);
 			File.Delete();
-
-			IsTempFile = false;
 
 			FileByteTarget target = new FileByteTarget(File);
 
@@ -53,8 +45,6 @@ namespace Dicom {
 		public void BeginSave(string fileName, AsyncCallback callback, object state) {
 			File = new FileReference(fileName);
 			File.Delete();
-
-			IsTempFile = false;
 
 			FileByteTarget target = new FileByteTarget(File);
 
@@ -140,15 +130,6 @@ namespace Dicom {
 				throw state.Item2;
 
 			return state.Item1;
-		}
-
-		public void Dispose() {
-			if (IsTempFile) {
-				try {
-					File.Delete();
-				} catch {
-				}
-			}
 		}
 	}
 }

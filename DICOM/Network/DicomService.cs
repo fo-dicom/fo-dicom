@@ -323,7 +323,7 @@ namespace Dicom.Network {
 
 								var request = _dimse as DicomCStoreRequest;
 								request.File = DicomFile.Open(fileName);
-								request.File.IsTempFile = true;
+								request.File.File.IsTempFile = true;
 								request.Dataset = request.File.Dataset;
 							}
 
