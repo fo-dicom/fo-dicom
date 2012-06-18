@@ -110,22 +110,18 @@ namespace Dicom {
 
 		private string[] _values = null;
 		public override T Get<T>(int item = -1) {
-			if (item == -1)
-				return (T)(object)StringValue;
-
 			if (_values == null)
 				_values = (StringValue ?? String.Empty).Split('\\');
 
 			if (typeof(T) == typeof(string) || typeof(T) == typeof(object)) {
-				if (item < 0)
+				if (item == -1)
 					return (T)((object)StringValue);
 
 				return (T)((object)_values[item]);
 			}
 
-			if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) {
+			if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[]))
 				return (T)(object)_values;
-			}
 
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(_values[item]);
