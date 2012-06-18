@@ -29,8 +29,6 @@ namespace Dicom {
 	}
 
 	public sealed partial class DicomUID : DicomParseable {
-		public readonly static DicomUID Implementation = new DicomUID("1.3.6.1.4.1.30071.7", "DICOM for .NET 4.0", DicomUidType.Unknown);
-
 		private string _uid;
 		private string _name;
 		private DicomUidType _type;
@@ -90,6 +88,10 @@ namespace Dicom {
 		static DicomUID() {
 			_uids = new ConcurrentDictionary<string, DicomUID>();
 			LoadInternalUIDs();
+		}
+
+		public static IEnumerable<DicomUID> Enumerate() {
+			return _uids.Values;
 		}
 
 		public bool IsImageStorage {
