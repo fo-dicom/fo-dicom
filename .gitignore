@@ -13,4 +13,3 @@ TestResult.xml
 *.StyleCop
 ipch/
 Distribute/
-packages/
