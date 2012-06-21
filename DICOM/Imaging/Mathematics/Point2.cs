@@ -63,10 +63,10 @@ namespace Dicom.Imaging.Mathematics {
 		/// <param name="other">Point to compare</param>
 		/// <returns>Compare result</returns>
 		public int CompareTo(Point2 other) {
-			if (Y < other.Y) return -1;
-			if (Y > other.Y) return 1;
 			if (X < other.X) return -1;
 			if (X > other.X) return 1;
+			if (Y < other.Y) return -1;
+			if (Y > other.Y) return 1;
 			return 0;
 		}
 
