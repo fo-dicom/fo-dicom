@@ -53,7 +53,7 @@ namespace Dicom.Imaging.Mathematics {
 			return X ^ Y;
 		}
 
-		/// <summary>Gets a human-readable string representing this <see cref="Paris.Mathematics.Point2"/> object.</summary>
+		/// <summary>Gets a human-readable string representing this <see cref="Dicom.Imaging.Mathematics.Point2"/> object.</summary>
 		/// <returns>String representation</returns>
 		public override string ToString() {
 			return String.Format("({0},{1})", X, Y);
