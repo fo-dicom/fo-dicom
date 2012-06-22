@@ -43,24 +43,21 @@ namespace ConsoleTest {
 
 				DicomTranscoder.LoadCodecs();
 
-				var server = new DicomServer<DicomCEchoProvider>(12345);
+
+				//var server = new DicomServer<DicomCEchoProvider>(12345);
 
 
-				var client = new DicomClient();
-				client.NegotiateAsyncOps();
-				for (int i = 0; i < 10; i++)
-				client.AddRequest(new DicomCEchoRequest());
-				//client.AddRequest(new DicomCStoreRequest(@"C:\Development\test.dcm"));
+				//var client = new DicomClient();
+				//client.NegotiateAsyncOps();
+				//for (int i = 0; i < 10; i++)
+				//    client.AddRequest(new DicomCEchoRequest());
+				//client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 
-				TcpClient tcp = new TcpClient("127.0.0.1", 12345);
-				client.Send(tcp.GetStream(), "SCU", "ANY-SCP");
-				tcp.Close();
+				//var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
+				//var testDir = Path.Combine(samplesDir, "Test");
 
-				var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
-				var testDir = Path.Combine(samplesDir, "Test");
-
-				if (!Directory.Exists(testDir))
-					Directory.CreateDirectory(testDir);
+				//if (!Directory.Exists(testDir))
+				//    Directory.CreateDirectory(testDir);
 
 				//var df = DicomFile.Open(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105752.1.0.1.dcm");
 
@@ -111,16 +108,16 @@ namespace ConsoleTest {
 				//Console.WriteLine(r.Contains(DateTime.Now.AddSeconds(60)));
 
 				//DicomDictionary dict = new DicomDictionary();
-				//dict.Load(@"Z:\DICOM\DICOM for .NET 4.0\Dictionaries\GDCM.DICOMV3.xml", DicomDictionaryFormat.GDCM);
-
-				//Console.WriteLine(DicomUID.JPEGLosslessProcess14SV1.Name);
+				//dict.Load(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml", DicomDictionaryFormat.XML);
 
 				//string output = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dict);
-				//File.WriteAllText(@"Z:\DICOM\DICOM for .NET 4.0\DicomTagGenerated.cs", output);
+				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomTagGenerated.cs", output);
 
-				//string output = Dicom.Generators.DicomDictionaryGenerator.Generate("Dicom", "DicomDictionary", "LoadInternalDictionary", dict);
-				//File.WriteAllText(@"Z:\DICOM\DICOM for .NET 4.0\DicomDictionaryGenerated.cs", output);
-				//File.WriteAllText(@"Z:\DicomDictionaryGenerated.cs", output);
+				//output = Dicom.Generators.DicomDictionaryGenerator.Generate("Dicom", "DicomDictionary", "LoadInternalDictionary", dict);
+				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomDictionaryGenerated.cs", output);
+
+				string output = Dicom.Generators.DicomUIDGenerator.Process(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml");
+				File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomUIDGenerated.cs", output);
 			} catch (Exception e) {
 				if (!(e is DicomException))
 					Console.WriteLine(e.ToString());
