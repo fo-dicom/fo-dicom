@@ -8,7 +8,7 @@ namespace Dicom.Network {
 		public DicomCFindRequest(DicomDataset command) : base(command) {
 		}
 
-		public DicomCFindRequest(DicomQueryRetrieveLevel level, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CFindRequest, DicomUID.Verification, priority) {
+		public DicomCFindRequest(DicomQueryRetrieveLevel level, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CFindRequest, DicomUID.StudyRootQueryRetrieveInformationModelFIND, priority) {
 			Dataset = new DicomDataset();
 			Level = level;
 		}
