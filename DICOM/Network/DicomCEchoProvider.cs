@@ -8,7 +8,7 @@ namespace Dicom.Network {
 
 		public void OnReceiveAssociationRequest(DicomAssociation association) {
 			foreach (var pc in association.PresentationContexts) {
-				if (pc.AbstractSyntax == DicomUID.VerificationSOPClass)
+				if (pc.AbstractSyntax == DicomUID.Verification)
 					pc.SetResult(DicomPresentationContextResult.Accept);
 				else
 					pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);

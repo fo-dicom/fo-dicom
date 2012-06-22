@@ -9,11 +9,14 @@ namespace Dicom {
 		TransferSyntax,
 		SOPClass,
 		MetaSOPClass,
+		ServiceClass,
 		SOPInstance,
 		ApplicationContextName,
+		ApplicationHostingModel,
 		CodingScheme,
 		FrameOfReference,
 		LDAP,
+		ContextGroupName,
 		Unknown
 	}
 
@@ -32,11 +35,13 @@ namespace Dicom {
 		private string _uid;
 		private string _name;
 		private DicomUidType _type;
+		private bool _retired;
 
-		public DicomUID(string uid, string name, DicomUidType type) {
+		public DicomUID(string uid, string name, DicomUidType type, bool retired=false) {
 			_uid = uid;
 			_name = name;
 			_type = type;
+			_retired = retired;
 		}
 
 		public string UID {
@@ -54,6 +59,12 @@ namespace Dicom {
 		public DicomUidType Type {
 			get {
 				return _type;
+			}
+		}
+
+		public bool IsRetired {
+			get {
+				return _retired;
 			}
 		}
 

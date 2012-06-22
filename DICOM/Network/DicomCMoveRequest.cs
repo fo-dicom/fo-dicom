@@ -8,7 +8,7 @@ namespace Dicom.Network {
 		public DicomCMoveRequest(DicomDataset command) : base(command) {
 		}
 
-		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.VerificationSOPClass, priority) {
+		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.Verification, priority) {
 			AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelMOVE;
 			DestinationAE = destinationAe;
 			Dataset = new DicomDataset();
@@ -16,7 +16,7 @@ namespace Dicom.Network {
 			Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
 		}
 
-		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, string seriesInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.VerificationSOPClass, priority) {
+		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, string seriesInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.Verification, priority) {
 			AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelMOVE;
 			DestinationAE = destinationAe;
 			Dataset = new DicomDataset();

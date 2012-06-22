@@ -40,7 +40,7 @@ namespace Dicom {
 				dict = dict[dict.GetPrivateCreator(creator.Value)];
 			}
 
-			foreach (XElement xentry in xdict.Elements("entry")) {
+			foreach (XElement xentry in xdict.Elements("tag")) {
 				string name = xentry.Value;
 
 				if (xentry.Attribute("keyword") == null)

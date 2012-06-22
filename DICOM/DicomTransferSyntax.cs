@@ -110,7 +110,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Baseline (Process 1)</summary>
 		public static DicomTransferSyntax JPEGProcess1 = new DicomTransferSyntax {
-			UID = DicomUID.JPEGBaselineProcess1,
+			UID = DicomUID.JPEGBaseline1,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
@@ -120,7 +120,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Extended (Process 2 &amp; 4)</summary>
 		public static DicomTransferSyntax JPEGProcess2_4 = new DicomTransferSyntax {
-			UID = DicomUID.JPEGExtendedProcess2_4,
+			UID = DicomUID.JPEGExtended24,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
@@ -130,7 +130,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Extended (Process 3 &amp; 5) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess3_5Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGExtendedProcess3_5RETIRED,
+			UID = DicomUID.JPEGExtended35RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -141,7 +141,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Spectral Selection, Non-Hierarchical (Process 6 &amp; 8) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess6_8Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGSpectralSelectionNonHierarchicalProcess6_8RETIRED,
+			UID = DicomUID.JPEGSpectralSelectionNonHierarchical68RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -152,7 +152,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Spectral Selection, Non-Hierarchical (Process 7 &amp; 9) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess7_9Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGSpectralSelectionNonHierarchicalProcess7_9RETIRED,
+			UID = DicomUID.JPEGSpectralSelectionNonHierarchical79RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -163,7 +163,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Full Progression, Non-Hierarchical (Process 10 &amp; 12) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess10_12Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGFullProgressionNonHierarchicalProcess10_12RETIRED,
+			UID = DicomUID.JPEGFullProgressionNonHierarchical1012RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -174,7 +174,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Full Progression, Non-Hierarchical (Process 11 &amp; 13) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess11_13Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGFullProgressionNonHierarchicalProcess11_13RETIRED,
+			UID = DicomUID.JPEGFullProgressionNonHierarchical1113RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -185,7 +185,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Non-Hierarchical (Process 14)</summary>
 		public static DicomTransferSyntax JPEGProcess14 = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLosslessNonHierarchicalProcess14,
+			UID = DicomUID.JPEGLosslessNonHierarchical14,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			Endian = Endian.Little
@@ -193,7 +193,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Non-Hierarchical (Process 15) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess15Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLosslessNonHierarchicalProcess15RETIRED,
+			UID = DicomUID.JPEGLosslessNonHierarchical15RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -202,7 +202,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Extended, Hierarchical (Process 16 &amp; 18) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess16_18Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGExtendedHierarchicalProcess16_18RETIRED,
+			UID = DicomUID.JPEGExtendedHierarchical1618RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -213,7 +213,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Extended, Hierarchical (Process 17 &amp; 19) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess17_19Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGExtendedHierarchicalProcess17_19RETIRED,
+			UID = DicomUID.JPEGExtendedHierarchical1719RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -224,7 +224,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Spectral Selection, Hierarchical (Process 20 &amp; 22) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess20_22Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGSpectralSelectionHierarchicalProcess20_22RETIRED,
+			UID = DicomUID.JPEGSpectralSelectionHierarchical2022RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -235,7 +235,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Spectral Selection, Hierarchical (Process 21 &amp; 23) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess21_23Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGSpectralSelectionHierarchicalProcess21_23RETIRED,
+			UID = DicomUID.JPEGSpectralSelectionHierarchical2123RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -246,7 +246,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Full Progression, Hierarchical (Process 24 &amp; 26) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess24_26Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGFullProgressionHierarchicalProcess24_26RETIRED,
+			UID = DicomUID.JPEGFullProgressionHierarchical2426RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -257,7 +257,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Full Progression, Hierarchical (Process 25 &amp; 27) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess25_27Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGFullProgressionHierarchicalProcess25_27RETIRED,
+			UID = DicomUID.JPEGFullProgressionHierarchical2527RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -268,7 +268,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Hierarchical (Process 28) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess28Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLosslessHierarchicalProcess28RETIRED,
+			UID = DicomUID.JPEGLosslessHierarchical28RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -277,7 +277,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Hierarchical (Process 29) (Retired)</summary>
 		public static DicomTransferSyntax JPEGProcess29Retired = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLosslessHierarchicalProcess29RETIRED,
+			UID = DicomUID.JPEGLosslessHierarchical29RETIRED,
 			IsRetired = true,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
@@ -286,7 +286,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1])</summary>
 		public static DicomTransferSyntax JPEGProcess14SV1 = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLosslessProcess14SV1,
+			UID = DicomUID.JPEGLossless,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			Endian = Endian.Little
@@ -294,7 +294,7 @@ namespace Dicom {
 
 		/// <summary>JPEG-LS Lossless Image Compression</summary>
 		public static DicomTransferSyntax JPEGLSLossless = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLSLosslessImageCompression,
+			UID = DicomUID.JPEGLSLossless,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			Endian = Endian.Little
@@ -302,7 +302,7 @@ namespace Dicom {
 
 		/// <summary>JPEG-LS Lossy (Near-Lossless) Image Compression</summary>
 		public static DicomTransferSyntax JPEGLSNearLossless = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLSLossyNearLosslessImageCompression,
+			UID = DicomUID.JPEGLSLossyNearLossless,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
@@ -312,7 +312,7 @@ namespace Dicom {
 
 		/// <summary>JPEG 2000 Lossless Image Compression</summary>
 		public static DicomTransferSyntax JPEG2000Lossless = new DicomTransferSyntax {
-			UID = DicomUID.JPEG2000ImageCompressionLosslessOnly,
+			UID = DicomUID.JPEG2000LosslessOnly,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			Endian = Endian.Little
@@ -320,7 +320,7 @@ namespace Dicom {
 
 		/// <summary>JPEG 2000 Lossy Image Compression</summary>
 		public static DicomTransferSyntax JPEG2000Lossy = new DicomTransferSyntax {
-			UID = DicomUID.JPEG2000ImageCompression,
+			UID = DicomUID.JPEG2000,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
@@ -330,7 +330,7 @@ namespace Dicom {
 
 		/// <summary>MPEG2 Main Profile @ Main Level</summary>
 		public static DicomTransferSyntax MPEG2 = new DicomTransferSyntax {
-			UID = DicomUID.MPEG2MainProfileMainLevel,
+			UID = DicomUID.MPEG2,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
