@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Dicom {
 	public enum DicomDictionaryFormat {
-		GDCM
+		XML
 	}
 
 	public class DicomDictionaryReader {
@@ -23,17 +23,17 @@ namespace Dicom {
 		}
 
 		public void Process() {
-			if (_format == DicomDictionaryFormat.GDCM)
-				ReadDictionaryGDCM();
+			if (_format == DicomDictionaryFormat.XML)
+				ReadDictionaryXML();
 		}
 
-		private void ReadDictionaryGDCM() {
+		private void ReadDictionaryXML() {
 			DicomDictionary dict = _dict;
 
 			XDocument doc = XDocument.Load(_file);
-			XElement xdict = doc.Element("dict");
+			XElement xdict = doc.Element("dictionary");
 			if (xdict == null)
-				throw new DicomDataException("Expected <dict> root node in GDCM DICOM dictionary.");
+				throw new DicomDataException("Expected <dictionary> root node in DICOM dictionary.");
 
 			XAttribute creator = xdict.Attribute("creator");
 			if (creator != null && !String.IsNullOrEmpty(creator.Value)) {
@@ -41,9 +41,7 @@ namespace Dicom {
 			}
 
 			foreach (XElement xentry in xdict.Elements("entry")) {
-				if (xentry.Attribute("name") == null)
-					continue;
-				string name = xentry.Attribute("name").Value;
+				string name = xentry.Value;
 
 				if (xentry.Attribute("keyword") == null)
 					continue;
@@ -58,8 +56,7 @@ namespace Dicom {
 				} else
 					vrs.Add(DicomVR.NONE);
 
-				DicomVM vm = DicomVM.Parse(
-					xentry.Attribute("vm").Value);
+				DicomVM vm = DicomVM.Parse(xentry.Attribute("vm").Value);
 
 				bool retired = false;
 				XAttribute xretired = xentry.Attribute("retired");

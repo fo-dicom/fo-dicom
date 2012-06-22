@@ -87,6 +87,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Generators\DicomDictionaryGenerator.cs" />
     <Compile Include="Generators\DicomTagGenerator.cs" />
+    <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensions.cs" />
@@ -100,7 +101,6 @@
     <Compile Include="Imaging\ColorSpace.cs" />
     <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
-    <Compile Include="Imaging\DicomImagingExtensions.cs" />
     <Compile Include="Imaging\DicomPixelData.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptions.cs" />
     <Compile Include="Imaging\PhotometricInterpretation.cs" />
@@ -194,7 +194,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
