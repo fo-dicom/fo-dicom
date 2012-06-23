@@ -11,6 +11,10 @@ namespace Dicom.Imaging.Codec {
 		#region Static
 		private static Dictionary<DicomTransferSyntax,IDicomCodec> _codecs = new Dictionary<DicomTransferSyntax,IDicomCodec>();
 
+		static DicomTranscoder() {
+			LoadCodecs(null, "Dicom.Native*.dll");
+		}
+
 		public static IDicomCodec GetCodec(DicomTransferSyntax syntax) {
 			IDicomCodec codec = null;
 			if (!_codecs.TryGetValue(syntax, out codec))
