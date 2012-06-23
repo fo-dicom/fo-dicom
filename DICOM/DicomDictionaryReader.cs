@@ -30,47 +30,60 @@ namespace Dicom {
 		private void ReadDictionaryXML() {
 			DicomDictionary dict = _dict;
 
-			XDocument doc = XDocument.Load(_file);
-			XElement xdict = doc.Element("dictionary");
-			if (xdict == null)
-				throw new DicomDataException("Expected <dictionary> root node in DICOM dictionary.");
+			XDocument xdoc = XDocument.Load(_file);
 
-			XAttribute creator = xdict.Attribute("creator");
-			if (creator != null && !String.IsNullOrEmpty(creator.Value)) {
-				dict = dict[dict.GetPrivateCreator(creator.Value)];
+			IEnumerable<XElement> xdicts;
+
+			if (xdoc.Root.Name == "dictionaries") {
+				xdicts = xdoc.Root.Elements("dictionary");
+			} else {
+				XElement xdict = xdoc.Element("dictionary");
+				if (xdict == null)
+					throw new DicomDataException("Expected <dictionary> root node in DICOM dictionary.");
+
+				List<XElement> dicts = new List<XElement>();
+				dicts.Add(xdict);
+				xdicts = dicts;
 			}
 
-			foreach (XElement xentry in xdict.Elements("tag")) {
-				string name = xentry.Value;
+			foreach (var xdict in xdicts) {
+				XAttribute creator = xdict.Attribute("creator");
+				if (creator != null && !String.IsNullOrEmpty(creator.Value)) {
+					dict = dict[dict.GetPrivateCreator(creator.Value)];
+				}
 
-				if (xentry.Attribute("keyword") == null)
-					continue;
-				string keyword = xentry.Attribute("keyword").Value;
+				foreach (XElement xentry in xdict.Elements("tag")) {
+					string name = xentry.Value;
 
-				List<DicomVR> vrs = new List<DicomVR>();
-				XAttribute xvr = xentry.Attribute("vr");
-				if (xvr != null && !String.IsNullOrEmpty(xvr.Value)) {
-					string[] vra = xvr.Value.Split('_', '/', '\\', ',', '|');
-					foreach (string vr in vra)
-						vrs.Add(DicomVR.Parse(vr));
-				} else
-					vrs.Add(DicomVR.NONE);
+					if (xentry.Attribute("keyword") == null)
+						continue;
+					string keyword = xentry.Attribute("keyword").Value;
 
-				DicomVM vm = DicomVM.Parse(xentry.Attribute("vm").Value);
+					List<DicomVR> vrs = new List<DicomVR>();
+					XAttribute xvr = xentry.Attribute("vr");
+					if (xvr != null && !String.IsNullOrEmpty(xvr.Value)) {
+						string[] vra = xvr.Value.Split('_', '/', '\\', ',', '|');
+						foreach (string vr in vra)
+							vrs.Add(DicomVR.Parse(vr));
+					} else
+						vrs.Add(DicomVR.NONE);
 
-				bool retired = false;
-				XAttribute xretired = xentry.Attribute("retired");
-				if (xretired != null && !String.IsNullOrEmpty(xretired.Value) && Boolean.Parse(xretired.Value))
-					retired = true;
+					DicomVM vm = DicomVM.Parse(xentry.Attribute("vm").Value);
 
-				string group = xentry.Attribute("group").Value;
-				string element = xentry.Attribute("element").Value;
-				if (group.ToLower().Contains('x') || element.ToLower().Contains('x')) {
-					DicomMaskedTag tag = DicomMaskedTag.Parse(group, element);
-					dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
-				} else {
-					DicomTag tag = DicomTag.Parse(group + "," + element);
-					dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
+					bool retired = false;
+					XAttribute xretired = xentry.Attribute("retired");
+					if (xretired != null && !String.IsNullOrEmpty(xretired.Value) && Boolean.Parse(xretired.Value))
+						retired = true;
+
+					string group = xentry.Attribute("group").Value;
+					string element = xentry.Attribute("element").Value;
+					if (group.ToLower().Contains('x') || element.ToLower().Contains('x')) {
+						DicomMaskedTag tag = DicomMaskedTag.Parse(group, element);
+						dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
+					} else {
+						DicomTag tag = DicomTag.Parse(group + "," + element);
+						dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
+					}
 				}
 			}
 		}
