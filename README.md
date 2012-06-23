@@ -1,4 +1,4 @@
-# Fellow Oak DICOM for .Net
+# Fellow Oak DICOM for .NET
 
 Please join the [Google group](http://groups.google.com/group/fo-dicom) for updates and support.
 
