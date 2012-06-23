@@ -34,7 +34,7 @@ namespace Dicom.Imaging.Codec {
 			var container = new CompositionContainer(catalog);
 			foreach (var lazy in container.GetExports<IDicomCodec>()) {
 				var codec = lazy.Value;
-				log.Info("Codec: {0}", codec.TransferSyntax.UID.Name);
+				log.Debug("Codec: {0}", codec.TransferSyntax.UID.Name);
 				_codecs[codec.TransferSyntax] = codec;
 			}
 		}
