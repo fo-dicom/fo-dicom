@@ -42,7 +42,7 @@ public:
 	}
 
 	property long Length {
-		long get() { return _stream->Length; }
+		long get() { return (long)_stream->Length; }
 	}
 
 	array<unsigned char>^ GetBuffer() {
@@ -196,7 +196,7 @@ void DicomRleNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ n
 			pos += oldPixelData->BytesAllocated - sabyte - 1;
 
 			for (int p = 0; p < pixelCount; p++) {
-				if (pos >= frameData->Size)
+				if ((unsigned int)pos >= frameData->Size)
 					throw gcnew DicomCodecException("Read position is past end of frame buffer");
 				encoder->Encode(frameArray[pos]);
 				pos += offset;
