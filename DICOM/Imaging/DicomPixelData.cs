@@ -271,12 +271,12 @@ namespace Dicom.Imaging {
 			public override void AddFrame(IByteBuffer data) {
 				NumberOfFrames++;
 
-				if (NumberOfFrames > 0) {
-					if (NumberOfFrames == 1)
-						Element.OffsetTable.Add(0u); // first frame
-
-					uint pos = (uint)Element.Fragments.Sum(x => x.Size + 8);
-					Element.OffsetTable.Add(pos);
+				long pos = Element.Fragments.Sum(x => (long)x.Size + 8);
+				if (pos < uint.MaxValue) {
+					Element.OffsetTable.Add((uint)pos);
+				} else {
+					// do not create an offset table for very large datasets
+					Element.OffsetTable.Clear();
 				}
 
 				data = EndianByteBuffer.Create(data, Syntax.Endian, BytesAllocated);
