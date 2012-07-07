@@ -41,9 +41,6 @@ namespace ConsoleTest {
 				LogManager.Configuration = config;
 
 
-				DicomTranscoder.LoadCodecs();
-
-
 				//var server = new DicomServer<DicomCEchoProvider>(12345);
 
 
@@ -107,17 +104,17 @@ namespace ConsoleTest {
 				//Console.WriteLine(r.Contains(DateTime.Today));
 				//Console.WriteLine(r.Contains(DateTime.Now.AddSeconds(60)));
 
-				//DicomDictionary dict = new DicomDictionary();
-				//dict.Load(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml", DicomDictionaryFormat.XML);
+				DicomDictionary dict = new DicomDictionary();
+				dict.Load(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml", DicomDictionaryFormat.XML);
 
-				//string output = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dict);
-				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomTagGenerated.cs", output);
+				string output = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dict);
+				File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomTagGenerated.cs", output);
 
 				//output = Dicom.Generators.DicomDictionaryGenerator.Generate("Dicom", "DicomDictionary", "LoadInternalDictionary", dict);
 				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomDictionaryGenerated.cs", output);
 
-				string output = Dicom.Generators.DicomUIDGenerator.Process(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml");
-				File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomUIDGenerated.cs", output);
+				//string output = Dicom.Generators.DicomUIDGenerator.Process(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml");
+				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomUIDGenerated.cs", output);
 			} catch (Exception e) {
 				if (!(e is DicomException))
 					Console.WriteLine(e.ToString());

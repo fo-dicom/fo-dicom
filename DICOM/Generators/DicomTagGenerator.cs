@@ -12,8 +12,8 @@ namespace Dicom.Generators {
 			output.AppendFormat("\tpublic partial class {0} {{", vclass).AppendLine();
 
 			foreach (DicomDictionaryEntry entry in dict) {
-				if (entry.MaskTag != null)
-					continue;
+				//if (entry.MaskTag != null)
+				//	continue;
 
 				string vrs = String.Join("/", entry.ValueRepresentations.Select(x => x.ToString()));
 				string variable = "_" + Char.ToLower(entry.Keyword[0]) + entry.Keyword.Substring(1);
