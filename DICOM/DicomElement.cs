@@ -408,6 +408,12 @@ namespace Dicom {
 				return (T)(object)_values;
 			}
 
+			if (typeof(T) == typeof(double))
+				return (T)(object)Convert.ToDouble(_values[item]);
+
+			if (typeof(T) == typeof(double[]))
+				return (T)(object)_values.Select(x => Convert.ToDouble(x)).ToArray();
+
 			return base.Get<T>(item);
 		}
 		#endregion

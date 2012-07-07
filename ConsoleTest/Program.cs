@@ -50,11 +50,14 @@ namespace ConsoleTest {
 				//    client.AddRequest(new DicomCEchoRequest());
 				//client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 
-				//var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
-				//var testDir = Path.Combine(samplesDir, "Test");
+				var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
+				var testDir = Path.Combine(samplesDir, "Test");
 
-				//if (!Directory.Exists(testDir))
-				//    Directory.CreateDirectory(testDir);
+				if (!Directory.Exists(testDir))
+				    Directory.CreateDirectory(testDir);
+
+				var img = new DicomImage(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105627.1.0.1.dcm");
+				img.RenderImage().Save(testDir + @"\test.jpg");
 
 				//var df = DicomFile.Open(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105752.1.0.1.dcm");
 
@@ -104,11 +107,11 @@ namespace ConsoleTest {
 				//Console.WriteLine(r.Contains(DateTime.Today));
 				//Console.WriteLine(r.Contains(DateTime.Now.AddSeconds(60)));
 
-				DicomDictionary dict = new DicomDictionary();
-				dict.Load(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml", DicomDictionaryFormat.XML);
+				//DicomDictionary dict = new DicomDictionary();
+				//dict.Load(@"F:\Development\fo-dicom\DICOM\Dictionaries\dictionary.xml", DicomDictionaryFormat.XML);
 
-				string output = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dict);
-				File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomTagGenerated.cs", output);
+				//string output = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dict);
+				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomTagGenerated.cs", output);
 
 				//output = Dicom.Generators.DicomDictionaryGenerator.Generate("Dicom", "DicomDictionary", "LoadInternalDictionary", dict);
 				//File.WriteAllText(@"F:\Development\fo-dicom\DICOM\DicomDictionaryGenerated.cs", output);

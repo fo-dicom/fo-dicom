@@ -43,15 +43,18 @@
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DicomDataException.cs" />
@@ -99,15 +102,35 @@
     <Compile Include="Imaging\Codec\DicomRleCodec.cs" />
     <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\IDicomCodec.cs" />
+    <Compile Include="Imaging\Color32.cs" />
     <Compile Include="Imaging\ColorSpace.cs" />
+    <Compile Include="Imaging\ColorTable.cs" />
     <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
+    <Compile Include="Imaging\DicomOverlayData.cs" />
     <Compile Include="Imaging\DicomPixelData.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptions.cs" />
+    <Compile Include="Imaging\LUT\CompositeLUT.cs" />
+    <Compile Include="Imaging\LUT\ILUT.cs" />
+    <Compile Include="Imaging\LUT\InvertLUT.cs" />
+    <Compile Include="Imaging\LUT\OutputLUT.cs" />
+    <Compile Include="Imaging\LUT\PaddingLUT.cs" />
+    <Compile Include="Imaging\LUT\PrecalculatedLUT.cs" />
+    <Compile Include="Imaging\LUT\RescaleLUT.cs" />
+    <Compile Include="Imaging\LUT\VOILinearLUT.cs" />
     <Compile Include="Imaging\PhotometricInterpretation.cs" />
+    <Compile Include="Imaging\Render\CompositeGraphic.cs" />
+    <Compile Include="Imaging\Render\GenericGrayscalePipeline.cs" />
+    <Compile Include="Imaging\Render\IGraphic.cs" />
+    <Compile Include="Imaging\Render\ImageGraphic.cs" />
+    <Compile Include="Imaging\Render\IPipeline.cs" />
+    <Compile Include="Imaging\Render\OverlayGraphic.cs" />
+    <Compile Include="Imaging\Render\PixelData.cs" />
     <Compile Include="Imaging\PixelDataConverter.cs" />
     <Compile Include="Imaging\PixelRepresentation.cs" />
     <Compile Include="Imaging\PlanarConfiguration.cs" />
+    <Compile Include="Imaging\Render\RgbColorPipeline.cs" />
+    <Compile Include="Imaging\SpatialTransform.cs" />
     <Compile Include="IO\Buffer\ByteBufferByteSource.cs" />
     <Compile Include="IO\Buffer\ByteBufferEnumerator.cs" />
     <Compile Include="IO\Buffer\ByteBufferExtensions.cs" />

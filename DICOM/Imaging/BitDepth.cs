@@ -69,6 +69,13 @@ namespace Dicom.Imaging {
 			return bitsStored;
 		}
 
+		public static BitDepth FromDataset(DicomDataset dataset) {
+			var allocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
+			var stored = dataset.Get<ushort>(DicomTag.BitsStored);
+			var signed = dataset.Get<PixelRepresentation>(DicomTag.PixelRepresentation) == PixelRepresentation.Signed;
+			return new BitDepth(allocated, stored, GetHighBit(stored, signed), signed);
+		}
+
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("Bits: {");

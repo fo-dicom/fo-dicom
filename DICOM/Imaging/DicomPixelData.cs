@@ -38,6 +38,12 @@ namespace Dicom.Imaging {
 			set { Dataset.Add(new DicomIntegerString(DicomTag.NumberOfFrames, value)); }
 		}
 
+		public BitDepth BitDepth {
+			get {
+				return new BitDepth(BitsAllocated, BitsStored, HighBit, PixelRepresentation == PixelRepresentation.Signed);
+			}
+		}
+
 		public ushort BitsAllocated {
 			get { return Dataset.Get<ushort>(DicomTag.BitsAllocated); }
 			set { Dataset.Add(new DicomUnsignedShort(DicomTag.BitsAllocated, value)); }
