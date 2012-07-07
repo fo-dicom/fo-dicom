@@ -58,7 +58,7 @@ namespace Dicom.IO.Buffer {
 
 		public bool MoveNext() {
 			Position += UnitSize;
-			if (Position < (Buffer.Size - UnitSize))
+			if (Position <= (Buffer.Size - UnitSize))
 				return true;
 			return false;
 		}
