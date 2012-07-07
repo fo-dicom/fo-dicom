@@ -6,9 +6,9 @@ Please join the [Google group](http://groups.google.com/group/fo-dicom) for upda
 * High-performance, fully asynchronous, .NET 4.0 API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
 * Supports very large datasets with content loading on demand
+* Image rendering
 
 ### Roadmap
-* Image rendering
 * Commercial support comming soon
 
 ### Examples
@@ -25,6 +25,12 @@ file.Dataset.Add(DicomTag.PatientsName, "DOE^JOHN");
 file = file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
 
 file.Save(@"output.dcm");
+```
+
+#### Render Image to JPEG
+```csharp
+var image = new DicomImage(@"test.dcm");
+image.RenderImage().Save(@"test.jpg");
 ```
 
 #### C-Store SCU
