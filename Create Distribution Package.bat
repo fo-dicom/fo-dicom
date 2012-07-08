@@ -6,3 +6,4 @@ copy "DICOM [Native]\Release\Dicom.Native.dll" Distribute\ /Y
 copy "DICOM [Native]\Release\Dicom.Native64.dll" Distribute\ /Y
 copy License.txt Distribute\ /Y
 copy README.md Distribute\ /Y
+copy ChangeLog.md Distribute\ /Y
