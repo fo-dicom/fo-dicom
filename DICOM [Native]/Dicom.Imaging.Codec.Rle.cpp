@@ -206,7 +206,14 @@ void DicomRleNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ n
 
 		encoder->MakeEvenLength();
 
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(encoder->GetBuffer()));
+		array<unsigned char>^ data = encoder->GetBuffer();
+
+		IByteBuffer^ buffer;
+		if (data->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(data);
+		else
+			buffer = gcnew MemoryByteBuffer(data);
+		newPixelData->AddFrame(buffer);
 	}
 }
 
@@ -351,7 +358,12 @@ void DicomRleNativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ n
 			decoder->DecodeSegment(s, frameData, pos, offset);
 		}
 
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(frameData));
+		IByteBuffer^ buffer;
+		if (frameData->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(frameData);
+		else
+			buffer = gcnew MemoryByteBuffer(frameData);
+		newPixelData->AddFrame(buffer);
 	}
 }
 

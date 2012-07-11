@@ -140,6 +140,7 @@
     <Compile Include="IO\Buffer\FileByteBuffer.cs" />
     <Compile Include="IO\Buffer\RangeByteBuffer.cs" />
     <Compile Include="IO\Buffer\SwapByteBuffer.cs" />
+    <Compile Include="IO\Buffer\TempFileBuffer.cs" />
     <Compile Include="IO\ByteConverter.cs" />
     <Compile Include="IO\DicomIoException.cs" />
     <Compile Include="IO\Endian.cs" />
@@ -218,7 +219,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -95,7 +95,12 @@ void DicomJpegLsNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData
 
 		Array::Resize(jpegData, (int)jpegDataSize);
 
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(jpegData));
+		IByteBuffer^ buffer;
+		if (jpegDataSize >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(jpegData);
+		else
+			buffer = gcnew MemoryByteBuffer(jpegData);
+		newPixelData->AddFrame(buffer);
 	}
 }
 
@@ -112,7 +117,12 @@ void DicomJpegLsNativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelData
 		JLS_ERROR err = JpegLsDecode((void*)frameArray->Pointer, frameData->Length, (void*)jpegArray->Pointer, jpegData->Size, &params);
 		if (err != OK) throw gcnew DicomJpegLsCodecException(err);
 
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(frameData));
+		IByteBuffer^ buffer;
+		if (frameData->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(frameData);
+		else
+			buffer = gcnew MemoryByteBuffer(frameData);
+		newPixelData->AddFrame(buffer);
 	}
 }
 

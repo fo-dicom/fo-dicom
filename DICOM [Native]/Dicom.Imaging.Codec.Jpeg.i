@@ -330,7 +330,12 @@ void JPEGCODEC::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 				newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
 		}
 
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(MemoryBuffer->ToArray()));
+		IByteBuffer^ buffer;
+		if (MemoryBuffer->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(MemoryBuffer->ToArray());
+		else
+			buffer = gcnew MemoryByteBuffer(MemoryBuffer->ToArray());
+		newPixelData->AddFrame(buffer);
 	} finally {
 		MemoryBuffer = nullptr;
 	}
@@ -478,15 +483,21 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 	}
 
 	jpeg_destroy_decompress(&dinfo);
+
+	IByteBuffer^ buffer;
+	if (frameArray->Count >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+		buffer = gcnew TempFileBuffer(frameArray->Data);
+	else
+		buffer = gcnew MemoryByteBuffer(frameArray->Data);
 	
 	if (newPixelData->PlanarConfiguration == PlanarConfiguration::Planar && newPixelData->SamplesPerPixel > 1) {
 		if (oldPixelData->SamplesPerPixel != 3 || oldPixelData->BitsStored > 8)
 				throw gcnew DicomCodecException("Planar reconfiguration only implemented for SamplesPerPixel=3 && BitsStores <= 8");
 
-		newPixelData->AddFrame(PixelDataConverter::InterleavedToPlanar24(gcnew MemoryByteBuffer(frameArray->Data)));
-	} else {
-		newPixelData->AddFrame(gcnew MemoryByteBuffer(frameArray->Data));
+		buffer = PixelDataConverter::InterleavedToPlanar24(buffer);
 	}
+
+	newPixelData->AddFrame(buffer);
 }
 
 int JPEGCODEC::ScanHeaderForPrecision(DicomPixelData^ pixelData) {

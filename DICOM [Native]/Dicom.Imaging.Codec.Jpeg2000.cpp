@@ -204,7 +204,13 @@ void DicomJpeg2000NativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelDa
 				int clen = cio_tell(cio);
 				array<unsigned char>^ cbuf = gcnew array<unsigned char>(clen);
 				Marshal::Copy((IntPtr)cio->buffer, cbuf, 0, clen);
-				newPixelData->AddFrame(gcnew MemoryByteBuffer(cbuf));
+
+				IByteBuffer^ buffer;
+				if (clen >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+					buffer = gcnew TempFileBuffer(cbuf);
+				else
+					buffer = gcnew MemoryByteBuffer(cbuf);
+				newPixelData->AddFrame(buffer);
 			} else
 				throw gcnew DicomCodecException("Unable to JPEG 2000 encode image");
 		}
@@ -334,7 +340,12 @@ void DicomJpeg2000NativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelDa
 					throw gcnew DicomCodecException("JPEG 2000 module only supports Bytes Allocated == 8 or 16!");
 			}
 
-			newPixelData->AddFrame(gcnew MemoryByteBuffer(destArray->Data));
+			IByteBuffer^ buffer;
+			if (destArray->Count >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+				buffer = gcnew TempFileBuffer(destArray->Data);
+			else
+				buffer = gcnew MemoryByteBuffer(destArray->Data);
+			newPixelData->AddFrame(buffer);
 		}
 		finally {
 			if (cio != nullptr)
