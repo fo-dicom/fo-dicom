@@ -56,31 +56,37 @@ namespace ConsoleTest {
 				if (!Directory.Exists(testDir))
 				    Directory.CreateDirectory(testDir);
 
-				var img = new DicomImage(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105627.1.0.1.dcm");
-				img.RenderImage().Save(testDir + @"\test.jpg");
+				//var img = new DicomImage(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105627.1.0.1.dcm");
+				//img.RenderImage().Save(testDir + @"\test.jpg");
 
-				//var df = DicomFile.Open(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105752.1.0.1.dcm");
+				var df = DicomFile.Open(samplesDir + @"\ClearCanvas\DXStudy\1.2.840.113619.2.67.2158294438.16324010109084338.243.dcm");
 
 				//Console.WriteLine(df.FileMetaInfo.Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID).UID.Name);
 				//Console.WriteLine(df.Dataset.Get<PlanarConfiguration>(DicomTag.PlanarConfiguration));
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
-				//df.Save(testDir + @"\test-jls.dcm");
+				var img = new DicomImage(df.Dataset);
+				img.RenderImage().Save(testDir + @"\test.jpg");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
-				//df.Save(testDir + @"\test-j2k.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
+				df.Save(testDir + @"\test-jls.dcm");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
-				//df.Save(testDir + @"\test-jll.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEG2000Lossless);
+				df.Save(testDir + @"\test-j2k.dcm");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.RLELossless);
-				//df.Save(testDir + @"\test-rle.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
+				df.Save(testDir + @"\test-jll.dcm");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
-				//df.Save(testDir + @"\test-ele.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.RLELossless);
+				df.Save(testDir + @"\test-rle.dcm");
 
-				//df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRBigEndian);
-				//df.Save(testDir + @"\test_ebe.dcm");
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+				df.Save(testDir + @"\test-ele.dcm");
+
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRBigEndian);
+				df.Save(testDir + @"\test-ebe.dcm");
+
+				df = df.ChangeTransferSyntax(DicomTransferSyntax.ImplicitVRLittleEndian);
+				df.Save(testDir + @"\test-ile.dcm");
 
 				//Console.WriteLine("End...");
 				//Console.ReadLine();

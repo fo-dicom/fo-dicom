@@ -229,9 +229,11 @@ namespace Dicom.IO.Reader {
 							// start of sequence
 							_observer.OnBeginSequence(source, _tag, _length);
 							_state = ParseState.Tag;
+							if (_length != UndefinedLength)
+								source.PushMilestone(_length);
 							PushState(state);
 							ParseItemSequence(source, null);
-							return;
+							continue;
 						}
 
 						if (_length == UndefinedLength) {
@@ -239,7 +241,7 @@ namespace Dicom.IO.Reader {
 							_state = ParseState.Tag;
 							PushState(state);
 							ParseFragmentSequence(source, null);
-							return;
+							continue;
 						}
 
 						if (!source.Require(_length, ParseDataset, state)) {
