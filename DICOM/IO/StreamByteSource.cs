@@ -137,7 +137,7 @@ namespace Dicom.IO {
 
 		public bool HasReachedMilestone() {
 			lock (_lock) {
-				if (_milestones.Count > 0 && _milestones.Peek() >= _stream.Position)
+				if (_milestones.Count > 0 && _stream.Position >= _milestones.Peek())
 					return true;
 				return false;
 			}
