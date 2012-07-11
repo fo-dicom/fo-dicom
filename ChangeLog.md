@@ -1,3 +1,6 @@
+####v1.0.3 (07/11/2012)
+* Fix parsing of explicit length sequences
+
 ####v1.0.2 (07/07/2012)
 * Image rendering
 * Don't create offset table for datasets over 4Gb
