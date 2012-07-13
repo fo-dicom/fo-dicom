@@ -1,3 +1,6 @@
+####v1.0.4
+* Make logger instance protected in DicomService
+
 ####v1.0.3 (07/11/2012)
 * Fix parsing of explicit length sequences
 

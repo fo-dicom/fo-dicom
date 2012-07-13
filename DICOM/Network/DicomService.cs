@@ -40,9 +40,9 @@ namespace Dicom.Network {
 			BeginReadPDUHeader();
 		}
 
-		private Logger Logger {
+		protected Logger Logger {
 			get;
-			set;
+			private set;
 		}
 
 		private string LogID {
