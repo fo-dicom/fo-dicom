@@ -35,6 +35,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		fo-dicom.nuspec = fo-dicom.nuspec
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{96052E4E-90EF-431F-A599-8723506A424B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C-Store SCP", "Examples\C-Store SCP\C-Store SCP.csproj", "{D9AF008C-EE25-49B3-96F6-E81B8A59D017}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
@@ -84,6 +88,10 @@ Global
 		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Debug|Any CPU.Build.0 = Debug|Win32
 		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Release|Any CPU.ActiveCfg = Release|Win32
 		{C6148839-334D-4894-BDB9-E2D57438CF8A}.Release|Any CPU.Build.0 = Release|Win32
+		{D9AF008C-EE25-49B3-96F6-E81B8A59D017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9AF008C-EE25-49B3-96F6-E81B8A59D017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9AF008C-EE25-49B3-96F6-E81B8A59D017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9AF008C-EE25-49B3-96F6-E81B8A59D017}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +103,7 @@ Global
 		{1B3557D4-1146-428A-AEC9-12CADF994527} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
+		{D9AF008C-EE25-49B3-96F6-E81B8A59D017} = {96052E4E-90EF-431F-A599-8723506A424B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
