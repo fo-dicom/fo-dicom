@@ -78,7 +78,7 @@ namespace Dicom {
 			if (values == null)
 				return this;
 
-			var entry = DicomDictionary.Default.FirstOrDefault(x => x.Tag == tag);
+			var entry = DicomDictionary.Default[tag];
 			if (entry == null)
 				throw new DicomDataException("Tag {0} not found in DICOM dictionary", tag);
 
