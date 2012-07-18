@@ -15,9 +15,9 @@ namespace Dicom {
 		private readonly static DicomDictionaryEntry GroupLength = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","0000"), "Group Length", "GroupLength", DicomVM.VM_1, false, DicomVR.UL);
 
 		private DicomPrivateCreator _privateCreator;
-		private Dictionary<string, DicomPrivateCreator> _creators;
-		private Dictionary<DicomPrivateCreator, DicomDictionary> _private;
-		private Dictionary<DicomTag, DicomDictionaryEntry> _entries;
+		private IDictionary<string, DicomPrivateCreator> _creators;
+		private IDictionary<DicomPrivateCreator, DicomDictionary> _private;
+		private IDictionary<DicomTag, DicomDictionaryEntry> _entries;
 		private List<DicomDictionaryEntry> _masked;
 		private bool _sortMasked;
 		#endregion
@@ -38,17 +38,23 @@ namespace Dicom {
 		#endregion
 
 		#region Properties
+		private static object _lock = new object();
 		private static DicomDictionary _default;
 		public static DicomDictionary Default {
 			get {
-				if (_default == null) {
-					_default = new DicomDictionary();
-					LoadInternalDictionary(_default);
-					_default.Add(GroupLength);
+				lock (_lock) {
+					if (_default == null) {
+						_default = new DicomDictionary();
+						LoadInternalDictionary(_default);
+						_default.Add(GroupLength);
+					}
+					return _default;
 				}
-				return _default;
 			}
-			set { _default = value; }
+			set {
+				lock (_lock)
+					_default = value;
+			}
 		}
 
 		public DicomDictionaryEntry this[DicomTag tag] {
