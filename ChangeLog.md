@@ -1,4 +1,4 @@
-#### v1.0.4
+#### v1.0.4 (07/18/2012)
 * Make logger instance protected in DicomService
 * Lock DICOM dictionary while loading
 * Throw exception if no DICOM dictionary entry is found while adding element to dataset
