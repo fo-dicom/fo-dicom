@@ -12,6 +12,7 @@ namespace Dicom.Network {
 			Type = (DicomCommandField)(0x8000 | (int)request.Type);
 			AffectedSOPClassUID = request.AffectedSOPClassUID;
 			RequestMessageID = request.MessageID;
+			Status = status;
 		}
 
 		public ushort RequestMessageID {
