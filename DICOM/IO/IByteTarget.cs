@@ -29,5 +29,7 @@ namespace Dicom.IO {
 		void Write(double v);
 
 		void Write(byte[] buffer, uint offset=0, uint count=0xffffffff, ByteTargetCallback callback=null, object state=null);
+
+		void Close();
 	}
 }

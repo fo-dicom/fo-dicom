@@ -40,6 +40,8 @@ namespace Dicom {
 
 			DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
 			writer.Write(target, FileMetaInfo, Dataset);
+
+			target.Close();
 		}
 
 		public void BeginSave(string fileName, AsyncCallback callback, object state) {

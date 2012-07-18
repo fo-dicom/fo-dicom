@@ -4,7 +4,7 @@ using System.IO;
 using Dicom.IO.Buffer;
 
 namespace Dicom.IO {
-	public class FileByteTarget : IByteTarget {
+	public class FileByteTarget : IDisposable, IByteTarget {
 		private FileReference _file;
 		private Stream _stream;
 		private Endian _endian;
@@ -90,6 +90,15 @@ namespace Dicom.IO {
 					state.Item1(this, state.Item2);
 				}
 			}
+		}
+
+		public void Close() {
+			_stream.Close();
+			_stream = null;
+		}
+
+		public void Dispose() {
+			Close();
 		}
 	}
 }
