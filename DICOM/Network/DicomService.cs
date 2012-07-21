@@ -750,7 +750,7 @@ namespace Dicom.Network {
 		}
 
 		protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) {
-			Logger.Log(LogLevel.Info, "{0} -> Abort: {1} - {2}", LogID, source.ToString(), reason.ToString());
+			Logger.Log(LogLevel.Info, "{0} -> Abort [source: {1}; reason: {2}]", LogID, source, reason);
 			SendPDU(new AAbort(source, reason));
 		}
 		#endregion
