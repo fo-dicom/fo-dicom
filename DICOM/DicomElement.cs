@@ -79,6 +79,9 @@ namespace Dicom {
 			if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
 				return (T)((object)StringValue);
 
+			if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[]))
+				return (T)(object)(new string[] { StringValue });
+
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(StringValue);
 
@@ -174,9 +177,13 @@ namespace Dicom {
 
 			if (_values == null) {
 				string[] vals = base.Get<string[]>();
-				_values = new DateTime[vals.Length];
-				for (int i = 0; i < vals.Length; i++)
-					_values[i] = DateTime.ParseExact(vals[i], DateFormats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+				if (vals.Length == 1 && String.IsNullOrEmpty(vals[0]))
+					_values = new DateTime[0];
+				else {
+					_values = new DateTime[vals.Length];
+					for (int i = 0; i < vals.Length; i++)
+						_values[i] = DateTime.ParseExact(vals[i], DateFormats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+				}
 			}
 
 			if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object)) {
