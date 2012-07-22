@@ -1,4 +1,4 @@
-﻿namespace DICOM_Dump {
+﻿namespace Dicom.Dump {
 	partial class MainForm {
 		/// <summary>
 		/// Required designer variable.

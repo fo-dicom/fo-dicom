@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Dicom;
 using Dicom.IO.Buffer;
 
-namespace DICOM_Dump {
+namespace Dicom.Dump {
 	public partial class MainForm : Form {
 		public MainForm() {
 			InitializeComponent();

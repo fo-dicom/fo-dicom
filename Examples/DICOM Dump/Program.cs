@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace DICOM_Dump {
+namespace Dicom.Dump {
 	static class Program {
 		/// <summary>
 		/// The main entry point for the application.
