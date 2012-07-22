@@ -14,7 +14,6 @@ using NLog.Targets;
 namespace Dicom.CStoreSCP {
 	class Program {
 		static string StoragePath = @".\DICOM";
-		static string TempPath = @".\DICOM\Temp";
 
 		static void Main(string[] args) {
 			// initialize NLog logging
@@ -72,10 +71,15 @@ namespace Dicom.CStoreSCP {
 			}
 
 			public void OnReceiveAssociationRequest(DicomAssociation association) {
+				if (association.CalledAE != "STORESCP") {
+					SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser, DicomRejectReason.CalledAENotRecognized);
+					return;
+				}
+
 				foreach (var pc in association.PresentationContexts) {
 					if (pc.AbstractSyntax == DicomUID.Verification)
 						pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-					else
+					else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
 						pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
 				}
 
