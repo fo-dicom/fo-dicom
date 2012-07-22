@@ -1,3 +1,7 @@
+#### v1.0.5 (07/22/2012)
+* Bug fixes
+* DICOM Dump example project
+
 #### v1.0.4 (07/18/2012)
 * Make logger instance protected in DicomService
 * Lock DICOM dictionary while loading
