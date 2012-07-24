@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Dicom {
@@ -45,7 +48,15 @@ namespace Dicom {
 				lock (_lock) {
 					if (_default == null) {
 						_default = new DicomDictionary();
-						LoadInternalDictionary(_default);
+						try {
+							var assembly = Assembly.GetCallingAssembly();
+							var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
+							var gzip = new GZipStream(stream, CompressionMode.Decompress);
+							var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+							reader.Process();
+						} catch (Exception e) {
+							throw new DicomDataException("Unable to load DICOM dictionary from resources.", e);
+						}
 						_default.Add(GroupLength);
 					}
 					return _default;
@@ -115,8 +126,15 @@ namespace Dicom {
 		}
 
 		public void Load(string file, DicomDictionaryFormat format) {
-			DicomDictionaryReader reader = new DicomDictionaryReader(this, format, file);
-			reader.Process();
+			using (var fs = File.OpenRead(file)) {
+				Stream s = fs;
+
+				if (file.EndsWith(".gz"))
+					s = new GZipStream(s, CompressionMode.Decompress);
+
+				DicomDictionaryReader reader = new DicomDictionaryReader(this, format, s);
+				reader.Process();
+			}
 		}
 		#endregion
 

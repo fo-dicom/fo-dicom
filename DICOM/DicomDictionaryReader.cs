@@ -14,12 +14,12 @@ namespace Dicom {
 	public class DicomDictionaryReader {
 		private DicomDictionary _dict;
 		private DicomDictionaryFormat _format;
-		private string _file;
+		private Stream _stream;
 
-		public DicomDictionaryReader(DicomDictionary dict, DicomDictionaryFormat format, string file) {
+		public DicomDictionaryReader(DicomDictionary dict, DicomDictionaryFormat format, Stream stream) {
 			_dict = dict;
 			_format = format;
-			_file = file;
+			_stream = stream;
 		}
 
 		public void Process() {
@@ -30,7 +30,7 @@ namespace Dicom {
 		private void ReadDictionaryXML() {
 			DicomDictionary dict = _dict;
 
-			XDocument xdoc = XDocument.Load(_file);
+			XDocument xdoc = XDocument.Load(_stream);
 
 			IEnumerable<XElement> xdicts;
 

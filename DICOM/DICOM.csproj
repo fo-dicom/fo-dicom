@@ -64,7 +64,6 @@
     <Compile Include="DicomDateRange.cs" />
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
-    <Compile Include="DicomDictionaryGenerated.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFile.cs" />
     <Compile Include="DicomFileMetaInformation.cs" />
@@ -213,13 +212,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
     <None Include="fo-dicom.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dictionaries\DICOM Dictionary.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Dictionaries\DICOM Dictionary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
