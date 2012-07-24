@@ -88,8 +88,8 @@ namespace Dicom {
 			if (_uids.TryGetValue(u, out uid))
 				return uid;
 
-			if (!IsValid(u))
-				throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
+			//if (!IsValid(u))
+			//	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
 
 			return new DicomUID(u, "Unknown", DicomUidType.Unknown);
 		}
