@@ -8,9 +8,6 @@ Please join the [Google group](http://groups.google.com/group/fo-dicom) for upda
 * Supports very large datasets with content loading on demand
 * Image rendering
 
-### Roadmap
-* Commercial support comming soon
-
 ### Examples
 
 #### File Operations
