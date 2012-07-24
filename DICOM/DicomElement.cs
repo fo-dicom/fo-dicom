@@ -603,6 +603,51 @@ namespace Dicom {
 			get { return DicomVR.OB; }
 		}
 		#endregion
+
+		#region Public Methods
+		public override T Get<T>(int item = -1) {
+			if (!typeof(T).IsArray && item == -1)
+				item = 0;
+
+			if (typeof(T) == typeof(short))
+				return (T)(object)ByteBufferEnumerator<short>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(short[]))
+				return (T)(object)ByteBufferEnumerator<short>.Create(Buffer).ToArray();
+
+			if (typeof(T) == typeof(ushort))
+				return (T)(object)ByteBufferEnumerator<ushort>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(ushort[]))
+				return (T)(object)ByteBufferEnumerator<ushort>.Create(Buffer).ToArray();
+
+			if (typeof(T) == typeof(int))
+				return (T)(object)ByteBufferEnumerator<int>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(int[]))
+				return (T)(object)ByteBufferEnumerator<int>.Create(Buffer).ToArray();
+
+			if (typeof(T) == typeof(uint))
+				return (T)(object)ByteBufferEnumerator<uint>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(uint[]))
+				return (T)(object)ByteBufferEnumerator<uint>.Create(Buffer).ToArray();
+
+			if (typeof(T) == typeof(float))
+				return (T)(object)ByteBufferEnumerator<float>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(float[]))
+				return (T)(object)ByteBufferEnumerator<float>.Create(Buffer).ToArray();
+
+			if (typeof(T) == typeof(double))
+				return (T)(object)ByteBufferEnumerator<double>.Create(Buffer).ToArray().GetValue(item);
+
+			if (typeof(T) == typeof(double[]))
+				return (T)(object)ByteBufferEnumerator<double>.Create(Buffer).ToArray();
+
+			return base.Get<T>(item);
+		}
+		#endregion
 	}
 
 	/// <summary>Other Word (OW)</summary>
@@ -878,7 +923,7 @@ namespace Dicom {
 	}
 
 	/// <summary>Unknown (UN)</summary>
-	public class DicomUnknown : DicomValueElement<byte> {
+	public class DicomUnknown : DicomOtherByte {
 		#region Public Constructors
 		public DicomUnknown(DicomTag tag, params byte[] values) : base(tag, values) {
 		}
