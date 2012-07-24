@@ -1,3 +1,7 @@
+#### v1.0.6 (07/24/2012)
+* Don't throw exception for invalid UID characters
+* Allow casting of OB & UN elements to value types
+
 #### v1.0.5 (07/22/2012)
 * Bug fixes
 * DICOM Dump example project
