@@ -1,3 +1,6 @@
+#### v1.0.7
+* Fix exception when accessing overlay data
+
 #### v1.0.6 (07/24/2012)
 * Don't throw exception for invalid UID characters
 * Allow casting of OB & UN elements to value types
