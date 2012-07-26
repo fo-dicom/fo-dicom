@@ -1,5 +1,7 @@
 #### v1.0.7
 * Fix exception when accessing overlay data
+* Fix parsing of multi-value string elements
+* Add option to display image in DICOM Dump utility
 
 #### v1.0.6 (07/24/2012)
 * Don't throw exception for invalid UID characters
