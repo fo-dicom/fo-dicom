@@ -1,4 +1,4 @@
-#### v1.0.7
+#### v1.0.7 (07/26/2012)
 * Fix exception when accessing overlay data
 * Fix parsing of multi-value string elements
 * Add option to display image in DICOM Dump utility
