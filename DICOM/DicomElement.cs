@@ -113,8 +113,12 @@ namespace Dicom {
 
 		private string[] _values = null;
 		public override T Get<T>(int item = -1) {
-			if (_values == null)
-				_values = (StringValue ?? String.Empty).Split('\\');
+			if (_values == null) {
+				if (String.IsNullOrEmpty(StringValue))
+					_values = new string[0];
+				else
+					_values = StringValue.Split('\\');
+			}
 
 			if (typeof(T) == typeof(string) || typeof(T) == typeof(object)) {
 				if (item == -1)
