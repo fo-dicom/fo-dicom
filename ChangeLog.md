@@ -2,6 +2,7 @@
 * Fix exception when accessing overlay data
 * Fix parsing of multi-value string elements
 * Add option to display image in DICOM Dump utility
+* Fix C-Store request from Conquest causing exception
 
 #### v1.0.6 (07/24/2012)
 * Don't throw exception for invalid UID characters
