@@ -56,6 +56,8 @@ namespace Dicom {
 
 			if (item.GetType().IsSubclassOf(typeof(DicomElement))) {
 				DicomElement element = (DicomElement)item;
+				if (n >= element.Count)
+					return defaultValue;
 				return (T)(object)element.Get<T>(n);
 			}
 

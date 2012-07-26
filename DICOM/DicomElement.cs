@@ -105,8 +105,12 @@ namespace Dicom {
 		private int _count = -1;
 		public override int Count {
 			get {
-				if (_count == -1)
-					_count = (StringValue ?? String.Empty).Split('\\').Count();
+				if (_count == -1) {
+					if (String.IsNullOrEmpty(StringValue))
+						_count = 0;
+					else
+						_count = StringValue.Split('\\').Count();
+				}
 				return _count;
 			}
 		}
