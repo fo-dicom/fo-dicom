@@ -187,8 +187,8 @@ namespace Dicom.Imaging {
 		}
 
 		private void Load(DicomDataset ds) {
-			_rows = ds.Get<ushort>(OverlayTag(DicomTag.OverlayRows), 0);
-			_columns = ds.Get<ushort>(OverlayTag(DicomTag.OverlayColumns), 0);
+			_rows = ds.Get<ushort>(OverlayTag(DicomTag.OverlayRows));
+			_columns = ds.Get<ushort>(OverlayTag(DicomTag.OverlayColumns));
 			_type = ds.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
 
 			DicomTag tag = OverlayTag(DicomTag.OverlayOrigin);
@@ -200,8 +200,8 @@ namespace Dicom.Imaging {
 				}
 			}
 
-			_bitsAllocated = ds.Get<ushort>(OverlayTag(DicomTag.OverlayBitsAllocated), 1);
-			_bitPosition = ds.Get<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0);
+			_bitsAllocated = ds.Get<ushort>(OverlayTag(DicomTag.OverlayBitsAllocated), 0, 1);
+			_bitPosition = ds.Get<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0, 0);
 
 			tag = OverlayTag(DicomTag.OverlayData);
 			if (ds.Contains(tag)) {
@@ -213,8 +213,8 @@ namespace Dicom.Imaging {
 			_subtype = ds.Get<string>(OverlayTag(DicomTag.OverlaySubtype), String.Empty);
 			_label = ds.Get<string>(OverlayTag(DicomTag.OverlayLabel), String.Empty);
 
-			_frames = ds.Get<int>(OverlayTag(DicomTag.NumberOfFramesInOverlay), 1);
-			_frameOrigin = ds.Get<ushort>(OverlayTag(DicomTag.ImageFrameOrigin), 1);
+			_frames = ds.Get<int>(OverlayTag(DicomTag.NumberOfFramesInOverlay), 0, 1);
+			_frameOrigin = ds.Get<ushort>(OverlayTag(DicomTag.ImageFrameOrigin), 0, 1);
 
 			//TODO: include ROI
 		}
