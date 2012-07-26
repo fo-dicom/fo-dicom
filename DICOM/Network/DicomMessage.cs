@@ -30,7 +30,7 @@ namespace Dicom.Network {
 		}
 
 		public bool HasDataset {
-			get { return Command.Get<ushort>(DicomTag.CommandDataSetType) == 0x0202; }
+			get { return Command.Get<ushort>(DicomTag.CommandDataSetType, 0, 0x0101) != 0x0101; }
 		}
 
 		public DicomDataset Command {
