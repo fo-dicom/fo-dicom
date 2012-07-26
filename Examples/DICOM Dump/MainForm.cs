@@ -12,12 +12,15 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Dump {
 	public partial class MainForm : Form {
+		private string _fileName;
+
 		public MainForm() {
 			InitializeComponent();
 		}
 
 		private void Reset() {
 			lvDicom.Items.Clear();
+			menuItemView.Enabled = false;
 		}
 
 		private delegate void AddItemDelegate(string tag, string vr, string length, string value);
@@ -44,9 +47,14 @@ namespace Dicom.Dump {
 
 				Reset();
 
-				var file = DicomFile.Open(ofd.FileName);
+				_fileName = ofd.FileName;
+
+				var file = DicomFile.Open(_fileName);
 				new DicomDatasetWalker(file.FileMetaInfo).Walk(new DumpWalker(this));
 				new DicomDatasetWalker(file.Dataset).Walk(new DumpWalker(this));
+
+				if (file.Dataset.Contains(DicomTag.PixelData))
+					menuItemView.Enabled = true;
 			} catch (Exception ex) {
 				MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} finally {
@@ -150,6 +158,11 @@ namespace Dicom.Dump {
 
 			public void OnEndWalk() {
 			}
+		}
+
+		private void OnClickView(object sender, EventArgs e) {
+			var form = new DisplayForm(_fileName);
+			form.ShowDialog(this);
 		}
 	}
 }
