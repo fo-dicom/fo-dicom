@@ -1,3 +1,8 @@
+#### v1.0.8
+* Parsing of Attribute Tag element type
+* Fix bug displaying compressed images
+* Add codec libraries as references to DICOM Dump utility
+
 #### v1.0.7 (07/26/2012)
 * Fix exception when accessing overlay data
 * Fix parsing of multi-value string elements
