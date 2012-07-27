@@ -315,14 +315,51 @@ namespace Dicom {
 			get { return DicomVR.AT; }
 		}
 
+		private DicomTag[] _values;
 		public IEnumerable<DicomTag> Values {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get {
+				if (_values == null) {
+					var values = new List<DicomTag>();
+					var parts = ByteBufferEnumerator<ushort>.Create(Buffer).ToArray();
+					for (int i = 0; i < parts.Length; i += 2) {
+						var group = parts[i + 0];
+						var element = parts[i + 1];
+						values.Add(new DicomTag(group, element));
+					}
+					_values = values.ToArray();
+				}
+				return _values;
+			}
+			private set {
+				_values = value.ToArray();
+				int length = _values.Length * 4;
+				byte[] buffer = new byte[length];
+				for (int i = 0; i < _values.Length; i++) {
+					var bytes = BitConverter.GetBytes(_values[i].Group);
+					Array.Copy(bytes, buffer, i * 4);
+					bytes = BitConverter.GetBytes(_values[i].Element);
+					Array.Copy(bytes, buffer, i * 4 + 2);
+				}
+				Buffer = new MemoryByteBuffer(buffer);
+			}
 		}
 		#endregion
 
 		#region Public Members
 		public override T Get<T>(int item = 0) {
+			var tags = Values.ToArray();
+
+			if (typeof(T) == typeof(DicomTag))
+				return (T)(object)tags[item];
+
+			if (typeof(T) == typeof(DicomTag[]))
+				return (T)(object)tags;
+
+			if (typeof(T) == typeof(string))
+				return (T)(object)tags[item].ToString();
+
+			if (typeof(T) == typeof(string[]))
+				return (T)(object)tags.Select(x => x.ToString()).ToArray();
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
 		}
