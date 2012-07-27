@@ -93,6 +93,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DICOM [Native]\x64\DICOM [Native64].vcxproj">
+      <Project>{FA9C7678-B9D9-46BC-8921-8152FD6787CA}</Project>
+      <Name>DICOM [Native64]</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOM [Native]\x86\DICOM [Native].vcxproj">
+      <Project>{C6148839-334D-4894-BDB9-E2D57438CF8A}</Project>
+      <Name>DICOM [Native]</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DICOM\DICOM.csproj">
       <Project>{D6E309B0-4837-459E-8C85-ABC268440D62}</Project>
       <Name>DICOM</Name>
