@@ -94,7 +94,7 @@ namespace Dicom.Imaging {
 			if (Dataset.InternalTransferSyntax.IsEncapsulated)
 				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
 
-			DicomPixelData pixelData = DicomPixelData.Create(dataset);
+			DicomPixelData pixelData = DicomPixelData.Create(Dataset);
 			_pixelData = PixelDataFactory.Create(pixelData, 0);
 			_overlays = DicomOverlayData.FromDataset(Dataset);
 		}
