@@ -94,7 +94,7 @@ namespace Dicom.IO.Writer {
 		public bool OnEndSequence() {
 			DicomSequence sequence = _sequences.Pop();
 
-			if (!_options.ExplicitLengthSequences || sequence.Tag.IsPrivate) {
+			if (!_options.ExplicitLengthSequences && !sequence.Tag.IsPrivate) {
 				WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
 			}
 
