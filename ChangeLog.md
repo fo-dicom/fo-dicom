@@ -1,3 +1,6 @@
+#### v1.0.9
+* Fix big endian pixel data being swapped twice
+
 #### v1.0.8 (08/02/2012)
 * Parsing of Attribute Tag element type
 * Fix bug displaying compressed images

@@ -192,8 +192,6 @@ namespace Dicom.Imaging {
 
 				if (BytesAllocated == 1 && Syntax.Endian == Endian.Little)
 					buffer = new SwapByteBuffer(buffer, 2);
-				else if (Syntax.Endian == Endian.Big)
-					buffer = new SwapByteBuffer(buffer, 2);
 
 				return buffer;
 			}
