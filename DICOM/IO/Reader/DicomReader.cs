@@ -89,7 +89,7 @@ namespace Dicom.IO.Reader {
 			try {
 				_result = DicomReaderResult.Processing;
 
-				while (!source.IsEOF && !source.HasReachedMilestone()) {
+				while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing) {
 					if (_state == ParseState.Tag) {
 						source.Mark();
 
@@ -221,7 +221,6 @@ namespace Dicom.IO.Reader {
 					if (_state == ParseState.Value) {
 						if (_tag == DicomTag.ItemDelimitationItem) {
 							// end of sequence item
-							ParseItemSequence(source, state);
 							return;
 						}
 
@@ -260,11 +259,12 @@ namespace Dicom.IO.Reader {
 
 				if (source.HasReachedMilestone()) {
 					// end of explicit length sequence item
-					_observer.OnEndSequenceItem();
 					source.PopMilestone();
-					ParseItemSequence(source, state);
 					return;
 				}
+
+				if (_result != DicomReaderResult.Processing)
+					return;
 
 				// end of processing
 				_result = DicomReaderResult.Success;
@@ -294,18 +294,18 @@ namespace Dicom.IO.Reader {
 						ushort group = source.GetUInt16();
 						ushort element = source.GetUInt16();
 
-						DicomTag tag = new DicomTag(group, element);
+						_tag = new DicomTag(group, element);
 
-						if (tag != DicomTag.Item && tag != DicomTag.SequenceDelimitationItem)
-							throw new DicomReaderException("Unexpected tag in DICOM sequence: {0}", tag);
+						if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem)
+							throw new DicomReaderException("Unexpected tag in DICOM sequence: {0}", _tag);
 
 						_length = source.GetUInt32();
 
-						if (tag == DicomTag.SequenceDelimitationItem) {
+						if (_tag == DicomTag.SequenceDelimitationItem) {
 							// end of sequence
 							_observer.OnEndSequence();
 							ResetState();
-							ParseDataset(source, PopState());
+							//ParseDataset(source, PopState());
 							return;
 						}
 
@@ -313,13 +313,6 @@ namespace Dicom.IO.Reader {
 					}
 
 					if (_state == ParseState.Value) {
-						if (_tag == DicomTag.ItemDelimitationItem) {
-							// end of sequence item
-							_observer.OnEndSequenceItem();
-							ResetState();
-							continue;
-						}
-
 						if (_length != UndefinedLength) {
 							if (!source.Require(_length, ParseItemSequence, state)) {
 								_result = DicomReaderResult.Suspended;
@@ -333,7 +326,10 @@ namespace Dicom.IO.Reader {
 
 						ResetState();
 						ParseDataset(source, state);
-						return;
+						ResetState();
+
+						_observer.OnEndSequenceItem();
+						continue;
 					}
 				}
 
