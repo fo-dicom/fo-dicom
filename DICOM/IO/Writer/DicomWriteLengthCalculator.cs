@@ -80,7 +80,7 @@ namespace Dicom.IO.Writer {
 				}
 			}
 
-			if (!_options.ExplicitLengthSequences) {
+			if (!_options.ExplicitLengthSequences && !sq.Tag.IsPrivate) {
 				// sequence delimitation item
 				length += 4; // tag
 				length += 4; // length

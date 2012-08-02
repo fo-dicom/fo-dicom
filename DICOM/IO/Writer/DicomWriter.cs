@@ -59,14 +59,7 @@ namespace Dicom.IO.Writer {
 			uint length = UndefinedLength;
 
 			if (_options.ExplicitLengthSequences || sequence.Tag.IsPrivate) {
-				DicomWriteOptions options = _options;
-				if (sequence.Tag.IsPrivate) {
-					options = new DicomWriteOptions(options);
-					options.ExplicitLengthSequences = false;
-					options.ExplicitLengthSequenceItems = false;
-				}
-
-				DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, options);
+				DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
 				length = calc.Calculate(sequence);
 			}
 
