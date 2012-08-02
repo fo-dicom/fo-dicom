@@ -1,12 +1,10 @@
-#### v1.0.9
-* Fix big endian pixel data being swapped twice
-
-#### v1.0.8 (08/02/2012)
+#### v1.0.9 (08/02/2012)
 * Parsing of Attribute Tag element type
 * Fix bug displaying compressed images
 * Add codec libraries as references to DICOM Dump utility
 * Fix bug writing private sequence lengths
 * Fix stack overflow when reading datasets with lots of sequences
+* Fix big endian pixel data being swapped twice
 
 #### v1.0.7 (07/26/2012)
 * Fix exception when accessing overlay data
