@@ -1,3 +1,6 @@
+#### v1.0.10
+* Fix bug preloading dictionary from another assembly
+
 #### v1.0.9 (08/02/2012)
 * Parsing of Attribute Tag element type
 * Fix bug displaying compressed images

@@ -49,7 +49,7 @@ namespace Dicom {
 					if (_default == null) {
 						_default = new DicomDictionary();
 						try {
-							var assembly = Assembly.GetCallingAssembly();
+							var assembly = Assembly.GetExecutingAssembly();
 							var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
 							var gzip = new GZipStream(stream, CompressionMode.Decompress);
 							var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
