@@ -100,6 +100,13 @@ namespace Dicom.Dump {
 				if (element.Length <= 2048)
 					value = String.Join("\\", element.Get<string[]>());
 
+				if (element.ValueRepresentation == DicomVR.UI) {
+					var uid = element.Get<DicomUID>(0);
+					var name = uid.Name;
+					if (name != "Unknown")
+						value = String.Format("{0} ({1})", value, name);
+				}
+
 				Form.AddItem(tag, 
 					element.ValueRepresentation.Code, 
 					element.Length.ToString(), 
