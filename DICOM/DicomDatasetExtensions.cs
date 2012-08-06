@@ -8,8 +8,17 @@ namespace Dicom {
 		}
 
 		public static DateTime GetDateTime(this DicomDataset dataset, DicomTag date, DicomTag time) {
-			DateTime da = dataset.Get<DateTime>(date);
-			DateTime tm = dataset.Get<DateTime>(time);
+			DicomDate dd = dataset.Get<DicomDate>(date);
+			DicomTime dt = dataset.Get<DicomTime>(time);
+
+			DateTime da = DateTime.Today;
+			if (dd != null && dd.Count > 0)
+				da = dd.Get<DateTime>(0);
+
+			DateTime tm = DateTime.Today;
+			if (dt != null && dt.Count > 0)
+				tm = dt.Get<DateTime>(0);
+
 			return new DateTime(da.Year, da.Month, da.Day, tm.Hour, tm.Minute, tm.Second);
 		}
 	}
