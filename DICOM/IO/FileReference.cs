@@ -13,7 +13,7 @@ namespace Dicom.IO {
 			private set;
 		}
 
-		/// <summary>File will be delete when object is Disposed.</summary>
+		/// <summary>File will be deleted when object is Disposed.</summary>
 		public bool IsTempFile {
 			get;
 			internal set;
@@ -28,7 +28,9 @@ namespace Dicom.IO {
 		}
 
 		public void Delete() {
-			if (File.Exists(Name))
+			if (IsTempFile)
+				TempFileRemover.Delete(Name);
+			else if (File.Exists(Name))
 				File.Delete(Name);
 		}
 

@@ -1,7 +1,8 @@
-#### v1.0.10
+#### v1.0.10 (08/13/2012)
 * Fix bug preloading dictionary from another assembly
 * Add name of UID to DICOM Dump elements
 * Better error handling in GetDateTime method
+* Persistent temporary file remover
 
 #### v1.0.9 (08/02/2012)
 * Parsing of Attribute Tag element type

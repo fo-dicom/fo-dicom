@@ -14,8 +14,7 @@ namespace Dicom.IO.Buffer {
 
 		public void Dispose() {
 			if (_path != null) {
-				if (File.Exists(_path))
-					File.Delete(_path);
+				TempFileRemover.Delete(_path);
 				_path = null;
 			}
 		}
