@@ -391,7 +391,13 @@ namespace Dicom {
 			DicomTransferSyntax tx;
 			if (Entries.TryGetValue(uid, out tx))
 				return tx;
-			throw new DicomDataException("Unknown transfer syntax UID: {0}", uid);
+			return new DicomTransferSyntax {
+				UID = uid,
+				IsExplicitVR = true,
+				IsEncapsulated = true,
+				Endian = Endian.Little
+			};
+			//throw new DicomDataException("Unknown transfer syntax UID: {0}", uid);
 		}
 		#endregion
 	}
