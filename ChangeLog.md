@@ -1,3 +1,6 @@
+#### v1.0.11
+* Accept unknown transfer syntaxes
+
 #### v1.0.10 (08/13/2012)
 * Fix bug preloading dictionary from another assembly
 * Add name of UID to DICOM Dump elements
