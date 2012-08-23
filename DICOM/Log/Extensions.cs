@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using NLog;
 
@@ -15,6 +16,21 @@ namespace Dicom.Log {
 			var logger = new DicomDatasetLogger(log, level);
 			new DicomDatasetWalker(file.FileMetaInfo).Walk(logger);
 			new DicomDatasetWalker(file.Dataset).Walk(logger);
+		}
+
+		public static string WriteToString(this IEnumerable<DicomItem> dataset) {
+			var log = new StringBuilder();
+			var dumper = new DicomDatasetDumper(log);
+			new DicomDatasetWalker(dataset).Walk(dumper);
+			return log.ToString();
+		}
+
+		public static string WriteToString(this DicomFile file) {
+			var log = new StringBuilder();
+			var dumper = new DicomDatasetDumper(log);
+			new DicomDatasetWalker(file.FileMetaInfo).Walk(dumper);
+			new DicomDatasetWalker(file.Dataset).Walk(dumper);
+			return log.ToString();
 		}
 	}
 }

@@ -1,5 +1,6 @@
-#### v1.0.11
+#### v1.0.11 (08/23/2012)
 * Accept unknown transfer syntaxes
+* Add ability to write DICOM dataset to string
 
 #### v1.0.10 (08/13/2012)
 * Fix bug preloading dictionary from another assembly
