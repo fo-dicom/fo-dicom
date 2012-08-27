@@ -11,11 +11,11 @@ using System.Text;
 namespace Dicom {
 	public partial class DicomDictionary : IEnumerable<DicomDictionaryEntry> {
 		#region Private Members
-		private readonly static DicomDictionaryEntry UnknownTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","xxxx"), "Unknown", "Unknown", DicomVM.VM_1_n, false, 
+		public readonly static DicomDictionaryEntry UnknownTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","xxxx"), "Unknown", "Unknown", DicomVM.VM_1_n, false, 
 			DicomVR.UN, DicomVR.AE, DicomVR.AS, DicomVR.AT, DicomVR.CS, DicomVR.DA, DicomVR.DS, DicomVR.DT, DicomVR.FD, DicomVR.FL, DicomVR.IS, DicomVR.LO, DicomVR.LT, DicomVR.OB, 
 			DicomVR.OF, DicomVR.OW, DicomVR.PN, DicomVR.SH, DicomVR.SL, DicomVR.SQ, DicomVR.SS, DicomVR.ST, DicomVR.TM, DicomVR.UI, DicomVR.UL, DicomVR.US, DicomVR.UT);
 
-		private readonly static DicomDictionaryEntry GroupLength = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","0000"), "Group Length", "GroupLength", DicomVM.VM_1, false, DicomVR.UL);
+		public readonly static DicomDictionaryEntry PrivateCreatorTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx", "00xx"), "Private Creator", "PrivateCreator", DicomVM.VM_1, false, DicomVR.LO);
 
 		private DicomPrivateCreator _privateCreator;
 		private IDictionary<string, DicomPrivateCreator> _creators;
@@ -48,6 +48,7 @@ namespace Dicom {
 				lock (_lock) {
 					if (_default == null) {
 						_default = new DicomDictionary();
+						_default.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx", "0000"), "Group Length", "GroupLength", DicomVM.VM_1, false, DicomVR.UL));
 						try {
 							var assembly = Assembly.GetExecutingAssembly();
 							var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
@@ -66,7 +67,6 @@ namespace Dicom {
 						} catch (Exception e) {
 							throw new DicomDataException("Unable to load private dictionary from resources.\n\n" + e.Message, e);
 						}
-						_default.Add(GroupLength);
 					}
 					return _default;
 				}
@@ -77,6 +77,11 @@ namespace Dicom {
 			}
 		}
 
+		public DicomPrivateCreator PrivateCreator {
+			get { return _privateCreator; }
+			internal set { _privateCreator = value; }
+		}
+
 		public DicomDictionaryEntry this[DicomTag tag] {
 			get {
 				if (_private != null && tag.PrivateCreator != null) {
@@ -85,13 +90,19 @@ namespace Dicom {
 						return pvt[tag];
 				}
 
+				// special case for private creator tag
+				if (tag.IsPrivate && tag.Element != 0x0000 && tag.Element <= 0x00ff)
+					return PrivateCreatorTag;
+
 				DicomDictionaryEntry entry = null;
 				if (_entries.TryGetValue(tag, out entry))
 					return entry;
 
-				entry = _masked.Where(x => x.MaskTag.IsMatch(tag)).FirstOrDefault();
-				if (entry != null)
-					return entry;
+				// this is faster than LINQ query
+				foreach (var x in _masked) {
+					if (x.MaskTag.IsMatch(tag))
+						return x;
+				}
 
 				return UnknownTag;
 			}

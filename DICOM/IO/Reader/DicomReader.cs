@@ -138,7 +138,9 @@ namespace Dicom.IO.Reader {
 						} else {
 							DicomDictionaryEntry entry = Dictionary[_tag];
 							if (entry != null) {
-								if (entry.ValueRepresentations.Contains(DicomVR.OB) && entry.ValueRepresentations.Contains(DicomVR.OW))
+								if (entry == DicomDictionary.UnknownTag)
+									_vr = DicomVR.UN;
+								else if (entry.ValueRepresentations.Contains(DicomVR.OB) && entry.ValueRepresentations.Contains(DicomVR.OW))
 									_vr = DicomVR.OW; // ???
 								else
 									_vr = entry.ValueRepresentations.FirstOrDefault();
@@ -155,24 +157,21 @@ namespace Dicom.IO.Reader {
 								// Group Length to UL
 								_vr = DicomVR.UL;
 								break;
+							} else if (IsExplicitVR) {
+								var entry = Dictionary[_tag];
+								if (entry != null)
+									_vr = entry.ValueRepresentations.FirstOrDefault();
+
+								if (_vr == null)
+									_vr = DicomVR.UN;
+
+								break;
 							}
+						}
 
-							if (_tag.Group.IsOdd()) {
-								if (_tag.Element <= 0x00ff) {
-									// Private Creator to LO
-									_vr = DicomVR.LO;
-									break;
-								} else if (IsExplicitVR) {
-									DicomDictionaryEntry entry = Dictionary[_tag];
-									if (entry != null)
-										_vr = entry.ValueRepresentations.FirstOrDefault();
-
-									if (_vr == null)
-										_vr = DicomVR.UN;
-
-									break;
-								}
-							}
+						if (_tag.IsPrivate) {
+							if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff)
+								_vr = DicomVR.LO; // force private creator to LO
 						}
 					}
 
@@ -252,6 +251,13 @@ namespace Dicom.IO.Reader {
 						if (!_vr.IsString)
 							buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
 						_observer.OnElement(source, _tag, _vr, buffer);
+
+						// parse private creator value and add to lookup table
+						if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff) {
+							var creator = DicomEncoding.Default.GetString(buffer.Data).TrimEnd((char)DicomVR.LO.PaddingValue);
+							var card = (uint)(_tag.Group << 16) + (uint)(_tag.Element);
+							_private[card] = creator;
+						}
 
 						ResetState();
 					}

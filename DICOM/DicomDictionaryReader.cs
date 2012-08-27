@@ -81,9 +81,11 @@ namespace Dicom {
 					string element = xentry.Attribute("element").Value;
 					if (group.ToLower().Contains('x') || element.ToLower().Contains('x')) {
 						DicomMaskedTag tag = DicomMaskedTag.Parse(group, element);
+						tag.Tag.PrivateCreator = dict.PrivateCreator;
 						dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
 					} else {
 						DicomTag tag = DicomTag.Parse(group + "," + element);
+						tag.PrivateCreator = dict.PrivateCreator;
 						dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));
 					}
 				}
