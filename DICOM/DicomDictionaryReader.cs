@@ -49,15 +49,17 @@ namespace Dicom {
 			foreach (var xdict in xdicts) {
 				XAttribute creator = xdict.Attribute("creator");
 				if (creator != null && !String.IsNullOrEmpty(creator.Value)) {
-					dict = dict[dict.GetPrivateCreator(creator.Value)];
+					dict = _dict[_dict.GetPrivateCreator(creator.Value)];
+				} else {
+					dict = _dict;
 				}
 
 				foreach (XElement xentry in xdict.Elements("tag")) {
-					string name = xentry.Value;
+					string name = xentry.Value ?? "Unknown";
 
-					if (xentry.Attribute("keyword") == null)
-						continue;
-					string keyword = xentry.Attribute("keyword").Value;
+					string keyword = String.Empty;
+					if (xentry.Attribute("keyword") != null)
+						keyword = xentry.Attribute("keyword").Value;
 
 					List<DicomVR> vrs = new List<DicomVR>();
 					XAttribute xvr = xentry.Attribute("vr");
