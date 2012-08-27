@@ -212,6 +212,10 @@ namespace Dicom.IO.Reader {
 							}
 
 							_length = source.GetUInt32();
+
+							// assume that undefined length in implicit dataset is SQ
+							if (_length == UndefinedLength && _vr == DicomVR.UN)
+								_vr = DicomVR.SQ;
 						}
 
 						_state = ParseState.Value;
