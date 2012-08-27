@@ -1,4 +1,4 @@
-#### v1.0.12
+#### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
 * Fix parsing errors when reading private dictionaries
 * Fix reading of private tags
