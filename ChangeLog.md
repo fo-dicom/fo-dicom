@@ -1,3 +1,9 @@
+#### v1.0.12
+* Add private dictionary to assembly
+* Fix parsing errors when reading private dictionaries
+* Fix reading of private tags
+* Miscellaneous enhancements
+
 #### v1.0.11 (08/23/2012)
 * Accept unknown transfer syntaxes
 * Add ability to write DICOM dataset to string
