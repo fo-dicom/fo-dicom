@@ -215,11 +215,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
+    <EmbeddedResource Include="Dictionaries\Private Dictionary.xml.gz" />
     <None Include="fo-dicom.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dictionaries\DICOM Dictionary.xml" />
+    <Content Include="Dictionaries\Private Dictionary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
