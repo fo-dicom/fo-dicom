@@ -168,6 +168,10 @@ namespace Dicom {
 
 		private DateTime[] _values = null;
 		public override T Get<T>(int item = -1) {
+			// no need to parse DateTime values if returning string(s)
+			if (typeof(T) == typeof(string) || typeof(T) == typeof(string[]))
+				return base.Get<T>(item);
+
 			if (typeof(T) == typeof(DicomDateRange)) {
 				string[] vals = base.Get<string>(item).Split('-');
 				var range = new DicomDateRange();
@@ -496,15 +500,18 @@ namespace Dicom {
 		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
-				    _formats = new string[8];
-					_formats[0] = "yyyyMMddHHmmss.fff";
-					_formats[1] = "yyyyMMddHHmmss.ff";
-					_formats[2] = "yyyyMMddHHmmss.f";
-					_formats[3] = "yyyyMMddHHmmss";
-					_formats[4] = "yyyyMMddHHmm";
-					_formats[5] = "yyyyMMdd";
-					_formats[6] = "yyyy.MM.dd";
-					_formats[7] = "yyyy/MM/dd";
+				    _formats = new string[12];
+					_formats[1] = "yyyyMMddHHmmsszzz";
+					_formats[2] = "yyyyMMddHHmmsszz";
+					_formats[3] = "yyyyMMddHHmmssz";
+					_formats[4] = "yyyyMMddHHmmss.fff";
+					_formats[5] = "yyyyMMddHHmmss.ff";
+					_formats[6] = "yyyyMMddHHmmss.f";
+					_formats[7] = "yyyyMMddHHmmss";
+					_formats[8] = "yyyyMMddHHmm";
+					_formats[9] = "yyyyMMdd";
+					_formats[10] = "yyyy.MM.dd";
+					_formats[11] = "yyyy/MM/dd";
 				}
 				return _formats;
 			}
