@@ -1,5 +1,5 @@
 #### v1.0.13
-* Set Temporary file attribute flag for temp buffers
+* Add ability for library to create and manage temp files
 
 #### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
