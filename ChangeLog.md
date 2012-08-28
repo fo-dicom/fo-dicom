@@ -1,3 +1,6 @@
+#### v1.0.13
+* Set Temporary file attribute flag for temp buffers
+
 #### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
 * Fix parsing errors when reading private dictionaries

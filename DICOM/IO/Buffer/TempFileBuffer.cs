@@ -8,6 +8,11 @@ namespace Dicom.IO.Buffer {
 
 		public TempFileBuffer(byte[] data) {
 			_path = Path.GetTempFileName();
+
+			// set temporary file attribute so that the file system
+			// attempts to keep all of the data in memory
+			File.SetAttributes(_path, FileAttributes.Temporary);
+
 			File.WriteAllBytes(_path, data);
 			_size = (uint)data.Length;
 		}
