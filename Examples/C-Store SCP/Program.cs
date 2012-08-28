@@ -93,10 +93,6 @@ namespace Dicom.CStoreSCP {
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 			}
 
-			public string GetTempFileName(DicomUID sopInstanceUid) {
-				return Path.GetTempFileName();
-			}
-
 			public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request) {
 				var studyUid = request.Dataset.Get<string>(DicomTag.StudyInstanceUID);
 				var instUid = request.SOPInstanceUID.UID;

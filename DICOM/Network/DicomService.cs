@@ -235,11 +235,7 @@ namespace Dicom.Network {
 								file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
 								file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
-								string fileName;
-								if (this is IDicomCStoreProvider)
-									fileName = (this as IDicomCStoreProvider).GetTempFileName(file.FileMetaInfo.MediaStorageSOPInstanceUID);
-								else
-									throw new DicomNetworkException("C-Store SCP not implemented");
+								var fileName = TemporaryFile.Create();
 
 								file.Save(fileName);
 
