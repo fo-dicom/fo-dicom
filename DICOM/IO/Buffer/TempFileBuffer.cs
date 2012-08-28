@@ -2,26 +2,15 @@
 using System.IO;
 
 namespace Dicom.IO.Buffer {
-	public sealed class TempFileBuffer : IByteBuffer, IDisposable {
-		private string _path;
+	public sealed class TempFileBuffer : IByteBuffer {
+		private TemporaryFile _file;
 		private uint _size;
 
 		public TempFileBuffer(byte[] data) {
-			_path = Path.GetTempFileName();
+			_file = new TemporaryFile();
 
-			// set temporary file attribute so that the file system
-			// attempts to keep all of the data in memory
-			File.SetAttributes(_path, FileAttributes.Temporary);
-
-			File.WriteAllBytes(_path, data);
+			File.WriteAllBytes(_file.Name, data);
 			_size = (uint)data.Length;
-		}
-
-		public void Dispose() {
-			if (_path != null) {
-				TempFileRemover.Delete(_path);
-				_path = null;
-			}
 		}
 
 		public bool IsMemory {
@@ -33,13 +22,13 @@ namespace Dicom.IO.Buffer {
 		}
 
 		public byte[] Data {
-			get { return File.ReadAllBytes(_path); }
+			get { return File.ReadAllBytes(_file.Name); }
 		}
 
 		public byte[] GetByteRange(int offset, int count) {
 			byte[] buffer = new byte[count];
 
-			using (Stream fs = File.OpenRead(_path)) {
+			using (Stream fs = File.OpenRead(_file.Name)) {
 				fs.Seek(offset, SeekOrigin.Begin);
 				fs.Read(buffer, 0, count);
 			}
