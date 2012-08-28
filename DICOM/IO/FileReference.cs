@@ -29,7 +29,7 @@ namespace Dicom.IO {
 
 		public void Delete() {
 			if (IsTempFile)
-				TempFileRemover.Delete(Name);
+				TemporaryFileRemover.Delete(Name);
 			else if (File.Exists(Name))
 				File.Delete(Name);
 		}

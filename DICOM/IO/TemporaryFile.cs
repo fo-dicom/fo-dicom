@@ -17,7 +17,7 @@ namespace Dicom.IO {
 		}
 
 		public void Dispose() {
-			TempFileRemover.Delete(_file);
+			TemporaryFileRemover.Delete(_file);
 		}
 
 		#region Static

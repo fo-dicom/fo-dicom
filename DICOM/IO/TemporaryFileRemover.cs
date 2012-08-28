@@ -4,14 +4,14 @@ using System.IO;
 using System.Threading;
 
 namespace Dicom.IO {
-	public class TempFileRemover : IDisposable {
-		private static TempFileRemover _instance = new TempFileRemover();
+	public class TemporaryFileRemover : IDisposable {
+		private static TemporaryFileRemover _instance = new TemporaryFileRemover();
 		private object _lock = new object();
 		private List<string> _files = new List<string>();
 		private Timer _timer;
 		private bool _running = false;
 
-		private TempFileRemover() {
+		private TemporaryFileRemover() {
 			_timer = new Timer(OnTick);
 		}
 
