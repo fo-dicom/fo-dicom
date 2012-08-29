@@ -47,9 +47,13 @@ namespace Dicom.IO {
 				path = Path.GetTempPath();
 			}
 
-			// set temporary file attribute so that the file system
-			// attempts to keep all of the data in memory
-			File.SetAttributes(path, FileAttributes.Temporary);
+			try {
+				// set temporary file attribute so that the file system
+				// will attempt to keep all of the data in memory
+				File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Temporary);
+			} catch {
+				// sometimes fails with invalid argument exception
+			}
 
 			return path;
 		}
