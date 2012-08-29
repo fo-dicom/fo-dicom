@@ -164,7 +164,8 @@
     <Compile Include="IO\PinnedArray.cs" />
     <Compile Include="IO\StreamByteSource.cs" />
     <Compile Include="IO\StreamByteTarget.cs" />
-    <Compile Include="IO\TempFileRemover.cs" />
+    <Compile Include="IO\TemporaryFileRemover.cs" />
+    <Compile Include="IO\TemporaryFile.cs" />
     <Compile Include="IO\Writer\DicomFileWriter.cs" />
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
