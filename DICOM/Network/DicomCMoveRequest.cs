@@ -12,15 +12,24 @@ namespace Dicom.Network {
 			DestinationAE = destinationAe;
 			Dataset = new DicomDataset();
 			Level = DicomQueryRetrieveLevel.Study;
-			Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
+			Dataset.Add(DicomTag.StudyInstanceUID, DicomUID.Parse(studyInstanceUid));      
 		}
 
 		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, string seriesInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.StudyRootQueryRetrieveInformationModelMOVE, priority) {
 			DestinationAE = destinationAe;
 			Dataset = new DicomDataset();
 			Level = DicomQueryRetrieveLevel.Series;
-			Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
-			Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
+			Dataset.Add(DicomTag.StudyInstanceUID, DicomUID.Parse(studyInstanceUid));
+			Dataset.Add(DicomTag.SeriesInstanceUID, DicomUID.Parse(seriesInstanceUid));      
+		}
+
+		public DicomCMoveRequest(string destinationAe, string studyInstanceUid, string seriesInstanceUid, string sopInstanceUid, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CMoveRequest, DicomUID.StudyRootQueryRetrieveInformationModelMOVE, priority) {
+			DestinationAE = destinationAe;
+			Dataset = new DicomDataset();
+			Level = DicomQueryRetrieveLevel.Image;
+			Dataset.Add(DicomTag.StudyInstanceUID, DicomUID.Parse(studyInstanceUid));
+			Dataset.Add(DicomTag.SeriesInstanceUID, DicomUID.Parse(seriesInstanceUid));
+			Dataset.Add(DicomTag.SOPInstanceUID, DicomUID.Parse(sopInstanceUid));
 		}
 
 		public DicomQueryRetrieveLevel Level {
