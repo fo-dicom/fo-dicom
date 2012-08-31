@@ -342,8 +342,19 @@ namespace Dicom.Network {
 			try {
 				Logger.Log(LogLevel.Info, "{0} <- {1}", LogID, dimse);
 
-				if (!DicomMessage.IsRequest(dimse.Type))
+				if (!DicomMessage.IsRequest(dimse.Type)) {
+					var rsp = dimse as DicomResponse;
+					lock (_lock) {
+						var req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
+						if (req != null) {
+							rsp.UserState = req.UserState;
+							(req as DicomRequest).PostResponse(this, rsp);
+							if (rsp.Status.State != DicomState.Pending)
+								_pending.Remove(req);
+						}
+					}
 					return;
+				}
 
 				if (dimse.Type == DicomCommandField.CStoreRequest) {
 					if (this is IDicomCStoreProvider) {
@@ -385,18 +396,6 @@ namespace Dicom.Network {
 
 				throw new DicomNetworkException("Operation not implemented");
 			} finally {
-				if (dimse is DicomResponse) {
-					var rsp = dimse as DicomResponse;
-					lock (_lock) {
-						var req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
-						if (req != null) {
-							(req as DicomRequest).PostResponse(this, rsp);
-							if (rsp.Status.State != DicomState.Pending)
-								_pending.Remove(req);
-						}
-					}
-				}
-
 				SendNextMessage();
 			}
 		}

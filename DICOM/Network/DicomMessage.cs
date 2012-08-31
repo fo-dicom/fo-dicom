@@ -48,6 +48,12 @@ namespace Dicom.Network {
 			}
 		}
 
+		/// <summary>State object that will be passed from request to response objects.</summary>
+		public object UserState {
+			get;
+			set;
+		}
+
 		public override string ToString() {
 			return String.Format("{0} [{1}]", ToString(Type), IsRequest(Type) ? MessageID : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
 		}
