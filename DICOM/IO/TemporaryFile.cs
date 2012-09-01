@@ -44,7 +44,7 @@ namespace Dicom.IO {
 				File.Create(path).Close();
 			} else {
 				// allow OS to create file in system temp path
-				path = Path.GetTempPath();
+				path = Path.GetTempFileName();
 			}
 
 			try {
