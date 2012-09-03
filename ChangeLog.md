@@ -1,5 +1,8 @@
 #### v1.0.13
 * Add ability for library to create and manage temp files
+* User state object for DIMSE requests and responses
+* Fix reading of elements with unknown dictionary VR (Justin Wake)
+* Fix handling of UIDs in DicomCMoveRequest (Justin Wake)
 
 #### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
