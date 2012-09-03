@@ -158,13 +158,6 @@ namespace Dicom.IO.Reader {
 								_vr = DicomVR.UL;
 								break;
 							} else if (IsExplicitVR) {
-								var entry = Dictionary[_tag];
-								if (entry != null)
-									_vr = entry.ValueRepresentations.FirstOrDefault();
-
-								if (_vr == null)
-									_vr = DicomVR.UN;
-
 								break;
 							}
 						}
@@ -252,6 +245,17 @@ namespace Dicom.IO.Reader {
 						}
 
 						IByteBuffer buffer = source.GetBuffer(_length);
+
+						if (_vr == DicomVR.UN && IsExplicitVR)
+						{
+							var entry = Dictionary[_tag];
+							if (entry != null)
+								_vr = entry.ValueRepresentations.FirstOrDefault();
+
+							if (_vr == null)
+								_vr = DicomVR.UN;
+						}
+
 						if (!_vr.IsString)
 							buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
 						_observer.OnElement(source, _tag, _vr, buffer);
