@@ -48,5 +48,8 @@ for (int i = 0; i < 10; i++)
 client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 ```
 
+### Contributors
+* [Justin Wake](https://github.com/jwake)
+
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See _License.txt_ for more information.
