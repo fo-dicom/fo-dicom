@@ -49,7 +49,11 @@ client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 ```
 
 ### Contributors
+* [Mahesh Dubey](https://github.com/mdubey82)
 * [Justin Wake](https://github.com/jwake)
+
+### Bug Reports
+* [Chris Horn](https://github.com/GMZ)
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See _License.txt_ for more information.
