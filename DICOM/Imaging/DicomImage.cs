@@ -20,6 +20,7 @@ namespace Dicom.Imaging {
 		#region Private Members
 		private const int OverlayColor = unchecked((int)0xffff00ff);
 
+		private int _currentFrame;
 		private IPixelData _pixelData;
 		private IPipeline _pipeline;
 
@@ -30,16 +31,18 @@ namespace Dicom.Imaging {
 
 		/// <summary>Creates DICOM image object from dataset</summary>
 		/// <param name="dataset">Source dataset</param>
-		public DicomImage(DicomDataset dataset) {
-			Load(dataset);
+		/// <param name="frame">Zero indexed frame number</param>
+		public DicomImage(DicomDataset dataset, int frame = 0) {
+			Load(dataset, frame);
 		}
 
 #if !SILVERLIGHT
 		/// <summary>Creates DICOM image object from file</summary>
 		/// <param name="fileName">Source file</param>
-		public DicomImage(string fileName) {
+		/// <param name="frame">Zero indexed frame number</param>
+		public DicomImage(string fileName, int frame = 0) {
 			var file = DicomFile.Open(fileName);
-			Load(file.Dataset);
+			Load(file.Dataset, frame);
 		}
 #endif
 
@@ -59,10 +62,19 @@ namespace Dicom.Imaging {
 			get { return _pixelData.Height; }
 		}
 
+		/// <summary>Number of frames contained in image data.</summary>
+		public int NumberOfFrames {
+			get { return Dataset.Get<int>(DicomTag.NumberOfFrames, 0, 1); }
+		}
+
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
+		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
 #if !SILVERLIGHT
-		public Image RenderImage() {
+		public Image RenderImage(int frame = 0) {
+			if (frame != _currentFrame)
+				Load(Dataset, frame);
+
 			CreatePipeline();
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
@@ -76,7 +88,10 @@ namespace Dicom.Imaging {
 		}
 #endif
 
-		public ImageSource RenderImageSource() {
+		public ImageSource RenderImageSource(int frame = 0) {
+			if (frame != _currentFrame)
+				Load(Dataset, frame);
+
 			CreatePipeline();
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
@@ -89,14 +104,15 @@ namespace Dicom.Imaging {
 			return graphic.RenderImageSource(_pipeline.LUT);
 		}
 
-		private void Load(DicomDataset dataset) {
+		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
 			if (Dataset.InternalTransferSyntax.IsEncapsulated)
 				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
 
 			DicomPixelData pixelData = DicomPixelData.Create(Dataset);
-			_pixelData = PixelDataFactory.Create(pixelData, 0);
+			_pixelData = PixelDataFactory.Create(pixelData, frame);
 			_overlays = DicomOverlayData.FromDataset(Dataset);
+			_currentFrame = frame;
 		}
 
 		private void CreatePipeline() {

@@ -4,6 +4,7 @@
 * Fix reading of elements with unknown dictionary VR (Justin Wake)
 * Fix handling of UIDs in DicomCMoveRequest (Justin Wake)
 * Add version to file meta information
+* Add support for multiframe images in DicomImage
 
 #### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
