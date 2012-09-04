@@ -215,6 +215,17 @@ namespace Dicom.IO.Reader {
 					}
 
 					if (_state == ParseState.Value) {
+						// check dictionary for VR after reading length to handle 16-bit lengths
+						// check before reading value to handle SQ elements
+						if (_vr == DicomVR.UN && IsExplicitVR) {
+							var entry = Dictionary[_tag];
+							if (entry != null)
+								_vr = entry.ValueRepresentations.FirstOrDefault();
+
+							if (_vr == null)
+								_vr = DicomVR.UN;
+						}
+
 						if (_tag == DicomTag.ItemDelimitationItem) {
 							// end of sequence item
 							return;
@@ -245,16 +256,6 @@ namespace Dicom.IO.Reader {
 						}
 
 						IByteBuffer buffer = source.GetBuffer(_length);
-
-						if (_vr == DicomVR.UN && IsExplicitVR)
-						{
-							var entry = Dictionary[_tag];
-							if (entry != null)
-								_vr = entry.ValueRepresentations.FirstOrDefault();
-
-							if (_vr == null)
-								_vr = DicomVR.UN;
-						}
 
 						if (!_vr.IsString)
 							buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
