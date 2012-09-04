@@ -9,6 +9,7 @@ namespace Dicom {
 		}
 
 		public DicomFileMetaInformation(DicomDataset dataset) : base() {
+			Version = new byte[] { 0x00, 0x01 };
 			MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
 			MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
 			TransferSyntax = dataset.InternalTransferSyntax;
@@ -19,6 +20,11 @@ namespace Dicom {
 			if (machine.Length > 16)
 				machine = machine.Substring(0, 16);
 			SourceApplicationEntityTitle = machine;
+		}
+
+		public byte[] Version {
+			get { return Get<byte[]>(DicomTag.FileMetaInformationVersion); }
+			set { Add(DicomTag.FileMetaInformationVersion, value); }
 		}
 
 		public DicomUID MediaStorageSOPClassUID {
