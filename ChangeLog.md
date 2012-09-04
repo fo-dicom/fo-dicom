@@ -1,4 +1,4 @@
-#### v1.0.13
+#### v1.0.13 (09/04/2012)
 * Add ability for library to create and manage temp files
 * User state object for DIMSE requests and responses
 * Fix reading of elements with unknown dictionary VR (Justin Wake)
