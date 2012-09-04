@@ -3,6 +3,7 @@
 * User state object for DIMSE requests and responses
 * Fix reading of elements with unknown dictionary VR (Justin Wake)
 * Fix handling of UIDs in DicomCMoveRequest (Justin Wake)
+* Add version to file meta information
 
 #### v1.0.12 (08/27/2012)
 * Add private dictionary to assembly
