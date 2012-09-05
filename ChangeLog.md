@@ -1,6 +1,7 @@
-#### v1.0.14
+#### v1.0.14 (09/05/2012)
 * Fix bug in DicomDatasetReaderObserver handling zero length Specific Character Set elements
 * Fix bug in DICOM Dump when displaying zero length UIDs
+* Load implementation version from assembly info
 
 #### v1.0.13 (09/04/2012)
 * Add ability for library to create and manage temp files
