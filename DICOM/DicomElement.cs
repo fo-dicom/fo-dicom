@@ -122,14 +122,15 @@ namespace Dicom {
 					_values = new string[0];
 				else
 					_values = StringValue.Split('\\');
+				_count = _values.Length;
 			}
 
 			if (typeof(T) == typeof(string) || typeof(T) == typeof(object)) {
 				if (item == -1)
 					return (T)((object)StringValue);
 
-				if (item >= _values.Length)
-					return default(T);
+				if (item < 0 || item >= Count)
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)((object)_values[item]);
 			}
@@ -203,7 +204,7 @@ namespace Dicom {
 
 			if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object)) {
 				if (item < 0 || item >= Count)
-					return default(T);
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)((object)_values[item]);
 			}
@@ -231,7 +232,7 @@ namespace Dicom {
 		public override T Get<T>(int item = 0) {
 			if (typeof(T) == typeof(Tv)) {
 				if (item < 0 || item >= Count)
-					return default(T);
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return ByteConverter.Get<T>(Buffer, item);
 			}
@@ -243,7 +244,7 @@ namespace Dicom {
 
 			if (typeof(T) == typeof(string)) {
 				if (item < 0 || item >= Count)
-					return default(T);
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
 			}
@@ -254,7 +255,7 @@ namespace Dicom {
 
 			if (typeof(T).IsEnum) {
 				if (item < 0 || item >= Count)
-					return default(T);
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
 				return (T)Enum.Parse(typeof(T), s);
@@ -262,7 +263,7 @@ namespace Dicom {
 
 			if (typeof(T).IsValueType) {
 				if (item < 0 || item >= Count)
-					return default(T);
+					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), typeof(T));
 			}
