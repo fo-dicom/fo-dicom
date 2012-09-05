@@ -1,3 +1,6 @@
+#### v1.0.14
+* Return default value instead of throwing exception when accessing element with out of range index
+
 #### v1.0.13 (09/04/2012)
 * Add ability for library to create and manage temp files
 * User state object for DIMSE requests and responses
