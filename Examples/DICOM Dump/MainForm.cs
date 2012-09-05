@@ -100,7 +100,7 @@ namespace Dicom.Dump {
 				if (element.Length <= 2048)
 					value = String.Join("\\", element.Get<string[]>());
 
-				if (element.ValueRepresentation == DicomVR.UI) {
+				if (element.ValueRepresentation == DicomVR.UI && element.Count > 0) {
 					var uid = element.Get<DicomUID>(0);
 					var name = uid.Name;
 					if (name != "Unknown")
