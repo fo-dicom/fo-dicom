@@ -57,7 +57,9 @@ namespace Dicom.IO.Reader {
 			}
 
 			if (element.Tag == DicomTag.SpecificCharacterSet) {
-				Encoding encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
+				Encoding encoding = DicomEncoding.Default;
+				if (element.Count > 0)
+					encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
 				_encodings.Push(encoding);
 			}
 
