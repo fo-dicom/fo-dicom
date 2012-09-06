@@ -5,6 +5,7 @@
 * Fix comparison of private DicomTags
 * Add shortcut constructor for private DicomTags
 * Handle null DicomDateRange in DicomDataset.Add()
+* Modality Worklist C-Find helper method
 
 #### v1.0.14 (09/05/2012)
 * Fix bug in DicomDatasetReaderObserver handling zero length Specific Character Set elements
