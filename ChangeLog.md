@@ -1,3 +1,6 @@
+#### v1.0.15
+* Add ability to store user state object in DicomService based classes
+
 #### v1.0.14 (09/05/2012)
 * Fix bug in DicomDatasetReaderObserver handling zero length Specific Character Set elements
 * Fix bug in DICOM Dump when displaying zero length UIDs

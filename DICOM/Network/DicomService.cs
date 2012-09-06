@@ -50,6 +50,11 @@ namespace Dicom.Network {
 			set;
 		}
 
+		public object UserState {
+			get;
+			set;
+		}
+
 		public DicomAssociation Association {
 			get;
 			internal set;
