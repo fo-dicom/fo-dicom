@@ -94,6 +94,7 @@ namespace Dicom.Network {
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
 			dimse.Dataset.Add(DicomTag.IssuerOfPatientID, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientSex, String.Empty);
+			dimse.Dataset.Add(DicomTag.PatientWeight, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
 			dimse.Dataset.Add(DicomTag.MedicalAlerts, String.Empty);
 			dimse.Dataset.Add(DicomTag.PregnancyStatus, String.Empty);
