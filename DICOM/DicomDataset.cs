@@ -114,7 +114,7 @@ namespace Dicom {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDate(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
-					return Add(new DicomDate(tag, values.Cast<DicomDateRange>().First()));
+					return Add(new DicomDate(tag, values.Cast<DicomDateRange>().FirstOrDefault() ?? new DicomDateRange()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomDate(tag, values.Cast<string>().ToArray()));
 			}
@@ -130,7 +130,7 @@ namespace Dicom {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDateTime(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
-					return Add(new DicomDateTime(tag, values.Cast<DicomDateRange>().First()));
+					return Add(new DicomDateTime(tag, values.Cast<DicomDateRange>().FirstOrDefault() ?? new DicomDateRange()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomDateTime(tag, values.Cast<string>().ToArray()));
 			}
@@ -206,7 +206,7 @@ namespace Dicom {
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomTime(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
-					return Add(new DicomTime(tag, values.Cast<DicomDateRange>().First()));
+					return Add(new DicomTime(tag, values.Cast<DicomDateRange>().FirstOrDefault() ?? new DicomDateRange()));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomTime(tag, values.Cast<string>().ToArray()));
 			}

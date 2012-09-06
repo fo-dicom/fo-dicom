@@ -16,7 +16,10 @@ namespace Dicom {
 		}
 
 		public string ToString(string format) {
-			return (Minimum == DateTime.MinValue ? String.Empty : Minimum.ToString(format)) + "-" + (Maximum == DateTime.MaxValue ? String.Empty : Maximum.ToString(format));
+			var value = (Minimum == DateTime.MinValue ? String.Empty : Minimum.ToString(format)) + "-" + (Maximum == DateTime.MaxValue ? String.Empty : Maximum.ToString(format));
+			if (value == "-")
+				return String.Empty;
+			return value;
 		}
 	}
 }
