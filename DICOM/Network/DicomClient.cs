@@ -38,6 +38,11 @@ namespace Dicom.Network {
 			set;
 		}
 
+		public object UserState {
+			get;
+			set;
+		}
+
 		public void AddRequest(DicomRequest request) {
 			if (_service != null && _service.IsConnected)
 				_service.SendRequest(request);
