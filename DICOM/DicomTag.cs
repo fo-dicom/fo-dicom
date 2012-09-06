@@ -18,6 +18,9 @@ namespace Dicom {
 			Element = element;
 		}
 
+		public DicomTag(ushort group, ushort element, string privateCreator) : this(group, element, DicomDictionary.Default.GetPrivateCreator(privateCreator)) {
+		}
+
 		public DicomTag(ushort group, ushort element, DicomPrivateCreator privateCreator) {
 			Group = group;
 			Element = element;
