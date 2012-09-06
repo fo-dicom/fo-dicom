@@ -2,6 +2,7 @@
 * Add ability to store user state object in DicomService based classes
 * Add ability to store user state object in DicomClient
 * Fix handling of UIDs in DicomCFindRequest
+* Fix comparison of private DicomTags
 
 #### v1.0.14 (09/05/2012)
 * Fix bug in DicomDatasetReaderObserver handling zero length Specific Character Set elements
