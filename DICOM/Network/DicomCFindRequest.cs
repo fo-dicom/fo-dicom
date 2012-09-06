@@ -58,7 +58,7 @@ namespace Dicom.Network {
 			dimse.Dataset.Add(DicomTag.IssuerOfPatientID, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientSex, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
-			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
+			dimse.Dataset.Add(DicomTag.StudyInstanceUID, DicomUID.Parse(studyInstanceUid));
 			dimse.Dataset.Add(DicomTag.ModalitiesInStudy, modalitiesInStudy);
 			dimse.Dataset.Add(DicomTag.StudyID, studyId);
 			dimse.Dataset.Add(DicomTag.AccessionNumber, accession);
@@ -72,8 +72,8 @@ namespace Dicom.Network {
 		public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid) {
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
 			dimse.AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
-			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
-			dimse.Dataset.Add(DicomTag.SeriesInstanceUID, String.Empty);
+			dimse.Dataset.Add(DicomTag.StudyInstanceUID, DicomUID.Parse(studyInstanceUid));
+			dimse.Dataset.Add(DicomTag.SeriesInstanceUID, DicomUID.Parse(String.Empty));
 			dimse.Dataset.Add(DicomTag.SeriesNumber, String.Empty);
 			dimse.Dataset.Add(DicomTag.SeriesDescription, String.Empty);
 			dimse.Dataset.Add(DicomTag.Modality, String.Empty);
