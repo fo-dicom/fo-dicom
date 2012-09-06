@@ -1,4 +1,4 @@
-#### v1.0.15
+#### v1.0.15 (09/06/2012)
 * Add ability to store user state object in DicomService based classes
 * Add ability to store user state object in DicomClient
 * Fix handling of UIDs in DicomCFindRequest
