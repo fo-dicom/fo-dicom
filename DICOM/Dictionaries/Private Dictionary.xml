@@ -287,6 +287,7 @@
 <dictionary creator="ELSCINT1">
 <tag group="00e1" element="xx01" vr="US" vm="1">Data Dictionary Version</tag>
 <tag group="00e1" element="xx14" vr="LT" vm="1">Unknown</tag>
+<tag group="00e1" element="xx21" vr="DS" vm="1">DLP</tag>
 <tag group="00e1" element="xx22" vr="DS" vm="2">Unknown</tag>
 <tag group="00e1" element="xx23" vr="DS" vm="2">Unknown</tag>
 <tag group="00e1" element="xx24" vr="LT" vm="1">Unknown</tag>
@@ -304,6 +305,7 @@
 <tag group="01e1" element="xx17" vr="UN" vm="1">Unknown</tag>
 <tag group="01e1" element="xx1f" vr="UN" vm="1">Unknown</tag>
 <tag group="01e1" element="xx23" vr="UN" vm="1">Unknown</tag>
+<tag group="01e1" element="xx26" vr="CS" vm="1">Phantom Type</tag>
 <tag group="01f1" element="xx01" vr="CS" vm="1-2">Unknown</tag>
 <tag group="01f1" element="xx02" vr="CS" vm="1">Unknown</tag>
 <tag group="01f1" element="xx03" vr="CS" vm="1">Unknown</tag>
