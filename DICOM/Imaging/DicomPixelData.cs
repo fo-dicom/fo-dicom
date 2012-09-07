@@ -133,7 +133,7 @@ namespace Dicom.Imaging {
 					return new OtherBytePixelData(dataset, false);
 				if (item is DicomOtherWord)
 					return new OtherWordPixelData(dataset, false);
-				if (item is DicomOtherByteFragment)
+				if (item is DicomOtherByteFragment || item is DicomOtherWordFragment)
 					return new EncapsulatedPixelData(dataset, false);
 
 				throw new DicomImagingException("Unexpected or unhandled pixel data element type: {0}", item.GetType());
@@ -216,32 +216,30 @@ namespace Dicom.Imaging {
 					Element = new DicomOtherByteFragment(DicomTag.PixelData);
 					Dataset.Add(Element);
 				} else
-					Element = dataset.Get<DicomOtherByteFragment>(DicomTag.PixelData);
+					Element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
 			}
 
-			public DicomOtherByteFragment Element {
+			public DicomFragmentSequence Element {
 				get;
 				private set;
 			}
 
 			public override IByteBuffer GetFrame(int frame) {
+				IByteBuffer buffer = null;
+
 				if (NumberOfFrames == 1) {
 					if (Element.Fragments.Count == 1)
-						return EndianByteBuffer.Create(Element.Fragments[0], Syntax.Endian, BytesAllocated);
+						buffer = Element.Fragments[0];
 					else
-						return EndianByteBuffer.Create(
-							new CompositeByteBuffer(Element.Fragments.ToArray()),
-							Syntax.Endian, BytesAllocated);
+						buffer = new CompositeByteBuffer(Element.Fragments.ToArray());
 				}
-
-				if (Element.Fragments.Count == NumberOfFrames)
-					return EndianByteBuffer.Create(Element.Fragments[frame], Syntax.Endian, BytesAllocated);
-
-				if (Element.OffsetTable.Count == NumberOfFrames) {
+				else if (Element.Fragments.Count == NumberOfFrames)
+					buffer = Element.Fragments[frame];
+				else if (Element.OffsetTable.Count == NumberOfFrames) {
 					uint start = Element.OffsetTable[frame];
 					uint stop = (Element.OffsetTable.Count == (frame + 1)) ? uint.MaxValue : Element.OffsetTable[frame + 1];
 
-					CompositeByteBuffer buffer = new CompositeByteBuffer();
+					var composite = new CompositeByteBuffer();
 
 					uint pos = 0;
 					int frag = 0;
@@ -256,7 +254,7 @@ namespace Dicom.Imaging {
 						throw new DicomImagingException("Fragment start position does not match offset table.");
 
 					while (pos < stop && frag < Element.Fragments.Count) {
-						buffer.Buffers.Add(Element.Fragments[frag]);
+						composite.Buffers.Add(Element.Fragments[frag]);
 
 						pos += 8;
 						pos += Element.Fragments[frag].Size;
@@ -266,10 +264,12 @@ namespace Dicom.Imaging {
 					if (pos < stop && stop != uint.MaxValue)
 						throw new DicomImagingException("Image frame truncated while reading fragments from offset table.");
 
-					return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
+					buffer = composite;
 				}
+				else
+					throw new DicomImagingException("Support for multi-frame images with varying fragment sizes and no offset table has not been implemented.");
 
-				throw new DicomImagingException("Support for multi-frame images with varying fragment sizes and no offset table has not been implemented.");
+				return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
 			}
 
 			public override void AddFrame(IByteBuffer data) {
