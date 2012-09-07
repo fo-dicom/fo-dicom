@@ -1,3 +1,9 @@
+#### v1.0.16
+* Fix decompression of JPEG Baseline Process 1 images
+* Fix conversion of YBR to RGB in JPEG compressed images
+* Add ability to handle encapsulated OW pixel data
+* Better handling of grayscale images without Window/Level in dataset
+
 #### v1.0.15 (09/06/2012)
 * Add ability to store user state object in DicomService based classes
 * Add ability to store user state object in DicomClient
