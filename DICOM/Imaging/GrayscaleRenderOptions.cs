@@ -50,7 +50,7 @@
 			var options = new GrayscaleRenderOptions(bits);
 			options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
 			options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
-			if (dataset.Contains(DicomTag.WindowWidth)) {
+			if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) != 0.0) {
 				options.WindowWidth = dataset.Get<double>(DicomTag.WindowWidth);
 				options.WindowCenter = dataset.Get<double>(DicomTag.WindowCenter);
 			}
