@@ -53,6 +53,23 @@
 			if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) != 0.0) {
 				options.WindowWidth = dataset.Get<double>(DicomTag.WindowWidth);
 				options.WindowCenter = dataset.Get<double>(DicomTag.WindowCenter);
+			} else if (dataset.Contains(DicomTag.SmallestImagePixelValue) && dataset.Contains(DicomTag.LargestImagePixelValue)) {
+				var smallElement = dataset.Get<DicomElement>(DicomTag.SmallestImagePixelValue);
+				var largeElement = dataset.Get<DicomElement>(DicomTag.LargestImagePixelValue);
+
+				int smallValue = 0;
+				int largeValue = 0;
+
+				if (smallElement.ValueRepresentation == DicomVR.US) {
+					smallValue = smallElement.Get<ushort>(0);
+					largeValue = smallElement.Get<ushort>(0);
+				} else {
+					smallValue = smallElement.Get<short>(0);
+					largeValue = smallElement.Get<short>(0);
+				}
+
+				options.WindowWidth = largeValue - smallValue;
+				options.WindowCenter = (largeValue + smallValue) / 2.0;
 			}
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
 			return options;
