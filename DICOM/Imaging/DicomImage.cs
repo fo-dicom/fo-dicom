@@ -106,8 +106,15 @@ namespace Dicom.Imaging {
 
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
-			if (Dataset.InternalTransferSyntax.IsEncapsulated)
-				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
+			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
+				DicomCodecParams cparams = null;
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
+					cparams = new DicomJpegParams {
+						ConvertColorspaceToRGB = true
+					};
+				}
+				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
+			}
 
 			DicomPixelData pixelData = DicomPixelData.Create(Dataset);
 			_pixelData = PixelDataFactory.Create(pixelData, frame);
