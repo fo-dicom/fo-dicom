@@ -1,4 +1,4 @@
-#### v1.0.16
+#### v1.0.16 (09/11/2012)
 * Fix decompression of JPEG Baseline Process 1 images
 * Fix conversion of YBR to RGB in JPEG compressed images
 * Add ability to handle encapsulated OW pixel data
