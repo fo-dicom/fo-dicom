@@ -171,5 +171,27 @@ namespace Dicom.Dump {
 			var form = new DisplayForm(_fileName);
 			form.ShowDialog(this);
 		}
+
+		private void OnContextMenuOpening(object sender, CancelEventArgs e) {
+			var point = lvDicom.PointToClient(MousePosition);
+
+			var item = lvDicom.GetItemAt(point.X, point.Y);
+			if (item == null) {
+				e.Cancel = true;
+				return;
+			}
+
+			item.Selected = true;
+		}
+
+		private void OnClickContextMenuCopyValue(object sender, EventArgs e) {
+			if (lvDicom.SelectedItems.Count == 0)
+				return;
+
+			var item = lvDicom.SelectedItems[0];
+			var value = item.SubItems[3].Text;
+
+			Clipboard.SetText(value);			
+		}
 	}
 }

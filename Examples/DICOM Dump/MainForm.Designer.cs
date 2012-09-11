@@ -23,16 +23,20 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemView = new System.Windows.Forms.ToolStripMenuItem();
 			this.lvDicom = new System.Windows.Forms.ListView();
 			this.columnHeaderTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeaderVR = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeaderLength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeaderValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.menuItemView = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmDicom = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
+			this.cmDicom.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -61,6 +65,14 @@
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.OnClickOpen);
 			// 
+			// menuItemView
+			// 
+			this.menuItemView.Enabled = false;
+			this.menuItemView.Name = "menuItemView";
+			this.menuItemView.Size = new System.Drawing.Size(41, 20);
+			this.menuItemView.Text = "&View";
+			this.menuItemView.Click += new System.EventHandler(this.OnClickView);
+			// 
 			// lvDicom
 			// 
 			this.lvDicom.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -68,6 +80,7 @@
             this.columnHeaderVR,
             this.columnHeaderLength,
             this.columnHeaderValue});
+			this.lvDicom.ContextMenuStrip = this.cmDicom;
 			this.lvDicom.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvDicom.FullRowSelect = true;
 			this.lvDicom.Location = new System.Drawing.Point(0, 24);
@@ -97,13 +110,20 @@
 			this.columnHeaderValue.Text = "Value";
 			this.columnHeaderValue.Width = 440;
 			// 
-			// menuItemView
+			// cmDicom
 			// 
-			this.menuItemView.Enabled = false;
-			this.menuItemView.Name = "menuItemView";
-			this.menuItemView.Size = new System.Drawing.Size(41, 20);
-			this.menuItemView.Text = "&View";
-			this.menuItemView.Click += new System.EventHandler(this.OnClickView);
+			this.cmDicom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyValueToolStripMenuItem});
+			this.cmDicom.Name = "cmDicom";
+			this.cmDicom.Size = new System.Drawing.Size(153, 48);
+			this.cmDicom.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
+			// 
+			// copyValueToolStripMenuItem
+			// 
+			this.copyValueToolStripMenuItem.Name = "copyValueToolStripMenuItem";
+			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyValueToolStripMenuItem.Text = "&Copy Value";
+			this.copyValueToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyValue);
 			// 
 			// MainForm
 			// 
@@ -117,6 +137,7 @@
 			this.Text = "DICOM Dump";
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
+			this.cmDicom.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -133,6 +154,8 @@
 		private System.Windows.Forms.ColumnHeader columnHeaderLength;
 		private System.Windows.Forms.ColumnHeader columnHeaderValue;
 		private System.Windows.Forms.ToolStripMenuItem menuItemView;
+		private System.Windows.Forms.ContextMenuStrip cmDicom;
+		private System.Windows.Forms.ToolStripMenuItem copyValueToolStripMenuItem;
 	}
 }
 
