@@ -174,8 +174,16 @@ namespace Dicom.Imaging {
 			groups.AddRange(ds.Where(x => x.Tag.Group >= 0x6000 && x.Tag.Group <= 0x60FF && x.Tag.Element == 0x0010).Select(x => x.Tag.Group));
 			var overlays = new List<DicomOverlayData>();
 			foreach (var group in groups) {
-				DicomOverlayData overlay = new DicomOverlayData(ds, group);
-				overlays.Add(overlay);
+				// ensure that 6000 group is actually an overlay group
+				if (ds.Get<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US)
+					continue;
+
+				try {
+					DicomOverlayData overlay = new DicomOverlayData(ds, group);
+					overlays.Add(overlay);
+				} catch {
+					// bail out if not an overlay group
+				}
 			}
 			return overlays.ToArray();
 		}
