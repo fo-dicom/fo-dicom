@@ -68,8 +68,10 @@
 					largeValue = smallElement.Get<short>(0);
 				}
 
-				options.WindowWidth = largeValue - smallValue;
-				options.WindowCenter = (largeValue + smallValue) / 2.0;
+				if (smallValue != 0 || largeValue != 0) {
+					options.WindowWidth = largeValue - smallValue;
+					options.WindowCenter = (largeValue + smallValue) / 2.0;
+				}
 			}
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
 			return options;
