@@ -1,3 +1,8 @@
+#### v1.0.18
+* Add Patient ID to DicomCMoveRequest constructors
+* Print Offending Element values when outputing request to log
+* Add ability to pass custom logger to DicomService based classes
+
 #### v1.0.17 (09/12/2012)
 * Check overlay group before attempting to load overlay data
 * Add ability to copy value column to clipboard in DICOM Dump
