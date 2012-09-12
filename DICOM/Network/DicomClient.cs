@@ -117,16 +117,26 @@ namespace Dicom.Network {
 			}
 
 			protected override void OnSendQueueEmpty() {
-				if (_timer == null)
+				if (_client.Linger == Timeout.Infinite) {
+					OnLingerTimeout(null);
+				} else {
 					_timer = new Timer(OnLingerTimeout);
-				if (_client.Linger == Timeout.Infinite)
-					SendAssociationReleaseRequest();
-				else
 					_timer.Change(_client.Linger, Timeout.Infinite);
+				}
 			}
 
 			private void OnLingerTimeout(object state) {
+				if (!IsSendQueueEmpty)
+					return;
+
 				SendAssociationReleaseRequest();
+
+				_timer = new Timer(OnReleaseTimeout);
+				_timer.Change(2500, Timeout.Infinite);
+			}
+
+			private void OnReleaseTimeout(object state) {
+				_client._async.Set();
 			}
 
 			public void OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) {

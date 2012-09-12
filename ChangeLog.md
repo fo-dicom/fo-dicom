@@ -1,6 +1,7 @@
 #### v1.0.17
 * Check overlay group before attempting to load overlay data
 * Add ability to copy value column to clipboard in DICOM Dump
+* Fix DicomClient linger timeout and add release timeout
 
 #### v1.0.16 (09/11/2012)
 * Fix decompression of JPEG Baseline Process 1 images

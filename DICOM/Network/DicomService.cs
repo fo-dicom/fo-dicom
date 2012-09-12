@@ -66,6 +66,13 @@ namespace Dicom.Network {
 			}
 		}
 
+		public bool IsSendQueueEmpty {
+			get {
+				lock (_lock)
+					return _pending.Count == 0;
+			}
+		}
+
 		private void BeginReadPDUHeader() {
 			try {
 				_readLength = 6;
