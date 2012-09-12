@@ -8,6 +8,8 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
+using NLog;
+
 namespace Dicom.Network {
 	public class DicomClient {
 		private EventAsyncResult _async;
@@ -34,6 +36,14 @@ namespace Dicom.Network {
 		/// Time in milliseconds to keep connection alive for additional requests.
 		/// </summary>
 		public int Linger {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Logger that is passed to the underlying DicomService implementation.
+		/// </summary>
+		public Logger Logger {
 			get;
 			set;
 		}
@@ -79,7 +89,7 @@ namespace Dicom.Network {
 			foreach (var request in _requests)
 				assoc.PresentationContexts.AddFromRequest(request);
 
-			_service = new DicomServiceUser(this, stream, assoc);
+			_service = new DicomServiceUser(this, stream, assoc, Logger);
 
 			_async = new EventAsyncResult(callback, state);
 			return _async;
@@ -106,7 +116,7 @@ namespace Dicom.Network {
 			private DicomClient _client;
 			private Timer _timer;
 
-			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association) : base(stream) {
+			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
 				_client = client;
 				SendAssociationRequest(association);
 			}

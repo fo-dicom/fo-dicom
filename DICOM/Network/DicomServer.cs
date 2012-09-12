@@ -8,6 +8,8 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
+using NLog;
+
 namespace Dicom.Network {
 	public class DicomServer<T> : IDisposable where T: DicomService, IDicomServiceProvider {
 		private X509Certificate _cert;
@@ -39,6 +41,11 @@ namespace Dicom.Network {
 			_timer = new Timer(OnTimerTick, false, 1000, 1000);
 		}
 
+		public Logger Logger {
+			get;
+			set;
+		}
+
 		private void OnAcceptTcpClient(IAsyncResult result) {
 			try {
 				var client = _listener.EndAcceptTcpClient(result);
@@ -52,7 +59,7 @@ namespace Dicom.Network {
 					stream = ssl;
 				}
 
-				T scp = (T)Activator.CreateInstance(typeof(T), stream);
+				T scp = (T)Activator.CreateInstance(typeof(T), stream, Logger);
 
 				_clients.Add(scp);
 			} catch {

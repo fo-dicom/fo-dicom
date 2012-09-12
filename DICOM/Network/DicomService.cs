@@ -29,20 +29,20 @@ namespace Dicom.Network {
 		private int _readLength;
 		private bool _isConnected;
 
-		protected DicomService(Stream stream) {
+		protected DicomService(Stream stream, Logger log = null) {
 			_network = stream;
 			_lock = new object();
 			_pduQueue = new Queue<PDU>();
 			_msgQueue = new Queue<DicomMessage>();
 			_pending = new List<DicomRequest>();
 			_isConnected = true;
-			Logger = LogManager.GetLogger("Dicom.Network");
+			Logger = log ?? LogManager.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
 		}
 
-		protected Logger Logger {
+		public Logger Logger {
 			get;
-			private set;
+			set;
 		}
 
 		private string LogID {
