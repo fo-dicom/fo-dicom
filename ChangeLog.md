@@ -1,4 +1,4 @@
-#### v1.0.17
+#### v1.0.17 (09/12/2012)
 * Check overlay group before attempting to load overlay data
 * Add ability to copy value column to clipboard in DICOM Dump
 * Fix DicomClient linger timeout and add release timeout
