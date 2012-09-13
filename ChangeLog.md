@@ -1,4 +1,7 @@
-#### v1.0.18
+#### v1.0.19 (09/13/2012)
+* Force passing of Logger to DicomService constructor (may be null)
+
+#### v1.0.18 (09/13/2012)
 * Print Offending Element values when outputing request to log
 * Add ability to pass custom logger to DicomService based classes
 
