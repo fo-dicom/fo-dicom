@@ -139,26 +139,46 @@ namespace Dicom.Network {
 				if (!IsSendQueueEmpty)
 					return;
 
-				SendAssociationReleaseRequest();
+				try {
+					SendAssociationReleaseRequest();
+				} catch {
+					// may have already disconnected
+					_client._async.Set();
+					return;
+				}
 
 				_timer = new Timer(OnReleaseTimeout);
 				_timer.Change(2500, Timeout.Infinite);
 			}
 
 			private void OnReleaseTimeout(object state) {
-				_client._async.Set();
+				try {
+					if (_client._async != null)
+						_client._async.Set();
+				} catch {
+					// event handler has already fired
+				}
 			}
 
 			public void OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				_client._exception = new DicomAssociationRejectedException(result, source, reason);
 				_client._async.Set();
 			}
 
 			public void OnReceiveAssociationReleaseResponse() {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				_client._async.Set();
 			}
 
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				_client._exception = new DicomAssociationAbortedException(source, reason);
 				_client._async.Set();
 			}
