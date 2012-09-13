@@ -1,3 +1,6 @@
+#### v1.0.20 (09/13/2012)
+* Fix exception in DicomClient when releasing association
+
 #### v1.0.19 (09/13/2012)
 * Force passing of Logger to DicomService constructor (may be null)
 
