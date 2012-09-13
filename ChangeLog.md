@@ -1,5 +1,4 @@
 #### v1.0.18
-* Add Patient ID to DicomCMoveRequest constructors
 * Print Offending Element values when outputing request to log
 * Add ability to pass custom logger to DicomService based classes
 
