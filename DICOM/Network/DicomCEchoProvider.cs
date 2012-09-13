@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 
+using NLog;
+
 namespace Dicom.Network {
 	public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {
-		public DicomCEchoProvider(Stream stream) : base(stream) {
+		public DicomCEchoProvider(Stream stream, Logger log) : base(stream, log) {
 		}
 
 		public void OnReceiveAssociationRequest(DicomAssociation association) {

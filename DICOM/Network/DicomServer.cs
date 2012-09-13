@@ -62,7 +62,10 @@ namespace Dicom.Network {
 				T scp = (T)Activator.CreateInstance(typeof(T), stream, Logger);
 
 				_clients.Add(scp);
-			} catch {
+			} catch (Exception e) {
+				if (Logger == null)
+					Logger = LogManager.GetLogger("Dicom.Network");
+				Logger.Error("Exception accepting client: " + e.ToString());
 			} finally {
 				if (_listener != null)
 					_listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);

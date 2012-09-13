@@ -29,7 +29,7 @@ namespace Dicom.Network {
 		private int _readLength;
 		private bool _isConnected;
 
-		protected DicomService(Stream stream, Logger log = null) {
+		protected DicomService(Stream stream, Logger log) {
 			_network = stream;
 			_lock = new object();
 			_pduQueue = new Queue<PDU>();
