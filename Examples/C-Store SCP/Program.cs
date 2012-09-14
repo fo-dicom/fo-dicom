@@ -67,7 +67,7 @@ namespace Dicom.CStoreSCP {
 				DicomTransferSyntax.ImplicitVRLittleEndian
 			};
 
-			public CStoreSCP(Stream stream) : base(stream, null) {
+			public CStoreSCP(Stream stream, Logger log) : base(stream, log) {
 			}
 
 			public void OnReceiveAssociationRequest(DicomAssociation association) {

@@ -1,5 +1,6 @@
 #### v1.0.21
 * Add connection close event and socket error handlers to DicomService
+* Fix C-Store SCP example's constructor not passing logger
 
 #### v1.0.20 (09/13/2012)
 * Fix exception in DicomClient when releasing association
