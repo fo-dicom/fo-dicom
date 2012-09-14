@@ -113,6 +113,10 @@ namespace Dicom.CStoreSCP {
 				return new DicomCStoreResponse(request, DicomStatus.Success);
 			}
 
+			public void OnCStoreRequestException(string tempFileName, Exception e) {
+				// let library handle logging and error response
+			}
+
 			public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request) {
 				return new DicomCEchoResponse(request, DicomStatus.Success);
 			}

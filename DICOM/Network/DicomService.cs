@@ -357,7 +357,17 @@ namespace Dicom.Network {
 								_dimseStream = null;
 
 								var request = _dimse as DicomCStoreRequest;
-								request.File = DicomFile.Open(fileName);
+
+								try {
+									request.File = DicomFile.Open(fileName);
+								} catch (Exception e) {
+									// failed to parse received DICOM file; send error response instead of aborting connection
+									SendResponse(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
+									Logger.Error("Error parsing C-Store dataset: " + e.ToString());
+									(this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
+									return;
+								}
+
 								request.File.File.IsTempFile = true;
 								request.Dataset = request.File.Dataset;
 							}
@@ -369,7 +379,7 @@ namespace Dicom.Network {
 				}
 			} catch (Exception e) {
 				SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
-				Logger.Log(LogLevel.Error, e.ToString());
+				Logger.Error(e.ToString());
 			} finally {
 				SendNextMessage();
 			}
