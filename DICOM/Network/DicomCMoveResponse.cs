@@ -45,6 +45,14 @@ namespace Dicom.Network {
 			if (Status.State != DicomState.Pending && Status.State != DicomState.Success) {
 				if (!String.IsNullOrEmpty(Status.ErrorComment))
 					sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+				if (Command.Contains(DicomTag.OffendingElement)) {
+					string[] tags = Command.Get<string[]>(DicomTag.OffendingElement);
+					if (tags.Length > 0) {
+						sb.Append("\n\t\tTags:		");
+						foreach (var tag in tags)
+							sb.AppendFormat(" {0}", tag);
+					}
+				}
 			}
 			return sb.ToString();
 		}
