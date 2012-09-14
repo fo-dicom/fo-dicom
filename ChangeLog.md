@@ -1,6 +1,7 @@
 #### v1.0.22
 * Add Offending Element tags to C-Move response output
 * Add exception handling for C-Store requests with unparsable datasets
+* Handle ObjectDisposedExceptions in network operations
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService
