@@ -182,6 +182,21 @@ namespace Dicom.Network {
 				_client._exception = new DicomAssociationAbortedException(source, reason);
 				_client._async.Set();
 			}
+
+			public void OnConnectionClosed(int errorCode) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
+				if (errorCode != 0)
+					_client._exception = new SocketException(errorCode);
+
+				try {
+					if (_client._async != null)
+						_client._async.Set();
+				} catch {
+					// event handler has already fired
+				}
+			}
 		}
 	}
 }

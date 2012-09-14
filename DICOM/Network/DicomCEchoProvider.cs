@@ -25,6 +25,9 @@ namespace Dicom.Network {
 		public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 		}
 
+		public void OnConnectionClosed(int errorCode) {
+		}
+
 		public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request) {
 			return new DicomCEchoResponse(request, DicomStatus.Success);
 		}

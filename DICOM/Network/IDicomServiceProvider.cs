@@ -8,5 +8,6 @@ namespace Dicom.Network {
 		void OnReceiveAssociationRequest(DicomAssociation association);
 		void OnReceiveAssociationReleaseRequest();
 		void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason);
+		void OnConnectionClosed(int errorCode);
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
@@ -73,16 +74,34 @@ namespace Dicom.Network {
 			}
 		}
 
+		private void CloseConnection(int errorCode) {
+			_isConnected = false;
+			try { _network.Close(); } catch { }
+
+			if (this is IDicomServiceProvider)
+				(this as IDicomServiceProvider).OnConnectionClosed(errorCode);
+			else if (this is IDicomServiceUser)
+				(this as IDicomServiceUser).OnConnectionClosed(errorCode);
+		}
+
 		private void BeginReadPDUHeader() {
 			try {
 				_readLength = 6;
 
 				byte[] buffer = new byte[6];
 				_network.BeginRead(buffer, 0, 6, EndReadPDUHeader, buffer);
+			} catch (IOException e) {
+				int error = 0;
+				if (e.InnerException is SocketException) {
+					error = (e.InnerException as SocketException).ErrorCode;
+					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+				} else
+					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+
+				CloseConnection(error);
 			} catch (ObjectDisposedException) {
 				// silently ignore
-				_network.Close();
-				_isConnected = false;
+				CloseConnection(0);
 			}
 		}
 
@@ -93,8 +112,7 @@ namespace Dicom.Network {
 				int count = _network.EndRead(result);
 				if (count == 0) {
 					// disconnected
-					_network.Close();
-					_isConnected = false;
+					CloseConnection(0);
 					return;
 				}
 
@@ -115,12 +133,16 @@ namespace Dicom.Network {
 				_network.BeginRead(buffer, 6, length, EndReadPDU, buffer);
 			} catch (ObjectDisposedException) {
 				// silently ignore
-				_network.Close();
-				_isConnected = false;
-			} catch (IOException) {
-				// object disposed
-				_network.Close();
-				_isConnected = false;
+				CloseConnection(0);
+			} catch (IOException e) {
+				int error = 0;
+				if (e.InnerException is SocketException) {
+					error = (e.InnerException as SocketException).ErrorCode;
+					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+				} else
+					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+
+				CloseConnection(error);
 			} catch (Exception e) {
 				Logger.Log(LogLevel.Error, "Exception processing PDU header: {0}", e.ToString());
 			}
@@ -133,8 +155,7 @@ namespace Dicom.Network {
 				int count = _network.EndRead(result);
 				if (count == 0) {
 					// disconnected
-					_network.Close();
-					_isConnected = false;
+					CloseConnection(0);
 					return;
 				}
 
@@ -195,8 +216,7 @@ namespace Dicom.Network {
 						Logger.Log(LogLevel.Info, "{0} <- Association release response", LogID);
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationReleaseResponse();
-						_network.Close();
-						_isConnected = false;
+						CloseConnection(0);
 						break;
 					}
 				case 0x07: {
@@ -207,8 +227,7 @@ namespace Dicom.Network {
 							(this as IDicomServiceProvider).OnReceiveAbort(pdu.Source, pdu.Reason);
 						else if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAbort(pdu.Source, pdu.Reason);
-						_network.Close();
-						_isConnected = false;
+						CloseConnection(0);
 						break;
 					}
 				case 0xFF: {
@@ -219,10 +238,18 @@ namespace Dicom.Network {
 				}
 
 				BeginReadPDUHeader();
+			} catch (IOException e) {
+				int error = 0;
+				if (e.InnerException is SocketException) {
+					error = (e.InnerException as SocketException).ErrorCode;
+					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+				} else
+					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+
+				CloseConnection(error);
 			} catch (Exception e) {
 				Logger.Log(LogLevel.Error, "Exception processing PDU: {0}", e.ToString());
-				_network.Close();
-				_isConnected = false;
+				CloseConnection(0);
 			}
 		}
 
@@ -419,6 +446,9 @@ namespace Dicom.Network {
 		}
 
 		private void SendNextPDU() {
+			if (!_isConnected)
+				return;
+
 			PDU pdu;
 
 			lock (_lock) {
@@ -438,7 +468,18 @@ namespace Dicom.Network {
 
 			byte[] buffer = ms.ToArray();
 
-			_network.BeginWrite(buffer, 0, (int)ms.Length, OnEndSendPDU, buffer);
+			try {
+				_network.BeginWrite(buffer, 0, (int)ms.Length, OnEndSendPDU, buffer);
+			} catch (IOException e) {
+				int error = 0;
+				if (e.InnerException is SocketException) {
+					error = (e.InnerException as SocketException).ErrorCode;
+					Logger.Error("Socket error while writing PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+				} else
+					Logger.Error("IO exception while writing PDU: {0}", e.ToString());
+
+				CloseConnection(error);
+			}
 		}
 
 		private void OnEndSendPDU(IAsyncResult ar) {
@@ -446,6 +487,15 @@ namespace Dicom.Network {
 
 			try {
 				_network.EndWrite(ar);
+			} catch (IOException e) {
+				int error = 0;
+				if (e.InnerException is SocketException) {
+					error = (e.InnerException as SocketException).ErrorCode;
+					Logger.Error("Socket error while writing PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+				} else
+					Logger.Error("IO exception while writing PDU: {0}", e.ToString());
+
+				CloseConnection(error);
 			} catch {
 			} finally {
 				lock (_lock)
