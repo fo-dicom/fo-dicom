@@ -92,18 +92,39 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public DicomDataset Transcode(DicomDataset dataset) {
+			if (!InputSyntax.IsEncapsulated && !OutputSyntax.IsEncapsulated) {
+				// transcode from uncompressed to uncompressed
+				var newDataset = dataset.Clone();
+				newDataset.InternalTransferSyntax = OutputSyntax;
+
+				var oldPixelData = DicomPixelData.Create(dataset, false);
+				var newPixelData = DicomPixelData.Create(newDataset, true);
+
+				for (int i = 0; i < oldPixelData.NumberOfFrames; i++) {
+					var frame = oldPixelData.GetFrame(i);
+					newPixelData.AddFrame(frame);
+				}
+
+				return newDataset;
+			}
+
 			if (InputSyntax.IsEncapsulated && OutputSyntax.IsEncapsulated) {
-				DicomDataset temp = Decode(dataset, DicomTransferSyntax.ExplicitVRLittleEndian, InputCodec, InputCodecParams);
+				// transcode from compressed to compressed
+				var temp = Decode(dataset, DicomTransferSyntax.ExplicitVRLittleEndian, InputCodec, InputCodecParams);
 				return Encode(temp, OutputSyntax, OutputCodec, OutputCodecParams);
 			}
 
-			if (InputSyntax.IsEncapsulated)
+			if (InputSyntax.IsEncapsulated) {
+				// transcode from compressed to uncompressed
 				return Decode(dataset, OutputSyntax, InputCodec, InputCodecParams);
+			}
 
-			if (OutputSyntax.IsEncapsulated)
+			if (OutputSyntax.IsEncapsulated) {
+				// transcode from uncompressed to compressed
 				return Encode(dataset, OutputSyntax, OutputCodec, OutputCodecParams);
+			}
 
-			return dataset.Clone();
+			throw new DicomCodecException("Unable to find transcoding solution for {0} to {1}", InputSyntax.UID.Name, OutputSyntax.UID.Name);
 		}
 
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {
@@ -144,5 +165,7 @@ namespace Dicom.Imaging.Codec {
 
 			return newDataset;
 		}
+
+
 	}
 }
