@@ -124,6 +124,7 @@ namespace Dicom.Network {
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
 				foreach (var request in _client._requests)
 					SendRequest(request);
+				_client._requests.Clear();
 			}
 
 			protected override void OnSendQueueEmpty() {
