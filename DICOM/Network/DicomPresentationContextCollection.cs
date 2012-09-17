@@ -43,7 +43,7 @@ namespace Dicom.Network {
 					if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
 						Add(cstore.AffectedSOPClassUID, cstore.TransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
 					else
-						Add(cstore.AffectedSOPClassUID, cstore.TransferSyntax);
+						Add(cstore.AffectedSOPClassUID, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
 				}
 			} else {
 				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.AffectedSOPClassUID);
