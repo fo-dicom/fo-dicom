@@ -55,19 +55,19 @@ namespace Dicom {
 			private set;
 		}
 
-		/// <summary>Maximum length of single value.</summary>
+		/// <summary>Maximum length of a single value.</summary>
 		public uint MaximumLength {
 			get;
 			private set;
 		}
 
-		/// <summary>Size of each individual value unit.</summary>
+		/// <summary>Size of each individual value unit for fixed length value types.</summary>
 		public int UnitSize {
 			get;
 			private set;
 		}
 
-		/// <summary>Number of bytes to swap when changing endian representation of value.</summary>
+		/// <summary>Number of bytes to swap when changing endian representation of value. Usually equal to the <see cref="UnitSize"/>.</summary>
 		public int ByteSwap {
 			get;
 			private set;
@@ -89,9 +89,9 @@ namespace Dicom {
 		}
 
 		/// <summary>
-		/// 
+		/// Gets a string representation of this VR.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>VR code</returns>
 		public override string ToString() {
 			return Code;
 		}
