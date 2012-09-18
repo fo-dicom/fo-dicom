@@ -456,6 +456,10 @@ namespace Dicom {
 		#region Public Members
 		private decimal[] _values;
 		public override T Get<T>(int item = -1) {
+			// no need to parse values if returning string(s)
+			if (typeof(T) == typeof(string) || typeof(T) == typeof(string[]))
+				return base.Get<T>(item);
+
 			if (_values == null) {
 				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any)).ToArray();
 			}
@@ -579,6 +583,10 @@ namespace Dicom {
 		#region Public Members
 		private int[] _values;
 		public override T Get<T>(int item = -1) {
+			// no need to parse values if returning string(s)
+			if (typeof(T) == typeof(string) || typeof(T) == typeof(string[]))
+				return base.Get<T>(item);
+
 			if (_values == null) {
 				_values = base.Get<string[]>().Select(x => int.Parse(x)).ToArray();
 			}
