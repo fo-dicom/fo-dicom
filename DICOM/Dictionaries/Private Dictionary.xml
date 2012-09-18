@@ -121,6 +121,41 @@
 <tag group="0019" element="xx82" vr="UN" vm="1">Unknown</tag>
 <tag group="0019" element="xx93" vr="UN" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="AMICAS0">
+<tag group="0023" element="xx01" vr="UI" vm="1">Original SOP Instance UID</tag>
+<tag group="0023" element="xx02" vr="OB" vm="1">Compressed Pixel Data</tag>
+<tag group="0023" element="xx08" vr="US" vm="1">Minimum Pixel Value</tag>
+<tag group="0023" element="xx10" vr="US" vm="1">Maximum Pixel Value</tag>
+<tag group="0023" element="xx16" vr="SL" vm="1">Intercept</tag>
+<tag group="0023" element="xx17" vr="UL" vm="1">Compressed Image Length</tag>
+<tag group="0023" element="xx18" vr="US" vm="1">Compressed Image Flag</tag>
+<tag group="0023" element="xx19" vr="US" vm="1">Reconstituted Image Flag</tag>
+<tag group="0023" element="xx20" vr="LO" vm="1">Compressed Mimetype</tag>
+<tag group="0023" element="xx21" vr="US" vm="1">Telemed Image Flag</tag>
+<tag group="0023" element="xx22" vr="UL" vm="1">Original Station ID</tag>
+<tag group="0023" element="xx30" vr="LO" vm="1">Validation Element Signature</tag>
+<tag group="0023" element="xx31" vr="LO" vm="1">Validation Element Reason</tag>
+<tag group="0023" element="xx32" vr="DA" vm="1">Validation Element Date</tag>
+<tag group="0023" element="xx33" vr="LO" vm="1">Validation Element State</tag>
+<tag group="0023" element="xx34" vr="UI" vm="1">Validation Element Old Amicas Image UID</tag>
+<tag group="0023" element="xx35" vr="UI" vm="1">Old Study Instance UID</tag>
+<tag group="0023" element="xx36" vr="UI" vm="1">Old Series Instance UID</tag>
+<tag group="0023" element="xx37" vr="UI" vm="1">Old SOP Instance UID</tag>
+<tag group="0023" element="xx40" vr="US" vm="1">Archive Restored Flag</tag>
+<tag group="0023" element="xx42" vr="US" vm="1">Migrated Image Flag</tag>
+<tag group="0023" element="xx43" vr="US" vm="1">Lossless Compression Flag</tag>
+<tag group="0023" element="xx44" vr="UT" vm="1">Spine Label Set</tag>
+<tag group="0023" element="xx45" vr="US" vm="1">Demo File Version</tag>
+<tag group="0023" element="xx46" vr="CS" vm="1">Sharpen Type</tag>
+<tag group="0023" element="xx47" vr="US" vm="1">Kernel Rows</tag>
+<tag group="0023" element="xx48" vr="US" vm="1">Kernel Columns</tag>
+<tag group="0023" element="xx49" vr="FL" vm="1">Kernel Data</tag>
+<tag group="0023" element="xx4a" vr="US" vm="1">Mammography Edges</tag>
+<tag group="0023" element="xx50" vr="UT" vm="1">3D Key Image Info</tag>
+<tag group="0023" element="xx51" vr="UT" vm="1">Viewer Layout Information</tag>
+<tag group="0023" element="xx52" vr="UT" vm="1">MPR Series Creation Info</tag>
+<tag group="0023" element="xx53" vr="UT" vm="1">Study Presentation Step Info</tag>
+</dictionary>
 <dictionary creator="Applicare/RadWorks/Version 5.0">
 <tag group="3109" element="xx02" vr="SH" vm="1">Unknown</tag>
 <tag group="3109" element="xx08" vr="LO" vm="1">Unknown</tag>
