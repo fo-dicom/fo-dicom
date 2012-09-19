@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.IO;
 using Dicom.IO;
 
 using Dicom.IO.Reader;
@@ -92,7 +92,24 @@ namespace Dicom {
 			return df;
 		}
 
-		public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
+        public static DicomFile Open(Stream stream)
+        {
+            var df = new DicomFile();
+            var source = new StreamByteSource(stream);
+
+            var reader = new DicomFileReader();
+            reader.Read(source,
+                new DicomDatasetReaderObserver(df.FileMetaInfo),
+                new DicomDatasetReaderObserver(df.Dataset));
+
+            df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
+            df.File = null;
+
+            return df;
+        }
+
+        public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
+        {
 			DicomFile df = new DicomFile();
 			df.File = new FileReference(fileName);
 			FileByteSource source = new FileByteSource(df.File);

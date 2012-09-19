@@ -203,6 +203,9 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object)) {
+                if (item == -1)
+                    return (T)((object) _values[0]);
+
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -465,7 +468,7 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
-				return (T)(object)_values[item];
+                return (T)(object)_values[Math.Max(item, 0)];
 			}
 
 			if (typeof(T) == typeof(decimal[]) || typeof(T) == typeof(object[])) {
@@ -473,7 +476,7 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(double))
-				return (T)(object)Convert.ToDouble(_values[item]);
+                return (T)(object)Convert.ToDouble(_values[Math.Max(item, 0)]);
 
 			if (typeof(T) == typeof(double[]))
 				return (T)(object)_values.Select(x => Convert.ToDouble(x)).ToArray();
@@ -592,7 +595,7 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(object)) {
-				return (T)(object)_values[item];
+                return (T)(object)_values[Math.Max(item, 0)];
 			}
 
 			if (typeof(T) == typeof(int[]) || typeof(T) == typeof(object[])) {
@@ -781,7 +784,19 @@ namespace Dicom {
 			get;
 			set;
 		}
-		#endregion
+
+        public string Prefix
+        {
+            get;
+            set;
+        }
+
+        public string Suffix
+        {
+            get;
+            set;
+        }
+        #endregion
 	}
 
 	/// <summary>Short String (SH)</summary>
