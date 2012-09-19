@@ -5,6 +5,9 @@
 * Fix transcoding between uncompressed transfer syntaxes
 * Don't parse values for IS and DS elements if returning string types
 * Add AMICAS private tags (AMICAS0) to private dictionary
+* Add support for 32-bit pixel data (Anders Gustafsson, Cureos AB)
+* Better handling of default item in Get<> method (Anders Gustafsson, Cureos AB)
+* Support opening DicomFile from Stream (Anders Gustafsson, Cureos AB)
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService
