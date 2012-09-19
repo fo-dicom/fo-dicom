@@ -6,7 +6,7 @@ namespace Dicom.Imaging.Render {
 	public class GenericGrayscalePipeline : IPipeline {
 		#region Private Members
 		private CompositeLUT _lut;
-		private RescaleLUT _rescaleLut;
+		private ModalityLUT _rescaleLut;
 		private VOILinearLUT _voiLut;
 		private OutputLUT _outputLut;
 		private InvertLUT _invertLut;
@@ -15,7 +15,7 @@ namespace Dicom.Imaging.Render {
 		#region Public Constructor
 		public GenericGrayscalePipeline(GrayscaleRenderOptions options) {
 			if (options.RescaleSlope != 1.0 || options.RescaleIntercept != 0.0)
-				_rescaleLut = new RescaleLUT(options.BitDepth.MinimumValue, options.BitDepth.MaximumValue, 
+				_rescaleLut = new ModalityLUT(options.BitDepth.MinimumValue, options.BitDepth.MaximumValue, 
 											 options.RescaleSlope, options.RescaleIntercept);
 			_voiLut = new VOILinearLUT(options.WindowCenter, options.WindowWidth);
 			_outputLut = new OutputLUT(options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);

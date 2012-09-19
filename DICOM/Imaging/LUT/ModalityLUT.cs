@@ -1,7 +1,7 @@
 using System;
 
 namespace Dicom.Imaging.LUT {
-	public class RescaleLUT : ILUT {
+	public class ModalityLUT : ILUT {
 		#region Private Members
 		private double _rescaleSlope;
 		private double _rescaleIntercept;
@@ -11,7 +11,7 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructors
-		public RescaleLUT(int minValue, int maxValue, double slope, double intercept) {
+		public ModalityLUT(int minValue, int maxValue, double slope, double intercept) {
 			_rescaleSlope = slope;
 			_rescaleIntercept = intercept;
 			_minValue = this[minValue];

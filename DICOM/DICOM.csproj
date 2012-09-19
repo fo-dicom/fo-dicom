@@ -115,7 +115,7 @@
     <Compile Include="Imaging\LUT\OutputLUT.cs" />
     <Compile Include="Imaging\LUT\PaddingLUT.cs" />
     <Compile Include="Imaging\LUT\PrecalculatedLUT.cs" />
-    <Compile Include="Imaging\LUT\RescaleLUT.cs" />
+    <Compile Include="Imaging\LUT\ModalityLUT.cs" />
     <Compile Include="Imaging\LUT\VOILinearLUT.cs" />
     <Compile Include="Imaging\PhotometricInterpretation.cs" />
     <Compile Include="Imaging\Render\CompositeGraphic.cs" />
@@ -227,7 +227,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
