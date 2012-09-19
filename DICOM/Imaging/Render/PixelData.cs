@@ -29,6 +29,11 @@ namespace Dicom.Imaging.Render {
 						return new GrayscalePixelDataS16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 					else
 						return new GrayscalePixelDataU16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
+				} else if (pixelData.BitsStored <= 32) {
+                    if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
+						return new GrayscalePixelDataS32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
+                    else
+						return new GrayscalePixelDataU32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 				} else
 					throw new DicomImagingException("Unsupported pixel data value for bits stored: {0}", pixelData.BitsStored);
 			} else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull) {
@@ -289,7 +294,197 @@ namespace Dicom.Imaging.Render {
 		#endregion
 	}
 
-	public class ColorPixelData24 : IPixelData {
+
+    public class GrayscalePixelDataS32 : IPixelData
+    {
+        #region Private Members
+        int _width;
+        int _height;
+        int[] _data;
+        #endregion
+
+        #region Public Constructor
+        public GrayscalePixelDataS32(int width, int height, BitDepth bitDepth, IByteBuffer data)
+        {
+            _width = width;
+            _height = height;
+            _data = ByteBufferEnumerator<int>.Create(data).ToArray();
+
+            int sign = 1 << bitDepth.HighBit;
+            int mask = sign - 1;
+
+            Parallel.For(0, _data.Length, (int i) =>
+            {
+                int d = _data[i];
+                if ((d & sign) != 0)
+                    _data[i] = -(d & mask);
+                else
+                    _data[i] = (d & mask);
+            });
+        }
+
+        private GrayscalePixelDataS32(int width, int height, int[] data)
+        {
+            _width = width;
+            _height = height;
+            _data = data;
+        }
+        #endregion
+
+        #region Public Properties
+        public int Width
+        {
+            get { return _width; }
+        }
+
+        public int Height
+        {
+            get { return _height; }
+        }
+
+        public int Components
+        {
+            get { return 1; }
+        }
+
+        public int[] Data
+        {
+            get { return _data; }
+        }
+        #endregion
+
+        #region Public Methods
+        public IPixelData Rescale(double scale)
+        {
+            if (scale == 1.0)
+                return this;
+            int w = (int)(Width * scale);
+            int h = (int)(Height * scale);
+            int[] data = BilinearInterpolation.RescaleGrayscale(_data, Width, Height, w, h);
+            return new GrayscalePixelDataS32(w, h, data);
+        }
+
+        public void Render(ILUT lut, int[] output)
+        {
+            if (lut == null)
+            {
+                Parallel.For(0, Height, y =>
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = _data[i];
+                    }
+                });
+            }
+            else
+            {
+                Parallel.For(0, Height, y =>
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[_data[i]];
+                    }
+                });
+            }
+        }
+        #endregion
+    }
+
+    public class GrayscalePixelDataU32 : IPixelData
+    {
+        #region Private Members
+        int _width;
+        int _height;
+        uint[] _data;
+        #endregion
+
+        #region Public Constructor
+        public GrayscalePixelDataU32(int width, int height, BitDepth bitDepth, IByteBuffer data)
+        {
+            _width = width;
+            _height = height;
+            _data = ByteBufferEnumerator<uint>.Create(data).ToArray();
+
+            if (bitDepth.BitsStored != 32)
+            {
+                int mask = (1 << (bitDepth.HighBit + 1)) - 1;
+
+                Parallel.For(0, _data.Length, (int i) =>
+                {
+                    _data[i] = (uint)(_data[i] & mask);
+                });
+            }
+        }
+
+        private GrayscalePixelDataU32(int width, int height, uint[] data)
+        {
+            _width = width;
+            _height = height;
+            _data = data;
+        }
+        #endregion
+
+        #region Public Properties
+        public int Width
+        {
+            get { return _width; }
+        }
+
+        public int Height
+        {
+            get { return _height; }
+        }
+
+        public int Components
+        {
+            get { return 1; }
+        }
+
+        public uint[] Data
+        {
+            get { return _data; }
+        }
+        #endregion
+
+        #region Public Methods
+        public IPixelData Rescale(double scale)
+        {
+            if (scale == 1.0)
+                return this;
+            int w = (int)(Width * scale);
+            int h = (int)(Height * scale);
+            uint[] data = BilinearInterpolation.RescaleGrayscale(_data, Width, Height, w, h);
+            return new GrayscalePixelDataU32(w, h, data);
+        }
+
+        public void Render(ILUT lut, int[] output)
+        {
+            if (lut == null)
+            {
+                Parallel.For(0, Height, y =>
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = (int)_data[i];
+                    }
+                });
+            }
+            else
+            {
+                Parallel.For(0, Height, y =>
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[(int)_data[i]];
+                    }
+                });
+            }
+        }
+        #endregion
+    }
+
+    public class ColorPixelData24 : IPixelData
+    {
 		#region Private Members
 		int _width;
 		int _height;
