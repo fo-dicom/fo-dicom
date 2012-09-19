@@ -7,7 +7,7 @@ namespace Dicom.Imaging.Render {
 		#region Private Members
 		private CompositeLUT _lut;
 		private ModalityLUT _rescaleLut;
-		private VOILinearLUT _voiLut;
+		private VOILUT _voiLut;
 		private OutputLUT _outputLut;
 		private InvertLUT _invertLut;
 		#endregion
@@ -17,7 +17,7 @@ namespace Dicom.Imaging.Render {
 			if (options.RescaleSlope != 1.0 || options.RescaleIntercept != 0.0)
 				_rescaleLut = new ModalityLUT(options.BitDepth.MinimumValue, options.BitDepth.MaximumValue, 
 											 options.RescaleSlope, options.RescaleIntercept);
-			_voiLut = new VOILinearLUT(options.WindowCenter, options.WindowWidth);
+			_voiLut = VOILUT.Create(options.VOILUTFunction, options.WindowCenter, options.WindowWidth);
 			_outputLut = new OutputLUT(options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);
 			if (options.Invert)
 				_invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);

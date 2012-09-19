@@ -4,6 +4,7 @@
 			BitDepth = bits;
 			RescaleSlope = 1.0;
 			RescaleIntercept = 0.0;
+			VOILUTFunction = "LINEAR";
 			WindowWidth = bits.MaximumValue - bits.MinimumValue;
 			WindowCenter = (bits.MaximumValue + bits.MinimumValue) / 2.0;
 			Monochrome1 = false;
@@ -21,6 +22,11 @@
 		}
 
 		public double RescaleIntercept {
+			get;
+			set;
+		}
+
+		public string VOILUTFunction {
 			get;
 			set;
 		}
@@ -73,6 +79,7 @@
 					options.WindowCenter = (largeValue + smallValue) / 2.0;
 				}
 			}
+			options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
 			return options;
 		}
