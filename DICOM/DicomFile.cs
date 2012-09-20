@@ -50,10 +50,10 @@ namespace Dicom {
 
 			FileByteTarget target = new FileByteTarget(File);
 
-			EventAsyncResult async = new EventAsyncResult(callback, state);
+			EventAsyncResult result = new EventAsyncResult(callback, state);
 
 			DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-			writer.BeginWrite(target, FileMetaInfo, Dataset, OnWriteComplete, new Tuple<DicomFileWriter, EventAsyncResult>(writer, async));
+			writer.BeginWrite(target, FileMetaInfo, Dataset, OnWriteComplete, new Tuple<DicomFileWriter, EventAsyncResult>(writer, result));
 		}
 		private static void OnWriteComplete(IAsyncResult result) {
 			var state = result.AsyncState as Tuple<DicomFileWriter, EventAsyncResult>;
@@ -68,12 +68,12 @@ namespace Dicom {
 		}
 
 		public void EndSave(IAsyncResult result) {
-			EventAsyncResult async = result as EventAsyncResult;
+			EventAsyncResult eventResult = result as EventAsyncResult;
 
 			result.AsyncWaitHandle.WaitOne();
 
-			if (async.InternalState != null)
-				throw async.InternalState as Exception;
+			if (eventResult.InternalState != null)
+				throw eventResult.InternalState as Exception;
 		}
 
 		public static DicomFile Open(string fileName) {
@@ -114,15 +114,15 @@ namespace Dicom {
 			df.File = new FileReference(fileName);
 			FileByteSource source = new FileByteSource(df.File);
 
-			EventAsyncResult async = new EventAsyncResult(callback, state);
+			EventAsyncResult result = new EventAsyncResult(callback, state);
 
 			DicomFileReader reader = new DicomFileReader();
 			reader.BeginRead(source,
 				new DicomDatasetReaderObserver(df.FileMetaInfo),
 				new DicomDatasetReaderObserver(df.Dataset),
-				OnReadComplete, new Tuple<DicomFileReader, DicomFile, EventAsyncResult>(reader, df, async));
+				OnReadComplete, new Tuple<DicomFileReader, DicomFile, EventAsyncResult>(reader, df, result));
 
-			return async;
+			return result;
 		}
 		private static void OnReadComplete(IAsyncResult result) {
 			var state = result.AsyncState as Tuple<DicomFileReader, DicomFile, EventAsyncResult>;
@@ -142,8 +142,8 @@ namespace Dicom {
 		public static DicomFile EndOpen(IAsyncResult result) {
 			result.AsyncWaitHandle.WaitOne();
 
-			EventAsyncResult async = result as EventAsyncResult;
-			var state = async.InternalState as Tuple<DicomFile, Exception>;
+			EventAsyncResult eventResult = result as EventAsyncResult;
+			var state = eventResult.InternalState as Tuple<DicomFile, Exception>;
 
 			if (state.Item2 != null)
 				throw state.Item2;
