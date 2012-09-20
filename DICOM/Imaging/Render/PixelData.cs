@@ -22,14 +22,14 @@ namespace Dicom.Imaging.Render {
 		public static IPixelData Create(DicomPixelData pixelData, int frame) {
 			PhotometricInterpretation pi = pixelData.PhotometricInterpretation;
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
-				if (pixelData.BitsStored <= 8)
+				if (pixelData.BitsAllocated <= 8)
 					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
-				else if (pixelData.BitsStored <= 16) {
+				else if (pixelData.BitsAllocated <= 16) {
 					if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
 						return new GrayscalePixelDataS16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 					else
 						return new GrayscalePixelDataU16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
-				} else if (pixelData.BitsStored <= 32) {
+				} else if (pixelData.BitsAllocated <= 32) {
                     if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
 						return new GrayscalePixelDataS32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
                     else

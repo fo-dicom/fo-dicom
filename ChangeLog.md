@@ -11,6 +11,7 @@
 * Add support SIGMOID VOI LUT function
 * Better handling of size and position of image display window in DICOM Dump
 * Fix calculation of W/L from smallest/largest pixel value elements
+* Fix viewing of images with bits allocated == 16 and bits stored == 8
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService
