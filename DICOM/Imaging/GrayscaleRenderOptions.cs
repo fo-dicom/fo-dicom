@@ -68,10 +68,10 @@
 
 				if (smallElement.ValueRepresentation == DicomVR.US) {
 					smallValue = smallElement.Get<ushort>(0);
-					largeValue = smallElement.Get<ushort>(0);
+					largeValue = largeElement.Get<ushort>(0);
 				} else {
 					smallValue = smallElement.Get<short>(0);
-					largeValue = smallElement.Get<short>(0);
+					largeValue = largeElement.Get<short>(0);
 				}
 
 				if (smallValue != 0 || largeValue != 0) {
