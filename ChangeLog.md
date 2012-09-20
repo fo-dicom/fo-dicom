@@ -9,6 +9,7 @@
 * Better handling of default item in Get<> method (Anders Gustafsson, Cureos AB)
 * Support opening DicomFile from Stream (Anders Gustafsson, Cureos AB)
 * Add support SIGMOID VOI LUT function
+* Better handling of size and position of image display window in DICOM Dump
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService
