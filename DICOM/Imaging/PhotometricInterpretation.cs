@@ -67,6 +67,7 @@ namespace Dicom.Imaging {
 		public static PhotometricInterpretation Parse(string photometricInterpretation) {
 			switch (photometricInterpretation.Trim(' ', '\0')) {
 				case "MONOCHROME1": return Monochrome1;
+				case "MONOCHROME":
 				case "MONOCHROME2": return Monochrome2;
 				case "PALETTE COLOR": return PaletteColor;
 				case "RGB": return Rgb;
