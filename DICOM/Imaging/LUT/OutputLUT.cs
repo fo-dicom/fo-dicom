@@ -4,7 +4,6 @@ using System.IO;
 namespace Dicom.Imaging.LUT {
 	public class OutputLUT : ILUT {
 		#region Private Members
-		private int[] _table;
 		private Color32[] _lut;
 		#endregion
 
@@ -21,7 +20,6 @@ namespace Dicom.Imaging.LUT {
 				if (value == null || value.Length != 256)
 					throw new DicomImagingException("Expected 256 entry color map");
 				_lut = value;
-				_table = null;
 			}
 		}
 
@@ -34,7 +32,7 @@ namespace Dicom.Imaging.LUT {
 		}
 
 		public bool IsValid {
-			get { return _table != null; }
+			get { return _lut != null; }
 		}
 
 		public int this[int value] {
@@ -43,19 +41,13 @@ namespace Dicom.Imaging.LUT {
 				//    return _table[0];
 				//if (value > 255)
 				//    return _table[255];
-				return _table[value];
+				return _lut[value].Value;
 			}
 		}
 		#endregion
 
 		#region Public Methods
 		public void Recalculate() {
-			if (_table == null) {
-				_table = new int[256];
-				for (int i = 0; i < 256; i++) {
-					_table[i] = _lut[i].Value;
-				}
-			}
 		}
 		#endregion
 	}
