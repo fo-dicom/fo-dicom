@@ -14,6 +14,7 @@ namespace Dicom.Imaging.Render {
 		int Width { get; }
 		int Height { get; }
 		int Components { get; }
+		DicomRange<int> GetMinMax(int padding);
 		IPixelData Rescale(double scale);
 		void Render(ILUT lut, int[] output);
 	}
@@ -91,6 +92,22 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			int min = Int32.MaxValue;
+			int max = Int32.MinValue;
+
+			for (int i = 0; i < _data.Length; i++) {
+				if (_data[i] == padding)
+					continue;
+				else if (_data[i] > max)
+					max = _data[i];
+				else if (_data[i] < min)
+					min = _data[i];
+			}
+
+			return new DicomRange<int>(min, max);
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -192,6 +209,22 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			int min = Int32.MaxValue;
+			int max = Int32.MinValue;
+
+			for (int i = 0; i < _data.Length; i++) {
+				if (_data[i] == padding)
+					continue;
+				else if (_data[i] > max)
+					max = _data[i];
+				else if (_data[i] < min)
+					min = _data[i];
+			}
+
+			return new DicomRange<int>(min, max);
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -267,6 +300,22 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			int min = Int32.MaxValue;
+			int max = Int32.MinValue;
+
+			for (int i = 0; i < _data.Length; i++) {
+				if (_data[i] == padding)
+					continue;
+				else if (_data[i] > max)
+					max = _data[i];
+				else if (_data[i] < min)
+					min = _data[i];
+			}
+
+			return new DicomRange<int>(min, max);
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -354,6 +403,22 @@ namespace Dicom.Imaging.Render {
         #endregion
 
         #region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			int min = Int32.MaxValue;
+			int max = Int32.MinValue;
+
+			for (int i = 0; i < _data.Length; i++) {
+				if (_data[i] == padding)
+					continue;
+				else if (_data[i] > max)
+					max = _data[i];
+				else if (_data[i] < min)
+					min = _data[i];
+			}
+
+			return new DicomRange<int>(min, max);
+		}
+
         public IPixelData Rescale(double scale)
         {
             if (scale == 1.0)
@@ -447,6 +512,10 @@ namespace Dicom.Imaging.Render {
         #endregion
 
         #region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 32-bit unsigned integer data.");
+		}
+
         public IPixelData Rescale(double scale)
         {
             if (scale == 1.0)
@@ -524,6 +593,10 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
+		public DicomRange<int> GetMinMax(int padding) {
+			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
