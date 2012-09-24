@@ -24,6 +24,7 @@ namespace Dicom.Imaging {
 		private IPixelData _pixelData;
 		private IPipeline _pipeline;
 
+		private double _scale;
 		private GrayscaleRenderOptions _renderOptions;
 
 		private DicomOverlayData[] _overlays;
@@ -33,6 +34,7 @@ namespace Dicom.Imaging {
 		/// <param name="dataset">Source dataset</param>
 		/// <param name="frame">Zero indexed frame number</param>
 		public DicomImage(DicomDataset dataset, int frame = 0) {
+			_scale = 1.0;
 			Load(dataset, frame);
 		}
 
@@ -41,6 +43,7 @@ namespace Dicom.Imaging {
 		/// <param name="fileName">Source file</param>
 		/// <param name="frame">Zero indexed frame number</param>
 		public DicomImage(string fileName, int frame = 0) {
+			_scale = 1.0;
 			var file = DicomFile.Open(fileName);
 			Load(file.Dataset, frame);
 		}
@@ -52,27 +55,42 @@ namespace Dicom.Imaging {
 			private set;
 		}
 
+		/// <summary>DICOM pixel data</summary>
+		public DicomPixelData PixelData {
+			get;
+			private set;
+		}
+
 		/// <summary>Width of image in pixels</summary>
 		public int Width {
-			get { return _pixelData.Width; }
+			get { return PixelData.Width; }
 		}
 
 		/// <summary>Height of image in pixels</summary>
 		public int Height {
-			get { return _pixelData.Height; }
+			get { return PixelData.Height; }
+		}
+
+		/// <summary>Scaling factor of the rendered image</summary>
+		public double Scale {
+			get { return _scale; }
+			set {
+				_scale = value;
+				_pixelData = null;
+			}
 		}
 
 		/// <summary>Number of frames contained in image data.</summary>
 		public int NumberOfFrames {
-			get { return Dataset.Get<int>(DicomTag.NumberOfFrames, 0, 1); }
+			get { return PixelData.NumberOfFrames; }
 		}
 
+#if !SILVERLIGHT
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
-#if !SILVERLIGHT
 		public Image RenderImage(int frame = 0) {
-			if (frame != _currentFrame)
+			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
 			CreatePipeline();
@@ -89,7 +107,7 @@ namespace Dicom.Imaging {
 #endif
 
 		public ImageSource RenderImageSource(int frame = 0) {
-			if (frame != _currentFrame)
+			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
 			CreatePipeline();
@@ -116,9 +134,14 @@ namespace Dicom.Imaging {
 				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
 			}
 
-			DicomPixelData pixelData = DicomPixelData.Create(Dataset);
-			_pixelData = PixelDataFactory.Create(pixelData, frame);
+			if (PixelData == null)
+				PixelData = DicomPixelData.Create(Dataset);
+
+			_pixelData = PixelDataFactory.Create(PixelData, frame);
+			_pixelData.Rescale(_scale);
+
 			_overlays = DicomOverlayData.FromDataset(Dataset);
+
 			_currentFrame = frame;
 		}
 
