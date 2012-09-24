@@ -17,28 +17,34 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
-					DicomImage image = new DicomImage(_fileName);
-			        Invoke(new WaitCallback(DisplayImage), image.RenderImage());
+					var image = new DicomImage(_fileName);
+			        Invoke(new WaitCallback(DisplayImage), image);
 			                             });
 			
 		}
 
 		protected void DisplayImage(object state) {
-			Image image = (Image)state;
+			var image = (DicomImage)state;
 
 			double scale = 1.0;
 			Size max = SystemInformation.WorkingArea.Size;
 
+			int maxW = max.Width - (Width - pbDisplay.Width);
+			int maxH = max.Height - (Height - pbDisplay.Height);
+
 			if (image.Width > image.Height) {
-				if (image.Width > max.Width)
-					scale = (double)max.Width / (double)image.Width;
+				if (image.Width > maxW)
+					scale = (double)maxW / (double)image.Width;
 			} else {
-				if (image.Height > max.Height)
-					scale = (double)max.Height / (double)image.Height;
+				if (image.Height > maxH)
+					scale = (double)maxH / (double)image.Height;
 			}
 
-			Width = (int)(image.Width * scale);
-			Height = (int)(image.Height * scale);
+			if (scale != 1.0)
+				image.Scale = scale;
+
+			Width = (int)(image.Width * scale) + (Width - pbDisplay.Width);
+			Height = (int)(image.Height * scale) + (Height - pbDisplay.Height);
 
 			if (Width >= (max.Width * 0.99) || Height >= (max.Height * 0.99))
 				CenterToScreen(); // center very large images on the screen
@@ -54,7 +60,7 @@ namespace Dicom.Dump {
 					Left = 0;
 			}
 
-			pbDisplay.Image = image;
+			pbDisplay.Image = image.RenderImage();
 		}
 	}
 }
