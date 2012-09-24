@@ -14,6 +14,7 @@
 * Fix viewing of images with bits allocated == 16 and bits stored == 8
 * Add support for image scaling in DicomImage
 * Use library to scale images before displaying in DICOM Dump
+* Calculate W/L from pixel data values if no defaults are available
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService
