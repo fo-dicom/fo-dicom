@@ -233,9 +233,9 @@ namespace Dicom.Imaging {
 				int offset = UncompressedFrameSize * frame;
 				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
-				// avoid unnecessary byte swap
-				//if (BytesAllocated == 1 && Syntax.Endian == Endian.Little)
-				//	buffer = new SwapByteBuffer(buffer, 2);
+				//TODO: trace down the need for this additional byte swap
+				if (Syntax.Endian == Endian.Big)
+					buffer = new SwapByteBuffer(buffer, 2);
 
 				return buffer;
 			}
