@@ -1,4 +1,4 @@
-#### v1.0.22
+#### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output
 * Add exception handling for C-Store requests with unparsable datasets
 * Handle ObjectDisposedExceptions in network operations
