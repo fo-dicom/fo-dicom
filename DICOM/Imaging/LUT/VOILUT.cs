@@ -120,8 +120,7 @@ namespace Dicom.Imaging.LUT {
 				if (value > WindowEnd)
 					return MaximumOutputValue;
 				unchecked {
-					double scale = ((value - WindowCenterMin05) / WindowWidthMin1) + 0.5;
-					return (int)(scale * 255);
+					return (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * 255.0);
 				}
 			}
 		}
@@ -138,7 +137,7 @@ namespace Dicom.Imaging.LUT {
 		public override int this[int value] {
 			get {
 				unchecked {
-					return (int)(255.0 / (1.0 + Math.Exp(-4.0 * ((value - WindowCenter) / WindowWidth))));
+					return (int)Math.Round(255.0 / (1.0 + Math.Exp(-4.0 * ((value - WindowCenter) / WindowWidth))));
 				}
 			}
 		}

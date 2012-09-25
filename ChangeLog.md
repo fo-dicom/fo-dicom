@@ -1,5 +1,6 @@
 #### v1.0.23
 * Fix W/L calculation creating negative window width
+* Round VOI LUT values instead of casting away fraction
 
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output
