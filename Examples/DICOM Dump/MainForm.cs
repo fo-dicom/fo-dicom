@@ -49,7 +49,15 @@ namespace Dicom.Dump {
 
 				_fileName = ofd.FileName;
 
-				var file = DicomFile.Open(_fileName);
+				DicomFile file = null;
+
+				try {
+					file = DicomFile.Open(_fileName);
+				} catch (DicomFileException ex) {
+					file = ex.File;
+					MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+
 				new DicomDatasetWalker(file.FileMetaInfo).Walk(new DumpWalker(this));
 				new DicomDatasetWalker(file.Dataset).Walk(new DumpWalker(this));
 
