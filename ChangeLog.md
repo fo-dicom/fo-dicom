@@ -23,6 +23,7 @@
 * Add DicomFileException to allow better chance of recovery from parse errors
 * Add maximum PDU length to association output
 * Fix major bug in writing PDataTF PDUs; improvements in performance and memory usage
+* Add ability to propose additional transfer syntaxes in C-Store request
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService

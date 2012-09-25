@@ -29,6 +29,16 @@ namespace Dicom.Network {
 			get { return File.FileMetaInfo.TransferSyntax; }
 		}
 
+		/// <summary>
+		/// Additional transfer syntaxes to propose in the association request.
+		/// 
+		/// DICOM dataset will be transcoded on the fly if necessary.
+		/// </summary>
+		public DicomTransferSyntax[] AdditionalTransferSyntaxes {
+			get;
+			set;
+		}
+
 		public delegate void ResponseDelegate(DicomCStoreRequest request, DicomCStoreResponse response);
 
 		public ResponseDelegate OnResponseReceived;

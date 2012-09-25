@@ -40,10 +40,15 @@ namespace Dicom.Network {
 				var cstore = request as DicomCStoreRequest;
 				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.AffectedSOPClassUID && x.AcceptedTransferSyntax == cstore.TransferSyntax);
 				if (pc == null) {
+					var tx = new List<DicomTransferSyntax>();
 					if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
-						Add(cstore.AffectedSOPClassUID, cstore.TransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
-					else
-						Add(cstore.AffectedSOPClassUID, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
+						tx.Add(cstore.TransferSyntax);
+					if (cstore.AdditionalTransferSyntaxes != null)
+						tx.AddRange(cstore.AdditionalTransferSyntaxes);
+					tx.Add(DicomTransferSyntax.ExplicitVRLittleEndian);
+					tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
+					
+					Add(cstore.AffectedSOPClassUID, tx.ToArray());
 				}
 			} else {
 				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.AffectedSOPClassUID);

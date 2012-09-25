@@ -75,7 +75,7 @@ namespace Dicom.Network {
 			if (Result == DicomPresentationContextResult.Accept)
 				return true;
 			foreach (DicomTransferSyntax ts in acceptedTs) {
-				if (HasTransferSyntax(ts)) {
+				if (ts != null && HasTransferSyntax(ts)) {
 					SetResult(DicomPresentationContextResult.Accept, ts);
 					return true;
 				}
@@ -84,12 +84,12 @@ namespace Dicom.Network {
 		}
 
 		public void AddTransferSyntax(DicomTransferSyntax ts) {
-			if (!_transferSyntaxes.Contains(ts))
+			if (ts != null && !_transferSyntaxes.Contains(ts))
 				_transferSyntaxes.Add(ts);
 		}
 
 		public void RemoveTransferSyntax(DicomTransferSyntax ts) {
-			if (_transferSyntaxes.Contains(ts))
+			if (ts != null && _transferSyntaxes.Contains(ts))
 				_transferSyntaxes.Remove(ts);
 		}
 
