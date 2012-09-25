@@ -62,6 +62,7 @@ namespace Dicom.Network {
 			sb.AppendFormat("Called AE Title:        {0}\n", CalledAE);
 			sb.AppendFormat("Implementation Class:   {0}\n", RemoteImplemetationClassUID ?? DicomImplementation.ClassUID);
 			sb.AppendFormat("Implementation Version: {0}\n", RemoteImplementationVersion ?? DicomImplementation.Version);
+			sb.AppendFormat("Maximum PDU Length:     {0}\n", MaximumPDULength);
 			sb.AppendFormat("Async Ops Invoked:      {0}\n", MaxAsyncOpsInvoked);
 			sb.AppendFormat("Async Ops Performed:    {0}\n", MaxAsyncOpsPerformed);
 			sb.AppendFormat("Presentation Contexts:  {0}\n", PresentationContexts.Count);
