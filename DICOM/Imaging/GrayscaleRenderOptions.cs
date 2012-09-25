@@ -80,6 +80,9 @@ namespace Dicom.Imaging {
 					largeValue = largeElement.Get<short>(0);
 				}
 
+				largeValue = (int)((largeValue * options.RescaleSlope) + options.RescaleIntercept);
+				smallValue = (int)((smallValue * options.RescaleSlope) + options.RescaleIntercept);
+
 				if (smallValue != 0 || largeValue != 0) {
 					options.WindowWidth = largeValue - smallValue;
 					options.WindowCenter = (largeValue + smallValue) / 2.0;
