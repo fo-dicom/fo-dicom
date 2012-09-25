@@ -1,3 +1,6 @@
+#### v1.0.23
+* Fix W/L calculation creating negative window width
+
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output
 * Add exception handling for C-Store requests with unparsable datasets

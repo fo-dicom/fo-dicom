@@ -73,7 +73,7 @@ namespace Dicom.Imaging {
 				smallValue = (int)((smallValue * options.RescaleSlope) + options.RescaleIntercept);
 
 				if (smallValue != 0 || largeValue != 0) {
-					options.WindowWidth = largeValue - smallValue;
+					options.WindowWidth = Math.Abs(largeValue - smallValue);
 					options.WindowCenter = (largeValue + smallValue) / 2.0;
 				}
 			} else {
@@ -86,7 +86,7 @@ namespace Dicom.Imaging {
 				range.Maximum = (int)((range.Maximum * options.RescaleSlope) + options.RescaleIntercept);
 				range.Minimum = (int)((range.Minimum * options.RescaleSlope) + options.RescaleIntercept);
 
-				options.WindowWidth = range.Maximum - range.Minimum;
+				options.WindowWidth = Math.Abs(range.Maximum - range.Minimum);
 				options.WindowCenter = (range.Maximum + range.Minimum) / 2.0;
 			}
 
