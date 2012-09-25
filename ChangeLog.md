@@ -16,6 +16,7 @@
 * Use library to scale images before displaying in DICOM Dump
 * Calculate W/L from pixel data values if no defaults are available
 * Add ability to Get<> Int32 values from US/SS elements
+* Add ability to Get<> DicomVR and IByteBuffer from elements
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 
+using Dicom.IO.Buffer;
 using Dicom.Log;
 
 namespace Dicom {
@@ -50,12 +51,18 @@ namespace Dicom {
 			if (typeof(T) == typeof(DicomItem))
 				return (T)(object)item;
 
-			if (typeof(T).IsSubclassOf(typeof(DicomItem))) {
+			if (typeof(T).IsSubclassOf(typeof(DicomItem)))
 				return (T)(object)item;
-			}
+
+			if (typeof(T) == typeof(DicomVR))
+				return (T)(object)item.ValueRepresentation;
 
 			if (item.GetType().IsSubclassOf(typeof(DicomElement))) {
 				DicomElement element = (DicomElement)item;
+
+				if (typeof(IByteBuffer).IsAssignableFrom(typeof(T)))
+					return (T)(object)element.Buffer;
+
 				if (n >= element.Count)
 					return defaultValue;
 				return (T)(object)element.Get<T>(n);
