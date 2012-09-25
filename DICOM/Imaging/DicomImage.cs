@@ -156,6 +156,8 @@ namespace Dicom.Imaging {
 				_pipeline = new GenericGrayscalePipeline(_renderOptions);
 			} else if (pi == PhotometricInterpretation.Rgb) {
 				_pipeline = new RgbColorPipeline();
+			} else if (pi == PhotometricInterpretation.PaletteColor) {
+				_pipeline = new PaletteColorPipeline(PixelData);
 			} else {
 				throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi.Value);
 			}

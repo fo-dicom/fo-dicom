@@ -18,6 +18,7 @@
 * Add ability to Get<> Int32 values from US/SS elements
 * Add ability to Get<> DicomVR and IByteBuffer from elements
 * Add ability to Get<> byte[] from elements
+* Add ability to render basic PALETTE COLOR images
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService

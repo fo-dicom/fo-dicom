@@ -110,6 +110,7 @@
     <Compile Include="Imaging\DicomPixelData.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptions.cs" />
     <Compile Include="Imaging\LUT\CompositeLUT.cs" />
+    <Compile Include="Imaging\LUT\PaletteColorLUT.cs" />
     <Compile Include="Imaging\LUT\VOILUT.cs" />
     <Compile Include="Imaging\LUT\ILUT.cs" />
     <Compile Include="Imaging\LUT\InvertLUT.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Imaging\Render\IPipeline.cs" />
     <Compile Include="Imaging\Render\OverlayGraphic.cs" />
+    <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
     <Compile Include="Imaging\Render\PixelData.cs" />
     <Compile Include="Imaging\PixelDataConverter.cs" />
     <Compile Include="Imaging\PixelRepresentation.cs" />
@@ -227,7 +229,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

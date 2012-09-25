@@ -106,6 +106,49 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		public Color32[] PaletteColorLUT {
+			get { return GetPaletteColorLUT(); }
+			set { throw new NotImplementedException(); }
+		}
+
+		private Color32[] GetPaletteColorLUT() {
+			if (PhotometricInterpretation != PhotometricInterpretation.PaletteColor)
+				throw new DicomImagingException("Attempted to get Palette Color LUT from image with invalid photometric interpretation.");
+
+			if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor))
+				throw new DicomImagingException("Palette Color LUT missing from dataset.");
+
+			int size = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
+			int first = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
+			int bits = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
+
+			var r = Dataset.Get<byte[]>(DicomTag.RedPaletteColorLookupTableData);
+			var g = Dataset.Get<byte[]>(DicomTag.GreenPaletteColorLookupTableData);
+			var b = Dataset.Get<byte[]>(DicomTag.BluePaletteColorLookupTableData);
+
+			var lut = new Color32[size];
+
+			if (r.Length == size) {
+				// 8-bit LUT entries
+				for (int i = 0; i < size; i++)
+					lut[i] = new Color32(0xff, r[i], g[i], b[i]);
+			} else {
+				// 16-bit LUT entries... we only support 8-bit until someone can find a sample image with a 16-bit palette
+
+				// 8-bit entries with 16-bits allocated
+				int offset = 0;
+
+				// 16-bit entries with 8-bits stored
+				if (bits == 16)
+					offset = 1;
+
+				for (int i = 0; i < size; i++, offset += 2)
+					lut[i] = new Color32(0xff, r[offset], g[offset], b[offset]);
+			}
+
+			return lut;
+		}
+
 		public abstract IByteBuffer GetFrame(int frame);
 
 		public abstract void AddFrame(IByteBuffer data);
