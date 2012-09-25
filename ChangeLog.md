@@ -22,6 +22,7 @@
 * Fix unnecessary byte swap for 8-bit pixel data stored in OW
 * Add DicomFileException to allow better chance of recovery from parse errors
 * Add maximum PDU length to association output
+* Fix major bug in writing PDataTF PDUs; improvements in performance and memory usage
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService

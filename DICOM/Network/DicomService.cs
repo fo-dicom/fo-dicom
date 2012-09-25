@@ -640,8 +640,7 @@ namespace Dicom.Network {
 			private byte _pcid;
 			private PDataTF _pdu;
 			private byte[] _bytes;
-			private int _sent;
-			private MemoryStream _buffer;
+			private int _length;
 			#endregion
 
 			#region Public Constructors
@@ -650,25 +649,20 @@ namespace Dicom.Network {
 				_command = true;
 				_pcid = pcid;
 				_max = (max == 0) ? MaxPduSizeLimit : Math.Min(max, MaxPduSizeLimit);
+				_bytes = new byte[_max];
 				_pdu = new PDataTF();
-				_buffer = new MemoryStream((int)_max * 2);
 			}
 			#endregion
 
 			#region Public Properties
-			public static int MaxPduSizeLimit = 16384;
+			public static int MaxPduSizeLimit = 4 * 1024 * 1024; // 4MB
 
 			public bool IsCommand {
 				get { return _command; }
 				set {
-					CreatePDV();
+					CreatePDV(true);
 					_command = value;
-					WritePDU(true);
 				}
-			}
-
-			public int BytesSent {
-				get { return _sent; }
 			}
 			#endregion
 
@@ -683,25 +677,31 @@ namespace Dicom.Network {
 				return 6 + (int)_pdu.GetLengthOfPDVs();
 			}
 
-			private bool CreatePDV() {
-				int len = Math.Min(GetBufferLength(), _max - CurrentPduSize() - 6);
+			private void CreatePDV(bool last) {
+				if (_bytes == null)
+					_bytes = new byte[0];
 
-				if (_bytes == null || _bytes.Length != len || _pdu.PDVs.Count > 0) {
-					_bytes = new byte[len];
-				}
-				_sent = _buffer.Read(_bytes, 0, len);
+				if (_length < _bytes.Length)
+					Array.Resize(ref _bytes, _length);
 
-				PDV pdv = new PDV(_pcid, _bytes, _command, false);
+				PDV pdv = new PDV(_pcid, _bytes, _command, last);
 				_pdu.PDVs.Add(pdv);
 
-				return pdv.IsLastFragment;
+				// is the current PDU at its maximum size or do we have room for another PDV?
+				if ((CurrentPduSize() + 6) >= _max || last)
+					WritePDU(last);
+
+				// Max PDU Size - Current Size - Size of PDV header
+				int max = _max - CurrentPduSize() - 6;
+
+				_bytes = last ? null : new byte[max];
+				_length = 0;
 			}
 
 			private void WritePDU(bool last) {
-				if (_pdu.PDVs.Count == 0 || ((CurrentPduSize() + 6) < _max && GetBufferLength() > 0)) {
-					CreatePDV();
-				}
-				if (_pdu.PDVs.Count > 0) {
+				if (_pdu.PDVs.Count == 0 && last)
+					CreatePDV(true);
+				else if (_pdu.PDVs.Count > 0) {
 					if (last)
 						_pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
@@ -709,17 +709,6 @@ namespace Dicom.Network {
 
 					_pdu = new PDataTF();
 				}
-			}
-
-			private void AppendBuffer(byte[] buffer, int offset, int count) {
-				long pos = _buffer.Position;
-				_buffer.Seek(0, SeekOrigin.End);
-				_buffer.Write(buffer, offset, count);
-				_buffer.Position = pos;
-			}
-
-			private int GetBufferLength() {
-				return (int)(_buffer.Length - _buffer.Position);
 			}
 			#endregion
 
@@ -765,23 +754,30 @@ namespace Dicom.Network {
 			}
 
 			public override void Write(byte[] buffer, int offset, int count) {
-				AppendBuffer(buffer, offset, count);
-				while ((CurrentPduSize() + 6 + GetBufferLength()) > _max) {
-					WritePDU(false);
+				if (_bytes == null || _bytes.Length == 0) {
+					// Max PDU Size - Current Size - Size of PDV header
+					int max = _max - CurrentPduSize() - 6;
+					_bytes = new byte[max];
 				}
-			}
 
-			public void Write(Stream stream) {
-				int max = _max - 12;
-				int length = (int)stream.Length;
-				int position = (int)stream.Position;
-				byte[] buffer = new byte[max];
-				while (position < length) {
-					int count = Math.Min(max, length - position);
-					count = stream.Read(buffer, 0, count);
-					AppendBuffer(buffer, 0, count);
-					position += count;
-					WritePDU(position == length);
+				while (count >= (_bytes.Length - _length)) {
+					int c = Math.Min(count, _bytes.Length - _length);
+
+					Array.Copy(buffer, offset, _bytes, _length, c);
+
+					_length += c;
+					offset += c;
+					count -= c;
+
+					CreatePDV(false);
+				}
+
+				if (count > 0) {
+					Array.Copy(buffer, offset, _bytes, _length, count);
+					_length += count;
+
+					if (_bytes.Length == _length)
+						CreatePDV(false);
 				}
 			}
 			#endregion
