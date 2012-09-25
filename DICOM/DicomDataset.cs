@@ -63,6 +63,9 @@ namespace Dicom {
 				if (typeof(IByteBuffer).IsAssignableFrom(typeof(T)))
 					return (T)(object)element.Buffer;
 
+				if (typeof(T) == typeof(byte[]))
+					return (T)(object)element.Buffer.Data;
+
 				if (n >= element.Count)
 					return defaultValue;
 				return (T)(object)element.Get<T>(n);
