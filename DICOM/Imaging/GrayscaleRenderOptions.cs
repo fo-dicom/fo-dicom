@@ -66,19 +66,8 @@ namespace Dicom.Imaging {
 				options.WindowWidth = dataset.Get<double>(DicomTag.WindowWidth);
 				options.WindowCenter = dataset.Get<double>(DicomTag.WindowCenter);
 			} else if (dataset.Contains(DicomTag.SmallestImagePixelValue) && dataset.Contains(DicomTag.LargestImagePixelValue)) {
-				var smallElement = dataset.Get<DicomElement>(DicomTag.SmallestImagePixelValue);
-				var largeElement = dataset.Get<DicomElement>(DicomTag.LargestImagePixelValue);
-
-				int smallValue = 0;
-				int largeValue = 0;
-
-				if (smallElement.ValueRepresentation == DicomVR.US) {
-					smallValue = smallElement.Get<ushort>(0);
-					largeValue = largeElement.Get<ushort>(0);
-				} else {
-					smallValue = smallElement.Get<short>(0);
-					largeValue = largeElement.Get<short>(0);
-				}
+				int smallValue = dataset.Get<int>(DicomTag.SmallestImagePixelValue, 0);
+				int largeValue = dataset.Get<int>(DicomTag.LargestImagePixelValue, 0);
 
 				largeValue = (int)((largeValue * options.RescaleSlope) + options.RescaleIntercept);
 				smallValue = (int)((smallValue * options.RescaleSlope) + options.RescaleIntercept);
@@ -88,15 +77,7 @@ namespace Dicom.Imaging {
 					options.WindowCenter = (largeValue + smallValue) / 2.0;
 				}
 			} else {
-				int padding = bits.MinimumValue;
-
-				var element = dataset.Get<DicomElement>(DicomTag.PixelPaddingValue);
-				if (element != null) {
-					if (element.ValueRepresentation == DicomVR.US)
-						padding = element.Get<ushort>(0);
-					else
-						padding = element.Get<short>(0);
-				}
+				int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, bits.MinimumValue);
 
 				var pixelData = DicomPixelData.Create(dataset);
 				var pixels = PixelDataFactory.Create(pixelData, 0);
