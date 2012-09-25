@@ -78,34 +78,42 @@ namespace Dicom {
 
 		public static DicomFile Open(string fileName) {
 			DicomFile df = new DicomFile();
-			FileReference file = new FileReference(fileName);
-			FileByteSource source = new FileByteSource(file);
 
-			DicomFileReader reader = new DicomFileReader();
-			reader.Read(source,
-				new DicomDatasetReaderObserver(df.FileMetaInfo),
-				new DicomDatasetReaderObserver(df.Dataset));
+			try {
+				df.File = new FileReference(fileName);
+				FileByteSource source = new FileByteSource(df.File);
 
-			df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
-			df.File = file;
+				DicomFileReader reader = new DicomFileReader();
+				reader.Read(source,
+					new DicomDatasetReaderObserver(df.FileMetaInfo),
+					new DicomDatasetReaderObserver(df.Dataset));
 
-			return df;
+				df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
+
+				return df;
+			} catch (Exception e) {
+				throw new DicomFileException(df, e.Message, e);
+			}
 		}
 
         public static DicomFile Open(Stream stream)
         {
             var df = new DicomFile();
-            var source = new StreamByteSource(stream);
 
-            var reader = new DicomFileReader();
-            reader.Read(source,
-                new DicomDatasetReaderObserver(df.FileMetaInfo),
-                new DicomDatasetReaderObserver(df.Dataset));
+			try {
+				var source = new StreamByteSource(stream);
 
-            df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
-            df.File = null;
+				var reader = new DicomFileReader();
+				reader.Read(source,
+					new DicomDatasetReaderObserver(df.FileMetaInfo),
+					new DicomDatasetReaderObserver(df.Dataset));
 
-            return df;
+				df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
+
+				return df;
+			} catch (Exception e) {
+				throw new DicomFileException(df, e.Message, e);
+			}
         }
 
         public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
@@ -146,7 +154,7 @@ namespace Dicom {
 			var state = eventResult.InternalState as Tuple<DicomFile, Exception>;
 
 			if (state.Item2 != null)
-				throw state.Item2;
+				throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
 
 			return state.Item1;
 		}

@@ -20,6 +20,7 @@
 * Add ability to Get<> byte[] from elements
 * Add ability to render basic PALETTE COLOR images
 * Fix unnecessary byte swap for 8-bit pixel data stored in OW
+* Add DicomFileException to allow better chance of recovery from parse errors
 
 #### v1.0.21 (09/14/2012)
 * Add connection close event and socket error handlers to DicomService

@@ -66,6 +66,7 @@
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFile.cs" />
+    <Compile Include="DicomFileException.cs" />
     <Compile Include="DicomFileMetaInformation.cs" />
     <Compile Include="DicomFragmentSequence.cs" />
     <Compile Include="DicomImplementation.cs" />
