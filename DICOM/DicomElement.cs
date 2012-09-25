@@ -848,6 +848,15 @@ namespace Dicom {
 			get { return DicomVR.SS; }
 		}
 		#endregion
+
+		#region Public Members
+		public override T Get<T>(int item = -1) {
+			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
+				return (T)(object)base.Get<T>(item);
+
+			return base.Get<T>(item);
+		}
+		#endregion
 	}
 
 	/// <summary>Short Text (ST)</summary>
@@ -1031,6 +1040,15 @@ namespace Dicom {
 		#region Public Properties
 		public override DicomVR ValueRepresentation {
 			get { return DicomVR.US; }
+		}
+		#endregion
+
+		#region Public Members
+		public override T Get<T>(int item = -1) {
+			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
+				return (T)(object)base.Get<T>(item);
+
+			return base.Get<T>(item);
 		}
 		#endregion
 	}
