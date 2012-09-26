@@ -34,6 +34,7 @@ namespace Dicom.Network {
 			_network = stream;
 			_lock = new object();
 			_pduQueue = new Queue<PDU>();
+			MaximumPDUsInQueue = 16;
 			_msgQueue = new Queue<DicomMessage>();
 			_pending = new List<DicomRequest>();
 			_isConnected = true;
@@ -72,6 +73,11 @@ namespace Dicom.Network {
 				lock (_lock)
 					return _pending.Count == 0;
 			}
+		}
+
+		public int MaximumPDUsInQueue {
+			get;
+			set;
 		}
 
 		private void CloseConnection(int errorCode) {
@@ -450,8 +456,19 @@ namespace Dicom.Network {
 		}
 
 		protected void SendPDU(PDU pdu) {
-			lock (_lock)
-				_pduQueue.Enqueue(pdu);
+			// throttle queueing of PDUs to prevent out of memory errors for very large datasets
+			do {
+				if (_pduQueue.Count >= MaximumPDUsInQueue) {
+					Thread.Sleep(10);
+					continue;
+				}
+
+				lock (_lock)
+					_pduQueue.Enqueue(pdu);
+
+				break;
+			} while (true);
+
 			SendNextPDU();
 		}
 

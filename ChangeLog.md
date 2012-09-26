@@ -3,6 +3,7 @@
 * Round VOI LUT values instead of casting away fraction
 * Fix bug reading signed pixel data from buffer
 * Fix encoding of JPEG2000 images with signed pixel data
+* Throttle queueing of PDUs to prevent out of memory errors for very large datasets
 
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output
