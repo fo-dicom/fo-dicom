@@ -2,6 +2,7 @@
 * Fix W/L calculation creating negative window width
 * Round VOI LUT values instead of casting away fraction
 * Fix bug reading signed pixel data from buffer
+* Fix encoding of JPEG2000 images with signed pixel data
 
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output

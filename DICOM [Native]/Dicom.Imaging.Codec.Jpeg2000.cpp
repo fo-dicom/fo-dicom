@@ -136,11 +136,11 @@ void DicomJpeg2000NativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelDa
 					if (comp->sgnd) {
 						if (oldPixelData->BitsStored < 8) {
 							const unsigned char sign = 1 << oldPixelData->HighBit;
-							const unsigned char mask = sign - 1;
+							const unsigned char mask = (0xff >> (oldPixelData->BitsAllocated - oldPixelData->BitsStored));
 							for (int p = 0; p < pixelCount; p++) {
 								const unsigned char pixel = frameArray->Data[pos];
 								if (pixel & sign)
-									comp->data[p] = -(pixel & mask);
+									comp->data[p] = -(((-pixel) & mask) + 1);
 								else
 									comp->data[p] = pixel;
 								pos += offset;
@@ -166,11 +166,11 @@ void DicomJpeg2000NativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelDa
 						if (oldPixelData->BitsStored < 16) {
 							unsigned short* frameData16 = (unsigned short*)(void*)frameArray->Pointer;
 							const unsigned short sign = 1 << oldPixelData->HighBit;
-							const unsigned short mask = sign - 1;
+							const unsigned short mask = (0xffff >> (oldPixelData->BitsAllocated - oldPixelData->BitsStored));
 							for (int p = 0; p < pixelCount; p++) {
 								const unsigned short pixel = frameData16[pos];
 								if (pixel & sign)
-									comp->data[p] = -(pixel & mask);
+									comp->data[p] = -(((-pixel) & mask) + 1);
 								else
 									comp->data[p] = pixel;
 								pos += offset;
