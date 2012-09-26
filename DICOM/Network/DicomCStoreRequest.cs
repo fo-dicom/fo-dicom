@@ -10,7 +10,11 @@ namespace Dicom.Network {
 	/// var client = new DicomClient();
 	/// 
 	/// // queue C-Store request to send DICOM file
-	/// client.Add(new DicomCStoreRequest(@"test1.dcm"));
+	/// client.Add(new DicomCStoreRequest(@"test1.dcm") {
+	///		OnResponseReceived = (DicomCStoreRequest req, DicomCStoreResponse rsp) => {
+	///			Console.WriteLine("{0}: {1}", req.SOPInstanceUID, rsp.Status);
+	///		}
+	/// });
 	/// 
 	/// // queue C-Store request with additional proposed transfer syntaxes
 	/// client.Add(new DicomCStoreRequest(@"test2.dcm") {
@@ -29,7 +33,7 @@ namespace Dicom.Network {
 		/// Constructor for DICOM C-Store request received from SCU.
 		/// </summary>
 		/// <remarks>
-		/// In most use cases this will only be called by the library.
+		/// In most use cases this constructor will only be called by the library.
 		/// </remarks>
 		/// <param name="command">DICOM Command Dataset</param>
 		public DicomCStoreRequest(DicomDataset command) : base(command) {
