@@ -171,12 +171,12 @@ namespace Dicom.Imaging.Render {
 
 			if (bitDepth.BitsStored != 16) {
 				int sign = 1 << bitDepth.HighBit;
-				int mask = sign - 1;
+				int mask = (UInt16.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
 				Parallel.For(0, _data.Length, (int i) => {
 					short d = _data[i];
 					if ((d & sign) != 0)
-						_data[i] = (short)-(d & mask);
+						_data[i] = (short)-(((-d) & mask) + 1);
 					else
 						_data[i] = (short)(d & mask);
 				});
@@ -344,8 +344,7 @@ namespace Dicom.Imaging.Render {
 	}
 
 
-    public class GrayscalePixelDataS32 : IPixelData
-    {
+    public class GrayscalePixelDataS32 : IPixelData {
         #region Private Members
         int _width;
         int _height;
@@ -353,27 +352,24 @@ namespace Dicom.Imaging.Render {
         #endregion
 
         #region Public Constructor
-        public GrayscalePixelDataS32(int width, int height, BitDepth bitDepth, IByteBuffer data)
-        {
+        public GrayscalePixelDataS32(int width, int height, BitDepth bitDepth, IByteBuffer data) {
             _width = width;
             _height = height;
             _data = ByteBufferEnumerator<int>.Create(data).ToArray();
 
             int sign = 1 << bitDepth.HighBit;
-            int mask = sign - 1;
+			uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
-            Parallel.For(0, _data.Length, (int i) =>
-            {
+            Parallel.For(0, _data.Length, (int i) => {
                 int d = _data[i];
                 if ((d & sign) != 0)
-                    _data[i] = -(d & mask);
+					_data[i] = (int)-(((-d) & mask) + 1);
                 else
-                    _data[i] = (d & mask);
+                    _data[i] = (int)(d & mask);
             });
         }
 
-        private GrayscalePixelDataS32(int width, int height, int[] data)
-        {
+        private GrayscalePixelDataS32(int width, int height, int[] data) {
             _width = width;
             _height = height;
             _data = data;
