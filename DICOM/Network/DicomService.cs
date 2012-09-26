@@ -653,6 +653,7 @@ namespace Dicom.Network {
 			#region Private Members
 			private DicomService _service;
 			private bool _command;
+			private int _pduMax;
 			private int _max;
 			private byte _pcid;
 			private PDataTF _pdu;
@@ -665,18 +666,29 @@ namespace Dicom.Network {
 				_service = service;
 				_command = true;
 				_pcid = pcid;
-				_max = (max == 0) ? MaxPduSizeLimit : Math.Min(max, MaxPduSizeLimit);
-				_bytes = new byte[_max];
+				_pduMax = max;
+				_max = (max == 0) ? MaxCommandBuffer : Math.Min(max, MaxCommandBuffer);
+
 				_pdu = new PDataTF();
+
+				// Max PDU Size - Current Size - Size of PDV header
+				_bytes = new byte[_max - CurrentPduSize() - 6];
 			}
 			#endregion
 
 			#region Public Properties
-			public static int MaxPduSizeLimit = 4 * 1024 * 1024; // 4MB
+			private const int MaxCommandBuffer = 1 * 1024; // 1KB
+			private const int MaxDataBuffer = 1 * 1024 * 1024; // 1MB
 
 			public bool IsCommand {
 				get { return _command; }
 				set {
+					// recalculate maximum PDU buffer size
+					if (value)
+						_max = (_pduMax == 0) ? MaxCommandBuffer : Math.Min(_pduMax, MaxCommandBuffer);
+					else
+						_max = (_pduMax == 0) ? MaxDataBuffer : Math.Min(_pduMax, MaxDataBuffer);
+
 					CreatePDV(true);
 					_command = value;
 				}
