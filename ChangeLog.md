@@ -6,6 +6,7 @@
 * Throttle queueing of PDUs to prevent out of memory errors for very large datasets
 * Better management of PDU buffer memory
 * Better handling for irregular specific character sets
+* Support displaying images without specified photometric interpretation
 
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output

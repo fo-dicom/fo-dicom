@@ -150,6 +150,21 @@ namespace Dicom.Imaging {
 				return;
 
 			var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+
+			if (pi == null) {
+				// generally ACR-NEMA
+				var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
+				if (samples == 0 || samples == 1) {
+					if (Dataset.Contains(DicomTag.RedPaletteColorLookupTableData))
+						pi = PhotometricInterpretation.PaletteColor;
+					else
+						pi = PhotometricInterpretation.Monochrome2;
+				} else {
+					// assume, probably incorrectly, that the image is RGB
+					pi = PhotometricInterpretation.Rgb;
+				}
+			}
+
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
 				if (_renderOptions == null)
 					_renderOptions = GrayscaleRenderOptions.FromDataset(Dataset);

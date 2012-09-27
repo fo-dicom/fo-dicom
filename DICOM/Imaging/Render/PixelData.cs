@@ -22,6 +22,21 @@ namespace Dicom.Imaging.Render {
 	public static class PixelDataFactory {
 		public static IPixelData Create(DicomPixelData pixelData, int frame) {
 			PhotometricInterpretation pi = pixelData.PhotometricInterpretation;
+
+			if (pi == null) {
+				// generally ACR-NEMA
+				var samples = pixelData.SamplesPerPixel;
+				if (samples == 0 || samples == 1) {
+					if (pixelData.Dataset.Contains(DicomTag.RedPaletteColorLookupTableData))
+						pi = PhotometricInterpretation.PaletteColor;
+					else
+						pi = PhotometricInterpretation.Monochrome2;
+				} else {
+					// assume, probably incorrectly, that the image is RGB
+					pi = PhotometricInterpretation.Rgb;
+				}
+			}
+
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
 				if (pixelData.BitsAllocated <= 8)
 					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
