@@ -1,4 +1,4 @@
-#### v1.0.23
+#### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width
 * Round VOI LUT values instead of casting away fraction
 * Fix bug reading signed pixel data from buffer
