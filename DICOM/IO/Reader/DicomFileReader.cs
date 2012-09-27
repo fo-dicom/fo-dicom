@@ -16,12 +16,22 @@ namespace Dicom.IO.Reader {
 		private IByteSource _source;
 		private IDicomReaderObserver _fmiObserver;
 		private IDicomReaderObserver _dataObserver;
+		private DicomFileFormat _fileFormat;
 
 		private DicomTransferSyntax _syntax;
 
 		public DicomFileReader() {
 			_reader = new DicomReader();
+			_fileFormat = DicomFileFormat.Unknown;
 			_syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+		}
+
+		public DicomFileFormat FileFormat {
+			get { return _fileFormat; }
+		}
+
+		public DicomTransferSyntax Syntax {
+			get { return _syntax; }
 		}
 
 		public DicomReaderResult Read(IByteSource source, IDicomReaderObserver fileMetaInfo, IDicomReaderObserver dataset) {
@@ -50,15 +60,77 @@ namespace Dicom.IO.Reader {
 				if (!source.Require(132, ParsePreamble, state))
 					return;
 
-				_source.Skip(128);
-				if (_source.GetUInt8() != 'D' ||
-					_source.GetUInt8() != 'I' ||
-					_source.GetUInt8() != 'C' ||
-					_source.GetUInt8() != 'M')
-					throw new DicomReaderException("Invalid preamble found in DICOM file parser");
+				// mark file origin
+				_source.Mark();
 
-				DicomReaderCallbackObserver obs = new DicomReaderCallbackObserver();
-				obs.Add(DicomTag.TransferSyntaxUID, delegate(object sender, DicomReaderEventArgs ea) {
+				// test for DICM preamble
+				_source.Skip(128);
+				if (_source.GetUInt8() == 'D' &&
+					_source.GetUInt8() == 'I' &&
+					_source.GetUInt8() == 'C' &&
+					_source.GetUInt8() == 'M')
+					_fileFormat = DicomFileFormat.DICOM3;
+
+				while (_fileFormat == DicomFileFormat.Unknown) {
+					// rewind to origin milestone
+					_source.Rewind();
+
+					// test for file meta info
+					var group = _source.GetUInt16();
+
+					if (group > 0x00ff) {
+						_source.Endian = Endian.Big;
+						_syntax = DicomTransferSyntax.ExplicitVRBigEndian;
+
+						group = Endian.Swap(group);
+					}
+
+					if (group > 0x00ff) {
+						// invalid starting tag
+						_source.Rewind();
+						break;
+					}
+
+					if (group == 0x0002)
+						_fileFormat = DicomFileFormat.DICOM3NoPreamble;
+					else
+						_fileFormat = DicomFileFormat.DICOM3NoFileMetaInfo;
+
+					var element = _source.GetUInt16();
+					var tag = new DicomTag(group, element);
+
+					// test for explicit VR
+					var vrt = Encoding.ASCII.GetBytes(tag.DictionaryEntry.ValueRepresentations[0].Code);
+					var vrs = _source.GetBytes(2);
+
+					if (vrt[0] != vrs[0] || vrt[1] != vrs[1]) {
+						// implicit VR
+						if (_syntax.Endian == Endian.Little)
+							_syntax = DicomTransferSyntax.ImplicitVRLittleEndian;
+						else
+							_syntax = DicomTransferSyntax.ImplicitVRBigEndian;
+					}
+
+					_source.Rewind();
+				}
+
+				if (_fileFormat == DicomFileFormat.Unknown)
+					throw new DicomReaderException("Attempted to read invalid DICOM file");
+
+				var obs = new DicomReaderCallbackObserver();
+				if (_fileFormat != DicomFileFormat.DICOM3) {
+					obs.Add(DicomTag.RecognitionCodeRETIRED, (object sender, DicomReaderEventArgs ea) => {
+						try {
+							string code = Encoding.ASCII.GetString(ea.Data.Data);
+							if (code == "ACR-NEMA 1.0")
+								_fileFormat = DicomFileFormat.ACRNEMA1;
+							else if (code == "ACR-NEMA 2.0")
+								_fileFormat = DicomFileFormat.ACRNEMA2;
+						} catch {
+						}
+					});
+				}
+				obs.Add(DicomTag.TransferSyntaxUID, (object sender, DicomReaderEventArgs ea) => {
 					try {
 						string uid = Encoding.ASCII.GetString(ea.Data.Data);
 						_syntax = DicomTransferSyntax.Parse(uid);
@@ -68,7 +140,11 @@ namespace Dicom.IO.Reader {
 
 				_source.Endian = _syntax.Endian;
 				_reader.IsExplicitVR = _syntax.IsExplicitVR;
-				_reader.BeginRead(_source, new DicomReaderMultiObserver(obs, _fmiObserver), FileMetaInfoStopTag, OnFileMetaInfoParseComplete, null);
+
+				if (_fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
+					_reader.BeginRead(_source, new DicomReaderMultiObserver(obs, _dataObserver), null, OnDatasetParseComplete, null);
+				else
+					_reader.BeginRead(_source, new DicomReaderMultiObserver(obs, _fmiObserver), FileMetaInfoStopTag, OnFileMetaInfoParseComplete, null);
 			} catch (Exception e) {
 				if (_exception == null)
 					_exception = e;

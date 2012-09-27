@@ -10,14 +10,21 @@ namespace Dicom {
 		public DicomFile() {
 			FileMetaInfo = new DicomFileMetaInformation();
 			Dataset = new DicomDataset();
+			Format = DicomFileFormat.DICOM3;
 		}
 
 		public DicomFile(DicomDataset dataset) {
 			Dataset = dataset;
 			FileMetaInfo = new DicomFileMetaInformation(Dataset);
+			Format = DicomFileFormat.DICOM3;
 		}
 
 		public FileReference File {
+			get;
+			private set;
+		}
+
+		public DicomFileFormat Format {
 			get;
 			private set;
 		}
@@ -33,6 +40,14 @@ namespace Dicom {
 		}
 
 		public void Save(string fileName) {
+			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
+				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+
+			if (Format == DicomFileFormat.DICOM3NoFileMetaInfo) {
+				// create file meta information from dataset
+				FileMetaInfo = new DicomFileMetaInformation(Dataset);
+			}
+
 			File = new FileReference(fileName);
 			File.Delete();
 
@@ -45,6 +60,14 @@ namespace Dicom {
 		}
 
 		public void BeginSave(string fileName, AsyncCallback callback, object state) {
+			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
+				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+
+			if (Format == DicomFileFormat.DICOM3NoFileMetaInfo) {
+				// create file meta information from dataset
+				FileMetaInfo = new DicomFileMetaInformation(Dataset);
+			}
+
 			File = new FileReference(fileName);
 			File.Delete();
 
@@ -88,7 +111,9 @@ namespace Dicom {
 					new DicomDatasetReaderObserver(df.FileMetaInfo),
 					new DicomDatasetReaderObserver(df.Dataset));
 
-				df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
+				df.Format = reader.FileFormat;
+
+				df.Dataset.InternalTransferSyntax = reader.Syntax;
 
 				return df;
 			} catch (Exception e) {
@@ -108,7 +133,9 @@ namespace Dicom {
 					new DicomDatasetReaderObserver(df.FileMetaInfo),
 					new DicomDatasetReaderObserver(df.Dataset));
 
-				df.Dataset.InternalTransferSyntax = df.FileMetaInfo.TransferSyntax;
+				df.Format = reader.FileFormat;
+
+				df.Dataset.InternalTransferSyntax = reader.Syntax;
 
 				return df;
 			} catch (Exception e) {
@@ -138,8 +165,11 @@ namespace Dicom {
 			Exception e = null;
 			try {
 				state.Item1.EndRead(result);
-				state.Item2.Dataset.InternalTransferSyntax = state.Item2.FileMetaInfo.TransferSyntax;
+
+				state.Item2.Format = state.Item1.FileFormat;
+				state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
 			} catch (Exception ex) {
+				state.Item2.Format = state.Item1.FileFormat;
 				e = ex;
 			}
 

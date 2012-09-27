@@ -68,6 +68,7 @@
     <Compile Include="DicomFile.cs" />
     <Compile Include="DicomFileException.cs" />
     <Compile Include="DicomFileMetaInformation.cs" />
+    <Compile Include="DicomFileFormat.cs" />
     <Compile Include="DicomFragmentSequence.cs" />
     <Compile Include="DicomImplementation.cs" />
     <Compile Include="DicomItem.cs" />

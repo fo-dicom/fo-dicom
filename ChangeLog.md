@@ -7,6 +7,7 @@
 * Better management of PDU buffer memory
 * Better handling for irregular specific character sets
 * Support displaying images without specified photometric interpretation
+* Ability to read files without preamble or file meta information (including ACR-NEMA)
 
 #### v1.0.22 (09/25/2012)
 * Add Offending Element tags to C-Move response output
