@@ -822,6 +822,13 @@ namespace Dicom.Network {
 
 		protected void SendAssociationAccept(DicomAssociation association) {
 			Association = association;
+
+			// reject all presentation contexts that have not already been accepted or rejected
+			foreach (var pc in Association.PresentationContexts) {
+				if (pc.Result == DicomPresentationContextResult.Proposed)
+					pc.SetResult(DicomPresentationContextResult.RejectNoReason);
+			}
+
 			Logger.Log(LogLevel.Info, "{0} -> Association accept:\n{1}", LogID, association.ToString());
 			SendPDU(new AAssociateAC(Association));
 		}

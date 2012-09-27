@@ -1,5 +1,6 @@
 #### v1.0.24
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order
+* Reject all presentation contexts that have not already been accepted or rejected when sending association accept
 
 #### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width
