@@ -61,25 +61,72 @@ namespace Dicom.Network {
 		#endregion
 
 		#region Public Members
+		/// <summary>
+		/// Sets the <c>Result</c> of this presentation context.
+		/// 
+		/// The preferred method of accepting presentation contexts is to call one of the <c>AcceptTransferSyntaxes</c> methods.
+		/// </summary>
+		/// <param name="result">Result status to return for this proposed presentation context.</param>
 		public void SetResult(DicomPresentationContextResult result) {
 			SetResult(result, _transferSyntaxes[0]);
 		}
 
+		/// <summary>
+		/// Sets the <c>Result</c> and <c>AcceptedTransferSyntax</c> of this presentation context.
+		/// 
+		/// The preferred method of accepting presentation contexts is to call one of the <c>AcceptTransferSyntaxes</c> methods.
+		/// </summary>
+		/// <param name="result">Result status to return for this proposed presentation context.</param>
+		/// <param name="acceptedTransferSyntax">Accepted transfer syntax for this proposed presentation context.</param>
 		public void SetResult(DicomPresentationContextResult result, DicomTransferSyntax acceptedTransferSyntax) {
 			_transferSyntaxes.Clear();
 			_transferSyntaxes.Add(acceptedTransferSyntax);
 			_result = result;
 		}
 
-		public bool AcceptTransferSyntaxes(params DicomTransferSyntax[] acceptedTs) {
+		/// <summary>
+		/// Compares a list of transfer syntaxes accepted by the SCP against the list of transfer syntaxes proposed by the SCU. Sets the presentation 
+		/// context <c>Result</c> to <c>DicomPresentationContextResult.Accept</c> if an accepted transfer syntax is found. If no accepted transfer
+		/// syntax is found, the presentation context <c>Result</c> is set to <c>DicomPresentationContextResult.RejectTransferSyntaxesNotSupported</c>.
+		/// </summary>
+		/// <param name="acceptedTransferSyntaxes">Transfer syntaxes that the SCP accepts for the proposed abstract syntax.</param>
+		/// <returns>Returns <c>true</c> if an accepted transfer syntax was found. Returns <c>false</c> if no accepted transfer syntax was found.</returns>
+		public bool AcceptTransferSyntaxes(params DicomTransferSyntax[] acceptedTransferSyntaxes) {
+			return AcceptTransferSyntaxes(acceptedTransferSyntaxes, false);
+		}
+
+		/// <summary>
+		/// Compares a list of transfer syntaxes accepted by the SCP against the list of transfer syntaxes proposed by the SCU. Sets the presentation 
+		/// context <c>Result</c> to <c>DicomPresentationContextResult.Accept</c> if an accepted transfer syntax is found. If no accepted transfer
+		/// syntax is found, the presentation context <c>Result</c> is set to <c>DicomPresentationContextResult.RejectTransferSyntaxesNotSupported</c>.
+		/// </summary>
+		/// <param name="acceptedTransferSyntaxes">Transfer syntaxes that the SCP accepts for the proposed abstract syntax.</param>
+		/// <param name="scpPriority">If set to <c>true</c>, transfer syntaxes will be accepted in the order specified by <paramref name="acceptedTransferSyntaxes"/>. If set to <c>false</c>, transfer syntaxes will be accepted in the order proposed by the SCU.</param>
+		/// <returns>Returns <c>true</c> if an accepted transfer syntax was found. Returns <c>false</c> if no accepted transfer syntax was found.</returns>
+		public bool AcceptTransferSyntaxes(DicomTransferSyntax[] acceptedTransferSyntaxes, bool scpPriority = false) {
 			if (Result == DicomPresentationContextResult.Accept)
 				return true;
-			foreach (DicomTransferSyntax ts in acceptedTs) {
-				if (ts != null && HasTransferSyntax(ts)) {
-					SetResult(DicomPresentationContextResult.Accept, ts);
-					return true;
+
+			if (scpPriority) {
+				// let the SCP decide which syntax that it would prefer
+				foreach (DicomTransferSyntax ts in acceptedTransferSyntaxes) {
+					if (ts != null && HasTransferSyntax(ts)) {
+						SetResult(DicomPresentationContextResult.Accept, ts);
+						return true;
+					}
+				}
+			} else {
+				// accept syntaxes in the order that the SCU proposed them
+				foreach (DicomTransferSyntax ts in _transferSyntaxes) {
+					if (acceptedTransferSyntaxes.Contains(ts)) {
+						SetResult(DicomPresentationContextResult.Accept, ts);
+						return true;
+					}
 				}
 			}
+
+			SetResult(DicomPresentationContextResult.RejectTransferSyntaxesNotSupported);
+
 			return false;
 		}
 
