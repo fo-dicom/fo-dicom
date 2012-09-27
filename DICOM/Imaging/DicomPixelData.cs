@@ -34,7 +34,7 @@ namespace Dicom.Imaging {
 		}
 
 		public int NumberOfFrames {
-			get { return Dataset.Get<ushort>(DicomTag.NumberOfFrames, (ushort)1); }
+			get { return Dataset.Get<ushort>(DicomTag.NumberOfFrames, 0, 1); }
 			set { Dataset.Add(new DicomIntegerString(DicomTag.NumberOfFrames, value)); }
 		}
 
@@ -60,7 +60,7 @@ namespace Dicom.Imaging {
 		}
 
 		public ushort SamplesPerPixel {
-			get { return Dataset.Get<ushort>(DicomTag.SamplesPerPixel); }
+			get { return Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 1); }
 			set { Dataset.Add(new DicomUnsignedShort(DicomTag.SamplesPerPixel, value)); }
 		}
 
