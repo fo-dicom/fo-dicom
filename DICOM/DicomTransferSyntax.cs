@@ -80,6 +80,13 @@ namespace Dicom {
 		}
 
 		#region Dicom Transfer Syntax
+		/// <summary>Virtual transfer syntax for reading datasets improperly encoded in Big Endian format with implicit VR.</summary>
+		public static DicomTransferSyntax ImplicitVRBigEndian = new DicomTransferSyntax {
+			UID = new DicomUID(DicomUID.ExplicitVRBigEndian.UID + ".123456", "Implicit VR Big Endian", DicomUidType.TransferSyntax),
+			IsExplicitVR = false,
+			Endian = Endian.Big
+		};
+
 		/// <summary>Implicit VR Little Endian</summary>
 		public static DicomTransferSyntax ImplicitVRLittleEndian = new DicomTransferSyntax {
 			UID = DicomUID.ImplicitVRLittleEndian,
