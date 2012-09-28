@@ -1,0 +1,11 @@
+* text=auto
+
+*.cs text=auto diff=csharp
+*.c text=auto diff=cpp
+*.h text=auto diff=cpp
+*.i text=auto diff=cpp
+*.cpp text=auto diff=cpp
+*.hpp text=auto diff=cpp
+
+*.csproj text=auto merge=union
+*.sln text=auto eol=crlf merge=union
