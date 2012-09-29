@@ -5,19 +5,19 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.IO {
-	public class TemporaryFile : IDisposable {
+	public class TemporaryFile {
 		private string _file;
 
 		public TemporaryFile() {
 			_file = Create();
 		}
 
-		public string Name {
-			get { return _file; }
+		~TemporaryFile() {
+			TemporaryFileRemover.Delete(_file);
 		}
 
-		public void Dispose() {
-			TemporaryFileRemover.Delete(_file);
+		public string Name {
+			get { return _file; }
 		}
 
 		#region Static

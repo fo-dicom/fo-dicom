@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 
 namespace Dicom.IO {
-	public class TemporaryFileRemover : IDisposable {
+	public class TemporaryFileRemover {
 		private static TemporaryFileRemover _instance = new TemporaryFileRemover();
 		private object _lock = new object();
 		private List<string> _files = new List<string>();
@@ -13,6 +13,16 @@ namespace Dicom.IO {
 
 		private TemporaryFileRemover() {
 			_timer = new Timer(OnTick);
+		}
+
+		~TemporaryFileRemover() {
+			// one last try to delete all of the files
+			for (int i = 0; i < _files.Count; i++) {
+				try {
+					File.Delete(_files[i]);
+				} catch {
+				}
+			}
 		}
 
 		public static void Delete(string file) {
@@ -51,16 +61,6 @@ namespace Dicom.IO {
 				if (_files.Count == 0) {
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 					_running = false;
-				}
-			}
-		}
-
-		public void Dispose() {
-			// one last try to delete all of the files
-			for (int i = 0; i < _files.Count; i++) {
-				try {
-					File.Delete(_files[i]);
-				} catch {
 				}
 			}
 		}

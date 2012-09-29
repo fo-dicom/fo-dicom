@@ -2,10 +2,19 @@
 using System.IO;
 
 namespace Dicom.IO {
-	public sealed class FileReference : IDisposable {
+	public sealed class FileReference {
 		public FileReference(string fileName, bool isTempFile = false) {
 			Name = fileName;
 			IsTempFile = isTempFile;
+		}
+
+		~FileReference() {
+			if (IsTempFile) {
+				try {
+					Delete();
+				} catch {
+				}
+			}
 		}
 
 		public string Name {
@@ -43,15 +52,6 @@ namespace Dicom.IO {
 			}
 
 			return buffer;
-		}
-
-		public void Dispose() {
-			if (IsTempFile) {
-				try {
-					Delete();
-				} catch {
-				}
-			}
 		}
 	}
 }
