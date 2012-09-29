@@ -14,7 +14,7 @@ using Dicom.Imaging.Render;
 
 namespace Dicom.Imaging {
 	/// <summary>
-	/// DICOM Image
+	/// DICOM Image calss with capability of
 	/// </summary>
 	public class DicomImage {
 		#region Private Members
@@ -85,6 +85,31 @@ namespace Dicom.Imaging {
 			get { return PixelData.NumberOfFrames; }
 		}
 
+		/// <summary>Window width of rendered gray scale image </summary>
+		public double WindowWidth {
+			get {
+				return _renderOptions != null ? _renderOptions.WindowWidth : 0;
+			}
+			set {
+				if (_renderOptions != null) {
+					_renderOptions.WindowWidth = value;
+				}
+			}
+		}
+
+		/// <summary>Window center of rendered gray scale image </summary>
+		public double WindowCenter {
+			get {
+				return _renderOptions != null ? _renderOptions.WindowCenter : 0;
+			}
+			set {
+
+				if (_renderOptions != null) {
+					_renderOptions.WindowCenter = value;
+				}
+			}
+		}
+
 #if !SILVERLIGHT
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
@@ -105,7 +130,11 @@ namespace Dicom.Imaging {
 			return graphic.RenderImage(_pipeline.LUT);
 		}
 #endif
-
+		/// <summary>
+		/// Renders DICOM image to <typeparamref name="System.Windows.Media.ImageSource"/> 
+		/// </summary>
+		/// <param name="frame">Zero indexed frame nu,ber</param>
+		/// <returns>Rendered image</returns>
 		public ImageSource RenderImageSource(int frame = 0) {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
@@ -122,6 +151,13 @@ namespace Dicom.Imaging {
 			return graphic.RenderImageSource(_pipeline.LUT);
 		}
 
+
+		/// <summary>
+		/// Loads the <para>dataset</para> pixeldata for specified frame and set the internal dataset
+		/// 
+		/// </summary>
+		/// <param name="dataset">dataset to load pixeldata from</param>
+		/// <param name="frame">The frame number to create pixeldata for</param>
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
@@ -131,6 +167,8 @@ namespace Dicom.Imaging {
 						ConvertColorspaceToRGB = true
 					};
 				}
+
+				//Is this introduce performance problem when dealing with multi-frame image?
 				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
 			}
 
@@ -145,6 +183,10 @@ namespace Dicom.Imaging {
 			_currentFrame = frame;
 		}
 
+		/// <summary>
+		/// Create image rendering pipeline according to the Dataset <see cref="PhotometricInterpretation"/>
+		/// 
+		/// </summary>
 		private void CreatePipeline() {
 			if (_pipeline != null)
 				return;
@@ -165,13 +207,17 @@ namespace Dicom.Imaging {
 				}
 			}
 
+
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
+				//Monochrom1 or Monochrome2 for grayscale image
 				if (_renderOptions == null)
 					_renderOptions = GrayscaleRenderOptions.FromDataset(Dataset);
 				_pipeline = new GenericGrayscalePipeline(_renderOptions);
 			} else if (pi == PhotometricInterpretation.Rgb) {
+				//RGB for color image
 				_pipeline = new RgbColorPipeline();
 			} else if (pi == PhotometricInterpretation.PaletteColor) {
+				//PALETTE COLOR for Palette image
 				_pipeline = new PaletteColorPipeline(PixelData);
 			} else {
 				throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi.Value);
