@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 
 namespace Dicom.IO {
-	public class TemporaryFileRemover {
+	public class TemporaryFileRemover : IDisposable {
 		private static TemporaryFileRemover _instance = new TemporaryFileRemover();
 		private object _lock = new object();
 		private List<string> _files = new List<string>();
@@ -16,6 +16,15 @@ namespace Dicom.IO {
 		}
 
 		~TemporaryFileRemover() {
+			DeleteAllRemainingFiles();
+		}
+
+		public void Dispose() {
+			DeleteAllRemainingFiles();
+			GC.SuppressFinalize(this);
+		}
+
+		private void DeleteAllRemainingFiles() {
 			// one last try to delete all of the files
 			for (int i = 0; i < _files.Count; i++) {
 				try {

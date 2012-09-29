@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.IO {
-	public class TemporaryFile {
+	public class TemporaryFile : IDisposable {
 		private string _file;
 
 		public TemporaryFile() {
@@ -14,6 +14,11 @@ namespace Dicom.IO {
 
 		~TemporaryFile() {
 			TemporaryFileRemover.Delete(_file);
+		}
+
+		public void Dispose() {
+			TemporaryFileRemover.Delete(_file);
+			GC.SuppressFinalize(this);
 		}
 
 		public string Name {
