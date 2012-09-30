@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.Imaging.LUT {
+
+	/// <summary>
+	/// Abstract VOI LUT implementation of <seealso cref="ILUT"/>
+	/// </summary>
 	public abstract class VOILUT : ILUT {
 		#region Private Members
 		private double _windowCenter;
@@ -19,6 +23,11 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructors
+		/// <summary>
+		/// Initialize new instance of <seealso cref="VOUTLUT"/>
+		/// </summary>
+		/// <param name="windowCenter">Window center</param>
+		/// <param name="windowWidth">Window width</param>
 		public VOILUT(double windowCenter, double windowWidth) {
 			WindowCenter = windowCenter;
 			WindowWidth = windowWidth;
@@ -26,6 +35,9 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Properties
+		/// <summary>
+		/// The VOI window center
+		/// </summary>
 		public double WindowCenter {
 			get { return _windowCenter; }
 			set {
@@ -34,6 +46,9 @@ namespace Dicom.Imaging.LUT {
 			}
 		}
 
+		/// <summary>
+		/// The VOI window width
+		/// </summary>
 		public double WindowWidth {
 			get { return _windowWidth; }
 			set {
@@ -93,6 +108,14 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Factory Methods
+		/// <summary>
+		/// Create a new VOILUT according to <paramref name="function"/>, <paramref name=" windowCenter"/>
+		/// and <paramref name="windowWidth"/>
+		/// </summary>
+		/// <param name="function">The VOI function (SIGMOID or LINEAR)</param>
+		/// <param name="windowCenter">VOI window center</param>
+		/// <param name="windowWidth">VOI window width</param>
+		/// <returns></returns>
 		public static VOILUT Create(string function, double windowCenter, double windowWidth) {
 			switch (function.ToUpper()) {
 			case "SIGMOID":
@@ -106,9 +129,18 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 	}
 
+	/// <summary>
+	/// LINEAR VOI LUT
+	/// </summary>
 	public class VOILinearLUT : VOILUT {
 		#region Public Constructors
-		public VOILinearLUT(double windowCenter, double windowWidth) : base(windowCenter, windowWidth) {
+		/// <summary>
+		/// Initialize new instance of <seealso cref="VOILinearLUT"/>
+		/// </summary>
+		/// <param name="windowCenter">VOI window center</param>
+		/// <param name="windowWidth">VOI window width</param>
+		public VOILinearLUT(double windowCenter, double windowWidth)
+			: base(windowCenter, windowWidth) {
 		}
 		#endregion
 
@@ -127,8 +159,16 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 	}
 
+	/// <summary>
+	/// SIGMOID VOI LUT
+	/// </summary>
 	public class VOISigmoidLUT : VOILUT {
 		#region Public Constructors
+		/// <summary>
+		/// Initialize new instance of <seealso cref="VOISigmoidLUT"/>
+		/// </summary>
+		/// <param name="windowCenter">VOI window center</param>
+		/// <param name="windowWidth">VOI window width</param>
 		public VOISigmoidLUT(double windowCenter, double windowWidth) : base(windowCenter, windowWidth) {
 		}
 		#endregion

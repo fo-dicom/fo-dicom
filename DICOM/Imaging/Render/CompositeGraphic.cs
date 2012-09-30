@@ -10,18 +10,28 @@ using System.Text;
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
+	/// <summary>
+	/// The Composite Graphic implementation of <seealso cref="IGraphic"/> which layers graphics one over the other
+	/// </summary>
 	public class CompositeGraphic : IGraphic {
 		#region Private Members
 		private List<IGraphic> _layers = new List<IGraphic>();
 		#endregion
 
 		#region Public Constructor
+		/// <summary>
+		/// Initialize new instance of <seealso cref="CompositeGraphic"/>
+		/// </summary>
+		/// <param name="bg">background (initial) graphic layer</param>
 		public CompositeGraphic(IGraphic bg) {
 			_layers.Add(bg);
 		}
 		#endregion
 
 		#region Public Properties
+		/// <summary>
+		/// The backgroun graphic layer
+		/// </summary>
 		public IGraphic BackgroundLayer {
 			get { return _layers[0]; }
 		}
@@ -68,6 +78,10 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Members
+		/// <summary>
+		/// Add new graphic layer to the existing layers according to its Z Order
+		/// </summary>
+		/// <param name="layer">The layer graphic instance</param>
 		public void AddLayer(IGraphic layer) {
 			_layers.Add(layer);
 			_layers.Sort(delegate(IGraphic a, IGraphic b) {

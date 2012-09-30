@@ -8,7 +8,7 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging {
 	/// <summary>
-	/// DICOM Overlay
+	/// DICOM image overlay class
 	/// </summary>
 	public class DicomOverlayData {
 		#region Private Members

@@ -16,6 +16,9 @@ using Dicom.Imaging.Render;
 using Dicom.IO;
 
 namespace Dicom.Imaging.Render {
+	/// <summary>
+	/// The Image Graphic implementation of <seealso cref="IGraphic"/>
+	/// </summary>
 	public class ImageGraphic : IGraphic {
 		#region Protected Members
 		protected IPixelData _originalData;
@@ -44,13 +47,20 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Properties
+		/// <summary>
+		/// Number of pixel componenets (samples)
+		/// </summary>
 		public int Components {
 			get { return OriginalData.Components; }
 		}
 
+		/// <summary>
+		/// Original pixel data
+		/// </summary>
 		public IPixelData OriginalData {
 			get { return _originalData; }
 		}
+
 		public int OriginalWidth {
 			get { return _originalData.Width; }
 		}
@@ -69,6 +79,9 @@ namespace Dicom.Imaging.Render {
 			get { return _scaleFactor; }
 		}
 
+		/// <summary>
+		/// Scaled pixel data
+		/// </summary>
 		public IPixelData ScaledData {
 			get {
 				if (_scaledData == null) {
@@ -101,11 +114,18 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Constructors
+		/// <summary>
+		/// Initialize new instance of <seealso cref="ImageGraphic"/>
+		/// </summary>
+		/// <param name="pixelData">Pixel data</param>
 		public ImageGraphic(IPixelData pixelData) : this() {
 			_originalData = pixelData;
 			Scale(1.0);
 		}
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		protected ImageGraphic() {
 			_zorder = 255;
 			_applyLut = true;
@@ -114,6 +134,10 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Members
+		/// <summary>
+		/// Add overlay to render over the resulted image 
+		/// </summary>
+		/// <param name="overlay">Overlay graphic </param>
 		public void AddOverlay(OverlayGraphic overlay) {
 			_overlays.Add(overlay);
 			overlay.Scale(_scaleFactor);
