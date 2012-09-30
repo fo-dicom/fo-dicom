@@ -49,6 +49,9 @@ namespace Dicom.IO.Writer {
 		}
 
 		private void OnCompletePreamble(IByteTarget target, object state) {
+			// recalculate FMI group length as required by standard
+			_fileMetaInfo.RecalculateGroupLengths();
+
 			DicomWriter writer = new DicomWriter(DicomTransferSyntax.ExplicitVRLittleEndian, _options, _target);
 			DicomDatasetWalker walker = new DicomDatasetWalker(_fileMetaInfo);
 			walker.BeginWalk(writer, OnCompleteFileMetaInfo, walker);
