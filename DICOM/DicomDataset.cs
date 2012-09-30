@@ -10,6 +10,7 @@ using Dicom.Log;
 namespace Dicom {
 	public class DicomDataset : IEnumerable<DicomItem> {
 		private IDictionary<DicomTag, DicomItem> _items;
+		private DicomTransferSyntax _syntax;
 
 		public DicomDataset() {
 			_items = new SortedList<DicomTag, DicomItem>();
@@ -26,10 +27,21 @@ namespace Dicom {
 				_items[item.Tag] = item;
 		}
 
+		/// <summary>DICOM transfer syntax of this dataset.</summary>
 		public DicomTransferSyntax InternalTransferSyntax {
-			get;
-			internal set;
+			get { return _syntax; }
+			internal set {
+				_syntax = value;
+
+				// update transfer syntax for sequence items
+				foreach (var sq in this.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
+					foreach (var item in sq.Items) {
+						item.InternalTransferSyntax = _syntax;
+					}
+				}
+			}
 		}
+
 
 		public T Get<T>(DicomTag tag, int n=0) {
 			return Get<T>(tag, n, default(T));
@@ -247,6 +259,11 @@ namespace Dicom {
 			throw new InvalidOperationException(String.Format("Unable to create DICOM element of type {0} with values of type {1}", vr.Code, typeof(T).ToString()));
 		}
 
+		/// <summary>
+		/// Checks the DICOM dataset to determine if the dataset already contains an item with the specified tag.
+		/// </summary>
+		/// <param name="tag">DICOM tag to test</param>
+		/// <returns><c>True</c> if a DICOM item with the specified tag already exists.</returns>
 		public bool Contains(DicomTag tag) {
 			return _items.ContainsKey(tag);
 		}
