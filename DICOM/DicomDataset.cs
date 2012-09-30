@@ -31,10 +31,6 @@ namespace Dicom {
 			internal set;
 		}
 
-		public bool Exists(DicomTag tag) {
-			return _items.ContainsKey(tag);
-		}
-
 		public T Get<T>(DicomTag tag, int n=0) {
 			return Get<T>(tag, n, default(T));
 		}
