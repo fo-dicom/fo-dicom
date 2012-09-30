@@ -582,6 +582,9 @@ namespace Dicom.Network {
 			if (pc == null)
 				throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.AffectedSOPClassUID);
 
+			// force calculation of command group length as required by standard
+			msg.Command.RecalculateGroupLengths();
+
 			var dimse = new Dimse();
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
