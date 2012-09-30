@@ -152,7 +152,7 @@ namespace Dicom.Imaging.Codec {
 				newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompression, "01"));
 
 				List<string> methods = new List<string>();
-				if (newDataset.Exists(DicomTag.LossyImageCompressionMethod))
+				if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
 					methods.AddRange(newDataset.Get<string[]>(DicomTag.LossyImageCompressionMethod));
 				methods.Add(codec.TransferSyntax.LossyCompressionMethod);
 				newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
