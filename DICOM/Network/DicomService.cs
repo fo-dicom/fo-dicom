@@ -609,6 +609,13 @@ namespace Dicom.Network {
 
 				var dataset = dimse.Message.Dataset;
 
+				// remove group lengths as suggested in PS 3.5 7.2
+				//
+				//	2. It is recommended that Group Length elements be removed during storage or transfer 
+				//	   in order to avoid the risk of inconsistencies arising during coercion of data 
+				//	   element values and changes in transfer syntax.
+				dataset.RemoveGroupLengths();
+
 				if (dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
 					dataset = dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
 
