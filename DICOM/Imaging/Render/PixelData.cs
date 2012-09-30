@@ -10,16 +10,49 @@ using Dicom.Imaging.Algorithms;
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
+	/// <summary>
+	/// Pixel data interface implemented by various pixel format classes
+	/// </summary>
 	public interface IPixelData {
+		/// <summary>
+		/// Image width (columns) in pixels
+		/// </summary>
 		int Width { get; }
+		/// <summary>
+		/// Image height (rows) in pixels
+		/// </summary>
 		int Height { get; }
+		/// <summary>
+		/// Number for pixel comopnents (normally 1 for grayscale, 1 for palette, and 3 for RGB and YBR
+		/// </summary>
 		int Components { get; }
+		/// <summary>
+		/// return the minimum and maximum pixel values from pixel data
+		/// </summary>
+		/// <param name="padding"></param>
+		/// <returns><paramref name="DicomImage<int>"/> of claculated minimum and max</returns>
 		DicomRange<int> GetMinMax(int padding);
 		IPixelData Rescale(double scale);
+		/// <summary>
+		/// Render the pixel data after applying <paramref name="lut"/> to the output array (allocated by user)
+		/// </summary>
+		/// <param name="lut">Lookup table to render the pixels into output pixels</param>
+		/// <param name="output">The output array to store the result in</param>
 		void Render(ILUT lut, int[] output);
 	}
 
+	/// <summary>
+	/// Pixel data factory to create <seealso cref="IPixelData"/> and <seealso cref="SingleBitPixelData"/> from 
+	/// <seealso cref="DicomPixelData"/>
+	/// </summary>
 	public static class PixelDataFactory {
+		/// <summary>
+		/// Create <see cref="IPixelData"/> form <see cref="DicomPixelData"/> 
+		/// according to the input <paramref name="pixelData"/> <seealso cref="PhotometricInterpretation"/>
+		/// </summary>
+		/// <param name="pixelData">Input pixel data</param>
+		/// <param name="frame">Frame number (0 based)</param>
+		/// <returns>Implementation of <seealso cref="IPixelData"/> according to <seealso cref="PhotometricInterpretation"/></returns>
 		public static IPixelData Create(DicomPixelData pixelData, int frame) {
 			PhotometricInterpretation pi = pixelData.PhotometricInterpretation;
 
@@ -62,11 +95,20 @@ namespace Dicom.Imaging.Render {
 			}
 		}
 
+		/// <summary>
+		/// Create <see cref="SingleBitPixelData"/> form <see cref="DicomOverlayData"/> 
+		/// according to the input <paramref name="overlayData"/>
+		/// </summary>
+		/// <param name="overlayData">The input overlay data</param>
+		/// <returns>The result overlay stored in <seealso cref="SingleBitPixelData"/></returns>
 		public static SingleBitPixelData Create(DicomOverlayData overlayData) {
 			return new SingleBitPixelData(overlayData.Columns, overlayData.Rows, overlayData.Data);
 		}
 	}
 
+	/// <summary>
+	/// Grayscale unsigned 8 bits <seealso cref="IPixelData"/> implementation
+	/// </summary>
 	public class GrayscalePixelDataU8 : IPixelData {
 		#region Private Members
 		int _width;
@@ -107,6 +149,7 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
+
 		public DicomRange<int> GetMinMax(int padding) {
 			int min = Int32.MaxValue;
 			int max = Int32.MinValue;
@@ -150,6 +193,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 	}
 
+	/// <summary>
+	/// Single bit pixel <seealso cref="IPixelData"/> implementation(for binary pixels) usually used for overlay pixel data
+	/// </summary>
 	public class SingleBitPixelData : GrayscalePixelDataU8 {
 		#region Public Constructor
 		public SingleBitPixelData(int width, int height, IByteBuffer data) : base(width, height, new MemoryByteBuffer(ExpandBits(width, height, data.Data))) {
@@ -171,6 +217,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 	}
 
+	/// <summary>
+	/// Grayscale signed 16 bits <seealso cref="IPixelData"/> implementation
+	/// </summary>
 	public class GrayscalePixelDataS16 : IPixelData {
 		#region Private Members
 		int _width;
@@ -267,6 +316,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 	}
 
+	/// <summary>
+	/// Grayscale unsigned 16 bits <seealso cref="IPixelData"/> implementation
+	/// </summary>
 	public class GrayscalePixelDataU16 : IPixelData {
 		#region Private Members
 		int _width;
@@ -358,7 +410,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 	}
 
-
+	/// <summary>
+	/// Grayscale signed 32 bits <seealso cref="IPixelData"/> implementation
+	/// </summary>
     public class GrayscalePixelDataS32 : IPixelData {
         #region Private Members
         int _width;
@@ -466,6 +520,9 @@ namespace Dicom.Imaging.Render {
         #endregion
     }
 
+	/// <summary>
+	/// Grayscale unsgiend 32 bits <seealso cref="IPixelData"/> implementation
+	/// </summary>
     public class GrayscalePixelDataU32 : IPixelData
     {
         #region Private Members
@@ -563,6 +620,9 @@ namespace Dicom.Imaging.Render {
         #endregion
     }
 
+	/// <summary>
+	/// Color 24 bits <seealso cref="IPixelData"/> implementation used for RGB
+	/// </summary>
     public class ColorPixelData24 : IPixelData
     {
 		#region Private Members

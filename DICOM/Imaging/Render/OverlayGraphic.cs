@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Dicom.Imaging.Algorithms;
 
 namespace Dicom.Imaging.Render {
+	/// <summary>
+	/// The Overlay Graphic which render overlay over pixel data
+	/// </summary>
 	public class OverlayGraphic {
 		#region Private Members
 		private SingleBitPixelData _originalData;
@@ -15,6 +18,13 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Constructors
+		/// <summary>
+		/// Initialize new instance of <seealso cref="OverlayGraphic"/>
+		/// </summary>
+		/// <param name="pixelData">Overlay pixel data</param>
+		/// <param name="offsetx">X offset</param>
+		/// <param name="offsety">Y offset</param>
+		/// <param name="color">The color of the resulting overlay</param>
 		public OverlayGraphic(SingleBitPixelData pixelData, int offsetx, int offsety, int color) {
 			_originalData = pixelData;
 			_scaledData = _originalData;
