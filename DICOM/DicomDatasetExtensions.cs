@@ -55,7 +55,7 @@ namespace Dicom {
 		/// <param name="createIfMissing">If set to <c>true</c>, group length elements will be created if missing. If set to <c>false</c>, only groups with existing group lengths will be recalculated.</param>
 		public static void RecalculateGroupLengths(this DicomDataset dataset, bool createIfMissing = true) {
 			// recalculate group lengths for sequences first
-			foreach (var sq in dataset.Select(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
+			foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
 				foreach (var item in sq.Items) {
 					item.RecalculateGroupLengths(createIfMissing);
 				}
@@ -94,7 +94,7 @@ namespace Dicom {
 
 			if (!firstLevelOnly) {
 				// remove group lengths from sequences
-				foreach (var sq in dataset.Select(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
+				foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
 					foreach (var item in sq.Items) {
 						item.RemoveGroupLengths(firstLevelOnly);
 					}
