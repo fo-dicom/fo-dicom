@@ -4,7 +4,17 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.Imaging {
+	/// <summary>
+	/// Extract image bit depth infomation from dataset and provide information for image rendering process
+	/// </summary>
 	public class BitDepth {
+		/// <summary>
+		/// Initialize the bit depth information using passed parameters
+		/// </summary>
+		/// <param name="allocated">Number of bits allocated per pixel sample (8,16,32) </param>
+		/// <param name="stored">Number of bits stored per pixel sample (from LSB to MSB)</param>
+		/// <param name="highBit">The high bit zero based index</param>
+		/// <param name="signed">True if pixel data signed (sign will be stored in the high bit)</param>
 		public BitDepth(int allocated, int stored, int highBit, bool signed) {
 			BitsAllocated = allocated;
 			BitsStored = stored;
@@ -31,11 +41,16 @@ namespace Dicom.Imaging {
 		public bool IsSigned {
 			get; private set;
 		}
-
+		/// <summary>
+		/// The maximum possible pixel value from stored bits
+		/// </summary>
 		public int MaximumValue {
 			get { return GetMaximumValue(BitsStored, IsSigned); }
 		}
 
+		/// <summary>
+		/// The minimum possible pixel value from stored bits
+		/// </summary>
 		public int MinimumValue {
 			get { return GetMinimumValue(BitsStored, IsSigned); }
 		}
@@ -54,21 +69,44 @@ namespace Dicom.Imaging {
 			return value + 1;
 		}
 
+		/// <summary>
+		/// Calculate the minimum value for specified bits and sign
+		/// </summary>
+		/// <param name="bitsStored">Number of bits</param>
+		/// <param name="isSigned">True if signed</param>
+		/// <returns>The minimum value</returns>
 		public static int GetMinimumValue(int bitsStored, bool isSigned) {
 			if (isSigned) return -(1 << (bitsStored - 1));
 			return 0;
 		}
 
+		/// <summary>
+		/// Calculate the maximum value for specified bits and sign
+		/// </summary>
+		/// <param name="bitsStored">Number of bits</param>
+		/// <param name="isSigned">True if signed</param>
+		/// <returns>The maximum value</returns>
 		public static int GetMaximumValue(int bitsStored, bool isSigned) {
 			if (isSigned) return (1 << (bitsStored - 1)) - 1;
 			return (1 << bitsStored) - 1;
 		}
 
+		/// <summary>
+		/// Return the high data bit index (excluding sign bit if data is signed)
+		/// </summary>
+		/// <param name="bitsStored">Number of bits</param>
+		/// <param name="isSigned">True if signed</param>
+		/// <returns>Index of high data bit (excluding sign bit if data is signed)</returns>
 		public static int GetHighBit(int bitsStored, bool isSigned) {
 			if (isSigned) return bitsStored - 1;
 			return bitsStored;
 		}
 
+		/// <summary>
+		/// Create new instance of <seealso cref="BitDpeth"/> from input <paramref name="dataset"/>
+		/// </summary>
+		/// <param name="dataset">Input dataset to extract bit depth information from</param>
+		/// <returns>New <seealso cref="BitDepth"/> instance</returns>
 		public static BitDepth FromDataset(DicomDataset dataset) {
 			var allocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
 			var stored = dataset.Get<ushort>(DicomTag.BitsStored);

@@ -3,6 +3,9 @@
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
+	/// <summary>
+	/// Grayscale color pipeline implementation of <seealso cref="IPipeline"/> interface
+	/// </summary>
 	public class GenericGrayscalePipeline : IPipeline {
 		#region Private Members
 		private CompositeLUT _lut;
@@ -13,6 +16,11 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Constructor
+		/// <summary>
+		/// Initialize new instance of <seealso cref="GenericGrayscalePipeline"/> which consist of the following sequence
+		/// Rescale (Modality) LUT -> VOI LUT -> Output LUT and optionally Invert LUT if specified by grayscale options
+		/// </summary>
+		/// <param name="options">Grayscale options to use in the pipeline</param>
 		public GenericGrayscalePipeline(GrayscaleRenderOptions options) {
 			if (options.RescaleSlope != 1.0 || options.RescaleIntercept != 0.0)
 				_rescaleLut = new ModalityLUT(options.BitDepth.MinimumValue, options.BitDepth.MaximumValue, 
@@ -25,6 +33,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Properties
+		/// <summary>
+		/// Get <seealso cref="CompositeLUT"/> of avaliavble LUTs available in this pipeline instance
+		/// </summary>
 		public ILUT LUT {
 			get {
 				if (_lut == null) {

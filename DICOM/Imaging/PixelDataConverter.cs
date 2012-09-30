@@ -7,7 +7,15 @@ using Dicom.IO;
 using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging {
+	/// <summary>
+	/// Convert pixels from presentation from interleaved to planar and from planar to interleaved
+	/// </summary>
 	public static class PixelDataConverter {
+		/// <summary>
+		/// Convert 24 bits pixels from interleaved (RGB) to planar (RRR...GGG...BBB...)
+		/// </summary>
+		/// <param name="data">Pixels data in interleaved format (RGB)</param>
+		/// <returns>Pixels data in planar format (RRR...GGG...BBB...)</returns>
 		public static IByteBuffer InterleavedToPlanar24(IByteBuffer data) {
 			byte[] oldPixels = data.Data;
 			byte[] newPixels = new byte[oldPixels.Length];
@@ -24,6 +32,11 @@ namespace Dicom.Imaging {
 			return new MemoryByteBuffer(newPixels);
 		}
 
+		/// <summary>
+		/// Convert 24 bits pixels from planar (RRR...GGG...BBB...) to interleaved (RGB)
+		/// </summary>
+		/// <param name="data">Pixels data in planar format (RRR...GGG...BBB...)</param>
+		/// <returns>Pixels data in interleaved format (RGB)</returns>
 		public static IByteBuffer PlanarToInterleaved24(IByteBuffer data) {
 			byte[] oldPixels = data.Data;
 			byte[] newPixels = new byte[oldPixels.Length];
@@ -36,7 +49,7 @@ namespace Dicom.Imaging {
 					newPixels[(n * 3) + 2] = oldPixels[n + (pixelCount * 2)];
 				}
 			}
-
+			
 			return new MemoryByteBuffer(newPixels);
 		}
 	}

@@ -1,6 +1,9 @@
 using System;
 
 namespace Dicom.Imaging.LUT {
+	/// <summary>
+	/// Invert LUT implementation of <seealso cref="ILUT"/> to invert grayscale images
+	/// </summary>
 	public class InvertLUT : ILUT {
 		#region Private Members
 		private int _minValue;
@@ -8,6 +11,11 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructors
+		/// <summary>
+		/// Initialize new instance of <seealso cref="InvertLUT"/> 
+		/// </summary>
+		/// <param name="minValue">Miniumum input value</param>
+		/// <param name="maxValue">Maximum output value</param>
 		public InvertLUT(int minValue, int maxValue) {
 			_minValue = minValue;
 			_maxValue = maxValue;
