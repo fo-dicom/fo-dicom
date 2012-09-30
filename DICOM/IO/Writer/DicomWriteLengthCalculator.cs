@@ -21,6 +21,10 @@ namespace Dicom.IO.Writer {
 		}
 
 		public uint Calculate(DicomItem item) {
+			// skip group lengths if not writing to file
+			if (!_options.KeepGroupLengths && item.Tag.Element == 0x0000)
+				return 0;
+
 			uint length = 0;
 			length += 4; // tag
 
