@@ -3,6 +3,7 @@
 * Reject all presentation contexts that have not already been accepted or rejected when sending association accept
 * Add finalizers to temp file classes to catch files not deleted at application exit
 * Remove Exists() method from DicomDataset (duplicates functionality of Contains())
+* Extension methods for recalculating and removing group length elements
 
 #### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width
