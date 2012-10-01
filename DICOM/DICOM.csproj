@@ -170,6 +170,7 @@
     <Compile Include="IO\StreamByteTarget.cs" />
     <Compile Include="IO\TemporaryFileRemover.cs" />
     <Compile Include="IO\TemporaryFile.cs" />
+    <Compile Include="IO\Writer\DicomDatasetExtensions.cs" />
     <Compile Include="IO\Writer\DicomFileWriter.cs" />
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
@@ -231,7 +232,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
