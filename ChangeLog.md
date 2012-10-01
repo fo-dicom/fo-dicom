@@ -5,6 +5,7 @@
 * Remove Exists() method from DicomDataset (duplicates functionality of Contains())
 * Extension methods for recalculating and removing group length elements
 * Force calculation of group lengths when writing File Meta Info and Command datasets
+* Fix exception when attempting to display ROI overlays
 
 #### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width

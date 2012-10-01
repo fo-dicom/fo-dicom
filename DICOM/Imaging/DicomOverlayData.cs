@@ -7,6 +7,14 @@ using System.Text;
 using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging {
+	public enum DicomOverlayType {
+		/// <summary>Graphic overlay</summary>
+		Graphics,
+
+		/// <summary>Region of Interest</summary>
+		ROI
+	}
+
 	/// <summary>
 	/// DICOM image overlay class
 	/// </summary>
@@ -16,7 +24,7 @@ namespace Dicom.Imaging {
 
 		private int _rows;
 		private int _columns;
-		private string _type;
+		private DicomOverlayType _type;
 		private int _originX;
 		private int _originY;
 		private int _bitsAllocated;
@@ -68,7 +76,7 @@ namespace Dicom.Imaging {
 		/// <summary>
 		/// Overlay type
 		/// </summary>
-		public string Type {
+		public DicomOverlayType Type {
 			get { return _type; }
 		}
 
@@ -197,7 +205,12 @@ namespace Dicom.Imaging {
 		private void Load(DicomDataset ds) {
 			_rows = ds.Get<ushort>(OverlayTag(DicomTag.OverlayRows));
 			_columns = ds.Get<ushort>(OverlayTag(DicomTag.OverlayColumns));
-			_type = ds.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+			
+			var type = ds.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+			if (type.StartsWith("R"))
+				_type = DicomOverlayType.ROI;
+			else
+				_type = DicomOverlayType.Graphics;
 
 			DicomTag tag = OverlayTag(DicomTag.OverlayOrigin);
 			if (ds.Contains(tag)) {

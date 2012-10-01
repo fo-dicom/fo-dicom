@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Text;
@@ -178,14 +179,13 @@ namespace Dicom.Imaging {
 			_pixelData = PixelDataFactory.Create(PixelData, frame);
 			_pixelData.Rescale(_scale);
 
-			_overlays = DicomOverlayData.FromDataset(Dataset);
+			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
 			_currentFrame = frame;
 		}
 
 		/// <summary>
-		/// Create image rendering pipeline according to the Dataset <see cref="PhotometricInterpretation"/>
-		/// 
+		/// Create image rendering pipeline according to the Dataset <see cref="PhotometricInterpretation"/>.
 		/// </summary>
 		private void CreatePipeline() {
 			if (_pipeline != null)
