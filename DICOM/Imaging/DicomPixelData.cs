@@ -343,7 +343,11 @@ namespace Dicom.Imaging {
 				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
 				//TODO: trace down the need for this additional byte swap
-				if (Syntax.Endian == Endian.Big)
+				if (Syntax.Endian == Endian.Big && !Syntax.SwapPixelData)
+					buffer = new SwapByteBuffer(buffer, 2);
+
+				// mainly for GE Private Implicit VR Little Endian
+				if (Syntax.SwapPixelData)
 					buffer = new SwapByteBuffer(buffer, 2);
 
 				return buffer;
@@ -433,6 +437,10 @@ namespace Dicom.Imaging {
 				}
 				else
 					throw new DicomImagingException("Support for multi-frame images with varying fragment sizes and no offset table has not been implemented.");
+
+				// mainly for GE Private Implicit VR Little Endian
+				if (!Syntax.IsEncapsulated && BitsAllocated == 16 && Syntax.SwapPixelData)
+					buffer = new SwapByteBuffer(buffer, 2);
 
 				return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
 			}
