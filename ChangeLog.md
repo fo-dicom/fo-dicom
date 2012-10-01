@@ -7,6 +7,7 @@
 * Force calculation of group lengths when writing File Meta Info and Command datasets
 * Fix exception when attempting to display ROI overlays
 * Add ability to extract embedded overlays from pixel data
+* Detect incorrect transfer syntax in file meta info
 
 #### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width
