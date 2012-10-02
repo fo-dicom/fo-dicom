@@ -230,6 +230,8 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.UI) {
+				if (typeof(T) == typeof(string))
+					return Add(new DicomUniqueIdentifier(tag, values.Cast<string>().First()));
 				if (typeof(T) == typeof(DicomUID))
 					return Add(new DicomUniqueIdentifier(tag, values.Cast<DicomUID>().ToArray()));
 				if (typeof(T) == typeof(DicomTransferSyntax))

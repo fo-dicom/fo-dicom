@@ -949,6 +949,9 @@ namespace Dicom {
 	/// <summary>Unique Identifier (UI)</summary>
 	public class DicomUniqueIdentifier : DicomMultiStringElement {
 		#region Public Constructors
+		public DicomUniqueIdentifier(DicomTag tag, params string[] values) : base(tag, values) {
+		}
+
 		public DicomUniqueIdentifier(DicomTag tag, params DicomUID[] values) : base(tag, values.Select(x => x.UID).ToArray()) {
 		}
 
