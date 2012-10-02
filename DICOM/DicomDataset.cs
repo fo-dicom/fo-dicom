@@ -95,33 +95,40 @@ namespace Dicom {
 		}
 
 		public DicomDataset Add<T>(DicomTag tag, params T[] values) {
-			if (values == null)
-				return this;
-
 			var entry = DicomDictionary.Default[tag];
 			if (entry == null)
-				throw new DicomDataException("Tag {0} not found in DICOM dictionary", tag);
+				throw new DicomDataException("Tag {0} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.", tag);
 
-			var vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
+			DicomVR vr = null;
+			if (values != null)
+				vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
 			if (vr == null)
 				vr = entry.ValueRepresentations.First();
 
 			if (vr == DicomVR.AE) {
+				if (values == null)
+					return Add(new DicomApplicationEntity(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomApplicationEntity(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.AS) {
+				if (values == null)
+					return Add(new DicomAgeString(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomAgeString(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.AT) {
+				if (values == null)
+					return Add(new DicomAttributeTag(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(DicomTag))
 					return Add(new DicomAttributeTag(tag, values.Cast<DicomTag>().ToArray()));
 			}
 
 			if (vr == DicomVR.CS) {
+				if (values == null)
+					return Add(new DicomCodeString(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomCodeString(tag, values.Cast<string>().ToArray()));
 				if (typeof(T).IsEnum)
@@ -129,6 +136,8 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.DA) {
+				if (values == null)
+					return Add(new DicomDate(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDate(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
@@ -138,6 +147,8 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.DS) {
+				if (values == null)
+					return Add(new DicomDecimalString(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(decimal))
 					return Add(new DicomDecimalString(tag, values.Cast<decimal>().ToArray()));
 				if (typeof(T) == typeof(string))
@@ -145,6 +156,8 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.DT) {
+				if (values == null)
+					return Add(new DicomDateTime(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomDateTime(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
@@ -154,16 +167,22 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.FD) {
+				if (values == null)
+					return Add(new DicomFloatingPointDouble(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(double))
 					return Add(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()));
 			}
 
 			if (vr == DicomVR.FL) {
+				if (values == null)
+					return Add(new DicomFloatingPointSingle(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(float))
 					return Add(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()));
 			}
 
 			if (vr == DicomVR.IS) {
+				if (values == null)
+					return Add(new DicomIntegerString(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(int))
 					return Add(new DicomIntegerString(tag, values.Cast<int>().ToArray()));
 				if (typeof(T) == typeof(string))
@@ -171,56 +190,78 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.LO) {
+				if (values == null)
+					return Add(new DicomLongString(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomLongString(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.LT) {
+				if (values == null)
+					return Add(new DicomLongText(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomLongText(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.OB) {
+				if (values == null)
+					return Add(new DicomOtherByte(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(byte))
 					return Add(new DicomOtherByte(tag, values.Cast<byte>().ToArray()));
 			}
 
 			if (vr == DicomVR.OF) {
+				if (values == null)
+					return Add(new DicomOtherFloat(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(float))
 					return Add(new DicomOtherFloat(tag, values.Cast<float>().ToArray()));
 			}
 
 			if (vr == DicomVR.OW) {
+				if (values == null)
+					return Add(new DicomOtherWord(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(ushort))
 					return Add(new DicomOtherWord(tag, values.Cast<ushort>().ToArray()));
 			}
 
 			if (vr == DicomVR.PN) {
+				if (values == null)
+					return Add(new DicomPersonName(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomPersonName(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.SH) {
+				if (values == null)
+					return Add(new DicomShortString(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomShortString(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.SL) {
+				if (values == null)
+					return Add(new DicomSignedLong(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(int))
 					return Add(new DicomSignedLong(tag, values.Cast<int>().ToArray()));
 			}
 
 			if (vr == DicomVR.SS) {
+				if (values == null)
+					return Add(new DicomSignedShort(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(short))
 					return Add(new DicomSignedShort(tag, values.Cast<short>().ToArray()));
 			}
 
 			if (vr == DicomVR.ST) {
+				if (values == null)
+					return Add(new DicomShortText(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomShortText(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.TM) {
+				if (values == null)
+					return Add(new DicomTime(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(DateTime))
 					return Add(new DicomTime(tag, values.Cast<DateTime>().ToArray()));
 				if (typeof(T) == typeof(DicomDateRange))
@@ -230,6 +271,8 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.UI) {
+				if (values == null)
+					return Add(new DicomUniqueIdentifier(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomUniqueIdentifier(tag, values.Cast<string>().First()));
 				if (typeof(T) == typeof(DicomUID))
@@ -239,21 +282,29 @@ namespace Dicom {
 			}
 
 			if (vr == DicomVR.UL) {
+				if (values == null)
+					return Add(new DicomUnsignedLong(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(uint))
 					return Add(new DicomUnsignedLong(tag, values.Cast<uint>().ToArray()));
 			}
 
 			if (vr == DicomVR.UN) {
+				if (values == null)
+					return Add(new DicomUnknown(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(byte))
 					return Add(new DicomUnknown(tag, values.Cast<byte>().ToArray()));
 			}
 
 			if (vr == DicomVR.US) {
+				if (values == null)
+					return Add(new DicomUnsignedShort(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(ushort))
 					return Add(new DicomUnsignedShort(tag, values.Cast<ushort>().ToArray()));
 			}
 
 			if (vr == DicomVR.UT) {
+				if (values == null)
+					return Add(new DicomUnlimitedText(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomUnlimitedText(tag, values.Cast<string>().First()));
 			}
