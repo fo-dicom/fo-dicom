@@ -49,7 +49,7 @@ namespace Dicom.IO.Writer {
 			else
 				groups = dataset.Where(x => x.Tag.Element == 0x0000).Select(x => x.Tag.Group);
 
-			foreach (var group in groups) {
+			foreach (var group in groups.ToList()) {
 				var items = dataset.GetGroup(group).ToList();
 
 				if (items.Count == 0) {
