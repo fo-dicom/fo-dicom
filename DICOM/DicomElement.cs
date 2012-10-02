@@ -850,7 +850,7 @@ namespace Dicom {
 		#endregion
 
 		#region Public Members
-		public override T Get<T>(int item = -1) {
+		public override T Get<T>(int item = 0) {
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
 				return (T)(object)base.Get<T>(item);
 
@@ -1047,7 +1047,7 @@ namespace Dicom {
 		#endregion
 
 		#region Public Members
-		public override T Get<T>(int item = -1) {
+		public override T Get<T>(int item = 0) {
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
 				return (T)(object)base.Get<T>(item);
 
