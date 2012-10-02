@@ -1,3 +1,6 @@
+#### v1.0.25
+* Fix min/max pixel value calculation for unsigned 32-bit pixel values
+
 #### v1.0.24 (10/01/2012)
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order
 * Reject all presentation contexts that have not already been accepted or rejected when sending association accept

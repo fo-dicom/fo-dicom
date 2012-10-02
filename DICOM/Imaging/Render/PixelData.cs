@@ -18,21 +18,26 @@ namespace Dicom.Imaging.Render {
 		/// Image width (columns) in pixels
 		/// </summary>
 		int Width { get; }
+
 		/// <summary>
 		/// Image height (rows) in pixels
 		/// </summary>
 		int Height { get; }
+
 		/// <summary>
 		/// Number for pixel comopnents (normally 1 for grayscale, 1 for palette, and 3 for RGB and YBR
 		/// </summary>
 		int Components { get; }
+
 		/// <summary>
 		/// return the minimum and maximum pixel values from pixel data
 		/// </summary>
 		/// <param name="padding"></param>
-		/// <returns><paramref name="DicomImage<int>"/> of claculated minimum and max</returns>
-		DicomRange<int> GetMinMax(int padding);
+		/// <returns>Range of claculated minimum and max</returns>
+		DicomRange<double> GetMinMax(int padding);
+
 		IPixelData Rescale(double scale);
+
 		/// <summary>
 		/// Render the pixel data after applying <paramref name="lut"/> to the output array (allocated by user)
 		/// </summary>
@@ -150,9 +155,9 @@ namespace Dicom.Imaging.Render {
 
 		#region Public Methods
 
-		public DicomRange<int> GetMinMax(int padding) {
-			int min = Int32.MaxValue;
-			int max = Int32.MinValue;
+		public DicomRange<double> GetMinMax(int padding) {
+			var min = Double.MaxValue;
+			var max = Double.MinValue;
 
 			for (int i = 0; i < _data.Length; i++) {
 				if (_data[i] == padding)
@@ -163,7 +168,7 @@ namespace Dicom.Imaging.Render {
 					min = _data[i];
 			}
 
-			return new DicomRange<int>(min, max);
+			return new DicomRange<double>(min, max);
 		}
 
 		public IPixelData Rescale(double scale) {
@@ -273,9 +278,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
-		public DicomRange<int> GetMinMax(int padding) {
-			int min = Int32.MaxValue;
-			int max = Int32.MinValue;
+		public DicomRange<double> GetMinMax(int padding) {
+			var min = Double.MaxValue;
+			var max = Double.MinValue;
 
 			for (int i = 0; i < _data.Length; i++) {
 				if (_data[i] == padding)
@@ -286,7 +291,7 @@ namespace Dicom.Imaging.Render {
 					min = _data[i];
 			}
 
-			return new DicomRange<int>(min, max);
+			return new DicomRange<double>(min, max);
 		}
 
 		public IPixelData Rescale(double scale) {
@@ -367,9 +372,9 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
-		public DicomRange<int> GetMinMax(int padding) {
-			int min = Int32.MaxValue;
-			int max = Int32.MinValue;
+		public DicomRange<double> GetMinMax(int padding) {
+			var min = Double.MaxValue;
+			var max = Double.MinValue;
 
 			for (int i = 0; i < _data.Length; i++) {
 				if (_data[i] == padding)
@@ -380,7 +385,7 @@ namespace Dicom.Imaging.Render {
 					min = _data[i];
 			}
 
-			return new DicomRange<int>(min, max);
+			return new DicomRange<double>(min, max);
 		}
 
 		public IPixelData Rescale(double scale) {
@@ -468,20 +473,18 @@ namespace Dicom.Imaging.Render {
         #endregion
 
         #region Public Methods
-		public DicomRange<int> GetMinMax(int padding) {
-			int min = Int32.MaxValue;
-			int max = Int32.MinValue;
+		public DicomRange<double> GetMinMax(int padding) {
+			var min = Double.MaxValue;
+			var max = Double.MinValue;
 
 			for (int i = 0; i < _data.Length; i++) {
-				if (_data[i] == padding)
-					continue;
-				else if (_data[i] > max)
+				if (_data[i] > max)
 					max = _data[i];
 				else if (_data[i] < min)
 					min = _data[i];
 			}
 
-			return new DicomRange<int>(min, max);
+			return new DicomRange<double>(min, max);
 		}
 
         public IPixelData Rescale(double scale)
@@ -580,8 +583,18 @@ namespace Dicom.Imaging.Render {
         #endregion
 
         #region Public Methods
-		public DicomRange<int> GetMinMax(int padding) {
-			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 32-bit unsigned integer data.");
+		public DicomRange<double> GetMinMax(int padding) {
+			var min = Double.MaxValue;
+			var max = Double.MinValue;
+
+			for (int i = 0; i < _data.Length; i++) {
+				if (_data[i] > max)
+					max = _data[i];
+				else if (_data[i] < min)
+					min = _data[i];
+			}
+
+			return new DicomRange<double>(min, max);
 		}
 
         public IPixelData Rescale(double scale)
@@ -664,7 +677,7 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
-		public DicomRange<int> GetMinMax(int padding) {
+		public DicomRange<double> GetMinMax(int padding) {
 			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
 		}
 
