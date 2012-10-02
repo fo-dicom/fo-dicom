@@ -1,4 +1,4 @@
-#### v1.0.24
+#### v1.0.24 (10/01/2012)
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order
 * Reject all presentation contexts that have not already been accepted or rejected when sending association accept
 * Add finalizers to temp file classes to catch files not deleted at application exit
