@@ -37,8 +37,8 @@ namespace Dicom.Network {
 		public static DicomCFindRequest CreatePatientQuery(string patientId = null, string patientName = null) {
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient);
 			dimse.AffectedSOPClassUID = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
-			dimse.Dataset.Add(DicomTag.PatientID, patientId ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.PatientName, patientName ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.PatientID, patientId);
+			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
 			dimse.Dataset.Add(DicomTag.IssuerOfPatientID, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientSex, String.Empty);
@@ -52,16 +52,16 @@ namespace Dicom.Network {
 		{
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
 			dimse.AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
-			dimse.Dataset.Add(DicomTag.PatientID, patientId ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.PatientName, patientName ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.PatientID, patientId);
+			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
 			dimse.Dataset.Add(DicomTag.IssuerOfPatientID, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientSex, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
-			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.ModalitiesInStudy, modalitiesInStudy ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.StudyID, studyId ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.AccessionNumber, accession ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
+			dimse.Dataset.Add(DicomTag.ModalitiesInStudy, modalitiesInStudy);
+			dimse.Dataset.Add(DicomTag.StudyID, studyId);
+			dimse.Dataset.Add(DicomTag.AccessionNumber, accession);
 			dimse.Dataset.Add(DicomTag.StudyDate, studyDateTime);
 			dimse.Dataset.Add(DicomTag.StudyTime, studyDateTime);
 			dimse.Dataset.Add(DicomTag.NumberOfStudyRelatedSeries, String.Empty);
@@ -72,11 +72,11 @@ namespace Dicom.Network {
 		public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string modality = null) {
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
 			dimse.AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
-			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
 			dimse.Dataset.Add(DicomTag.SeriesInstanceUID, String.Empty);
 			dimse.Dataset.Add(DicomTag.SeriesNumber, String.Empty);
 			dimse.Dataset.Add(DicomTag.SeriesDescription, String.Empty);
-			dimse.Dataset.Add(DicomTag.Modality, modality ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.Modality, modality);
 			dimse.Dataset.Add(DicomTag.SeriesDate, String.Empty);
 			dimse.Dataset.Add(DicomTag.SeriesTime, String.Empty);
 			dimse.Dataset.Add(DicomTag.NumberOfSeriesRelatedInstances, String.Empty);
@@ -89,8 +89,8 @@ namespace Dicom.Network {
 		{
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Worklist);
 			dimse.AffectedSOPClassUID = DicomUID.ModalityWorklistInformationModelFIND;
-			dimse.Dataset.Add(DicomTag.PatientID, patientId ?? String.Empty);
-			dimse.Dataset.Add(DicomTag.PatientName, patientName ?? String.Empty);
+			dimse.Dataset.Add(DicomTag.PatientID, patientId);
+			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
 			dimse.Dataset.Add(DicomTag.IssuerOfPatientID, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientSex, String.Empty);
@@ -126,11 +126,11 @@ namespace Dicom.Network {
 			dimse.Dataset.Add(new DicomSequence(DicomTag.ProcedureCodeSequence));
 
 			var sps = new DicomDataset();
-			sps.Add(DicomTag.ScheduledStationAETitle, stationAE ?? String.Empty);
-			sps.Add(DicomTag.ScheduledStationName, stationName ?? String.Empty);
+			sps.Add(DicomTag.ScheduledStationAETitle, stationAE);
+			sps.Add(DicomTag.ScheduledStationName, stationName);
 			sps.Add(DicomTag.ScheduledProcedureStepStartDate, scheduledDateTime);
 			sps.Add(DicomTag.ScheduledProcedureStepStartTime, scheduledDateTime);
-			sps.Add(DicomTag.Modality, modality ?? String.Empty);
+			sps.Add(DicomTag.Modality, modality);
 			sps.Add(DicomTag.ScheduledPerformingPhysicianName, String.Empty);
 			sps.Add(DicomTag.ScheduledProcedureStepDescription, String.Empty);
 			sps.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence));
