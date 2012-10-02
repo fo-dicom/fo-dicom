@@ -2,6 +2,7 @@
 * Fix min/max pixel value calculation for unsigned 32-bit pixel values
 * Fix collection modified exception when calculating group lengths
 * Better handling of null values when adding elements to dataset
+* Fix default values when accessing SS/US element values (Anders Gustafsson, Cureos AB)
 
 #### v1.0.24 (10/01/2012)
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order
