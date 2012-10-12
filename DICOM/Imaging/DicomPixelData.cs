@@ -18,8 +18,13 @@ namespace Dicom.Imaging {
 		protected DicomPixelData(DicomDataset dataset) {
 			Dataset = dataset;
 			Syntax = dataset.InternalTransferSyntax;
+            IsOverlayCleanUpRequire = false;
 		}
-
+        
+        public bool IsOverlayCleanUpRequire {
+            get;
+            set;
+        }
 		/// <summary>
 		/// Dicom Dataset
 		/// </summary>
@@ -218,7 +223,46 @@ namespace Dicom.Imaging {
 
 			return lut;
 		}
+        
+        protected void DoOverlayCleanUp(IByteBuffer buffer) {
+            int bitsAllocated = BitsAllocated;
+            int bitsStored = BitsStored;
+            int highBit = HighBit;
+            bool isSigned = PixelRepresentation == Imaging.PixelRepresentation.Signed;
+            var pixelData = buffer.Data;
+            unsafe {
+                int shift = highBit + 1 - bitsStored;
+                if (bitsAllocated == 16) {
+                    ushort mask = (ushort)((1 << bitsStored) - 1);
+                    ushort inputMask = (ushort)(mask << shift);
+                    int length = pixelData.Length;
+                    fixed (byte* data = pixelData) 
+                    {
+                        ushort window;
+                        if (isSigned) {
+                            ushort smask = (ushort)(1 << (bitsStored - 1));
+                            ushort sfill = (ushort)~mask;
 
+                            for (int n = 0; n < length; n += 2) {
+                                window = (ushort)((data[n + 1] << 8) + data[n]);
+                                window = (ushort)((window & inputMask) >> shift);
+                                if ((window & smask) > 0)
+                                    window = (ushort)(window | sfill);
+                                data[n] = (byte)(window & 0x00ff);
+                                data[n + 1] = (byte)((window & 0xff00) >> 8);
+                            }
+                        } else {
+                            for (int n = 0; n < length; n += 2) {
+                                window = (ushort)((data[n + 1] << 8) + data[n]);
+                                window = (ushort)((window & inputMask) >> shift);
+                                data[n] = (byte)(window & 0x00ff);
+                                data[n + 1] = (byte)((window & 0xff00) >> 8);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 		/// <summary>
 		/// Abstract GetFrame method to extract specific frame byte buffer <paramref name="frame"/> dataset
 		/// </summary>
@@ -298,8 +342,14 @@ namespace Dicom.Imaging {
 			}
 			public override IByteBuffer GetFrame(int frame) {
 				int offset = UncompressedFrameSize * frame;
-				return new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
-			}
+				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+               
+                if (IsOverlayCleanUpRequire) {
+                    buffer = new MemoryByteBuffer(buffer.Data);
+                    DoOverlayCleanUp(buffer);
+                }
+                return buffer;
+            }
 
 			public override void AddFrame(IByteBuffer data) {
 				if (!(Element.Buffer is CompositeByteBuffer))
@@ -349,7 +399,11 @@ namespace Dicom.Imaging {
 				// mainly for GE Private Implicit VR Little Endian
 				if (Syntax.SwapPixelData)
 					buffer = new SwapByteBuffer(buffer, 2);
-
+                
+                if (IsOverlayCleanUpRequire) {
+                    buffer = new MemoryByteBuffer(buffer.Data);
+                    DoOverlayCleanUp(buffer);
+                }
 				return buffer;
 			}
 

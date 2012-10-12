@@ -141,6 +141,7 @@ namespace Dicom.Imaging.Codec {
 
 		private DicomDataset Encode(DicomDataset oldDataset, DicomTransferSyntax inSyntax, IDicomCodec codec, DicomCodecParams parameters) {
 			DicomPixelData oldPixelData = DicomPixelData.Create(oldDataset, false);
+            oldPixelData.IsOverlayCleanUpRequire = codec.TransferSyntax.IsLossy;
 
 			DicomDataset newDataset = oldDataset.Clone();
 			newDataset.InternalTransferSyntax = codec.TransferSyntax;
