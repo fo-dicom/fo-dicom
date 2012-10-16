@@ -171,7 +171,7 @@ namespace Dicom.Imaging {
 				}
 
 				//Is this introduce performance problem when dealing with multi-frame image?
-				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
+				//Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
 			}
 
 			if (PixelData == null)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Dicom.Imaging.Codec ;
 using Dicom.IO;
 using Dicom.IO.Buffer;
 
@@ -269,12 +269,13 @@ namespace Dicom.Imaging {
 		/// <param name="frame">Frame index</param>
 		/// <returns>Frame byte buffer</returns>
 		public abstract IByteBuffer GetFrame(int frame);
-
 		/// <summary>
 		/// Abstract AddFrame method to add new frame into dataset pixel dataset. new frame will be appended to existing frames
 		/// </summary>
 		/// <param name="data">Frame byte buffer</param>
 		public abstract void AddFrame(IByteBuffer data);
+
+        public abstract  IByteBuffer GetUncompressFrame(int frame, DicomCodecParams param = null);
 
 		/// <summary>
 		/// A factory method to initialize new instance of <seealso cref="DicomPixelData"/> implementation either 
@@ -351,6 +352,10 @@ namespace Dicom.Imaging {
                 return buffer;
             }
 
+            public override IByteBuffer GetUncompressFrame(int frame, DicomCodecParams param = null) {
+                return GetFrame (frame );
+            }
+
 			public override void AddFrame(IByteBuffer data) {
 				if (!(Element.Buffer is CompositeByteBuffer))
 					throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
@@ -405,7 +410,11 @@ namespace Dicom.Imaging {
                     DoOverlayCleanUp(buffer);
                 }
 				return buffer;
-			}
+            }            
+
+            public override IByteBuffer GetUncompressFrame(int frame, DicomCodecParams param = null) {
+                return GetFrame (frame );
+            }
 
 			public override void AddFrame(IByteBuffer data) {
 				if (!(Element.Buffer is CompositeByteBuffer))
@@ -498,6 +507,21 @@ namespace Dicom.Imaging {
 
 				return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
 			}
+
+            public override IByteBuffer GetUncompressFrame(int frame, DicomCodecParams param = null) {
+                DicomDataset dataset = new DicomDataset(Dataset);
+                dataset.InternalTransferSyntax = Dataset.InternalTransferSyntax;
+                dataset.Remove(DicomTag.PixelData);
+                dataset.Remove(DicomTag.NumberOfFrames);
+
+                EncapsulatedPixelData compressPixelData = new EncapsulatedPixelData(dataset, true);
+                var compressPixels = this.GetFrame(frame);
+                compressPixelData.AddFrame(compressPixels);
+
+                dataset = dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, param);
+                var UncompressPixelData = Create(dataset, false);
+                return UncompressPixelData.GetFrame(0);
+            }
 
 			public override void AddFrame(IByteBuffer data) {
 				NumberOfFrames++;
