@@ -300,12 +300,15 @@ void DicomJpeg2000NativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelDa
 				if (newPixelData->BytesAllocated == 1) {
 					if (comp->sgnd) {
 						const unsigned char sign = 1 << newPixelData->HighBit;
+                        const unsigned char mask = 0xFF ^ sign;
 						for (int p = 0; p < pixelCount; p++) {
 							const int i = comp->data[p];
 							if (i < 0)
-								destArray->Data[pos] = (unsigned char)(-i | sign);
+								//destArray->Data[pos] = (unsigned char)(-i | sign);
+                                  destArray->Data[pos] =(unsigned char)((i & mask) | sign);
 							else
-								destArray->Data[pos] = (unsigned char)(i);
+								//destArray->Data[pos] = (unsigned char)(i);
+                                destArray->Data[pos] = (unsigned char)(i & mask);
 							pos += offset;
 						}
 					}
@@ -318,14 +321,17 @@ void DicomJpeg2000NativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelDa
 				}
 				else if (newPixelData->BytesAllocated == 2) {
 					const unsigned short sign = 1 << newPixelData->HighBit;
+                    const unsigned short mask = 0xFFFF ^ sign;
 					unsigned short* destData16 = (unsigned short*)(void*)destArray->Pointer;
 					if (comp->sgnd) {
 						for (int p = 0; p < pixelCount; p++) {
 							const int i = comp->data[p];
 							if (i < 0)
-								destData16[pos] = (unsigned short)(-i | sign);
+								//destData16[pos] = (unsigned short)(-i | sign);
+                                destData16[pos] = (unsigned short)((i & mask) | sign);
 							else
-								destData16[pos] = (unsigned short)(i);
+								//destData16[pos] = (unsigned short)(i);
+                                destData16[pos] = (unsigned short)(i & mask);
 							pos += offset;
 						}
 					}
