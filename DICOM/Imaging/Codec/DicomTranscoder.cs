@@ -6,6 +6,8 @@ using System.ComponentModel.Composition.Hosting;
 
 using NLog;
 
+using Dicom.IO.Buffer;
+
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
 		#region Static
@@ -125,6 +127,32 @@ namespace Dicom.Imaging.Codec {
 			}
 
 			throw new DicomCodecException("Unable to find transcoding solution for {0} to {1}", InputSyntax.UID.Name, OutputSyntax.UID.Name);
+		}
+
+		/// <summary>
+		/// Decompress single frame from DICOM dataset and return uncompressed frame buffer.
+		/// </summary>
+		/// <param name="dataset">DICOM dataset</param>
+		/// <param name="frame">Frame number</param>
+		/// <returns>Uncompressed frame buffer</returns>
+		public IByteBuffer DecodeFrame(DicomDataset dataset, int frame) {
+			var pixelData = DicomPixelData.Create(dataset, false);
+			var buffer = pixelData.GetFrame(frame);
+
+			// is pixel data already uncompressed?
+			if (!dataset.InternalTransferSyntax.IsEncapsulated)
+				return buffer;
+
+			// clone dataset to prevent changes to source
+			var cloneDataset = dataset.Clone();
+
+			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+			oldPixelData.AddFrame(buffer);
+
+			var newDataset = Decode(cloneDataset, InputSyntax, InputCodec, InputCodecParams);
+
+			var newPixelData = DicomPixelData.Create(newDataset, false);
+			return newPixelData.GetFrame(frame);
 		}
 
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {
