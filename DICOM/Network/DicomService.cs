@@ -15,6 +15,7 @@ using Dicom.Imaging.Codec;
 using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
+using Dicom.Threading;
 
 namespace Dicom.Network {
 	public abstract class DicomService {
@@ -29,6 +30,7 @@ namespace Dicom.Network {
 		private Stream _dimseStream;
 		private int _readLength;
 		private bool _isConnected;
+		private ThreadPoolQueue<int> _responseQueue;
 
 		protected DicomService(Stream stream, Logger log) {
 			_network = stream;
@@ -37,6 +39,7 @@ namespace Dicom.Network {
 			MaximumPDUsInQueue = 16;
 			_msgQueue = new Queue<DicomMessage>();
 			_pending = new List<DicomRequest>();
+			_responseQueue = new ThreadPoolQueue<int>();
 			_isConnected = true;
 			Logger = log ?? LogManager.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
@@ -338,7 +341,10 @@ namespace Dicom.Network {
 							}
 
 							if (!_dimse.HasDataset) {
-								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+								if (DicomMessage.IsRequest(_dimse.Type))
+									ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+								else
+									_responseQueue.Queue(_dimse.MessageID, PerformDimseCallback, _dimse);
 								_dimse = null;
 								return;
 							}
@@ -378,7 +384,10 @@ namespace Dicom.Network {
 								request.Dataset = request.File.Dataset;
 							}
 
-							ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+							if (DicomMessage.IsRequest(_dimse.Type))
+								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+							else
+								_responseQueue.Queue(_dimse.MessageID, PerformDimseCallback, _dimse);
 							_dimse = null;
 						}
 					}

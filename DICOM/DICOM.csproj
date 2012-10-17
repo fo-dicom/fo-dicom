@@ -219,6 +219,7 @@
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ThreadPoolQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
@@ -233,7 +234,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
