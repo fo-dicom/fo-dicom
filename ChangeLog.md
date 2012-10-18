@@ -1,4 +1,4 @@
-#### v1.0.25
+#### v1.0.25 (10/18/2012)
 * Fix min/max pixel value calculation for unsigned 32-bit pixel values
 * Fix collection modified exception when calculating group lengths
 * Better handling of null values when adding elements to dataset
