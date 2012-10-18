@@ -412,7 +412,7 @@ namespace Dicom.Network {
 			var dimse = state as DicomMessage;
 
 			try {
-				Logger.Log(LogLevel.Info, "{0} <- {1}", LogID, dimse);
+				Logger.Log(LogLevel.Info, "{0} <- {1}", LogID, dimse.ToString(Options.LogDimseDatasets));
 
 				if (!DicomMessage.IsRequest(dimse.Type)) {
 					var rsp = dimse as DicomResponse;
@@ -585,7 +585,7 @@ namespace Dicom.Network {
 				msg = _msgQueue.Dequeue();
 			}
 
-			Logger.Log(LogLevel.Info, "{0} -> {1}", LogID, msg);
+			Logger.Log(LogLevel.Info, "{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
 
 			if (msg is DicomRequest)
 				_pending.Add(msg as DicomRequest);

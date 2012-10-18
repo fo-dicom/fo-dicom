@@ -16,5 +16,11 @@ namespace Dicom.Network {
 			get;
 			set;
 		}
+
+		/// <summary>Write command and data datasets to log.</summary>
+		public bool LogDimseDatasets {
+			get;
+			set;
+		}
 	}
 }
