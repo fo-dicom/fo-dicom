@@ -142,7 +142,7 @@ namespace Dicom {
 				return (T)DicomParseable.Parse<T>(_values[item]);
 
 			if (typeof(T).IsEnum)
-				return (T)Enum.Parse(typeof(T), _values[item]);
+				return (T)Enum.Parse(typeof(T), _values[item], true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
 		}
@@ -261,7 +261,7 @@ namespace Dicom {
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
-				return (T)Enum.Parse(typeof(T), s);
+				return (T)Enum.Parse(typeof(T), s, true);
 			}
 
 			if (typeof(T).IsValueType) {
