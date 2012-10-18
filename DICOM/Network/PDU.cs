@@ -347,6 +347,10 @@ namespace Dicom.Network {
 			_assoc = assoc;
 		}
 
+		public override string ToString() {
+			return "A-ASSOCIATE-RQ";
+		}
+
 		#region Write
 		/// <summary>
 		/// Writes A-ASSOCIATE-RQ to PDU buffer
@@ -534,6 +538,10 @@ namespace Dicom.Network {
 		/// <param name="assoc">Association parameters</param>
 		public AAssociateAC(DicomAssociation assoc) {
 			_assoc = assoc;
+		}
+
+		public override string ToString() {
+			return "A-ASSOCIATE-AC";
 		}
 
 		#region Write
@@ -782,6 +790,10 @@ namespace Dicom.Network {
 			get { return _rn; }
 		}
 
+		public override string ToString() {
+			return "A-ASSOCIATE-RJ";
+		}
+
 		/// <summary>
 		/// Writes A-ASSOCIATE-RJ to PDU buffer
 		/// </summary>
@@ -811,6 +823,10 @@ namespace Dicom.Network {
 	#region A-Release-RQ
 	/// <summary>A-RELEASE-RQ</summary>
 	public class AReleaseRQ : PDU {
+		public override string ToString() {
+			return "A-RELEASE-RQ";
+		}
+
 		/// <summary>
 		/// Writes A-RELEASE-RQ to PDU buffer
 		/// </summary>
@@ -834,6 +850,10 @@ namespace Dicom.Network {
 	#region A-Release-RP
 	/// <summary>A-RELEASE-RP</summary>
 	public class AReleaseRP : PDU {
+		public override string ToString() {
+			return "A-RELEASE-RP";
+		}
+
 		/// <summary>
 		/// Writes A-RELEASE-RP to PDU buffer
 		/// </summary>
@@ -920,6 +940,10 @@ namespace Dicom.Network {
 			_s = source; _r = reason;
 		}
 
+		public override string ToString() {
+			return "A-ABORT";
+		}
+
 		#region Write
 		/// <summary>
 		/// Writes A-ABORT to PDU buffer
@@ -974,6 +998,13 @@ namespace Dicom.Network {
 				len += pdv.PDVLength;
 			}
 			return len;
+		}
+
+		public override string ToString() {
+			var value = String.Format("P-DATA-TF [Length: {0}", 6 + GetLengthOfPDVs());
+			foreach (var pdv in PDVs)
+				value += String.Format("; {0}: {1}", pdv.IsCommand ? "CMD" : "DATA", pdv.PDVLength - 6);
+			return value + "]";
 		}
 
 		#region Write
