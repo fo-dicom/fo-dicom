@@ -188,6 +188,7 @@
     <Compile Include="Network\DicomCEchoProvider.cs" />
     <Compile Include="Network\DicomQueryRetrieveLevel.cs" />
     <Compile Include="Network\DicomServer.cs" />
+    <Compile Include="Network\DicomServiceOptions.cs" />
     <Compile Include="Network\IDicomCMoveProvider.cs" />
     <Compile Include="Network\IDicomCFindProvider.cs" />
     <Compile Include="Network\DicomCMoveRequest.cs" />

@@ -43,9 +43,15 @@ namespace Dicom.Network {
 			_isConnected = true;
 			Logger = log ?? LogManager.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
+			Options = DicomServiceOptions.Default;
 		}
 
 		public Logger Logger {
+			get;
+			set;
+		}
+
+		public DicomServiceOptions Options {
 			get;
 			set;
 		}
@@ -208,6 +214,8 @@ namespace Dicom.Network {
 				case 0x04: {
 						var pdu = new PDataTF();
 						pdu.Read(raw);
+						if (Options.LogDataPDUs)
+							Logger.Info("{0} <- {1}", LogID, pdu);
 						ProcessPDataTF(pdu);
 						break;
 					}
@@ -498,6 +506,9 @@ namespace Dicom.Network {
 
 				pdu = _pduQueue.Dequeue();
 			}
+
+			if (Options.LogDataPDUs && pdu is PDataTF)
+				Logger.Info("{0} -> {1}", LogID, pdu);
 
 			MemoryStream ms = new MemoryStream();
 			pdu.Write().WritePDU(ms);
