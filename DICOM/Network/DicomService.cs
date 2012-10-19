@@ -360,14 +360,16 @@ namespace Dicom.Network {
 							if (_dimse.Type != DicomCommandField.CStoreRequest) {
 								_dimseStream.Seek(0, SeekOrigin.Begin);
 
+								var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+
 								_dimse.Dataset = new DicomDataset();
-								_dimse.Dataset.InternalTransferSyntax = _dimse.Command.InternalTransferSyntax;
+								_dimse.Dataset.InternalTransferSyntax = pc.AcceptedTransferSyntax;
 
 								var source = new StreamByteSource(_dimseStream);
-								source.Endian = _dimse.Command.InternalTransferSyntax.Endian;
+								source.Endian = pc.AcceptedTransferSyntax.Endian;
 
 								var reader = new DicomReader();
-								reader.IsExplicitVR = _dimse.Command.InternalTransferSyntax.IsExplicitVR;
+								reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
 								reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
 								_dimseStream = null;
