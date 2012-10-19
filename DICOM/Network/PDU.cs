@@ -1001,10 +1001,10 @@ namespace Dicom.Network {
 		}
 
 		public override string ToString() {
-			var value = String.Format("P-DATA-TF [Length: {0}", 6 + GetLengthOfPDVs());
+			var value = String.Format("P-DATA-TF [Length: {0}]", 6 + GetLengthOfPDVs());
 			foreach (var pdv in PDVs)
-				value += String.Format("; {0}: {1}", pdv.IsCommand ? "CMD" : "DATA", pdv.PDVLength - 6);
-			return value + "]";
+				value += "\n\t" + pdv.ToString();
+			return value;
 		}
 
 		#region Write
@@ -1094,6 +1094,10 @@ namespace Dicom.Network {
 		/// <summary>Length of this PDV</summary>
 		public uint PDVLength {
 			get { return (uint)_value.Length + 6; }
+		}
+
+		public override string ToString() {
+			return String.Format("PDV [PCID: {0}; Length: {1}; Command: {2}; Last: {3}]", PCID, Value.Length, IsCommand, IsLastFragment);
 		}
 
 		#region Write
