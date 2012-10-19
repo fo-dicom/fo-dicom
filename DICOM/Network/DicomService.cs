@@ -609,7 +609,7 @@ namespace Dicom.Network {
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
 
-			dimse.Stream = new PDataTFStream(this, pc.ID, (int)Association.MaximumPDULength);
+			dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
 			var writer = new DicomWriter(DicomTransferSyntax.ImplicitVRLittleEndian, DicomWriteOptions.Default, new StreamByteTarget(dimse.Stream));
 
@@ -683,8 +683,8 @@ namespace Dicom.Network {
 			#region Private Members
 			private DicomService _service;
 			private bool _command;
-			private int _pduMax;
-			private int _max;
+			private uint _pduMax;
+			private uint _max;
 			private byte _pcid;
 			private PDataTF _pdu;
 			private byte[] _bytes;
@@ -692,12 +692,12 @@ namespace Dicom.Network {
 			#endregion
 
 			#region Public Constructors
-			public PDataTFStream(DicomService service, byte pcid, int max) {
+			public PDataTFStream(DicomService service, byte pcid, uint max) {
 				_service = service;
 				_command = true;
 				_pcid = pcid;
-				_pduMax = max;
-				_max = (max == 0) ? MaxCommandBuffer : Math.Min(max, MaxCommandBuffer);
+				_pduMax = Math.Min(max, Int32.MaxValue);
+				_max = (_pduMax == 0) ? MaxCommandBuffer : Math.Min(_pduMax, MaxCommandBuffer);
 
 				_pdu = new PDataTF();
 
@@ -707,8 +707,8 @@ namespace Dicom.Network {
 			#endregion
 
 			#region Public Properties
-			private const int MaxCommandBuffer = 1 * 1024; // 1KB
-			private const int MaxDataBuffer = 1 * 1024 * 1024; // 1MB
+			private const uint MaxCommandBuffer = 1 * 1024; // 1KB
+			private const uint MaxDataBuffer = 1 * 1024 * 1024; // 1MB
 
 			public bool IsCommand {
 				get { return _command; }
@@ -732,8 +732,8 @@ namespace Dicom.Network {
 			#endregion
 
 			#region Private Members
-			private int CurrentPduSize() {
-				return 6 + (int)_pdu.GetLengthOfPDVs();
+			private uint CurrentPduSize() {
+				return 6 + _pdu.GetLengthOfPDVs();
 			}
 
 			private void CreatePDV(bool last) {
@@ -751,7 +751,7 @@ namespace Dicom.Network {
 					WritePDU(last);
 
 				// Max PDU Size - Current Size - Size of PDV header
-				int max = _max - CurrentPduSize() - 6;
+				uint max = _max - CurrentPduSize() - 6;
 
 				_bytes = last ? null : new byte[max];
 				_length = 0;
@@ -760,7 +760,8 @@ namespace Dicom.Network {
 			private void WritePDU(bool last) {
 				if (_pdu.PDVs.Count == 0 && last)
 					CreatePDV(true);
-				else if (_pdu.PDVs.Count > 0) {
+				
+				if (_pdu.PDVs.Count > 0) {
 					if (last)
 						_pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
@@ -815,7 +816,7 @@ namespace Dicom.Network {
 			public override void Write(byte[] buffer, int offset, int count) {
 				if (_bytes == null || _bytes.Length == 0) {
 					// Max PDU Size - Current Size - Size of PDV header
-					int max = _max - CurrentPduSize() - 6;
+					uint max = _max - CurrentPduSize() - 6;
 					_bytes = new byte[max];
 				}
 
