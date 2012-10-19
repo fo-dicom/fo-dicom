@@ -15,8 +15,9 @@
   </metadata>
   <files>
     <file src="DICOM\bin\Release\Dicom.dll" target="lib\net40" />
-	<file src="DICOM\bin\Release\Dicom.xml" target="lib\net40" />
-	<file src="DICOM [Native]\Release\Dicom.Native.dll" target="lib\net40" />
-	<file src="DICOM [Native]\Release\Dicom.Native64.dll" target="lib\net40" />
+    <file src="DICOM\bin\Release\Dicom.pdb" target="lib\net40" />
+	  <file src="DICOM\bin\Release\Dicom.xml" target="lib\net40" />
+	  <file src="DICOM [Native]\Release\Dicom.Native.dll" target="lib\net40" />
+	  <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="lib\net40" />
   </files>
 </package>
