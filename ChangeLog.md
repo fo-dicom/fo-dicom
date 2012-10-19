@@ -1,6 +1,8 @@
-#### v1.0.26
+#### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class
 * Advanced configuration options for P-Data-TF PDU buffer lengths
+* Fix bug where final PDV may not be written to P-Data-TF PDU
+* Fix bug reading DIMSE datasets from network
 
 #### v1.0.25 (10/18/2012)
 * Fix min/max pixel value calculation for unsigned 32-bit pixel values
