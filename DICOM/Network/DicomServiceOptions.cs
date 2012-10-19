@@ -15,8 +15,8 @@ namespace Dicom.Network {
 		public DicomServiceOptions() {
 			LogDataPDUs = false;
 			LogDimseDatasets = false;
-			MaxCommandBuffer = 1 * 1024; //1KB
-
+			MaxCommandBuffer = 1 * 1024;		//1KB
+			MaxDataBuffer = 1 * 1024 * 1024;	//1MB
 		}
 
 		/// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>

@@ -585,8 +585,6 @@ namespace Dicom.Network {
 				msg = _msgQueue.Dequeue();
 			}
 
-			Logger.Log(LogLevel.Info, "{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
-
 			if (msg is DicomRequest)
 				_pending.Add(msg as DicomRequest);
 
@@ -602,19 +600,37 @@ namespace Dicom.Network {
 			if (pc == null)
 				throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.AffectedSOPClassUID);
 
-			// force calculation of command group length as required by standard
-			msg.Command.RecalculateGroupLengths();
-
 			var dimse = new Dimse();
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
+
+			// force calculation of command group length as required by standard
+			msg.Command.RecalculateGroupLengths();
+
+			if (msg.HasDataset) {
+				// remove group lengths as recommended in PS 3.5 7.2
+				//
+				//	2. It is recommended that Group Length elements be removed during storage or transfer 
+				//	   in order to avoid the risk of inconsistencies arising during coercion of data 
+				//	   element values and changes in transfer syntax.
+				msg.Dataset.RemoveGroupLengths();
+
+				if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
+					msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
+			}
+
+			Logger.Log(LogLevel.Info, "{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
 
 			dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
 			var writer = new DicomWriter(DicomTransferSyntax.ImplicitVRLittleEndian, DicomWriteOptions.Default, new StreamByteTarget(dimse.Stream));
 
 			dimse.Walker = new DicomDatasetWalker(msg.Command);
-			dimse.Walker.BeginWalk(writer, OnEndSendCommand, dimse);
+
+			if (dimse.Message.HasDataset)
+				dimse.Walker.BeginWalk(writer, OnEndSendCommand, dimse);
+			else
+				dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
 		}
 
 		private void OnEndSendCommand(IAsyncResult result) {
@@ -622,31 +638,14 @@ namespace Dicom.Network {
 			try {
 				dimse.Walker.EndWalk(result);
 
-				if (!dimse.Message.HasDataset) {
-					dimse.Stream.Flush(true);
-					dimse.Stream.Close();
-					return;
-				}
-
 				dimse.Stream.IsCommand = false;
-
-				var dataset = dimse.Message.Dataset;
-
-				// remove group lengths as suggested in PS 3.5 7.2
-				//
-				//	2. It is recommended that Group Length elements be removed during storage or transfer 
-				//	   in order to avoid the risk of inconsistencies arising during coercion of data 
-				//	   element values and changes in transfer syntax.
-				dataset.RemoveGroupLengths();
-
-				if (dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
-					dataset = dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
 
 				var writer = new DicomWriter(dimse.PresentationContext.AcceptedTransferSyntax, DicomWriteOptions.Default, new StreamByteTarget(dimse.Stream));
 
-				dimse.Walker = new DicomDatasetWalker(dataset);
+				dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
 				dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
-			} catch {
+			} catch (Exception e) {
+				Logger.Error("Exception sending DIMSE: {0}", e.ToString());
 			} finally {
 				if (!dimse.Message.HasDataset) {
 					lock (_lock)
@@ -660,7 +659,8 @@ namespace Dicom.Network {
 			var dimse = result.AsyncState as Dimse;
 			try {
 				dimse.Walker.EndWalk(result);
-			} catch {
+			} catch (Exception e) {
+				Logger.Error("Exception sending DIMSE: {0}", e.ToString());
 			} finally {
 				dimse.Stream.Flush(true);
 				dimse.Stream.Close();
@@ -726,6 +726,7 @@ namespace Dicom.Network {
 
 			#region Public Members
 			public void Flush(bool last) {
+				CreatePDV(last);
 				WritePDU(last);
 			}
 			#endregion
@@ -737,29 +738,38 @@ namespace Dicom.Network {
 			}
 
 			private void CreatePDV(bool last) {
-				if (_bytes == null)
-					_bytes = new byte[0];
+				try {
+					if (_bytes == null)
+						_bytes = new byte[0];
 
-				if (_length < _bytes.Length)
-					Array.Resize(ref _bytes, _length);
+					if (_length < _bytes.Length)
+						Array.Resize(ref _bytes, _length);
 
-				PDV pdv = new PDV(_pcid, _bytes, _command, last);
-				_pdu.PDVs.Add(pdv);
+					PDV pdv = new PDV(_pcid, _bytes, _command, last);
+					_pdu.PDVs.Add(pdv);
 
-				// is the current PDU at its maximum size or do we have room for another PDV?
-				if ((CurrentPduSize() + 6) >= _max || last)
-					WritePDU(last);
+					//_service.Logger.Info(pdv);
 
-				// Max PDU Size - Current Size - Size of PDV header
-				uint max = _max - CurrentPduSize() - 6;
+					// reset length in case we recurse into WritePDU()
+					_length = 0;
 
-				_bytes = last ? null : new byte[max];
-				_length = 0;
+					// is the current PDU at its maximum size or do we have room for another PDV?
+					if ((CurrentPduSize() + 6) >= _max || last)
+						WritePDU(last);
+
+					// Max PDU Size - Current Size - Size of PDV header
+					uint max = _max - CurrentPduSize() - 6;
+
+					_bytes = last ? null : new byte[max];
+				} catch (Exception e) {
+					_service.Logger.Error("Exception creating PDV: " + e.ToString());
+					throw;
+				}
 			}
 
 			private void WritePDU(bool last) {
-				if (_pdu.PDVs.Count == 0 && last)
-					CreatePDV(true);
+				if (_length > 0)
+					CreatePDV(last);
 				
 				if (_pdu.PDVs.Count > 0) {
 					if (last)
@@ -814,30 +824,35 @@ namespace Dicom.Network {
 			}
 
 			public override void Write(byte[] buffer, int offset, int count) {
-				if (_bytes == null || _bytes.Length == 0) {
-					// Max PDU Size - Current Size - Size of PDV header
-					uint max = _max - CurrentPduSize() - 6;
-					_bytes = new byte[max];
-				}
+				try {
+					if (_bytes == null || _bytes.Length == 0) {
+						// Max PDU Size - Current Size - Size of PDV header
+						uint max = _max - CurrentPduSize() - 6;
+						_bytes = new byte[max];
+					}
 
-				while (count >= (_bytes.Length - _length)) {
-					int c = Math.Min(count, _bytes.Length - _length);
+					while (count >= (_bytes.Length - _length)) {
+						int c = Math.Min(count, _bytes.Length - _length);
 
-					Array.Copy(buffer, offset, _bytes, _length, c);
+						Array.Copy(buffer, offset, _bytes, _length, c);
 
-					_length += c;
-					offset += c;
-					count -= c;
+						_length += c;
+						offset += c;
+						count -= c;
 
-					CreatePDV(false);
-				}
-
-				if (count > 0) {
-					Array.Copy(buffer, offset, _bytes, _length, count);
-					_length += count;
-
-					if (_bytes.Length == _length)
 						CreatePDV(false);
+					}
+
+					if (count > 0) {
+						Array.Copy(buffer, offset, _bytes, _length, count);
+						_length += count;
+
+						if (_bytes.Length == _length)
+							CreatePDV(false);
+					}
+				} catch (Exception e) {
+					_service.Logger.Error("Exception writing data to PDV: " + e.ToString());
+					throw;
 				}
 			}
 			#endregion
