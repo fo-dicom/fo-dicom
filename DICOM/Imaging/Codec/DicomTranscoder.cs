@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using NLog;
 
 using Dicom.IO.Buffer;
+using Dicom.IO.Writer;
 
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
@@ -94,6 +95,12 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public DicomDataset Transcode(DicomDataset dataset) {
+			if (!dataset.Contains(DicomTag.PixelData)) {
+				var newDataset = dataset.Clone();
+				newDataset.RecalculateGroupLengths(false);
+				return newDataset;
+			}
+
 			if (!InputSyntax.IsEncapsulated && !OutputSyntax.IsEncapsulated) {
 				// transcode from uncompressed to uncompressed
 				var newDataset = dataset.Clone();
@@ -106,6 +113,8 @@ namespace Dicom.Imaging.Codec {
 					var frame = oldPixelData.GetFrame(i);
 					newPixelData.AddFrame(frame);
 				}
+
+				newDataset.RecalculateGroupLengths(false);
 
 				return newDataset;
 			}
@@ -164,6 +173,8 @@ namespace Dicom.Imaging.Codec {
 
 			codec.Decode(oldPixelData, newPixelData, parameters);
 
+			newDataset.RecalculateGroupLengths(false);
+
 			return newDataset;
 		}
 
@@ -190,6 +201,8 @@ namespace Dicom.Imaging.Codec {
 				string ratio = String.Format("{0:0.000}", oldSize / newSize);
 				newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
 			}
+
+			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
 		}
