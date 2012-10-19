@@ -97,6 +97,7 @@ namespace Dicom.Imaging.Codec {
 		public DicomDataset Transcode(DicomDataset dataset) {
 			if (!dataset.Contains(DicomTag.PixelData)) {
 				var newDataset = dataset.Clone();
+				newDataset.InternalTransferSyntax = OutputSyntax;
 				newDataset.RecalculateGroupLengths(false);
 				return newDataset;
 			}
