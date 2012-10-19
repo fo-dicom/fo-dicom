@@ -80,6 +80,8 @@ namespace Dicom.Network {
 				output += Dataset.WriteToString();
 			}
 
+			output += "---------------------------------------------------------------------------";
+
 			return output;
 		}
 

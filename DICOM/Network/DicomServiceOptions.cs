@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.Network {
+	/// <summary>
+	/// Options to control the behavior of the <see cref="DicomService"/> base class.
+	/// </summary>
 	public class DicomServiceOptions {
-		public static DicomServiceOptions Default = new DicomServiceOptions();
-
+		/// <summary>Default options for use with the <see cref="DicomService"/> base class.</summary>
+		public readonly static DicomServiceOptions Default = new DicomServiceOptions();
+		
+		/// <summary>Constructor</summary>
 		public DicomServiceOptions() {
 			LogDataPDUs = false;
 		}
