@@ -14,6 +14,9 @@ namespace Dicom.Network {
 		/// <summary>Constructor</summary>
 		public DicomServiceOptions() {
 			LogDataPDUs = false;
+			LogDimseDatasets = false;
+			MaxCommandBuffer = 1 * 1024; //1KB
+
 		}
 
 		/// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
@@ -24,6 +27,18 @@ namespace Dicom.Network {
 
 		/// <summary>Write command and data datasets to log.</summary>
 		public bool LogDimseDatasets {
+			get;
+			set;
+		}
+
+		/// <summary>Maximum buffer length for command PDVs when generating P-Data-TF PDUs.</summary>
+		public uint MaxCommandBuffer {
+			get;
+			set;
+		}
+
+		/// <summary>Maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
+		public uint MaxDataBuffer {
 			get;
 			set;
 		}

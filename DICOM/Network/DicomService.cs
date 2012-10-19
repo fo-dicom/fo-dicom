@@ -697,7 +697,7 @@ namespace Dicom.Network {
 				_command = true;
 				_pcid = pcid;
 				_pduMax = Math.Min(max, Int32.MaxValue);
-				_max = (_pduMax == 0) ? MaxCommandBuffer : Math.Min(_pduMax, MaxCommandBuffer);
+				_max = (_pduMax == 0) ? _service.Options.MaxCommandBuffer : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
 
 				_pdu = new PDataTF();
 
@@ -707,20 +707,19 @@ namespace Dicom.Network {
 			#endregion
 
 			#region Public Properties
-			private const uint MaxCommandBuffer = 1 * 1024; // 1KB
-			private const uint MaxDataBuffer = 1 * 1024 * 1024; // 1MB
-
 			public bool IsCommand {
 				get { return _command; }
 				set {
 					// recalculate maximum PDU buffer size
-					if (value)
-						_max = (_pduMax == 0) ? MaxCommandBuffer : Math.Min(_pduMax, MaxCommandBuffer);
-					else
-						_max = (_pduMax == 0) ? MaxDataBuffer : Math.Min(_pduMax, MaxDataBuffer);
+					if (_command != value) {
+						if (value)
+							_max = (_pduMax == 0) ? _service.Options.MaxCommandBuffer : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
+						else
+							_max = (_pduMax == 0) ? _service.Options.MaxDataBuffer : Math.Min(_pduMax, _service.Options.MaxDataBuffer);
 
-					CreatePDV(true);
-					_command = value;
+						CreatePDV(true);
+						_command = value;
+					}
 				}
 			}
 			#endregion
@@ -733,6 +732,7 @@ namespace Dicom.Network {
 
 			#region Private Members
 			private uint CurrentPduSize() {
+				// PDU header + PDV header + PDV data
 				return 6 + _pdu.GetLengthOfPDVs();
 			}
 
