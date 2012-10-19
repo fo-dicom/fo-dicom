@@ -1,3 +1,6 @@
+#### v1.0.26
+* Advanced DIMSE logging options for DicomService base class
+
 #### v1.0.25 (10/18/2012)
 * Fix min/max pixel value calculation for unsigned 32-bit pixel values
 * Fix collection modified exception when calculating group lengths
