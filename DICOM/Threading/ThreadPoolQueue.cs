@@ -96,13 +96,15 @@ namespace Dicom.Threading {
 				// log this somewhere?
 			}
 
-			WorkGroup group = null;
-			if (!_groups.TryGetValue(item.Group, out group))
-				return;
+			lock (_lock) {
+				WorkGroup group = null;
+				if (!_groups.TryGetValue(item.Group, out group))
+					return;
 
-			group.Executing = false;
+				group.Executing = false;
 
-			ExecuteNext(item.Group);
+				ExecuteNext(item.Group);
+			}
 		}
 	}
 }
