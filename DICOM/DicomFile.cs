@@ -51,12 +51,10 @@ namespace Dicom {
 			File = new FileReference(fileName);
 			File.Delete();
 
-			FileByteTarget target = new FileByteTarget(File);
-
-			DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-			writer.Write(target, FileMetaInfo, Dataset);
-
-			target.Close();
+			using (var target = new FileByteTarget(File)) {
+				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+				writer.Write(target, FileMetaInfo, Dataset);
+			}
 		}
 
 		public void BeginSave(string fileName, AsyncCallback callback, object state) {
@@ -83,6 +81,10 @@ namespace Dicom {
 
 			try {
 				state.Item1.EndWrite(result);
+
+				// ensure that file handles are closed
+				var target = (FileByteTarget)state.Item1.Target;
+				target.Dispose();
 			} catch (Exception ex) {
 				state.Item2.InternalState = ex;
 			}
@@ -104,18 +106,19 @@ namespace Dicom {
 
 			try {
 				df.File = new FileReference(fileName);
-				FileByteSource source = new FileByteSource(df.File);
 
-				DicomFileReader reader = new DicomFileReader();
-				reader.Read(source,
-					new DicomDatasetReaderObserver(df.FileMetaInfo),
-					new DicomDatasetReaderObserver(df.Dataset));
+				using (var source = new FileByteSource(df.File)) {
+					DicomFileReader reader = new DicomFileReader();
+					reader.Read(source,
+						new DicomDatasetReaderObserver(df.FileMetaInfo),
+						new DicomDatasetReaderObserver(df.Dataset));
 
-				df.Format = reader.FileFormat;
+					df.Format = reader.FileFormat;
 
-				df.Dataset.InternalTransferSyntax = reader.Syntax;
+					df.Dataset.InternalTransferSyntax = reader.Syntax;
 
-				return df;
+					return df;
+				}
 			} catch (Exception e) {
 				throw new DicomFileException(df, e.Message, e);
 			}
@@ -147,6 +150,7 @@ namespace Dicom {
         {
 			DicomFile df = new DicomFile();
 			df.File = new FileReference(fileName);
+
 			FileByteSource source = new FileByteSource(df.File);
 
 			EventAsyncResult result = new EventAsyncResult(callback, state);
@@ -165,6 +169,10 @@ namespace Dicom {
 			Exception e = null;
 			try {
 				state.Item1.EndRead(result);
+
+				// ensure that file handles are closed
+				var source = (FileByteSource)state.Item1.Source;
+				source.Dispose();
 
 				state.Item2.Format = state.Item1.FileFormat;
 				state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;

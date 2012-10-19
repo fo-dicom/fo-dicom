@@ -1,3 +1,6 @@
+#### v1.0.27
+* Ensure that file handles are closed after opening or saving DICOM file
+
 #### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class
 * Advanced configuration options for P-Data-TF PDU buffer lengths

@@ -93,8 +93,11 @@ namespace Dicom.IO {
 		}
 
 		public void Close() {
-			_stream.Close();
-			_stream = null;
+			try {
+				_stream.Close();
+				_stream = null;
+			} catch {
+			}
 		}
 
 		public void Dispose() {

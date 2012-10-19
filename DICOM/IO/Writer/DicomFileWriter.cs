@@ -20,6 +20,10 @@ namespace Dicom.IO.Writer {
 			_options = options;
 		}
 
+		public IByteTarget Target {
+			get { return _target; }
+		}
+
 		public void Write(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset) {
 			EndWrite(BeginWrite(target, fileMetaInfo, dataset, null, null));
 		}

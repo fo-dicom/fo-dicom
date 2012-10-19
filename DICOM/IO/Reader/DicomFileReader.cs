@@ -26,6 +26,10 @@ namespace Dicom.IO.Reader {
 			_syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 		}
 
+		public IByteSource Source {
+			get { return _source; }
+		}
+
 		public DicomFileFormat FileFormat {
 			get { return _fileFormat; }
 		}
