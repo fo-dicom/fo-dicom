@@ -46,6 +46,14 @@ namespace Dicom.Network {
 			set;
 		}
 
+		/// <summary>
+		/// Options to control behavior of <see cref="DicomService"/> base class.
+		/// </summary>
+		public DicomServiceOptions Options {
+			get;
+			set;
+		}
+
 		private void OnAcceptTcpClient(IAsyncResult result) {
 			try {
 				var client = _listener.EndAcceptTcpClient(result);
@@ -60,6 +68,9 @@ namespace Dicom.Network {
 				}
 
 				T scp = (T)Activator.CreateInstance(typeof(T), stream, Logger);
+
+				if (Options != null)
+					scp.Options = Options;
 
 				_clients.Add(scp);
 			} catch (Exception e) {
