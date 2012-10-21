@@ -11,12 +11,14 @@ namespace Dicom {
 			FileMetaInfo = new DicomFileMetaInformation();
 			Dataset = new DicomDataset();
 			Format = DicomFileFormat.DICOM3;
+            DicomWriteOptions = DicomWriteOptions.Default;
 		}
 
 		public DicomFile(DicomDataset dataset) {
 			Dataset = dataset;
 			FileMetaInfo = new DicomFileMetaInformation(Dataset);
 			Format = DicomFileFormat.DICOM3;
+            DicomWriteOptions = DicomWriteOptions.Default;
 		}
 
 		public FileReference File {
@@ -39,7 +41,9 @@ namespace Dicom {
 			private set;
 		}
 
-		public void Save(string fileName) {
+        protected DicomWriteOptions DicomWriteOptions { get; set; }
+
+		public virtual void Save(string fileName) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -53,13 +57,13 @@ namespace Dicom {
 
 			FileByteTarget target = new FileByteTarget(File);
 
-			DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions);
 			writer.Write(target, FileMetaInfo, Dataset);
 
 			target.Close();
 		}
 
-		public void BeginSave(string fileName, AsyncCallback callback, object state) {
+		public virtual void BeginSave(string fileName, AsyncCallback callback, object state) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -75,7 +79,7 @@ namespace Dicom {
 
 			EventAsyncResult result = new EventAsyncResult(callback, state);
 
-			DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions);
 			writer.BeginWrite(target, FileMetaInfo, Dataset, OnWriteComplete, new Tuple<DicomFileWriter, EventAsyncResult>(writer, result));
 		}
 		private static void OnWriteComplete(IAsyncResult result) {
@@ -159,6 +163,7 @@ namespace Dicom {
 
 			return result;
 		}
+
 		private static void OnReadComplete(IAsyncResult result) {
 			var state = result.AsyncState as Tuple<DicomFileReader, DicomFile, EventAsyncResult>;
 

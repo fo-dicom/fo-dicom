@@ -183,6 +183,10 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
+    <Compile Include="Media\DicomDirectory.cs" />
+    <Compile Include="Media\DirectoryRecordCollection.cs" />
+    <Compile Include="Media\DirectoryRecordSequenceItem.cs" />
+    <Compile Include="Media\DirectoryRecordType.cs" />
     <Compile Include="Network\DicomCEchoProvider.cs" />
     <Compile Include="Network\DicomQueryRetrieveLevel.cs" />
     <Compile Include="Network\DicomServer.cs" />
@@ -231,7 +235,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
