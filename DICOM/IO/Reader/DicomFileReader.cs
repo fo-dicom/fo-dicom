@@ -26,6 +26,10 @@ namespace Dicom.IO.Reader {
 			_syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 		}
 
+		public IByteSource Source {
+			get { return _source; }
+		}
+
 		public DicomFileFormat FileFormat {
 			get { return _fileFormat; }
 		}
@@ -71,9 +75,15 @@ namespace Dicom.IO.Reader {
 					_source.GetUInt8() == 'M')
 					_fileFormat = DicomFileFormat.DICOM3;
 
-				while (_fileFormat == DicomFileFormat.Unknown) {
-					// rewind to origin milestone
-					_source.Rewind();
+				// test for incorrect syntax in file meta info
+				 do {
+					 if (_fileFormat == DicomFileFormat.DICOM3) {
+						 // move milestone to after preamble
+						 _source.Mark();
+					 } else {
+						 // rewind to origin milestone
+						 _source.Rewind();
+					 }
 
 					// test for file meta info
 					var group = _source.GetUInt16();
@@ -87,14 +97,17 @@ namespace Dicom.IO.Reader {
 
 					if (group > 0x00ff) {
 						// invalid starting tag
+						_fileFormat = DicomFileFormat.Unknown;
 						_source.Rewind();
 						break;
 					}
 
-					if (group == 0x0002)
-						_fileFormat = DicomFileFormat.DICOM3NoPreamble;
-					else
-						_fileFormat = DicomFileFormat.DICOM3NoFileMetaInfo;
+					if (_fileFormat == DicomFileFormat.Unknown) {
+						if (group == 0x0002)
+							_fileFormat = DicomFileFormat.DICOM3NoPreamble;
+						else
+							_fileFormat = DicomFileFormat.DICOM3NoFileMetaInfo;
+					}
 
 					var element = _source.GetUInt16();
 					var tag = new DicomTag(group, element);
@@ -112,7 +125,7 @@ namespace Dicom.IO.Reader {
 					}
 
 					_source.Rewind();
-				}
+				} while (_fileFormat == DicomFileFormat.Unknown);
 
 				if (_fileFormat == DicomFileFormat.Unknown)
 					throw new DicomReaderException("Attempted to read invalid DICOM file");

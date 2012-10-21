@@ -386,6 +386,7 @@ namespace Dicom.Media
             {
                 if (dataset.Exists(tag))
                 {
+                    tag.
                     sequenceItem.Add(tag, dataset.Get<object>(tag));
                 }
                 else

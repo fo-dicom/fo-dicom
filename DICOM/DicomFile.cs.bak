@@ -55,10 +55,19 @@ namespace Dicom {
 			File = new FileReference(fileName);
 			File.Delete();
 
+<<<<<<< HEAD
+			FileByteTarget target = new FileByteTarget(File);
+
+            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions);
+			writer.Write(target, FileMetaInfo, Dataset);
+
+			target.Close();
+=======
 			using (var target = new FileByteTarget(File)) {
-				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions);
+				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
 				writer.Write(target, FileMetaInfo, Dataset);
 			}
+>>>>>>> 8694bb1dde31aa130cd99d61aabd6ae9accc68e3
 		}
 
 		public virtual void BeginSave(string fileName, AsyncCallback callback, object state) {

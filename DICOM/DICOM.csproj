@@ -84,6 +84,7 @@
     <Compile Include="DicomTransferSyntax.cs" />
     <Compile Include="DicomUID.cs" />
     <Compile Include="DicomUIDGenerated.cs" />
+    <Compile Include="DicomUIDPrivate.cs" />
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
     <Compile Include="DicomException.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="IO\StreamByteTarget.cs" />
     <Compile Include="IO\TemporaryFileRemover.cs" />
     <Compile Include="IO\TemporaryFile.cs" />
+    <Compile Include="IO\Writer\DicomDatasetExtensions.cs" />
     <Compile Include="IO\Writer\DicomFileWriter.cs" />
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="Network\DicomCEchoProvider.cs" />
     <Compile Include="Network\DicomQueryRetrieveLevel.cs" />
     <Compile Include="Network\DicomServer.cs" />
+    <Compile Include="Network\DicomServiceOptions.cs" />
     <Compile Include="Network\IDicomCMoveProvider.cs" />
     <Compile Include="Network\IDicomCFindProvider.cs" />
     <Compile Include="Network\DicomCMoveRequest.cs" />
@@ -221,6 +224,7 @@
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ThreadPoolQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />

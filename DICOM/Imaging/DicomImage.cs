@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Text;
+
 using Dicom;
 using Dicom.Imaging.Codec;
 using Dicom.Imaging.LUT;
@@ -144,7 +146,8 @@ namespace Dicom.Imaging {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
-				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX, overlay.OriginY, OverlayColor);
+				// DICOM overlay origin begins at (1,1)
+				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
 				graphic.AddOverlay(og);
 			}
 
@@ -153,14 +156,19 @@ namespace Dicom.Imaging {
 
 
 		/// <summary>
-		/// Loads the <para>dataset</para> pixeldata for specified frame and set the internal dataset
+		/// Loads the pixel data for specified frame and set the internal dataset
 		/// 
 		/// </summary>
 		/// <param name="dataset">dataset to load pixeldata from</param>
 		/// <param name="frame">The frame number to create pixeldata for</param>
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
+
+			if (PixelData == null)
+				PixelData = DicomPixelData.Create(Dataset);
+
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
+				// decompress single frame from source dataset
 				DicomCodecParams cparams = null;
 				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
 					cparams = new DicomJpegParams {
@@ -168,24 +176,33 @@ namespace Dicom.Imaging {
 					};
 				}
 
-				//Is this introduce performance problem when dealing with multi-frame image?
-				Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
+				var transcoder = new DicomTranscoder(Dataset.InternalTransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian);
+				transcoder.InputCodecParams = cparams;
+				transcoder.OutputCodecParams = cparams;
+				var buffer = transcoder.DecodeFrame(Dataset, frame);
+
+				// clone the dataset because modifying the pixel data modifies the dataset
+				var clone = Dataset.Clone();
+				clone.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+
+				var pixelData = DicomPixelData.Create(clone, true);
+				pixelData.AddFrame(buffer);
+
+				_pixelData = PixelDataFactory.Create(pixelData, 0);
+			} else {
+				// pull uncompressed frame from source pixel data
+				_pixelData = PixelDataFactory.Create(PixelData, frame);
 			}
 
-			if (PixelData == null)
-				PixelData = DicomPixelData.Create(Dataset);
-
-			_pixelData = PixelDataFactory.Create(PixelData, frame);
 			_pixelData.Rescale(_scale);
 
-			_overlays = DicomOverlayData.FromDataset(Dataset);
+			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
 			_currentFrame = frame;
 		}
 
 		/// <summary>
-		/// Create image rendering pipeline according to the Dataset <see cref="PhotometricInterpretation"/>
-		/// 
+		/// Create image rendering pipeline according to the Dataset <see cref="PhotometricInterpretation"/>.
 		/// </summary>
 		private void CreatePipeline() {
 			if (_pipeline != null)

@@ -7,6 +7,14 @@ using System.Text;
 using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging {
+	public enum DicomOverlayType {
+		/// <summary>Graphic overlay</summary>
+		Graphics,
+
+		/// <summary>Region of Interest</summary>
+		ROI
+	}
+
 	/// <summary>
 	/// DICOM image overlay class
 	/// </summary>
@@ -16,7 +24,7 @@ namespace Dicom.Imaging {
 
 		private int _rows;
 		private int _columns;
-		private string _type;
+		private DicomOverlayType _type;
 		private int _originX;
 		private int _originY;
 		private int _bitsAllocated;
@@ -68,7 +76,7 @@ namespace Dicom.Imaging {
 		/// <summary>
 		/// Overlay type
 		/// </summary>
-		public string Type {
+		public DicomOverlayType Type {
 			get { return _type; }
 		}
 
@@ -197,15 +205,17 @@ namespace Dicom.Imaging {
 		private void Load(DicomDataset ds) {
 			_rows = ds.Get<ushort>(OverlayTag(DicomTag.OverlayRows));
 			_columns = ds.Get<ushort>(OverlayTag(DicomTag.OverlayColumns));
-			_type = ds.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+			
+			var type = ds.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+			if (type.StartsWith("R"))
+				_type = DicomOverlayType.ROI;
+			else
+				_type = DicomOverlayType.Graphics;
 
 			DicomTag tag = OverlayTag(DicomTag.OverlayOrigin);
 			if (ds.Contains(tag)) {
-				short[] xy = ds.Get<short[]>(tag);
-				if (xy != null && xy.Length == 2) {
-					_originX = xy[0];
-					_originY = xy[1];
-				}
+				_originX = ds.Get<short>(tag, 0, 1);
+				_originY = ds.Get<short>(tag, 1, 1);
 			}
 
 			_bitsAllocated = ds.Get<ushort>(OverlayTag(DicomTag.OverlayBitsAllocated), 0, 1);
@@ -215,6 +225,64 @@ namespace Dicom.Imaging {
 			if (ds.Contains(tag)) {
 				var elem = ds.FirstOrDefault(x => x.Tag == tag) as DicomElement;
 				_data = elem.Buffer;
+			} else {
+				// overlay embedded in high bits of pixel data
+				if (ds.InternalTransferSyntax.IsEncapsulated)
+					throw new DicomImagingException("Attempted to extract embedded overlay from compressed pixel data. Decompress pixel data before attempting this operation.");
+
+				var pixels = DicomPixelData.Create(ds);
+
+				// (1,1) indicates top left pixel of image
+				int ox = Math.Max(0, _originX - 1);
+				int oy = Math.Max(0, _originY - 1);
+				int ow = Math.Min(_rows, pixels.Width - _rows - ox);
+				int oh = Math.Min(_columns, pixels.Height - _columns - oy);
+
+				var frame = pixels.GetFrame(0);
+
+				// calculate length of output buffer
+				var count = (_rows * _columns) / 8;
+				if (((_rows * _columns) % 8) != 0)
+					count++;
+				if ((count & 1) != 0)
+					count++;
+
+				var bytes = new byte[count];
+				var bits = new BitArray(bytes);
+				int mask = 1 << _bitPosition;
+
+				if (pixels.BitsAllocated == 8) {
+					var data = ByteBufferEnumerator<byte>.Create(frame).ToArray();
+
+					for (int y = oy; y < oh; y++) {
+						int n = (y * pixels.Width) + ox;
+						int i = (y - oy) * _columns;
+						for (int x = ox; x < ow; x++) {
+							if ((data[n] & mask) != 0)
+								bits[i] = true;
+							n++;
+							i++;
+						}
+					}
+				} else if (pixels.BitsAllocated == 16) {
+					// we don't really care if the pixel data is signed or not
+					var data = ByteBufferEnumerator<ushort>.Create(frame).ToArray();
+
+					for (int y = oy; y < oh; y++) {
+						int n = (y * pixels.Width) + ox;
+						int i = (y - oy) * _columns;
+						for (int x = ox; x < ow; x++) {
+							if ((data[n] & mask) != 0)
+								bits[i] = true;
+							n++;
+							i++;
+						}
+					}
+				} else {
+					throw new DicomImagingException("Unable to extract embedded overlay from pixel data with bits stored greater than 16.");
+				}
+
+				_data = new MemoryByteBuffer(bytes);
 			}
 
 			_description = ds.Get<string>(OverlayTag(DicomTag.OverlayDescription), String.Empty);

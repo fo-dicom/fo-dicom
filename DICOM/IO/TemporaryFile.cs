@@ -12,12 +12,17 @@ namespace Dicom.IO {
 			_file = Create();
 		}
 
-		public string Name {
-			get { return _file; }
+		~TemporaryFile() {
+			TemporaryFileRemover.Delete(_file);
 		}
 
 		public void Dispose() {
 			TemporaryFileRemover.Delete(_file);
+			GC.SuppressFinalize(this);
+		}
+
+		public string Name {
+			get { return _file; }
 		}
 
 		#region Static

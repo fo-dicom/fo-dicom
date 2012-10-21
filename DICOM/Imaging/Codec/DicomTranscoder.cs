@@ -6,6 +6,9 @@ using System.ComponentModel.Composition.Hosting;
 
 using NLog;
 
+using Dicom.IO.Buffer;
+using Dicom.IO.Writer;
+
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
 		#region Static
@@ -92,6 +95,13 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public DicomDataset Transcode(DicomDataset dataset) {
+			if (!dataset.Contains(DicomTag.PixelData)) {
+				var newDataset = dataset.Clone();
+				newDataset.InternalTransferSyntax = OutputSyntax;
+				newDataset.RecalculateGroupLengths(false);
+				return newDataset;
+			}
+
 			if (!InputSyntax.IsEncapsulated && !OutputSyntax.IsEncapsulated) {
 				// transcode from uncompressed to uncompressed
 				var newDataset = dataset.Clone();
@@ -104,6 +114,8 @@ namespace Dicom.Imaging.Codec {
 					var frame = oldPixelData.GetFrame(i);
 					newPixelData.AddFrame(frame);
 				}
+
+				newDataset.RecalculateGroupLengths(false);
 
 				return newDataset;
 			}
@@ -127,6 +139,32 @@ namespace Dicom.Imaging.Codec {
 			throw new DicomCodecException("Unable to find transcoding solution for {0} to {1}", InputSyntax.UID.Name, OutputSyntax.UID.Name);
 		}
 
+		/// <summary>
+		/// Decompress single frame from DICOM dataset and return uncompressed frame buffer.
+		/// </summary>
+		/// <param name="dataset">DICOM dataset</param>
+		/// <param name="frame">Frame number</param>
+		/// <returns>Uncompressed frame buffer</returns>
+		public IByteBuffer DecodeFrame(DicomDataset dataset, int frame) {
+			var pixelData = DicomPixelData.Create(dataset, false);
+			var buffer = pixelData.GetFrame(frame);
+
+			// is pixel data already uncompressed?
+			if (!dataset.InternalTransferSyntax.IsEncapsulated)
+				return buffer;
+
+			// clone dataset to prevent changes to source
+			var cloneDataset = dataset.Clone();
+
+			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+			oldPixelData.AddFrame(buffer);
+
+			var newDataset = Decode(cloneDataset, InputSyntax, InputCodec, InputCodecParams);
+
+			var newPixelData = DicomPixelData.Create(newDataset, false);
+			return newPixelData.GetFrame(frame);
+		}
+
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {
 			DicomPixelData oldPixelData = DicomPixelData.Create(oldDataset, false);
 
@@ -135,6 +173,8 @@ namespace Dicom.Imaging.Codec {
 			DicomPixelData newPixelData = DicomPixelData.Create(newDataset, true);
 
 			codec.Decode(oldPixelData, newPixelData, parameters);
+
+			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
 		}
@@ -152,7 +192,7 @@ namespace Dicom.Imaging.Codec {
 				newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompression, "01"));
 
 				List<string> methods = new List<string>();
-				if (newDataset.Exists(DicomTag.LossyImageCompressionMethod))
+				if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
 					methods.AddRange(newDataset.Get<string[]>(DicomTag.LossyImageCompressionMethod));
 				methods.Add(codec.TransferSyntax.LossyCompressionMethod);
 				newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
@@ -162,6 +202,8 @@ namespace Dicom.Imaging.Codec {
 				string ratio = String.Format("{0:0.000}", oldSize / newSize);
 				newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
 			}
+
+			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
 		}

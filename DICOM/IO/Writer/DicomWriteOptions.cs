@@ -8,12 +8,14 @@ namespace Dicom.IO.Writer {
 		public DicomWriteOptions() {
 			ExplicitLengthSequences = false;
 			ExplicitLengthSequenceItems = false;
+			KeepGroupLengths = false;
 			LargeObjectSize = 16*1024;
 		}
 
 		public DicomWriteOptions(DicomWriteOptions options) {
 			ExplicitLengthSequences = options.ExplicitLengthSequences;
 			ExplicitLengthSequenceItems = options.ExplicitLengthSequenceItems;
+			KeepGroupLengths = options.KeepGroupLengths;
 			LargeObjectSize = options.LargeObjectSize;
 		}
 
@@ -33,6 +35,11 @@ namespace Dicom.IO.Writer {
 		}
 
 		public bool ExplicitLengthSequenceItems {
+			get;
+			set;
+		}
+
+		public bool KeepGroupLengths {
 			get;
 			set;
 		}

@@ -50,6 +50,11 @@ namespace Dicom {
 			private set;
 		}
 
+		public bool SwapPixelData {
+			get;
+			private set;
+		}
+
 		public override string ToString() {
 			return UID.Name;
 		}
@@ -85,6 +90,15 @@ namespace Dicom {
 			UID = new DicomUID(DicomUID.ExplicitVRBigEndian.UID + ".123456", "Implicit VR Big Endian", DicomUidType.TransferSyntax),
 			IsExplicitVR = false,
 			Endian = Endian.Big
+		};
+
+		/// <summary>GE Private Implicit VR Big Endian</summary>
+		/// <remarks>Same as Implicit VR Little Endian except for big endian pixel data.</remarks>
+		public static DicomTransferSyntax GEPrivateImplicitVRBigEndian = new DicomTransferSyntax {
+			UID = new DicomUID("1.2.840.113619.5.2", "GE Private Implicit VR Big Endian", DicomUidType.TransferSyntax),
+			IsExplicitVR = false,
+			Endian = Endian.Little,
+			SwapPixelData = true
 		};
 
 		/// <summary>Implicit VR Little Endian</summary>
@@ -359,6 +373,7 @@ namespace Dicom {
 
 		static DicomTransferSyntax() {
 			#region Load Transfer Syntax List
+			Entries.Add(DicomTransferSyntax.GEPrivateImplicitVRBigEndian.UID, DicomTransferSyntax.GEPrivateImplicitVRBigEndian);
 			Entries.Add(DicomTransferSyntax.ImplicitVRLittleEndian.UID, DicomTransferSyntax.ImplicitVRLittleEndian);
 			Entries.Add(DicomTransferSyntax.ExplicitVRLittleEndian.UID, DicomTransferSyntax.ExplicitVRLittleEndian);
 			Entries.Add(DicomTransferSyntax.ExplicitVRBigEndian.UID, DicomTransferSyntax.ExplicitVRBigEndian);

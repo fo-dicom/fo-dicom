@@ -1,6 +1,33 @@
-#### v1.0.24
+#### v1.0.27
+* Ensure that file handles are closed after opening or saving DICOM file
+* Add ability to move file pointed to by FileReference
+
+#### v1.0.26 (10/19/2012)
+* Advanced DIMSE logging options for DicomService base class
+* Advanced configuration options for P-Data-TF PDU buffer lengths
+* Fix bug where final PDV may not be written to P-Data-TF PDU
+* Fix bug reading DIMSE datasets from network
+
+#### v1.0.25 (10/18/2012)
+* Fix min/max pixel value calculation for unsigned 32-bit pixel values
+* Fix collection modified exception when calculating group lengths
+* Better handling of null values when adding elements to dataset
+* Fix default values when accessing SS/US element values (Anders Gustafsson, Cureos AB)
+* Fix decoding of JPEG2000 images with signed pixel data (Mahesh Dubey)
+* Ability to decompress single frame from dataset (Mahesh Dubey)
+* Use ThreadPoolQueue to process related response messages in order
+
+#### v1.0.24 (10/01/2012)
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order
 * Reject all presentation contexts that have not already been accepted or rejected when sending association accept
+* Add finalizers to temp file classes to catch files not deleted at application exit
+* Remove Exists() method from DicomDataset (duplicates functionality of Contains())
+* Extension methods for recalculating and removing group length elements
+* Force calculation of group lengths when writing File Meta Info and Command datasets
+* Fix exception when attempting to display ROI overlays
+* Add ability to extract embedded overlays from pixel data
+* Detect incorrect transfer syntax in file meta info
+* Add support for reading and displaying GE Private Implicit VR Big Endian syntax
 
 #### v1.0.23 (09/26/2012)
 * Fix W/L calculation creating negative window width

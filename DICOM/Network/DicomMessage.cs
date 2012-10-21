@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Dicom.Log;
+
 namespace Dicom.Network {
 	public class DicomMessage {
 		public DicomMessage() {
@@ -56,6 +58,30 @@ namespace Dicom.Network {
 
 		public override string ToString() {
 			return String.Format("{0} [{1}]", ToString(Type), IsRequest(Type) ? MessageID : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
+		}
+
+		public string ToString(bool printDatasets) {
+			var output = ToString();
+
+			if (!printDatasets)
+				return output;
+
+			output += "\n";
+			output += "--------------------------------------------------------------------------------\n";
+			output += " DIMSE Command:\n";
+			output += "--------------------------------------------------------------------------------\n";
+			output += Command.WriteToString();
+
+			if (HasDataset) {
+				output += "--------------------------------------------------------------------------------\n";
+				output += " DIMSE Dataset:\n";
+				output += "--------------------------------------------------------------------------------\n";
+				output += Dataset.WriteToString();
+			}
+
+			output += "--------------------------------------------------------------------------------";
+
+			return output;
 		}
 
 		public static string ToString(DicomCommandField type) {

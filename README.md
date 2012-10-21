@@ -49,6 +49,7 @@ client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 ```
 
 ### Contributors
+* [Hesham Desouky](https://github.com/hdesouky) (Nebras Technology)
 * [Mahesh Dubey](https://github.com/mdubey82)
 * [Anders Gustafsson](https://github.com/cureos) (Cureos AB)
 * [Justin Wake](https://github.com/jwake)

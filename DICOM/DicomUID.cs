@@ -99,6 +99,7 @@ namespace Dicom {
 		static DicomUID() {
 			_uids = new ConcurrentDictionary<string, DicomUID>();
 			LoadInternalUIDs();
+			LoadPrivateUIDs();
 		}
 
 		public static IEnumerable<DicomUID> Enumerate() {

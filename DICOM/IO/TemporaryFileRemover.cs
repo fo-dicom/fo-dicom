@@ -15,6 +15,25 @@ namespace Dicom.IO {
 			_timer = new Timer(OnTick);
 		}
 
+		~TemporaryFileRemover() {
+			DeleteAllRemainingFiles();
+		}
+
+		public void Dispose() {
+			DeleteAllRemainingFiles();
+			GC.SuppressFinalize(this);
+		}
+
+		private void DeleteAllRemainingFiles() {
+			// one last try to delete all of the files
+			for (int i = 0; i < _files.Count; i++) {
+				try {
+					File.Delete(_files[i]);
+				} catch {
+				}
+			}
+		}
+
 		public static void Delete(string file) {
 			_instance.DeletePrivate(file);
 		}
@@ -51,16 +70,6 @@ namespace Dicom.IO {
 				if (_files.Count == 0) {
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 					_running = false;
-				}
-			}
-		}
-
-		public void Dispose() {
-			// one last try to delete all of the files
-			for (int i = 0; i < _files.Count; i++) {
-				try {
-					File.Delete(_files[i]);
-				} catch {
 				}
 			}
 		}

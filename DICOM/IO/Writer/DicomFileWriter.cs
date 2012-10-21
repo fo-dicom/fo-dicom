@@ -20,6 +20,10 @@ namespace Dicom.IO.Writer {
 			_options = options;
 		}
 
+		public IByteTarget Target {
+			get { return _target; }
+		}
+
 		public void Write(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset) {
 			EndWrite(BeginWrite(target, fileMetaInfo, dataset, null, null));
 		}
@@ -49,6 +53,9 @@ namespace Dicom.IO.Writer {
 		}
 
 		private void OnCompletePreamble(IByteTarget target, object state) {
+			// recalculate FMI group length as required by standard
+			_fileMetaInfo.RecalculateGroupLengths();
+
 			DicomWriter writer = new DicomWriter(DicomTransferSyntax.ExplicitVRLittleEndian, _options, _target);
 			DicomDatasetWalker walker = new DicomDatasetWalker(_fileMetaInfo);
 			walker.BeginWalk(writer, OnCompleteFileMetaInfo, walker);
@@ -64,6 +71,19 @@ namespace Dicom.IO.Writer {
 				}
 
 				DicomTransferSyntax syntax = _fileMetaInfo.TransferSyntax;
+
+				if (_options.KeepGroupLengths) {
+					// update transfer syntax and recalculate existing group lengths
+					_dataset.InternalTransferSyntax = syntax;
+					_dataset.RecalculateGroupLengths(false);
+				} else {
+					// remove group lengths as suggested in PS 3.5 7.2
+					//
+					//	2. It is recommended that Group Length elements be removed during storage or transfer 
+					//	   in order to avoid the risk of inconsistencies arising during coercion of data 
+					//	   element values and changes in transfer syntax.
+					_dataset.RemoveGroupLengths();
+				}
 
 				DicomWriter writer = new DicomWriter(syntax, _options, _target);
 				walker = new DicomDatasetWalker(_dataset);
