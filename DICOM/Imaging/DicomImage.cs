@@ -120,8 +120,6 @@ namespace Dicom.Imaging {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
-			CreatePipeline();
-
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
@@ -132,16 +130,15 @@ namespace Dicom.Imaging {
 			return graphic.RenderImage(_pipeline.LUT);
 		}
 #endif
+
 		/// <summary>
-		/// Renders DICOM image to <typeparamref name="System.Windows.Media.ImageSource"/> 
+		/// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 
 		/// </summary>
 		/// <param name="frame">Zero indexed frame nu,ber</param>
 		/// <returns>Rendered image</returns>
 		public ImageSource RenderImageSource(int frame = 0) {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
-
-			CreatePipeline();
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
@@ -199,6 +196,8 @@ namespace Dicom.Imaging {
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
 			_currentFrame = frame;
+
+			CreatePipeline();
 		}
 
 		/// <summary>
