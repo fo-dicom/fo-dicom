@@ -31,6 +31,7 @@ namespace Dicom.Network {
 		private int _readLength;
 		private bool _isConnected;
 		private ThreadPoolQueue<int> _processQueue;
+		private DicomServiceOptions _options;
 
 		protected DicomService(Stream stream, Logger log) {
 			_network = stream;
@@ -53,8 +54,11 @@ namespace Dicom.Network {
 		}
 
 		public DicomServiceOptions Options {
-			get;
-			set;
+			get { return _options; }
+			set {
+				_options = value;
+				_processQueue.Linger = _options.ThreadPoolLinger;
+			}
 		}
 
 		private string LogID {
