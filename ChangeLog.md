@@ -4,6 +4,7 @@
 * Fix window/level settings not being applied to rendered DicomImage
 * Fix processing order of received DIMSE responses
 * Process P-Data-TF PDUs on ThreadPool
+* Temporary fix for rendering JPEG compressed YBR images
 
 #### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class

@@ -82,6 +82,11 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		public PhotometricInterpretation PhotometricInterpretation {
+			get;
+			private set;
+		}
+
 		/// <summary>Number of frames contained in image data.</summary>
 		public int NumberOfFrames {
 			get { return PixelData.NumberOfFrames; }
@@ -161,8 +166,10 @@ namespace Dicom.Imaging {
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
 
-			if (PixelData == null)
+			if (PixelData == null) {
 				PixelData = DicomPixelData.Create(Dataset);
+				PhotometricInterpretation = PixelData.PhotometricInterpretation;
+			}
 
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
 				// decompress single frame from source dataset
@@ -184,6 +191,10 @@ namespace Dicom.Imaging {
 
 				var pixelData = DicomPixelData.Create(clone, true);
 				pixelData.AddFrame(buffer);
+
+				// temporary fix for JPEG compressed YBR images
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && pixelData.SamplesPerPixel == 3)
+					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
 			} else {
@@ -208,10 +219,14 @@ namespace Dicom.Imaging {
 				return;
 
 			var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
+
+			// temporary fix for JPEG compressed YBR images
+			if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && samples == 3)
+				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {
 				// generally ACR-NEMA
-				var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 				if (samples == 0 || samples == 1) {
 					if (Dataset.Contains(DicomTag.RedPaletteColorLookupTableData))
 						pi = PhotometricInterpretation.PaletteColor;
