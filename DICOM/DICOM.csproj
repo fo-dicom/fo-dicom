@@ -221,6 +221,7 @@
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading\ThreadPoolQueue.cs" />
+    <Compile Include="Threading\WorkQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
