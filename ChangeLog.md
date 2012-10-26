@@ -7,6 +7,7 @@
 * Temporary fix for rendering JPEG compressed YBR images
 * Fix Async Ops window for associations where it is not negotiated
 * Fix bug reading Palette Color LUT with implicit length
+* Support decompression and rendering of JPEG Process 2 images
 
 #### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class

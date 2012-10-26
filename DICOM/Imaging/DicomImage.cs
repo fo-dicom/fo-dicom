@@ -174,7 +174,7 @@ namespace Dicom.Imaging {
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
 				// decompress single frame from source dataset
 				DicomCodecParams cparams = null;
-				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) {
 					cparams = new DicomJpegParams {
 						ConvertColorspaceToRGB = true
 					};
@@ -193,7 +193,7 @@ namespace Dicom.Imaging {
 				pixelData.AddFrame(buffer);
 
 				// temporary fix for JPEG compressed YBR images
-				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && pixelData.SamplesPerPixel == 3)
+				if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
 					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
@@ -222,7 +222,7 @@ namespace Dicom.Imaging {
 			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 
 			// temporary fix for JPEG compressed YBR images
-			if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && samples == 3)
+			if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
 				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {

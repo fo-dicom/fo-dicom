@@ -118,7 +118,9 @@ public:
 
 protected:
 	virtual JpegNativeCodec^ GetCodec(int bits, DicomJpegParams^ jparams) override {
-		if (bits == 12)
+		if (bits == 8)
+			return gcnew Jpeg8Codec(JpegMode::Sequential, 0, 0);
+		else if (bits <= 12)
 			return gcnew Jpeg12Codec(JpegMode::Sequential, 0, 0);
 		else
 			throw gcnew DicomCodecException(String::Format("Unable to create JPEG Process 4 codec for bits stored == {0}", bits));
