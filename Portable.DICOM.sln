@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{733FD5EE-8360-4AA1-8821-80D3D87DEBDA}"
+	ProjectSection(SolutionItems) = preProject
+		ChangeLog.md = ChangeLog.md
+		License.txt = License.txt
+		README.md = README.md
+		Todo.md = Todo.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1E86A172-B9C5-4BBF-BD0F-22507432C8A5}"
+	ProjectSection(SolutionItems) = preProject
+		fo-dicom.nuspec = fo-dicom.nuspec
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM", "DICOM\Store.DICOM.csproj", "{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|ARM.ActiveCfg = Debug|ARM
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|ARM.Build.0 = Debug|ARM
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|x64.ActiveCfg = Debug|x64
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|x64.Build.0 = Debug|x64
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|x86.ActiveCfg = Debug|x86
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Debug|x86.Build.0 = Debug|x86
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|ARM.ActiveCfg = Release|ARM
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|ARM.Build.0 = Release|ARM
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x64.ActiveCfg = Release|x64
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x64.Build.0 = Release|x64
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x86.ActiveCfg = Release|x86
+		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_UseGlobalSettings = True
+	EndGlobalSection
+EndGlobal
