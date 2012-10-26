@@ -59,7 +59,6 @@ namespace Dicom.Imaging.Render {
 		/// <param name="frame">Frame number (0 based)</param>
 		/// <returns>Implementation of <seealso cref="IPixelData"/> according to <seealso cref="PhotometricInterpretation"/></returns>
 		public static IPixelData Create(DicomPixelData pixelData, int frame) {
-            
 			PhotometricInterpretation pi = pixelData.PhotometricInterpretation;
 
 			if (pi == null) {
@@ -78,17 +77,17 @@ namespace Dicom.Imaging.Render {
 
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
 				if (pixelData.BitsAllocated <= 8)
-					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetUncompressFrame(frame));
+					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
 				else if (pixelData.BitsAllocated <= 16) {
 					if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
-						return new GrayscalePixelDataS16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetUncompressFrame(frame));
+						return new GrayscalePixelDataS16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 					else
-						return new GrayscalePixelDataU16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetUncompressFrame(frame));
+						return new GrayscalePixelDataU16(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 				} else if (pixelData.BitsAllocated <= 32) {
                     if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
-						return new GrayscalePixelDataS32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetUncompressFrame(frame));
+						return new GrayscalePixelDataS32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
                     else
-						return new GrayscalePixelDataU32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetUncompressFrame(frame));
+						return new GrayscalePixelDataU32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 				} else
 					throw new DicomImagingException("Unsupported pixel data value for bits stored: {0}", pixelData.BitsStored);
 			} else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull) {

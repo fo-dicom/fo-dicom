@@ -347,6 +347,10 @@ namespace Dicom.Network {
 			_assoc = assoc;
 		}
 
+		public override string ToString() {
+			return "A-ASSOCIATE-RQ";
+		}
+
 		#region Write
 		/// <summary>
 		/// Writes A-ASSOCIATE-RQ to PDU buffer
@@ -536,6 +540,10 @@ namespace Dicom.Network {
 			_assoc = assoc;
 		}
 
+		public override string ToString() {
+			return "A-ASSOCIATE-AC";
+		}
+
 		#region Write
 		/// <summary>
 		/// Writes A-ASSOCIATE-AC to PDU buffer
@@ -596,11 +604,13 @@ namespace Dicom.Network {
 			pdu.WriteLength16();
 
 			// Asynchronous Operations Negotiation
-			pdu.Write("Item-Type", (byte)0x53);
-			pdu.Write("Reserved", (byte)0x00);
-			pdu.Write("Item-Length", (ushort)0x0004);
-			pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
-			pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
+			if (_assoc.MaxAsyncOpsInvoked != 1 || _assoc.MaxAsyncOpsPerformed != 1) {
+				pdu.Write("Item-Type", (byte)0x53);
+				pdu.Write("Reserved", (byte)0x00);
+				pdu.Write("Item-Length", (ushort)0x0004);
+				pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
+				pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
+			}
 
 			// Implementation Version
 			pdu.Write("Item-Type", (byte)0x55);
@@ -621,6 +631,10 @@ namespace Dicom.Network {
 		/// </summary>
 		/// <param name="raw">PDU buffer</param>
 		public void Read(RawPDU raw) {
+			// reset async ops in case remote end does not negotiate
+			_assoc.MaxAsyncOpsInvoked = 1;
+			_assoc.MaxAsyncOpsPerformed = 1;
+
 			uint l = raw.Length - 6;
 			ushort c = 0;
 
@@ -782,6 +796,10 @@ namespace Dicom.Network {
 			get { return _rn; }
 		}
 
+		public override string ToString() {
+			return "A-ASSOCIATE-RJ";
+		}
+
 		/// <summary>
 		/// Writes A-ASSOCIATE-RJ to PDU buffer
 		/// </summary>
@@ -811,6 +829,10 @@ namespace Dicom.Network {
 	#region A-Release-RQ
 	/// <summary>A-RELEASE-RQ</summary>
 	public class AReleaseRQ : PDU {
+		public override string ToString() {
+			return "A-RELEASE-RQ";
+		}
+
 		/// <summary>
 		/// Writes A-RELEASE-RQ to PDU buffer
 		/// </summary>
@@ -834,6 +856,10 @@ namespace Dicom.Network {
 	#region A-Release-RP
 	/// <summary>A-RELEASE-RP</summary>
 	public class AReleaseRP : PDU {
+		public override string ToString() {
+			return "A-RELEASE-RP";
+		}
+
 		/// <summary>
 		/// Writes A-RELEASE-RP to PDU buffer
 		/// </summary>
@@ -920,6 +946,10 @@ namespace Dicom.Network {
 			_s = source; _r = reason;
 		}
 
+		public override string ToString() {
+			return "A-ABORT";
+		}
+
 		#region Write
 		/// <summary>
 		/// Writes A-ABORT to PDU buffer
@@ -974,6 +1004,13 @@ namespace Dicom.Network {
 				len += pdv.PDVLength;
 			}
 			return len;
+		}
+
+		public override string ToString() {
+			var value = String.Format("P-DATA-TF [Length: {0}]", 6 + GetLengthOfPDVs());
+			foreach (var pdv in PDVs)
+				value += "\n\t" + pdv.ToString();
+			return value;
 		}
 
 		#region Write
@@ -1063,6 +1100,10 @@ namespace Dicom.Network {
 		/// <summary>Length of this PDV</summary>
 		public uint PDVLength {
 			get { return (uint)_value.Length + 6; }
+		}
+
+		public override string ToString() {
+			return String.Format("PDV [PCID: {0}; Length: {1}; Command: {2}; Last: {3}]", PCID, Value.Length, IsCommand, IsLastFragment);
 		}
 
 		#region Write

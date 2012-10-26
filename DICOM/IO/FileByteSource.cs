@@ -5,7 +5,7 @@ using System.IO;
 using Dicom.IO.Buffer;
 
 namespace Dicom.IO {
-	public class FileByteSource : IByteSource {
+	public class FileByteSource : IByteSource, IDisposable {
 		private FileReference _file;
 		private Stream _stream;
 		private Endian _endian;
@@ -156,6 +156,18 @@ namespace Dicom.IO {
 
 				throw new DicomIoException("Requested {0} bytes past end of file.", count);
 			}
+		}
+
+		public void Dispose() {
+			try {
+				_reader.Close();
+
+				// closing binary reader should close this
+				_stream.Close();
+			} catch {
+			}
+
+			GC.SuppressFinalize(this);
 		}
 	}
 }

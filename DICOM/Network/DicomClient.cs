@@ -48,6 +48,14 @@ namespace Dicom.Network {
 			set;
 		}
 
+		/// <summary>
+		/// Options to control behavior of <see cref="DicomService"/> base class.
+		/// </summary>
+		public DicomServiceOptions Options {
+			get;
+			set;
+		}
+
 		public object UserState {
 			get;
 			set;
@@ -118,6 +126,8 @@ namespace Dicom.Network {
 
 			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
 				_client = client;
+				if (_client.Options != null)
+					Options = _client.Options;
 				SendAssociationRequest(association);
 			}
 

@@ -1,7 +1,26 @@
-#### v1.0.25
+#### v1.0.27
+* Ensure that file handles are closed after opening or saving DICOM file
+* Add ability to move file pointed to by FileReference
+* Fix window/level settings not being applied to rendered DicomImage
+* Fix processing order of received DIMSE responses
+* Process P-Data-TF PDUs on ThreadPool
+* Temporary fix for rendering JPEG compressed YBR images
+* Fix Async Ops window for associations where it is not negotiated
+
+#### v1.0.26 (10/19/2012)
+* Advanced DIMSE logging options for DicomService base class
+* Advanced configuration options for P-Data-TF PDU buffer lengths
+* Fix bug where final PDV may not be written to P-Data-TF PDU
+* Fix bug reading DIMSE datasets from network
+
+#### v1.0.25 (10/18/2012)
 * Fix min/max pixel value calculation for unsigned 32-bit pixel values
 * Fix collection modified exception when calculating group lengths
 * Better handling of null values when adding elements to dataset
+* Fix default values when accessing SS/US element values (Anders Gustafsson, Cureos AB)
+* Fix decoding of JPEG2000 images with signed pixel data (Mahesh Dubey)
+* Ability to decompress single frame from dataset (Mahesh Dubey)
+* Use ThreadPoolQueue to process related response messages in order
 
 #### v1.0.24 (10/01/2012)
 * Change the default presentation context transfer syntax acceptance behavior to prefer the SCU proposed order

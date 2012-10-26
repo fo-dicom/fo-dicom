@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Text;
+
 using Dicom;
 using Dicom.Imaging.Codec;
 using Dicom.Imaging.LUT;
@@ -81,6 +82,11 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		public PhotometricInterpretation PhotometricInterpretation {
+			get;
+			private set;
+		}
+
 		/// <summary>Number of frames contained in image data.</summary>
 		public int NumberOfFrames {
 			get { return PixelData.NumberOfFrames; }
@@ -119,8 +125,6 @@ namespace Dicom.Imaging {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
-			CreatePipeline();
-
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
@@ -131,16 +135,15 @@ namespace Dicom.Imaging {
 			return graphic.RenderImage(_pipeline.LUT);
 		}
 #endif
+
 		/// <summary>
-		/// Renders DICOM image to <typeparamref name="System.Windows.Media.ImageSource"/> 
+		/// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 
 		/// </summary>
 		/// <param name="frame">Zero indexed frame nu,ber</param>
 		/// <returns>Rendered image</returns>
 		public ImageSource RenderImageSource(int frame = 0) {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
-
-			CreatePipeline();
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
@@ -155,14 +158,21 @@ namespace Dicom.Imaging {
 
 
 		/// <summary>
-		/// Loads the <para>dataset</para> pixeldata for specified frame and set the internal dataset
+		/// Loads the pixel data for specified frame and set the internal dataset
 		/// 
 		/// </summary>
 		/// <param name="dataset">dataset to load pixeldata from</param>
 		/// <param name="frame">The frame number to create pixeldata for</param>
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
+
+			if (PixelData == null) {
+				PixelData = DicomPixelData.Create(Dataset);
+				PhotometricInterpretation = PixelData.PhotometricInterpretation;
+			}
+
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
+				// decompress single frame from source dataset
 				DicomCodecParams cparams = null;
 				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
 					cparams = new DicomJpegParams {
@@ -170,19 +180,35 @@ namespace Dicom.Imaging {
 					};
 				}
 
-				//Is this introduce performance problem when dealing with multi-frame image?
-				//Dataset = Dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, cparams);
+				var transcoder = new DicomTranscoder(Dataset.InternalTransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian);
+				transcoder.InputCodecParams = cparams;
+				transcoder.OutputCodecParams = cparams;
+				var buffer = transcoder.DecodeFrame(Dataset, frame);
+
+				// clone the dataset because modifying the pixel data modifies the dataset
+				var clone = Dataset.Clone();
+				clone.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+
+				var pixelData = DicomPixelData.Create(clone, true);
+				pixelData.AddFrame(buffer);
+
+				// temporary fix for JPEG compressed YBR images
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && pixelData.SamplesPerPixel == 3)
+					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+
+				_pixelData = PixelDataFactory.Create(pixelData, 0);
+			} else {
+				// pull uncompressed frame from source pixel data
+				_pixelData = PixelDataFactory.Create(PixelData, frame);
 			}
 
-			if (PixelData == null)
-				PixelData = DicomPixelData.Create(Dataset);
-
-			_pixelData = PixelDataFactory.Create(PixelData, frame);
 			_pixelData.Rescale(_scale);
 
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
 			_currentFrame = frame;
+
+			CreatePipeline();
 		}
 
 		/// <summary>
@@ -193,10 +219,14 @@ namespace Dicom.Imaging {
 				return;
 
 			var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
+
+			// temporary fix for JPEG compressed YBR images
+			if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && samples == 3)
+				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {
 				// generally ACR-NEMA
-				var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 				if (samples == 0 || samples == 1) {
 					if (Dataset.Contains(DicomTag.RedPaletteColorLookupTableData))
 						pi = PhotometricInterpretation.PaletteColor;

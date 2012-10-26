@@ -81,8 +81,12 @@ namespace Jpeg {
 	public static class JpegHelper {
 		//DCMTK djcodecd.cxx
 		public static int ScanJpegForBitDepth(DicomPixelData pixelData) {
-			DicomFragmentSequence element = pixelData.Dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
-			IByteBuffer buffer = element.Fragments[0];
+			DicomItem item = pixelData.Dataset.Get<DicomItem>(DicomTag.PixelData);
+			IByteBuffer buffer;
+			if (item is DicomFragmentSequence)
+				buffer = (item as DicomFragmentSequence).Fragments[0];
+			else
+				buffer = (item as DicomElement).Buffer;
 			MemoryStream ms = new MemoryStream(buffer.Data);
 			BinaryReader br = EndianBinaryReader.Create(ms, Endian.Big);
 
