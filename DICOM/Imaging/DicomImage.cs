@@ -82,6 +82,7 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		/// <summary>Photometric interpretation of pixel data.</summary>
 		public PhotometricInterpretation PhotometricInterpretation {
 			get;
 			private set;
@@ -98,9 +99,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowWidth : 0;
 			}
 			set {
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowWidth = value;
-				}
 			}
 		}
 
@@ -110,10 +110,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowCenter : 0;
 			}
 			set {
-
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowCenter = value;
-				}
 			}
 		}
 
@@ -237,7 +235,6 @@ namespace Dicom.Imaging {
 					pi = PhotometricInterpretation.Rgb;
 				}
 			}
-
 
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
 				//Monochrom1 or Monochrome2 for grayscale image

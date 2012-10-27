@@ -23,9 +23,8 @@ namespace Dicom.Imaging.Render {
 		/// <param name="options">Grayscale options to use in the pipeline</param>
 		public GenericGrayscalePipeline(GrayscaleRenderOptions options) {
 			if (options.RescaleSlope != 1.0 || options.RescaleIntercept != 0.0)
-				_rescaleLut = new ModalityLUT(options.BitDepth.MinimumValue, options.BitDepth.MaximumValue, 
-											 options.RescaleSlope, options.RescaleIntercept);
-			_voiLut = VOILUT.Create(options.VOILUTFunction, options.WindowCenter, options.WindowWidth);
+				_rescaleLut = new ModalityLUT(options);
+			_voiLut = VOILUT.Create(options);
 			_outputLut = new OutputLUT(options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);
 			if (options.Invert)
 				_invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);

@@ -10,6 +10,8 @@ namespace Dicom.Imaging.LUT {
 	/// </summary>
 	public abstract class VOILUT : ILUT {
 		#region Private Members
+		private GrayscaleRenderOptions _renderOptions;
+
 		private double _windowCenter;
 		private double _windowWidth;
 
@@ -18,43 +20,26 @@ namespace Dicom.Imaging.LUT {
 		private double _windowWidthDiv2;
 		private int _windowStart;
 		private int _windowEnd;
-
-		private bool _valid;
 		#endregion
 
 		#region Public Constructors
 		/// <summary>
 		/// Initialize new instance of <seealso cref="VOUTLUT"/>
 		/// </summary>
-		/// <param name="windowCenter">Window center</param>
-		/// <param name="windowWidth">Window width</param>
-		public VOILUT(double windowCenter, double windowWidth) {
-			WindowCenter = windowCenter;
-			WindowWidth = windowWidth;
+		/// <param name="options">Render options</param>
+		public VOILUT(GrayscaleRenderOptions options) {
+			_renderOptions = options;
+			Recalculate();
 		}
 		#endregion
 
 		#region Public Properties
-		/// <summary>
-		/// The VOI window center
-		/// </summary>
-		public double WindowCenter {
+		protected double WindowCenter {
 			get { return _windowCenter; }
-			set {
-				_windowCenter = value;
-				_valid = false;
-			}
 		}
 
-		/// <summary>
-		/// The VOI window width
-		/// </summary>
-		public double WindowWidth {
+		protected double WindowWidth {
 			get { return _windowWidth; }
-			set {
-				_windowWidth = value;
-				_valid = false;
-			}
 		}
 
 		protected double WindowCenterMin05 {
@@ -77,16 +62,19 @@ namespace Dicom.Imaging.LUT {
 			get { return _windowEnd; }
 		}
 
-		public bool IsValid {
-			get { return _valid; }
-		}
-
 		public int MinimumOutputValue {
 			get { return 0; }
 		}
 
 		public int MaximumOutputValue {
 			get { return 255; }
+		}
+
+		public bool IsValid {
+			get {
+				// always recalculate
+				return false;
+			}
 		}
 
 		public abstract int this[int value] {
@@ -96,13 +84,14 @@ namespace Dicom.Imaging.LUT {
 
 		#region Public Methods
 		public void Recalculate() {
-			if (!_valid) {
+			if (_renderOptions.WindowWidth != _windowWidth || _renderOptions.WindowCenter != _windowCenter) {
+				_windowWidth = _renderOptions.WindowWidth;
+				_windowCenter = _renderOptions.WindowCenter;
 				_windowCenterMin05 = _windowCenter - 0.5;
 				_windowWidthMin1 = _windowWidth - 1;
 				_windowWidthDiv2 = _windowWidthMin1 / 2;
 				_windowStart = (int)(_windowCenterMin05 - _windowWidthDiv2);
 				_windowEnd = (int)(_windowCenterMin05 + _windowWidthDiv2);
-				_valid = true;
 			}
 		}
 		#endregion
@@ -112,19 +101,17 @@ namespace Dicom.Imaging.LUT {
 		/// Create a new VOILUT according to <paramref name="function"/>, <paramref name=" windowCenter"/>
 		/// and <paramref name="windowWidth"/>
 		/// </summary>
-		/// <param name="function">The VOI function (SIGMOID or LINEAR)</param>
-		/// <param name="windowCenter">VOI window center</param>
-		/// <param name="windowWidth">VOI window width</param>
+		/// <param name="options">Render options</param>
 		/// <returns></returns>
-		public static VOILUT Create(string function, double windowCenter, double windowWidth) {
-			switch (function.ToUpper()) {
+		public static VOILUT Create(GrayscaleRenderOptions options) {
+			switch (options.VOILUTFunction.ToUpper()) {
 			case "SIGMOID":
-				return new VOISigmoidLUT(windowCenter, windowWidth);
+				return new VOISigmoidLUT(options);
 			default:
 				break;
 			}
 
-			return new VOILinearLUT(windowCenter, windowWidth);
+			return new VOILinearLUT(options);
 		}
 		#endregion
 	}
@@ -137,10 +124,8 @@ namespace Dicom.Imaging.LUT {
 		/// <summary>
 		/// Initialize new instance of <seealso cref="VOILinearLUT"/>
 		/// </summary>
-		/// <param name="windowCenter">VOI window center</param>
-		/// <param name="windowWidth">VOI window width</param>
-		public VOILinearLUT(double windowCenter, double windowWidth)
-			: base(windowCenter, windowWidth) {
+		/// <param name="options">Render options</param>
+		public VOILinearLUT(GrayscaleRenderOptions options) : base(options) {
 		}
 		#endregion
 
@@ -167,9 +152,8 @@ namespace Dicom.Imaging.LUT {
 		/// <summary>
 		/// Initialize new instance of <seealso cref="VOISigmoidLUT"/>
 		/// </summary>
-		/// <param name="windowCenter">VOI window center</param>
-		/// <param name="windowWidth">VOI window width</param>
-		public VOISigmoidLUT(double windowCenter, double windowWidth) : base(windowCenter, windowWidth) {
+		/// <param name="options">Render options</param>
+		public VOISigmoidLUT(GrayscaleRenderOptions options) : base(options) {
 		}
 		#endregion
 
