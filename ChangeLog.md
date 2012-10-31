@@ -1,4 +1,4 @@
-#### v1.0.27
+#### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file
 * Add ability to move file pointed to by FileReference
 * Fix window/level settings not being applied to rendered DicomImage
