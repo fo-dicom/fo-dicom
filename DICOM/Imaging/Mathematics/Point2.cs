@@ -5,8 +5,13 @@ namespace Dicom.Imaging.Mathematics {
 	/// <summary>
 	/// Coordinate in 2D space
 	/// </summary>
-	[Serializable]
+#if NETFX_CORE
+    [DataContract]
+    public class Point2 : IComparable<Point2>, IEquatable<Point2> {
+#else
+    [Serializable]
 	public class Point2 : IComparable<Point2>, IEquatable<Point2>, ISerializable {
+#endif
 		public static readonly Point2 Origin = new Point2();
 
 		public Point2() {
@@ -17,19 +22,28 @@ namespace Dicom.Imaging.Mathematics {
 			Y = y;
 		}
 
+#if !NETFX_CORE
 		protected Point2(SerializationInfo info, StreamingContext context) {
 			X = info.GetInt32("X");
 			Y = info.GetInt32("Y");
 		}
+#endif
 
 		/// <summary>Position on X axis</summary>
-		public int X {
+#if NETFX_CORE
+        [DataMember]
+#endif
+        public int X {
 			get;
 			set;
 		}
 
 		/// <summary>Position on Y axis</summary>
-		public int Y {
+#if NETFX_CORE
+        [DataMember]
+#endif
+        public int Y
+        {
 			get;
 			set;
 		}
@@ -70,9 +84,11 @@ namespace Dicom.Imaging.Mathematics {
 			return 0;
 		}
 
+#if !NETFX_CORE
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("X", X);
 			info.AddValue("Y", Y);
 		}
+#endif
 	}
 }

@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom {
+#if NETFX_CORE
+    using System.Runtime.Serialization;
+    [DataContract]
+#endif
 	public sealed class DicomPrivateCreator : IEquatable<DicomPrivateCreator>, IComparable<DicomPrivateCreator>, IComparable {
 		internal DicomPrivateCreator(string creator) {
 			this.Creator = creator;
 		}
 
+#if NETFX_CORE
+        [DataMember]
+#endif
 		public string Creator {
 			get;
 			private set;

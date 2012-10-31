@@ -6,7 +6,10 @@ using System.Text;
 
 namespace Dicom {
 	/// <summary>DICOM Value Representation</summary>
-	public sealed class DicomVR {
+#if NETFX_CORE
+    [DataContract]
+#endif
+    public sealed class DicomVR {
 		private const byte PadZero = 0x00;
 		private const byte PadSpace = 0x20;
 
@@ -14,7 +17,11 @@ namespace Dicom {
 		}
 
 		/// <summary>Code used to represent VR.</summary>
-		public string Code {
+#if NETFX_CORE
+        [DataMember]
+#endif
+        public string Code
+        {
 			get;
 			private set;
 		}
@@ -84,9 +91,11 @@ namespace Dicom {
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {
+#if !NETFX_CORE
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("vr", Code);
 		}
+#endif
 
 		/// <summary>
 		/// Gets a string representation of this VR.

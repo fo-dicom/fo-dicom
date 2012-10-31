@@ -104,6 +104,9 @@
     <Content Include="Dictionaries\Private Dictionary.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\Logger.cs" />
+    <Compile Include="Adapters\LogLevel.cs" />
+    <Compile Include="Adapters\LogManager.cs" />
     <Compile Include="DicomDataException.cs" />
     <Compile Include="DicomDataset.cs" />
     <Compile Include="DicomDatasetExtensions.cs" />
@@ -279,6 +282,15 @@
   <ItemGroup>
     <None Include="fo-dicom.snk" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MetroLog">
+      <HintPath>..\packages\MetroLog.0.6.4.0\lib\netcore45\MetroLog.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroLog.NetCore">
+      <HintPath>..\packages\MetroLog.0.6.4.0\lib\netcore45\MetroLog.NetCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>

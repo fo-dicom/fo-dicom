@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
+#if !NETFX_CORE
+using System.Security.Permissions;
+#endif
 using Dicom.Imaging.Mathematics;
 
 namespace Dicom {
 	/// <summary>
 	/// DICOM Tag
 	/// </summary>
-	[Serializable]
+#if NETFX_CORE
+    [DataContract]
+    public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable {
+#else
+    [Serializable]
 	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable, ISerializable {
-		public readonly static DicomTag Unknown = new DicomTag(0xffff, 0xffff);
+#endif
+        public readonly static DicomTag Unknown = new DicomTag(0xffff, 0xffff);
 
 		public DicomTag(ushort group, ushort element) {
 			Group = group;
@@ -27,6 +34,7 @@ namespace Dicom {
 			PrivateCreator = privateCreator;
 		}
 
+#if !NETFX_CORE
 		private DicomTag(SerializationInfo info, StreamingContext ctx) {
 			Group = info.GetUInt16("group");
 			Element = info.GetUInt16("element");
@@ -37,13 +45,21 @@ namespace Dicom {
 			} catch (SerializationException) {
 			}
 		}
+#endif
 
+#if NETFX_CORE
+        [DataMember]
+#endif
 		public ushort Group {
 			get;
 			private set;
 		}
 
-		public ushort Element {
+#if NETFX_CORE
+        [DataMember]
+#endif
+        public ushort Element
+        {
 			get;
 			private set;
 		}
@@ -56,12 +72,16 @@ namespace Dicom {
 			get { return Group.IsOdd(); }
 		}
 
-		public DicomPrivateCreator PrivateCreator {
+#if NETFX_CORE
+        [DataMember]
+#endif
+        public DicomPrivateCreator PrivateCreator
+        {
 			get;
 			internal set;
 		}
 
-		public DicomDictionaryEntry DictionaryEntry {
+        public DicomDictionaryEntry DictionaryEntry {
 			get {
 				return DicomDictionary.Default[this];
 			}
@@ -162,6 +182,7 @@ namespace Dicom {
 			return HashCode;
 		}
 
+#if !NETFX_CORE
 		[SecurityPermission(SecurityAction.Demand, SerializationFormatter=true)]
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("group", Group);
@@ -169,6 +190,7 @@ namespace Dicom {
 			if (PrivateCreator != null)
 				info.AddValue("creator", PrivateCreator.Creator);
 		}
+#endif
 
 		public static DicomTag Parse(string s) {
 			try {
