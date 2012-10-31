@@ -195,8 +195,12 @@ namespace Dicom.Imaging {
 			var r = Dataset.Get<byte[]>(DicomTag.RedPaletteColorLookupTableData);
 			var g = Dataset.Get<byte[]>(DicomTag.GreenPaletteColorLookupTableData);
 			var b = Dataset.Get<byte[]>(DicomTag.BluePaletteColorLookupTableData);
-
-			var lut = new Color32[size];
+           
+            // If the LUT size is 0, that means it's 65536 in size.
+            if (size == 0)
+                size = 65536;
+			
+            var lut = new Color32[size];
 
 			if (r.Length == size) {
 				// 8-bit LUT entries
