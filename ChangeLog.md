@@ -1,3 +1,6 @@
+#### v1.0.28
+* Display exception message in DICOM Dump for image rendering errors
+
 #### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file
 * Add ability to move file pointed to by FileReference
