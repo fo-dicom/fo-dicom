@@ -95,7 +95,14 @@ namespace Dicom.Imaging.Render {
 				if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
 					buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
 				return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
-			} else {
+            } else if (pi == PhotometricInterpretation.YbrFull422)
+            {
+                var buffer = pixelData.GetFrame(frame);
+                if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
+                    throw new DicomImagingException("Unsupported planar configuration for YBR_FULL_422");
+                return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
+            }
+            else {
 				throw new DicomImagingException("Unsupported pixel data photometric interpretation: {0}", pi.Value);
 			}
 		}

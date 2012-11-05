@@ -56,15 +56,20 @@ namespace Dicom.Media
         {
             FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, new byte[] { 0x00, 0x01 });
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
+            FileMetaInfo.MediaStorageSOPInstanceUID = new DicomUID("1.2.40.0.13.0.192.168.0.23.2287488211.1352048149206.32771",
+                "MediaStorageSOPInstanceUID", DicomUidType.MetaSOPClass);
             FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
-            FileMetaInfo.TransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            FileMetaInfo.TransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
             FileMetaInfo.ImplementationClassUID = DicomImplementation.ClassUID;
             FileMetaInfo.ImplementationVersionName = DicomImplementation.Version;
 
             _directoryRecordSequence = new DicomSequence(DicomTag.DirectoryRecordSequence);
 
             Dataset.Add<string>(DicomTag.FileSetID, string.Empty)
-                                 .Add(_directoryRecordSequence);
+                   .Add<ushort>(DicomTag.FileSetConsistencyFlag, 0)
+                   .Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0)
+                   .Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0)
+                   .Add(_directoryRecordSequence);
 
             DicomWriteOptions = new DicomWriteOptions();
         }
@@ -115,8 +120,8 @@ namespace Dicom.Media
             }
             else
             {
-                Dataset.Add<ulong>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
-                Dataset.Add<ulong>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
+                Dataset.Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
+                Dataset.Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
             }
 
             base.Save(fileName);
@@ -170,7 +175,7 @@ namespace Dicom.Media
             if (record.NextDirectoryRecord != null)
             {
                 record.Add<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
-                SetOffsets(record);
+                SetOffsets(record.NextDirectoryRecord);
             }
             else
             {
@@ -384,10 +389,9 @@ namespace Dicom.Media
 
             foreach (var tag in recordType.Tags)
             {
-                if (dataset.Exists(tag))
+                if (dataset.Contains(tag))
                 {
-                    tag.
-                    sequenceItem.Add(tag, dataset.Get<object>(tag));
+                    sequenceItem.Add(dataset.Get<DicomItem>(tag));
                 }
                 else
                 {
