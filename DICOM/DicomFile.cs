@@ -23,7 +23,7 @@ namespace Dicom {
 
 		public FileReference File {
 			get;
-			private set;
+			protected set;
 		}
 
 		public DicomFileFormat Format {

@@ -69,8 +69,7 @@ namespace DICOM_Media
             {
                 var dicomFile = Dicom.DicomFile.Open(file.FullName);
 
-                dicomDir.AddFile(dicomFile, "000001");
-                break;
+                dicomDir.AddFile(dicomFile, string.Format(@"000001\{0}",file.Name));
             }
 
             dicomDir.Save(dicomDirPath);

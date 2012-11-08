@@ -56,8 +56,7 @@ namespace Dicom.Media
         {
             FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, new byte[] { 0x00, 0x01 });
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
-            FileMetaInfo.MediaStorageSOPInstanceUID = new DicomUID("1.2.40.0.13.0.192.168.0.23.2287488211.1352048149206.32771",
-                "MediaStorageSOPInstanceUID", DicomUidType.MetaSOPClass);
+            FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate("MediaStorageSOPInstanceUID");
             FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
             FileMetaInfo.TransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
             FileMetaInfo.ImplementationClassUID = DicomImplementation.ClassUID;
@@ -74,6 +73,67 @@ namespace Dicom.Media
             DicomWriteOptions = new DicomWriteOptions();
         }
 
+        public DicomDirectory(string fileName)
+            : base()
+        {
+            DicomWriteOptions = new DicomWriteOptions();
+            try
+            {
+                File = new IO.FileReference(fileName);
+
+                using (var source = new IO.FileByteSource(File))
+                {
+                    var reader = new IO.Reader.DicomFileReader();
+                    reader.Read(source,
+                        new IO.Reader.DicomDatasetReaderObserver(FileMetaInfo),
+                        new IO.Reader.DicomDatasetReaderObserver(Dataset));
+
+                    Format = reader.FileFormat;
+
+                    Dataset.InternalTransferSyntax = reader.Syntax;
+
+                    _directoryRecordSequence = Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+
+                    foreach (var item in _directoryRecordSequence.Items)
+                    {
+
+                    }
+
+                    //Dictionary<uint, DirectoryRecordSequenceItem> lookup = new Dictionary<uint, DirectoryRecordSequenceItem>();
+
+                    //foreach (DirectoryRecordSequenceItem sqItem in _directoryRecordSequence.Values as DicomSequenceItem[])
+                    //{
+                    //    lookup.Add(sqItem.Offset, sqItem);
+                    //}
+
+                    //// Get the root Directory Record.
+                    //uint offset = _dicomDirFile.DataSet[DicomTags.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity].GetUInt32(0, 0);
+                    //if (!lookup.TryGetValue(offset, out _rootRecord) && offset != 0)
+                    //    throw new DicomDataException("Unable to find root directory record in File");
+
+                    //// Now traverse through the remainder of the directory records, and match up the offsets with the directory
+                    //// records so we can build up the tree structure.
+                    //foreach (DirectoryRecordSequenceItem sqItem in _directoryRecordSequence.Values as DicomSequenceItem[])
+                    //{
+                    //    offset = sqItem[DicomTags.OffsetOfTheNextDirectoryRecord].GetUInt32(0, 0);
+
+                    //    DirectoryRecordSequenceItem foundItem;
+                    //    if (lookup.TryGetValue(offset, out foundItem))
+                    //        sqItem.NextDirectoryRecord = foundItem;
+                    //    else
+                    //        sqItem.NextDirectoryRecord = null;
+
+                    //    offset = sqItem[DicomTags.OffsetOfReferencedLowerLevelDirectoryEntity].GetUInt32(0, 0);
+
+                    //    sqItem.LowerLevelDirectoryRecord = lookup.TryGetValue(offset, out foundItem) ? foundItem : null;
+                    //}	
+                }
+            }
+            catch (Exception e)
+            {
+                throw new DicomFileException(this, e.Message, e);
+            }
+        }
         #endregion
 
         #region Save/Load Methods
@@ -132,6 +192,12 @@ namespace Dicom.Media
             throw new NotImplementedException();
         }
 
+
+        public static DicomDirectory OpenMedia(string fileName)
+        {
+            var dicomDirectory = new DicomDirectory(fileName);
+            return dicomDirectory;
+        }
         private void AddDirectoryRecordsToSequenceItem(DirectoryRecordSequenceItem recordItem)
         {
             if (recordItem == null)
