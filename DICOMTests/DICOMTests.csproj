@@ -43,7 +43,7 @@
     <Compile Include="DicomTagTests.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Helpers\Serialization.cs" />
+    <Compile Include="Helpers\SerializationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

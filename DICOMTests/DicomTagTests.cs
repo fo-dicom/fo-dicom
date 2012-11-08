@@ -13,7 +13,7 @@ namespace Dicom
         public void Serialization_RegularTag_CanBeDeserialized()
         {
             var expected = DicomTag.BeamDose;
-            var actual = expected.GetSerializedDeserializedObject();
+            var actual = expected.GetDataContractSerializerDeserializedObject();
             Assert.AreEqual(expected, actual);
         }
 
@@ -21,7 +21,7 @@ namespace Dicom
         public void Serialization_PrivateCreatorTag_CanBeDeserialized()
         {
             var expected = new DicomTag(0x3005, 0x1013, "CUREOS");
-            var actual = expected.GetSerializedDeserializedObject();
+            var actual = expected.GetDataContractSerializerDeserializedObject();
             Assert.AreEqual(expected, actual);
         }
     }

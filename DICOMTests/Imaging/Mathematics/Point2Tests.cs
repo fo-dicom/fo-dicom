@@ -13,7 +13,15 @@ namespace Dicom.Imaging.Mathematics
         public void Serialization_RegularPoint_CanBeDeserialized()
         {
             var expected = new Point2(3, -5);
-            var actual = expected.GetSerializedDeserializedObject();
+            var actual = expected.GetDataContractSerializerDeserializedObject();
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test, ExpectedException(typeof(System.Runtime.Serialization.SerializationException))]
+        public void Serialization_BinaryFormatter_Throws()
+        {
+            var expected = new Point2(-2, 12);
+            var actual = expected.GetBinaryFormatterDeserializedObject();
             Assert.AreEqual(expected, actual);
         }
     }
