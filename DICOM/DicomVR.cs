@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace Dicom {
@@ -77,15 +76,6 @@ namespace Dicom {
 		public Type ValueType {
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Serializes VR code
-		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {
-			info.AddValue("vr", Code);
 		}
 
 		/// <summary>

@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
-
 using Dicom.Imaging.Mathematics;
 
 namespace Dicom {
 	/// <summary>
 	/// DICOM Tag
 	/// </summary>
-	[Serializable]
-	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable, ISerializable {
+	[DataContract]
+	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable {
 		public readonly static DicomTag Unknown = new DicomTag(0xffff, 0xffff);
 
 		public DicomTag(ushort group, ushort element) {
@@ -27,22 +25,13 @@ namespace Dicom {
 			PrivateCreator = privateCreator;
 		}
 
-		private DicomTag(SerializationInfo info, StreamingContext ctx) {
-			Group = info.GetUInt16("group");
-			Element = info.GetUInt16("element");
-			try {
-				string creator = info.GetString("creator");
-				if (!String.IsNullOrWhiteSpace(creator))
-					PrivateCreator = DicomDictionary.Default.GetPrivateCreator(creator);
-			} catch (SerializationException) {
-			}
-		}
-
+        [DataMember]
 		public ushort Group {
 			get;
 			private set;
 		}
 
+        [DataMember]
 		public ushort Element {
 			get;
 			private set;
@@ -56,6 +45,7 @@ namespace Dicom {
 			get { return Group.IsOdd(); }
 		}
 
+        [DataMember]
 		public DicomPrivateCreator PrivateCreator {
 			get;
 			internal set;
@@ -160,14 +150,6 @@ namespace Dicom {
 			//        return (Group << 16) + Element + PrivateCreator.Creator.GetHashCode();
 			//}
 			return HashCode;
-		}
-
-		[SecurityPermission(SecurityAction.Demand, SerializationFormatter=true)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {
-			info.AddValue("group", Group);
-			info.AddValue("element", Element);
-			if (PrivateCreator != null)
-				info.AddValue("creator", PrivateCreator.Creator);
 		}
 
 		public static DicomTag Parse(string s) {
