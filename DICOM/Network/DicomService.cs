@@ -30,7 +30,8 @@ namespace Dicom.Network {
 		private Stream _dimseStream;
 		private int _readLength;
 		private bool _isConnected;
-		private ThreadPoolQueue<int> _responseQueue;
+		private ThreadPoolQueue<int> _processQueue;
+		private DicomServiceOptions _options;
 
 		protected DicomService(Stream stream, Logger log) {
 			_network = stream;
@@ -39,7 +40,8 @@ namespace Dicom.Network {
 			MaximumPDUsInQueue = 16;
 			_msgQueue = new Queue<DicomMessage>();
 			_pending = new List<DicomRequest>();
-			_responseQueue = new ThreadPoolQueue<int>();
+			_processQueue = new ThreadPoolQueue<int>();
+			_processQueue.DefaultGroup = Int32.MinValue;
 			_isConnected = true;
 			Logger = log ?? LogManager.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
@@ -52,8 +54,11 @@ namespace Dicom.Network {
 		}
 
 		public DicomServiceOptions Options {
-			get;
-			set;
+			get { return _options; }
+			set {
+				_options = value;
+				_processQueue.Linger = _options.ThreadPoolLinger;
+			}
 		}
 
 		private string LogID {
@@ -216,7 +221,7 @@ namespace Dicom.Network {
 						pdu.Read(raw);
 						if (Options.LogDataPDUs)
 							Logger.Info("{0} <- {1}", LogID, pdu);
-						ProcessPDataTF(pdu);
+						_processQueue.Queue(ProcessPDataTF, pdu);
 						break;
 					}
 				case 0x05: {
@@ -270,7 +275,8 @@ namespace Dicom.Network {
 			}
 		}
 
-		private void ProcessPDataTF(PDataTF pdu) {
+		private void ProcessPDataTF(object state) {
+			var pdu = (PDataTF)state;
 			try {
 				foreach (var pdv in pdu.PDVs) {
 					if (_dimse == null) {
@@ -352,7 +358,7 @@ namespace Dicom.Network {
 								if (DicomMessage.IsRequest(_dimse.Type))
 									ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 								else
-									_responseQueue.Queue(_dimse.MessageID, PerformDimseCallback, _dimse);
+									_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, _dimse);
 								_dimse = null;
 								return;
 							}
@@ -397,14 +403,14 @@ namespace Dicom.Network {
 							if (DicomMessage.IsRequest(_dimse.Type))
 								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 							else
-								_responseQueue.Queue(_dimse.MessageID, PerformDimseCallback, _dimse);
+								_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, _dimse);
 							_dimse = null;
 						}
 					}
 				}
 			} catch (Exception e) {
 				SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
-				Logger.Error(e.ToString());
+				Logger.Error("Exception processing P-Data-TF PDU: " + e.ToString());
 			} finally {
 				SendNextMessage();
 			}

@@ -13,6 +13,7 @@ namespace Dicom.Threading {
 
 		private class WorkGroup {
 			public T Key;
+			public object Lock = new object();
 			public volatile bool Executing = false;
 			public Queue<WorkItem> Items = new Queue<WorkItem>();
 
@@ -26,6 +27,42 @@ namespace Dicom.Threading {
 
 		public ThreadPoolQueue() {
 			_groups = new Dictionary<T, WorkGroup>();
+			Linger = 200;
+			DefaultGroup = default(T);
+		}
+
+		/// <summary>Time in milliseconds (MS) to keep the WorkGroup alive after processing last item.</summary>
+		public int Linger {
+			get;
+			set;
+		}
+
+		/// <summary>Value of key for default group.</summary>
+		public T DefaultGroup {
+			get;
+			set;
+		}
+
+		public void Queue(Action action) {
+			Queue(new WorkItem {
+				Group = DefaultGroup,
+				Action = action
+			});
+		}
+
+		public void Queue(WaitCallback callback) {
+			Queue(new WorkItem {
+				Group = DefaultGroup,
+				Callback = callback
+			});
+		}
+
+		public void Queue(WaitCallback callback, object state) {
+			Queue(new WorkItem {
+				Group = DefaultGroup,
+				Callback = callback,
+				State = state
+			});
 		}
 
 		public void Queue(T group, Action action) {
@@ -58,51 +95,83 @@ namespace Dicom.Threading {
 					_groups.Add(item.Group, group);
 				}
 
-				group.Items.Enqueue(item);
-			}
+				lock (group.Lock)
+					group.Items.Enqueue(item);
 
-			ExecuteNext(item.Group);
+				Execute(item.Group);
+			}
 		}
 
-		private void ExecuteNext(T groupKey) {
+		private void Execute(T groupKey) {
+			WorkGroup group = null;
 			lock (_lock) {
-				WorkGroup group = null;
 				if (!_groups.TryGetValue(groupKey, out group))
 					return;
+			}
 
+			lock (group.Lock) {
 				if (group.Executing)
 					return;
 
-				if (group.Items.Count == 0) {
+				if (group.Items.Count == 0 && !group.Key.Equals(DefaultGroup)) {
 					_groups.Remove(groupKey);
 					return;
 				}
 
-				var item = group.Items.Dequeue();
+				group.Executing = true;
 
-				ThreadPool.QueueUserWorkItem(ExecuteProc, item);
+				ThreadPool.QueueUserWorkItem(ExecuteProc, group);
 			}
 		}
 
 		private void ExecuteProc(object state) {
-			var item = (WorkItem)state;
+			var group = (WorkGroup)state;
 
-			try {
-				if (item.Action != null)
-					item.Action();
-				else if (item.Callback != null)
-					item.Callback(item.State);
-			} catch {
-				// log this somewhere?
-			}
+			do {
+				WorkItem item = null;
 
-			WorkGroup group = null;
-			if (!_groups.TryGetValue(item.Group, out group))
-				return;
+				bool empty;
+				lock (group.Lock) {
+					empty = group.Items.Count == 0;
 
-			group.Executing = false;
+					if (!empty)
+						item = group.Items.Dequeue();
+				}
 
-			ExecuteNext(item.Group);
+				if (empty) {
+					var linger = DateTime.Now.AddMilliseconds(Linger);
+					while (empty && DateTime.Now < linger) {
+						Thread.Sleep(0);
+						lock (_lock) {
+							empty = group.Items.Count == 0;
+
+							if (!empty)
+								item = group.Items.Dequeue();
+						}
+					}
+
+					if (empty) {
+						lock (_lock) {
+							lock (group.Lock)
+								group.Executing = false;
+
+							if (!group.Key.Equals(DefaultGroup))
+								_groups.Remove(group.Key);
+
+							return;
+						}
+					}
+				}
+
+				try {
+					if (item.Action != null)
+						item.Action();
+					else if (item.Callback != null)
+						item.Callback(item.State);
+				} catch {
+					// log this somewhere?
+				}
+			} while (true);
 		}
 	}
 }

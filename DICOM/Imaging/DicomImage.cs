@@ -82,6 +82,12 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		/// <summary>Photometric interpretation of pixel data.</summary>
+		public PhotometricInterpretation PhotometricInterpretation {
+			get;
+			private set;
+		}
+
 		/// <summary>Number of frames contained in image data.</summary>
 		public int NumberOfFrames {
 			get { return PixelData.NumberOfFrames; }
@@ -93,9 +99,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowWidth : 0;
 			}
 			set {
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowWidth = value;
-				}
 			}
 		}
 
@@ -105,10 +110,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowCenter : 0;
 			}
 			set {
-
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowCenter = value;
-				}
 			}
 		}
 
@@ -120,8 +123,6 @@ namespace Dicom.Imaging {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
-			CreatePipeline();
-
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
@@ -132,16 +133,15 @@ namespace Dicom.Imaging {
 			return graphic.RenderImage(_pipeline.LUT);
 		}
 #endif
+
 		/// <summary>
-		/// Renders DICOM image to <typeparamref name="System.Windows.Media.ImageSource"/> 
+		/// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 
 		/// </summary>
 		/// <param name="frame">Zero indexed frame nu,ber</param>
 		/// <returns>Rendered image</returns>
 		public ImageSource RenderImageSource(int frame = 0) {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
-
-			CreatePipeline();
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
@@ -164,13 +164,15 @@ namespace Dicom.Imaging {
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
 
-			if (PixelData == null)
+			if (PixelData == null) {
 				PixelData = DicomPixelData.Create(Dataset);
+				PhotometricInterpretation = PixelData.PhotometricInterpretation;
+			}
 
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
 				// decompress single frame from source dataset
 				DicomCodecParams cparams = null;
-				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) {
 					cparams = new DicomJpegParams {
 						ConvertColorspaceToRGB = true
 					};
@@ -188,6 +190,10 @@ namespace Dicom.Imaging {
 				var pixelData = DicomPixelData.Create(clone, true);
 				pixelData.AddFrame(buffer);
 
+				// temporary fix for JPEG compressed YBR images
+				if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
+					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
 			} else {
 				// pull uncompressed frame from source pixel data
@@ -199,6 +205,8 @@ namespace Dicom.Imaging {
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
 			_currentFrame = frame;
+
+			CreatePipeline();
 		}
 
 		/// <summary>
@@ -209,10 +217,14 @@ namespace Dicom.Imaging {
 				return;
 
 			var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
+
+			// temporary fix for JPEG compressed YBR images
+			if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {
 				// generally ACR-NEMA
-				var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 				if (samples == 0 || samples == 1) {
 					if (Dataset.Contains(DicomTag.RedPaletteColorLookupTableData))
 						pi = PhotometricInterpretation.PaletteColor;
@@ -223,7 +235,6 @@ namespace Dicom.Imaging {
 					pi = PhotometricInterpretation.Rgb;
 				}
 			}
-
 
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
 				//Monochrom1 or Monochrome2 for grayscale image

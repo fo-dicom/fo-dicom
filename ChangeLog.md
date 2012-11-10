@@ -1,6 +1,17 @@
-#### v1.0.27
+#### v1.0.28
+* Display exception message in DICOM Dump for image rendering errors
+
+#### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file
 * Add ability to move file pointed to by FileReference
+* Fix window/level settings not being applied to rendered DicomImage
+* Fix processing order of received DIMSE responses
+* Process P-Data-TF PDUs on ThreadPool
+* Temporary fix for rendering JPEG compressed YBR images
+* Fix Async Ops window for associations where it is not negotiated
+* Fix bug reading Palette Color LUT with implicit length
+* Support decompression and rendering of JPEG Process 2 images
+* Enable modification of Window/Level in DicomImage
 
 #### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class

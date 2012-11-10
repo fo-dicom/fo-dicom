@@ -604,11 +604,13 @@ namespace Dicom.Network {
 			pdu.WriteLength16();
 
 			// Asynchronous Operations Negotiation
-			pdu.Write("Item-Type", (byte)0x53);
-			pdu.Write("Reserved", (byte)0x00);
-			pdu.Write("Item-Length", (ushort)0x0004);
-			pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
-			pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
+			if (_assoc.MaxAsyncOpsInvoked != 1 || _assoc.MaxAsyncOpsPerformed != 1) {
+				pdu.Write("Item-Type", (byte)0x53);
+				pdu.Write("Reserved", (byte)0x00);
+				pdu.Write("Item-Length", (ushort)0x0004);
+				pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
+				pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
+			}
 
 			// Implementation Version
 			pdu.Write("Item-Type", (byte)0x55);
@@ -629,6 +631,10 @@ namespace Dicom.Network {
 		/// </summary>
 		/// <param name="raw">PDU buffer</param>
 		public void Read(RawPDU raw) {
+			// reset async ops in case remote end does not negotiate
+			_assoc.MaxAsyncOpsInvoked = 1;
+			_assoc.MaxAsyncOpsPerformed = 1;
+
 			uint l = raw.Length - 6;
 			ushort c = 0;
 
