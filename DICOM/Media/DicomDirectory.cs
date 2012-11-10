@@ -85,56 +85,22 @@ namespace Dicom.Media
                 using (var source = new IO.FileByteSource(File))
                 {
                     var reader = new IO.Reader.DicomFileReader();
+
+                    var datasetObserver = new IO.Reader.DicomDatasetReaderObserver(Dataset);
+                    var dirObserver = new DicomDirectoryReaderObserver(Dataset);
+                    
                     reader.Read(source,
                         new IO.Reader.DicomDatasetReaderObserver(FileMetaInfo),
-                        new IO.Reader.DicomDatasetReaderObserver(Dataset));
-                    
+                        new IO.Reader.DicomReaderMultiObserver(datasetObserver, dirObserver));
+
                     Format = reader.FileFormat;
 
                     Dataset.InternalTransferSyntax = reader.Syntax;
 
-                    
+
                     _directoryRecordSequence = Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
 
-                    Dictionary<uint, DirectoryRecordSequenceItem> lookup = new Dictionary<uint, DirectoryRecordSequenceItem>();
-
-                    uint fileOffset = Dataset.Get<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
-                    foreach (var item in _directoryRecordSequence.Items)
-                    {
-                        
-                        lookup[fileOffset] = new DirectoryRecordSequenceItem(item);
-                    }
-
-                    RootDirectoryRecord = new DirectoryRecordSequenceItem();
-
-                    //Dictionary<uint, DirectoryRecordSequenceItem> lookup = new Dictionary<uint, DirectoryRecordSequenceItem>();
-
-                    //foreach (DirectoryRecordSequenceItem sqItem in _directoryRecordSequence.Values as DicomSequenceItem[])
-                    //{
-                    //    lookup.Add(sqItem.Offset, sqItem);
-                    //}
-
-                    //// Get the root Directory Record.
-                    //uint offset = _dicomDirFile.DataSet[DicomTags.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity].GetUInt32(0, 0);
-                    //if (!lookup.TryGetValue(offset, out _rootRecord) && offset != 0)
-                    //    throw new DicomDataException("Unable to find root directory record in File");
-
-                    //// Now traverse through the remainder of the directory records, and match up the offsets with the directory
-                    //// records so we can build up the tree structure.
-                    //foreach (DirectoryRecordSequenceItem sqItem in _directoryRecordSequence.Values as DicomSequenceItem[])
-                    //{
-                    //    offset = sqItem[DicomTags.OffsetOfTheNextDirectoryRecord].GetUInt32(0, 0);
-
-                    //    DirectoryRecordSequenceItem foundItem;
-                    //    if (lookup.TryGetValue(offset, out foundItem))
-                    //        sqItem.NextDirectoryRecord = foundItem;
-                    //    else
-                    //        sqItem.NextDirectoryRecord = null;
-
-                    //    offset = sqItem[DicomTags.OffsetOfReferencedLowerLevelDirectoryEntity].GetUInt32(0, 0);
-
-                    //    sqItem.LowerLevelDirectoryRecord = lookup.TryGetValue(offset, out foundItem) ? foundItem : null;
-                    //}	
+                    RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
                 }
             }
             catch (Exception e)
@@ -276,7 +242,7 @@ namespace Dicom.Media
             if (dicomFile == null)
                 throw new ArgumentNullException("dicomFile");
 
-            AddNewRcord(dicomFile.FileMetaInfo,dicomFile.Dataset, referencedFileId);
+            AddNewRcord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId);
         }
 
         private void AddNewRcord(DicomFileMetaInformation metaFileInfo, DicomDataset dataset, string referencedFileId)

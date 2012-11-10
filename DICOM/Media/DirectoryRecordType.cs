@@ -50,6 +50,7 @@ namespace Dicom.Media
                     _tags.Add(DicomTag.SeriesDescription);
                     break;
                 case "IMAGE":
+                    _tags.Add(DicomTag.InstanceNumber);
                     break;
                 default:
                     break;

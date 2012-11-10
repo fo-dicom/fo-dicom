@@ -19,9 +19,9 @@ namespace Dicom.Media
         }
         public uint Offset { get; internal set; }
 
-        public DirectoryRecordType DirectoryRecordType
+        public string DirectoryRecordType
         {
-            get { return null; }
+            get { return Get<string>(DicomTag.DirectoryRecordType); }
         }
 
         #endregion
@@ -39,7 +39,7 @@ namespace Dicom.Media
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-
+            sb.AppendFormat("Directory Record Type: {0}, Lower level items:", DirectoryRecordType, LowerLevelDirectoryRecordCollection.Count());
             return sb.ToString();
         }
     }

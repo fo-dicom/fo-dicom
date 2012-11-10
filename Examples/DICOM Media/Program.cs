@@ -91,7 +91,27 @@ namespace DICOM_Media
                 }
             }
 
-            Dicom.Media.DicomDirectory.OpenMedia(dicomDirPath);
+            var dicomDirectory = Dicom.Media.DicomDirectory.OpenMedia(dicomDirPath);
+
+            foreach (var patientRecord in dicomDirectory.RootDirectoryRecordCollection)
+            {
+                Console.WriteLine("Patient {0},{1}", patientRecord.Get<string>(Dicom.DicomTag.PatientID), patientRecord.Get<string>(Dicom.DicomTag.PatientName));
+
+                foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
+                {
+                    Console.WriteLine("\tStudy {0}", studyRecord.Get<string>(Dicom.DicomTag.StudyInstanceUID));
+
+                    foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
+                    {
+                        Console.WriteLine("\tSeries {0}", seriesRecord.Get<string>(Dicom.DicomTag.SeriesInstanceUID));
+
+                        foreach (var imageRecord in seriesRecord.LowerLevelDirectoryRecordCollection)
+                        {
+                            Console.WriteLine("\tImage {0}, {1}", imageRecord.Get<string>(Dicom.DicomTag.ReferencedSOPInstanceUIDInFile), imageRecord.Get<Dicom.DicomCodeString>(Dicom.DicomTag.ReferencedFileID).Get<string>());
+                        }
+                    }
+                }
+            }
         }
 
         private static void PrintUsage()

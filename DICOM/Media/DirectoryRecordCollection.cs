@@ -75,7 +75,7 @@ namespace Dicom.Media
                 if (_current == null)
                 {
                     _current = _head;
-                    return false;
+                    return true;
                 }
 
                 if (_current.NextDirectoryRecord == null)
