@@ -28,7 +28,7 @@ namespace Dicom {
 
 		public DicomFileFormat Format {
 			get;
-			private set;
+			protected set;
 		}
 
 		public DicomFileMetaInformation FileMetaInfo {

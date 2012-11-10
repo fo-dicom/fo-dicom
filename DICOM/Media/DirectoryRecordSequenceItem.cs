@@ -26,6 +26,15 @@ namespace Dicom.Media
 
         #endregion
 
+        public DirectoryRecordSequenceItem()
+        {
+
+        }
+        public DirectoryRecordSequenceItem(IEnumerable<DicomItem> items)
+            : base(items)
+        {
+        }
+
 
         public override string ToString()
         {

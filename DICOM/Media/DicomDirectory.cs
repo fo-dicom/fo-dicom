@@ -1,5 +1,6 @@
 ﻿using Dicom.IO.Writer;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dicom.Media
@@ -87,17 +88,24 @@ namespace Dicom.Media
                     reader.Read(source,
                         new IO.Reader.DicomDatasetReaderObserver(FileMetaInfo),
                         new IO.Reader.DicomDatasetReaderObserver(Dataset));
-
+                    
                     Format = reader.FileFormat;
 
                     Dataset.InternalTransferSyntax = reader.Syntax;
 
+                    
                     _directoryRecordSequence = Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
 
+                    Dictionary<uint, DirectoryRecordSequenceItem> lookup = new Dictionary<uint, DirectoryRecordSequenceItem>();
+
+                    uint fileOffset = Dataset.Get<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
                     foreach (var item in _directoryRecordSequence.Items)
                     {
-
+                        
+                        lookup[fileOffset] = new DirectoryRecordSequenceItem(item);
                     }
+
+                    RootDirectoryRecord = new DirectoryRecordSequenceItem();
 
                     //Dictionary<uint, DirectoryRecordSequenceItem> lookup = new Dictionary<uint, DirectoryRecordSequenceItem>();
 

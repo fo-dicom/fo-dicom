@@ -77,7 +77,21 @@ namespace DICOM_Media
 
         private static void ReadMedia(string[] args)
         {
-            throw new NotImplementedException();
+            string dicomDirPath = string.Empty;
+            string imagesFolder = string.Empty;
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].StartsWith("-f:"))
+                {
+                    dicomDirPath = args[i].Substring(3);
+                }
+                else if (args[i].StartsWith("-i:"))
+                {
+                    imagesFolder = args[i].Substring(3);
+                }
+            }
+
+            Dicom.Media.DicomDirectory.OpenMedia(dicomDirPath);
         }
 
         private static void PrintUsage()
