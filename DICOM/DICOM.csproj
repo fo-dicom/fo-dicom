@@ -220,6 +220,9 @@
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ActionCallback.cs" />
+    <Compile Include="Threading\CompoundAction.cs" />
+    <Compile Include="Threading\ActionQueue.cs" />
     <Compile Include="Threading\ThreadPoolQueue.cs" />
     <Compile Include="Threading\WorkQueue.cs" />
   </ItemGroup>
@@ -236,7 +239,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
