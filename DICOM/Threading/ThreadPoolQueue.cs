@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace Dicom.Threading {
-	class ThreadPoolQueue<T> {
+	public class ThreadPoolQueue<T> {
 		private class WorkItem {
 			public T Group;
 			public Action Action;
