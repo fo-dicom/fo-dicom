@@ -90,6 +90,7 @@ namespace Dicom.Imaging.Codec {
 			DicomFile f = new DicomFile();
 			f.FileMetaInfo.Add(file.FileMetaInfo);
 			f.FileMetaInfo.TransferSyntax = OutputSyntax;
+            f.Dataset.InternalTransferSyntax = OutputSyntax;
 			f.Dataset.Add(Transcode(file.Dataset));
 			return f;
 		}
