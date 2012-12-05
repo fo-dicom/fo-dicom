@@ -10,7 +10,7 @@ namespace Dicom.Network {
 
 		protected DicomRequest(DicomCommandField type, DicomUID affectedClassUid, DicomPriority priority) : base() {
 			Type = type;
-			AffectedSOPClassUID = affectedClassUid;
+			SOPClassUID = affectedClassUid;
 			MessageID = GetNextMessageID();
 			Priority = priority;
 			Dataset = null;

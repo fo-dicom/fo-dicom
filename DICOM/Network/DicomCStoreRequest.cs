@@ -47,7 +47,7 @@ namespace Dicom.Network {
 		public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CStoreRequest, file.FileMetaInfo.MediaStorageSOPClassUID, priority) {
 			File = file;
 			Dataset = file.Dataset;
-			AffectedSOPClassUID = File.FileMetaInfo.MediaStorageSOPClassUID;
+			SOPClassUID = File.FileMetaInfo.MediaStorageSOPClassUID;
 			SOPInstanceUID = File.FileMetaInfo.MediaStorageSOPInstanceUID;
 		}
 

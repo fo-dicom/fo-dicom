@@ -21,9 +21,32 @@ namespace Dicom.Network {
 			set { Command.Add(DicomTag.CommandField, (ushort)value); }
 		}
 
-		public DicomUID AffectedSOPClassUID {
-			get { return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID); }
-			set { Command.Add(DicomTag.AffectedSOPClassUID, value); }
+		/// <summary>Affected or requested SOP Class UID</summary>
+		public DicomUID SOPClassUID {
+			get {
+				switch (Type) {
+				case DicomCommandField.NGetRequest:
+				case DicomCommandField.NSetRequest:
+				case DicomCommandField.NActionRequest:
+				case DicomCommandField.NDeleteRequest:
+					return Command.Get<DicomUID>(DicomTag.RequestedSOPClassUID);
+				default:
+					return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID);
+				}
+			}
+			set {
+				switch (Type) {
+				case DicomCommandField.NGetRequest:
+				case DicomCommandField.NSetRequest:
+				case DicomCommandField.NActionRequest:
+				case DicomCommandField.NDeleteRequest:
+					Command.Add(DicomTag.RequestedSOPClassUID, value);
+					break;
+				default:
+					Command.Add(DicomTag.AffectedSOPClassUID, value);
+					break;
+				}
+			}
 		}
 
 		public ushort MessageID {
