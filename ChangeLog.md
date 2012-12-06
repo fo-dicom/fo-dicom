@@ -4,6 +4,7 @@
 * Fix bug where frame is not added to OtherWordPixelData (Mahesh Dubey)
 * Fix bug where exception is not thrown for out of range frame numbers in GetFrame() (Mahesh Dubey)
 * Fix bug where internal transfer syntax is not set when transcoding file (Mahesh Dubey)
+* Add request/response classes for DICOM Normalized services
 
 #### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file
