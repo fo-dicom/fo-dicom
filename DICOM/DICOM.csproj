@@ -65,6 +65,10 @@
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
+    <Compile Include="DicomDirectory.cs" />
+    <Compile Include="DicomDirectoryRecord.cs" />
+    <Compile Include="DicomDirectoryRecordCollection.cs" />
+    <Compile Include="DicomDirectoryRecordType.cs" />
     <Compile Include="DicomFile.cs" />
     <Compile Include="DicomFileException.cs" />
     <Compile Include="DicomFileMetaInformation.cs" />
@@ -158,6 +162,7 @@
     <Compile Include="IO\IByteSource.cs" />
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
+    <Compile Include="IO\Reader\DicomDirectoryReaderObserver.cs" />
     <Compile Include="IO\Reader\DicomFileReader.cs" />
     <Compile Include="IO\Reader\DicomReader.cs" />
     <Compile Include="IO\Reader\DicomReaderCallbackObserver.cs" />
@@ -186,11 +191,19 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
-    <Compile Include="Media\DicomDirectory.cs" />
-    <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
-    <Compile Include="Media\DirectoryRecordCollection.cs" />
-    <Compile Include="Media\DirectoryRecordSequenceItem.cs" />
-    <Compile Include="Media\DirectoryRecordType.cs" />
+    <Compile Include="Network\IDicomNServiceProvider.cs" />
+    <Compile Include="Network\DicomNDeleteRequest.cs" />
+    <Compile Include="Network\DicomNDeleteResponse.cs" />
+    <Compile Include="Network\DicomNCreateRequest.cs" />
+    <Compile Include="Network\DicomNCreateResponse.cs" />
+    <Compile Include="Network\DicomNActionRequest.cs" />
+    <Compile Include="Network\DicomNActionResponse.cs" />
+    <Compile Include="Network\DicomNSetRequest.cs" />
+    <Compile Include="Network\DicomNSetResponse.cs" />
+    <Compile Include="Network\DicomNGetRequest.cs" />
+    <Compile Include="Network\DicomNGetResponse.cs" />
+    <Compile Include="Network\DicomNEventReportResponse.cs" />
+    <Compile Include="Network\DicomNEventReportRequest.cs" />
     <Compile Include="Network\DicomCEchoProvider.cs" />
     <Compile Include="Network\DicomQueryRetrieveLevel.cs" />
     <Compile Include="Network\DicomServer.cs" />
@@ -226,6 +239,9 @@
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ActionCallback.cs" />
+    <Compile Include="Threading\CompoundAction.cs" />
+    <Compile Include="Threading\ActionQueue.cs" />
     <Compile Include="Threading\ThreadPoolQueue.cs" />
     <Compile Include="Threading\WorkQueue.cs" />
   </ItemGroup>
@@ -242,7 +258,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

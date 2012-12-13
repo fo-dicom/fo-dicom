@@ -64,7 +64,7 @@ namespace DICOM_Media
 
             var dirInfo = new DirectoryInfo(imagesFolder);
 
-            var dicomDir = new Dicom.Media.DicomDirectory();
+            var dicomDir = new Dicom.DicomDirectory();
             foreach (var file in dirInfo.GetFiles("*.*",SearchOption.AllDirectories))
             {
                 var dicomFile = Dicom.DicomFile.Open(file.FullName);
@@ -91,7 +91,7 @@ namespace DICOM_Media
                 }
             }
 
-            var dicomDirectory = Dicom.Media.DicomDirectory.OpenMedia(dicomDirPath);
+            var dicomDirectory = Dicom.DicomDirectory.OpenMedia(dicomDirPath);
 
             foreach (var patientRecord in dicomDirectory.RootDirectoryRecordCollection)
             {
