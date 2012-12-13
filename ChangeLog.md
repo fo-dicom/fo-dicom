@@ -1,4 +1,4 @@
-#### v1.0.28
+#### v1.0.28 (12/12/2012)
 * Display exception message in DICOM Dump for image rendering errors
 * Remove serialization members
 * Fix bug where frame is not added to OtherWordPixelData (Mahesh Dubey)
