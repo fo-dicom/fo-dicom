@@ -65,6 +65,10 @@
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
+    <Compile Include="DicomDirectory.cs" />
+    <Compile Include="DicomDirectoryRecord.cs" />
+    <Compile Include="DicomDirectoryRecordCollection.cs" />
+    <Compile Include="DicomDirectoryRecordType.cs" />
     <Compile Include="DicomFile.cs" />
     <Compile Include="DicomFileException.cs" />
     <Compile Include="DicomFileMetaInformation.cs" />
@@ -157,6 +161,7 @@
     <Compile Include="IO\IByteSource.cs" />
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
+    <Compile Include="IO\Reader\DicomDirectoryReaderObserver.cs" />
     <Compile Include="IO\Reader\DicomFileReader.cs" />
     <Compile Include="IO\Reader\DicomReader.cs" />
     <Compile Include="IO\Reader\DicomReaderCallbackObserver.cs" />
@@ -252,7 +257,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

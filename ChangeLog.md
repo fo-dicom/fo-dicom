@@ -6,6 +6,7 @@
 * Fix bug where internal transfer syntax is not set when transcoding file (Mahesh Dubey)
 * Add request/response classes for DICOM Normalized services
 * Change DicomCStoreRequest constructor to use SOP Class/Instance UIDs from dataset instead of FMI
+* Experimental support for DICOM directory files (Hesham Desouky)
 
 #### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file
