@@ -36,7 +36,7 @@ namespace Dicom.Network {
 
 		public static DicomCFindRequest CreatePatientQuery(string patientId = null, string patientName = null) {
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient);
-			dimse.AffectedSOPClassUID = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
+			dimse.SOPClassUID = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
 			dimse.Dataset.Add(DicomTag.PatientID, patientId);
 			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
@@ -51,7 +51,7 @@ namespace Dicom.Network {
 														 string modalitiesInStudy = null, string studyInstanceUid = null)
 		{
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
-			dimse.AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
+			dimse.SOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
 			dimse.Dataset.Add(DicomTag.PatientID, patientId);
 			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);
@@ -71,7 +71,7 @@ namespace Dicom.Network {
 
 		public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string modality = null) {
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
-			dimse.AffectedSOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
+			dimse.SOPClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
 			dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
 			dimse.Dataset.Add(DicomTag.SeriesInstanceUID, String.Empty);
 			dimse.Dataset.Add(DicomTag.SeriesNumber, String.Empty);
@@ -88,7 +88,7 @@ namespace Dicom.Network {
 															DicomDateRange scheduledDateTime = null)
 		{
 			var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Worklist);
-			dimse.AffectedSOPClassUID = DicomUID.ModalityWorklistInformationModelFIND;
+			dimse.SOPClassUID = DicomUID.ModalityWorklistInformationModelFIND;
 			dimse.Dataset.Add(DicomTag.PatientID, patientId);
 			dimse.Dataset.Add(DicomTag.PatientName, patientName);
 			dimse.Dataset.Add(DicomTag.OtherPatientIDs, String.Empty);

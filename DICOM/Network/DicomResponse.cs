@@ -10,7 +10,7 @@ namespace Dicom.Network {
 
 		public DicomResponse(DicomMessage request, DicomStatus status) : base() {
 			Type = (DicomCommandField)(0x8000 | (int)request.Type);
-			AffectedSOPClassUID = request.AffectedSOPClassUID;
+			SOPClassUID = request.SOPClassUID;
 			RequestMessageID = request.MessageID;
 			Status = status;
 		}
