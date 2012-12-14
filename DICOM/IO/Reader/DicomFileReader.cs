@@ -113,7 +113,7 @@ namespace Dicom.IO.Reader {
 					var tag = new DicomTag(group, element);
 
 					// test for explicit VR
-					var vrt = Encoding.ASCII.GetBytes(tag.DictionaryEntry.ValueRepresentations[0].Code);
+					var vrt = Encoding.UTF8.GetBytes(tag.DictionaryEntry.ValueRepresentations[0].Code);
 					var vrs = _source.GetBytes(2);
 
 					if (vrt[0] != vrs[0] || vrt[1] != vrs[1]) {
@@ -134,7 +134,7 @@ namespace Dicom.IO.Reader {
 				if (_fileFormat != DicomFileFormat.DICOM3) {
 					obs.Add(DicomTag.RecognitionCodeRETIRED, (object sender, DicomReaderEventArgs ea) => {
 						try {
-							string code = Encoding.ASCII.GetString(ea.Data.Data);
+							string code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
 							if (code == "ACR-NEMA 1.0")
 								_fileFormat = DicomFileFormat.ACRNEMA1;
 							else if (code == "ACR-NEMA 2.0")
@@ -145,7 +145,7 @@ namespace Dicom.IO.Reader {
 				}
 				obs.Add(DicomTag.TransferSyntaxUID, (object sender, DicomReaderEventArgs ea) => {
 					try {
-						string uid = Encoding.ASCII.GetString(ea.Data.Data);
+						string uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
 						_syntax = DicomTransferSyntax.Parse(uid);
 					} catch {
 					}

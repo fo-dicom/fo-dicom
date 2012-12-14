@@ -12,7 +12,7 @@ namespace Dicom.IO {
 	public static class ByteConverter {
 		public static IByteBuffer ToByteBuffer(string value, Encoding encoding=null) {
 			if (encoding == null)
-				encoding = Encoding.ASCII;
+				encoding = Encoding.UTF8;
 
 			byte[] bytes = encoding.GetBytes(value);
 
@@ -21,9 +21,9 @@ namespace Dicom.IO {
 
 		public static IByteBuffer ToByteBuffer(string value, Encoding encoding, byte padding) {
 			if (encoding == null)
-				encoding = Encoding.ASCII;
+				encoding = Encoding.UTF8;
 
-			byte[] bytes = Encoding.ASCII.GetBytes(value);
+			byte[] bytes = Encoding.UTF8.GetBytes(value);
 
 			if (bytes.Length.IsOdd()) {
 				Array.Resize(ref bytes, bytes.Length + 1);
