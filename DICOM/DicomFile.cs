@@ -21,25 +21,25 @@ namespace Dicom {
 
 		public FileReference File {
 			get;
-			private set;
+			protected set;
 		}
 
 		public DicomFileFormat Format {
 			get;
-			private set;
+			protected set;
 		}
 
 		public DicomFileMetaInformation FileMetaInfo {
 			get;
-			private set;
+			protected set;
 		}
 
 		public DicomDataset Dataset {
 			get;
-			private set;
+			protected set;
 		}
 
-		public void Save(string fileName) {
+		public virtual void Save(string fileName) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -57,7 +57,7 @@ namespace Dicom {
 			}
 		}
 
-		public void BeginSave(string fileName, AsyncCallback callback, object state) {
+		public virtual void BeginSave(string fileName, AsyncCallback callback, object state) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
