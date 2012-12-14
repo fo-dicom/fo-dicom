@@ -133,7 +133,7 @@ namespace Dicom.IO.Reader {
 							}
 
 							byte[] bytes = source.GetBytes(2);
-							string vr = Encoding.ASCII.GetString(bytes);
+							string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 							_vr = DicomVR.Parse(vr);
 						} else {
 							DicomDictionaryEntry entry = Dictionary[_tag];
@@ -263,7 +263,7 @@ namespace Dicom.IO.Reader {
 
 						// parse private creator value and add to lookup table
 						if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff) {
-							var creator = DicomEncoding.Default.GetString(buffer.Data).TrimEnd((char)DicomVR.LO.PaddingValue);
+							var creator = DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length).TrimEnd((char)DicomVR.LO.PaddingValue);
 							var card = (uint)(_tag.Group << 16) + (uint)(_tag.Element);
 							_private[card] = creator;
 						}
