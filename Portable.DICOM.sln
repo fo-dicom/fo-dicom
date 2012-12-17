@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM", "DICOM\Store.DICOM.csproj", "{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portable.DICOM", "DICOM\Portable.DICOM.csproj", "{469DFB6E-BD46-40A0-8802-6CA9288C91DD}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
@@ -47,6 +49,16 @@ Global
 		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x64.Build.0 = Release|x64
 		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x86.ActiveCfg = Release|x86
 		{13C29CA9-B513-453C-90B6-FDA14D0FD6C6}.Release|x86.Build.0 = Release|x86
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Release|x64.ActiveCfg = Release|Any CPU
+		{469DFB6E-BD46-40A0-8802-6CA9288C91DD}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
