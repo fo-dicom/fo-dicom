@@ -6,7 +6,7 @@ using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 
-namespace Dicom.Media {
+namespace Dicom {
 	public class DicomDirectory : DicomFile, IDisposable {
 		#region Properties and Attributes
 
