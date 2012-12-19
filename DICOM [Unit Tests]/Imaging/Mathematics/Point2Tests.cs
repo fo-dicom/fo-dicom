@@ -1,15 +1,18 @@
 ﻿// Copyright (c) 2012 Anders Gustafsson, Cureos AB.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Runtime.Serialization;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Dicom.Helpers;
-using NUnit.Framework;
 
 namespace Dicom.Imaging.Mathematics
 {
-    [TestFixture]
+    [TestClass]
     public class Point2Tests
     {
-        [Test]
+		[TestMethod]
         public void Serialization_RegularPoint_CanBeDeserialized()
         {
             var expected = new Point2(3, -5);
@@ -17,7 +20,7 @@ namespace Dicom.Imaging.Mathematics
             Assert.AreEqual(expected, actual);
         }
 
-        [Test, ExpectedException(typeof(System.Runtime.Serialization.SerializationException))]
+        [TestMethod, ExpectedException(typeof(SerializationException))]
         public void Serialization_BinaryFormatter_Throws()
         {
             var expected = new Point2(-2, 12);
