@@ -1,3 +1,6 @@
+#### v1.0.29
+* Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
+
 #### v1.0.28 (12/12/2012)
 * Display exception message in DICOM Dump for image rendering errors
 * Remove serialization members
