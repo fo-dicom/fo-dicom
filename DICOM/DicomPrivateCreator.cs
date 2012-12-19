@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Dicom {
+    [DataContract]
 	public sealed class DicomPrivateCreator : IEquatable<DicomPrivateCreator>, IComparable<DicomPrivateCreator>, IComparable {
 		internal DicomPrivateCreator(string creator) {
 			this.Creator = creator;
 		}
 
+        [DataMember]
 		public string Creator {
 			get;
 			private set;
