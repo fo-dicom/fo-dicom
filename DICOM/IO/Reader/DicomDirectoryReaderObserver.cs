@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Dicom.IO;
+using Dicom.IO.Reader;
 using Dicom.IO.Buffer;
 
-namespace Dicom.IO.Reader {
+namespace Dicom.Media {
 	public class DicomDirectoryReaderObserver : IDicomReaderObserver {
 		private DicomSequence _directoryRecordSequence = null;
 		private Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
