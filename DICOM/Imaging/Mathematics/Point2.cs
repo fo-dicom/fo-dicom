@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace Dicom.Imaging.Mathematics {
 	/// <summary>
 	/// Coordinate in 2D space
 	/// </summary>
-	[Serializable]
-	public class Point2 : IComparable<Point2>, IEquatable<Point2>, ISerializable {
+	public class Point2 : IComparable<Point2>, IEquatable<Point2> {
 		public static readonly Point2 Origin = new Point2();
 
 		public Point2() {
@@ -15,11 +13,6 @@ namespace Dicom.Imaging.Mathematics {
 		public Point2(int x, int y) {
 			X = x;
 			Y = y;
-		}
-
-		protected Point2(SerializationInfo info, StreamingContext context) {
-			X = info.GetInt32("X");
-			Y = info.GetInt32("Y");
 		}
 
 		/// <summary>Position on X axis</summary>
@@ -68,11 +61,6 @@ namespace Dicom.Imaging.Mathematics {
 			if (Y < other.Y) return -1;
 			if (Y > other.Y) return 1;
 			return 0;
-		}
-
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {
-			info.AddValue("X", X);
-			info.AddValue("Y", Y);
 		}
 	}
 }

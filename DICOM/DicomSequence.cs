@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Dicom.IO;
+﻿using System.Collections.Generic;
 
 namespace Dicom {
 	public class DicomSequence : DicomItem, IEnumerable<DicomDataset> {

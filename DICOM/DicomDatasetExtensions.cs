@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Dicom.IO.Writer;
 
 namespace Dicom {
 	public static class DicomDatasetExtensions {

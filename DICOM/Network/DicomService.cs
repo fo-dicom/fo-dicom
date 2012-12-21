@@ -349,6 +349,42 @@ namespace Dicom.Network {
 							case DicomCommandField.CEchoResponse:
 								_dimse = new DicomCEchoResponse(command);
 								break;
+							case DicomCommandField.NActionRequest:
+								_dimse = new DicomNActionRequest(command);
+								break;
+							case DicomCommandField.NActionResponse:
+								_dimse = new DicomNActionResponse(command);
+								break;
+							case DicomCommandField.NCreateRequest:
+								_dimse = new DicomNCreateRequest(command);
+								break;
+							case DicomCommandField.NCreateResponse:
+								_dimse = new DicomNCreateResponse(command);
+								break;
+							case DicomCommandField.NDeleteRequest:
+								_dimse = new DicomNDeleteRequest(command);
+								break;
+							case DicomCommandField.NDeleteResponse:
+								_dimse = new DicomNDeleteResponse(command);
+								break;
+							case DicomCommandField.NEventReportRequest:
+								_dimse = new DicomNEventReportRequest(command);
+								break;
+							case DicomCommandField.NEventReportResponse:
+								_dimse = new DicomNEventReportResponse(command);
+								break;
+							case DicomCommandField.NGetRequest:
+								_dimse = new DicomNGetRequest(command);
+								break;
+							case DicomCommandField.NGetResponse:
+								_dimse = new DicomNGetResponse(command);
+								break;
+							case DicomCommandField.NSetRequest:
+								_dimse = new DicomNSetRequest(command);
+								break;
+							case DicomCommandField.NSetResponse:
+								_dimse = new DicomNSetResponse(command);
+								break;
 							default:
 								_dimse = new DicomMessage(command);
 								break;
@@ -472,6 +508,30 @@ namespace Dicom.Network {
 						return;
 					} else
 						throw new DicomNetworkException("C-Echo SCP not implemented");
+				}
+
+				if (dimse.Type == DicomCommandField.NActionRequest || dimse.Type == DicomCommandField.NCreateRequest ||
+					dimse.Type == DicomCommandField.NDeleteRequest || dimse.Type == DicomCommandField.NEventReportRequest ||
+					dimse.Type == DicomCommandField.NGetRequest || dimse.Type == DicomCommandField.NSetRequest) {
+					if (!(this is IDicomNServiceProvider))
+						throw new DicomNetworkException("N-Service SCP not implemented");
+
+					DicomResponse response = null;
+					if (dimse.Type == DicomCommandField.NActionRequest)
+						response = (this as IDicomNServiceProvider).OnNActionRequest(dimse as DicomNActionRequest);
+					else if (dimse.Type == DicomCommandField.NCreateRequest)
+						response = (this as IDicomNServiceProvider).OnNCreateRequest(dimse as DicomNCreateRequest);
+					else if (dimse.Type == DicomCommandField.NDeleteRequest)
+						response = (this as IDicomNServiceProvider).OnNDeleteRequest(dimse as DicomNDeleteRequest);
+					else if (dimse.Type == DicomCommandField.NEventReportRequest)
+						response = (this as IDicomNServiceProvider).OnNEventReportRequest(dimse as DicomNEventReportRequest);
+					else if (dimse.Type == DicomCommandField.NGetRequest)
+						response = (this as IDicomNServiceProvider).OnNGetRequest(dimse as DicomNGetRequest);
+					else if (dimse.Type == DicomCommandField.NSetRequest)
+						response = (this as IDicomNServiceProvider).OnNSetRequest(dimse as DicomNSetRequest);
+
+					SendResponse(response);
+					return;
 				}
 
 				throw new DicomNetworkException("Operation not implemented");
@@ -598,16 +658,15 @@ namespace Dicom.Network {
 
 			DicomPresentationContext pc = null;
 			if (msg is DicomCStoreRequest) {
-				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AffectedSOPClassUID && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
+				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
 				if (pc == null)
-					pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AffectedSOPClassUID);
+					pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
 			} else {
-				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AffectedSOPClassUID);
+				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
 			}
 
 			if (pc == null)
-				throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.AffectedSOPClassUID);
-
+			throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
 			var dimse = new Dimse();
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
@@ -760,15 +819,13 @@ namespace Dicom.Network {
 
 					// reset length in case we recurse into WritePDU()
 					_length = 0;
-
 					// is the current PDU at its maximum size or do we have room for another PDV?
 					if ((CurrentPduSize() + 6) >= _max || (!_command && last))
 						WritePDU(last);
 
 					// Max PDU Size - Current Size - Size of PDV header
 					uint max = _max - CurrentPduSize() - 6;
-
-					_bytes = last ? null : new byte[max];
+				  _bytes = last ? null : new byte[max];
 				} catch (Exception e) {
 					_service.Logger.Error("Exception creating PDV: " + e.ToString());
 					throw;

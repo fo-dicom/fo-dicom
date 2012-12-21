@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Dicom.Log;
 
 namespace Dicom {
 	public class DicomExceptionEventArgs : EventArgs {

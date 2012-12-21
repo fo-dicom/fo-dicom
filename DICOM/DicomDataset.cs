@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-
 using Dicom.IO.Buffer;
-using Dicom.Log;
 
 namespace Dicom {
 	public class DicomDataset : IEnumerable<DicomItem> {

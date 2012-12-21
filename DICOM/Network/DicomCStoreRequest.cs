@@ -44,11 +44,10 @@ namespace Dicom.Network {
 		/// </summary>
 		/// <param name="file">DICOM file to be sent</param>
 		/// <param name="priority">Priority of request</param>
-		public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CStoreRequest, file.FileMetaInfo.MediaStorageSOPClassUID, priority) {
+		public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CStoreRequest, file.Dataset.Get<DicomUID>(DicomTag.SOPClassUID), priority) {
 			File = file;
 			Dataset = file.Dataset;
-			AffectedSOPClassUID = File.FileMetaInfo.MediaStorageSOPClassUID;
-			SOPInstanceUID = File.FileMetaInfo.MediaStorageSOPInstanceUID;
+			SOPInstanceUID = File.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
 		}
 
 		/// <summary>

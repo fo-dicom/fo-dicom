@@ -81,7 +81,7 @@ namespace Dicom.Imaging {
 				_pixelData = null;
 			}
 		}
-
+		/// <summary>Photometric interpretation of pixel data.</summary>
 		public PhotometricInterpretation PhotometricInterpretation {
 			get;
 			private set;
@@ -98,9 +98,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowWidth : 0;
 			}
 			set {
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowWidth = value;
-				}
 			}
 		}
 
@@ -110,10 +109,8 @@ namespace Dicom.Imaging {
 				return _renderOptions != null ? _renderOptions.WindowCenter : 0;
 			}
 			set {
-
-				if (_renderOptions != null) {
+				if (_renderOptions != null)
 					_renderOptions.WindowCenter = value;
-				}
 			}
 		}
 
@@ -174,7 +171,7 @@ namespace Dicom.Imaging {
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
 				// decompress single frame from source dataset
 				DicomCodecParams cparams = null;
-				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1) {
+				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) {
 					cparams = new DicomJpegParams {
 						ConvertColorspaceToRGB = true
 					};
@@ -193,7 +190,7 @@ namespace Dicom.Imaging {
 				pixelData.AddFrame(buffer);
 
 				// temporary fix for JPEG compressed YBR images
-				if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && pixelData.SamplesPerPixel == 3)
+				if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
 					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
@@ -237,7 +234,6 @@ namespace Dicom.Imaging {
 					pi = PhotometricInterpretation.Rgb;
 				}
 			}
-
 
 			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
 				//Monochrom1 or Monochrome2 for grayscale image
