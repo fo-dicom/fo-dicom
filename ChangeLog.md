@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+#### v1.0.27
+=======
 #### v1.0.29
 * Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
 * Convert unit tests to use MS Unit Testing framework
@@ -14,6 +17,7 @@
 * Experimental support for DICOM directory files (Hesham Desouky)
 
 #### v1.0.27 (10/30/2012)
+>>>>>>> origin/master
 * Ensure that file handles are closed after opening or saving DICOM file
 * Add ability to move file pointed to by FileReference
 * Fix window/level settings not being applied to rendered DicomImage
@@ -21,9 +25,12 @@
 * Process P-Data-TF PDUs on ThreadPool
 * Temporary fix for rendering JPEG compressed YBR images
 * Fix Async Ops window for associations where it is not negotiated
+<<<<<<< HEAD
+=======
 * Fix bug reading Palette Color LUT with implicit length
 * Support decompression and rendering of JPEG Process 2 images
 * Enable modification of Window/Level in DicomImage
+>>>>>>> origin/master
 
 #### v1.0.26 (10/19/2012)
 * Advanced DIMSE logging options for DicomService base class

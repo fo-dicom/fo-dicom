@@ -163,7 +163,7 @@ namespace Dicom.Imaging.Codec {
 			var newDataset = Decode(cloneDataset, InputSyntax, InputCodec, InputCodecParams);
 
 			var newPixelData = DicomPixelData.Create(newDataset, false);
-			return newPixelData.GetFrame(frame);
+			return newPixelData.GetFrame(0);
 		}
 
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {

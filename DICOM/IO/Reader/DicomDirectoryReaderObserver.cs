@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Dicom.IO.Buffer;
+using Dicom.Media;
 
 namespace Dicom.IO.Reader {
 	public class DicomDirectoryReaderObserver : IDicomReaderObserver {
