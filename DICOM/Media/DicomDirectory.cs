@@ -110,6 +110,9 @@ namespace Dicom.Media {
 
 		public static DicomFile Open(string fileName) {
 			var df = new DicomDirectory();
+
+			// reset datasets
+			df.FileMetaInfo.Clear();
 			df.Dataset.Clear();
 
 			try {
@@ -138,6 +141,11 @@ namespace Dicom.Media {
 
 		public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
 			var df = new DicomDirectory();
+
+			// reset datasets
+			df.FileMetaInfo.Clear();
+			df.Dataset.Clear();
+
 			df.File = new FileReference(fileName);
 
 			FileByteSource source = new FileByteSource(df.File);
