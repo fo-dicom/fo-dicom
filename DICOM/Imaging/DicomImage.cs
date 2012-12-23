@@ -81,7 +81,6 @@ namespace Dicom.Imaging {
 				_pixelData = null;
 			}
 		}
-
 		/// <summary>Photometric interpretation of pixel data.</summary>
 		public PhotometricInterpretation PhotometricInterpretation {
 			get;
@@ -220,7 +219,7 @@ namespace Dicom.Imaging {
 			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 
 			// temporary fix for JPEG compressed YBR images
-			if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+			if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && samples == 3)
 				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {

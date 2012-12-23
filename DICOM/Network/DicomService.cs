@@ -666,8 +666,7 @@ namespace Dicom.Network {
 			}
 
 			if (pc == null)
-				throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
-
+			throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
 			var dimse = new Dimse();
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
@@ -820,15 +819,13 @@ namespace Dicom.Network {
 
 					// reset length in case we recurse into WritePDU()
 					_length = 0;
-
 					// is the current PDU at its maximum size or do we have room for another PDV?
 					if ((CurrentPduSize() + 6) >= _max || (!_command && last))
 						WritePDU(last);
 
 					// Max PDU Size - Current Size - Size of PDV header
 					uint max = _max - CurrentPduSize() - 6;
-
-					_bytes = last ? null : new byte[max];
+				  _bytes = last ? null : new byte[max];
 				} catch (Exception e) {
 					_service.Logger.Error("Exception creating PDV: " + e.ToString());
 					throw;
