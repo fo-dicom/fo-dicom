@@ -93,7 +93,7 @@ namespace Dicom.Media {
 
 		#region Save/Load Methods
 
-		public override void Save(string fileName) {
+		protected override void OnSave() {
 			if (RootDirectoryRecord == null)
 				throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
 
@@ -131,19 +131,13 @@ namespace Dicom.Media {
 				Dataset.Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
 				Dataset.Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
 			}
-
-			base.Save(fileName);
 		}
 
-		public override void BeginSave(string fileName, AsyncCallback callback, object state) {
-			throw new NotImplementedException();
-		}
-
-
-		public static DicomDirectory OpenMedia(string fileName) {
+		public static DicomDirectory Open(string fileName) {
 			var dicomDirectory = new DicomDirectory(fileName);
 			return dicomDirectory;
 		}
+
 		private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem) {
 			if (recordItem == null)
 				return;
@@ -154,7 +148,6 @@ namespace Dicom.Media {
 
 			if (recordItem.NextDirectoryRecord != null)
 				AddDirectoryRecordsToSequenceItem(recordItem.NextDirectoryRecord);
-
 		}
 
 		#endregion
