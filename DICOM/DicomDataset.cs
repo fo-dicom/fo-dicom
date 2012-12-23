@@ -340,6 +340,15 @@ namespace Dicom {
 		}
 
 		/// <summary>
+		/// Removes all items from the dataset.
+		/// </summary>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset Clear() {
+			_items.Clear();
+			return this;
+		}
+
+		/// <summary>
 		/// Enumerates all DICOM items.
 		/// </summary>
 		/// <returns>Enumeration of DICOM items</returns>
