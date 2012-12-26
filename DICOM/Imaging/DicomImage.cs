@@ -199,7 +199,7 @@ namespace Dicom.Imaging {
 				_pixelData = PixelDataFactory.Create(PixelData, frame);
 			}
 
-			_pixelData.Rescale(_scale);
+			_pixelData = _pixelData.Rescale(_scale);
 
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
