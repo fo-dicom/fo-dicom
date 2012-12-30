@@ -73,12 +73,14 @@ namespace Dicom {
 		}
 
 		public override string ToString() {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			foreach (IDicomMatchRule rule in _rules) {
+				if (sb.Length > 0)
+					sb.Append("  ").Append(Operator.ToString().ToUpper()).Append(" ");
 				if (rule is DicomMatchRuleSet)
-					sb.AppendLine("(").AppendLine(rule.ToString()).AppendLine(")");
+					sb.Append("(").AppendLine(rule.ToString()).AppendLine(")");
 				else
-					sb.AppendLine(rule.ToString());
+					sb.Append(rule.ToString());
 			}
 			return sb.ToString();
 		}
@@ -88,13 +90,13 @@ namespace Dicom {
 	/// <summary>
 	/// Negates the return value of a match rule.
 	/// </summary>
-	public class NegativeDicomMatchRule : IDicomMatchRule {
+	public class NegateDicomMatchRule : IDicomMatchRule {
 		#region Private Members
 		private IDicomMatchRule _rule;
 		#endregion
 
 		#region Public Constructor
-		public NegativeDicomMatchRule(IDicomMatchRule rule) {
+		public NegateDicomMatchRule(IDicomMatchRule rule) {
 			_rule = rule;
 		}
 		#endregion
@@ -138,13 +140,13 @@ namespace Dicom {
 	/// <summary>
 	/// Checks if a DICOM element exists and has a value.
 	/// </summary>
-	public class EmptyDicomMatchRule : IDicomMatchRule {
+	public class IsEmptyDicomMatchRule : IDicomMatchRule {
 		#region Private Members
 		private DicomTag _tag;
 		#endregion
 
 		#region Public Constructor
-		public EmptyDicomMatchRule(DicomTag tag) {
+		public IsEmptyDicomMatchRule(DicomTag tag) {
 			_tag = tag;
 		}
 		#endregion
@@ -159,7 +161,7 @@ namespace Dicom {
 		}
 
 		public override string ToString() {
-			return String.Format("{0} empty", _tag);
+			return String.Format("{0} is empty", _tag);
 		}
 		#endregion
 	}
