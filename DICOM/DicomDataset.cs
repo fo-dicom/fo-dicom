@@ -366,8 +366,10 @@ namespace Dicom {
 		/// <param name="tags">Tags to copy</param>
 		/// <returns>Current Dataset</returns>
 		public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags) {
-			if (destination != null)
-				destination.Add(this);
+			if (destination != null) {
+				foreach (var tag in tags)
+					destination.Add(Get<DicomItem>(tag));
+			}
 			return this;
 		}
 
