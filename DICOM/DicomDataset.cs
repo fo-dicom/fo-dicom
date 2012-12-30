@@ -354,7 +354,8 @@ namespace Dicom {
 		/// <param name="destination">Destination Dataset</param>
 		/// <returns>Current Dataset</returns>
 		public DicomDataset CopyTo(DicomDataset destination) {
-			destination.Add(this);
+			if (destination != null)
+				destination.Add(this);
 			return this;
 		}
 
@@ -365,7 +366,8 @@ namespace Dicom {
 		/// <param name="tags">Tags to copy</param>
 		/// <returns>Current Dataset</returns>
 		public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags) {
-			destination.Add(this);
+			if (destination != null)
+				destination.Add(this);
 			return this;
 		}
 
@@ -376,7 +378,8 @@ namespace Dicom {
 		/// <param name="mask">Tags to copy</param>
 		/// <returns>Current Dataset</returns>
 		public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask) {
-			destination.Add(Enumerate(mask));
+			if (destination != null)
+				destination.Add(Enumerate(mask));
 			return this;
 		}
 
