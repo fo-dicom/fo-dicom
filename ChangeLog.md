@@ -1,4 +1,8 @@
-#### v1.0.29
+#### v1.0.30
+* Fix bug rescaling DicomImage (Mahesh Dubey)
+* Add rules for matching and transforming DICOM datasets
+
+#### v1.0.29 (12/22/2012)
 * Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
 * Convert unit tests to use MS Unit Testing framework
 * Move DICOMDIR classes back to Dicom.Media namespace
