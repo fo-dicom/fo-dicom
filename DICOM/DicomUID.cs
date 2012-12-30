@@ -71,58 +71,12 @@ namespace Dicom {
 			}
 		}
 
-		private static volatile DicomUID _instanceRootUid = null;
-		private static DicomUID InstanceRootUID {
-			get {
-				if (_instanceRootUid == null) {
-					lock (GenerateUidLock) {
-						if (_instanceRootUid == null) {
-#if !SILVERLIGHT
-							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-							for (int i = 0; i < interfaces.Length; i++) {
-								if (NetworkInterface.LoopbackInterfaceIndex != i && interfaces[i].OperationalStatus == OperationalStatus.Up) {
-									string hex = interfaces[i].GetPhysicalAddress().ToString();
-									if (!String.IsNullOrEmpty(hex)) {
-										try {
-											long mac = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-											return Generate(DicomImplementation.ClassUID, mac);
-										} catch {
-										}
-									}
-								}
-							}
-#endif
-							_instanceRootUid = Generate(DicomImplementation.ClassUID, Environment.TickCount);
-						}
-					}
-				}
-				return _instanceRootUid;
-			}
-		}
-
-		private static long LastTicks = 0;
-		private static object GenerateUidLock = new object();
-		private static DateTime Y2K = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		public static DicomUID Generate() {
-			lock (GenerateUidLock) {
-				long ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-				while (ticks == LastTicks) {
-					Thread.Sleep(1);
-					ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-				}
-				LastTicks = ticks;
-
-				string str = ticks.ToString();
-				if (str.EndsWith("0000"))
-					str = str.Substring(0, str.Length - 4);
-
-				StringBuilder uid = new StringBuilder();
-				uid.Append(InstanceRootUID.UID).Append('.').Append(str);
-				return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
-			}
+			var generator = new DicomUIDGenerator();
+			return generator.Generate();
 		}
 
-		public static DicomUID Generate(DicomUID baseUid, long nextSeq) {
+		public static DicomUID Append(DicomUID baseUid, long nextSeq) {
 			StringBuilder uid = new StringBuilder();
 			uid.Append(baseUid.UID).Append('.').Append(nextSeq);
 			return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
