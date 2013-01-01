@@ -14,13 +14,19 @@ namespace Dicom {
 		}
 
 		public DicomDataset(params DicomItem[] items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		public DicomDataset(IEnumerable<DicomItem> items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		/// <summary>DICOM transfer syntax of this dataset.</summary>
