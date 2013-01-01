@@ -79,14 +79,20 @@ namespace Dicom {
 		}
 
 		public DicomDataset Add(params DicomItem[] items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 			return this;
 		}
 
 		public DicomDataset Add(IEnumerable<DicomItem> items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 			return this;
 		}
 
