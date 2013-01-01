@@ -1,6 +1,7 @@
-#### v1.0.30
+#### v1.0.30 (1/1/2013)
 * Fix bug rescaling DicomImage (Mahesh Dubey)
 * Add rules for matching and transforming DICOM datasets
+* Miscellaneous improvements and fixes
 
 #### v1.0.29 (12/22/2012)
 * Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
