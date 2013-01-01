@@ -13,7 +13,7 @@ namespace Dicom.IO.Writer {
 		/// <param name="group">DICOM tag group</param>
 		/// <param name="createIfMissing">If set to <c>true</c>, the group length element will be created if missing. If set to <c>false</c>, the group length will only be calculated if the group length element exists.</param>
 		public static void RecalculateGroupLength(this DicomDataset dataset, ushort group, bool createIfMissing = true) {
-			var items = dataset.GetGroup(group).ToList();
+			var items = dataset.EnumerateGroup(group).ToList();
 
 			if (items.Count == 0) {
 				// no items exist for the specified group; remove
@@ -50,7 +50,7 @@ namespace Dicom.IO.Writer {
 				groups = dataset.Where(x => x.Tag.Element == 0x0000).Select(x => x.Tag.Group);
 
 			foreach (var group in groups.ToList()) {
-				var items = dataset.GetGroup(group).ToList();
+				var items = dataset.EnumerateGroup(group).ToList();
 
 				if (items.Count == 0) {
 					// no items exist for the specified group; remove

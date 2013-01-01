@@ -381,7 +381,7 @@ namespace Dicom {
 		/// <returns>Current Dataset</returns>
 		public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask) {
 			if (destination != null)
-				destination.Add(Enumerate(mask));
+				destination.Add(_items.Values.Where(x => mask.IsMatch(x.Tag)));
 			return this;
 		}
 
@@ -399,24 +399,6 @@ namespace Dicom {
 		/// <returns>Enumeration of DICOM items</returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return _items.Values.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Enumerates DICOM items for specified group.
-		/// </summary>
-		/// <param name="group">Group</param>
-		/// <returns>Enumeration of DICOM items</returns>
-		public IEnumerable<DicomItem> GetGroup(ushort group) {
-			return _items.Values.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
-		}
-
-		/// <summary>
-		/// Enumerates DICOM items matching mask.
-		/// </summary>
-		/// <param name="mask">Mask</param>
-		/// <returns>Enumeration of DICOM items</returns>
-		public IEnumerable<DicomItem> Enumerate(DicomMaskedTag mask) {
-			return _items.Values.Where(x => mask.IsMatch(x.Tag));
 		}
 	}
 }

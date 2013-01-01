@@ -79,7 +79,7 @@ namespace Dicom {
 
 		#region Public Methods
 		public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null) {
-			var remove = dataset.Enumerate(_mask).Select(x => x.Tag).ToList();
+			var remove = dataset.EnumerateMasked(_mask).Select(x => x.Tag).ToList();
 			foreach (DicomTag tag in remove) {
 				dataset.CopyTo(modifiedAttributesSequenceItem, tag);
 				dataset.Remove(tag);
