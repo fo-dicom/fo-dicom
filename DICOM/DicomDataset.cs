@@ -14,13 +14,19 @@ namespace Dicom {
 		}
 
 		public DicomDataset(params DicomItem[] items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		public DicomDataset(IEnumerable<DicomItem> items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		/// <summary>DICOM transfer syntax of this dataset.</summary>
@@ -79,14 +85,20 @@ namespace Dicom {
 		}
 
 		public DicomDataset Add(params DicomItem[] items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 			return this;
 		}
 
 		public DicomDataset Add(IEnumerable<DicomItem> items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 			return this;
 		}
 
@@ -340,6 +352,52 @@ namespace Dicom {
 		}
 
 		/// <summary>
+		/// Removes all items from the dataset.
+		/// </summary>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset Clear() {
+			_items.Clear();
+			return this;
+		}
+
+		/// <summary>
+		/// Copies all items to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination) {
+			if (destination != null)
+				destination.Add(this);
+			return this;
+		}
+
+		/// <summary>
+		/// Copies tags to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <param name="tags">Tags to copy</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags) {
+			if (destination != null) {
+				foreach (var tag in tags)
+					destination.Add(Get<DicomItem>(tag));
+			}
+			return this;
+		}
+
+		/// <summary>
+		/// Copies tags matching mask to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <param name="mask">Tags to copy</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask) {
+			if (destination != null)
+				destination.Add(_items.Values.Where(x => mask.IsMatch(x.Tag)));
+			return this;
+		}
+
+		/// <summary>
 		/// Enumerates all DICOM items.
 		/// </summary>
 		/// <returns>Enumeration of DICOM items</returns>
@@ -353,15 +411,6 @@ namespace Dicom {
 		/// <returns>Enumeration of DICOM items</returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return _items.Values.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Enumerates DICOM items for specified group.
-		/// </summary>
-		/// <param name="group">Group</param>
-		/// <returns>Enumeration of DICOM items</returns>
-		public IEnumerable<DicomItem> GetGroup(ushort group) {
-			return _items.Values.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
 		}
 	}
 }

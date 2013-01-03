@@ -1,3 +1,15 @@
+#### v1.0.30 (1/1/2013)
+* Fix bug rescaling DicomImage (Mahesh Dubey)
+* Add rules for matching and transforming DICOM datasets
+* Miscellaneous improvements and fixes
+
+#### v1.0.29 (12/22/2012)
+* Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
+* Convert unit tests to use MS Unit Testing framework
+* Move DICOMDIR classes back to Dicom.Media namespace
+* Change DicomDirectory Open/Save methods to be consistent with DicomFile usage
+* Fix bug decoding single frame from a multiframe image (Mahesh Dubey)
+
 #### v1.0.28 (12/12/2012)
 * Display exception message in DICOM Dump for image rendering errors
 * Remove serialization members
