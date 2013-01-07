@@ -121,7 +121,6 @@
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
     <Compile Include="Imaging\Render\PixelData.cs" />
     <Compile Include="Imaging\Render\RgbColorPipeline.cs" />
-    <Compile Include="Imaging\SpatialTransform.cs" />
     <Compile Include="IO\Buffer\ByteBufferByteSource.cs" />
     <Compile Include="IO\Buffer\ByteBufferEnumerator.cs" />
     <Compile Include="IO\Buffer\ByteBufferExtensions.cs" />
@@ -171,7 +170,6 @@
     <Compile Include="Portability\NLog\Logger.cs" />
     <Compile Include="Portability\NLog\LogLevel.cs" />
     <Compile Include="Portability\NLog\LogManager.cs" />
-    <Compile Include="Portability\System\Drawing\Point.cs" />
     <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
