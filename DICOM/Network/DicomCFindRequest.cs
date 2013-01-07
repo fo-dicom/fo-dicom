@@ -97,11 +97,10 @@ namespace Dicom.Network {
 			dimse.Dataset.Add(DicomTag.PatientWeight, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
 			dimse.Dataset.Add(DicomTag.MedicalAlerts, String.Empty);
-			dimse.Dataset.Add(DicomTag.PregnancyStatus, String.Empty);
+			dimse.Dataset.Add(DicomTag.PregnancyStatus, new ushort[0]);
 			dimse.Dataset.Add(DicomTag.Allergies, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientComments, String.Empty);
 			dimse.Dataset.Add(DicomTag.SpecialNeeds, String.Empty);
-			dimse.Dataset.Add(DicomTag.PregnancyStatus, String.Empty);
 			dimse.Dataset.Add(DicomTag.PatientState, String.Empty);
 			dimse.Dataset.Add(DicomTag.CurrentPatientLocation, String.Empty);
 			dimse.Dataset.Add(DicomTag.InstitutionName, String.Empty);

@@ -62,6 +62,23 @@ namespace Dicom {
 			}
 		}
 
+		public void Save(Stream stream) {
+			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
+				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+
+			if (Format == DicomFileFormat.DICOM3NoFileMetaInfo) {
+				// create file meta information from dataset
+				FileMetaInfo = new DicomFileMetaInformation(Dataset);
+			}
+
+			OnSave();
+
+			using (var target = new StreamByteTarget(stream)) {
+				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+				writer.Write(target, FileMetaInfo, Dataset);
+			}
+		}
+
 		public void BeginSave(string fileName, AsyncCallback callback, object state) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
