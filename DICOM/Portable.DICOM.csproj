@@ -8,7 +8,7 @@
     <ProjectGuid>{469DFB6E-BD46-40A0-8802-6CA9288C91DD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Portable.DICOM</RootNamespace>
+    <RootNamespace>DICOM</RootNamespace>
     <AssemblyName>Portable.DICOM</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
@@ -94,7 +94,6 @@
     <Compile Include="Imaging\Color32.cs" />
     <Compile Include="Imaging\ColorSpace.cs" />
     <Compile Include="Imaging\ColorTable.cs" />
-    <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
     <Compile Include="Imaging\DicomOverlayData.cs" />
     <Compile Include="Imaging\DicomPixelData.cs" />
@@ -116,10 +115,7 @@
     <Compile Include="Imaging\PixelDataConverter.cs" />
     <Compile Include="Imaging\PixelRepresentation.cs" />
     <Compile Include="Imaging\PlanarConfiguration.cs" />
-    <Compile Include="Imaging\Render\CompositeGraphic.cs" />
     <Compile Include="Imaging\Render\GenericGrayscalePipeline.cs" />
-    <Compile Include="Imaging\Render\IGraphic.cs" />
-    <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Imaging\Render\IPipeline.cs" />
     <Compile Include="Imaging\Render\OverlayGraphic.cs" />
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
@@ -168,6 +164,10 @@
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
     <Compile Include="IO\Writer\DicomWriter.cs" />
+    <Compile Include="Media\DicomDirectory.cs" />
+    <Compile Include="Media\DicomDirectoryRecord.cs" />
+    <Compile Include="Media\DicomDirectoryRecordCollection.cs" />
+    <Compile Include="Media\DicomDirectoryRecordType.cs" />
     <Compile Include="Portability\NLog\Logger.cs" />
     <Compile Include="Portability\NLog\LogLevel.cs" />
     <Compile Include="Portability\NLog\LogManager.cs" />
