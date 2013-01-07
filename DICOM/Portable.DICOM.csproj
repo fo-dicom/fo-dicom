@@ -32,6 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <Compile Include="DicomDataException.cs" />
@@ -57,6 +63,7 @@
     <Compile Include="DicomImplementation.cs" />
     <Compile Include="DicomItem.cs" />
     <Compile Include="DicomMaskedTag.cs" />
+    <Compile Include="DicomMatchRules.cs" />
     <Compile Include="DicomParseable.cs" />
     <Compile Include="DicomPrivateCreator.cs" />
     <Compile Include="DicomRange.cs" />
@@ -64,8 +71,10 @@
     <Compile Include="DicomTag.cs" />
     <Compile Include="DicomTagGenerated.cs" />
     <Compile Include="DicomTransferSyntax.cs" />
+    <Compile Include="DicomTransformRules.cs" />
     <Compile Include="DicomUID.cs" />
     <Compile Include="DicomUIDGenerated.cs" />
+    <Compile Include="DicomUIDGenerator.cs" />
     <Compile Include="DicomUIDPrivate.cs" />
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
@@ -74,15 +83,18 @@
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />
+    <Compile Include="Imaging\Codec\DicomCodecExtensions.cs" />
     <Compile Include="Imaging\Codec\DicomCodecParams.cs" />
     <Compile Include="Imaging\Codec\DicomJpeg2000Codec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegCodec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegLsCodec.cs" />
     <Compile Include="Imaging\Codec\DicomRleCodec.cs" />
+    <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\IDicomCodec.cs" />
     <Compile Include="Imaging\Color32.cs" />
     <Compile Include="Imaging\ColorSpace.cs" />
     <Compile Include="Imaging\ColorTable.cs" />
+    <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
     <Compile Include="Imaging\DicomOverlayData.cs" />
     <Compile Include="Imaging\DicomPixelData.cs" />
@@ -104,12 +116,16 @@
     <Compile Include="Imaging\PixelDataConverter.cs" />
     <Compile Include="Imaging\PixelRepresentation.cs" />
     <Compile Include="Imaging\PlanarConfiguration.cs" />
+    <Compile Include="Imaging\Render\CompositeGraphic.cs" />
     <Compile Include="Imaging\Render\GenericGrayscalePipeline.cs" />
+    <Compile Include="Imaging\Render\IGraphic.cs" />
+    <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Imaging\Render\IPipeline.cs" />
     <Compile Include="Imaging\Render\OverlayGraphic.cs" />
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
     <Compile Include="Imaging\Render\PixelData.cs" />
     <Compile Include="Imaging\Render\RgbColorPipeline.cs" />
+    <Compile Include="Imaging\SpatialTransform.cs" />
     <Compile Include="IO\Buffer\ByteBufferByteSource.cs" />
     <Compile Include="IO\Buffer\ByteBufferEnumerator.cs" />
     <Compile Include="IO\Buffer\ByteBufferExtensions.cs" />
@@ -133,6 +149,7 @@
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\PinnedArray.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
+    <Compile Include="IO\Reader\DicomDirectoryReaderObserver.cs" />
     <Compile Include="IO\Reader\DicomFileReader.cs" />
     <Compile Include="IO\Reader\DicomReader.cs" />
     <Compile Include="IO\Reader\DicomReaderCallbackObserver.cs" />
@@ -151,9 +168,13 @@
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
     <Compile Include="IO\Writer\DicomWriter.cs" />
+    <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fo-dicom.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
