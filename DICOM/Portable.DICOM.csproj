@@ -168,6 +168,10 @@
     <Compile Include="IO\Writer\DicomWriteLengthCalculator.cs" />
     <Compile Include="IO\Writer\DicomWriteOptions.cs" />
     <Compile Include="IO\Writer\DicomWriter.cs" />
+    <Compile Include="Portability\NLog\Logger.cs" />
+    <Compile Include="Portability\NLog\LogLevel.cs" />
+    <Compile Include="Portability\NLog\LogManager.cs" />
+    <Compile Include="Portability\System\Drawing\Point.cs" />
     <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +179,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fo-dicom.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MetroLog">
+      <HintPath>..\packages\MetroLog.0.8.1\lib\portable-net45+wp8+win8\MetroLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

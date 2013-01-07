@@ -1,7 +1,9 @@
 ﻿using System;
 using MetroLog;
 
+// ReSharper disable CheckNamespace
 namespace NLog
+// ReSharper restore CheckNamespace
 {
     public class Logger : ILogger
     {

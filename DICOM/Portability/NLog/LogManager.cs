@@ -1,4 +1,6 @@
-﻿namespace NLog
+﻿// ReSharper disable CheckNamespace
+namespace NLog
+// ReSharper restore CheckNamespace
 {
     public class LogManager
     {
