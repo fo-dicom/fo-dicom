@@ -121,6 +121,9 @@
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
     <Compile Include="Imaging\Render\PixelData.cs" />
     <Compile Include="Imaging\Render\RgbColorPipeline.cs" />
+    <Compile Include="Imaging\SpatialTransform.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IO\Buffer\ByteBufferByteSource.cs" />
     <Compile Include="IO\Buffer\ByteBufferEnumerator.cs" />
     <Compile Include="IO\Buffer\ByteBufferExtensions.cs" />
@@ -182,6 +185,12 @@
     <Reference Include="MetroLog">
       <HintPath>..\packages\MetroLog.0.8.1\lib\portable-net45+wp8+win8\MetroLog.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Portable.DICOM.Adapters\Portable.DICOM.Adapters.csproj">
+      <Project>{18b7b25c-86b9-419f-95fe-8b227efcd71b}</Project>
+      <Name>Portable.DICOM.Adapters</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
