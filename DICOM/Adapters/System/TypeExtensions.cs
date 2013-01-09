@@ -7,19 +7,29 @@ namespace System
 {
     public static class TypeExtensions
     {
-        public static bool IsAssignableFrom(this Type obj, Type c)
+        public static bool IsEnum(this Type type)
         {
-            return obj.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
+            return type.GetTypeInfo().IsEnum;
         }
 
-        public static bool IsSubclassOf(this Type obj, Type c)
+        public static bool IsValueType(this Type type)
         {
-            return obj.GetTypeInfo().IsSubclassOf(c);
+            return type.GetTypeInfo().IsValueType;
         }
 
-        public static MethodInfo GetMethod(this Type obj, string name, BindingFlags bindingAttr)
+        public static bool IsAssignableFrom(this Type type, Type c)
         {
-            return obj.GetRuntimeMethods().SingleOrDefault(mi => mi.Name.Equals(name));
+            return type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
+        }
+
+        public static bool IsSubclassOf(this Type type, Type c)
+        {
+            return type.GetTypeInfo().IsSubclassOf(c);
+        }
+
+        public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr)
+        {
+            return type.GetRuntimeMethods().SingleOrDefault(mi => mi.Name.Equals(name));
         }
 
     }

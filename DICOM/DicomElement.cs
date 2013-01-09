@@ -85,7 +85,11 @@ namespace Dicom {
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(StringValue);
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum())
+#else
 			if (typeof(T).IsEnum)
+#endif
 				return (T)Enum.Parse(typeof(T), StringValue, true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -141,7 +145,11 @@ namespace Dicom {
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(_values[item]);
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum())
+#else
 			if (typeof(T).IsEnum)
+#endif
 				return (T)Enum.Parse(typeof(T), _values[item], true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -256,7 +264,11 @@ namespace Dicom {
 				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum()) {
+#else
 			if (typeof(T).IsEnum) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -264,7 +276,11 @@ namespace Dicom {
 				return (T)Enum.Parse(typeof(T), s, true);
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsValueType()) {
+#else
 			if (typeof(T).IsValueType) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -602,14 +618,22 @@ namespace Dicom {
 				return (T)(object)_values;
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum()) {
+#else
 			if (typeof(T).IsEnum) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)(object)_values[item];
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsValueType()) {
+#else
 			if (typeof(T).IsValueType) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 

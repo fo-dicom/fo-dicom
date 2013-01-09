@@ -139,7 +139,11 @@ namespace Dicom {
 					return Add(new DicomCodeString(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
 					return Add(new DicomCodeString(tag, values.Cast<string>().ToArray()));
+#if NETFX_CORE
+				if (typeof(T).IsEnum())
+#else
 				if (typeof(T).IsEnum)
+#endif
 					return Add(new DicomCodeString(tag, values.Select(x => x.ToString()).ToArray()));
 			}
 
