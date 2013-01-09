@@ -15,7 +15,21 @@ namespace System.IO
         {
         }
 
+        public static Stream Create(string path)
+        {
+            return Stream.Null;
+        }
+
+        public static void Move(string sourceFileName, string destFileName)
+        {
+        }
+
         public static Stream OpenRead(string path)
+        {
+            return Stream.Null;
+        }
+
+        public static Stream OpenWrite(string path)
         {
             return Stream.Null;
         }
@@ -26,6 +40,15 @@ namespace System.IO
         }
 
         public static void WriteAllBytes(string path, byte[] bytes)
+        {
+        }
+
+        public static FileAttributes GetAttributes(string path)
+        {
+            return FileAttributes.Temporary;
+        }
+
+        public static void SetAttributes(string path, FileAttributes attributes)
         {
         }
 
