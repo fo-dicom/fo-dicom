@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Dicom {
 	public class ColorSpace {
@@ -26,8 +27,19 @@ namespace Dicom {
 			return a.Name != b.Name;
 		}
 
+		protected bool Equals(ColorSpace other) {
+			return String.Equals(Name, other.Name);
+		}
+
+		public override bool Equals(object obj) {
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			var other = obj as ColorSpace;
+			return other != null && Equals(other);
+		}
+
 		public override int GetHashCode() {
-			return base.GetHashCode();
+			return (Name != null ? Name.GetHashCode() : 0);
 		}
 
 		public override string ToString() {
