@@ -335,7 +335,7 @@ namespace Dicom {
 		public RegexDicomMatchRule(DicomTag tag, string pattern) {
 			_tag = tag;
 			_pattern = pattern;
-			_regex = new Regex(_pattern, RegexOptions.Compiled);
+			_regex = new Regex(_pattern);
 		}
 		#endregion
 
