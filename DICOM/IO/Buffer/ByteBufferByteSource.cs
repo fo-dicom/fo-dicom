@@ -49,7 +49,7 @@ namespace Dicom.IO.Buffer {
 
 			_milestones = new Stack<long>();
 			_buffers = new List<IByteBuffer>(buffers);
-			_buffers.ForEach(x => _length += x.Size);
+			foreach (var x in _buffers) _length += x.Size;
 			_fixed = true;
 
 			_current = -1;
@@ -181,13 +181,13 @@ namespace Dicom.IO.Buffer {
 				int p = 0;
 				byte[] bytes = new byte[count];
 				while (count > 0) {
-					if (_current == -1 || _currentPos >= _currentData.LongLength) {
+					if (_current == -1 || _currentPos >= _currentData.Length) {
 						if (!SwapBuffers())
 							throw new DicomIoException("Tried to retrieve {0} bytes past end of source.", count);
 					}
 
-					int n = (int)System.Math.Min(_currentData.LongLength - _currentPos, count);
-					Array.Copy(_currentData, _currentPos, bytes, p, n);
+					int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
+					Array.Copy(_currentData, (int)_currentPos, bytes, p, n);
 
 					count -= n;
 					p += n;
@@ -320,7 +320,7 @@ namespace Dicom.IO.Buffer {
 
 		private byte NextByte() {
 			lock (_lock) {
-				if (_current == -1 || _currentPos >= _currentData.LongLength) {
+				if (_current == -1 || _currentPos >= _currentData.Length) {
 					if (!SwapBuffers())
 						throw new DicomIoException("Tried to retrieve byte past end of source.");
 				}
