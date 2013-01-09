@@ -1,3 +1,7 @@
+#### v1.0.31
+* Improved portability and fewer compiler warnings (Anders Gustafsson)
+* Miscellaneous improvements and fixes
+
 #### v1.0.30 (1/1/2013)
 * Fix bug rescaling DicomImage (Mahesh Dubey)
 * Add rules for matching and transforming DICOM datasets
