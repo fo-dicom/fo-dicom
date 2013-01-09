@@ -105,6 +105,7 @@
     <Compile Include="Adapters\NLog\LogManager.cs" />
     <Compile Include="Adapters\System\Collections\Generic\SortedList.cs" />
     <Compile Include="Adapters\System\Drawing\Point.cs" />
+    <Compile Include="Adapters\System\IO\BinaryReaderExtensions.cs" />
     <Compile Include="Adapters\System\IO\Directory.cs" />
     <Compile Include="Adapters\System\IO\File.cs" />
     <Compile Include="Adapters\System\IO\FileAttributes.cs" />
