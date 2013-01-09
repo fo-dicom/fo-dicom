@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="Adapters\NLog\Logger.cs" />
     <Compile Include="Adapters\NLog\LogLevel.cs" />
+    <Compile Include="Adapters\NLog\LogLevelExtensions.cs" />
     <Compile Include="Adapters\NLog\LogManager.cs" />
     <Compile Include="Adapters\System\Collections\Generic\SortedList.cs" />
     <Compile Include="Adapters\System\Drawing\Point.cs" />

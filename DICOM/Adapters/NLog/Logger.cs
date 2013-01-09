@@ -123,5 +123,15 @@ namespace NLog
         {
             get { return _logger.IsFatalEnabled; }
         }
+
+        public void Log(LogLevel logLevel, string message, Exception ex)
+        {
+            _logger.Log(logLevel.ToMetroLogLevel(), message, ex);
+        }
+
+        public void Log(LogLevel logLevel, string message, params object[] ps)
+        {
+            _logger.Log(logLevel.ToMetroLogLevel(), message, ps);
+        }
     }
 }
