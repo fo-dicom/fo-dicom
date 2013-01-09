@@ -108,7 +108,7 @@ namespace Dicom.Media {
 			}
 		}
 
-		public static DicomFile Open(string fileName) {
+		public new static DicomFile Open(string fileName) {
 			var df = new DicomDirectory();
 
 			// reset datasets
@@ -139,7 +139,7 @@ namespace Dicom.Media {
 			}
 		}
 
-		public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
+		public new static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
 			var df = new DicomDirectory();
 
 			// reset datasets
@@ -186,7 +186,7 @@ namespace Dicom.Media {
 			state.Item3.Set();
 		}
 
-		public static DicomDirectory EndOpen(IAsyncResult result) {
+		public new static DicomDirectory EndOpen(IAsyncResult result) {
 			result.AsyncWaitHandle.WaitOne();
 
 			EventAsyncResult eventResult = result as EventAsyncResult;
