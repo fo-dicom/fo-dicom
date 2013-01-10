@@ -266,12 +266,6 @@
     <Reference Include="MetroLog">
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.NetCore">
-      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroLog.WinRT">
-      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
