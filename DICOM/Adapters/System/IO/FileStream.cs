@@ -1,62 +1,47 @@
-﻿// ReSharper disable CheckNamespace
+﻿using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Streams;
+
+// ReSharper disable CheckNamespace
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    public class FileStream : Stream
+    public class FileStream
     {
+        #region FIELDS
+
+        private readonly IRandomAccessStream _stream;
+        private readonly DataWriter _writer;
+
+        #endregion
+
         #region CONSTRUCTORS
 
         public FileStream(string name, FileMode mode)
         {
+            _stream = Task.Run(async () =>
+                                         {
+                                             var file = await KnownFolders.DocumentsLibrary.CreateFileAsync(name);
+                                             return await file.OpenAsync(FileAccessMode.ReadWrite);
+                                         }).Result;
+            _writer = new DataWriter(_stream);
         }
 
         #endregion
 
-        public override void Flush()
+        #region METHODS
+
+        public void WriteByte(byte value)
         {
-            throw new NotImplementedException();
+            _writer.WriteByte(value);
         }
 
-        public override int Read(byte[] buffer, int offset, int count)
+        public void Close()
         {
-            throw new NotImplementedException();
+            _writer.Dispose();
+            _stream.Dispose();
         }
 
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetLength(long value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanRead
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override bool CanSeek
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override bool CanWrite
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override long Length
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override long Position { get; set; }
+        #endregion
     }
 }
