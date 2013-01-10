@@ -1,5 +1,7 @@
-﻿// ReSharper disable CheckNamespace
-namespace System.Reflection.Mock
+﻿using System.Reflection;
+
+// ReSharper disable CheckNamespace
+namespace Mock.System.Reflection
 // ReSharper restore CheckNamespace
 {
     public static class Assembly

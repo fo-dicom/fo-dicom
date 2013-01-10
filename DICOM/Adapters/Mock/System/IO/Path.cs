@@ -1,5 +1,7 @@
-﻿// ReSharper disable CheckNamespace
-namespace System.IO.Mock
+﻿using System;
+
+// ReSharper disable CheckNamespace
+namespace Mock.System.IO
 // ReSharper restore CheckNamespace
 {
     public static class Path

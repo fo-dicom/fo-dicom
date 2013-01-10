@@ -1,10 +1,10 @@
-﻿// ReSharper disable CheckNamespace
-
+﻿using System;
 using System.Linq;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 
-namespace System.Mock
+// ReSharper disable CheckNamespace
+namespace Mock.System
 // ReSharper restore CheckNamespace
 {
     public static class Environment
