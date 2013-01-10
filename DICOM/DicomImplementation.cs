@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 
 #if NETFX_CORE
-using Assembly = System.Reflection.Mock.Assembly;
+using Assembly = Mock.System.Reflection.Assembly;
 #endif
 
 namespace Dicom {

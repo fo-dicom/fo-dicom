@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 #if NETFX_CORE
-using Environment = System.Mock.Environment;
+using Environment = Mock.System.Environment;
 #endif
 
 namespace Dicom {

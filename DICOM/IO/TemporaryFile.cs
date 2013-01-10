@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 #if NETFX_CORE
-using Path = System.IO.Mock.Path;
+using Path = Mock.System.IO.Path;
 #endif
 
 namespace Dicom.IO {
