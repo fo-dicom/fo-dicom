@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
 
+#if NETFX_CORE
+using Path = System.IO.Mock.Path;
+#endif
+
 namespace Dicom.IO {
 	public sealed class FileReference {
 		public FileReference(string fileName, bool isTempFile = false) {

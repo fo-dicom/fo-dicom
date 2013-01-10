@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+#if NETFX_CORE
+using Path = System.IO.Mock.Path;
+#endif
+
 namespace Dicom.IO {
 	public class TemporaryFile : IDisposable {
 		private string _file;
