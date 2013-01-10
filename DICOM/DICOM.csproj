@@ -70,7 +70,6 @@
     <Compile Include="DicomMatchRules.cs" />
     <Compile Include="DicomTransformRules.cs" />
     <Compile Include="DicomUIDGenerator.cs" />
-    <Compile Include="Imaging\Codec\DicomTranscoder_StaticLoad.cs" />
     <Compile Include="Media\DicomDirectory.cs" />
     <Compile Include="Media\DicomDirectoryRecord.cs" />
     <Compile Include="Media\DicomDirectoryRecordCollection.cs" />
