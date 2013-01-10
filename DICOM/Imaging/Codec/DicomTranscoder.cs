@@ -1,18 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.ComponentModel.Composition.Hosting;
+
+#if NETFX_CORE
+using Assembly = System.Reflection.Mock.Assembly;
+#endif
+
+using NLog;
+
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
 
 namespace Dicom.Imaging.Codec {
-	public partial class DicomTranscoder {
+	public class DicomTranscoder {
 		#region Static
 		private static Dictionary<DicomTransferSyntax,IDicomCodec> _codecs = new Dictionary<DicomTransferSyntax,IDicomCodec>();
+
+		static DicomTranscoder() {
+			LoadCodecs(null, "Dicom.Native*.dll");
+		}
 
 		public static IDicomCodec GetCodec(DicomTransferSyntax syntax) {
 			IDicomCodec codec = null;
 			if (!_codecs.TryGetValue(syntax, out codec))
 				throw new DicomCodecException("No codec registered for tranfer syntax: {0}", syntax);
 			return codec;
+		}
+
+		public static void LoadCodecs(string path = null, string search = null) {
+			if (path == null)
+#if NETFX_CORE
+				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetLocation());
+#else
+				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+#endif
+
+			var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+
+			var catalog = (search == null) ?
+				new DirectoryCatalog(path) :
+				new DirectoryCatalog(path, search);
+			var container = new CompositionContainer(catalog);
+			foreach (var lazy in container.GetExports<IDicomCodec>()) {
+				var codec = lazy.Value;
+				log.Debug("Codec: {0}", codec.TransferSyntax.UID.Name);
+				_codecs[codec.TransferSyntax] = codec;
+			}
 		}
 		#endregion
 
