@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Storage;
 
 // ReSharper disable CheckNamespace
 namespace Mock.System.IO
@@ -8,17 +9,18 @@ namespace Mock.System.IO
     {
         public static string GetTempPath()
         {
-            return String.Empty;
+            return ApplicationData.Current.LocalFolder.Name;
         }
 
         public static string GetTempFileName()
         {
-            return String.Empty;
+            return global::System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Name,
+                                                  global::System.IO.Path.GetRandomFileName());
         }
 
         public static string GetFullPath(string path)
         {
-            return String.Empty;
+            return path;
         }
 
         public static string Combine(string path1, string path2)

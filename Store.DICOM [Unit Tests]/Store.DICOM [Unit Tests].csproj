@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\System\IO\DirectoryTests.cs" />
+    <Compile Include="Adapters\Mock\System\IO\PathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
