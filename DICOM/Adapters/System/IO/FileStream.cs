@@ -21,10 +21,10 @@ namespace System.IO
         {
             _stream = Task.Run(async () =>
                                          {
-                                             var file = await KnownFolders.DocumentsLibrary.CreateFileAsync(name);
+                                             var file = await KnownFolders.DocumentsLibrary.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
                                              return await file.OpenAsync(FileAccessMode.ReadWrite);
                                          }).Result;
-            _writer = new DataWriter(_stream);
+            _writer = new DataWriter(_stream) { UnicodeEncoding = UnicodeEncoding.Utf8, ByteOrder = ByteOrder.LittleEndian };
         }
 
         #endregion
@@ -38,8 +38,8 @@ namespace System.IO
 
         public void Close()
         {
+            var flushed = Task.Run(async () => await _writer.StoreAsync()).Result;
             _writer.Dispose();
-            _stream.Dispose();
         }
 
         #endregion
