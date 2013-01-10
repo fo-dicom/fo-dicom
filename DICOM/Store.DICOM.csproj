@@ -104,6 +104,8 @@
     <Compile Include="Adapters\NLog\LogLevelExtensions.cs" />
     <Compile Include="Adapters\NLog\LogManager.cs" />
     <Compile Include="Adapters\System\Collections\Generic\SortedList.cs" />
+    <Compile Include="Adapters\System\ComponentModel\Composition\Hosting\CompositionContainer.cs" />
+    <Compile Include="Adapters\System\ComponentModel\Composition\Hosting\DirectoryCatalog.cs" />
     <Compile Include="Adapters\System\Drawing\Point.cs" />
     <Compile Include="Adapters\System\IO\BinaryReaderExtensions.cs" />
     <Compile Include="Adapters\System\IO\Directory.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Adapters\System\IO\Mock\Path.cs" />
     <Compile Include="Adapters\System\IO\StreamExtensions.cs" />
     <Compile Include="Adapters\System\Mock\Environment.cs" />
+    <Compile Include="Adapters\System\Reflection\AssemblyExtensions.cs" />
     <Compile Include="Adapters\System\Reflection\BindingFlags.cs" />
     <Compile Include="Adapters\System\Reflection\Mock\Assembly.cs" />
     <Compile Include="Adapters\System\Threading\Thread.cs" />
