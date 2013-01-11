@@ -1,8 +1,7 @@
-﻿using System;
-using Windows.Storage;
+﻿using Windows.Storage;
 
 // ReSharper disable CheckNamespace
-namespace Mock.System.IO
+namespace Override.System.IO
 // ReSharper restore CheckNamespace
 {
     public static class Path

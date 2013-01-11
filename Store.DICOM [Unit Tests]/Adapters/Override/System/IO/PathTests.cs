@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 // ReSharper disable CheckNamespace
-namespace Mock.System.IO
+namespace Override.System.IO
 // ReSharper restore CheckNamespace
 {
     [TestClass]

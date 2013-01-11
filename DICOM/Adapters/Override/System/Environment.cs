@@ -4,7 +4,7 @@ using Windows.Networking;
 using Windows.Networking.Connectivity;
 
 // ReSharper disable CheckNamespace
-namespace Mock.System
+namespace Override.System
 // ReSharper restore CheckNamespace
 {
     public static class Environment
