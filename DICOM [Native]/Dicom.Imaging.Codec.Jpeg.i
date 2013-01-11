@@ -335,6 +335,7 @@ void JPEGCODEC::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 			buffer = gcnew TempFileBuffer(MemoryBuffer->ToArray());
 		else
 			buffer = gcnew MemoryByteBuffer(MemoryBuffer->ToArray());
+		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
 	} finally {
 		MemoryBuffer = nullptr;
@@ -489,6 +490,7 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 		buffer = gcnew TempFileBuffer(frameArray->Data);
 	else
 		buffer = gcnew MemoryByteBuffer(frameArray->Data);
+	buffer = EvenLengthBuffer::Create(buffer);
 	
 	if (newPixelData->PlanarConfiguration == PlanarConfiguration::Planar && newPixelData->SamplesPerPixel > 1) {
 		if (oldPixelData->SamplesPerPixel != 3 || oldPixelData->BitsStored > 8)
