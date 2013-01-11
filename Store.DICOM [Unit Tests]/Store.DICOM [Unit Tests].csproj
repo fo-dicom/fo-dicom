@@ -110,6 +110,7 @@
     <SDKReference Include="TestPlatform, Version=11.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\System\Collections\Generic\SortedListTests.cs" />
     <Compile Include="Adapters\System\IO\DirectoryTests.cs" />
     <Compile Include="Adapters\Override\System\IO\PathTests.cs" />
     <Compile Include="Adapters\System\IO\FileStreamTests.cs" />
