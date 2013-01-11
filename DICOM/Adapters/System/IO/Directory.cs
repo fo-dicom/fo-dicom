@@ -8,11 +8,13 @@ namespace System.IO
 {
     public static class Directory
     {
+        public static readonly StorageFolder RootFolder = KnownFolders.DocumentsLibrary;
+
         public static bool Exists(string path)
         {
             try
             {
-                var folder = Task.Run(async () => await KnownFolders.DocumentsLibrary.GetFolderAsync(path)).Result;
+                var folder = Task.Run(async () => await RootFolder.GetFolderAsync(path)).Result;
                 return folder != null;
             }
             catch
@@ -23,14 +25,14 @@ namespace System.IO
 
         public static void CreateDirectory(string path)
         {
-            var folder = Task.Run(async () => await KnownFolders.DocumentsLibrary.CreateFolderAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
+            var folder = Task.Run(async () => await RootFolder.CreateFolderAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
         }
 
         public static string[] GetDirectories(string path)
         {
             var folders = Task.Run(async () =>
                                              {
-                                                 var root = await KnownFolders.DocumentsLibrary.GetFolderAsync(path);
+                                                 var root = await RootFolder.GetFolderAsync(path);
                                                  return await root.GetFoldersAsync();
                                              }).Result;
             return folders.Select(folder => folder.Name).ToArray();
@@ -40,7 +42,7 @@ namespace System.IO
         {
             var files = Task.Run(async () =>
                                            {
-                                               var root = await KnownFolders.DocumentsLibrary.GetFolderAsync(path);
+                                               var root = await RootFolder.GetFolderAsync(path);
                                                return await root.GetFilesAsync();
                                            }).Result;
 

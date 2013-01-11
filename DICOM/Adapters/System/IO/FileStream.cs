@@ -19,12 +19,13 @@ namespace System.IO
 
         public FileStream(string name, FileMode mode)
         {
+            // TODO Handle alternative create/open/read/write scenarios
             _stream = Task.Run(async () =>
                                          {
-                                             var file = await KnownFolders.DocumentsLibrary.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
+                                             var file = await Directory.RootFolder.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
                                              return await file.OpenAsync(FileAccessMode.ReadWrite);
                                          }).Result;
-            _writer = new DataWriter(_stream) { UnicodeEncoding = UnicodeEncoding.Utf8, ByteOrder = ByteOrder.LittleEndian };
+            _writer = new DataWriter(_stream);
         }
 
         #endregion
@@ -38,8 +39,12 @@ namespace System.IO
 
         public void Close()
         {
-            var flushed = Task.Run(async () => await _writer.StoreAsync()).Result;
-            _writer.Dispose();
+            Task.Run(async () =>
+                               {
+                                   var status = await _writer.StoreAsync();
+                                   _writer.Dispose();
+                                   return status;
+                               });
         }
 
         #endregion

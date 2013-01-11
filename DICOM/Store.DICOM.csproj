@@ -9,8 +9,8 @@
     <ProjectGuid>{03FE7C6B-BE2C-4138-BE6A-EBA951122EC8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DICOM</RootNamespace>
-    <AssemblyName>Store.DICOM</AssemblyName>
+    <RootNamespace>Dicom</RootNamespace>
+    <AssemblyName>Dicom</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

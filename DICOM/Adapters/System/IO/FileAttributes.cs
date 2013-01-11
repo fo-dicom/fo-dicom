@@ -5,6 +5,7 @@ namespace System.IO
     [Flags]
     public enum FileAttributes
     {
+        Normal,
         Temporary
     }
 }

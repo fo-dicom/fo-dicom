@@ -1,4 +1,7 @@
-﻿// ReSharper disable CheckNamespace
+﻿using System.Threading.Tasks;
+
+// ReSharper disable CheckNamespace
+
 namespace System.Threading
 // ReSharper restore CheckNamespace
 {
@@ -6,13 +9,9 @@ namespace System.Threading
 
     public static class ThreadPool
     {
-         public static bool QueueUserWorkItem(WaitCallback callBack)
+         public static bool QueueUserWorkItem(WaitCallback callBack, object state = null)
          {
-             return true;
-         }
-
-         public static bool QueueUserWorkItem(WaitCallback callBack, object state)
-         {
+             Task.Run(() => callBack(state));
              return true;
          }
     }

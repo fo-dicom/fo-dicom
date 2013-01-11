@@ -114,7 +114,9 @@
     <Compile Include="Adapters\System\IO\DirectoryTests.cs" />
     <Compile Include="Adapters\Override\System\IO\PathTests.cs" />
     <Compile Include="Adapters\System\IO\FileStreamTests.cs" />
+    <Compile Include="Adapters\System\IO\FileTests.cs" />
     <Compile Include="Adapters\System\Threading\ThreadTests.cs" />
+    <Compile Include="DicomFileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
