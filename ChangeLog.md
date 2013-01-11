@@ -1,5 +1,6 @@
 #### v1.0.31
 * Improved portability and fewer compiler warnings (Anders Gustafsson)
+* Import DicomFileScanner from mDCM
 * Miscellaneous improvements and fixes
 
 #### v1.0.30 (1/1/2013)
