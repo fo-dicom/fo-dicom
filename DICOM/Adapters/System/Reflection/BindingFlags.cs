@@ -5,7 +5,9 @@ namespace System.Reflection
     [Flags]
     public enum BindingFlags
     {
+        Instance,
         Static,
+        NonPublic,
         Public
     }
 }
