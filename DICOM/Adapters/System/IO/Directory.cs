@@ -23,7 +23,7 @@ namespace System.IO
 
         public static void CreateDirectory(string path)
         {
-            var folder = Task.Run(async () => await KnownFolders.DocumentsLibrary.CreateFolderAsync(path)).Result;
+            var folder = Task.Run(async () => await KnownFolders.DocumentsLibrary.CreateFolderAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
         }
 
         public static string[] GetDirectories(string path)
