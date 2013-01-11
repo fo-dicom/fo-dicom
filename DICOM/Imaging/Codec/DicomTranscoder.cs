@@ -5,7 +5,7 @@ using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
 #if NETFX_CORE
-using Assembly = Mock.System.Reflection.Assembly;
+using Assembly = Override.System.Reflection.Assembly;
 #endif
 
 using NLog;

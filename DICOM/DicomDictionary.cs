@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 
 #if NETFX_CORE
-using Assembly = Mock.System.Reflection.Assembly;
+using Assembly = Override.System.Reflection.Assembly;
 #endif
 
 namespace Dicom {
