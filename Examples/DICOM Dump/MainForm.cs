@@ -8,11 +8,13 @@ using System.Text;
 using System.Windows.Forms;
 
 using Dicom;
+using Dicom.Imaging;
 using Dicom.IO.Buffer;
 
 namespace Dicom.Dump {
 	public partial class MainForm : Form {
 		private string _fileName;
+		private DicomFile _file;
 
 		public MainForm() {
 			InitializeComponent();
@@ -39,6 +41,8 @@ namespace Dicom.Dump {
 
 		private void OnClickOpen(object sender, EventArgs e) {
 			var ofd = new OpenFileDialog();
+			ofd.Filter = "DICOM Files (*.dcm;*.dic)|*.dcm;*.dic|All Files (*.*)|*.*";
+
 			if (ofd.ShowDialog() == DialogResult.Cancel)
 				return;
 
@@ -49,24 +53,38 @@ namespace Dicom.Dump {
 
 				_fileName = ofd.FileName;
 
-				DicomFile file = null;
-
 				try {
-					file = DicomFile.Open(_fileName);
+					_file = DicomFile.Open(_fileName);
 				} catch (DicomFileException ex) {
-					file = ex.File;
+					_file = ex.File;
 					MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 
-				new DicomDatasetWalker(file.FileMetaInfo).Walk(new DumpWalker(this));
-				new DicomDatasetWalker(file.Dataset).Walk(new DumpWalker(this));
+				new DicomDatasetWalker(_file.FileMetaInfo).Walk(new DumpWalker(this));
+				new DicomDatasetWalker(_file.Dataset).Walk(new DumpWalker(this));
 
-				if (file.Dataset.Contains(DicomTag.PixelData))
+				if (_file.Dataset.Contains(DicomTag.PixelData))
 					menuItemView.Enabled = true;
 			} catch (Exception ex) {
 				MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} finally {
 				lvDicom.EndUpdate();
+			}
+		}
+
+		private void OnClickSave(object sender, EventArgs e) {
+			var sfd = new SaveFileDialog();
+			sfd.Filter = "DICOM (*.dcm)|*.dcm|Image (*.bmp;*.jpg;*.png;*.gif)|*.bmp;*.jpg;*.png;*.gif";
+
+			if (sfd.ShowDialog() == DialogResult.Cancel)
+				return;
+
+			if (sfd.FilterIndex == 0) {
+				var file = new DicomFile(_file.Dataset);
+				file.Save(sfd.FileName);
+			} else {
+				var image = new DicomImage(_file.Dataset);
+				image.RenderImage().Save(sfd.FileName);
 			}
 		}
 

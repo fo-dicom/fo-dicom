@@ -35,6 +35,7 @@
 			this.columnHeaderValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.cmDicom = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.cmDicom.SuspendLayout();
 			this.SuspendLayout();
@@ -53,7 +54,8 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem});
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
 			this.fileToolStripMenuItem.Text = "&File";
@@ -61,7 +63,7 @@
 			// openToolStripMenuItem
 			// 
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.OnClickOpen);
 			// 
@@ -115,15 +117,22 @@
 			this.cmDicom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyValueToolStripMenuItem});
 			this.cmDicom.Name = "cmDicom";
-			this.cmDicom.Size = new System.Drawing.Size(153, 48);
+			this.cmDicom.Size = new System.Drawing.Size(129, 26);
 			this.cmDicom.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
 			// 
 			// copyValueToolStripMenuItem
 			// 
 			this.copyValueToolStripMenuItem.Name = "copyValueToolStripMenuItem";
-			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.copyValueToolStripMenuItem.Text = "&Copy Value";
 			this.copyValueToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyValue);
+			// 
+			// saveToolStripMenuItem
+			// 
+			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Text = "&Save";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.OnClickSave);
 			// 
 			// MainForm
 			// 
@@ -156,6 +165,7 @@
 		private System.Windows.Forms.ToolStripMenuItem menuItemView;
 		private System.Windows.Forms.ContextMenuStrip cmDicom;
 		private System.Windows.Forms.ToolStripMenuItem copyValueToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 	}
 }
 
