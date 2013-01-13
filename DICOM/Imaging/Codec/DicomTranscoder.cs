@@ -6,6 +6,7 @@ using System.ComponentModel.Composition.Hosting;
 
 using NLog;
 
+using Dicom.IO;
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
 
@@ -116,6 +117,8 @@ namespace Dicom.Imaging.Codec {
 					newPixelData.AddFrame(frame);
 				}
 
+				ProcessOverlays(dataset, newDataset);
+
 				newDataset.RecalculateGroupLengths(false);
 
 				return newDataset;
@@ -175,6 +178,8 @@ namespace Dicom.Imaging.Codec {
 
 			codec.Decode(oldPixelData, newPixelData, parameters);
 
+			ProcessOverlays(oldDataset, newDataset);
+
 			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
@@ -204,11 +209,28 @@ namespace Dicom.Imaging.Codec {
 				newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
 			}
 
+			ProcessOverlays(oldDataset, newDataset);
+
 			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
 		}
 
+		private static void ProcessOverlays(DicomDataset input, DicomDataset output) {
+			var overlays = DicomOverlayData.FromDataset(input);
 
+			foreach (var overlay in overlays) {
+				var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
+
+				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
+				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
+
+				var data = overlay.Data;
+				if (output.InternalTransferSyntax.IsExplicitVR)
+					output.Add(new DicomOtherByte(dataTag, data));
+				else
+					output.Add(new DicomOtherWord(dataTag, data));
+			}
+		}
 	}
 }
