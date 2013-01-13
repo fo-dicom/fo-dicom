@@ -3,6 +3,7 @@
 * Ensure frame buffers created by codecs have even length
 * Import DicomFileScanner from mDCM
 * Ability to save datasets and images in DICOM Dump utility
+* Ability to change tranfer syntax in DICOM Dump utility
 * Miscellaneous improvements and fixes
 
 #### v1.0.30 (1/1/2013)

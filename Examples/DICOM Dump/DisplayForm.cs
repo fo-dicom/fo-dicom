@@ -3,21 +3,22 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
+using Dicom;
 using Dicom.Imaging;
 
 namespace Dicom.Dump {
 	public partial class DisplayForm : Form {
-		private readonly string _fileName;
+		private readonly DicomFile _file;
 
-		public DisplayForm(string fileName) {
-			_fileName = fileName;
+		public DisplayForm(DicomFile file) {
+			_file = file;
 			InitializeComponent();
 		}
 
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
-					var image = new DicomImage(_fileName);
+					var image = new DicomImage(_file.Dataset);
 			        Invoke(new WaitCallback(DisplayImage), image);
 			                             });
 			
