@@ -1,4 +1,4 @@
-#### v1.0.31
+#### v1.0.31 (1/13/2013)
 * Improved portability and fewer compiler warnings (Anders Gustafsson)
 * Ensure frame buffers created by codecs have even length
 * Import DicomFileScanner from mDCM
