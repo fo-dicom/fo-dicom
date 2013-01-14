@@ -60,5 +60,10 @@ namespace Store.DICOM.Dump
             var dicomFile = DicomFile.Open(storeStream.AsStream());
             Dataset = dicomFile.Dataset;
         }
+
+        private void Close_OnClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Exit();
+        }
     }
 }

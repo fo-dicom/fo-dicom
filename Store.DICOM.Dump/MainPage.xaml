@@ -20,6 +20,20 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <ListView ItemsSource="{Binding Dataset, ElementName=Self, Mode=TwoWay}">
+            <ListView.Header>
+                <Grid Background="DarkSlateBlue">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="240"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Tag" FontSize="14" Margin="0,4,8,0"/>
+                    <TextBlock Grid.Column="1" Text="Tag description" FontSize="14" Margin="0,4,8,0"/>
+                    <TextBlock Grid.Column="2" Text="VR" FontSize="14" Margin="0,4,8,0"/>
+                    <TextBlock Grid.Column="3" Text="Value" FontSize="14" Margin="0,4,8,0"/>
+                </Grid>
+            </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -37,6 +51,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button x:Name="OpenFile" Grid.Row="1" Grid.Column="1" Click="OpenFile_OnClick">Open File</Button>
+        <Button x:Name="OpenFile" Grid.Row="1" Grid.Column="0" Click="OpenFile_OnClick">Open File</Button>
+        <Button x:Name="Close" Grid.Row="1" Grid.Column="1" Click="Close_OnClick">Close</Button>
     </Grid>
 </Page>
