@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\System\Collections\Generic\SortedListTests.cs" />
+    <Compile Include="Adapters\System\Drawing\PointTests.cs" />
     <Compile Include="Adapters\System\IO\DirectoryTests.cs" />
     <Compile Include="Adapters\Override\System\IO\PathTests.cs" />
     <Compile Include="Adapters\System\IO\FileStreamTests.cs" />
