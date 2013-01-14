@@ -246,6 +246,9 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(string)) {
+                if (item == -1)
+                    return (T)(object)ByteConverter.Get<Tv>(Buffer, 0).ToString();
+
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
