@@ -1,0 +1,42 @@
+﻿<Page
+    x:Class="Store.DICOM.Dump.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="using:Store.DICOM.Dump"
+    mc:Ignorable="d" x:Name="Self">
+    <Page.Resources>
+        <local:DicomTagToNameConverter x:Key="DicomTagToNameConverter"/>
+        <local:DicomItemToValueConverter x:Key="DicomItemToValueConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <ListView ItemsSource="{Binding Dataset, ElementName=Self, Mode=TwoWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Tag}" Margin="0,4,8,0"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Tag, Converter={StaticResource DicomTagToNameConverter}}" Margin="0,4,8,0"/>
+                        <TextBlock Grid.Column="2" Text="{Binding ValueRepresentation}" Margin="0,4,8,0"/>
+                        <TextBlock Grid.Column="3" Text="{Binding Converter={StaticResource DicomItemToValueConverter}}" Margin="0,4,8,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button x:Name="OpenFile" Grid.Row="1" Grid.Column="1" Click="OpenFile_OnClick">Open File</Button>
+    </Grid>
+</Page>
