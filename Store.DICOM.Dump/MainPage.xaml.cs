@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using Dicom;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
@@ -54,7 +56,8 @@ namespace Store.DICOM.Dump
             var file = await filePicker.PickSingleFileAsync();
             if (file == null) return;
 
-            var dicomFile = DicomFile.Open(file.Name);
+            var storeStream = await file.OpenAsync(FileAccessMode.Read);
+            var dicomFile = DicomFile.Open(storeStream.AsStream());
             Dataset = dicomFile.Dataset;
         }
     }
