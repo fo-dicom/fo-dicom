@@ -30,12 +30,12 @@ namespace System.IO
 
         public static Stream OpenRead(string path)
         {
-            return Task.Run(async () => await Directory.RootFolder.OpenStreamForReadAsync(path)).Result;
+            return Task.Run(async () => await Directory.Root.OpenStreamForReadAsync(path)).Result;
         }
 
         public static Stream OpenWrite(string path)
         {
-            return Task.Run(async () => await Directory.RootFolder.OpenStreamForWriteAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
+            return Task.Run(async () => await Directory.Root.OpenStreamForWriteAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
         }
 
         public static byte[] ReadAllBytes(string path)
@@ -63,7 +63,7 @@ namespace System.IO
             var status =
                 Task.Run(async () =>
                                    {
-                                       var file = await Directory.RootFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
+                                       var file = await Directory.Root.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
                                        using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
                                        using (var writer = new DataWriter(stream))
                                        {
@@ -90,7 +90,7 @@ namespace System.IO
                 var fileName = Path.GetFileName(path);
                 var file = Task.Run(async () =>
                 {
-                    var folder = await Directory.RootFolder.GetFolderAsync(folderName);
+                    var folder = await Directory.Root.GetFolderAsync(folderName);
                     return await folder.GetFileAsync(fileName);
                 }).Result;
                 return file;

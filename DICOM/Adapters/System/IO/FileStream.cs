@@ -22,7 +22,7 @@ namespace System.IO
             // TODO Handle alternative create/open/read/write scenarios
             _stream = Task.Run(async () =>
                                          {
-                                             var file = await Directory.RootFolder.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
+                                             var file = await Directory.Root.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
                                              return await file.OpenAsync(FileAccessMode.ReadWrite);
                                          }).Result;
             _writer = new DataWriter(_stream);
