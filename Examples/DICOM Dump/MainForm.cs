@@ -8,11 +8,13 @@ using System.Text;
 using System.Windows.Forms;
 
 using Dicom;
+using Dicom.Imaging;
+using Dicom.Imaging.Codec;
 using Dicom.IO.Buffer;
 
 namespace Dicom.Dump {
 	public partial class MainForm : Form {
-		private string _fileName;
+		private DicomFile _file;
 
 		public MainForm() {
 			InitializeComponent();
@@ -37,36 +39,64 @@ namespace Dicom.Dump {
 			lvi.SubItems.Add(value);
 		}
 
-		private void OnClickOpen(object sender, EventArgs e) {
-			var ofd = new OpenFileDialog();
-			if (ofd.ShowDialog() == DialogResult.Cancel)
-				return;
+		public void OpenFile(string fileName) {
+			DicomFile file = null;
 
+			try {
+				file = DicomFile.Open(fileName);
+			} catch (DicomFileException ex) {
+				file = ex.File;
+				MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			OpenFile(file);
+		}
+
+		public void OpenFile(DicomFile file) {
 			try {
 				lvDicom.BeginUpdate();
 
 				Reset();
 
-				_fileName = ofd.FileName;
+				_file = file;
 
-				DicomFile file = null;
+				new DicomDatasetWalker(_file.FileMetaInfo).Walk(new DumpWalker(this));
+				new DicomDatasetWalker(_file.Dataset).Walk(new DumpWalker(this));
 
-				try {
-					file = DicomFile.Open(_fileName);
-				} catch (DicomFileException ex) {
-					file = ex.File;
-					MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-
-				new DicomDatasetWalker(file.FileMetaInfo).Walk(new DumpWalker(this));
-				new DicomDatasetWalker(file.Dataset).Walk(new DumpWalker(this));
-
-				if (file.Dataset.Contains(DicomTag.PixelData))
+				if (_file.Dataset.Contains(DicomTag.PixelData))
 					menuItemView.Enabled = true;
+				menuItemSyntax.Enabled = true;
+				menuItemSave.Enabled = true;
 			} catch (Exception ex) {
 				MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} finally {
 				lvDicom.EndUpdate();
+			}
+		}
+
+		private void OnClickOpen(object sender, EventArgs e) {
+			var ofd = new OpenFileDialog();
+			ofd.Filter = "DICOM Files (*.dcm;*.dic)|*.dcm;*.dic|All Files (*.*)|*.*";
+
+			if (ofd.ShowDialog() == DialogResult.Cancel)
+				return;
+
+			OpenFile(ofd.FileName);
+		}
+
+		private void OnClickSave(object sender, EventArgs e) {
+			var sfd = new SaveFileDialog();
+			sfd.Filter = "DICOM (*.dcm)|*.dcm|Image (*.bmp;*.jpg;*.png;*.gif)|*.bmp;*.jpg;*.png;*.gif";
+
+			if (sfd.ShowDialog() == DialogResult.Cancel)
+				return;
+
+			if (sfd.FilterIndex == 1) {
+				var file = new DicomFile(_file.Dataset);
+				file.Save(sfd.FileName);
+			} else {
+				var image = new DicomImage(_file.Dataset);
+				image.RenderImage().Save(sfd.FileName);
 			}
 		}
 
@@ -176,7 +206,7 @@ namespace Dicom.Dump {
 		}
 
 		private void OnClickView(object sender, EventArgs e) {
-			var form = new DisplayForm(_fileName);
+			var form = new DisplayForm(_file);
 			form.ShowDialog(this);
 		}
 
@@ -200,6 +230,39 @@ namespace Dicom.Dump {
 			var value = item.SubItems[3].Text;
 
 			Clipboard.SetText(value);			
+		}
+
+		private void ChangeSyntax(DicomTransferSyntax syntax) {
+			var file = _file.ChangeTransferSyntax(syntax);
+			OpenFile(file);
+		}
+
+		private void OnClickExplicitVRLittleEndian(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+		}
+
+		private void OnClickImplicitVRLittleEndian(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.ImplicitVRLittleEndian);
+		}
+
+		private void OnClickExplicitVRBigEndian(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.ExplicitVRBigEndian);
+		}
+
+		private void OnClickJPEGLosslessP14SV1(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGProcess14SV1);
+		}
+
+		private void OnClickJPEG2000Lossless(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossless);
+		}
+
+		private void OnClickJPEGLSLossless(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSLossless);
+		}
+
+		private void OnClickRLELossless(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.RLELossless);
 		}
 	}
 }
