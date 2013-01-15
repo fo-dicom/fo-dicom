@@ -352,10 +352,6 @@ namespace Dicom.Imaging {
 				int offset = UncompressedFrameSize * frame;
 				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
-				//TODO: trace down the need for this additional byte swap
-				if (Syntax.Endian == Endian.Big && !Syntax.SwapPixelData)
-					buffer = new SwapByteBuffer(buffer, 2);
-
 				// mainly for GE Private Implicit VR Little Endian
 				if (Syntax.SwapPixelData)
 					buffer = new SwapByteBuffer(buffer, 2);

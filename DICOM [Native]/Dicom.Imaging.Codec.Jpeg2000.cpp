@@ -210,6 +210,7 @@ void DicomJpeg2000NativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelDa
 					buffer = gcnew TempFileBuffer(cbuf);
 				else
 					buffer = gcnew MemoryByteBuffer(cbuf);
+				buffer = EvenLengthBuffer::Create(buffer);
 				newPixelData->AddFrame(buffer);
 			} else
 				throw gcnew DicomCodecException("Unable to JPEG 2000 encode image");
@@ -351,6 +352,7 @@ void DicomJpeg2000NativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelDa
 				buffer = gcnew TempFileBuffer(destArray->Data);
 			else
 				buffer = gcnew MemoryByteBuffer(destArray->Data);
+			buffer = EvenLengthBuffer::Create(buffer);
 			newPixelData->AddFrame(buffer);
 		}
 		finally {

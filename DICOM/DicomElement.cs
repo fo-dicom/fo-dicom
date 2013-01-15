@@ -70,7 +70,7 @@ namespace Dicom {
 		protected string StringValue {
 			get {
 				if (_value == null && Buffer != null)
-					_value = Encoding.GetString(Buffer.Data).TrimEnd((char)ValueRepresentation.PaddingValue);
+					_value = Encoding.GetString(Buffer.Data, 0, (int)Buffer.Size).TrimEnd((char)ValueRepresentation.PaddingValue);
 				return _value;
 			}
 		}
