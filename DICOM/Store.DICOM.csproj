@@ -177,6 +177,7 @@
     <Compile Include="Imaging\Color32.cs" />
     <Compile Include="Imaging\ColorSpace.cs" />
     <Compile Include="Imaging\ColorTable.cs" />
+    <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
     <Compile Include="Imaging\DicomOverlayData.cs" />
     <Compile Include="Imaging\DicomPixelData.cs" />
@@ -198,7 +199,10 @@
     <Compile Include="Imaging\PixelDataConverter.cs" />
     <Compile Include="Imaging\PixelRepresentation.cs" />
     <Compile Include="Imaging\PlanarConfiguration.cs" />
+    <Compile Include="Imaging\Render\CompositeGraphic.cs" />
     <Compile Include="Imaging\Render\GenericGrayscalePipeline.cs" />
+    <Compile Include="Imaging\Render\IGraphic.cs" />
+    <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Imaging\Render\IPipeline.cs" />
     <Compile Include="Imaging\Render\OverlayGraphic.cs" />
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
@@ -269,6 +273,9 @@
     <Reference Include="MetroLog">
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.dll</HintPath>
     </Reference>
+    <Reference Include="WriteableBitmapEx.WinRT">
+      <HintPath>..\packages\WriteableBitmapEx.1.0.5.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
@@ -284,7 +291,7 @@
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>

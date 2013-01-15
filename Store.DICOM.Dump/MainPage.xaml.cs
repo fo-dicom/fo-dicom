@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using Dicom;
+using Dicom.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -17,10 +19,12 @@ namespace Store.DICOM.Dump
     {
         #region FIELDS
 
-        // Using a DependencyProperty as the backing store for Dataset.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DatasetProperty =
             DependencyProperty.Register("Dataset", typeof(DicomDataset), typeof(MainPage), new PropertyMetadata(null));
 
+        public static readonly DependencyProperty ImageProperty =
+            DependencyProperty.Register("Image", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
+        
         #endregion
 
         public MainPage()
@@ -34,6 +38,12 @@ namespace Store.DICOM.Dump
         {
             get { return (DicomDataset)GetValue(DatasetProperty); }
             set { SetValue(DatasetProperty, value); }
+        }
+
+        public ImageSource Image
+        {
+            get { return (ImageSource)GetValue(ImageProperty); }
+            set { SetValue(ImageProperty, value); }
         }
 
         #endregion
@@ -59,11 +69,9 @@ namespace Store.DICOM.Dump
             var storeStream = await file.OpenAsync(FileAccessMode.Read);
             var dicomFile = DicomFile.Open(storeStream.AsStream());
             Dataset = dicomFile.Dataset;
-        }
 
-        private void Close_OnClick(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Exit();
+            if (!Dataset.Contains(DicomTag.PixelData)) return;
+            Image = new DicomImage(Dataset).RenderImageSource();
         }
     }
 }
