@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-#if !SILVERLIGHT
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
-using System.Linq;
+﻿#if NETFX_CORE
+using Windows.UI.Xaml.Media;
+#elif SILVERLIGHT
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Text;
+#else
+using System.Drawing;
+using System.Windows.Media;
+#endif
 
-using Dicom;
+using System.Linq;
 using Dicom.Imaging.Codec;
-using Dicom.Imaging.LUT;
 using Dicom.Imaging.Render;
 
 namespace Dicom.Imaging {
@@ -114,7 +111,7 @@ namespace Dicom.Imaging {
 			}
 		}
 
-#if !SILVERLIGHT
+#if !NETFX_CORE && !SILVERLIGHT
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>

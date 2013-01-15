@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
-using System.Drawing;
-#endif
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Text;
 using Dicom.Imaging.LUT;
+
+#if NETFX_CORE
+using Windows.Foundation;
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
+using System.Windows;
+using System.Windows.Media.Imaging;
+#else
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media.Imaging;
+#endif
 
 namespace Dicom.Imaging.Render {
 	/// <summary>
@@ -128,7 +133,7 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
-#if SILVERLIGHT
+#if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;

@@ -1,18 +1,21 @@
-using System;
-using System.Collections.Generic;
-#if !SILVERLIGHT
+#if NETFX_CORE
+using System.IO;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-#endif
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Threading;
+#endif
 
-using Dicom.Imaging.Algorithms;
+using System;
+using System.Collections.Generic;
+using System.Windows;
 using Dicom.Imaging.LUT;
-using Dicom.Imaging.Render;
 using Dicom.IO;
 
 namespace Dicom.Imaging.Render {
@@ -25,7 +28,7 @@ namespace Dicom.Imaging.Render {
 		protected IPixelData _scaledData;
 
 		protected PinnedIntArray _pixels;
-#if SILVERLIGHT
+#if NETFX_CORE || SILVERLIGHT
 		protected WriteableBitmap _bitmap;
 #else
 	    private const int DPI = 96;
@@ -212,7 +215,7 @@ namespace Dicom.Imaging.Render {
 			_flipY = flipy;
 		}
 
-#if SILVERLIGHT
+#if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			bool render = false;
@@ -235,16 +238,20 @@ namespace Dicom.Imaging.Render {
 					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
 				}
 			}
-
+#if NETFX_CORE
+		    var from = _pixels.Data;
+		    var to = _bitmap.GetBitmapContext().Pixels;
+            Parallel.For(0, _pixels.Count, i => to[i] = from[i]);
+		    _bitmap = _bitmap.Invert();
+#else
 			MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
-
+#endif
 			_bitmap.Rotate(_rotation);
 
 			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
 			if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
 
 			_bitmap.Invalidate();
-
 			return _bitmap;
 		}
 #else
