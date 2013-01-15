@@ -23,7 +23,7 @@ namespace Dicom.IO {
 			if (encoding == null)
 				encoding = Encoding.UTF8;
 
-			byte[] bytes = Encoding.UTF8.GetBytes(value);
+			byte[] bytes = encoding.GetBytes(value);
 
 			if (bytes.Length.IsOdd()) {
 				Array.Resize(ref bytes, bytes.Length + 1);
