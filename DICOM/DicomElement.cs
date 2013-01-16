@@ -654,6 +654,9 @@ namespace Dicom {
 		public DicomLongString(DicomTag tag, string value) : base(tag, value) {
 		}
 
+        public DicomLongString(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
+
 		public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
 		#endregion
@@ -670,6 +673,9 @@ namespace Dicom {
 		#region Public Constructors
 		public DicomLongText(DicomTag tag, string value) : base(tag, value) {
 		}
+
+        public DicomLongText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
 
 		public DicomLongText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}
@@ -784,6 +790,9 @@ namespace Dicom {
 		public DicomPersonName(DicomTag tag, string value) : base(tag, value) {
 		}
 
+        public DicomPersonName(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
+
 		public DicomPersonName(DicomTag tag, string Last, string Middle, string First, string Prefix = null, string Suffix = null) : base(tag, null) {
 			throw new NotImplementedException();
 		}
@@ -831,6 +840,9 @@ namespace Dicom {
 		#region Public Constructors
 		public DicomShortString(DicomTag tag, string value) : base(tag, value) {
 		}
+
+        public DicomShortString(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
 
 		public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -891,6 +903,9 @@ namespace Dicom {
 		#region Public Constructors
 		public DicomShortText(DicomTag tag, string value) : base(tag, value) {
 		}
+
+        public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
 
 		public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}
