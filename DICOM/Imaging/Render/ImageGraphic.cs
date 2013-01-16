@@ -1,22 +1,19 @@
+using System;
+using System.Collections.Generic;
+using Dicom.Imaging.LUT;
+using Dicom.IO;
+
 #if NETFX_CORE
-using System.IO;
-using System.Threading.Tasks;
-using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows.Media.Imaging;
 #else
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #endif
-
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using Dicom.Imaging.LUT;
-using Dicom.IO;
 
 namespace Dicom.Imaging.Render {
 	/// <summary>
@@ -238,14 +235,12 @@ namespace Dicom.Imaging.Render {
 					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
 				}
 			}
-#if NETFX_CORE
-		    var from = _pixels.Data;
-		    var to = _bitmap.GetBitmapContext().Pixels;
-            Parallel.For(0, _pixels.Count, i => to[i] = from[i]);
-		    _bitmap = _bitmap.Invert();
-#else
-			MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
-#endif
+
+			using (var context = _bitmap.GetBitmapContext())
+			{
+				Array.Copy(_pixels.Data, context.Pixels, _pixels.Count);
+			}
+
 			_bitmap.Rotate(_rotation);
 
 			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
