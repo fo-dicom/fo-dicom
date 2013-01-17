@@ -1,22 +1,37 @@
 ﻿// ReSharper disable CheckNamespace
+
+using System.Threading.Tasks;
+using Dicom;
+
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    public static class StreamExtensions
+    internal static class StreamExtensions
     {
-        public static void Close(this Stream stream)
+        internal static void Close(this Stream stream)
         {
             stream.Dispose();
         }
 
-        public static IAsyncResult BeginWrite(this Stream stream, byte[] buffer, int offset, int count,
+        internal static IAsyncResult BeginWrite(this Stream stream, byte[] buffer, int offset, int count,
                                               AsyncCallback callback, object state)
         {
-            return null;
+            return Task.Run(() => stream.Write(buffer, offset, count)).ContinueWith(task => callback(new EventAsyncResult(null, state)));
         }
 
-        public static void EndWrite(this Stream stream, IAsyncResult asyncResult)
+        internal static void EndWrite(this Stream stream, IAsyncResult asyncResult)
         {
         }
-    }
+
+		internal static IAsyncResult BeginRead(this Stream stream, byte[] buffer, int offset, int count,
+											  AsyncCallback callback, object state)
+		{
+			return Task.Run(() => stream.Read(buffer, offset, count)).ContinueWith(task => callback(new EventAsyncResult(null, state)));
+		}
+
+		internal static int EndRead(this Stream stream, IAsyncResult asyncResult)
+		{
+			return ((byte[])asyncResult.AsyncState).Length;
+		}
+	}
 }

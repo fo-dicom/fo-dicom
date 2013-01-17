@@ -2,22 +2,27 @@
 namespace System.Threading
 // ReSharper restore CheckNamespace
 {
-    public delegate void TimerCallback(object state);
+    internal delegate void TimerCallback(object state);
 
-    public class Timer
+    internal class Timer
     {
         #region CONSTRUCTORS
 
-        public Timer(TimerCallback callback)
+        internal Timer(TimerCallback callback)
         {
             
         }
 
-        #endregion
+	    internal Timer(TimerCallback callback, object state, int dueTime, int period)
+	    {
+		    
+	    }
+
+		#endregion
 
         #region METHODS
 
-        public bool Change(int dueTime, int period)
+        internal bool Change(int dueTime, int period)
         {
             return true;
         }

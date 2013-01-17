@@ -2,6 +2,7 @@
 using System.IO;
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Network;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
@@ -57,7 +58,7 @@ namespace Store.DICOM.Dump
         {
         }
 
-        private async void OpenFile_OnClick(object sender, RoutedEventArgs e)
+        private async void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
         {
             var filePicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
             filePicker.FileTypeFilter.Add(".dcm");
@@ -73,5 +74,14 @@ namespace Store.DICOM.Dump
             if (!Dataset.Contains(DicomTag.PixelData)) return;
             Image = new DicomImage(Dataset).RenderImageSource();
         }
+
+	    private void EchoButton_OnClick(object sender, RoutedEventArgs e)
+	    {
+		    var client = new DicomClient();
+		    var request = new DicomCEchoRequest();
+		    request.OnResponseReceived = (echoRequest, response) => EchoStatus.Text = response.Status.Description;
+			client.AddRequest(request);
+			client.Send("server", 104, false, "cureos", "cureos");
+	    }
     }
 }

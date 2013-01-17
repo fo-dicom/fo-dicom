@@ -35,7 +35,6 @@
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="documentsLibrary" />
-    <Capability Name="internetClient" />
+    <Capability Name="privateNetworkClientServer" />
   </Capabilities>
 </Package>

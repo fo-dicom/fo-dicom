@@ -6,7 +6,7 @@ using Windows.Storage.Streams;
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    public class FileStream
+    internal class FileStream : MemoryStream
     {
         #region FIELDS
 
@@ -17,8 +17,10 @@ namespace System.IO
 
         #region CONSTRUCTORS
 
-        public FileStream(string name, FileMode mode)
+        internal FileStream(string name, FileMode mode)
         {
+	        Name = name;
+
             // TODO Handle alternative create/open/read/write scenarios
             _stream = Task.Run(async () =>
                                          {
@@ -30,14 +32,20 @@ namespace System.IO
 
         #endregion
 
-        #region METHODS
+		#region PROPERTIES
 
-        public void WriteByte(byte value)
+		internal string Name { get; private set; }
+
+		#endregion
+
+		#region METHODS
+
+		internal new void WriteByte(byte value)
         {
             _writer.WriteByte(value);
         }
 
-        public void Close()
+        internal void Close()
         {
             Task.Run(async () =>
                                {
