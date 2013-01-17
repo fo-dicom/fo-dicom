@@ -31,7 +31,7 @@ namespace Dicom.Network {
 			_bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
 			_m16 = new Stack<long>();
 			_m32 = new Stack<long>();
-			_encoding = Encoding.ASCII;
+			_encoding = Encoding.UTF8;
 		}
 
 		/// <summary>
