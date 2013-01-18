@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using NLog;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -13,6 +13,7 @@ namespace System.Net.Sockets
 	{
 		#region FIELDS
 
+		private static readonly Logger Logger = LogManager.GetLogger(typeof(TcpClient).FullName);
 		private readonly Stream _stream;
 
 		#endregion
@@ -21,16 +22,25 @@ namespace System.Net.Sockets
 
 		internal TcpClient(string host, int port)
 		{
-			_stream = Task.Run(async () =>
-				                         {
-					                         var socket = new StreamSocket();
-					                         await socket.ConnectAsync(new HostName(host), port.ToString());
-					                         return new Stream(socket);
-				                         }).Result;
+			try
+			{
+				_stream = Task.Run(async () =>
+					                         {
+						                         var socket = new StreamSocket();
+						                         await socket.ConnectAsync(new HostName(host), port.ToString());
+						                         return new Stream(socket);
+					                         }).Result;
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error when creating socket stream, message: {0}", e.Message);
+				_stream = null;
+			}
 		}
 
 		internal TcpClient(StreamSocket socket)
 		{
+			if (socket == null) throw new ArgumentNullException("socket");
 			_stream = new Stream(socket);
 		}
 
@@ -45,7 +55,7 @@ namespace System.Net.Sockets
 
 		internal void Close()
 		{
-			_stream.Dispose();
+			if (_stream != null) _stream.Dispose();
 		}
 
 		#endregion
@@ -76,16 +86,24 @@ namespace System.Net.Sockets
 
 			public override int Read(byte[] buffer, int offset, int count)
 			{
-				Task.Run(async () =>
-					               {
-						               var reader = new DataReader(_socket.InputStream);
-						               await reader.LoadAsync((uint)count);
-						               var buf = new byte[count];
-						               reader.ReadBytes(buf);
-						               reader.DetachStream();
-									   Array.Copy(buf, 0, buffer, offset, count);
-					               }).Wait();
-				return count;
+				try
+				{
+					Task.Run(async () =>
+						               {
+							               var reader = new DataReader(_socket.InputStream);
+							               await reader.LoadAsync((uint)count);
+							               var buf = new byte[count];
+							               reader.ReadBytes(buf);
+							               reader.DetachStream();
+							               Array.Copy(buf, 0, buffer, offset, count);
+						               }).Wait();
+					return count;
+				}
+				catch (Exception e)
+				{
+					Logger.Error("Error when reading from socket stream, message: {0}", e.Message);
+					return 0;
+				}
 			}
 
 			public override long Seek(long offset, SeekOrigin origin)
@@ -100,15 +118,22 @@ namespace System.Net.Sockets
 
 			public override void Write(byte[] buffer, int offset, int count)
 			{
-				Task.Run(async () =>
-					               {
-						               var buf = new byte[count];
-									   Array.Copy(buffer, offset, buf, 0, count);
-						               var writer = new DataWriter(_socket.OutputStream);
-						               writer.WriteBytes(buf);
-						               await writer.StoreAsync();
-						               writer.DetachStream();
-					               }).Wait();
+				try
+				{
+					Task.Run(async () =>
+					{
+						var buf = new byte[count];
+						Array.Copy(buffer, offset, buf, 0, count);
+						var writer = new DataWriter(_socket.OutputStream);
+						writer.WriteBytes(buf);
+						await writer.StoreAsync();
+						writer.DetachStream();
+					}).Wait();
+				}
+				catch (Exception e)
+				{
+					Logger.Error("Error when writing to socket stream, message: {0}", e.Message);
+				}
 			}
 
 			protected override void Dispose(bool disposing)

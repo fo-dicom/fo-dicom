@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Dicom;
 using Dicom.Imaging;
 using Dicom.Network;
+using NLog;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -25,7 +28,12 @@ namespace Store.DICOM.Dump
 
         public static readonly DependencyProperty ImageProperty =
             DependencyProperty.Register("Image", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
-        
+
+		// Using a DependencyProperty as the backing store for EchoStatusMessage.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty EchoStatusMessageProperty =
+			DependencyProperty.Register("EchoStatusMessage", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
+
+		
         #endregion
 
         public MainPage()
@@ -75,13 +83,17 @@ namespace Store.DICOM.Dump
             Image = new DicomImage(Dataset).RenderImageSource();
         }
 
-	    private void EchoButton_OnClick(object sender, RoutedEventArgs e)
+		private void EchoButton_OnClick(object sender, RoutedEventArgs e)
 	    {
 		    var client = new DicomClient();
-			client.NegotiateAsyncOps();
-		    var request = new DicomCEchoRequest();
-		    request.OnResponseReceived = (echoRequest, response) => EchoStatus.Text = response.Status.Description;
-			client.AddRequest(request);
+			var request = new DicomCEchoRequest
+				              {
+					              OnResponseReceived =
+						              async (req, res) =>
+						              await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+						                                        () => EchoStatus.Text = res.Status.Description)
+				              };
+		    client.AddRequest(request);
 			client.Send("localhost", 104, false, "ANY-SCU", "STORESCP");
 	    }
     }

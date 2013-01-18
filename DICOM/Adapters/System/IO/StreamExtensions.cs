@@ -16,7 +16,9 @@ namespace System.IO
         internal static IAsyncResult BeginWrite(this Stream stream, byte[] buffer, int offset, int count,
                                               AsyncCallback callback, object state)
         {
-            return Task.Run(() => stream.Write(buffer, offset, count)).ContinueWith(task => callback(new EventAsyncResult(null, state)));
+	        return
+		        new TaskFactory().StartNew(asyncState => stream.Write(buffer, offset, count), state)
+		                         .ContinueWith(task => callback(task));
         }
 
         internal static void EndWrite(this Stream stream, IAsyncResult asyncResult)
@@ -26,12 +28,18 @@ namespace System.IO
 		internal static IAsyncResult BeginRead(this Stream stream, byte[] buffer, int offset, int count,
 											  AsyncCallback callback, object state)
 		{
-			return Task.Run(() => stream.Read(buffer, offset, count)).ContinueWith(task => callback(new EventAsyncResult(null, state)));
+			return new TaskFactory<int>().StartNew(asyncState => stream.Read(buffer, offset, count), state)
+			                             .ContinueWith(task =>
+				                                           {
+					                                           callback(task);
+					                                           return task.Result;
+				                                           });
 		}
 
 		internal static int EndRead(this Stream stream, IAsyncResult asyncResult)
 		{
-			return ((byte[])asyncResult.AsyncState).Length;
+			var task = asyncResult as Task<int>;
+			return task != null ? task.Result : 0;
 		}
 	}
 }
