@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Dicom;
 using Dicom.Imaging;
 using Dicom.Network;
-using NLog;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
@@ -23,17 +21,14 @@ namespace Store.DICOM.Dump
     {
         #region FIELDS
 
+	    private DicomServer<CEchoScp> _server;
+ 
         public static readonly DependencyProperty DatasetProperty =
             DependencyProperty.Register("Dataset", typeof(DicomDataset), typeof(MainPage), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ImageProperty =
             DependencyProperty.Register("Image", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
 
-		// Using a DependencyProperty as the backing store for EchoStatusMessage.  This enables animation, styling, binding, etc...
-		public static readonly DependencyProperty EchoStatusMessageProperty =
-			DependencyProperty.Register("EchoStatusMessage", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
-
-		
         #endregion
 
         public MainPage()
@@ -95,6 +90,11 @@ namespace Store.DICOM.Dump
 				              };
 		    client.AddRequest(request);
 			client.Send("localhost", 104, false, "ANY-SCU", "STORESCP");
+	    }
+
+	    private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
+	    {
+			_server = new DicomServer<CEchoScp>(104);
 	    }
     }
 }
