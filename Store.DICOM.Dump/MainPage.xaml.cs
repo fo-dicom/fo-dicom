@@ -78,10 +78,11 @@ namespace Store.DICOM.Dump
 	    private void EchoButton_OnClick(object sender, RoutedEventArgs e)
 	    {
 		    var client = new DicomClient();
+			client.NegotiateAsyncOps();
 		    var request = new DicomCEchoRequest();
 		    request.OnResponseReceived = (echoRequest, response) => EchoStatus.Text = response.Status.Description;
 			client.AddRequest(request);
-			client.Send("server", 104, false, "cureos", "cureos");
+			client.Send("localhost", 104, false, "ANY-SCU", "STORESCP");
 	    }
     }
 }
