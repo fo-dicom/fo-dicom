@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
+using Windows.Storage.Streams;
 
 // ReSharper disable CheckNamespace
 namespace System.Net.Sockets
@@ -74,7 +76,16 @@ namespace System.Net.Sockets
 
 			public override int Read(byte[] buffer, int offset, int count)
 			{
-				return _socket.InputStream.AsStreamForRead().Read(buffer, offset, count);
+				Task.Run(async () =>
+					               {
+						               var reader = new DataReader(_socket.InputStream);
+						               await reader.LoadAsync((uint)count);
+						               var buf = new byte[count];
+						               reader.ReadBytes(buf);
+						               reader.DetachStream();
+									   Array.Copy(buf, 0, buffer, offset, count);
+					               }).Wait();
+				return count;
 			}
 
 			public override long Seek(long offset, SeekOrigin origin)
@@ -89,7 +100,15 @@ namespace System.Net.Sockets
 
 			public override void Write(byte[] buffer, int offset, int count)
 			{
-				_socket.OutputStream.AsStreamForWrite().Write(buffer, offset, count);
+				Task.Run(async () =>
+					               {
+						               var buf = new byte[count];
+									   Array.Copy(buffer, offset, buf, 0, count);
+						               var writer = new DataWriter(_socket.OutputStream);
+						               writer.WriteBytes(buf);
+						               await writer.StoreAsync();
+						               writer.DetachStream();
+					               }).Wait();
 			}
 
 			protected override void Dispose(bool disposing)
