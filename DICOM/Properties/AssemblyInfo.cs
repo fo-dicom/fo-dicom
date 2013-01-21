@@ -34,3 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.31.0")]
 
 [assembly: AssemblyFileVersionAttribute("1.0.31.0")]
+
+#if NETFX_CORE
+[assembly: InternalsVisibleTo("Store.Dicom.Tests")]
+#endif
