@@ -11,7 +11,7 @@ namespace System.IO
          [TestMethod]
          public void Exists_ExistingFile_ReturnsTrue()
          {
-             var fileName = @"Visual Studio 2012\Settings\CurrentSettings.vssettings";
+             var fileName = Path.Combine(IOHelper.GetMyDocumentsPath(), @"Visual Studio 2012\Settings\CurrentSettings.vssettings");
              var expected = true;
              var actual = File.Exists(fileName);
              Assert.AreEqual(expected, actual);
@@ -20,7 +20,7 @@ namespace System.IO
          [TestMethod]
          public void Exists_NonExistingFile_ReturnsFalse()
          {
-             var fileName = @"Visual Studio 2012\SomeTypicallySillyName.dcm";
+             var fileName = Path.Combine(IOHelper.GetMyDocumentsPath(), @"Visual Studio 2012\SomeTypicallySillyName.dcm");
              var expected = false;
              var actual = File.Exists(fileName);
              Assert.AreEqual(expected, actual);
@@ -30,7 +30,7 @@ namespace System.IO
         public void WriteAllBytes_ReadAllBytes_CreatesNonZeroLengthFile()
         {
             var expected = new byte[] { 65, 66, 67, 68 };
-            var fileName = Path.Combine(ApplicationData.Current.LocalFolder.Name, "test.dcm");
+            var fileName = Path.Combine(IOHelper.GetMyDocumentsPath(), "test.dcm");
             File.WriteAllBytes(fileName, expected);
             var actual = File.ReadAllBytes(fileName);
             CollectionAssert.AreEqual(expected, actual);

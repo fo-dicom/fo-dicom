@@ -10,7 +10,7 @@ namespace System.IO
     [TestClass]
     public class DirectoryTests
     {
-		private static readonly string TopDirectoryToCreate = Path.Combine(GetMyDocumentsPath(), "TemporaryFolderName");
+		private static readonly string TopDirectoryToCreate = Path.Combine(IOHelper.GetMyDocumentsPath(), "TemporaryFolderName");
 		private static readonly string SubDirectoryToCreate = Path.Combine(TopDirectoryToCreate, "With sub-folder");
 
 		[TestCleanup]
@@ -35,7 +35,7 @@ namespace System.IO
         public void Exists_NonExistingDirectory_ReturnsFalse()
         {
             var expected = false;
-            var actual = Directory.Exists(Path.Combine(GetMyDocumentsPath(), "HowSillyOfMeToExpectADirectoryLikeThisToExist"));
+            var actual = Directory.Exists(Path.Combine(IOHelper.GetMyDocumentsPath(), "HowSillyOfMeToExpectADirectoryLikeThisToExist"));
             Assert.AreEqual(expected, actual);
         }
 
@@ -43,7 +43,7 @@ namespace System.IO
         public void Exists_ExistingDirectory_ReturnsTrue()
         {
             var expected = true;
-            var actual = Directory.Exists(Path.Combine(GetMyDocumentsPath(), "Visual Studio 2012\\Projects"));
+            var actual = Directory.Exists(Path.Combine(IOHelper.GetMyDocumentsPath(), "Visual Studio 2012\\Projects"));
             Assert.AreEqual(expected, actual);
         }
 
@@ -59,7 +59,7 @@ namespace System.IO
 		[TestMethod]
 		public void GetDirectories_DocumentsPath_ShouldContainVS2012folder()
 		{
-			var dirs = Directory.GetDirectories(GetMyDocumentsPath());
+			var dirs = Directory.GetDirectories(IOHelper.GetMyDocumentsPath());
 			var expected = true;
 			var actual = dirs.Any(dir => dir.Equals("Visual Studio 2012"));
 			Assert.AreEqual(expected, actual);
@@ -100,15 +100,6 @@ namespace System.IO
 			var actual = files.Length;
 			Assert.AreEqual(expected, actual);
 		}
-
-	    private static string GetMyDocumentsPath()
-	    {
-		    return Task.Run(async () =>
-			                          {
-				                          var folders = await KnownFolders.DocumentsLibrary.GetFoldersAsync();
-				                          return Path.GetDirectoryName(folders.First().Path);
-			                          }).Result;
-	    }
 
 	    private static void CreateTemporaryFiles()
 	    {

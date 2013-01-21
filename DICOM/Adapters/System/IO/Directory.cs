@@ -24,14 +24,7 @@ namespace System.IO
         static Directory()
         {
 	        Logger = LogManager.GetLogger(typeof(Directory));
-            Root = KnownFolders.DocumentsLibrary;
         }
-
-        #endregion
-
-        #region PROPERTIES
-
-        internal static StorageFolder Root { get; set; }
 
         #endregion
 

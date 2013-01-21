@@ -12,6 +12,7 @@ namespace System.IO
 
         private readonly IRandomAccessStream _stream;
         private readonly DataWriter _writer;
+	    private bool _disposed;
 
         #endregion
 
@@ -19,16 +20,28 @@ namespace System.IO
 
         internal FileStream(string name, FileMode mode)
         {
-	        Name = name;
+			if (mode != FileMode.Create) throw new NotSupportedException("Only supported file mode is Create");
 
-            // TODO Handle alternative create/open/read/write scenarios
-            _stream = Task.Run(async () =>
-                                         {
-                                             var file = await Directory.Root.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);
-                                             return await file.OpenAsync(FileAccessMode.ReadWrite);
-                                         }).Result;
-            _writer = new DataWriter(_stream);
-        }
+			try
+			{
+				Name = name;
+				_stream = Task.Run(async () =>
+					                         {
+						                         var file = await FileHelper.CreateStorageFileAsync(name);
+												 return await file.OpenAsync(FileAccessMode.ReadWrite);
+											 }).Result;
+				_writer = new DataWriter(_stream);
+				_disposed = false;
+
+			}
+			catch
+			{
+				Name = String.Empty;
+				_stream = null;
+				_writer = null;
+				_disposed = true;
+			}
+		}
 
         #endregion
 
@@ -42,18 +55,33 @@ namespace System.IO
 
 		internal new void WriteByte(byte value)
         {
+			if (_disposed) throw new ObjectDisposedException("File stream is disposed or could not be initialized.");
             _writer.WriteByte(value);
         }
 
         internal void Close()
         {
-            Task.Run(async () =>
+			if (_disposed) throw new ObjectDisposedException("File stream is disposed or could not be initialized.");
+			Task.Run(async () =>
                                {
-                                   var status = await _writer.StoreAsync();
+                                   await _writer.StoreAsync();
                                    _writer.Dispose();
-                                   return status;
-                               });
+                               }).Wait();
         }
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed) return;
+
+			if (disposing)
+			{
+				_writer.Dispose();
+				_stream.Dispose();
+			}
+			_disposed = true;
+
+			base.Dispose(disposing);
+		}
 
         #endregion
     }

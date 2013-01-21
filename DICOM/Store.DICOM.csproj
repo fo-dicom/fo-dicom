@@ -113,6 +113,7 @@
     <Compile Include="Adapters\System\IO\DirectoryInfo.cs" />
     <Compile Include="Adapters\System\IO\File.cs" />
     <Compile Include="Adapters\System\IO\FileAttributes.cs" />
+    <Compile Include="Adapters\System\IO\FileHelper.cs" />
     <Compile Include="Adapters\System\IO\FileInfo.cs" />
     <Compile Include="Adapters\System\IO\FileMode.cs" />
     <Compile Include="Adapters\System\IO\FileStream.cs" />

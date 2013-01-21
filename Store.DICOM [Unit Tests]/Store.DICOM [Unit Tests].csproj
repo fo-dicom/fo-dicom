@@ -116,6 +116,7 @@
     <Compile Include="Adapters\Override\System\IO\PathTests.cs" />
     <Compile Include="Adapters\System\IO\FileStreamTests.cs" />
     <Compile Include="Adapters\System\IO\FileTests.cs" />
+    <Compile Include="Adapters\System\IO\IOHelper.cs" />
     <Compile Include="Adapters\System\Threading\ThreadTests.cs" />
     <Compile Include="DicomFileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

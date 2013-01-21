@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -21,16 +22,38 @@ namespace System.IO
 
         internal static bool Exists(string path)
         {
-            return GetStorageFile(path) != null;
+			try
+			{
+				return Task.Run(async () => await FileHelper.GetStorageFileAsync(path)).Result != null;
+			}
+			catch
+			{
+				return false;
+			}
         }
 
-        internal static void Delete(string path)
-        {
-        }
+	    internal static void Delete(string path)
+	    {
+		    try
+		    {
+			    Task.Run(async () =>
+				                   {
+					                   var file = await FileHelper.GetStorageFileAsync(path);
+					                   await file.DeleteAsync();
+				                   }).Wait();
+		    }
+		    catch
+		    {
+		    }
+	    }
 
-        internal static Stream Create(string path)
+	    internal static Stream Create(string path)
         {
-            return OpenWrite(path);
+			return Task.Run(async () =>
+			{
+				var file = await FileHelper.CreateStorageFileAsync(path);
+				return await file.OpenStreamForWriteAsync();
+			}).Result;
         }
 
         internal static void Move(string sourceFileName, string destFileName)
@@ -39,50 +62,42 @@ namespace System.IO
 
         internal static Stream OpenRead(string path)
         {
-            return Task.Run(async () => await Directory.Root.OpenStreamForReadAsync(path)).Result;
+            return Task.Run(async () =>
+	                                  {
+		                                  var file = await FileHelper.GetStorageFileAsync(path);
+		                                  return await file.OpenStreamForReadAsync();
+	                                  }).Result;
         }
 
-        internal static Stream OpenWrite(string path)
-        {
-            return Task.Run(async () => await Directory.Root.OpenStreamForWriteAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
-        }
+	    internal static Stream OpenWrite(string path)
+	    {
+		    return Task.Run(async () =>
+			                          {
+				                          var file = Exists(path)
+					                                     ? await FileHelper.GetStorageFileAsync(path)
+					                                     : await FileHelper.CreateStorageFileAsync(path);
+				                          return await file.OpenStreamForWriteAsync();
+			                          }).Result;
+	    }
 
-        internal static byte[] ReadAllBytes(string path)
-        {
-            byte[] bytes = null;
-            var status =
-                Task.Run(async () =>
-                                   {
-                                       var file = GetStorageFile(path);
-                                       using (var stream = await file.OpenAsync(FileAccessMode.Read))
-                                       using (var reader = new DataReader(stream))
-                                       {
-                                           var size = stream.Size;
-                                           await reader.LoadAsync((uint)size);
-                                           bytes = new byte[size];
-                                           reader.ReadBytes(bytes);
-                                           return 0;
-                                       }
-                                   }).Result;
-            return bytes;
-        }
+	    internal static byte[] ReadAllBytes(string path)
+	    {
+		    byte[] bytes = null;
+		    Task.Run(async () =>
+			                   {
+				                   var buffer = await PathIO.ReadBufferAsync(path);
+								   bytes = new byte[buffer.Length];
+				                   buffer.CopyTo(bytes);
+			                   }).Wait();
+		    return bytes;
+	    }
 
-        internal static void WriteAllBytes(string path, byte[] bytes)
-        {
-            var status =
-                Task.Run(async () =>
-                                   {
-                                       var file = await Directory.Root.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
-                                       using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
-                                       using (var writer = new DataWriter(stream))
-                                       {
-                                           writer.WriteBytes(bytes);
-                                           return await writer.StoreAsync();
-                                       }
-                                   }).Result;
-        }
+	    internal static void WriteAllBytes(string path, byte[] bytes)
+	    {
+		    Task.Run(async () => await PathIO.WriteBytesAsync(path, bytes)).Wait();
+	    }
 
-        internal static FileAttributes GetAttributes(string path)
+	    internal static FileAttributes GetAttributes(string path)
         {
             return FileAttributes.Normal;
         }
@@ -91,25 +106,6 @@ namespace System.IO
         {
         }
 
-        private static StorageFile GetStorageFile(string path)
-        {
-            try
-            {
-                var folderName = Path.GetDirectoryName(path);
-                var fileName = Path.GetFileName(path);
-                var file = Task.Run(async () =>
-                {
-                    var folder = await Directory.Root.GetFolderAsync(folderName);
-                    return await folder.GetFileAsync(fileName);
-                }).Result;
-                return file;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        #endregion
+	    #endregion
     }
 }
