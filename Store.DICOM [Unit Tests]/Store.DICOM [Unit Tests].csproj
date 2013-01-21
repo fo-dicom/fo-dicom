@@ -124,6 +124,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="packages.config" />
     <None Include="Store.DICOM.Tests.TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,18 @@
       <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
       <Name>Store.DICOM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MetroLog, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroLog.NetCore">
+      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroLog.WinRT">
+      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

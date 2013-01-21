@@ -7,7 +7,7 @@ using Windows.Networking.Connectivity;
 namespace Override.System
 // ReSharper restore CheckNamespace
 {
-    public static class Environment
+    internal static class Environment
     {
         ///<summary>
         /// Want to store the hostname to send for push notifications to make
@@ -17,7 +17,7 @@ namespace Override.System
         /// Thanks to Jeff Wilcox and Matthijs Hoekstra
         /// Adapted from Q42.WinRT library at https://github.com/Q42/Q42.WinRT
         ///</summary>
-        public static string MachineName
+        internal static string MachineName
         {
             get
             {

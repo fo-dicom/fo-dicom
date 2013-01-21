@@ -1,13 +1,12 @@
-﻿// ReSharper disable CheckNamespace
+﻿using System;
 
-using System;
-
+// ReSharper disable CheckNamespace
 namespace NLog
 // ReSharper restore CheckNamespace
 {
-    public static class LogLevelExtensions
+    internal static class LogLevelExtensions
     {
-        public static MetroLog.LogLevel ToMetroLogLevel(this LogLevel logLevel)
+        internal static MetroLog.LogLevel ToMetroLogLevel(this LogLevel logLevel)
         {
             switch (logLevel)
             {

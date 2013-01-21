@@ -6,39 +6,48 @@ using Windows.Storage.Streams;
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    public class File
+    internal class File
     {
-        #region METHODS
+		#region PROPERTIES
 
-        public static bool Exists(string path)
+		internal static string[] DicomFileExtensions
+		{
+			get { return new[] { ".dcm", ".dic" }; }
+		}
+
+		#endregion
+
+		#region METHODS
+
+        internal static bool Exists(string path)
         {
             return GetStorageFile(path) != null;
         }
 
-        public static void Delete(string path)
+        internal static void Delete(string path)
         {
         }
 
-        public static Stream Create(string path)
+        internal static Stream Create(string path)
         {
             return OpenWrite(path);
         }
 
-        public static void Move(string sourceFileName, string destFileName)
+        internal static void Move(string sourceFileName, string destFileName)
         {
         }
 
-        public static Stream OpenRead(string path)
+        internal static Stream OpenRead(string path)
         {
             return Task.Run(async () => await Directory.Root.OpenStreamForReadAsync(path)).Result;
         }
 
-        public static Stream OpenWrite(string path)
+        internal static Stream OpenWrite(string path)
         {
             return Task.Run(async () => await Directory.Root.OpenStreamForWriteAsync(path, CreationCollisionOption.ReplaceExisting)).Result;
         }
 
-        public static byte[] ReadAllBytes(string path)
+        internal static byte[] ReadAllBytes(string path)
         {
             byte[] bytes = null;
             var status =
@@ -58,7 +67,7 @@ namespace System.IO
             return bytes;
         }
 
-        public static void WriteAllBytes(string path, byte[] bytes)
+        internal static void WriteAllBytes(string path, byte[] bytes)
         {
             var status =
                 Task.Run(async () =>
@@ -73,12 +82,12 @@ namespace System.IO
                                    }).Result;
         }
 
-        public static FileAttributes GetAttributes(string path)
+        internal static FileAttributes GetAttributes(string path)
         {
             return FileAttributes.Normal;
         }
 
-        public static void SetAttributes(string path, FileAttributes attributes)
+        internal static void SetAttributes(string path, FileAttributes attributes)
         {
         }
 

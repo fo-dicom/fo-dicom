@@ -1,8 +1,6 @@
-﻿// ReSharper disable CheckNamespace
+﻿using System.Threading.Tasks;
 
-using System.Threading.Tasks;
-using Dicom;
-
+// ReSharper disable CheckNamespace
 namespace System.IO
 // ReSharper restore CheckNamespace
 {

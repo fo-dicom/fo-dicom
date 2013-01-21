@@ -1,30 +1,35 @@
-﻿using Windows.Storage;
+﻿using System.IO;
+using Windows.Storage;
 
 // ReSharper disable CheckNamespace
 namespace Override.System.IO
 // ReSharper restore CheckNamespace
 {
-    public static class Path
-    {
-        public static string GetTempPath()
+    internal static class Path
+	{
+		#region METHODS
+
+		internal static string GetTempPath()
         {
-            return ApplicationData.Current.LocalFolder.Name;
+            return ApplicationData.Current.TemporaryFolder.Path;
         }
 
-        public static string GetTempFileName()
+        internal static string GetTempFileName()
         {
-            return global::System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Name,
-                                                  global::System.IO.Path.GetRandomFileName());
+            return global::System.IO.Path.ChangeExtension(global::System.IO.Path.Combine(GetTempPath(),
+                                                  global::System.IO.Path.GetRandomFileName()), File.DicomFileExtensions[0]);
         }
 
-        public static string GetFullPath(string path)
+        internal static string GetFullPath(string path)
         {
             return path;
         }
 
-        public static string Combine(string path1, string path2)
+        internal static string Combine(string path1, string path2)
         {
             return global::System.IO.Path.Combine(path1, path2);
-        }
-    }
+		}
+
+		#endregion
+	}
 }

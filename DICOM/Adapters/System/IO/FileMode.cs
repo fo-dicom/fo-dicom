@@ -2,7 +2,7 @@
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    public enum FileMode
+    internal enum FileMode
     {
         Create
     }

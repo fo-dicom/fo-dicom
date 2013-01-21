@@ -34,6 +34,13 @@
             </SupportedFileTypes>
           </FileTypeAssociation>
         </Extension>
+        <Extension Category="windows.fileTypeAssociation">
+          <FileTypeAssociation Name=".dic">
+            <SupportedFileTypes>
+              <FileType>.dic</FileType>
+            </SupportedFileTypes>
+          </FileTypeAssociation>
+        </Extension>
       </Extensions>
     </Application>
     <Application Id="vstest.executionengine.x86.App" Executable="vstest.executionengine.appcontainer.x86.exe" EntryPoint="vstest.executionengine.x86.App">

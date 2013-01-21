@@ -1,12 +1,24 @@
-﻿// ReSharper disable CheckNamespace
+﻿using System;
+
+// ReSharper disable CheckNamespace
 namespace NLog
 // ReSharper restore CheckNamespace
 {
-    public class LogManager
+    internal static class LogManager
     {
-        public static Logger GetLogger(string name)
+        internal static Logger GetLogger(string name)
         {
             return new Logger(MetroLog.LogManagerFactory.DefaultLogManager.GetLogger(name));
         }
+
+		internal static Logger GetLogger(Type type)
+		{
+			return GetLogger(type.FullName);
+		}
+
+		internal static Logger GetLogger<T>()
+		{
+			return GetLogger(typeof(T));
+		}
     }
 }
