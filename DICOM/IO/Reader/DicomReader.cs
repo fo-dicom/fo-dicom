@@ -134,7 +134,12 @@ namespace Dicom.IO.Reader {
 
 							byte[] bytes = source.GetBytes(2);
 							string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-							_vr = DicomVR.Parse(vr);
+							try {
+								_vr = DicomVR.Parse(vr);
+							} catch {
+								// unable to parse VR
+								_vr = DicomVR.UN;
+							}
 						} else {
 							DicomDictionaryEntry entry = Dictionary[_tag];
 							if (entry != null) {
