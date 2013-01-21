@@ -60,6 +60,7 @@ namespace Dicom.IO.Reader {
 				Encoding encoding = DicomEncoding.Default;
 				if (element.Count > 0)
 					encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
+				_encodings.Pop();
 				_encodings.Push(encoding);
 			}
 
@@ -82,6 +83,8 @@ namespace Dicom.IO.Reader {
 			sq.Items.Add(item);
 
 			_datasets.Push(item);
+
+			_encodings.Push(_encodings.Peek());
 		}
 
 		public void OnEndSequenceItem() {
