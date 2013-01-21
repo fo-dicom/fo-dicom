@@ -464,7 +464,7 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
-				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any)).ToArray();
+				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
@@ -591,7 +591,7 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
-				_values = base.Get<string[]>().Select(x => int.Parse(x)).ToArray();
+				_values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 			}
 
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(object)) {
