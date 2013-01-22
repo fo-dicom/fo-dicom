@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace Dicom.Imaging {
 	public static class ColorTable {
@@ -47,11 +48,12 @@ namespace Dicom.Imaging {
 
 		public static void SaveLUT(string file, Color32[] lut) {
 			if (lut.Length != 256) return;
-			FileStream fs = new FileStream(file, FileMode.Create);
-			for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].R);
-			for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].G);
-			for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].B);
-			fs.Close();
+			using (FileStream fs = new FileStream(file, FileMode.Create))
+			{
+				fs.Write(lut.Select(color => color.R).ToArray(), 0, lut.Length);
+				fs.Write(lut.Select(color => color.G).ToArray(), 0, lut.Length);
+				fs.Write(lut.Select(color => color.B).ToArray(), 0, lut.Length);
+			}
 		}
 	}
 }
