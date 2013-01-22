@@ -58,7 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DicomPersonNameTest.cs" />
-    <Compile Include="DicomTagTests.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
