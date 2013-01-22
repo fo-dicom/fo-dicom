@@ -65,5 +65,18 @@ namespace System.IO
 			File.Delete(fileName);
 			Assert.IsFalse(File.Exists(fileName));
 		}
+
+		[TestMethod]
+		public void Move_FileInSubfolder_ConfirmedMoved()
+		{
+			var srcFileName = IOHelper.GetMyDocumentsPath(@"temporary-file.dcm");
+			var destFileName = IOHelper.GetMyDocumentsPath(@"Temporary folder\temporary file.dcm");
+			File.Create(srcFileName);
+			Assert.IsTrue(File.Exists(srcFileName));
+
+			File.Move(srcFileName, destFileName);
+			Assert.IsFalse(File.Exists(srcFileName));
+			Assert.IsTrue(File.Exists(destFileName));
+		}
 	}
 }

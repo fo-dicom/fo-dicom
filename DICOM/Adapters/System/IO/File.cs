@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Windows.Storage;
 
 // ReSharper disable CheckNamespace
 namespace System.IO
@@ -50,8 +51,21 @@ namespace System.IO
 	    }
 
 	    internal static void Move(string sourceFileName, string destFileName)
-        {
-        }
+	    {
+			try
+			{
+				Task.Run(async () =>
+						   {
+							   var src = await FileHelper.GetStorageFileAsync(sourceFileName);
+							   var dest = await FileHelper.CreateStorageFileAsync(destFileName);
+							   await src.MoveAndReplaceAsync(dest);
+						   }).Wait();
+
+			}
+			catch
+			{
+			}
+		}
 
 	    internal static FileStream OpenRead(string path)
 	    {
