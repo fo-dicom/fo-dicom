@@ -1,3 +1,25 @@
+# Fellow Oak DICOM for Windows Store apps
+
+This is a fork of Colby Dillion's [fo-dicom](https://github.com/rcd/fo-dicom) toolkit, aimed at Windows Store applications. This repository provides a Windows Store class library project *Store.DICOM* that can be 
+applied in any Windows Store application.
+
+To sufficiently use the library in a Windows Store application, consider enabling the following capabilities and declarations in the application manifest file:
+* Documents Library capability
+* Internet (Client & Server) capability
+* Private Networks (Client & Server) capability
+* Removable Storage capability
+* File Type Associations declaration e.g. for files with extensions *.dcm* and *.dic*
+
+At this stage, the *Store.DICOM* class library exposes the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* currently does not publicly expose *awaitable* methods for file and network I/O etc.
+
+Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
+* Codecs for compressed image types (JPEG, JPEG-LS, JPEG 2000 and RLE) cannot be loaded.
+* Secure Sockets Layer (SSL) network I/O is not enabled.
+
+Issues directly related to using *fo-dicom* in Windows Store applications can sufficiently be reported [here](https://github.com/cureos/fo-dicom/issues). 
+General *fo-dicom* issues are best reported to the parent repository [Issues page](https://github.com/rcd/fo-dicom/issues).
+
+
 # Fellow Oak DICOM for .NET
 
 Please join the [Google group](http://groups.google.com/group/fo-dicom) for updates and support. Binaries are available from [Fellow Oak](http://www.fellowoak.com/binaries/) and [NuGet](http://www.nuget.org/packages/fo-dicom).
