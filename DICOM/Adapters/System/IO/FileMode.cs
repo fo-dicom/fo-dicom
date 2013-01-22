@@ -4,6 +4,11 @@ namespace System.IO
 {
     internal enum FileMode
     {
-        Create
+		CreateNew,
+        Create,
+		Open,
+		OpenOrCreate,
+		Truncate,
+		Append
     }
 }

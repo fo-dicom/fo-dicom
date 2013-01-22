@@ -15,6 +15,7 @@ namespace System.IO
 		{
 			try
 			{
+				File.Delete(IOHelper.GetMyDocumentsPath("test.dcm"));
 				Task.Run(async () =>
 						   {
 							   var folder =

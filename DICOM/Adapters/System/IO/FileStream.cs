@@ -6,12 +6,11 @@ using Windows.Storage.Streams;
 namespace System.IO
 // ReSharper restore CheckNamespace
 {
-    internal class FileStream : MemoryStream
+    internal sealed class FileStream : Stream
     {
         #region FIELDS
 
         private readonly IRandomAccessStream _stream;
-        private readonly DataWriter _writer;
 	    private bool _disposed;
 
         #endregion
@@ -20,26 +19,69 @@ namespace System.IO
 
         internal FileStream(string name, FileMode mode)
         {
-			if (mode != FileMode.Create) throw new NotSupportedException("Only supported file mode is Create");
-
 			try
 			{
-				Name = name;
 				_stream = Task.Run(async () =>
 					                         {
-						                         var file = await FileHelper.CreateStorageFileAsync(name);
-												 return await file.OpenAsync(FileAccessMode.ReadWrite);
-											 }).Result;
-				_writer = new DataWriter(_stream);
+						                         StorageFile file;
+						                         ulong position;
+						                         switch (mode)
+						                         {
+							                         case FileMode.Create:
+							                         case FileMode.Truncate:
+								                         file = await FileHelper.CreateStorageFileAsync(name);
+								                         position = 0;
+								                         break;
+							                         case FileMode.CreateNew:
+								                         if (File.Exists(name))
+									                         throw new IOException("File mode is CreateNew, but file already exists.");
+								                         file = await FileHelper.CreateStorageFileAsync(name);
+								                         position = 0;
+								                         break;
+							                         case FileMode.OpenOrCreate:
+								                         if (File.Exists(name))
+								                         {
+									                         file = await FileHelper.GetStorageFileAsync(name);
+								                         }
+								                         else
+								                         {
+									                         file = await FileHelper.CreateStorageFileAsync(name);
+								                         }
+								                         position = 0;
+								                         break;
+							                         case FileMode.Open:
+								                         if (!File.Exists(name))
+									                         throw new FileNotFoundException("File mode is Open, but file does not exist.");
+								                         file = await FileHelper.GetStorageFileAsync(name);
+								                         position = 0;
+								                         break;
+							                         case FileMode.Append:
+								                         if (File.Exists(name))
+								                         {
+									                         file = await FileHelper.GetStorageFileAsync(name);
+									                         position = (await file.GetBasicPropertiesAsync()).Size;
+								                         }
+								                         else
+								                         {
+									                         file = await FileHelper.CreateStorageFileAsync(name);
+									                         position = 0;
+								                         }
+								                         break;
+							                         default:
+								                         throw new ArgumentOutOfRangeException("mode");
+						                         }
+												 var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
+												 stream.Seek(position);
+						                         return stream;
+					                         }).Result;
 				_disposed = false;
-
+				Name = name;
 			}
 			catch
 			{
-				Name = String.Empty;
 				_stream = null;
-				_writer = null;
 				_disposed = true;
+				Name = String.Empty;
 			}
 		}
 
@@ -47,27 +89,115 @@ namespace System.IO
 
 		#region PROPERTIES
 
-		internal string Name { get; private set; }
+	    public override bool CanRead
+	    {
+		    get { return true; }
+	    }
+
+	    public override bool CanSeek
+	    {
+		    get { return true; }
+	    }
+
+	    public override bool CanWrite
+	    {
+		    get { return true; }
+	    }
+
+	    public override long Length
+	    {
+			get
+			{
+				if (_disposed) throw new ObjectDisposedException("_stream");
+				return (long)_stream.Size;
+			}
+	    }
+
+	    public override long Position
+	    {
+			get
+			{
+				if (_disposed) throw new ObjectDisposedException("_stream");
+				return (long)_stream.Position;
+			}
+			set
+			{
+				if (_disposed) throw new ObjectDisposedException("_stream");
+				_stream.Seek((ulong)value);
+			}
+	    }
+
+	    internal string Name { get; private set; }
 
 		#endregion
 
 		#region METHODS
 
-		internal new void WriteByte(byte value)
-        {
-			if (_disposed) throw new ObjectDisposedException("File stream is disposed or could not be initialized.");
-            _writer.WriteByte(value);
-        }
+	    public override void Flush()
+	    {
+			if (_disposed) throw new ObjectDisposedException("_stream");
+			Task.Run(async () => await _stream.FlushAsync()).Wait();
+	    }
 
-        internal void Close()
-        {
-			if (_disposed) throw new ObjectDisposedException("File stream is disposed or could not be initialized.");
-			Task.Run(async () =>
-                               {
-                                   await _writer.StoreAsync();
-                                   _writer.Dispose();
-                               }).Wait();
-        }
+	    public override int Read(byte[] buffer, int offset, int count)
+	    {
+			if (_disposed) throw new ObjectDisposedException("_stream");
+			return Task.Run(async () =>
+			                          {
+										  using (var reader = new DataReader(_stream))
+										  {
+											  await reader.LoadAsync((uint)count);
+											  var length = Math.Min(count, (int)reader.UnconsumedBufferLength);
+											  var temp = new byte[length];
+											  reader.ReadBytes(temp);
+											  Array.Copy(temp, 0, buffer, offset, length);
+											  reader.DetachStream();
+											  return length;
+										  }
+			                          }).Result;
+	    }
+
+	    public override long Seek(long offset, SeekOrigin origin)
+	    {
+			if (_disposed) throw new ObjectDisposedException("_stream");
+			switch (origin)
+		    {
+			    case SeekOrigin.Begin:
+				    _stream.Seek((ulong)offset);
+				    break;
+			    case SeekOrigin.Current:
+				    _stream.Seek(_stream.Position + (ulong)offset);
+				    break;
+			    case SeekOrigin.End:
+				    _stream.Seek(_stream.Size - (ulong)offset);
+				    break;
+			    default:
+				    throw new ArgumentOutOfRangeException("offset");
+		    }
+		    return (long)_stream.Position;
+	    }
+
+	    public override void SetLength(long value)
+	    {
+			if (_disposed) throw new ObjectDisposedException("_stream");
+			_stream.Size = (ulong)value;
+	    }
+
+	    public override void Write(byte[] buffer, int offset, int count)
+	    {
+			if (_disposed) throw new ObjectDisposedException("_stream");
+		    Task.Run(async () =>
+			                   {
+				                   using (var writer = new DataWriter(_stream))
+				                   {
+					                   var temp = new byte[count];
+									   Array.Copy(buffer, offset, temp, 0, count);
+					                   writer.WriteBytes(temp);
+					                   await writer.StoreAsync();
+					                   writer.DetachStream();
+				                   }
+			                   }).Wait();
+	    }
 
 		protected override void Dispose(bool disposing)
 		{
@@ -75,7 +205,7 @@ namespace System.IO
 
 			if (disposing)
 			{
-				_writer.Dispose();
+				Flush();
 				_stream.Dispose();
 			}
 			_disposed = true;
@@ -83,6 +213,6 @@ namespace System.IO
 			base.Dispose(disposing);
 		}
 
-        #endregion
+	    #endregion
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Storage;
+﻿using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
 namespace System.IO
@@ -46,55 +44,42 @@ namespace System.IO
 		    }
 	    }
 
-	    internal static Stream Create(string path)
+	    internal static FileStream Create(string path)
 	    {
-		    return Task.Run(async () =>
-			                          {
-				                          var file = await FileHelper.CreateStorageFileAsync(path);
-				                          return await file.OpenStreamForWriteAsync();
-			                          }).Result;
+			return new FileStream(path, FileMode.Create);
 	    }
 
 	    internal static void Move(string sourceFileName, string destFileName)
         {
         }
 
-        internal static Stream OpenRead(string path)
-        {
-            return Task.Run(async () =>
-	                                  {
-		                                  var file = await FileHelper.GetStorageFileAsync(path);
-		                                  return await file.OpenStreamForReadAsync();
-	                                  }).Result;
-        }
-
-	    internal static Stream OpenWrite(string path)
+	    internal static FileStream OpenRead(string path)
 	    {
-		    return Task.Run(async () =>
-			                          {
-				                          var file = Exists(path)
-					                                     ? await FileHelper.GetStorageFileAsync(path)
-					                                     : await FileHelper.CreateStorageFileAsync(path);
-				                          return await file.OpenStreamForWriteAsync();
-			                          }).Result;
+		    return new FileStream(path, FileMode.Open);
+	    }
+
+	    internal static FileStream OpenWrite(string path)
+	    {
+			return new FileStream(path, FileMode.OpenOrCreate);
 	    }
 
 	    internal static byte[] ReadAllBytes(string path)
 	    {
-		    byte[] bytes = null;
-		    Task.Run(async () =>
-			                   {
-				                   var buffer = await PathIO.ReadBufferAsync(path);
-								   bytes = new byte[buffer.Length];
-				                   buffer.CopyTo(bytes);
-			                   }).Wait();
-		    return bytes;
+			using (var stream = new FileStream(path, FileMode.Open))
+			{
+		    var bytes = new byte[stream.Length];
+				stream.Read(bytes, 0, (int)stream.Length);
+				return bytes;
+			}
 	    }
 
 	    internal static void WriteAllBytes(string path, byte[] bytes)
 	    {
-		    Task.Run(async () => await PathIO.WriteBytesAsync(path, bytes)).Wait();
-	    }
+			using (var stream = new FileStream(path, FileMode.Create))
+			{
+				stream.Write(bytes, 0, bytes.Length);
+			}
+		}
 
 	    internal static FileAttributes GetAttributes(string path)
         {

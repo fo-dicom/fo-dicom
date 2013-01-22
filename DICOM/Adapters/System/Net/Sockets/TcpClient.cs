@@ -13,7 +13,7 @@ namespace System.Net.Sockets
 	{
 		#region FIELDS
 
-		private static readonly Logger Logger = LogManager.GetLogger(typeof(TcpClient).FullName);
+		private static readonly Logger Logger = LogManager.GetLogger<TcpClient>();
 		private readonly Stream _stream;
 
 		#endregion
@@ -81,7 +81,6 @@ namespace System.Net.Sockets
 
 			public override void Flush()
 			{
-				Task.Run(async () => await _socket.OutputStream.FlushAsync()).Wait();
 			}
 
 			public override int Read(byte[] buffer, int offset, int count)
