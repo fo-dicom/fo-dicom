@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Streams;
 
 // ReSharper disable CheckNamespace
 namespace System.IO
@@ -48,15 +47,15 @@ namespace System.IO
 	    }
 
 	    internal static Stream Create(string path)
-        {
-			return Task.Run(async () =>
-			{
-				var file = await FileHelper.CreateStorageFileAsync(path);
-				return await file.OpenStreamForWriteAsync();
-			}).Result;
-        }
+	    {
+		    return Task.Run(async () =>
+			                          {
+				                          var file = await FileHelper.CreateStorageFileAsync(path);
+				                          return await file.OpenStreamForWriteAsync();
+			                          }).Result;
+	    }
 
-        internal static void Move(string sourceFileName, string destFileName)
+	    internal static void Move(string sourceFileName, string destFileName)
         {
         }
 

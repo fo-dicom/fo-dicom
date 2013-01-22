@@ -1,11 +1,12 @@
-﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Dicom
 {
     [TestClass]
     public class DicomFileTests
     {
-        private readonly string _dicomFileName = @"Data\DICOM\ct.0.dcm";
+        private readonly string _dicomFileName = IOHelper.GetMyDocumentsPath(@"Data\DICOM\ct.0.dcm");
 
          [TestMethod]
          public void Open_ExistingDicomFile_Success()

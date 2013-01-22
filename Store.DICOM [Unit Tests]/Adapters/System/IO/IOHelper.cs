@@ -8,12 +8,12 @@ namespace System.IO
 {
 	internal static class IOHelper
 	{
-		internal static string GetMyDocumentsPath()
+		internal static string GetMyDocumentsPath(string relativePath)
 		{
 			return Task.Run(async () =>
 				                      {
 					                      var folders = await KnownFolders.DocumentsLibrary.GetFoldersAsync();
-					                      return Path.GetDirectoryName(folders.First().Path);
+					                      return Path.Combine(Path.GetDirectoryName(folders.First().Path), relativePath);
 				                      }).Result;
 		}
 	}

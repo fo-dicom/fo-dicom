@@ -12,7 +12,7 @@ namespace System.IO
         [TestMethod]
         public void Constructor_WriteByte_Close_FileOfNonZeroLengthCreated()
         {
-            var fileName = Path.Combine(IOHelper.GetMyDocumentsPath(), "test.dcm");
+            var fileName = IOHelper.GetMyDocumentsPath("test.dcm");
             var stream = new FileStream(fileName, FileMode.Create);
             stream.WriteByte(65);
             stream.Close();
