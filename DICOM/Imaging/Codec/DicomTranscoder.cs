@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+
+#if !NETFX_CORE
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
-
-#if NETFX_CORE
-using Assembly = Override.System.Reflection.Assembly;
 #endif
 
 using NLog;
@@ -31,12 +30,12 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public static void LoadCodecs(string path = null, string search = null) {
-			if (path == null)
 #if NETFX_CORE
-				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetLocation());
+			var rleCodec = new DicomRleCodecImpl();
+			_codecs[rleCodec.TransferSyntax] = rleCodec;
 #else
+			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-#endif
 
 			var log = LogManager.GetLogger("Dicom.Imaging.Codec");
 
@@ -49,6 +48,7 @@ namespace Dicom.Imaging.Codec {
 				log.Debug("Codec: {0}", codec.TransferSyntax.UID.Name);
 				_codecs[codec.TransferSyntax] = codec;
 			}
+#endif
 		}
 		#endregion
 
