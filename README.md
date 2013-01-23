@@ -10,11 +10,13 @@ To sufficiently use the library in a Windows Store application, consider enablin
 * Removable Storage capability
 * File Type Associations declaration e.g. for files with extensions *.dcm* and *.dic*
 
-At this stage, the *Store.DICOM* class library exposes the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* currently does not publicly expose *awaitable* methods for file and network I/O etc.
+At this stage, the *Store.DICOM* class library exposes the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* currently does not publicly expose 
+[Windows Runtime API](http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx) asynchronous methods for file and network I/O etc. 
 
 Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
-* Codecs for compressed image types (JPEG, JPEG-LS, JPEG 2000 and RLE) cannot be loaded.
+* Only uncompressed and RLE compressed images are supported. Codecs for JPEG, JPEG-LS and JPEG 2000 compressed images are not implemented.
 * Secure Sockets Layer (SSL) network I/O is not enabled.
+* Database query transforms are not supported, i.e. it is not possible to update a DICOM dataset based on a database query.
 
 Issues directly related to using *fo-dicom* in Windows Store applications can sufficiently be reported [here](https://github.com/cureos/fo-dicom/issues). 
 General *fo-dicom* issues are best reported to the parent repository [Issues page](https://github.com/rcd/fo-dicom/issues).
