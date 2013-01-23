@@ -186,7 +186,7 @@
     <Compile Include="Imaging\Codec\DicomJpegCodec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegLsCodec.cs" />
     <Compile Include="Imaging\Codec\DicomRleCodec.cs" />
-    <Compile Include="Imaging\Codec\DicomRleCodecImpl.cs" />
+    <Compile Include="WS\Dicom\Imaging\Codec\DicomRleCodecImpl.cs" />
     <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\IDicomCodec.cs" />
     <Compile Include="Imaging\Color32.cs" />
