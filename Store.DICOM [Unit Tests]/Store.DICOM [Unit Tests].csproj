@@ -110,14 +110,14 @@
     <SDKReference Include="TestPlatform, Version=11.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Adapters\System\Collections\Generic\SortedListTests.cs" />
-    <Compile Include="Adapters\System\Drawing\PointTests.cs" />
-    <Compile Include="Adapters\System\IO\DirectoryTests.cs" />
-    <Compile Include="Adapters\Override\System\IO\PathTests.cs" />
-    <Compile Include="Adapters\System\IO\FileStreamTests.cs" />
-    <Compile Include="Adapters\System\IO\FileTests.cs" />
-    <Compile Include="Adapters\System\IO\IOHelper.cs" />
-    <Compile Include="Adapters\System\Threading\ThreadTests.cs" />
+    <Compile Include="WS\System\Collections\Generic\SortedListTests.cs" />
+    <Compile Include="WS\System\Drawing\PointTests.cs" />
+    <Compile Include="WS\System\IO\DirectoryTests.cs" />
+    <Compile Include="WS\Override\System\IO\PathTests.cs" />
+    <Compile Include="WS\System\IO\FileStreamTests.cs" />
+    <Compile Include="WS\System\IO\FileTests.cs" />
+    <Compile Include="WS\System\IO\IOHelper.cs" />
+    <Compile Include="WS\System\Threading\ThreadTests.cs" />
     <Compile Include="DicomFileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
