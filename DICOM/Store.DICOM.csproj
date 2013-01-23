@@ -340,10 +340,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.WinRT">
+    <Reference Include="MetroLog.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT">
+    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WriteableBitmapEx.1.0.5.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
