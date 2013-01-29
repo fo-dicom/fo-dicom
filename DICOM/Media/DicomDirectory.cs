@@ -108,7 +108,7 @@ namespace Dicom.Media {
 			}
 		}
 
-		public static DicomDirectory Open(string fileName) {
+		public new static DicomDirectory Open(string fileName) {
 			var df = new DicomDirectory();
 
 			// reset datasets
