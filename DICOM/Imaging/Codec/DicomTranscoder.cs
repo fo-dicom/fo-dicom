@@ -22,6 +22,15 @@ namespace Dicom.Imaging.Codec {
 			LoadCodecs(null, "Dicom.Native*.dll");
 		}
 
+#if NETFX_CORE
+		public static void RegisterCodec(IDicomCodec codec, bool overwrite) {
+			IDicomCodec dummy;
+			if (!overwrite && _codecs.TryGetValue(codec.TransferSyntax, out dummy))
+				throw new DicomCodecException("Transfer syntax: {0} already registered and overwrite disabled", codec.TransferSyntax);
+			_codecs[codec.TransferSyntax] = codec;
+		}
+#endif
+
 		public static IDicomCodec GetCodec(DicomTransferSyntax syntax) {
 			IDicomCodec codec = null;
 			if (!_codecs.TryGetValue(syntax, out codec))
@@ -30,10 +39,7 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public static void LoadCodecs(string path = null, string search = null) {
-#if NETFX_CORE
-			var rleCodec = new DicomRleCodecImpl();
-			_codecs[rleCodec.TransferSyntax] = rleCodec;
-#else
+#if !NETFX_CORE
 			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

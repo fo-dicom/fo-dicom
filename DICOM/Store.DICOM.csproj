@@ -186,7 +186,6 @@
     <Compile Include="Imaging\Codec\DicomJpegCodec.cs" />
     <Compile Include="Imaging\Codec\DicomJpegLsCodec.cs" />
     <Compile Include="Imaging\Codec\DicomRleCodec.cs" />
-    <Compile Include="WS\Dicom\Imaging\Codec\DicomRleCodecImpl.cs" />
     <Compile Include="Imaging\Codec\DicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\IDicomCodec.cs" />
     <Compile Include="Imaging\Color32.cs" />
@@ -344,9 +343,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WriteableBitmapEx.1.0.5.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+    <Reference Include="WriteableBitmapEx.WinRT">
+      <HintPath>..\packages\WriteableBitmapEx.1.0.6.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -358,7 +356,9 @@
     <Content Include="Dictionaries\DICOM Dictionary.xml" />
     <Content Include="Dictionaries\Private Dictionary.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="WS\Dicom\Imaging\Codec\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
