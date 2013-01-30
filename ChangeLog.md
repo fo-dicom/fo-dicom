@@ -1,5 +1,6 @@
 #### v1.0.32
 * DICOM Media example by Hesham Desouky
+* Move DicomFileScanner to Dicom.Media namespace
 * Miscellaneous improvements and fixes
 
 #### v1.0.31 (1/13/2013)

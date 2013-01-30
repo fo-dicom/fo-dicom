@@ -67,7 +67,7 @@
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
-    <Compile Include="DicomFileScanner.cs" />
+    <Compile Include="Media\DicomFileScanner.cs" />
     <Compile Include="DicomMatchRules.cs" />
     <Compile Include="DicomTransformRules.cs" />
     <Compile Include="DicomUIDGenerator.cs" />
