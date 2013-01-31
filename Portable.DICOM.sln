@@ -46,6 +46,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM", "Store.Dicom\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM.Core", "Store.DICOM.Core\Store.DICOM.Core.csproj", "{D45C449F-9089-41EF-B43E-3EE87AE39FDD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2E2DADF2-2279-482A-9156-36F4B2D463E3}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
