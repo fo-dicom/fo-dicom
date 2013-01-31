@@ -141,9 +141,6 @@
     <Compile Include="..\DICOM\DicomFileException.cs">
       <Link>DicomFileException.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\DicomFileFormat.cs">
-      <Link>DicomFileFormat.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\DicomFileMetaInformation.cs">
       <Link>DicomFileMetaInformation.cs</Link>
     </Compile>
@@ -320,12 +317,6 @@
     </Compile>
     <Compile Include="..\DICOM\Imaging\PixelDataConverter.cs">
       <Link>Imaging\PixelDataConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\Imaging\PixelRepresentation.cs">
-      <Link>Imaging\PixelRepresentation.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\Imaging\PlanarConfiguration.cs">
-      <Link>Imaging\PlanarConfiguration.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Imaging\Render\CompositeGraphic.cs">
       <Link>Imaging\Render\CompositeGraphic.cs</Link>
@@ -752,6 +743,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Store.DICOM.Core\Store.DICOM.Core.csproj">
+      <Project>{d45c449f-9089-41ef-b43e-3ee87ae39fdd}</Project>
+      <Name>Store.DICOM.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

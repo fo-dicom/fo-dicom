@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM.Dump", "Store.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM", "Store.Dicom\Store.DICOM.csproj", "{03FE7C6B-BE2C-4138-BE6A-EBA951122EC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM.Core", "Store.DICOM.Core\Store.DICOM.Core.csproj", "{D45C449F-9089-41EF-B43E-3EE87AE39FDD}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
@@ -107,6 +109,10 @@ Global
 		{03FE7C6B-BE2C-4138-BE6A-EBA951122EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03FE7C6B-BE2C-4138-BE6A-EBA951122EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03FE7C6B-BE2C-4138-BE6A-EBA951122EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45C449F-9089-41EF-B43E-3EE87AE39FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45C449F-9089-41EF-B43E-3EE87AE39FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45C449F-9089-41EF-B43E-3EE87AE39FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45C449F-9089-41EF-B43E-3EE87AE39FDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
