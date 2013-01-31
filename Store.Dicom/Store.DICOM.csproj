@@ -141,6 +141,9 @@
     <Compile Include="..\DICOM\DicomFileException.cs">
       <Link>DicomFileException.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\DicomFileFormat.cs">
+      <Link>DicomFileFormat.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\DicomFileMetaInformation.cs">
       <Link>DicomFileMetaInformation.cs</Link>
     </Compile>

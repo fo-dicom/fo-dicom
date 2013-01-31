@@ -9,7 +9,7 @@
     <ProjectGuid>{D45C449F-9089-41EF-B43E-3EE87AE39FDD}</ProjectGuid>
     <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dicom</RootNamespace>
+    <RootNamespace>Dicom.Imaging</RootNamespace>
     <AssemblyName>Dicom.Core</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
@@ -102,9 +102,6 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DICOM\DicomFileFormat.cs">
-      <Link>DicomFileFormat.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\Imaging\PixelRepresentation.cs">
       <Link>Imaging\PixelRepresentation.cs</Link>
     </Compile>
