@@ -181,6 +181,8 @@
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\t2.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tcd.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tgt.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
     <ClInclude Include="Dicom.Imaging.Codec.PixelData.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Rle.h" />
   </ItemGroup>
@@ -339,6 +341,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.PixelData.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
   </ItemGroup>
