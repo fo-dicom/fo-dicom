@@ -4,6 +4,7 @@
 #pragma once
 
 using namespace Platform;
+using namespace Dicom::Imaging;
 
 namespace Dicom {
 namespace Imaging {
@@ -12,14 +13,11 @@ namespace Codec {
 	public delegate Array<unsigned char>^ GetFrameDelegate(int index);
 	public delegate void AddFrameDelegate(const Array<unsigned char>^ buffer);
 
-	public ref class PixelData sealed
+	public ref class CodecPixelData sealed
 	{
-	private:
-		GetFrameDelegate^ _getFrame;
-		AddFrameDelegate^ _addFrame;
-
 	public:
-		PixelData(GetFrameDelegate^ getFrame, AddFrameDelegate^ addFrame);
+		property GetFrameDelegate^ GetFrameImpl;
+		property AddFrameDelegate^ AddFrameImpl;
 
 		property int NumberOfFrames;
 		property int Width;
@@ -27,7 +25,7 @@ namespace Codec {
 		property int BytesAllocated;
 		property int SamplesPerPixel;
 		property int UncompressedFrameSize;
-		property int PlanarConfiguration;
+		property PlanarConfiguration PlanarConfiguration;
 
 		Array<unsigned char>^ GetFrame(int index);
 		void AddFrame(const Array<unsigned char>^ buffer);

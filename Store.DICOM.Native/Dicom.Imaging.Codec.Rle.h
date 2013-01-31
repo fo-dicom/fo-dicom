@@ -11,8 +11,8 @@ namespace Codec {
 	public ref class DicomRleNativeCodec sealed
 	{
 	public:
-		static void Encode(PixelData^ oldPixelData, PixelData^ newPixelData);
-		static void Decode(PixelData^ oldPixelData, PixelData^ newPixelData);
+		static void Encode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData);
+		static void Decode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData);
 	};
 } // Codec
 } // Imaging

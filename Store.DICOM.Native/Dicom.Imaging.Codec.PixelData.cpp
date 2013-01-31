@@ -6,20 +6,14 @@ namespace Dicom {
 namespace Imaging {
 namespace Codec {
 
-PixelData::PixelData(GetFrameDelegate^ getFrame, AddFrameDelegate^ addFrame)
+Array<unsigned char>^ CodecPixelData::GetFrame(int index)
 {
-	_getFrame = getFrame;
-	_addFrame = addFrame;
+	return GetFrameImpl(index);
 }
 
-Array<unsigned char>^ PixelData::GetFrame(int index)
+void CodecPixelData::AddFrame(const Array<unsigned char>^ buffer)
 {
-	return _getFrame(index);
-}
-
-void PixelData::AddFrame(const Array<unsigned char>^ buffer)
-{
-	_addFrame(buffer);
+	AddFrameImpl(buffer);
 }
 
 } // Codec

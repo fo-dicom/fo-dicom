@@ -6,7 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 #endif
-
+using System.Linq;
+using System.Reflection;
 using NLog;
 
 using Dicom.IO;
@@ -22,15 +23,6 @@ namespace Dicom.Imaging.Codec {
 			LoadCodecs(null, "Dicom.Native*.dll");
 		}
 
-#if NETFX_CORE
-		public static void RegisterCodec(IDicomCodec codec, bool overwrite) {
-			IDicomCodec dummy;
-			if (!overwrite && _codecs.TryGetValue(codec.TransferSyntax, out dummy))
-				throw new DicomCodecException("Transfer syntax: {0} already registered and overwrite disabled", codec.TransferSyntax);
-			_codecs[codec.TransferSyntax] = codec;
-		}
-#endif
-
 		public static IDicomCodec GetCodec(DicomTransferSyntax syntax) {
 			IDicomCodec codec = null;
 			if (!_codecs.TryGetValue(syntax, out codec))
@@ -39,7 +31,17 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		public static void LoadCodecs(string path = null, string search = null) {
-#if !NETFX_CORE
+#if NETFX_CORE
+			var types =
+				typeof(IDicomCodec).GetTypeInfo()
+				                   .Assembly.DefinedTypes.Where(
+					                   ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
+			foreach (var ti in types)
+			{
+				var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
+				_codecs[codec.TransferSyntax] = codec;
+			}
+#else
 			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

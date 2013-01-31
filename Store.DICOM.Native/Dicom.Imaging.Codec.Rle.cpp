@@ -7,6 +7,7 @@ using namespace std;
 using namespace Concurrency;
 using namespace Platform;
 using namespace Windows::Storage::Streams;
+using namespace Dicom::Imaging;
 
 namespace Dicom {
 namespace Imaging {
@@ -177,7 +178,7 @@ private:
 	}
 };
 
-void DicomRleNativeCodec::Encode(PixelData^ oldPixelData, PixelData^ newPixelData) {
+void DicomRleNativeCodec::Encode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData) {
 /*	int pixelCount = oldPixelData->Width * oldPixelData->Height;
 	int numberOfSegments = oldPixelData->BytesAllocated * oldPixelData->SamplesPerPixel;
 
@@ -299,8 +300,6 @@ private:
 			else if (control >= -127) {
 				int length = -control;
 
-				//if (i >= end) // never happens due to check below
-				//    throw new DicomCodecException("RLE repeat run exceeds input buffer length.");
 				if ((pos + ((length - 1) * sampleOffset)) >= bufferLength)
 					throw ref new FailureException("RLE repeat run exceeds output buffer length.");
 
@@ -339,7 +338,7 @@ private:
 	}
 };
 
-void DicomRleNativeCodec::Decode(PixelData^ oldPixelData, PixelData^ newPixelData) {
+void DicomRleNativeCodec::Decode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData) {
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ rleData = oldPixelData->GetFrame(frame);
 		Array<unsigned char>^ frameData = ref new Array<unsigned char>(newPixelData->UncompressedFrameSize);
@@ -358,7 +357,7 @@ void DicomRleNativeCodec::Decode(PixelData^ oldPixelData, PixelData^ newPixelDat
 
 			int pos, offset;
 
-			if (newPixelData->PlanarConfiguration == 0 /*Interleaved*/) {
+			if (newPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved) {
 				pos = sample * newPixelData->BytesAllocated;
 				offset = newPixelData->SamplesPerPixel * newPixelData->BytesAllocated;
 			}
