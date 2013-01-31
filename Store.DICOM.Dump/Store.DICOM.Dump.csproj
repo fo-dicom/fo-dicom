@@ -100,13 +100,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\DICOM\Store.DICOM.csproj">
-      <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
-      <Name>Store.DICOM</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -160,6 +153,12 @@
     <Reference Include="WriteableBitmapEx.WinRT">
       <HintPath>..\packages\WriteableBitmapEx.1.0.6.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Dicom\Store.DICOM.csproj">
+      <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
+      <Name>Store.DICOM</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

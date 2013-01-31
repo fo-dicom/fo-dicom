@@ -110,14 +110,14 @@
     <SDKReference Include="TestPlatform, Version=11.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WS\System\Collections\Generic\SortedListTests.cs" />
-    <Compile Include="WS\System\Drawing\PointTests.cs" />
-    <Compile Include="WS\System\IO\DirectoryTests.cs" />
-    <Compile Include="WS\Override\System\IO\PathTests.cs" />
-    <Compile Include="WS\System\IO\FileStreamTests.cs" />
-    <Compile Include="WS\System\IO\FileTests.cs" />
-    <Compile Include="WS\System\IO\IOHelper.cs" />
-    <Compile Include="WS\System\Threading\ThreadTests.cs" />
+    <Compile Include="Store\System\Collections\Generic\SortedListTests.cs" />
+    <Compile Include="Store\System\Drawing\PointTests.cs" />
+    <Compile Include="Store\System\IO\DirectoryTests.cs" />
+    <Compile Include="Store\Override\System\IO\PathTests.cs" />
+    <Compile Include="Store\System\IO\FileStreamTests.cs" />
+    <Compile Include="Store\System\IO\FileTests.cs" />
+    <Compile Include="Store\System\IO\IOHelper.cs" />
+    <Compile Include="Store\System\Threading\ThreadTests.cs" />
     <Compile Include="DicomFileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -143,12 +143,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM\Store.DICOM.csproj">
-      <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
-      <Name>Store.DICOM</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="MetroLog, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.dll</HintPath>
@@ -159,6 +153,12 @@
     <Reference Include="MetroLog.WinRT">
       <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Dicom\Store.DICOM.csproj">
+      <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
+      <Name>Store.DICOM</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
