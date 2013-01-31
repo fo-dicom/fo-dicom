@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace Dicom {
+namespace Dicom.Media {
 	public delegate void DicomScanProgressCallback(DicomFileScanner scanner, string directory, int count);
 	public delegate void DicomScanFileFoundCallback(DicomFileScanner scanner, DicomFile file, string fileName);
 	public delegate void DicomScanCompleteCallback(DicomFileScanner scanner);

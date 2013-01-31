@@ -1,3 +1,8 @@
+#### v1.0.32
+* DICOM Media example by Hesham Desouky
+* Move DicomFileScanner to Dicom.Media namespace
+* Miscellaneous improvements and fixes
+
 #### v1.0.31 (1/13/2013)
 * Improved portability and fewer compiler warnings (Anders Gustafsson)
 * Ensure frame buffers created by codecs have even length

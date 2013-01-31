@@ -10,4 +10,5 @@ copy README.md Distribute\ /Y
 copy ChangeLog.md Distribute\ /Y
 copy "Examples\C-Store SCP\bin\Release\Dicom.CStoreSCP.exe" Distribute\ /Y
 copy "Examples\DICOM Dump\bin\Release\Dicom.Dump.exe" Distribute\ /Y
+copy "Examples\DICOM Media\bin\Release\Dicom.Media.exe" Distribute\ /Y
 copy "packages\NLog.2.0.0.2000\lib\net40\NLog.dll" Distribute\ /Y
