@@ -4,16 +4,25 @@
 #pragma once
 
 using namespace Platform;
-using namespace Dicom::Imaging;
 
 namespace Dicom {
 namespace Imaging {
 namespace Codec {
 
+	private class PlanarConfiguration {
+	public:
+		enum { Interleaved = 0, Planar = 1 };
+	};
+
+	private class PixelRepresentation {
+	public:
+		enum { Unsigned = 0, Signed = 1 };
+	};
+
 	public delegate Array<unsigned char>^ GetFrameDelegate(int index);
 	public delegate void AddFrameDelegate(const Array<unsigned char>^ buffer);
 
-	public ref class CodecPixelData sealed
+	public ref class NativePixelData sealed
 	{
 	public:
 		property GetFrameDelegate^ GetFrameImpl;
@@ -25,7 +34,8 @@ namespace Codec {
 		property int BytesAllocated;
 		property int SamplesPerPixel;
 		property int UncompressedFrameSize;
-		property PlanarConfiguration PlanarConfiguration;
+		property int PlanarConfiguration;
+		property String^ PhotometricInterpretation;
 
 		Array<unsigned char>^ GetFrame(int index);
 		void AddFrame(const Array<unsigned char>^ buffer);

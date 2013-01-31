@@ -5,13 +5,13 @@ using Dicom.IO.Buffer;
 namespace Dicom.Imaging.Codec
 // ReSharper restore CheckNamespace
 {
-	public static class CodecPixelDataExtensions
+	public static class NativePixelDataExtensions
 	{
 		#region METHODS
 
-		public static CodecPixelData ToCodecPixelData(this DicomPixelData dicomPixelData)
+		public static NativePixelData ToNativePixelData(this DicomPixelData dicomPixelData)
 		{
-			return new CodecPixelData
+			return new NativePixelData
 				       {
 					       NumberOfFrames = dicomPixelData.NumberOfFrames,
 					       Width = dicomPixelData.Width,
@@ -19,7 +19,7 @@ namespace Dicom.Imaging.Codec
 					       SamplesPerPixel = dicomPixelData.SamplesPerPixel,
 					       BytesAllocated = dicomPixelData.BytesAllocated,
 					       UncompressedFrameSize = dicomPixelData.UncompressedFrameSize,
-					       PlanarConfiguration = dicomPixelData.PlanarConfiguration,
+					       PlanarConfiguration = (int)dicomPixelData.PlanarConfiguration,
 					       GetFrameImpl = index => dicomPixelData.GetFrame(index).Data,
 					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer))
 				       };

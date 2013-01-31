@@ -7,7 +7,6 @@ using namespace std;
 using namespace Concurrency;
 using namespace Platform;
 using namespace Windows::Storage::Streams;
-using namespace Dicom::Imaging;
 
 namespace Dicom {
 namespace Imaging {
@@ -178,7 +177,7 @@ private:
 	}
 };
 
-void DicomRleNativeCodec::Encode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData) {
+void DicomRleNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData) {
 	int pixelCount = oldPixelData->Width * oldPixelData->Height;
 	int numberOfSegments = oldPixelData->BytesAllocated * oldPixelData->SamplesPerPixel;
 
@@ -330,7 +329,7 @@ private:
 	}
 };
 
-void DicomRleNativeCodec::Decode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData) {
+void DicomRleNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData) {
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ rleData = oldPixelData->GetFrame(frame);
 		Array<unsigned char>^ frameData = ref new Array<unsigned char>(newPixelData->UncompressedFrameSize);

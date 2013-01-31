@@ -5,12 +5,12 @@ namespace Dicom.Imaging.Codec
 	public class DicomRleCodecImpl : DicomRleCodec {
 
 		public override void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters) {
-			DicomRleNativeCodec.Encode(oldPixelData.ToCodecPixelData(), newPixelData.ToCodecPixelData());
+			DicomRleNativeCodec.Encode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData());
 		}
 
 		public override void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
-			DicomRleNativeCodec.Decode(oldPixelData.ToCodecPixelData(), newPixelData.ToCodecPixelData());
+			DicomRleNativeCodec.Decode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData());
 		}
 	}
 }
