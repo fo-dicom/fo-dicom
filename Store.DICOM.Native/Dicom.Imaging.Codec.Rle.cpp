@@ -179,14 +179,13 @@ private:
 };
 
 void DicomRleNativeCodec::Encode(CodecPixelData^ oldPixelData, CodecPixelData^ newPixelData) {
-/*	int pixelCount = oldPixelData->Width * oldPixelData->Height;
+	int pixelCount = oldPixelData->Width * oldPixelData->Height;
 	int numberOfSegments = oldPixelData->BytesAllocated * oldPixelData->SamplesPerPixel;
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
-		IByteBuffer^ frameData = oldPixelData->GetFrame(frame);
-		PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameData->Data);
+		Array<unsigned char>^ frameData = oldPixelData->GetFrame(frame);
 
-		RLEEncoder^ encoder = gcnew RLEEncoder();
+		RLEEncoder^ encoder = ref new RLEEncoder();
 
 		for (int s = 0; s < numberOfSegments; s++) {
 			encoder->NextSegment();
@@ -209,9 +208,9 @@ void DicomRleNativeCodec::Encode(CodecPixelData^ oldPixelData, CodecPixelData^ n
 			pos += oldPixelData->BytesAllocated - sabyte - 1;
 
 			for (int p = 0; p < pixelCount; p++) {
-				if ((unsigned int)pos >= frameData->Size)
-					throw ref new DicomCodecException("Read position is past end of frame buffer");
-				encoder->Encode(frameArray[pos]);
+				if ((unsigned int)pos >= frameData->Length)
+					throw ref new FailureException("Read position is past end of frame buffer");
+				encoder->Encode(frameData[pos]);
 				pos += offset;
 			}
 			encoder->Flush();
@@ -220,15 +219,8 @@ void DicomRleNativeCodec::Encode(CodecPixelData^ oldPixelData, CodecPixelData^ n
 		encoder->MakeEvenLength();
 
 		Array<unsigned char>^ data = encoder->GetBuffer();
-
-		IByteBuffer^ buffer;
-		if (data->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
-			buffer = gcnew TempFileBuffer(data);
-		else
-			buffer = gcnew MemoryByteBuffer(data);
-		buffer = EvenLengthBuffer::Create(buffer);
-		newPixelData->AddFrame(buffer);
-	}*/
+		newPixelData->AddFrame(data);
+	}
 }
 
 private ref class RLEDecoder sealed {
