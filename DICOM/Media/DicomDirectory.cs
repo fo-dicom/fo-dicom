@@ -11,7 +11,7 @@ namespace Dicom.Media {
 	public class DicomDirectory : DicomFile, IDisposable {
 		#region Properties and Attributes
 
-		private readonly DicomSequence _directoryRecordSequence;
+		private DicomSequence _directoryRecordSequence;
 
 		private uint _fileOffset;
 
@@ -108,7 +108,7 @@ namespace Dicom.Media {
 			}
 		}
 
-		public new static DicomFile Open(string fileName) {
+		public new static DicomDirectory Open(string fileName) {
 			var df = new DicomDirectory();
 
 			// reset datasets
@@ -131,6 +131,9 @@ namespace Dicom.Media {
 					df.Format = reader.FileFormat;
 
 					df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+					df._directoryRecordSequence = df.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+					df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
 
 					return df;
 				}
@@ -160,12 +163,12 @@ namespace Dicom.Media {
 			reader.BeginRead(source,
 				new DicomDatasetReaderObserver(df.FileMetaInfo),
 				new DicomReaderMultiObserver(datasetObserver, dirObserver),
-				OnReadComplete, new Tuple<DicomFileReader, DicomDirectory, EventAsyncResult>(reader, df, result));
+				OnReadComplete, new Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>(reader, df, dirObserver, result));
 
 			return result;
 		}
 		private static void OnReadComplete(IAsyncResult result) {
-			var state = result.AsyncState as Tuple<DicomFileReader, DicomDirectory, EventAsyncResult>;
+			var state = result.AsyncState as Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>;
 
 			Exception e = null;
 			try {
@@ -177,13 +180,16 @@ namespace Dicom.Media {
 
 				state.Item2.Format = state.Item1.FileFormat;
 				state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
+
+				state.Item2._directoryRecordSequence = state.Item2.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+				state.Item2.RootDirectoryRecord = state.Item3.BuildDirectoryRecords();
 			} catch (Exception ex) {
 				state.Item2.Format = state.Item1.FileFormat;
 				e = ex;
 			}
 
-			state.Item3.InternalState = new Tuple<DicomDirectory, Exception>(state.Item2, e);
-			state.Item3.Set();
+			state.Item4.InternalState = new Tuple<DicomDirectory, Exception>(state.Item2, e);
+			state.Item4.Set();
 		}
 
 		public new static DicomDirectory EndOpen(IAsyncResult result) {

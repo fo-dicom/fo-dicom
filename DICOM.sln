@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM Dump", "Examples\DICO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM [Unit Tests]", "DICOM [Unit Tests]\DICOM [Unit Tests].csproj", "{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM Media", "Examples\DICOM Media\DICOM Media.csproj", "{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
@@ -108,6 +110,10 @@ Global
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +127,7 @@ Global
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{D9AF008C-EE25-49B3-96F6-E81B8A59D017} = {96052E4E-90EF-431F-A599-8723506A424B}
 		{8C433ABF-AFE5-4A76-BEBC-74116EC3460E} = {96052E4E-90EF-431F-A599-8723506A424B}
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC} = {96052E4E-90EF-431F-A599-8723506A424B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True

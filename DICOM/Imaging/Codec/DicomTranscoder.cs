@@ -222,6 +222,10 @@ namespace Dicom.Imaging.Codec {
 			foreach (var overlay in overlays) {
 				var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
 
+				// don't run conversion on non-embedded overlays
+				if (output.Contains(dataTag))
+					continue;
+
 				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
 				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
 
