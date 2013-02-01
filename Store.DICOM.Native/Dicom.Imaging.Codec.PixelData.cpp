@@ -6,15 +6,28 @@ namespace Dicom {
 namespace Imaging {
 namespace Codec {
 
-Array<unsigned char>^ NativePixelData::GetFrame(int index)
-{
-	return GetFrameImpl(index);
-}
+	String^ NativePixelData::PhotometricInterpretation::get()
+	{
+		return _photometricInterpretation;
+	}
 
-void NativePixelData::AddFrame(const Array<unsigned char>^ buffer)
-{
-	AddFrameImpl(buffer);
-}
+	void NativePixelData::PhotometricInterpretation::set(String^ value)
+	{
+		if (SetPhotometricInterpretationImpl != nullptr) SetPhotometricInterpretationImpl(value);
+		_photometricInterpretation = value;
+	}
+
+	Array<unsigned char>^ NativePixelData::GetFrame(int index)
+	{
+		if (GetFrameImpl == nullptr) throw ref new NullReferenceException("GetFrame delegate not defined");
+		return GetFrameImpl(index);
+	}
+
+	void NativePixelData::AddFrame(const Array<unsigned char>^ buffer)
+	{
+		if (AddFrameImpl == nullptr) throw ref new NullReferenceException("AddFrame delegate not defined");
+		AddFrameImpl(buffer);
+	}
 
 } // Codec
 } // Imaging

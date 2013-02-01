@@ -332,7 +332,10 @@ private:
 void DicomRleNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData) {
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ rleData = oldPixelData->GetFrame(frame);
-		Array<unsigned char>^ frameData = ref new Array<unsigned char>(newPixelData->UncompressedFrameSize);
+
+		// Create new frame data of even length
+		int frameSize = newPixelData->UncompressedFrameSize; if ((frameSize & 1) == 1) ++frameSize;
+		Array<unsigned char>^ frameData = ref new Array<unsigned char>(frameSize);
 
 		int pixelCount = oldPixelData->Width * oldPixelData->Height;
 		int numberOfSegments = oldPixelData->BytesAllocated * oldPixelData->SamplesPerPixel;
@@ -362,7 +365,6 @@ void DicomRleNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^
 			decoder->DecodeSegment(s, &frameData, pos, offset);
 		}
 
-		//buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(frameData);
 	}
 }

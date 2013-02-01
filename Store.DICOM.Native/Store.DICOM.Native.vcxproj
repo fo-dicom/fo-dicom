@@ -341,6 +341,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.PixelData.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />

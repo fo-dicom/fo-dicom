@@ -16,7 +16,7 @@ namespace Dicom.Imaging.Codec
 
 		public override void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
-			throw new System.NotImplementedException();
+			DicomJpeg2000NativeCodec.Decode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData(), parameters.ToNativeJpeg2000Parameters());
 		}
 	}
 }

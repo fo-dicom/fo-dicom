@@ -681,6 +681,7 @@
     <Compile Include="..\DICOM\Threading\WorkQueue.cs">
       <Link>Threading\WorkQueue.cs</Link>
     </Compile>
+    <Compile Include="Store\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs" />
     <Compile Include="Store\Dicom\Imaging\Codec\NativePixelDataExtensions.cs" />
     <Compile Include="Store\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs" />
     <Compile Include="Store\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs" />

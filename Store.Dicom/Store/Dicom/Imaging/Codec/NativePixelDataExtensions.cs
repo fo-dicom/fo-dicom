@@ -17,11 +17,14 @@ namespace Dicom.Imaging.Codec
 					       Width = dicomPixelData.Width,
 					       Height = dicomPixelData.Height,
 					       SamplesPerPixel = dicomPixelData.SamplesPerPixel,
+						   HighBit = dicomPixelData.HighBit,
 					       BytesAllocated = dicomPixelData.BytesAllocated,
 					       UncompressedFrameSize = dicomPixelData.UncompressedFrameSize,
 					       PlanarConfiguration = (int)dicomPixelData.PlanarConfiguration,
+						   PhotometricInterpretation = dicomPixelData.PhotometricInterpretation.Value,
 					       GetFrameImpl = index => dicomPixelData.GetFrame(index).Data,
-					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer))
+					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer)),
+						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value)
 				       };
 		}
 
