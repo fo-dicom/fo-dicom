@@ -186,6 +186,7 @@
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
     <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h" />
     <ClInclude Include="Dicom.Imaging.Codec.JpegLsParameters.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegParameters.h" />
     <ClInclude Include="Dicom.Imaging.Codec.PixelData.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Rle.h" />
   </ItemGroup>
@@ -348,6 +349,7 @@
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.JpegLsParameters.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegParameters.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.PixelData.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
   </ItemGroup>

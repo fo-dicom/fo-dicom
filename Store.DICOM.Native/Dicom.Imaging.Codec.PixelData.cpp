@@ -17,6 +17,11 @@ namespace Codec {
 		_photometricInterpretation = value;
 	}
 
+	int NativePixelData::Precision::get()
+	{
+		if (GetPrecisionImpl == nullptr) throw ref new NullReferenceException("GetPrecision delegate not defined");
+	}
+
 	Array<unsigned char>^ NativePixelData::GetFrame(int index)
 	{
 		if (GetFrameImpl == nullptr) throw ref new NullReferenceException("GetFrame delegate not defined");

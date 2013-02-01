@@ -1,7 +1,7 @@
-﻿// ReSharper disable CheckNamespace
+﻿using Dicom.IO.Buffer;
+using Dicom.Imaging.Codec.Jpeg;
 
-using Dicom.IO.Buffer;
-
+// ReSharper disable CheckNamespace
 namespace Dicom.Imaging.Codec
 // ReSharper restore CheckNamespace
 {
@@ -25,7 +25,8 @@ namespace Dicom.Imaging.Codec
 						   PhotometricInterpretation = dicomPixelData.PhotometricInterpretation.Value,
 					       GetFrameImpl = index => dicomPixelData.GetFrame(index).Data,
 					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer)),
-						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value)
+						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value),
+						   GetPrecisionImpl = () => JpegHelper.ScanJpegForBitDepth(dicomPixelData)
 				       };
 		}
 

@@ -124,6 +124,9 @@
     <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.JpegParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\bio.h">
@@ -263,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\indexbox_manager.h">
       <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="Dicom.Imaging.Codec.JpegParameters.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -36,6 +36,7 @@ namespace Codec {
 	public delegate Array<unsigned char>^ GetFrameDelegate(int index);
 	public delegate void AddFrameDelegate(const Array<unsigned char>^ buffer);
 	public delegate void SetPhotometricInterpretationDelegate(String^ value);
+	public delegate int GetPrecisionDelegate();
 
 	public ref class NativePixelData sealed
 	{
@@ -46,6 +47,7 @@ namespace Codec {
 		property GetFrameDelegate^ GetFrameImpl;
 		property AddFrameDelegate^ AddFrameImpl;
 		property SetPhotometricInterpretationDelegate^ SetPhotometricInterpretationImpl;
+		property GetPrecisionDelegate^ GetPrecisionImpl;
 
 		property int NumberOfFrames;
 		property int Width;
@@ -61,6 +63,11 @@ namespace Codec {
 		{
 			String^ get();
 			void set(String^ value);
+		}
+
+		property int Precision
+		{
+			int get();
 		}
 
 	internal:
