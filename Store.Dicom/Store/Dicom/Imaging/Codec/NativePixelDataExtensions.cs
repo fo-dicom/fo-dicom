@@ -18,6 +18,7 @@ namespace Dicom.Imaging.Codec
 					       Height = dicomPixelData.Height,
 					       SamplesPerPixel = dicomPixelData.SamplesPerPixel,
 						   HighBit = dicomPixelData.HighBit,
+						   BitsStored = dicomPixelData.BitsStored,
 					       BytesAllocated = dicomPixelData.BytesAllocated,
 					       UncompressedFrameSize = dicomPixelData.UncompressedFrameSize,
 					       PlanarConfiguration = (int)dicomPixelData.PlanarConfiguration,

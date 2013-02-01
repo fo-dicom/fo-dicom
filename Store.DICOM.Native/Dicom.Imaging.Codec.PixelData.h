@@ -51,6 +51,7 @@ namespace Codec {
 		property int Width;
 		property int Height;
 		property int HighBit;
+		property int BitsStored;
 		property int BytesAllocated;
 		property int SamplesPerPixel;
 		property int UncompressedFrameSize;
