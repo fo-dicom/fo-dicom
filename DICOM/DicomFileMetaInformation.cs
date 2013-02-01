@@ -56,5 +56,9 @@ namespace Dicom {
 			get { return Get<string>(DicomTag.SourceApplicationEntityTitle); }
 			set { Add(DicomTag.SourceApplicationEntityTitle, value); }
 		}
+
+		public override string ToString() {
+			return "DICOM File Meta Info";
+		}
 	}
 }

@@ -412,5 +412,9 @@ namespace Dicom {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return _items.Values.GetEnumerator();
 		}
+
+		public override string ToString() {
+			return String.Format("DICOM Dataset [{0} items]", _items.Count);
+		}
 	}
 }
