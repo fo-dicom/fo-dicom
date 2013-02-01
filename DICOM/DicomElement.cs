@@ -36,12 +36,6 @@ namespace Dicom {
 		}
 
 		public abstract T Get<T>(int item = -1);
-
-		public override string ToString() {
-			if (Tag.DictionaryEntry != null)
-				return String.Format("{0} {1} {2}", Tag, ValueRepresentation, Tag.DictionaryEntry.Name);
-			return String.Format("{0} {1} Unknown", Tag, ValueRepresentation);
-		}
 	}
 
 	/// <summary>
