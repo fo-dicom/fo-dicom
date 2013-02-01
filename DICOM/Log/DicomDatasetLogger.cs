@@ -9,14 +9,16 @@ namespace Dicom.Log {
 	public class DicomDatasetLogger : IDicomDatasetWalker {
 		private Logger _log;
 		private LogLevel _level;
-		private int _width = 80;
-		private int _value = 60;
+		private int _width = 128;
+		private int _value = 64;
 		private int _depth = 0;
 		private string _pad = String.Empty;
 
-		public DicomDatasetLogger(Logger logger, LogLevel level) {
+		public DicomDatasetLogger(Logger logger, LogLevel level, int width = 128, int valueLength = 64) {
 			_log = logger;
 			_level = level;
+			_width = width;
+			_value = valueLength;
 		}
 
 		public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback) {
