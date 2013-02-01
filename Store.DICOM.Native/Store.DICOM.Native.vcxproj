@@ -163,6 +163,7 @@
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\event.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\fix.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\image.h" />
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\indexbox_manager.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\int.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\j2k.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\j2k_lib.h" />

@@ -261,5 +261,8 @@
     <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\indexbox_manager.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
