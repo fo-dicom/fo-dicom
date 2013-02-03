@@ -46,5 +46,9 @@ namespace Dicom {
 		public override int GetHashCode() {
 			return Creator.GetHashCode();
 		}
+
+		public override string ToString() {
+			return Creator;
+		}
 	}
 }

@@ -69,5 +69,11 @@ namespace Dicom.IO {
 
 			return buffer;
 		}
+
+		public override string ToString() {
+			if (IsTempFile)
+				return String.Format("{0} [TEMP]", Name);
+			return Name;
+		}
 	}
 }

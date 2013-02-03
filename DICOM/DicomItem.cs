@@ -35,5 +35,11 @@ namespace Dicom {
 				throw new ArgumentException("Passed non-DicomItem to comparer", "obj");
 			return CompareTo(obj as DicomItem);
 		}
+
+		public override string ToString() {
+			if (Tag.DictionaryEntry != null)
+				return String.Format("{0} {1} {2}", Tag, ValueRepresentation, Tag.DictionaryEntry.Name);
+			return String.Format("{0} {1} Unknown", Tag, ValueRepresentation);
+		}
 	}
 }
