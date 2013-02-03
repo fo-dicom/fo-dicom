@@ -67,5 +67,9 @@ namespace Dicom.IO {
 			return path;
 		}
 		#endregion
+
+		public override string ToString() {
+			return String.Format("{0} [TEMP]", Name);
+		}
 	}
 }

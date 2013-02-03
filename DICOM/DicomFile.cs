@@ -220,5 +220,9 @@ namespace Dicom {
 
 			return state.Item1;
 		}
+
+		public override string ToString() {
+			return String.Format("DICOM File [{0}]", Format);
+		}
 	}
 }

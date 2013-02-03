@@ -196,7 +196,7 @@ namespace Dicom {
 		}
 
 		public override string ToString() {
-			return UID;
+			return String.Format("{0} [{1}]", Name, UID);
 		}
 	}
 }
