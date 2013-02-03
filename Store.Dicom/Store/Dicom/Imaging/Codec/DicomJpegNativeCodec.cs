@@ -17,6 +17,25 @@ namespace Dicom.Imaging.Codec
 		public override void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
 			throw new System.NotImplementedException();
+/*	if (oldPixelData->NumberOfFrames == 0)
+		return;
+
+	// IJG eats the extra padding bits. Is there a better way to test for this?
+	if (oldPixelData->BitsAllocated == 16 && oldPixelData->BitsStored <= 8) {
+		// check for embedded overlays?
+		newPixelData->BitsAllocated = 8;
+	}
+
+	if (parameters == nullptr || parameters->GetType() != DicomJpegParams::typeid)
+		parameters = GetDefaultParameters();
+
+	DicomJpegParams^ jparams = (DicomJpegParams^)parameters;
+
+	JpegNativeCodec^ codec = GetCodec(oldPixelData->BitsStored, jparams);
+
+	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
+		codec->Encode(oldPixelData, newPixelData, jparams, frame);
+	}*/
 		}
 
 		public override void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
