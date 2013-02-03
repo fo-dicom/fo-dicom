@@ -16,26 +16,26 @@ namespace Dicom.Imaging.Codec
 
 		public override void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
-			throw new System.NotImplementedException();
-/*	if (oldPixelData->NumberOfFrames == 0)
-		return;
+			if (oldPixelData.NumberOfFrames == 0) return;
 
-	// IJG eats the extra padding bits. Is there a better way to test for this?
-	if (oldPixelData->BitsAllocated == 16 && oldPixelData->BitsStored <= 8) {
-		// check for embedded overlays?
-		newPixelData->BitsAllocated = 8;
-	}
+			// IJG eats the extra padding bits. Is there a better way to test for this?
+			if (oldPixelData.BitsAllocated == 16 && oldPixelData.BitsStored <= 8)
+			{
+				// check for embedded overlays?
+				newPixelData.BitsAllocated = 8;
+			}
 
-	if (parameters == nullptr || parameters->GetType() != DicomJpegParams::typeid)
-		parameters = GetDefaultParameters();
+			var jparams = parameters as DicomJpegParams ?? GetDefaultParameters() as DicomJpegParams;
 
-	DicomJpegParams^ jparams = (DicomJpegParams^)parameters;
+			var codec = GetCodec(oldPixelData.BitsStored, jparams);
 
-	JpegNativeCodec^ codec = GetCodec(oldPixelData->BitsStored, jparams);
-
-	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
-		codec->Encode(oldPixelData, newPixelData, jparams, frame);
-	}*/
+			var oldNativeData = oldPixelData.ToNativePixelData();
+			var newNativeData = newPixelData.ToNativePixelData();
+			var jNativeParams = jparams.ToNativeJpegParameters();
+			for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
+			{
+				codec.Encode(oldNativeData, newNativeData, jNativeParams, frame);
+			}
 		}
 
 		public override void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
