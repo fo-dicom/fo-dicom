@@ -34,6 +34,24 @@ namespace Codec {
 		AddFrameImpl(buffer);
 	}
 
+	Array<unsigned char>^ NativePixelData::InterleavedToPlanar24(Array<unsigned char>^ buffer)
+	{
+		return buffer; // TODO Real implementation
+/*			byte[] oldPixels = data.Data;
+			byte[] newPixels = new byte[oldPixels.Length];
+			int pixelCount = newPixels.Length / 3;
+
+			unchecked {
+				for (int n = 0; n < pixelCount; n++) {
+					newPixels[n + (pixelCount * 0)] = oldPixels[(n * 3) + 0];
+					newPixels[n + (pixelCount * 1)] = oldPixels[(n * 3) + 1];
+					newPixels[n + (pixelCount * 2)] = oldPixels[(n * 3) + 2];
+				}
+			}
+
+			return new MemoryByteBuffer(newPixels);*/
+	}
+
 } // Codec
 } // Imaging
 } // Dicom

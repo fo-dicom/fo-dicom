@@ -22,11 +22,11 @@ namespace Dicom.Imaging.Codec
 					       BytesAllocated = dicomPixelData.BytesAllocated,
 					       UncompressedFrameSize = dicomPixelData.UncompressedFrameSize,
 					       PlanarConfiguration = (int)dicomPixelData.PlanarConfiguration,
+						   PixelRepresentation = (int)dicomPixelData.PixelRepresentation,
 						   PhotometricInterpretation = dicomPixelData.PhotometricInterpretation.Value,
 					       GetFrameImpl = index => dicomPixelData.GetFrame(index).Data,
 					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer)),
 						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value),
-						   GetPrecisionImpl = () => JpegHelper.ScanJpegForBitDepth(dicomPixelData)
 				       };
 		}
 

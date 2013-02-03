@@ -41,7 +41,7 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422)    ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422) ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial420))
-		throw ref new FailureException("Photometric Interpretation not supported by JPEG-LS encoder");
+		throw ref new FailureException("Photometric Interpretation '" + oldPixelData->PhotometricInterpretation + "' not supported by JPEG-LS encoder");
 
 	NativeJpegLsParameters^ jparams = parameters == nullptr ? ref new NativeJpegLsParameters() : parameters;
 /*

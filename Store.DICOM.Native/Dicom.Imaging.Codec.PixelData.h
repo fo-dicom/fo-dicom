@@ -47,7 +47,6 @@ namespace Codec {
 		property GetFrameDelegate^ GetFrameImpl;
 		property AddFrameDelegate^ AddFrameImpl;
 		property SetPhotometricInterpretationDelegate^ SetPhotometricInterpretationImpl;
-		property GetPrecisionDelegate^ GetPrecisionImpl;
 
 		property int NumberOfFrames;
 		property int Width;
@@ -58,6 +57,7 @@ namespace Codec {
 		property int SamplesPerPixel;
 		property int UncompressedFrameSize;
 		property int PlanarConfiguration;
+		property int PixelRepresentation;
 
 		property String^ PhotometricInterpretation
 		{
@@ -65,14 +65,11 @@ namespace Codec {
 			void set(String^ value);
 		}
 
-		property int Precision
-		{
-			int get();
-		}
-
 	internal:
 		Array<unsigned char>^ GetFrame(int index);
 		void AddFrame(const Array<unsigned char>^ buffer);
+
+		static Array<unsigned char>^ InterleavedToPlanar24(Array<unsigned char>^ buffer);
 	};
 
 } // Codec

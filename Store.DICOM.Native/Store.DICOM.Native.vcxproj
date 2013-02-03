@@ -182,6 +182,7 @@
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\t2.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tcd.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tgt.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
     <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h" />
@@ -350,6 +351,7 @@
     <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.JpegLsParameters.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.JpegParameters.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_12.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.PixelData.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
   </ItemGroup>
@@ -363,6 +365,9 @@
     <ProjectReference Include="..\DICOM [Native]\Common\libijg8.vcxproj">
       <Project>{f8d42452-b8c2-41ad-9c0a-2aeb2518d434}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dicom.Imaging.Codec.Jpeg.i" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
