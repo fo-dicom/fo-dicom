@@ -32,7 +32,7 @@ public interface class IJpegNativeCodec {
 	property int Predictor { int get(); };
 	property int PointTransform { int get(); }
 };
-/*
+
 public ref class Jpeg16Codec sealed : public IJpegNativeCodec {
 public:
 	Jpeg16Codec(JpegMode mode, int predictor, int point_transform);
@@ -53,7 +53,7 @@ private:
 
 //	[ThreadStatic]
 //	static Jpeg16Codec^ This;
-};*/
+};
 
 public ref class Jpeg12Codec sealed : public IJpegNativeCodec {
 public:
@@ -76,7 +76,7 @@ private:
 //	[ThreadStatic]
 //	static Jpeg12Codec^ This;
 };
-/*
+
 public ref class Jpeg8Codec sealed : public IJpegNativeCodec {
 public:
 	Jpeg8Codec(JpegMode mode, int predictor, int point_transform);
@@ -97,7 +97,7 @@ private:
 
 //	[ThreadStatic]
 //	static Jpeg8Codec^ This;
-};*/
+};
 } // Jpeg
 /*
 using namespace Dicom::Imaging::Codec::Jpeg;

@@ -13,11 +13,10 @@ namespace Dicom.Imaging.Codec
 
 		protected override IJpegNativeCodec GetCodec(int bits, DicomJpegParams jparams)
 		{
-/*		if (bits == 8)
+			if (bits == 8)
 			return new Jpeg8Codec(JpegMode.Sequential, 0, 0);
-		else*/ if (bits <= 12)
-			return new Jpeg12Codec(JpegMode.Sequential, 0, 0);
-		else
+			if (bits <= 12)
+				return new Jpeg12Codec(JpegMode.Sequential, 0, 0);
 			throw new DicomCodecException("Unable to create JPEG Process 4 codec for bits stored == {0}", bits);
 		}
 	}
