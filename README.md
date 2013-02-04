@@ -13,8 +13,10 @@ To sufficiently use the library in a Windows Store application, consider enablin
 At this stage, the *Store.DICOM* class library exposes the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* currently does not publicly expose 
 [Windows Runtime API](http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx) asynchronous methods for file and network I/O etc. 
 
+The library has dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* and *ARM*.
+
 Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
-* Only uncompressed and RLE compressed images are supported. Codecs for JPEG, JPEG-LS and JPEG 2000 compressed images are not implemented.
+* Image compression and decompression is incomplete; JPEG encoding is not working.
 * Secure Sockets Layer (SSL) network I/O is not enabled.
 * Database query transforms are not supported, i.e. it is not possible to update a DICOM dataset based on a database query.
 
