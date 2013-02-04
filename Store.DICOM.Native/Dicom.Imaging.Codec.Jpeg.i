@@ -1,6 +1,12 @@
 #define IJGE_BLOCKSIZE 16384
 
 namespace IJGVERS {
+	static Array<unsigned char>^ DataArray;
+	static IRandomAccessStream^ MemoryBuffer;
+	static DataWriter^ Writer;
+}
+
+namespace IJGVERS {
 	// private error handler struct
 	struct ErrorStruct {
 	  // the standard IJG error handler object
@@ -21,7 +27,6 @@ namespace IJGVERS {
 	}
 }
 
-
 JPEGCODEC::JPEGCODEC(JpegMode mode, int predictor, int point_transform) {
 	_mode = mode;
 	_predictor = predictor;
@@ -41,31 +46,42 @@ namespace IJGVERS {
 		else
 			return JCS_UNKNOWN;
 	}
-/*
+
 	// callbacks for compress-destination-manager
 	void initDestination(j_compress_ptr cinfo) {
-		JPEGCODEC^ thisPtr = (JPEGCODEC^)JPEGCODEC::This;
-		thisPtr->MemoryBuffer = gcnew MemoryStream();
-		thisPtr->DataArray = gcnew PinnedByteArray(IJGE_BLOCKSIZE);
-		cinfo->dest->next_output_byte = (unsigned char*)(void*)thisPtr->DataArray->Pointer;
+		MemoryBuffer = ref new InMemoryRandomAccessStream();
+		Writer = ref new DataWriter(MemoryBuffer);
+		DataArray = ref new Array<unsigned char>(IJGE_BLOCKSIZE);
+		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->Data;
 		cinfo->dest->free_in_buffer = IJGE_BLOCKSIZE;
 	}
 
 	ijg_boolean emptyOutputBuffer(j_compress_ptr cinfo) {
-		JPEGCODEC^ thisPtr = (JPEGCODEC^)JPEGCODEC::This;
-		thisPtr->MemoryBuffer->Write(thisPtr->DataArray->Data, 0, IJGE_BLOCKSIZE);
-		cinfo->dest->next_output_byte = (unsigned char*)(void*)thisPtr->DataArray->Pointer;
+		Writer->WriteBytes(DataArray);
+		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->Data;
 		cinfo->dest->free_in_buffer = IJGE_BLOCKSIZE;
 		return TRUE;
 	}
 
 	void termDestination(j_compress_ptr cinfo) {
-		JPEGCODEC^ thisPtr = (JPEGCODEC^)JPEGCODEC::This;
 		int count = IJGE_BLOCKSIZE - cinfo->dest->free_in_buffer;
-		thisPtr->MemoryBuffer->Write(thisPtr->DataArray->Data, 0, count);
-		thisPtr->DataArray = nullptr;
+		Array<unsigned char>^ last = ref new Array<unsigned char>(count);
+		for (int i = 0; i < count; ++i) last[i] = DataArray[i];
+		Writer->WriteBytes(last);
+
+		Array<unsigned char>^ bytes = ref new Array<unsigned char>(MemoryBuffer->Size);
+		DataReader^ reader = ref new DataReader(MemoryBuffer->GetInputStreamAt(0));
+		create_task(Writer->StoreAsync()).then([reader] (unsigned int bytesStored) {
+			return reader->LoadAsync(bytesStored);
+		}).then([reader, bytes] (task<unsigned int> bytesLoaded) {
+			reader->ReadBytes(bytes);
+		}).wait();
+
+		int length = bytes->Length;
+		DataArray = ref new Array<unsigned char>(length + ((length & 1) == 1 ? 1 : 0));
+		for (int i = 0; i < length; ++i) DataArray[i] = bytes[i];
 	}
-*/
+
 	// Borrowed from DCMTK djeijgXX.cxx
 	/*
 	 * jpeg_simple_spectral_selection() creates a scan script
@@ -201,29 +217,27 @@ namespace IJGVERS {
 }
 
 void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpegParameters^ params, int frame) {
-/*	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrIct) ||
+	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrIct) ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrRct))
-		throw ref new FailureException("Photometric Interpretation '{0}' not supported by JPEG encoder!", oldPixelData->PhotometricInterpretation);
+		throw ref new FailureException("Photometric Interpretation '" + oldPixelData->PhotometricInterpretation + "' not supported by JPEG encoder!");
 
-	PinnedByteArray^ frameArray = nullptr;
+	Array<unsigned char>^ frameArray = nullptr;
 	
 	if (oldPixelData->BitsAllocated == 16 && oldPixelData->BitsStored <= 8) {
-		IByteBuffer^ frameBuffer = oldPixelData->GetFrame(frame);
-		frameArray = gcnew PinnedByteArray(
-						ByteConverter::UnpackLow16(frameBuffer)->Data);
+		Array<unsigned char>^ frameBuffer = oldPixelData->GetFrame(frame);
+		/*frameArray = gcnew PinnedByteArray(
+						ByteConverter::UnpackLow16(frameBuffer)->Data);*/
 	}
 	else
-		frameArray = gcnew PinnedByteArray(oldPixelData->GetFrame(frame)->Data);
+		frameArray = oldPixelData->GetFrame(frame);
 
 	try {
 		if (oldPixelData->PlanarConfiguration == PlanarConfiguration::Planar && oldPixelData->SamplesPerPixel > 1) {
 			if (oldPixelData->SamplesPerPixel != 3 || oldPixelData->BitsStored > 8)
-				throw gcnew DicomCodecException("Planar reconfiguration only implemented for SamplesPerPixel=3 && BitsStores <= 8");
+				throw ref new FailureException("Planar reconfiguration only implemented for SamplesPerPixel=3 && BitsStores <= 8");
 
 			newPixelData->PlanarConfiguration = PlanarConfiguration::Interleaved;
-			frameArray = gcnew PinnedByteArray(
-				PixelDataConverter::PlanarToInterleaved24(
-					gcnew MemoryByteBuffer(frameArray->Data))->Data);
+			frameArray =  NativePixelData::PlanarToInterleaved24(frameArray);
 		}
 
 		struct jpeg_compress_struct cinfo;
@@ -235,8 +249,6 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 		jpeg_create_compress(&cinfo);
 		cinfo.client_data = nullptr;
 		
-		JPEGCODEC::This = this;
-
 		// Specify destination manager
 		jpeg_destination_mgr dest;
 		dest.init_destination = IJGVERS::initDestination;
@@ -314,7 +326,7 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 		JSAMPROW row_pointer[1];
 		int row_stride = oldPixelData->Width * oldPixelData->SamplesPerPixel * (oldPixelData->BitsStored <= 8 ? 1 : oldPixelData->BytesAllocated);
 
-		unsigned char* framePtr = (unsigned char*)(void*)frameArray->Pointer;
+		unsigned char* framePtr = (unsigned char*)(void*)frameArray->Data;
 		while (cinfo.next_scanline < cinfo.image_height) {
 			row_pointer[0] = (JSAMPLE *)(&framePtr[cinfo.next_scanline * row_stride]);
 			jpeg_write_scanlines(&cinfo, row_pointer, 1);
@@ -330,19 +342,20 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 				newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
 		}
 
-		IByteBuffer^ buffer;
-		if (MemoryBuffer->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
-			buffer = gcnew TempFileBuffer(MemoryBuffer->ToArray());
-		else
-			buffer = gcnew MemoryByteBuffer(MemoryBuffer->ToArray());
-		buffer = EvenLengthBuffer::Create(buffer);
-		newPixelData->AddFrame(buffer);
-	} finally {
-		MemoryBuffer = nullptr;
-	}*/
+		newPixelData->AddFrame(IJGVERS::DataArray);
+
+		IJGVERS::DataArray = nullptr;
+		IJGVERS::MemoryBuffer = nullptr;
+		IJGVERS::Writer = nullptr;
+	} 
+	catch (...) {
+		IJGVERS::DataArray = nullptr;
+		IJGVERS::MemoryBuffer = nullptr;
+		IJGVERS::Writer = nullptr;
+
+		throw;
+	}
 }
-
-
 
 namespace IJGVERS {
 	// private source manager struct

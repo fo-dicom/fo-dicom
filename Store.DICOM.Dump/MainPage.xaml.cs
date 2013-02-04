@@ -37,6 +37,10 @@ namespace Store.DICOM.Dump
 		                                typeof(MainPage),
 		                                new PropertyMetadata(new[]
 			                                                     {
+																	 DicomTransferSyntax.JPEGProcess1,
+																	 DicomTransferSyntax.JPEGProcess2_4,
+																	 DicomTransferSyntax.JPEGProcess14,
+																	 DicomTransferSyntax.JPEGProcess14SV1,
 				                                                     DicomTransferSyntax.JPEG2000Lossless,
 				                                                     DicomTransferSyntax.JPEG2000Lossy,
 				                                                     DicomTransferSyntax.JPEGLSLossless,

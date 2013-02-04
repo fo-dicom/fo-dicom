@@ -50,9 +50,6 @@ private:
 	JpegMode _mode;
 	int _predictor;
 	int _pointTransform;
-
-//	[ThreadStatic]
-//	static Jpeg16Codec^ This;
 };
 
 public ref class Jpeg12Codec sealed : public IJpegNativeCodec {
@@ -72,9 +69,6 @@ private:
 	JpegMode _mode;
 	int _predictor;
 	int _pointTransform;
-
-//	[ThreadStatic]
-//	static Jpeg12Codec^ This;
 };
 
 public ref class Jpeg8Codec sealed : public IJpegNativeCodec {
@@ -94,9 +88,6 @@ private:
 	JpegMode _mode;
 	int _predictor;
 	int _pointTransform;
-
-//	[ThreadStatic]
-//	static Jpeg8Codec^ This;
 };
 } // Jpeg
 } // Codec

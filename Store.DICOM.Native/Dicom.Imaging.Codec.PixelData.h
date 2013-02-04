@@ -71,6 +71,7 @@ namespace Codec {
 		void AddFrame(const Array<unsigned char>^ buffer);
 
 		static Array<unsigned char>^ InterleavedToPlanar24(Array<unsigned char>^ buffer);
+		static Array<unsigned char>^ PlanarToInterleaved24(Array<unsigned char>^ buffer);
 	};
 
 } // Codec

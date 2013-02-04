@@ -1,9 +1,12 @@
 #include <vector>
+#include "ppltasks.h"
 
 #include "Dicom.Imaging.Codec.Jpeg.h"
 #include "Dicom.Imaging.Codec.PixelData.h"
 
+using namespace Concurrency;
 using namespace Platform;
+using namespace Windows::Storage::Streams;
 
 #define IJGVERS IJG16
 #define JPEGCODEC Jpeg16Codec

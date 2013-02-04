@@ -43,6 +43,20 @@ namespace Codec {
 		return newPixels;
 	}
 
+	Array<unsigned char>^ NativePixelData::PlanarToInterleaved24(Array<unsigned char>^ oldPixels)
+	{
+		Array<unsigned char>^ newPixels = ref new Array<unsigned char>(oldPixels->Length);
+		int pixelCount = newPixels->Length / 3;
+
+		for (int n = 0; n < pixelCount; n++) {
+			newPixels[(n * 3) + 0] = oldPixels[n + (pixelCount * 0)];
+			newPixels[(n * 3) + 1] = oldPixels[n + (pixelCount * 1)];
+			newPixels[(n * 3) + 2] = oldPixels[n + (pixelCount * 2)];
+		}
+
+		return newPixels;
+	}
+
 } // Codec
 } // Imaging
 } // Dicom
