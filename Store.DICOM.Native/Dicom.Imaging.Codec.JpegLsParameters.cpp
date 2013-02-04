@@ -1,10 +1,10 @@
-#include "Dicom.Imaging.Codec.JpegLsParameters.h"
+#include "Dicom.Imaging.Codec.JpegLSParameters.h"
 
 namespace Dicom {
 namespace Imaging {
 namespace Codec {
 
-NativeJpegLsParameters::NativeJpegLsParameters()
+NativeJpegLSParameters::NativeJpegLSParameters()
 {
 	AllowedError = 3;
 	InterleaveMode = DicomJpegLsInterleaveMode::Line;

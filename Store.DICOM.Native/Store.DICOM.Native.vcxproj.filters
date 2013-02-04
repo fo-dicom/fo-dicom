@@ -118,9 +118,6 @@
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dicom.Imaging.Codec.JpegLsParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -134,6 +131,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg_16.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.JpegLSParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -267,9 +267,6 @@
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dicom.Imaging.Codec.JpegLsParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -280,6 +277,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dicom.Imaging.Codec.JpegLSParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Imaging.Codec;
 using Dicom.Network;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -29,6 +32,18 @@ namespace Store.DICOM.Dump
         public static readonly DependencyProperty ImageProperty =
             DependencyProperty.Register("Image", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
 
+	    public static readonly DependencyProperty TransferSyntaxesProperty =
+		    DependencyProperty.Register("TransferSyntaxes", typeof(ReadOnlyObservableCollection<DicomTransferSyntax>),
+		                                typeof(MainPage),
+		                                new PropertyMetadata(new[]
+			                                                     {
+				                                                     DicomTransferSyntax.JPEG2000Lossless,
+				                                                     DicomTransferSyntax.JPEG2000Lossy,
+				                                                     DicomTransferSyntax.JPEGLSLossless,
+				                                                     DicomTransferSyntax.JPEGLSNearLossless,
+				                                                     DicomTransferSyntax.RLELossless
+			                                                     }));
+	
         #endregion
 
         public MainPage()
@@ -49,6 +64,12 @@ namespace Store.DICOM.Dump
             get { return (ImageSource)GetValue(ImageProperty); }
             set { SetValue(ImageProperty, value); }
         }
+
+		public ReadOnlyObservableCollection<DicomTransferSyntax> TransferSyntaxes
+		{
+			get { return (ReadOnlyObservableCollection<DicomTransferSyntax>)GetValue(TransferSyntaxesProperty); }
+			set { SetValue(TransferSyntaxesProperty, value); }
+		}
 
         #endregion
 
@@ -96,5 +117,12 @@ namespace Store.DICOM.Dump
 	    {
 			_server = new DicomServer<CEchoScp>(104);
 	    }
+
+	    private void TransferSyntaxBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+	    {
+			if (Image == null) return;
+		    Dataset = Dataset.ChangeTransferSyntax(TransferSyntaxBox.SelectedItem as DicomTransferSyntax);
+			Image = new DicomImage(Dataset).RenderImageSource();
+		}
     }
 }

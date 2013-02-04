@@ -39,12 +39,12 @@ OPJ_COLOR_SPACE getOpenJpegColorSpace(String^ photometricInterpretation) {
 }
 
 void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpeg2000Parameters^ parameters) {
-/*	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422)    ||
+	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422)    ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422) ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial420))
-		throw ref new FailureException("Photometric Interpretation " << oldPixelData->PhotometricInterpretation << " not supported by JPEG 2000 encoder");
+		throw ref new FailureException("Photometric Interpretation '" + oldPixelData->PhotometricInterpretation + "' not supported by JPEG 2000 encoder");
 
-	NativeJpeg2000Parameters^ jparams = parameters == nullptr ? new NativeJpeg2000Parameters() : parameters;
+	NativeJpeg2000Parameters^ jparams = parameters == nullptr ? ref new NativeJpeg2000Parameters() : parameters;
 
 	int pixelCount = oldPixelData->Height * oldPixelData->Width;
 
@@ -53,9 +53,9 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 
 		opj_image_cmptparm_t cmptparm[3];
 		opj_cparameters_t eparams;  /* compression parameters */
-//		opj_event_mgr_t event_mgr;  /* event manager */
-//		opj_cinfo_t* cinfo = NULL;  /* handle to a compressor */
-/*		opj_image_t *image = NULL;
+		opj_event_mgr_t event_mgr;  /* event manager */
+		opj_cinfo_t* cinfo = NULL;  /* handle to a compressor */
+		opj_image_t *image = NULL;
 		opj_cio_t *cio = NULL;
 
 		memset(&event_mgr, 0, sizeof(opj_event_mgr_t));
@@ -72,7 +72,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 		opj_set_default_encoder_parameters(&eparams);
 		eparams.cp_disto_alloc = 1;
 
-		if (newPixelData->Syntax == DicomTransferSyntax::JPEG2000Lossy && jparams->Irreversible)
+		if (newPixelData->TransferSyntaxIsLossy && jparams->Irreversible)
 			eparams.irreversible = 1;
 
 		int r = 0;
@@ -86,7 +86,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 		eparams.tcp_numlayers++;
 		eparams.tcp_rates[r] = (float)jparams->Rate;
 
-		if (newPixelData->Syntax == DicomTransferSyntax::JPEG2000Lossless && jparams->Rate > 0)
+		if (!newPixelData->TransferSyntaxIsLossy && jparams->Rate > 0)
 			eparams.tcp_rates[eparams.tcp_numlayers++] = 0;
 
 		if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb && jparams->AllowMCT)
@@ -125,7 +125,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 							const unsigned char sign = 1 << oldPixelData->HighBit;
 							const unsigned char mask = (0xff >> (oldPixelData->BitsAllocated - oldPixelData->BitsStored));
 							for (int p = 0; p < pixelCount; p++) {
-								const unsigned char pixel = frameArray->Data[pos];
+								const unsigned char pixel = frameData[pos];
 								if (pixel & sign)
 									comp->data[p] = -(((-pixel) & mask) + 1);
 								else
@@ -134,7 +134,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 							}
 						}
 						else {
-							char* frameData8 = (char*)(void*)frameArray->Pointer;
+							char* frameData8 = (char*)(void*)frameData->Data;
 							for (int p = 0; p < pixelCount; p++) {
 								comp->data[p] = frameData8[pos];
 								pos += offset;
@@ -143,7 +143,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 					}
 					else {
 						for (int p = 0; p < pixelCount; p++) {
-							comp->data[p] = frameArray->Data[pos];
+							comp->data[p] = frameData[pos];
 							pos += offset;
 						}
 					}
@@ -151,7 +151,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 				else if (oldPixelData->BytesAllocated == 2) {
 					if (comp->sgnd) {
 						if (oldPixelData->BitsStored < 16) {
-							unsigned short* frameData16 = (unsigned short*)(void*)frameArray->Pointer;
+							unsigned short* frameData16 = (unsigned short*)(void*)frameData->Data;
 							const unsigned short sign = 1 << oldPixelData->HighBit;
 							const unsigned short mask = (0xffff >> (oldPixelData->BitsAllocated - oldPixelData->BitsStored));
 							for (int p = 0; p < pixelCount; p++) {
@@ -164,7 +164,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 							}
 						}
 						else {
-							short* frameData16 = (short*)(void*)frameArray->Pointer;
+							short* frameData16 = (short*)(void*)frameData->Data;
 							for (int p = 0; p < pixelCount; p++) {
 								comp->data[p] = frameData16[pos];
 								pos += offset;
@@ -172,7 +172,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 						}
 					}
 					else {
-						unsigned short* frameData16 = (unsigned short*)(void*)frameArray->Pointer;
+						unsigned short* frameData16 = (unsigned short*)(void*)frameData->Data;
 						for (int p = 0; p < pixelCount; p++) {
 							comp->data[p] = frameData16[pos];
 							pos += offset;
@@ -180,7 +180,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 					}
 				}
 				else
-					throw gcnew DicomCodecException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
+					throw ref new FailureException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
 			}
 
 			opj_setup_encoder(cinfo, &eparams, image);
@@ -189,20 +189,14 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 
 			if (opj_encode(cinfo, cio, image, eparams.index)) {
 				int clen = cio_tell(cio);
-				array<unsigned char>^ cbuf = gcnew array<unsigned char>(clen);
-				Marshal::Copy((IntPtr)cio->buffer, cbuf, 0, clen);
+				unsigned char* cioBuf = cio->buffer;
+				Array<unsigned char>^ cbuf = ref new Array<unsigned char>(clen + ((clen & 1) == 1 ? 1 : 0));
+				for (int i = 0; i < clen; ++i) cbuf[i] = cioBuf[i];
 
-				IByteBuffer^ buffer;
-				if (clen >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
-					buffer = gcnew TempFileBuffer(cbuf);
-				else
-					buffer = gcnew MemoryByteBuffer(cbuf);
-				buffer = EvenLengthBuffer::Create(buffer);
-				newPixelData->AddFrame(buffer);
+				newPixelData->AddFrame(cbuf);
 			} else
-				throw gcnew DicomCodecException("Unable to JPEG 2000 encode image");
-		}
-		finally {
+				throw ref new FailureException("Unable to JPEG 2000 encode image");
+
 			if (cio != nullptr)
 				opj_cio_close(cio);
 			if (image != nullptr)
@@ -210,18 +204,28 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 			if (cinfo != nullptr)
 				opj_destroy_compress(cinfo);
 		}
+		catch (...) {
+			if (cio != nullptr)
+				opj_cio_close(cio);
+			if (image != nullptr)
+				opj_image_destroy(image);
+			if (cinfo != nullptr)
+				opj_destroy_compress(cinfo);
+
+			throw;
+		}
 	}
 
 	if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb) {
 		newPixelData->PlanarConfiguration = PlanarConfiguration::Interleaved;
 
 		if (jparams->AllowMCT && jparams->UpdatePhotometricInterpretation) {
-			if (newPixelData->Syntax == DicomTransferSyntax::JPEG2000Lossy && jparams->Irreversible)
+			if (newPixelData->TransferSyntaxIsLossy && jparams->Irreversible)
 				newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrIct;
 			else
 				newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrRct;
 		}
-	}*/
+	}
 }
 
 void DicomJpeg2000NativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpeg2000Parameters^ parameters) {

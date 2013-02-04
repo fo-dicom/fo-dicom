@@ -11,12 +11,12 @@ namespace Dicom.Imaging.Codec
 
 		public override void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
-			DicomJpegLsNativeCodec.Encode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData(), parameters.ToNativeJpegLsParameters());
+			DicomJpegLsNativeCodec.Encode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData(), parameters.ToNativeJpegLSParameters());
 		}
 
 		public override void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
 		{
-			DicomJpegLsNativeCodec.Decode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData(), parameters.ToNativeJpegLsParameters());
+			DicomJpegLsNativeCodec.Decode(oldPixelData.ToNativePixelData(), newPixelData.ToNativePixelData(), parameters.ToNativeJpegLSParameters());
 		}
 	}
 }

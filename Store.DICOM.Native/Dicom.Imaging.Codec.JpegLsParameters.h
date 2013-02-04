@@ -19,10 +19,10 @@ namespace Codec {
 		enum { None = 0, HP1 = 1, HP2 = 2, HP3 = 3 };
 	};
 
-	public ref class NativeJpegLsParameters sealed
+	public ref class NativeJpegLSParameters sealed
 	{
 	public:
-		NativeJpegLsParameters();
+		NativeJpegLSParameters();
 
 		property int AllowedError;
 		property int InterleaveMode;

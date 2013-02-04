@@ -1,4 +1,4 @@
-#include "Dicom.Imaging.Codec.JpegLs.h"
+#include "Dicom.Imaging.Codec.JpegLS.h"
 
 #include "CharLS/interface.h"
 #include "CharLS/publictypes.h"
@@ -37,14 +37,14 @@ static String^ GetErrorMessage(JLS_ERROR error) {
 	}
 }
 
-void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpegLsParameters^ parameters) {
+void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpegLSParameters^ parameters) {
 	if ((oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422)    ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422) ||
 		(oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial420))
 		throw ref new FailureException("Photometric Interpretation '" + oldPixelData->PhotometricInterpretation + "' not supported by JPEG-LS encoder");
 
-	NativeJpegLsParameters^ jparams = parameters == nullptr ? ref new NativeJpegLsParameters() : parameters;
-/*
+	NativeJpegLSParameters^ jparams = parameters == nullptr ? ref new NativeJpegLSParameters() : parameters;
+
 	JlsParameters params = {0};
 	params.width = oldPixelData->Width;
 	params.height = oldPixelData->Height;
@@ -61,36 +61,29 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 			params.colorTransform = (int)jparams->ColorTransform;
 	}
 
-	if (TransferSyntax == DicomTransferSyntax::JPEGLSNearLossless) {
+	if (oldPixelData->TransferSyntaxIsLossy) {
 		params.allowedlossyerror = jparams->AllowedError;
 	}
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
-		IByteBuffer^ frameData = oldPixelData->GetFrame(frame);
-		PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameData->Data);
+		Array<unsigned char>^ frameData = oldPixelData->GetFrame(frame);
 
 		// assume compressed frame will be smaller than original
-		array<unsigned char>^ jpegData = gcnew array<unsigned char>(frameData->Size);
-		PinnedByteArray^ jpegArray = gcnew PinnedByteArray(jpegData);
+		Array<unsigned char>^ jpegData = ref new Array<unsigned char>(frameData->Length);
 
 		size_t jpegDataSize = 0;
 
-		JLS_ERROR err = JpegLsEncode((void*)jpegArray->Pointer, jpegArray->Count, &jpegDataSize, (void*)frameArray->Pointer, frameArray->Count, &params);
-		if (err != OK) throw gcnew DicomJpegLsCodecException(err);
+		JLS_ERROR err = JpegLsEncode((void*)jpegData->Data, jpegData->Length, &jpegDataSize, (void*)frameData->Data, frameData->Length, &params);
+		if (err != OK) throw ref new FailureException(GetErrorMessage(err));
 
-		Array::Resize(jpegData, (int)jpegDataSize);
+		Array<unsigned char>^ buffer = ref new Array<unsigned char>(jpegDataSize + ((jpegDataSize & 1) == 1 ? 1 : 0));
+		for (int i = 0; i < jpegDataSize; ++i) buffer[i] = jpegData[i];
 
-		IByteBuffer^ buffer;
-		if (jpegDataSize >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
-			buffer = gcnew TempFileBuffer(jpegData);
-		else
-			buffer = gcnew MemoryByteBuffer(jpegData);
-		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
-	}*/
+	}
 }
 
-void DicomJpegLsNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpegLsParameters^ parameters) {
+void DicomJpegLsNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelData, NativeJpegLSParameters^ parameters) {
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ jpegData = oldPixelData->GetFrame(frame);
 
