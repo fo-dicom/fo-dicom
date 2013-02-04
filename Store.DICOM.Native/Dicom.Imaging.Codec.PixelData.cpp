@@ -17,6 +17,17 @@ namespace Codec {
 		_photometricInterpretation = value;
 	}
 
+	int NativePixelData::PlanarConfiguration::get()
+	{
+		return _planarConfiguration;
+	}
+
+	void NativePixelData::PlanarConfiguration::set(int value)
+	{
+		if (SetPlanarConfigurationImpl != nullptr) SetPlanarConfigurationImpl(value);
+		_planarConfiguration = value;
+	}
+
 	Array<unsigned char>^ NativePixelData::GetFrame(int index)
 	{
 		if (GetFrameImpl == nullptr) throw ref new NullReferenceException("GetFrame delegate not defined");
@@ -55,6 +66,14 @@ namespace Codec {
 		}
 
 		return newPixels;
+	}
+
+	Array<unsigned char>^ NativePixelData::UnpackLow16(Array<unsigned char>^ data) {
+		Array<unsigned char>^ bytes = ref new Array<unsigned char>(data->Length / 2);
+		for (int i = 0; i < bytes->Length && (i * 2) < data->Length; i++) {
+			bytes[i] = data[i * 2];
+		}
+		return bytes;
 	}
 
 } // Codec

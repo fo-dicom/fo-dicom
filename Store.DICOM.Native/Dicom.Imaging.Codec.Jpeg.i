@@ -223,13 +223,10 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 
 	Array<unsigned char>^ frameArray = nullptr;
 	
+	frameArray = oldPixelData->GetFrame(frame);
 	if (oldPixelData->BitsAllocated == 16 && oldPixelData->BitsStored <= 8) {
-		Array<unsigned char>^ frameBuffer = oldPixelData->GetFrame(frame);
-		/*frameArray = gcnew PinnedByteArray(
-						ByteConverter::UnpackLow16(frameBuffer)->Data);*/
+		frameArray = NativePixelData::UnpackLow16(frameArray);
 	}
-	else
-		frameArray = oldPixelData->GetFrame(frame);
 
 	try {
 		if (oldPixelData->PlanarConfiguration == PlanarConfiguration::Planar && oldPixelData->SamplesPerPixel > 1) {

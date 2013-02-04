@@ -1,5 +1,4 @@
 ﻿using Dicom.IO.Buffer;
-using Dicom.Imaging.Codec.Jpeg;
 
 // ReSharper disable CheckNamespace
 namespace Dicom.Imaging.Codec
@@ -28,7 +27,8 @@ namespace Dicom.Imaging.Codec
 						   PhotometricInterpretation = dicomPixelData.PhotometricInterpretation.Value,
 					       GetFrameImpl = index => dicomPixelData.GetFrame(index).Data,
 					       AddFrameImpl = buffer => dicomPixelData.AddFrame(new MemoryByteBuffer(buffer)),
-						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value),
+						   SetPlanarConfigurationImpl = value => dicomPixelData.PlanarConfiguration = (PlanarConfiguration)value,
+						   SetPhotometricInterpretationImpl = value => dicomPixelData.PhotometricInterpretation = PhotometricInterpretation.Parse(value)
 				       };
 		}
 

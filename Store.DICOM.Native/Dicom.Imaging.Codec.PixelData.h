@@ -35,16 +35,19 @@ namespace Codec {
 
 	public delegate Array<unsigned char>^ GetFrameDelegate(int index);
 	public delegate void AddFrameDelegate(const Array<unsigned char>^ buffer);
+	public delegate void SetPlanarConfigurationDelegate(int value);
 	public delegate void SetPhotometricInterpretationDelegate(String^ value);
 
 	public ref class NativePixelData sealed
 	{
 	private:
+		int _planarConfiguration;
 		String^ _photometricInterpretation;
 
 	public:
 		property GetFrameDelegate^ GetFrameImpl;
 		property AddFrameDelegate^ AddFrameImpl;
+		property SetPlanarConfigurationDelegate^ SetPlanarConfigurationImpl;
 		property SetPhotometricInterpretationDelegate^ SetPhotometricInterpretationImpl;
 
 		property int NumberOfFrames;
@@ -56,9 +59,14 @@ namespace Codec {
 		property int BytesAllocated;
 		property int SamplesPerPixel;
 		property int UncompressedFrameSize;
-		property int PlanarConfiguration;
 		property int PixelRepresentation;
 		property bool TransferSyntaxIsLossy;
+
+		property int PlanarConfiguration
+		{
+			int get();
+			void set(int value);
+		}
 
 		property String^ PhotometricInterpretation
 		{
@@ -72,6 +80,7 @@ namespace Codec {
 
 		static Array<unsigned char>^ InterleavedToPlanar24(Array<unsigned char>^ buffer);
 		static Array<unsigned char>^ PlanarToInterleaved24(Array<unsigned char>^ buffer);
+		static Array<unsigned char>^ UnpackLow16(Array<unsigned char>^ data);
 	};
 
 } // Codec
