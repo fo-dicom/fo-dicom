@@ -19,7 +19,7 @@ namespace Dicom.Imaging.Codec {
 			_isVerbose = false;
 			_enableMct = true;
 			_updatePmi = true;
-			_signedAsUnsigned = true;
+			_signedAsUnsigned = false;
 
 			_rates = new int[9];
 			_rates[0] = 1280;
