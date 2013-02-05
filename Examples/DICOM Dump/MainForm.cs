@@ -67,6 +67,8 @@ namespace Dicom.Dump {
 					menuItemView.Enabled = true;
 				menuItemSyntax.Enabled = true;
 				menuItemSave.Enabled = true;
+
+				menuItemJpegLossy.Enabled = _file.Dataset.Get<int>(DicomTag.BitsStored, 0, 16) <= 12;
 			} catch (Exception ex) {
 				MessageBox.Show(this, "Exception while loading DICOM file: " + ex.Message, "Error loading DICOM file", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} finally {
@@ -232,8 +234,8 @@ namespace Dicom.Dump {
 			Clipboard.SetText(value);			
 		}
 
-		private void ChangeSyntax(DicomTransferSyntax syntax) {
-			var file = _file.ChangeTransferSyntax(syntax);
+		private void ChangeSyntax(DicomTransferSyntax syntax, DicomCodecParams param = null) {
+			var file = _file.ChangeTransferSyntax(syntax, param);
 			OpenFile(file);
 		}
 
@@ -249,16 +251,150 @@ namespace Dicom.Dump {
 			ChangeSyntax(DicomTransferSyntax.ExplicitVRBigEndian);
 		}
 
+		private void OnClickJPEGLosslessP14(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGProcess14);
+		}
+
 		private void OnClickJPEGLosslessP14SV1(object sender, EventArgs e) {
 			ChangeSyntax(DicomTransferSyntax.JPEGProcess14SV1);
+		}
+
+		private void OnClickJPEGLossyQuality100(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 100
+			});
+		}
+
+		private void OnClickJPEGLossyQuality90(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 90
+			});
+		}
+
+		private void OnClickJPEGLossyQuality80(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 80
+			});
+		}
+
+		private void OnClickJPEGLossyQuality75(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 75
+			});
+		}
+
+		private void OnClickJPEGLossyQuality70(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4; ;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 70
+			});
+		}
+
+		private void OnClickJPEGLossyQuality60(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 60
+			});
+		}
+
+		private void OnClickJPEGLossyQuality50(object sender, EventArgs e) {
+			var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+			var syntax = DicomTransferSyntax.JPEGProcess1;
+			if (bits == 16)
+				syntax = DicomTransferSyntax.JPEGProcess2_4;
+			ChangeSyntax(syntax, new DicomJpegParams {
+				Quality = 50
+			});
 		}
 
 		private void OnClickJPEG2000Lossless(object sender, EventArgs e) {
 			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossless);
 		}
 
+		private void OnClickJPEG2000LossyRate5(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossy, new DicomJpeg2000Params {
+				Rate = 5
+			});
+		}
+
+		private void OnClickJPEG2000LossyRate10(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossy, new DicomJpeg2000Params {
+				Rate = 10
+			});
+		}
+
+		private void OnClickJPEG2000LossyRate20(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossy, new DicomJpeg2000Params {
+				Rate = 20
+			});
+		}
+
+		private void OnClickJPEG2000LossyRate40(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossy, new DicomJpeg2000Params {
+				Rate = 40
+			});
+		}
+
+		private void OnClickJPEG2000LossyRate80(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEG2000Lossy, new DicomJpeg2000Params {
+				Rate = 80
+			});
+		}
+
 		private void OnClickJPEGLSLossless(object sender, EventArgs e) {
 			ChangeSyntax(DicomTransferSyntax.JPEGLSLossless);
+		}
+
+		private void OnClickJPEGLSNearLosslessError2(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSNearLossless, new DicomJpegLsParams {
+				AllowedError = 2
+			});
+		}
+
+		private void OnClickJPEGLSNearLosslessError3(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSNearLossless, new DicomJpegLsParams {
+				AllowedError = 3
+			});
+		}
+
+		private void OnClickJPEGLSNearLosslessError4(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSNearLossless, new DicomJpegLsParams {
+				AllowedError = 4
+			});
+		}
+
+		private void OnClickJPEGLSNearLosslessError5(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSNearLossless, new DicomJpegLsParams {
+				AllowedError = 5
+			});
+		}
+
+		private void OnClickJPEGLSNearLosslessError10(object sender, EventArgs e) {
+			ChangeSyntax(DicomTransferSyntax.JPEGLSNearLossless, new DicomJpegLsParams {
+				AllowedError = 10
+			});
 		}
 
 		private void OnClickRLELossless(object sender, EventArgs e) {
