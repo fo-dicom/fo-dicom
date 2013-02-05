@@ -190,6 +190,10 @@ namespace Dicom.Imaging {
 				if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
 					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
+				// temporary fix for JPEG 2000 Lossy images
+				if (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
+					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
 			} else {
 				// pull uncompressed frame from source pixel data
@@ -216,7 +220,11 @@ namespace Dicom.Imaging {
 			var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 
 			// temporary fix for JPEG compressed YBR images
-			if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 && samples == 3)
+			if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+				pi = PhotometricInterpretation.Rgb;
+
+			// temporary fix for JPEG 2000 Lossy images
+			if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
 				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {
