@@ -125,8 +125,16 @@ namespace Store.DICOM.Dump
 	    private void TransferSyntaxBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 	    {
 			if (Image == null) return;
-		    Dataset = Dataset.ChangeTransferSyntax(TransferSyntaxBox.SelectedItem as DicomTransferSyntax);
-			Image = new DicomImage(Dataset).RenderImageSource();
+			try
+			{
+				Dataset = Dataset.ChangeTransferSyntax(TransferSyntaxBox.SelectedItem as DicomTransferSyntax);
+				Image = new DicomImage(Dataset).RenderImageSource();
+				ErrorMessage.Text = String.Empty;
+			}
+			catch (Exception exception)
+			{
+				ErrorMessage.Text = exception.Message + Environment.NewLine + exception.StackTrace;
+			} 
 		}
     }
 }

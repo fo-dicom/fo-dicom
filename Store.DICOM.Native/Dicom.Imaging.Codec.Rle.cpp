@@ -14,6 +14,7 @@ namespace Codec {
 
 private ref class RLEEncoder sealed {
 private:
+	int64 _length;
 	int _count;
 	Array<unsigned int>^ _offsets;
 	IRandomAccessStream^ _stream;
@@ -26,13 +27,20 @@ private:
 
 internal:
 	RLEEncoder() {
+		_length = 0;
 		_count = 0;
 		_offsets = ref new Array<unsigned int>(15);
 		_stream = ref new InMemoryRandomAccessStream();
 		_writer = ref new DataWriter(_stream);
 		_writer->ByteOrder = ByteOrder::LittleEndian;
 		_buffer = ref new Array<unsigned char>(132);
-		WriteHeader();
+
+		// Write header
+		_writer->WriteUInt32((unsigned int)_count); _length += 4;
+		for (int i = 0; i < 15; i++) {
+			_writer->WriteUInt32(_offsets[i]);
+			_length += 4;
+		}
 
 		_prevByte = -1;
 		_repeatCount = 0;
@@ -44,29 +52,41 @@ internal:
 	}
 
 	property int64 Length {
-		int64 get() { return (int64)_stream->Size; }
+		int64 get() { return _length; }; 
 	}
 
 	Array<unsigned char>^ GetBuffer() {
 		Flush();
-		WriteHeader();
+		create_task(_writer->StoreAsync()).wait();
+		_writer->DetachStream();
 
-		Array<unsigned char>^ bytes = ref new Array<unsigned char>(_stream->Size);
+		// Re-write header
+		DataWriter^ writer = ref new DataWriter(_stream->GetOutputStreamAt(0));
+		writer->ByteOrder = ByteOrder::LittleEndian;
+		writer->WriteUInt32((unsigned int)_count);
+		for (int i = 0; i < 15; i++) {
+			writer->WriteUInt32(_offsets[i]);
+		}
+		create_task(writer->StoreAsync()).wait();
+		writer->DetachStream();
+
+		Array<unsigned char>^ bytes = ref new Array<unsigned char>(Length);
 		DataReader^ reader = ref new DataReader(_stream->GetInputStreamAt(0));
+		reader->ByteOrder = ByteOrder::LittleEndian;
 
-		create_task(_writer->StoreAsync()).then([reader] (unsigned int bytesStored) {
-			return reader->LoadAsync(bytesStored);
-		}).then([reader, bytes] (task<unsigned int> bytesLoaded) {
-			reader->ReadBytes(bytes);
-		}).wait();
+		create_task(reader->LoadAsync(Length)).wait();
+		reader->ReadBytes(bytes);
+		reader->DetachStream();
+
 		return bytes;
 	}
 
 	void NextSegment() {
 		Flush();
-		if ((Length & 1) == 1)
-			_writer->WriteByte(0x00);
-		_offsets[_count++] = (unsigned int)_stream->Size;
+		if ((_length & 1) == 1) {
+			_writer->WriteByte(0x00); ++_length;
+		}
+		_offsets[_count++] = (unsigned int)_length;
 	}
 
 	void Encode(unsigned char b) {
@@ -77,14 +97,14 @@ internal:
 				// We're starting a run, flush out the buffer
 				while (_bufferPos > 0) {
 					int count = min(128, _bufferPos);
-					_writer->WriteByte((unsigned char)(count - 1));
+					_writer->WriteByte((unsigned char)(count - 1)); ++_length;
 					MoveBuffer(count);
 				}
 			}
 			else if (_repeatCount > 128) {
 				int count = min(_repeatCount, 128);
-				_writer->WriteByte((unsigned char)(257 - count));
-				_writer->WriteByte((unsigned char)_prevByte);
+				_writer->WriteByte((unsigned char)(257 - count)); ++_length;
+				_writer->WriteByte((unsigned char)_prevByte); ++_length;
 				_repeatCount -= count;
 			}
 		}
@@ -104,8 +124,8 @@ internal:
 				default: {
 						while (_repeatCount > 0) {
 							int count = min(_repeatCount, 128);
-							_writer->WriteByte((unsigned char)(257 - count));
-							_writer->WriteByte((unsigned char)_prevByte);
+							_writer->WriteByte((unsigned char)(257 - count)); ++_length;
+							_writer->WriteByte((unsigned char)_prevByte); ++_length;
 							_repeatCount -= count;
 						}
 
@@ -115,7 +135,7 @@ internal:
 
 			while (_bufferPos > 128) {
 				int count = min(128, _bufferPos);
-				_writer->WriteByte((unsigned char)(count - 1));
+				_writer->WriteByte((unsigned char)(count - 1)); ++_length;
 				MoveBuffer(count);
 			}
 
@@ -125,9 +145,9 @@ internal:
 	}
 
 	void MakeEvenLength() {
-		// Make even length
-		if (_stream->Size % 2 == 1)
-			_writer->WriteByte(0);
+		if ((_length & 1) == 1) {
+			_writer->WriteByte(0x00); ++_length;
+		}
 	}
 
 	void Flush() {
@@ -140,15 +160,15 @@ internal:
 
 		while (_bufferPos > 0) {
 			int count = min(128, _bufferPos);
-			_writer->WriteByte((unsigned char)(count - 1));
+			_writer->WriteByte((unsigned char)(count - 1)); ++_length;
 			MoveBuffer(count);
 		}
 
 		if (_repeatCount >= 2) {
 			while (_repeatCount > 0) {
 				int count = min(_repeatCount, 128);
-				_writer->WriteByte((unsigned char)(257 - count));
-				_writer->WriteByte((unsigned char)_prevByte);
+				_writer->WriteByte((unsigned char)(257 - count)); ++_length;
+				_writer->WriteByte((unsigned char)_prevByte); ++_length;
 				_repeatCount -= count;
 			}
 		}
@@ -160,20 +180,13 @@ internal:
 
 private:
 	void MoveBuffer(int count) {
-		for (int i = 0; i < count; ++i)
-			_writer->WriteByte(_buffer[i]);
+		for (int i = 0; i < count; ++i) {
+			_writer->WriteByte(_buffer[i]); ++_length;
+		}
 		for (int i = count, n = 0; i < _bufferPos; i++, n++) {
 			_buffer[n] = _buffer[i];
 		}
 		_bufferPos = _bufferPos - count;
-	}
-
-	void WriteHeader() {
-		_stream->Seek(0);
-		_writer->WriteUInt32((unsigned int)_count);
-		for (int i = 0; i < 15; i++) {
-			_writer->WriteUInt32(_offsets[i]);
-		}
 	}
 };
 
@@ -232,17 +245,21 @@ public:
 	RLEDecoder(const Array<unsigned char>^ data) {
 		IRandomAccessStream^ stream = ref new InMemoryRandomAccessStream();
 		DataWriter^ writer = ref new DataWriter(stream);
+		writer->ByteOrder = ByteOrder::LittleEndian;
+		writer->WriteBytes(data);
+		create_task(writer->StoreAsync()).wait();
+		writer->DetachStream();
+
 		DataReader^ reader = ref new DataReader(stream->GetInputStreamAt(0));
 		reader->ByteOrder = ByteOrder::LittleEndian;
-		writer->WriteBytes(data);
-		create_task(writer->StoreAsync()).then([stream, reader] (unsigned int bytesStored) {
-			return reader->LoadAsync(stream->Size);
-		}).wait();
+		create_task(reader->LoadAsync(stream->Size)).wait();
 		_count = (int)reader->ReadUInt32();
 		_offsets = ref new Array<int>(15);
 		for (int i = 0; i < 15; i++) {
 			_offsets[i] = reader->ReadInt32();
 		}
+		reader->DetachStream();
+
 		_data = ref new Array<unsigned char>(data);
 	}
 

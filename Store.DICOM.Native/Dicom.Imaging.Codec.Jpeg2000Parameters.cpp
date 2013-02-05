@@ -13,7 +13,7 @@ NativeJpeg2000Parameters::NativeJpeg2000Parameters()
 	IsVerbose = false;
 	AllowMCT = true;
 	UpdatePhotometricInterpretation = true;
-	EncodeSignedPixelValuesAsUnsigned = true;
+	EncodeSignedPixelValuesAsUnsigned = false;
 
 	int rates[] = {1280, 640, 320, 160, 80, 40, 20, 10, 5 };
 	RateLevels = ref new Array<int>(rates, 9);
