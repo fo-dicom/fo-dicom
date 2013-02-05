@@ -68,14 +68,14 @@ namespace IJGVERS {
 		Array<unsigned char>^ last = ref new Array<unsigned char>(count);
 		for (int i = 0; i < count; ++i) last[i] = DataArray[i];
 		Writer->WriteBytes(last);
+		create_task(Writer->StoreAsync()).wait();
+		Writer->DetachStream();
 
 		Array<unsigned char>^ bytes = ref new Array<unsigned char>(MemoryBuffer->Size);
 		DataReader^ reader = ref new DataReader(MemoryBuffer->GetInputStreamAt(0));
-		create_task(Writer->StoreAsync()).then([reader] (unsigned int bytesStored) {
-			return reader->LoadAsync(bytesStored);
-		}).then([reader, bytes] (task<unsigned int> bytesLoaded) {
-			reader->ReadBytes(bytes);
-		}).wait();
+		create_task(reader->LoadAsync(bytes->Length)).wait();
+		reader->ReadBytes(bytes);
+		reader->DetachStream();
 
 		int length = bytes->Length;
 		DataArray = ref new Array<unsigned char>(length + ((length & 1) == 1 ? 1 : 0));

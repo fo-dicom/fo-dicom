@@ -1,5 +1,7 @@
 # Fellow Oak DICOM for Windows Store apps
 
+Copyright (c) 2012-2013 Colby Dillion, adaptations to Windows Store platform (c) 2012-2013 Anders Gustafsson, Cureos AB
+
 This is a fork of Colby Dillion's [fo-dicom](https://github.com/rcd/fo-dicom) toolkit, aimed at Windows Store applications. This repository provides a Windows Store class library project *Store.DICOM* that can be 
 applied in any Windows Store application.
 
@@ -16,7 +18,6 @@ At this stage, the *Store.DICOM* class library exposes the same API as the regul
 The library has dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* and *ARM*.
 
 Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
-* Image compression and decompression is incomplete; JPEG encoding is not working.
 * Secure Sockets Layer (SSL) network I/O is not enabled.
 * Database query transforms are not supported, i.e. it is not possible to update a DICOM dataset based on a database query.
 
