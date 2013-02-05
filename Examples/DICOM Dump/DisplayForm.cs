@@ -8,7 +8,11 @@ using Dicom.Imaging;
 
 namespace Dicom.Dump {
 	public partial class DisplayForm : Form {
-		private readonly DicomFile _file;
+		private DicomFile _file;
+		private DicomImage _image;
+		private bool _grayscale;
+		private double _windowWidth;
+		private double _windowCenter;
 
 		public DisplayForm(DicomFile file) {
 			_file = file;
@@ -18,8 +22,13 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
-					var image = new DicomImage(_file.Dataset);
-			        Invoke(new WaitCallback(DisplayImage), image);
+					_image = new DicomImage(_file.Dataset);
+					_grayscale = !_image.PhotometricInterpretation.IsColor;
+					if (_grayscale) {
+						_windowWidth = _image.WindowWidth;
+						_windowCenter = _image.WindowCenter;
+					}
+			        Invoke(new WaitCallback(DisplayImage), _image);
 			                             });
 			
 		}
@@ -75,9 +84,50 @@ namespace Dicom.Dump {
 				}
 
 				pbDisplay.Image = image.RenderImage();
+
+				if (_grayscale)
+					Text = String.Format("DICOM Image Display [wc: {0}, ww: {1}]", image.WindowCenter, image.WindowWidth);
 			} catch (Exception e) {
 				OnException(e);
 			}
+		}
+
+		private bool _dragging = false;
+		private Point _lastPosition = Point.Empty;
+
+		private void OnMouseDown(object sender, MouseEventArgs e) {
+			if (!_grayscale)
+				return;
+
+			_lastPosition = e.Location;
+			_dragging = true;
+		}
+
+		private void OnMouseUp(object sender, MouseEventArgs e) {
+			_dragging = false;
+		}
+
+		private void OnMouseLeave(object sender, EventArgs e) {
+			_dragging = false;
+		}
+
+		private void OnMouseMove(object sender, MouseEventArgs e) {
+			if (!_dragging)
+				return;
+
+			_image.WindowWidth += e.X - _lastPosition.X;
+			_image.WindowCenter += e.Y - _lastPosition.Y;
+
+			_lastPosition = e.Location;
+
+			DisplayImage(_image);
+		}
+
+		private void OnMouseDoubleClick(object sender, MouseEventArgs e) {
+			_image.WindowCenter = _windowCenter;
+			_image.WindowWidth = _windowWidth;
+
+			DisplayImage(_image);
 		}
 	}
 }
