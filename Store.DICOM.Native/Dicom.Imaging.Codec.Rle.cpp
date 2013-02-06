@@ -36,11 +36,9 @@ internal:
 		_buffer = ref new Array<unsigned char>(132);
 
 		// Write header
-		_writer->WriteUInt32((unsigned int)_count); _length += 4;
-		for (int i = 0; i < 15; i++) {
-			_writer->WriteUInt32(_offsets[i]);
-			_length += 4;
-		}
+		AppendUInt32((unsigned int)_count);
+		for (int i = 0; i < 15; i++)
+			AppendUInt32(_offsets[i]);
 
 		_prevByte = -1;
 		_repeatCount = 0;
@@ -64,9 +62,8 @@ internal:
 		DataWriter^ writer = ref new DataWriter(_stream->GetOutputStreamAt(0));
 		writer->ByteOrder = ByteOrder::LittleEndian;
 		writer->WriteUInt32((unsigned int)_count);
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 15; i++)
 			writer->WriteUInt32(_offsets[i]);
-		}
 		create_task(writer->StoreAsync()).wait();
 		writer->DetachStream();
 
@@ -83,9 +80,8 @@ internal:
 
 	void NextSegment() {
 		Flush();
-		if ((_length & 1) == 1) {
-			_writer->WriteByte(0x00); ++_length;
-		}
+		if ((_length & 1) == 1)
+			AppendByte(0x00);
 		_offsets[_count++] = (unsigned int)_length;
 	}
 
@@ -97,14 +93,14 @@ internal:
 				// We're starting a run, flush out the buffer
 				while (_bufferPos > 0) {
 					int count = min(128, _bufferPos);
-					_writer->WriteByte((unsigned char)(count - 1)); ++_length;
+					AppendByte((unsigned char)(count - 1));
 					MoveBuffer(count);
 				}
 			}
 			else if (_repeatCount > 128) {
 				int count = min(_repeatCount, 128);
-				_writer->WriteByte((unsigned char)(257 - count)); ++_length;
-				_writer->WriteByte((unsigned char)_prevByte); ++_length;
+				AppendByte((unsigned char)(257 - count));
+				AppendByte((unsigned char)_prevByte);
 				_repeatCount -= count;
 			}
 		}
@@ -124,18 +120,17 @@ internal:
 				default: {
 						while (_repeatCount > 0) {
 							int count = min(_repeatCount, 128);
-							_writer->WriteByte((unsigned char)(257 - count)); ++_length;
-							_writer->WriteByte((unsigned char)_prevByte); ++_length;
+							AppendByte((unsigned char)(257 - count));
+							AppendByte((unsigned char)_prevByte);
 							_repeatCount -= count;
 						}
-
 						break;
 					}
 			}
 
 			while (_bufferPos > 128) {
 				int count = min(128, _bufferPos);
-				_writer->WriteByte((unsigned char)(count - 1)); ++_length;
+				AppendByte((unsigned char)(count - 1));
 				MoveBuffer(count);
 			}
 
@@ -145,9 +140,8 @@ internal:
 	}
 
 	void MakeEvenLength() {
-		if ((_length & 1) == 1) {
-			_writer->WriteByte(0x00); ++_length;
-		}
+		if ((_length & 1) == 1)
+			AppendByte(0x00);
 	}
 
 	void Flush() {
@@ -160,15 +154,15 @@ internal:
 
 		while (_bufferPos > 0) {
 			int count = min(128, _bufferPos);
-			_writer->WriteByte((unsigned char)(count - 1)); ++_length;
+			AppendByte((unsigned char)(count - 1));
 			MoveBuffer(count);
 		}
 
 		if (_repeatCount >= 2) {
 			while (_repeatCount > 0) {
 				int count = min(_repeatCount, 128);
-				_writer->WriteByte((unsigned char)(257 - count)); ++_length;
-				_writer->WriteByte((unsigned char)_prevByte); ++_length;
+				AppendByte((unsigned char)(257 - count));
+				AppendByte((unsigned char)_prevByte);
 				_repeatCount -= count;
 			}
 		}
@@ -180,13 +174,26 @@ internal:
 
 private:
 	void MoveBuffer(int count) {
-		for (int i = 0; i < count; ++i) {
-			_writer->WriteByte(_buffer[i]); ++_length;
-		}
+		AppendBytes(_buffer->begin(), count);
 		for (int i = count, n = 0; i < _bufferPos; i++, n++) {
 			_buffer[n] = _buffer[i];
 		}
 		_bufferPos = _bufferPos - count;
+	}
+
+	inline void AppendBytes(unsigned char * beginPtr, unsigned int count) {
+		_writer->WriteBytes(ArrayReference<unsigned char>(beginPtr, count));
+		_length += count;
+	}
+
+	inline void AppendByte(unsigned char value) {
+		_writer->WriteByte(value);
+		++_length;
+	}
+
+	inline void AppendUInt32(unsigned int value) {
+		_writer->WriteUInt32(value);
+		_length += 4;
 	}
 };
 

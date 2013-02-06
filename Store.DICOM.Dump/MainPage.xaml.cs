@@ -88,6 +88,8 @@ namespace Store.DICOM.Dump
 
         private async void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
         {
+	        ErrorMessage.Text = String.Empty;
+
             var filePicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
             filePicker.FileTypeFilter.Add(".dcm");
             filePicker.FileTypeFilter.Add(".dic");
