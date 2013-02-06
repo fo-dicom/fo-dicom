@@ -1,4 +1,5 @@
 #include "Dicom.Imaging.Codec.JpegLS.h"
+#include "Dicom.Imaging.Codec.ArrayCopy.h"
 
 #include "CharLS/interface.h"
 #include "CharLS/publictypes.h"
@@ -7,6 +8,8 @@
 #include "CharLS/losslesstraits.h"
 #include "CharLS/colortransform.h"
 #include "CharLS/processline.h"
+
+#include <algorithm>
 
 namespace Dicom {
 namespace Imaging {
@@ -73,11 +76,11 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 
 		size_t jpegDataSize = 0;
 
-		JLS_ERROR err = JpegLsEncode((void*)jpegData->Data, jpegData->Length, &jpegDataSize, (void*)frameData->Data, frameData->Length, &params);
+		JLS_ERROR err = JpegLsEncode((void*)jpegData->begin(), jpegData->Length, &jpegDataSize, (void*)frameData->begin(), frameData->Length, &params);
 		if (err != OK) throw ref new FailureException(GetErrorMessage(err));
 
 		Array<unsigned char>^ buffer = ref new Array<unsigned char>(jpegDataSize + ((jpegDataSize & 1) == 1 ? 1 : 0));
-		for (int i = 0; i < jpegDataSize; ++i) buffer[i] = jpegData[i];
+		Arrays::Copy(jpegData, buffer, jpegDataSize);
 
 		newPixelData->AddFrame(buffer);
 	}
@@ -92,7 +95,7 @@ void DicomJpegLsNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelDa
 
 		JlsParameters params = {0};
 
-		JLS_ERROR err = JpegLsDecode((void*)frameData->Data, frameData->Length, (void*)jpegData->Data, jpegData->Length, &params);
+		JLS_ERROR err = JpegLsDecode((void*)frameData->begin(), frameData->Length, (void*)jpegData->begin(), jpegData->Length, &params);
 		if (err != OK) throw ref new FailureException(GetErrorMessage(err));
 
 		newPixelData->AddFrame(frameData);

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Dicom.Imaging.Codec.Jpeg2000.h"
+#include "Dicom.Imaging.Codec.ArrayCopy.h"
 
 extern "C" {
 #include "OpenJPEG/openjpeg.h"
@@ -134,7 +135,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 							}
 						}
 						else {
-							char* frameData8 = (char*)(void*)frameData->Data;
+							char* frameData8 = (char*)(void*)frameData->begin();
 							for (int p = 0; p < pixelCount; p++) {
 								comp->data[p] = frameData8[pos];
 								pos += offset;
@@ -151,7 +152,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 				else if (oldPixelData->BytesAllocated == 2) {
 					if (comp->sgnd) {
 						if (oldPixelData->BitsStored < 16) {
-							unsigned short* frameData16 = (unsigned short*)(void*)frameData->Data;
+							unsigned short* frameData16 = (unsigned short*)(void*)frameData->begin();
 							const unsigned short sign = 1 << oldPixelData->HighBit;
 							const unsigned short mask = (0xffff >> (oldPixelData->BitsAllocated - oldPixelData->BitsStored));
 							for (int p = 0; p < pixelCount; p++) {
@@ -164,7 +165,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 							}
 						}
 						else {
-							short* frameData16 = (short*)(void*)frameData->Data;
+							short* frameData16 = (short*)(void*)frameData->begin();
 							for (int p = 0; p < pixelCount; p++) {
 								comp->data[p] = frameData16[pos];
 								pos += offset;
@@ -172,7 +173,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 						}
 					}
 					else {
-						unsigned short* frameData16 = (unsigned short*)(void*)frameData->Data;
+						unsigned short* frameData16 = (unsigned short*)(void*)frameData->begin();
 						for (int p = 0; p < pixelCount; p++) {
 							comp->data[p] = frameData16[pos];
 							pos += offset;
@@ -189,9 +190,8 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 
 			if (opj_encode(cinfo, cio, image, eparams.index)) {
 				int clen = cio_tell(cio);
-				unsigned char* cioBuf = cio->buffer;
 				Array<unsigned char>^ cbuf = ref new Array<unsigned char>(clen + ((clen & 1) == 1 ? 1 : 0));
-				for (int i = 0; i < clen; ++i) cbuf[i] = cioBuf[i];
+				Arrays::Copy(cio->buffer, cbuf, clen);
 
 				newPixelData->AddFrame(cbuf);
 			} else
@@ -276,7 +276,7 @@ void DicomJpeg2000NativeCodec::Decode(NativePixelData^ oldPixelData, NativePixel
 			bool opj_err = false;
 			dinfo->client_data = (void*)&opj_err;
 
-			cio = opj_cio_open((opj_common_ptr)dinfo, (unsigned char*)jpegData->Data, (int)jpegData->Length);
+			cio = opj_cio_open((opj_common_ptr)dinfo, (unsigned char*)jpegData->begin(), (int)jpegData->Length);
 			image = opj_decode(dinfo, cio);
 
 			if (image == nullptr)
@@ -295,17 +295,15 @@ void DicomJpeg2000NativeCodec::Decode(NativePixelData^ oldPixelData, NativePixel
 						for (int p = 0; p < pixelCount; p++) {
 							const int i = comp->data[p];
 							if (i < 0)
-								//destArray->Data[pos] = (unsigned char)(-i | sign);
-                                  destArray->Data[pos] =(unsigned char)((i & mask) | sign);
+                                  destArray[pos] =(unsigned char)((i & mask) | sign);
 							else
-								//destArray->Data[pos] = (unsigned char)(i);
-                                destArray->Data[pos] = (unsigned char)(i & mask);
+                                destArray[pos] = (unsigned char)(i & mask);
 							pos += offset;
 						}
 					}
 					else {
 						for (int p = 0; p < pixelCount; p++) {
-							destArray->Data[pos] = (unsigned char)comp->data[p];
+							destArray[pos] = (unsigned char)comp->data[p];
 							pos += offset;
 						}
 					}
@@ -313,7 +311,7 @@ void DicomJpeg2000NativeCodec::Decode(NativePixelData^ oldPixelData, NativePixel
 				else if (newPixelData->BytesAllocated == 2) {
 					const unsigned short sign = 1 << newPixelData->HighBit;
                     const unsigned short mask = 0xFFFF ^ sign;
-					unsigned short* destData16 = (unsigned short*)(void *)destArray->Data;
+					unsigned short* destData16 = (unsigned short*)(void *)destArray->begin();
 					if (comp->sgnd) {
 						for (int p = 0; p < pixelCount; p++) {
 							const int i = comp->data[p];

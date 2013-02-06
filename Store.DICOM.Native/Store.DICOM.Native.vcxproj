@@ -245,6 +245,7 @@
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\t2.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tcd.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tgt.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.ArrayCopy.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />

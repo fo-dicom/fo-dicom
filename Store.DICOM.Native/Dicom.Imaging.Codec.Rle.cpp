@@ -274,18 +274,18 @@ public:
 		int get() { return _count; }
 	}
 
-	void DecodeSegment(int segment, Array<unsigned char>^* buffer, int start, int sampleOffset) {
+	void DecodeSegment(int segment, WriteOnlyArray<unsigned char>^ buffer, int start, int sampleOffset) {
 		if (segment < 0 || segment >= _count)
 			throw ref new OutOfBoundsException("Segment number out of range");
 
 		int offset = GetSegmentOffset(segment);
 		int length = GetSegmentLength(segment);
 
-		Decode(*buffer, start, sampleOffset, _data, offset, length);
+		Decode(buffer, start, sampleOffset, _data, offset, length);
 	}
 
 private:
-	void Decode(Array<unsigned char>^ buffer, int start, int sampleOffset, Array<unsigned char>^ rleData, int offset, int count) {
+	void Decode(WriteOnlyArray<unsigned char>^ buffer, int start, int sampleOffset, const Array<unsigned char>^ rleData, int offset, int count) {
 		int pos = start;
 		int end = offset + count;
 		int bufferLength = buffer->Length;
@@ -386,7 +386,7 @@ void DicomRleNativeCodec::Decode(NativePixelData^ oldPixelData, NativePixelData^
 
 			pos += newPixelData->BytesAllocated - sabyte - 1;
 
-			decoder->DecodeSegment(s, &frameData, pos, offset);
+			decoder->DecodeSegment(s, frameData, pos, offset);
 		}
 
 		newPixelData->AddFrame(frameData);

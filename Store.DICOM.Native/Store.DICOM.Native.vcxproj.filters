@@ -282,6 +282,9 @@
     <ClInclude Include="Dicom.Imaging.Codec.JpegLSParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Dicom.Imaging.Codec.ArrayCopy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dicom.Imaging.Codec.Jpeg.i">
