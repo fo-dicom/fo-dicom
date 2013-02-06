@@ -52,34 +52,34 @@ namespace IJGVERS {
 		MemoryBuffer = ref new InMemoryRandomAccessStream();
 		Writer = ref new DataWriter(MemoryBuffer);
 		DataArray = ref new Array<unsigned char>(IJGE_BLOCKSIZE);
-		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->Data;
+		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->begin();
 		cinfo->dest->free_in_buffer = IJGE_BLOCKSIZE;
 	}
 
 	ijg_boolean emptyOutputBuffer(j_compress_ptr cinfo) {
 		Writer->WriteBytes(DataArray);
-		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->Data;
+		cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->begin();
 		cinfo->dest->free_in_buffer = IJGE_BLOCKSIZE;
 		return TRUE;
 	}
 
 	void termDestination(j_compress_ptr cinfo) {
 		int count = IJGE_BLOCKSIZE - cinfo->dest->free_in_buffer;
-		Array<unsigned char>^ last = ref new Array<unsigned char>(count);
-		for (int i = 0; i < count; ++i) last[i] = DataArray[i];
-		Writer->WriteBytes(last);
+		Writer->WriteBytes(ArrayReference<unsigned char>(DataArray->begin(), count));
 		create_task(Writer->StoreAsync()).wait();
 		Writer->DetachStream();
+		Writer = nullptr;
 
 		Array<unsigned char>^ bytes = ref new Array<unsigned char>(MemoryBuffer->Size);
 		DataReader^ reader = ref new DataReader(MemoryBuffer->GetInputStreamAt(0));
 		create_task(reader->LoadAsync(bytes->Length)).wait();
 		reader->ReadBytes(bytes);
 		reader->DetachStream();
+		MemoryBuffer = nullptr;
 
 		int length = bytes->Length;
 		DataArray = ref new Array<unsigned char>(length + ((length & 1) == 1 ? 1 : 0));
-		for (int i = 0; i < length; ++i) DataArray[i] = bytes[i];
+		Arrays::Copy(bytes, DataArray, length);
 	}
 
 	// Borrowed from DCMTK djeijgXX.cxx
@@ -323,7 +323,7 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 		JSAMPROW row_pointer[1];
 		int row_stride = oldPixelData->Width * oldPixelData->SamplesPerPixel * (oldPixelData->BitsStored <= 8 ? 1 : oldPixelData->BytesAllocated);
 
-		unsigned char* framePtr = (unsigned char*)(void*)frameArray->Data;
+		unsigned char* framePtr = (unsigned char*)(void*)frameArray->begin();
 		while (cinfo.next_scanline < cinfo.image_height) {
 			row_pointer[0] = (JSAMPLE *)(&framePtr[cinfo.next_scanline * row_stride]);
 			jpeg_write_scanlines(&cinfo, row_pointer, 1);
@@ -340,16 +340,10 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 		}
 
 		newPixelData->AddFrame(IJGVERS::DataArray);
-
 		IJGVERS::DataArray = nullptr;
-		IJGVERS::MemoryBuffer = nullptr;
-		IJGVERS::Writer = nullptr;
 	} 
 	catch (...) {
 		IJGVERS::DataArray = nullptr;
-		IJGVERS::MemoryBuffer = nullptr;
-		IJGVERS::Writer = nullptr;
-
 		throw;
 	}
 }
@@ -441,7 +435,7 @@ void JPEGCODEC::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 	src.pub.bytes_in_buffer   = 0;
 	src.pub.next_input_byte   = NULL;
 	src.skip_bytes            = 0;
-	src.next_buffer           = (unsigned char*)(void*)jpegArray->Data;
+	src.next_buffer           = (unsigned char*)(void*)jpegArray->begin();
 	src.next_buffer_size      = (unsigned int*)jpegArray->Length;
 
     IJGVERS::ErrorStruct jerr;
@@ -486,7 +480,7 @@ void JPEGCODEC::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
 		frameSize++;
 
 	Array<unsigned char>^ frameArray = ref new Array<unsigned char>(frameSize);
-	unsigned char* framePtr = (unsigned char*)(void*)frameArray->Data;
+	unsigned char* framePtr = (unsigned char*)(void*)frameArray->begin();
 
 	while (dinfo.output_scanline < dinfo.output_height) {
 		int rows = jpeg_read_scanlines(&dinfo, (JSAMPARRAY)&framePtr, 1);
@@ -521,7 +515,7 @@ int JPEGCODEC::ScanHeaderForPrecision(NativePixelData^ pixelData) {
 	src.pub.bytes_in_buffer   = 0;
 	src.pub.next_input_byte   = NULL;
 	src.skip_bytes            = 0;
-	src.next_buffer           = (unsigned char*)(void*)jpegArray->Data;
+	src.next_buffer           = (unsigned char*)(void*)jpegArray->begin();
 	src.next_buffer_size      = (unsigned int*)jpegArray->Length;
 
     IJGVERS::ErrorStruct jerr;

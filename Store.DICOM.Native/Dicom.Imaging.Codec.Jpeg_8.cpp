@@ -1,6 +1,7 @@
 #include <vector>
 #include "ppltasks.h"
 
+#include "Dicom.Imaging.Codec.ArrayCopy.h"
 #include "Dicom.Imaging.Codec.Jpeg.h"
 #include "Dicom.Imaging.Codec.PixelData.h"
 
