@@ -34,7 +34,8 @@ namespace System.Net.Sockets
 			}
 			catch (Exception e)
 			{
-				Logger.Error("Error when creating socket stream, message: {0}", e.Message);
+				Logger.Error("Error when creating socket stream, message: {0}",
+				             e.InnerException != null ? e.InnerException.Message : e.Message);
 				_stream = null;
 			}
 		}
