@@ -1,5 +1,7 @@
 # Fellow Oak DICOM for Windows Store apps
 
+Last updated February 6, 2013.
+
 Copyright (c) 2012-2013 Colby Dillion, adaptations to Windows Store platform (c) 2012-2013 Anders Gustafsson, Cureos AB
 
 This is a fork of Colby Dillion's [fo-dicom](https://github.com/rcd/fo-dicom) toolkit, aimed at Windows Store applications. This repository provides a Windows Store class library project *Store.DICOM* that can be 
@@ -18,11 +20,11 @@ At this stage, the *Store.DICOM* class library exposes the same API as the regul
 The library has dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* and *ARM*.
 
 Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
-* Secure Sockets Layer (SSL) network I/O is not enabled.
+* Only Secure Sockets Layer (SSL) client is supported, SSL server functionality is *not* enabled.
 * Database query transforms are not supported, i.e. it is not possible to update a DICOM dataset based on a database query.
 
-Issues directly related to using *fo-dicom* in Windows Store applications can sufficiently be reported [here](https://github.com/cureos/fo-dicom/issues). 
-General *fo-dicom* issues are best reported to the parent repository [Issues page](https://github.com/rcd/fo-dicom/issues).
+Issues directly related to using *fo-dicom* in Windows Store applications can be reported [here](https://github.com/cureos/fo-dicom/issues). 
+General *fo-dicom* issues should be reported to the parent repository [Issues page](https://github.com/rcd/fo-dicom/issues).
 
 
 # Fellow Oak DICOM for .NET

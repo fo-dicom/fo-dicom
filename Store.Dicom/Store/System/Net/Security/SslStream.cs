@@ -1,6 +1,8 @@
 ﻿using System.IO;
+using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using Dicom.Network;
 
 // ReSharper disable CheckNamespace
 namespace System.Net.Security
@@ -10,7 +12,7 @@ namespace System.Net.Security
 	{
 		#region FIELDS
 
-		private Stream _innerStream;
+		private TcpClient.Stream _innerStream;
 		private bool _leaveInnerStreamOpen;
 		
 		#endregion
@@ -19,7 +21,11 @@ namespace System.Net.Security
 
 		internal SslStream(Stream innerStream, bool leaveInnerStreamOpen)
 		{
-			_innerStream = innerStream;
+			var tcpClientStream = innerStream as TcpClient.Stream;
+			if (tcpClientStream == null)
+				throw new ArgumentException("Stream type not associated with TCP client", "innerStream");
+
+			_innerStream = tcpClientStream;
 			_leaveInnerStreamOpen = leaveInnerStreamOpen;
 		}
 
@@ -34,10 +40,12 @@ namespace System.Net.Security
 		internal void AuthenticateAsServer(X509Certificate serverCertificate, 
 			bool clientCertificateRequired, SslProtocols enabledSslProtocols, bool checkCertificateRevocation)
 		{
+			throw new DicomNetworkException("SSL server support is not implemented");
 		}
 
 		internal void AuthenticateAsClient(string targetHost)
 		{
+			_innerStream.UpgradeToSsl(targetHost);
 		}
 		
 		#endregion

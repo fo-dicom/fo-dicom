@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Dicom.Network;
 using NLog;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -78,6 +79,12 @@ namespace System.Net.Sockets
 			#endregion
 
 			#region METHODS
+
+			internal void UpgradeToSsl(string validationHost)
+			{
+				if (!Task.Run(async () => await _socket.UpgradeToSslAsync(SocketProtectionLevel.Ssl, new HostName(validationHost))).Wait(10000))
+					throw new DicomNetworkException("Could not authenticate '{0}' as SSL server", validationHost);
+			}
 
 			public override void Flush()
 			{
