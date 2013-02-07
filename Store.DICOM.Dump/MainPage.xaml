@@ -9,8 +9,7 @@
     <Page.Resources>
         <CollectionViewSource x:Key="DicomImageSource" IsSourceGrouped="True" ItemsPath="FileImages" Source="{Binding ModalityGroups, ElementName=Self}"/>
 <!--
-        <local:DicomTagToNameConverter x:Key="DicomTagToNameConverter"/>
-        <local:DicomItemToValueConverter x:Key="DicomItemToValueConverter"/>
+        <local:IsNotNullConverter x:Key="IsNotNull"/>
 -->
         <Style x:Key="DicomEchoAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
             <Setter Property="AutomationProperties.AutomationId" Value="DicomEchoAppBarButton"/>
@@ -32,7 +31,7 @@
             <TextBlock Text=" Cureos DICOM Viewer" Grid.Column="1" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/> 
         </Grid>
         <Grid Grid.Row="1">
-            <GridView ItemsSource="{Binding Source={StaticResource DicomImageSource}}" Padding="116,0,40,0" SelectionMode="Single">
+            <GridView x:Name="DicomFilesView" ItemsSource="{Binding Source={StaticResource DicomImageSource}}" Padding="116,0,40,0" SelectionMode="Single">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel Orientation="Horizontal"/>
@@ -61,7 +60,7 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="0.30*" />
                             </Grid.RowDefinitions>
-                            <Image Grid.Row="0" Grid.RowSpan="2" Stretch="Uniform" Source="{Binding Image}"/>
+                            <Image Grid.Row="0" Grid.RowSpan="2" Stretch="Uniform" Source="{Binding FirstFrameImage}"/>
                             <Rectangle Grid.Row="1" Fill="#FF0055AA" Opacity="0.85"/>
                             <TextBlock Grid.Row="1" Foreground="White" Margin="5" TextAlignment="Left" TextWrapping="Wrap" FontSize="12" Text="{Binding DisplayName}" /> 
                         </Grid>
@@ -101,6 +100,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource OpenFileAppBarButtonStyle}" Tapped="OpenFileButtonOnTapped"/>
+                    <Rectangle Margin="5,15,5,15" Stroke="White" StrokeThickness="2" VerticalAlignment="Stretch" Width="1" Opacity="0.25"/>
+                    <Button Style="{StaticResource ViewAppBarButtonStyle}" Tapped="ViewDicomFileButtonOnTapped"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock x:Name="EchoStatus" VerticalAlignment="Center"/>

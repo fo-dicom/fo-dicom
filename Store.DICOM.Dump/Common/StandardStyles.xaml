@@ -1065,11 +1065,13 @@
         <Setter Property="AutomationProperties.Name" Value="Placeholder"/>
         <Setter Property="Content" Value="&#xE18A;"/>
     </Style>
+-->
     <Style x:Key="ViewAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
         <Setter Property="AutomationProperties.AutomationId" Value="ViewAppBarButton"/>
         <Setter Property="AutomationProperties.Name" Value="View"/>
         <Setter Property="Content" Value="&#xE18B;"/>
     </Style>
+<!--
     <Style x:Key="SetLockScreenAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
         <Setter Property="AutomationProperties.AutomationId" Value="SetLockscreenAppBarButton"/>
         <Setter Property="AutomationProperties.Name" Value="Set Lockscreen"/>

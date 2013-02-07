@@ -27,19 +27,41 @@ namespace Store.DICOM.Dump
 
 		public class DicomFileImage
 		{
-			public string DisplayName { get; set; }
-			public DicomFile File { get; set; }
-			public ImageSource Image { get; set; }
+			#region CONSTRUCTORS
 
-			public string Modality
+			public DicomFileImage(string displayName, DicomFile file)
 			{
-				get
+				DisplayName = displayName;
+				File = file;
+
+				var dataset = file.Dataset;
+				if (dataset != null)
 				{
-					return File != null && File.Dataset != null
-						       ? File.Dataset.Get(DicomTag.Modality, "Undefined")
-						       : "Undefined";
+					FirstFrameImage = dataset.Contains(DicomTag.PixelData)
+						                   ? new DicomImage(dataset).RenderImageSource()
+						                   : null;
+					Modality = dataset.Get(DicomTag.Modality, String.Empty);
+					NumberOfFrames = FirstFrameImage != null ? dataset.Get(DicomTag.NumberOfFrames, 1) : 0;
+				}
+				else
+				{
+					FirstFrameImage = null;
+					Modality = String.Empty;
+					NumberOfFrames = 0;
 				}
 			}
+
+			#endregion
+
+			#region PROPERTIES
+
+			public string DisplayName { get; private set; }
+			public DicomFile File { get; private set; }
+			public ImageSource FirstFrameImage { get; private set; }
+			public string Modality { get; private set; }
+			public int NumberOfFrames { get; private set; }
+
+			#endregion
 		}
 
 		public class ModalityGroup
@@ -123,13 +145,7 @@ namespace Store.DICOM.Dump
 		        {
 					var storeStream = await file.OpenAsync(FileAccessMode.Read);
 					var dicomFile = DicomFile.Open(storeStream.AsStream());
-			        var dicomImage = dicomFile.Dataset.Contains(DicomTag.PixelData) ? new DicomImage(dicomFile.Dataset).RenderImageSource() : null;
-			        var fileImage = new DicomFileImage
-				                        {
-					                        DisplayName = Path.GetFileNameWithoutExtension(file.Path),
-					                        File = dicomFile,
-					                        Image = dicomImage
-				                        };
+			        var fileImage = new DicomFileImage(Path.GetFileNameWithoutExtension(file.Path), dicomFile);
 
 			        var modality = fileImage.Modality;
 			        var modalityGroup = _modalityGroups.FirstOrDefault(m => m.Modality.Equals(modality));
@@ -183,5 +199,11 @@ namespace Store.DICOM.Dump
 			} 
 		}
  */
-    }
+
+	    private void ViewDicomFileButtonOnTapped(object sender, TappedRoutedEventArgs e)
+	    {
+			if (DicomFilesView.SelectedItem == null) return;
+		    Frame.Navigate(typeof(ViewDicomFileImagePage), DicomFilesView.SelectedItem);
+	    }
+	}
 }
