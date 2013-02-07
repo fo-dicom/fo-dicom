@@ -8,6 +8,11 @@
     <Page.Resources>
         <local:DicomTagToNameConverter x:Key="DicomTagToNameConverter"/>
         <local:DicomItemToValueConverter x:Key="DicomItemToValueConverter"/>
+        <Style x:Key="PingAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+            <Setter Property="AutomationProperties.AutomationId" Value="PingAppBarButton"/>
+            <Setter Property="AutomationProperties.Name" Value="Ping"/>
+            <Setter Property="Content" Value="&#xE201;"/>
+        </Style>
     </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
@@ -40,10 +45,22 @@
         <TextBlock Grid.Row="0" Grid.Column="0" x:Name="ErrorMessage" Foreground="Red" FontWeight="ExtraBold" VerticalAlignment="Top"/>
         <ComboBox x:Name="TransferSyntaxBox"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" ItemsSource="{Binding TransferSyntaxes, ElementName=Self}" SelectionChanged="TransferSyntaxBox_OnSelectionChanged"></ComboBox>
         <Image Grid.Row="0" Grid.Column="1" Source="{Binding Image, ElementName=Self, Mode=TwoWay}" Stretch="Uniform"/>
-        <Button Grid.Row="1" Grid.Column="0" Click="OpenFileButton_OnClick">Open File</Button>
-        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-            <Button Click="EchoButton_OnClick">Ping</Button>
-            <TextBlock x:Name="EchoStatus"/>
-        </StackPanel>
     </Grid>
+    <Page.BottomAppBar>
+        <AppBar Background="#FF001040">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource OpenFileAppBarButtonStyle}" Tapped="OpenFileButtonOnTapped"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="EchoStatus" VerticalAlignment="Center"/>
+                    <Button Style="{StaticResource PingAppBarButtonStyle}" Tapped="PingButtonOnTapped"/>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
 </Page>

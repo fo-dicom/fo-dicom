@@ -10,6 +10,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -86,13 +87,12 @@ namespace Store.DICOM.Dump
         {
         }
 
-        private async void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
+        private async void OpenFileButtonOnTapped(object sender, TappedRoutedEventArgs e)
         {
 	        ErrorMessage.Text = String.Empty;
 
             var filePicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
-            filePicker.FileTypeFilter.Add(".dcm");
-            filePicker.FileTypeFilter.Add(".dic");
+            filePicker.FileTypeFilter.Add("*");
 
             var file = await filePicker.PickSingleFileAsync();
             if (file == null) return;
@@ -105,7 +105,7 @@ namespace Store.DICOM.Dump
             Image = new DicomImage(Dataset).RenderImageSource();
         }
 
-		private void EchoButton_OnClick(object sender, RoutedEventArgs e)
+		private void PingButtonOnTapped(object sender, TappedRoutedEventArgs e)
 	    {
 		    var client = new DicomClient();
 			var request = new DicomCEchoRequest
@@ -116,7 +116,7 @@ namespace Store.DICOM.Dump
 						                                        () => EchoStatus.Text = res.Status.Description)
 				              };
 		    client.AddRequest(request);
-			client.Send("localhost", 104, false, "ANY-SCU", "STORESCP");
+			client.Send("server", 104, false, "cureos", "cureos");
 	    }
 
 	    private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
