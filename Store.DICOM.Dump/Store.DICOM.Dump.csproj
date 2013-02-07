@@ -106,8 +106,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="CEchoScp.cs" />
-    <Compile Include="DicomItemToValueConverter.cs" />
-    <Compile Include="DicomTagToNameConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

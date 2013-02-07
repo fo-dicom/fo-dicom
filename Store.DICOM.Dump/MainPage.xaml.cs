@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using Dicom;
 using Dicom.Imaging;
-using Dicom.Imaging.Codec;
 using Dicom.Network;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -22,16 +22,40 @@ namespace Store.DICOM.Dump
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage
-    {
-        #region FIELDS
+	{
+		#region INNER CLASSES
 
-	    private DicomServer<CEchoScp> _server;
+		public class DicomFileImage
+		{
+			public string DisplayName { get; set; }
+			public DicomFile File { get; set; }
+			public ImageSource Image { get; set; }
+
+			public string Modality
+			{
+				get
+				{
+					return File != null && File.Dataset != null
+						       ? File.Dataset.Get(DicomTag.Modality, "Undefined")
+						       : "Undefined";
+				}
+			}
+		}
+
+		public class ModalityGroup
+		{
+			public string Modality { get; set; }
+			public ICollection<DicomFileImage> FileImages { get; set; }
+		}
+
+		#endregion
+
+		#region FIELDS
+
+	    private readonly ObservableCollection<ModalityGroup> _modalityGroups =
+		    new ObservableCollection<ModalityGroup>();
  
-        public static readonly DependencyProperty DatasetProperty =
-            DependencyProperty.Register("Dataset", typeof(DicomDataset), typeof(MainPage), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty ImageProperty =
-            DependencyProperty.Register("Image", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
+		private DicomServer<CEchoScp> _server;
 
 	    public static readonly DependencyProperty TransferSyntaxesProperty =
 		    DependencyProperty.Register("TransferSyntaxes", typeof(ReadOnlyObservableCollection<DicomTransferSyntax>),
@@ -51,24 +75,21 @@ namespace Store.DICOM.Dump
 	
         #endregion
 
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+		#region CONSTRUCTORS
+
+		public MainPage()
+		{
+			InitializeComponent();
+		}
+		
+		#endregion
 
         #region PROPERTIES
 
-        public DicomDataset Dataset
-        {
-            get { return (DicomDataset)GetValue(DatasetProperty); }
-            set { SetValue(DatasetProperty, value); }
-        }
-
-        public ImageSource Image
-        {
-            get { return (ImageSource)GetValue(ImageProperty); }
-            set { SetValue(ImageProperty, value); }
-        }
+	    public ObservableCollection<ModalityGroup> ModalityGroups
+	    {
+			get { return _modalityGroups; }
+	    }
 
 		public ReadOnlyObservableCollection<DicomTransferSyntax> TransferSyntaxes
 		{
@@ -89,23 +110,46 @@ namespace Store.DICOM.Dump
 
         private async void OpenFileButtonOnTapped(object sender, TappedRoutedEventArgs e)
         {
-	        ErrorMessage.Text = String.Empty;
-
             var filePicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
             filePicker.FileTypeFilter.Add("*");
 
-            var file = await filePicker.PickSingleFileAsync();
-            if (file == null) return;
+	        var files = await filePicker.PickMultipleFilesAsync();
+			if (files == null || files.Count == 0) return;
 
-            var storeStream = await file.OpenAsync(FileAccessMode.Read);
-            var dicomFile = DicomFile.Open(storeStream.AsStream());
-            Dataset = dicomFile.Dataset;
+			_modalityGroups.Clear();
+			foreach (var file in files)
+	        {
+		        try
+		        {
+					var storeStream = await file.OpenAsync(FileAccessMode.Read);
+					var dicomFile = DicomFile.Open(storeStream.AsStream());
+			        var dicomImage = dicomFile.Dataset.Contains(DicomTag.PixelData) ? new DicomImage(dicomFile.Dataset).RenderImageSource() : null;
+			        var fileImage = new DicomFileImage
+				                        {
+					                        DisplayName = Path.GetFileNameWithoutExtension(file.Path),
+					                        File = dicomFile,
+					                        Image = dicomImage
+				                        };
 
-            if (!Dataset.Contains(DicomTag.PixelData)) return;
-            Image = new DicomImage(Dataset).RenderImageSource();
-        }
+			        var modality = fileImage.Modality;
+			        var modalityGroup = _modalityGroups.FirstOrDefault(m => m.Modality.Equals(modality));
+					if (modalityGroup == null)
+					{
+						_modalityGroups.Add(new ModalityGroup { Modality = modality, FileImages = new ObservableCollection<DicomFileImage> { fileImage }});
+					}
+					else
+					{
+						modalityGroup.FileImages.Add(fileImage);
+					}
+		        }
+		        catch
+		        {
+		        }
+	        }
 
-		private void PingButtonOnTapped(object sender, TappedRoutedEventArgs e)
+		}
+
+		private void DicomEchoButtonOnTapped(object sender, TappedRoutedEventArgs e)
 	    {
 		    var client = new DicomClient();
 			var request = new DicomCEchoRequest
@@ -123,7 +167,7 @@ namespace Store.DICOM.Dump
 	    {
 			_server = new DicomServer<CEchoScp>(104);
 	    }
-
+/*
 	    private void TransferSyntaxBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 	    {
 			if (Image == null) return;
@@ -138,5 +182,6 @@ namespace Store.DICOM.Dump
 				ErrorMessage.Text = exception.Message + Environment.NewLine + exception.StackTrace;
 			} 
 		}
+ */
     }
 }
