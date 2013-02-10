@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using Dicom;
 using Dicom.IO.Buffer;
 using Dicom.Imaging;
@@ -121,10 +122,9 @@ namespace Store.DICOM.Dump
 			savePicker.FileTypeChoices.Add("DICOM files", new[] { ".dcm", ".dic" });
 
 			var file = await savePicker.PickSaveFileAsync();
-			using (var writer = new DataWriter(await file.OpenAsync(FileAccessMode.ReadWrite)))
+			using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
 			{
-				writer.WriteString("TODO");
-				await writer.StoreAsync();
+				FileImage.DicomFile.Save(stream.AsStreamForWrite());
 			}
 		}
 

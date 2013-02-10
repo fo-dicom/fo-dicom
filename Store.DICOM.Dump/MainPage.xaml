@@ -5,12 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:local="using:Store.DICOM.Dump"
-    mc:Ignorable="d" x:Name="Self" Loaded="MainPage_OnLoaded">
+    mc:Ignorable="d" x:Name="Self">
     <Page.Resources>
         <CollectionViewSource x:Key="DicomImageSource" IsSourceGrouped="True" ItemsPath="FileImages" Source="{Binding ModalityGroups, ElementName=Self}"/>
-<!--
-        <local:IsNotNullConverter x:Key="IsNotNull"/>
--->
         <Style x:Key="DicomEchoAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
             <Setter Property="AutomationProperties.AutomationId" Value="DicomEchoAppBarButton"/>
             <Setter Property="AutomationProperties.Name" Value="DICOM Echo"/>
@@ -81,10 +78,6 @@
                     <Button Style="{StaticResource OpenFileAppBarButtonStyle}" Tapped="OpenFileButtonOnTapped"/>
                     <Rectangle Margin="5,15,5,15" Stroke="White" StrokeThickness="2" VerticalAlignment="Stretch" Width="1" Opacity="0.25"/>
                     <Button Style="{StaticResource RemoveAppBarButtonStyle}" Tapped="RemoveButtonOnTapped"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock x:Name="EchoStatus" VerticalAlignment="Center"/>
-                    <Button Style="{StaticResource DicomEchoAppBarButtonStyle}" Tapped="DicomEchoButtonOnTapped"/>
                 </StackPanel>
             </Grid>
         </AppBar>

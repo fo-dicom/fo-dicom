@@ -37,8 +37,6 @@ namespace Store.DICOM.Dump
 	    private readonly static ObservableCollection<ModalityGroup> _modalityGroups =
 		    new ObservableCollection<ModalityGroup>();
  
-		private DicomServer<CEchoScp> _server;
-	
         #endregion
 
 		#region CONSTRUCTORS
@@ -101,25 +99,6 @@ namespace Store.DICOM.Dump
 	        }
 
 		}
-
-		private void DicomEchoButtonOnTapped(object sender, TappedRoutedEventArgs e)
-	    {
-		    var client = new DicomClient();
-			var request = new DicomCEchoRequest
-				              {
-					              OnResponseReceived =
-						              async (req, res) =>
-						              await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-						                                        () => EchoStatus.Text = res.Status.Description)
-				              };
-		    client.AddRequest(request);
-			client.Send("server", 104, false, "cureos", "cureos");
-	    }
-
-	    private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
-	    {
-			_server = new DicomServer<CEchoScp>(104);
-	    }
 
 	    private void DicomFilesViewOnItemClick(object sender, ItemClickEventArgs e)
 	    {
