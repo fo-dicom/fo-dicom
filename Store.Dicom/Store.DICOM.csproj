@@ -312,6 +312,9 @@
     <Compile Include="..\DICOM\Imaging\Mathematics\Matrix.cs">
       <Link>Imaging\Mathematics\Matrix.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\MovingAverage.cs">
+      <Link>Imaging\Mathematics\MovingAverage.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Imaging\Mathematics\Point2.cs">
       <Link>Imaging\Mathematics\Point2.cs</Link>
     </Compile>
