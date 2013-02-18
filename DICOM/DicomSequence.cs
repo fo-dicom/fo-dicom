@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Dicom.IO;
-
 namespace Dicom {
 	public class DicomSequence : DicomItem, IEnumerable<DicomDataset> {
 		private IList<DicomDataset> _items;

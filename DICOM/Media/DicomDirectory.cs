@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Dicom.IO;
@@ -10,7 +11,7 @@ namespace Dicom {
 	public class DicomDirectory : DicomFile, IDisposable {
 		#region Properties and Attributes
 
-		private readonly DicomSequence _directoryRecordSequence;
+		private DicomSequence _directoryRecordSequence;
 
 		private uint _fileOffset;
 
@@ -63,37 +64,11 @@ namespace Dicom {
 				   .Add(_directoryRecordSequence);
 		}
 
-		public DicomDirectory(string fileName) : base() {
-			try {
-				File = new FileReference(fileName);
-
-				using (var source = new FileByteSource(File)) {
-					var reader = new IO.Reader.DicomFileReader();
-
-					var datasetObserver = new IO.Reader.DicomDatasetReaderObserver(Dataset);
-					var dirObserver = new DicomDirectoryReaderObserver(Dataset);
-
-					reader.Read(source,
-						new IO.Reader.DicomDatasetReaderObserver(FileMetaInfo),
-						new IO.Reader.DicomReaderMultiObserver(datasetObserver, dirObserver));
-
-					Format = reader.FileFormat;
-
-					Dataset.InternalTransferSyntax = reader.Syntax;
-
-					_directoryRecordSequence = Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
-
-					RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
-				}
-			} catch (Exception e) {
-				throw new DicomFileException(this, e.Message, e);
-			}
-		}
 		#endregion
 
 		#region Save/Load Methods
 
-		public override void Save(string fileName) {
+		protected override void OnSave() {
 			if (RootDirectoryRecord == null)
 				throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
 
@@ -131,19 +106,104 @@ namespace Dicom {
 				Dataset.Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
 				Dataset.Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
 			}
-
-			base.Save(fileName);
 		}
 
-		public override void BeginSave(string fileName, AsyncCallback callback, object state) {
-			throw new NotImplementedException();
+		public new static DicomDirectory Open(string fileName) {
+			var df = new DicomDirectory();
+
+			// reset datasets
+			df.FileMetaInfo.Clear();
+			df.Dataset.Clear();
+
+			try {
+				df.File = new FileReference(fileName);
+
+				using (var source = new FileByteSource(df.File)) {
+					DicomFileReader reader = new DicomFileReader();
+
+					var datasetObserver = new DicomDatasetReaderObserver(df.Dataset);
+					var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+
+					reader.Read(source,
+						new DicomDatasetReaderObserver(df.FileMetaInfo),
+						new DicomReaderMultiObserver(datasetObserver, dirObserver));
+
+					df.Format = reader.FileFormat;
+
+					df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+					df._directoryRecordSequence = df.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+					df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
+
+					return df;
+				}
+			} catch (Exception e) {
+				throw new DicomFileException(df, e.Message, e);
+			}
 		}
 
+		public new static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
+			var df = new DicomDirectory();
 
-		public static DicomDirectory OpenMedia(string fileName) {
-			var dicomDirectory = new DicomDirectory(fileName);
-			return dicomDirectory;
+			// reset datasets
+			df.FileMetaInfo.Clear();
+			df.Dataset.Clear();
+
+			df.File = new FileReference(fileName);
+
+			FileByteSource source = new FileByteSource(df.File);
+
+			EventAsyncResult result = new EventAsyncResult(callback, state);
+
+			DicomFileReader reader = new DicomFileReader();
+
+			var datasetObserver = new DicomDatasetReaderObserver(df.Dataset);
+			var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+
+			reader.BeginRead(source,
+				new DicomDatasetReaderObserver(df.FileMetaInfo),
+				new DicomReaderMultiObserver(datasetObserver, dirObserver),
+				OnReadComplete, new Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>(reader, df, dirObserver, result));
+
+			return result;
 		}
+		private static void OnReadComplete(IAsyncResult result) {
+			var state = result.AsyncState as Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>;
+
+			Exception e = null;
+			try {
+				state.Item1.EndRead(result);
+
+				// ensure that file handles are closed
+				var source = (FileByteSource)state.Item1.Source;
+				source.Dispose();
+
+				state.Item2.Format = state.Item1.FileFormat;
+				state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
+
+				state.Item2._directoryRecordSequence = state.Item2.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+				state.Item2.RootDirectoryRecord = state.Item3.BuildDirectoryRecords();
+			} catch (Exception ex) {
+				state.Item2.Format = state.Item1.FileFormat;
+				e = ex;
+			}
+
+			state.Item4.InternalState = new Tuple<DicomDirectory, Exception>(state.Item2, e);
+			state.Item4.Set();
+		}
+
+		public new static DicomDirectory EndOpen(IAsyncResult result) {
+			result.AsyncWaitHandle.WaitOne();
+
+			EventAsyncResult eventResult = result as EventAsyncResult;
+			var state = eventResult.InternalState as Tuple<DicomDirectory, Exception>;
+
+			if (state.Item2 != null)
+				throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
+
+			return state.Item1;
+		}
+
 		private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem) {
 			if (recordItem == null)
 				return;
@@ -154,7 +214,6 @@ namespace Dicom {
 
 			if (recordItem.NextDirectoryRecord != null)
 				AddDirectoryRecordsToSequenceItem(recordItem.NextDirectoryRecord);
-
 		}
 
 		#endregion

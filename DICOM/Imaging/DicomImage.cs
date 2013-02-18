@@ -81,7 +81,6 @@ namespace Dicom.Imaging {
 				_pixelData = null;
 			}
 		}
-
 		/// <summary>Photometric interpretation of pixel data.</summary>
 		public PhotometricInterpretation PhotometricInterpretation {
 			get;
@@ -194,13 +193,17 @@ namespace Dicom.Imaging {
 				if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
 					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
+				// temporary fix for JPEG 2000 Lossy images
+				if (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
+					pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+
 				_pixelData = PixelDataFactory.Create(pixelData, 0);
 			} else {
 				// pull uncompressed frame from source pixel data
 				_pixelData = PixelDataFactory.Create(PixelData, frame);
 			}
 
-			_pixelData.Rescale(_scale);
+			_pixelData = _pixelData.Rescale(_scale);
 
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
@@ -221,6 +224,10 @@ namespace Dicom.Imaging {
 
 			// temporary fix for JPEG compressed YBR images
 			if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1 || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+				pi = PhotometricInterpretation.Rgb;
+
+			// temporary fix for JPEG 2000 Lossy images
+			if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
 				pi = PhotometricInterpretation.Rgb;
 
 			if (pi == null) {

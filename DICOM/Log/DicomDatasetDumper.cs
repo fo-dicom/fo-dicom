@@ -6,13 +6,15 @@ using Dicom.IO.Buffer;
 namespace Dicom.Log {
 	public class DicomDatasetDumper : IDicomDatasetWalker {
 		private StringBuilder _log;
-		private int _width = 80;
-		private int _value = 60;
+		private int _width = 128;
+		private int _value = 64;
 		private int _depth = 0;
 		private string _pad = String.Empty;
 
-		public DicomDatasetDumper(StringBuilder log) {
+		public DicomDatasetDumper(StringBuilder log, int width = 128, int valueLength = 64) {
 			_log = log;
+			_width = width;
+			_value = valueLength;
 		}
 
 		public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback) {

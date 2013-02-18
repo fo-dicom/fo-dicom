@@ -13,6 +13,7 @@ namespace Dicom.Imaging.Render {
 		private VOILUT _voiLut;
 		private OutputLUT _outputLut;
 		private InvertLUT _invertLut;
+		private GrayscaleRenderOptions _options;
 		#endregion
 
 		#region Public Constructor
@@ -22,11 +23,12 @@ namespace Dicom.Imaging.Render {
 		/// </summary>
 		/// <param name="options">Grayscale options to use in the pipeline</param>
 		public GenericGrayscalePipeline(GrayscaleRenderOptions options) {
-			if (options.RescaleSlope != 1.0 || options.RescaleIntercept != 0.0)
-				_rescaleLut = new ModalityLUT(options);
-			_voiLut = VOILUT.Create(options);
-			_outputLut = new OutputLUT(options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);
-			if (options.Invert)
+			_options = options;
+			if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0)
+				_rescaleLut = new ModalityLUT(_options);
+			_voiLut = VOILUT.Create(_options);
+			_outputLut = new OutputLUT(_options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);
+			if (_options.Invert)
 				_invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);
 		}
 		#endregion
@@ -47,7 +49,7 @@ namespace Dicom.Imaging.Render {
 						composite.Add(_invertLut);
 					_lut = composite;
 				}
-				return _lut;
+				return new PrecalculatedLUT(_lut, _options.BitDepth.MinimumValue, _options.BitDepth.MaximumValue);
 			}
 		}
 		#endregion

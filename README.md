@@ -1,6 +1,6 @@
 # Fellow Oak DICOM for .NET
 
-Please join the [Google group](http://groups.google.com/group/fo-dicom) for updates and support. Binaries are available from [GitHub](https://github.com/rcd/fo-dicom/downloads) and [NuGet](http://www.nuget.org/packages/fo-dicom).
+Please join the [Google group](http://groups.google.com/group/fo-dicom) for updates and support. Binaries are available from [Fellow Oak](http://www.fellowoak.com/binaries/) and [NuGet](http://www.nuget.org/packages/fo-dicom).
 
 ### Features
 * High-performance, fully asynchronous, .NET 4.0 API

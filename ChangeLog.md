@@ -1,3 +1,33 @@
+#### v1.0.32
+* DICOM Media example by Hesham Desouky
+* Move DicomFileScanner to Dicom.Media namespace
+* Add WriteToConsole logging extension method
+* Increase line length of dataset logging extension methods
+* Improve rendering performance by precalculating grayscale LUT
+* Miscellaneous improvements and fixes
+
+#### v1.0.31 (1/13/2013)
+* Improved portability and fewer compiler warnings (Anders Gustafsson)
+* Ensure frame buffers created by codecs have even length
+* Import DicomFileScanner from mDCM
+* Ability to save datasets and images in DICOM Dump utility
+* Ability to change tranfer syntax in DICOM Dump utility
+* Fix loss of embedded overlay data during compression
+* Fix rendering of big endian images
+* Miscellaneous improvements and fixes
+
+#### v1.0.30 (1/1/2013)
+* Fix bug rescaling DicomImage (Mahesh Dubey)
+* Add rules for matching and transforming DICOM datasets
+* Miscellaneous improvements and fixes
+
+#### v1.0.29 (12/22/2012)
+* Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
+* Convert unit tests to use MS Unit Testing framework
+* Move DICOMDIR classes back to Dicom.Media namespace
+* Change DicomDirectory Open/Save methods to be consistent with DicomFile usage
+* Fix bug decoding single frame from a multiframe image (Mahesh Dubey)
+
 #### v1.0.28 (12/12/2012)
 * Display exception message in DICOM Dump for image rendering errors
 * Remove serialization members

@@ -25,7 +25,9 @@ namespace Dicom.IO.Buffer {
 		}
 
 		public byte[] GetByteRange(int offset, int count) {
-			throw new ArgumentOutOfRangeException("offset", "Offset and count cannot be greater than 0 in EmptyBuffer");
+			if (offset != 0 || count != 0)
+				throw new ArgumentOutOfRangeException("offset", "Offset and count cannot be greater than 0 in EmptyBuffer");
+			return Data;
 		}
 	}
 }

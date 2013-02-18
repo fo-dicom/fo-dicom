@@ -36,15 +36,20 @@
 			this.pbDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pbDisplay.TabIndex = 0;
 			this.pbDisplay.TabStop = false;
+			this.pbDisplay.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
+			this.pbDisplay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+			this.pbDisplay.MouseLeave += new System.EventHandler(this.OnMouseLeave);
+			this.pbDisplay.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+			this.pbDisplay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
 			// 
-			// DicomQuickDisplayForm
+			// DisplayForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
 			this.Controls.Add(this.pbDisplay);
 			this.MinimizeBox = false;
-			this.Name = "DicomQuickDisplayForm";
+			this.Name = "DisplayForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

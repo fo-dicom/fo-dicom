@@ -39,7 +39,10 @@ namespace Dicom {
 			protected set;
 		}
 
-		public virtual void Save(string fileName) {
+		protected virtual void OnSave() {
+		}
+
+		public void Save(string fileName) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -50,6 +53,8 @@ namespace Dicom {
 
 			File = new FileReference(fileName);
 			File.Delete();
+
+			OnSave();
 
 			using (var target = new FileByteTarget(File)) {
 				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
@@ -57,7 +62,24 @@ namespace Dicom {
 			}
 		}
 
-		public virtual void BeginSave(string fileName, AsyncCallback callback, object state) {
+		public void Save(Stream stream) {
+			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
+				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+
+			if (Format == DicomFileFormat.DICOM3NoFileMetaInfo) {
+				// create file meta information from dataset
+				FileMetaInfo = new DicomFileMetaInformation(Dataset);
+			}
+
+			OnSave();
+
+			using (var target = new StreamByteTarget(stream)) {
+				DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+				writer.Write(target, FileMetaInfo, Dataset);
+			}
+		}
+
+		public void BeginSave(string fileName, AsyncCallback callback, object state) {
 			if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
 				throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -68,6 +90,8 @@ namespace Dicom {
 
 			File = new FileReference(fileName);
 			File.Delete();
+
+			OnSave();
 
 			FileByteTarget target = new FileByteTarget(File);
 
@@ -195,6 +219,10 @@ namespace Dicom {
 				throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
 
 			return state.Item1;
+		}
+
+		public override string ToString() {
+			return String.Format("DICOM File [{0}]", Format);
 		}
 	}
 }

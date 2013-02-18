@@ -100,6 +100,7 @@ void DicomJpegLsNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData
 			buffer = gcnew TempFileBuffer(jpegData);
 		else
 			buffer = gcnew MemoryByteBuffer(jpegData);
+		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
 	}
 }
@@ -122,6 +123,7 @@ void DicomJpegLsNativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelData
 			buffer = gcnew TempFileBuffer(frameData);
 		else
 			buffer = gcnew MemoryByteBuffer(frameData);
+		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
 	}
 }

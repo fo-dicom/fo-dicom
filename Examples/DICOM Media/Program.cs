@@ -4,119 +4,75 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace DICOM_Media
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            try
-            {
-                if (args.Length < 2)
-                {
-                    PrintUsage();   
-                    return;
-                }
-                foreach (var arg in args)
-                {
-                    if (arg == "read")
-                    {
-                        ReadMedia(args);
-                        return;
-                    }
-                    else if (arg == "write")
-                    {
-                        WriteMedia(args);
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
+namespace Dicom.Media {
+	class Program {
+		static void Main(string[] args) {
+			try {
+				if (args.Length < 2) {
+					PrintUsage();
+					return;
+				}
 
-            }
-        }
+				var action = args[0];
+				var path = args[1];
 
-        private static void WriteMedia(string[] args)
-        {
-            string dicomDirPath = string.Empty;
-            string imagesFolder = string.Empty;
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i].StartsWith("-f:"))
-                {
-                    dicomDirPath = args[i].Substring(3);
-                }
-                else if (args[i].StartsWith("-i:"))
-                {
-                    imagesFolder = args[i].Substring(3);
-                }
-            }
-            if (string.IsNullOrEmpty(dicomDirPath) || string.IsNullOrEmpty(imagesFolder))
-            {
-                PrintUsage();
-                return;
-            }
+				if (action == "read") {
+					path = Path.Combine(path, "DICOMDIR");
 
-            var dirInfo = new DirectoryInfo(imagesFolder);
+					if (!File.Exists(path)) {
+						Console.WriteLine("DICOMDIR file not found: {0}", path);
+						return;
+					}
 
-            var dicomDir = new Dicom.DicomDirectory();
-            foreach (var file in dirInfo.GetFiles("*.*",SearchOption.AllDirectories))
-            {
-                var dicomFile = Dicom.DicomFile.Open(file.FullName);
+					ReadMedia(path);
+					return;
+				}
 
-                dicomDir.AddFile(dicomFile, string.Format(@"000001\{0}",file.Name));
-            }
+				WriteMedia(path);
+			} catch (Exception ex) {
+				Console.WriteLine(ex.Message);
+			} finally {
 
-            dicomDir.Save(dicomDirPath);
-        }
+			}
+		}
 
-        private static void ReadMedia(string[] args)
-        {
-            string dicomDirPath = string.Empty;
-            string imagesFolder = string.Empty;
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i].StartsWith("-f:"))
-                {
-                    dicomDirPath = args[i].Substring(3);
-                }
-                else if (args[i].StartsWith("-i:"))
-                {
-                    imagesFolder = args[i].Substring(3);
-                }
-            }
+		private static void WriteMedia(string path) {
+			var dicomDirPath = Path.Combine(path, "DICOMDIR");
 
-            var dicomDirectory = Dicom.DicomDirectory.OpenMedia(dicomDirPath);
+			var dirInfo = new DirectoryInfo(path);
 
-            foreach (var patientRecord in dicomDirectory.RootDirectoryRecordCollection)
-            {
-                Console.WriteLine("Patient {0},{1}", patientRecord.Get<string>(Dicom.DicomTag.PatientID), patientRecord.Get<string>(Dicom.DicomTag.PatientName));
+			var dicomDir = new DicomDirectory();
+			foreach (var file in dirInfo.GetFiles("*.*", SearchOption.AllDirectories)) {
+				var dicomFile = Dicom.DicomFile.Open(file.FullName);
 
-                foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection)
-                {
-                    Console.WriteLine("\tStudy {0}", studyRecord.Get<string>(Dicom.DicomTag.StudyInstanceUID));
+				dicomDir.AddFile(dicomFile, String.Format(@"000001\{0}", file.Name));
+			}
 
-                    foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection)
-                    {
-                        Console.WriteLine("\tSeries {0}", seriesRecord.Get<string>(Dicom.DicomTag.SeriesInstanceUID));
+			dicomDir.Save(dicomDirPath);
+		}
 
-                        foreach (var imageRecord in seriesRecord.LowerLevelDirectoryRecordCollection)
-                        {
-                            Console.WriteLine("\tImage {0}, {1}", imageRecord.Get<string>(Dicom.DicomTag.ReferencedSOPInstanceUIDInFile), imageRecord.Get<Dicom.DicomCodeString>(Dicom.DicomTag.ReferencedFileID).Get<string>());
-                        }
-                    }
-                }
-            }
-        }
+		private static void ReadMedia(string fileName) {
+			var dicomDirectory = DicomDirectory.Open(fileName);
 
-        private static void PrintUsage()
-        {
-            Console.WriteLine("usage: create|read -f:filePath -i:imagesFolder");
-        }
-    }
+			foreach (var patientRecord in dicomDirectory.RootDirectoryRecordCollection) {
+				Console.WriteLine("Patient: {0} ({1})", patientRecord.Get<string>(DicomTag.PatientName), patientRecord.Get<string>(DicomTag.PatientID));
+
+				foreach (var studyRecord in patientRecord.LowerLevelDirectoryRecordCollection) {
+					Console.WriteLine("\tStudy: {0}", studyRecord.Get<string>(DicomTag.StudyInstanceUID));
+
+					foreach (var seriesRecord in studyRecord.LowerLevelDirectoryRecordCollection) {
+						Console.WriteLine("\t\tSeries: {0}", seriesRecord.Get<string>(DicomTag.SeriesInstanceUID));
+
+						foreach (var imageRecord in seriesRecord.LowerLevelDirectoryRecordCollection) {
+							Console.WriteLine("\t\t\tImage: {0} [{1}]", imageRecord.Get<string>(DicomTag.ReferencedSOPInstanceUIDInFile), imageRecord.Get<string>(Dicom.DicomTag.ReferencedFileID));
+						}
+					}
+				}
+			}
+		}
+
+		private static void PrintUsage() {
+			Console.WriteLine("Usage: Dicom.Media.exe read|write <directory>");
+		}
+	}
 }

@@ -70,7 +70,7 @@ namespace Dicom {
 		protected string StringValue {
 			get {
 				if (_value == null && Buffer != null)
-					_value = Encoding.GetString(Buffer.Data).TrimEnd((char)ValueRepresentation.PaddingValue);
+					_value = Encoding.GetString(Buffer.Data, 0, (int)Buffer.Size).TrimEnd((char)ValueRepresentation.PaddingValue);
 				return _value;
 			}
 		}
@@ -464,7 +464,7 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
-				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any)).ToArray();
+				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
@@ -591,7 +591,7 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
-				_values = base.Get<string[]>().Select(x => int.Parse(x)).ToArray();
+				_values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 			}
 
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(object)) {
@@ -622,10 +622,13 @@ namespace Dicom {
 	}
 
 	/// <summary>Long String (LO)</summary>
-	public class DicomLongString : DicomStringElement {
+	public class DicomLongString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomLongString(DicomTag tag, string value) : base(tag, value) {
+        public DicomLongString(DicomTag tag, params string[] values) : base(tag, values) {
 		}
+
+        public DicomLongString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+        }
 
 		public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -643,6 +646,9 @@ namespace Dicom {
 		#region Public Constructors
 		public DicomLongText(DicomTag tag, string value) : base(tag, value) {
 		}
+
+        public DicomLongText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
 
 		public DicomLongText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}
@@ -752,14 +758,21 @@ namespace Dicom {
 	}
 
 	/// <summary>Person Name (PN)</summary>
-	public sealed class DicomPersonName : DicomStringElement {
+	public sealed class DicomPersonName : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomPersonName(DicomTag tag, string value) : base(tag, value) {
+        public DicomPersonName(DicomTag tag, params string[] values) : base(tag, values) {
 		}
 
-		public DicomPersonName(DicomTag tag, string Last, string Middle, string First, string Prefix = null, string Suffix = null) : base(tag, null) {
-			throw new NotImplementedException();
+        public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+        }
+
+        public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+            base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
 		}
+
+        public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+            base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+        }
 
 		public DicomPersonName(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -771,39 +784,91 @@ namespace Dicom {
 		}
 
 		public string Last {
-			get;
-			set;
+            get {
+                string[] s = Get<string>().Split('\\');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('=');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('^');
+                if (s.Count() < 1) return "";
+                return s[0];
+            }
 		}
 
-		public string Middle {
-			get;
-			set;
+        public string First
+        {
+            get
+            {
+                string[] s = Get<string>().Split('\\');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('=');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('^');
+                if (s.Count() < 2) return "";
+                return s[1];
+            }
+        }
+        
+        public string Middle
+        {
+            get {
+                string[] s = Get<string>().Split('\\');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('=');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('^');
+                if (s.Count() < 3) return "";
+                return s[2];
+            }
 		}
 
-		public string First {
-			get;
-			set;
-		}
 
         public string Prefix
         {
-            get;
-            set;
+            get {
+                string[] s = Get<string>().Split('\\');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('=');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('^');
+                if (s.Count() < 4) return "";
+                return s[3];
+            }
         }
 
         public string Suffix
         {
-            get;
-            set;
+            get {
+                string[] s = Get<string>().Split('\\');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('=');
+                if (s.Count() < 1) return "";
+                s = s[0].Split('^');
+                if (s.Count() < 5) return "";
+                return s[4];
+            }
         }
         #endregion
-	}
+        #region Private Functions
+        private static string ConcatName(string Last, string First, string Middle = null, string Prefix = null, string Suffix = null)
+        {
+            if (!String.IsNullOrEmpty(Suffix)) return Last + "^" + First + "^" + Middle + "^" + Prefix + "^" + Suffix;
+            if (!String.IsNullOrEmpty(Prefix)) return Last + "^" + First + "^" + Middle + "^" + Prefix;
+            if (!String.IsNullOrEmpty(Middle)) return Last + "^" + First + "^" + Middle;
+            if (!String.IsNullOrEmpty(First))  return Last + "^" + First;
+            return Last;
+        }
+        #endregion
+    }
 
 	/// <summary>Short String (SH)</summary>
-	public class DicomShortString : DicomStringElement {
+	public class DicomShortString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomShortString(DicomTag tag, string value) : base(tag, value) {
+        public DicomShortString(DicomTag tag, params string[] values) : base(tag, values) {
 		}
+
+        public DicomShortString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+        }
 
 		public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -864,6 +929,9 @@ namespace Dicom {
 		#region Public Constructors
 		public DicomShortText(DicomTag tag, string value) : base(tag, value) {
 		}
+
+        public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+        }
 
 		public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}

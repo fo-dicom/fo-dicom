@@ -20,6 +20,16 @@ namespace Dicom.Threading {
 			Stop();
 		}
 
+		public int Count {
+			get {
+				if (_actions == null)
+					return 0;
+
+				lock (_lock)
+					return _actions.Count;
+			}
+		}
+
 		public void Enqueue(Action action) {
 			if (_thread == null)
 				Start();

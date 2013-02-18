@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Dicom {
+namespace Dicom.Media {
 	public class DicomDirectoryRecordType {
 		#region Properties and Attributes
 		private readonly string _recordName;
