@@ -3,6 +3,7 @@
 * Move DicomFileScanner to Dicom.Media namespace
 * Add WriteToConsole logging extension method
 * Increase line length of dataset logging extension methods
+* Improve rendering performance by precalculating grayscale LUT
 * Miscellaneous improvements and fixes
 
 #### v1.0.31 (1/13/2013)
