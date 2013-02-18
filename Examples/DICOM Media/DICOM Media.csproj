@@ -30,12 +30,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{00A56C9C-8237-4CB8-ACC9-437C8D366EFC}</ProjectGuid>
+    <ProjectGuid>{B33668E0-9F98-453C-98C8-D203E92A1A40}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dicom.Media</RootNamespace>
@@ -130,6 +131,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\DICOM\DICOM.csproj">
       <Project>{d6e309b0-4837-459e-8c85-abc268440d62}</Project>
+    </ProjectReference>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>

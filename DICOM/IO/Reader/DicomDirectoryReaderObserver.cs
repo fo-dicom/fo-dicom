@@ -8,7 +8,7 @@ using Dicom.IO.Reader;
 using Dicom.IO.Buffer;
 using Dicom.Media;
 
-namespace Dicom.Media {
+namespace Dicom.IO.Reader {
 	public class DicomDirectoryReaderObserver : IDicomReaderObserver {
 		private DicomSequence _directoryRecordSequence = null;
 		private Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
@@ -62,6 +62,7 @@ namespace Dicom.Media {
 		}
 
 		public void OnEndSequence() {
+            _currentSequenceTag.Pop();
 		}
 
 		public void OnBeginFragmentSequence(IO.IByteSource source, DicomTag tag, DicomVR vr) {
