@@ -13,16 +13,12 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructor
-		public PrecalculatedLUT(ILUT lut) {
-			_minValue = lut.MinimumOutputValue;
-			_maxValue = lut.MaximumOutputValue;
+		public PrecalculatedLUT(ILUT lut, int minValue, int maxValue) {
+			_minValue = minValue;
+			_maxValue = maxValue;
 			_offset = -_minValue;
 			_table = new int[_maxValue - _minValue + 1];
 			_lut = lut;
-
-			for (int i = _minValue; i <= _maxValue; i++) {
-				_table[i + _offset] = _lut[i];
-			}
 		}
 		#endregion
 
@@ -48,6 +44,8 @@ namespace Dicom.Imaging.LUT {
 		public void Recalculate() {
 			if (IsValid)
 				return;
+
+			_lut.Recalculate();
 
 			for (int i = _minValue; i <= _maxValue; i++) {
 				_table[i + _offset] = _lut[i];
