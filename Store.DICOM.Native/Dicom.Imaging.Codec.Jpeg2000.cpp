@@ -76,7 +76,7 @@ void DicomJpeg2000NativeCodec::Encode(NativePixelData^ oldPixelData, NativePixel
 		if (newPixelData->TransferSyntaxIsLossy && jparams->Irreversible)
 			eparams.irreversible = 1;
 
-		int r = 0;
+		unsigned int r = 0;
 		for (; r < jparams->RateLevels->Length; r++) {
 			if (jparams->RateLevels[r] > jparams->Rate) {
 				eparams.tcp_numlayers++;

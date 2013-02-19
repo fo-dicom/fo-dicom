@@ -70,7 +70,7 @@ namespace IJGVERS {
 		Writer->DetachStream();
 		Writer = nullptr;
 
-		Array<unsigned char>^ bytes = ref new Array<unsigned char>(MemoryBuffer->Size);
+		Array<unsigned char>^ bytes = ref new Array<unsigned char>(static_cast<unsigned int>(MemoryBuffer->Size));
 		DataReader^ reader = ref new DataReader(MemoryBuffer->GetInputStreamAt(0));
 		create_task(reader->LoadAsync(bytes->Length)).wait();
 		reader->ReadBytes(bytes);

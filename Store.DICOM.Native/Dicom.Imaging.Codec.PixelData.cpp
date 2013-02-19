@@ -70,7 +70,7 @@ namespace Codec {
 
 	Array<unsigned char>^ NativePixelData::UnpackLow16(Array<unsigned char>^ data) {
 		Array<unsigned char>^ bytes = ref new Array<unsigned char>(data->Length / 2);
-		for (int i = 0; i < bytes->Length && (i * 2) < data->Length; i++) {
+		for (unsigned int i = 0; i < bytes->Length && (i * 2) < data->Length; i++) {
 			bytes[i] = data[i * 2];
 		}
 		return bytes;

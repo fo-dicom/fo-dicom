@@ -67,11 +67,11 @@ internal:
 		create_task(writer->StoreAsync()).wait();
 		writer->DetachStream();
 
-		Array<unsigned char>^ bytes = ref new Array<unsigned char>(Length);
+		Array<unsigned char>^ bytes = ref new Array<unsigned char>(static_cast<unsigned int>(Length));
 		DataReader^ reader = ref new DataReader(_stream->GetInputStreamAt(0));
 		reader->ByteOrder = ByteOrder::LittleEndian;
 
-		create_task(reader->LoadAsync(Length)).wait();
+		create_task(reader->LoadAsync(static_cast<unsigned int>(Length))).wait();
 		reader->ReadBytes(bytes);
 		reader->DetachStream();
 
@@ -259,7 +259,7 @@ public:
 
 		DataReader^ reader = ref new DataReader(stream->GetInputStreamAt(0));
 		reader->ByteOrder = ByteOrder::LittleEndian;
-		create_task(reader->LoadAsync(stream->Size)).wait();
+		create_task(reader->LoadAsync(static_cast<unsigned int>(stream->Size))).wait();
 		_count = (int)reader->ReadUInt32();
 		_offsets = ref new Array<int>(15);
 		for (int i = 0; i < 15; i++) {
