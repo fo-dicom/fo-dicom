@@ -62,6 +62,7 @@ namespace Dicom.Media {
 		}
 
 		public void OnEndSequence() {
+			_currentSequenceTag.Pop();
 		}
 
 		public void OnBeginFragmentSequence(IO.IByteSource source, DicomTag tag, DicomVR vr) {
