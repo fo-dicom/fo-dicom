@@ -75,7 +75,14 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 
-			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
+			if (pixelData.BitsStored == 1) {
+				if (pixelData.Dataset.Get<DicomUID>(DicomTag.SOPClassUID) == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
+					// Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
+					return new SingleBitPixelData(pixelData.Width, pixelData.Height, PixelDataConverter.ReverseBits(pixelData.GetFrame(frame)));
+				else
+					// Need sample images to verify that this is correct
+					return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+			} else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
 				if (pixelData.BitsAllocated <= 8)
 					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
 				else if (pixelData.BitsAllocated <= 16) {
