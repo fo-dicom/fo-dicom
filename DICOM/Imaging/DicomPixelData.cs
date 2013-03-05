@@ -165,6 +165,12 @@ namespace Dicom.Imaging {
 		/// </summary>
 		public int UncompressedFrameSize {
 			get {
+				if (BitsAllocated == 1) {
+					var bytes = (Width * Height) / 8;
+					if (((Width * Height) % 8) > 0)
+						bytes++;
+					return bytes;
+				}
 				return BytesAllocated * SamplesPerPixel * Width * Height;
 			}
 		}
