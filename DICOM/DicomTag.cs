@@ -35,7 +35,11 @@ namespace Dicom {
 		}
 
 		private int HashCode {
-			get { return (Group << 16) | Element; }
+			get {
+				if (PrivateCreator != null)
+					return (Group << 16) | (Element & 0xff);
+				return (Group << 16) | Element;
+			}
 		}
 
 		public bool IsPrivate {

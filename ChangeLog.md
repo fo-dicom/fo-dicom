@@ -6,6 +6,7 @@
 * Fix reading of sequences in DICOMDIR files (Hesham Desouky)
 * Improve rendering performance by precalculating grayscale LUT
 * Ability to render single-bit images
+* Fix hash code implementation for private tags
 * Miscellaneous improvements and fixes
 
 #### v1.0.31 (1/13/2013)
