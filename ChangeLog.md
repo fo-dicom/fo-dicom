@@ -1,4 +1,4 @@
-#### v1.0.32
+#### v1.0.32 (3/12/2013)
 * DICOM Media example by Hesham Desouky
 * Move DicomFileScanner to Dicom.Media namespace
 * Add WriteToConsole logging extension method
