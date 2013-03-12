@@ -36,9 +36,8 @@ namespace Dicom {
 
 		private int HashCode {
 			get {
-				if (PrivateCreator != null)
-					return (Group << 16) | (Element & 0xff);
-				return (Group << 16) | Element;
+				// this is slow and ugly... need a better method
+				return ToString().GetHashCode();
 			}
 		}
 
