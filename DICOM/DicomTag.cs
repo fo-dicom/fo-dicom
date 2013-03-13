@@ -34,10 +34,6 @@ namespace Dicom {
 			private set;
 		}
 
-		private int HashCode {
-			get { return (Group << 16) | Element; }
-		}
-
 		public bool IsPrivate {
 			get { return Group.IsOdd(); }
 		}
@@ -138,14 +134,12 @@ namespace Dicom {
 			return !(a == b);
 		}
 
+		private int _hash = 0;
+
 		public override int GetHashCode() {
-			//unchecked {
-			//    if (PrivateCreator == null)
-			//        return (Group << 16) + Element + String.Empty.GetHashCode();
-			//    else
-			//        return (Group << 16) + Element + PrivateCreator.Creator.GetHashCode();
-			//}
-			return HashCode;
+			if (_hash == 0)
+				_hash = ToString().GetHashCode();
+			return _hash;
 		}
 
 		public static DicomTag Parse(string s) {

@@ -5,28 +5,14 @@ using System.Linq;
 using System.Text;
 
 using Dicom;
+using Dicom.Log;
 using Dicom.Network;
-
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 
 namespace Dicom.CStoreSCP {
 	class Program {
 		static string StoragePath = @".\DICOM";
 
 		static void Main(string[] args) {
-			// initialize NLog logging
-			var config = new LoggingConfiguration();
-
-			var target = new ColoredConsoleTarget();
-			target.Layout = "${message}";
-			config.AddTarget("Console", target);
-			config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Info, target));
-
-			LogManager.Configuration = config;
-
-
 			// preload dictionary to prevent timeouts
 			var dict = DicomDictionary.Default;
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using NLog;
-
 namespace Dicom.Log {
 	public static class Extensions {
 		public static void WriteToLog(this IEnumerable<DicomItem> dataset, Logger log, LogLevel level) {

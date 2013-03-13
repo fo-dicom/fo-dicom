@@ -1,4 +1,4 @@
-#### v1.0.32
+#### v1.0.32 (3/12/2013)
 * DICOM Media example by Hesham Desouky
 * Move DicomFileScanner to Dicom.Media namespace
 * Add WriteToConsole logging extension method
@@ -6,6 +6,7 @@
 * Fix reading of sequences in DICOMDIR files (Hesham Desouky)
 * Improve rendering performance by precalculating grayscale LUT
 * Ability to render single-bit images
+* Fix hash code implementation for private tags
 * Miscellaneous improvements and fixes
 
 #### v1.0.31 (1/13/2013)

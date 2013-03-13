@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 
 using Dicom.IO;
-using NLog;
-
 using Dicom.IO.Buffer;
 using Dicom.IO.Reader;
+using Dicom.Log;
 
 namespace Dicom.Log {
 	public class DicomParserLogger : IDicomReaderObserver {
