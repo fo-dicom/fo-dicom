@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-using NLog;
+using Dicom.Log;
 
 namespace Dicom.Network {
 	public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {

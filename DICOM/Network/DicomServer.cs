@@ -8,7 +8,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
-using NLog;
+using Dicom.Log;
 
 namespace Dicom.Network {
 	public class DicomServer<T> : IDisposable where T: DicomService, IDicomServiceProvider {
@@ -75,7 +75,7 @@ namespace Dicom.Network {
 				_clients.Add(scp);
 			} catch (Exception e) {
 				if (Logger == null)
-					Logger = LogManager.GetLogger("Dicom.Network");
+					Logger = LogManager.Default.GetLogger("Dicom.Network");
 				Logger.Error("Exception accepting client: " + e.ToString());
 			} finally {
 				if (_listener != null)
