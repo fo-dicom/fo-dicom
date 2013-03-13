@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Dicom.Network;
-using NLog;
+using Dicom.Log;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -14,12 +14,17 @@ namespace System.Net.Sockets
 	{
 		#region FIELDS
 
-		private static readonly Logger Logger = LogManager.GetLogger<TcpClient>();
+		private static readonly Logger Logger;
 		private readonly Stream _stream;
 
 		#endregion
 
 		#region CONSTRUCTORS
+
+		static TcpClient()
+		{
+			Logger = LogManager.Default.GetLogger(typeof(TcpClient).FullName);
+		}
 
 		internal TcpClient(string host, int port)
 		{

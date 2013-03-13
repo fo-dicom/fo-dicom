@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NLog;
 using Windows.Storage;
 using Windows.Storage.Search;
+using Dicom.Log;
 
 // ReSharper disable CheckNamespace
 namespace System.IO
@@ -23,7 +23,7 @@ namespace System.IO
 
         static Directory()
         {
-	        Logger = LogManager.GetLogger(typeof(Directory));
+	        Logger = LogManager.Default.GetLogger(typeof(Directory).FullName);
         }
 
         #endregion

@@ -2,7 +2,7 @@
 using System.Linq;
 using Dicom;
 using Dicom.Network;
-using NLog;
+using Dicom.Log;
 
 namespace Store.DICOM.Dump
 {

@@ -487,6 +487,15 @@
     <Compile Include="..\DICOM\Log\HexWriter.cs">
       <Link>Log\HexWriter.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Log\Logger.cs">
+      <Link>Log\Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\LogLevel.cs">
+      <Link>Log\LogLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\LogManager.cs">
+      <Link>Log\LogManager.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Media\DicomDirectory.cs">
       <Link>Media\DicomDirectory.cs</Link>
     </Compile>
@@ -683,10 +692,8 @@
     <Compile Include="Store\Dicom\Imaging\Codec\DicomRleCodecImpl.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Store\NLog\Logger.cs" />
-    <Compile Include="Store\NLog\LogLevel.cs" />
-    <Compile Include="Store\NLog\LogLevelExtensions.cs" />
-    <Compile Include="Store\NLog\LogManager.cs" />
+    <Compile Include="Store\Dicom\Log\ConsoleLogger.cs" />
+    <Compile Include="Store\Dicom\Log\MetroLogManager.cs" />
     <Compile Include="Store\Override\System\Environment.cs" />
     <Compile Include="Store\Override\System\IO\Path.cs" />
     <Compile Include="Store\Override\System\Reflection\Assembly.cs" />
