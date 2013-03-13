@@ -8,13 +8,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using NLog;
-
-using Dicom.Log;
 using Dicom.Imaging.Codec;
 using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
+using Dicom.Log;
 using Dicom.Threading;
 
 namespace Dicom.Network {
@@ -43,7 +41,7 @@ namespace Dicom.Network {
 			_processQueue = new ThreadPoolQueue<int>();
 			_processQueue.DefaultGroup = Int32.MinValue;
 			_isConnected = true;
-			Logger = log ?? LogManager.GetLogger("Dicom.Network");
+			Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
 			Options = DicomServiceOptions.Default;
 		}
@@ -164,7 +162,7 @@ namespace Dicom.Network {
 
 				CloseConnection(error);
 			} catch (Exception e) {
-				Logger.Log(LogLevel.Error, "Exception processing PDU header: {0}", e.ToString());
+				Logger.Error("Exception processing PDU header: {0}", e.ToString());
 			}
 		}
 
@@ -194,7 +192,7 @@ namespace Dicom.Network {
 						var pdu = new AAssociateRQ(Association);
 						pdu.Read(raw);
 						LogID = Association.CallingAE;
-						Logger.Log(LogLevel.Info, "{0} <- Association request:\n{1}", LogID, Association.ToString());
+						Logger.Info("{0} <- Association request:\n{1}", LogID, Association.ToString());
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAssociationRequest(Association);
 						break;
@@ -203,7 +201,7 @@ namespace Dicom.Network {
 						var pdu = new AAssociateAC(Association);
 						pdu.Read(raw);
 						LogID = Association.CalledAE;
-						Logger.Log(LogLevel.Info, "{0} <- Association accept:\n{1}", LogID, Association.ToString());
+						Logger.Info("{0} <- Association accept:\n{1}", LogID, Association.ToString());
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationAccept(Association);
 						break;
@@ -211,7 +209,7 @@ namespace Dicom.Network {
 				case 0x03: {
 						var pdu = new AAssociateRJ();
 						pdu.Read(raw);
-						Logger.Log(LogLevel.Info, "{0} <- Association reject [result: {1}; source: {2}; reason: {3}]", LogID, pdu.Result, pdu.Source, pdu.Reason);
+						Logger.Info("{0} <- Association reject [result: {1}; source: {2}; reason: {3}]", LogID, pdu.Result, pdu.Source, pdu.Reason);
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
 						break;
@@ -227,7 +225,7 @@ namespace Dicom.Network {
 				case 0x05: {
 						var pdu = new AReleaseRQ();
 						pdu.Read(raw);
-						Logger.Log(LogLevel.Info, "{0} <- Association release request", LogID);
+						Logger.Info("{0} <- Association release request", LogID);
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAssociationReleaseRequest();
 						break;
@@ -235,7 +233,7 @@ namespace Dicom.Network {
 				case 0x06: {
 						var pdu = new AReleaseRP();
 						pdu.Read(raw);
-						Logger.Log(LogLevel.Info, "{0} <- Association release response", LogID);
+						Logger.Info("{0} <- Association release response", LogID);
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationReleaseResponse();
 						CloseConnection(0);
@@ -244,7 +242,7 @@ namespace Dicom.Network {
 				case 0x07: {
 						var pdu = new AAbort();
 						pdu.Read(raw);
-						Logger.Log(LogLevel.Info, "{0} <- Abort: {1} - {2}", LogID, pdu.Source, pdu.Reason);
+						Logger.Info("{0} <- Abort: {1} - {2}", LogID, pdu.Source, pdu.Reason);
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAbort(pdu.Source, pdu.Reason);
 						else if (this is IDicomServiceUser)
@@ -270,7 +268,7 @@ namespace Dicom.Network {
 
 				CloseConnection(error);
 			} catch (Exception e) {
-				Logger.Log(LogLevel.Error, "Exception processing PDU: {0}", e.ToString());
+				Logger.Error("Exception processing PDU: {0}", e.ToString());
 				CloseConnection(0);
 			}
 		}
@@ -456,7 +454,7 @@ namespace Dicom.Network {
 			var dimse = state as DicomMessage;
 
 			try {
-				Logger.Log(LogLevel.Info, "{0} <- {1}", LogID, dimse.ToString(Options.LogDimseDatasets));
+				Logger.Info("{0} <- {1}", LogID, dimse.ToString(Options.LogDimseDatasets));
 
 				if (!DicomMessage.IsRequest(dimse.Type)) {
 					var rsp = dimse as DicomResponse;
@@ -686,7 +684,7 @@ namespace Dicom.Network {
 					msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
 			}
 
-			Logger.Log(LogLevel.Info, "{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
+			Logger.Info("{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
 
 			dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
@@ -926,7 +924,7 @@ namespace Dicom.Network {
 		#region Send Methods
 		protected void SendAssociationRequest(DicomAssociation association) {
 			LogID = association.CalledAE;
-			Logger.Log(LogLevel.Info, "{0} -> Association request:\n{1}", LogID, association.ToString());
+			Logger.Info("{0} -> Association request:\n{1}", LogID, association.ToString());
 			Association = association;
 			SendPDU(new AAssociateRQ(Association));
 		}
@@ -940,27 +938,27 @@ namespace Dicom.Network {
 					pc.SetResult(DicomPresentationContextResult.RejectNoReason);
 			}
 
-			Logger.Log(LogLevel.Info, "{0} -> Association accept:\n{1}", LogID, association.ToString());
+			Logger.Info("{0} -> Association accept:\n{1}", LogID, association.ToString());
 			SendPDU(new AAssociateAC(Association));
 		}
 
 		protected void SendAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) {
-			Logger.Log(LogLevel.Info, "{0} -> Association reject [result: {1}; source: {2}; reason: {3}]", LogID, result, source, reason);
+			Logger.Info("{0} -> Association reject [result: {1}; source: {2}; reason: {3}]", LogID, result, source, reason);
 			SendPDU(new AAssociateRJ(result, source, reason));
 		}
 
 		protected void SendAssociationReleaseRequest() {
-			Logger.Log(LogLevel.Info, "{0} -> Association release request", LogID);
+			Logger.Info("{0} -> Association release request", LogID);
 			SendPDU(new AReleaseRQ());
 		}
 
 		protected void SendAssociationReleaseResponse() {
-			Logger.Log(LogLevel.Info, "{0} -> Association release response", LogID);
+			Logger.Info("{0} -> Association release response", LogID);
 			SendPDU(new AReleaseRP());
 		}
 
 		protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) {
-			Logger.Log(LogLevel.Info, "{0} -> Abort [source: {1}; reason: {2}]", LogID, source, reason);
+			Logger.Info("{0} -> Abort [source: {1}; reason: {2}]", LogID, source, reason);
 			SendPDU(new AAbort(source, reason));
 		}
 		#endregion

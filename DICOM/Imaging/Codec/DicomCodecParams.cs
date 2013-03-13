@@ -1,11 +1,11 @@
 ﻿using System;
 
-using NLog;
+using Dicom.Log;
 
 namespace Dicom.Imaging.Codec {
 	public class DicomCodecParams {
 		protected DicomCodecParams() {
-			Logger = LogManager.GetLogger("Dicom.Imaging.Codec");
+			Logger = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
 		}
 
 		public Logger Logger {
