@@ -61,19 +61,25 @@ namespace Dicom {
 			}
 
 			switch (format) {
-				case "g": {
-						if (PrivateCreator != null)
-							return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
-						else
-							return String.Format("{0:x4},{1:x4}", Group, Element);
-					}
-				case "G":
-				default: {
+			case "X": {
+				if (PrivateCreator != null)
+					return String.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator);
+				else
+					return String.Format("({0:x4},{1:x4})", Group, Element);
+			}
+			case "g": {
 					if (PrivateCreator != null)
-						return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
+						return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
 					else
-						return String.Format("({0:x4},{1:x4})", Group, Element);
-					}
+						return String.Format("{0:x4},{1:x4}", Group, Element);
+				}
+			case "G":
+			default: {
+				if (PrivateCreator != null)
+					return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
+				else
+					return String.Format("({0:x4},{1:x4})", Group, Element);
+				}
 			}
 		}
 
@@ -138,7 +144,7 @@ namespace Dicom {
 
 		public override int GetHashCode() {
 			if (_hash == 0)
-				_hash = ToString().GetHashCode();
+				_hash = ToString("X", null).GetHashCode();
 			return _hash;
 		}
 
