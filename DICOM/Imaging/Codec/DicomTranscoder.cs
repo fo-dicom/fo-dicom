@@ -7,11 +7,10 @@ using System.ComponentModel.Composition.Hosting;
 #endif
 using System.Linq;
 using System.Reflection;
-using NLog;
-
 using Dicom.IO;
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
+using Dicom.Log;
 
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
@@ -56,7 +55,7 @@ namespace Dicom.Imaging.Codec {
 			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-			var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+			var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
 
 			var catalog = (search == null) ?
 				new DirectoryCatalog(path) :

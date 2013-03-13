@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text;
 
-using NLog;
-
 using Dicom.IO.Buffer;
+using Dicom.Log;
 
 namespace Dicom.Log {
 	public class DicomDatasetLogger : IDicomDatasetWalker {

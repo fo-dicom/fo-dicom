@@ -30,17 +30,6 @@ namespace ConsoleTest {
 					Console.ForegroundColor = old;
 				};
 
-				LoggingConfiguration config = new LoggingConfiguration();
-
-				ColoredConsoleTarget ct = new ColoredConsoleTarget();
-				ct.Layout = "${message}";
-				config.AddTarget("Console", ct);
-
-				config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, ct));
-
-				LogManager.Configuration = config;
-
-
 				//var server = new DicomServer<DicomCEchoProvider>(12345);
 
 
