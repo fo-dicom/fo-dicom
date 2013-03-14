@@ -746,17 +746,21 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MetroLog">
-      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.dll</HintPath>
+    <Reference Include="MetroLog, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.NetCore">
-      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
+    <Reference Include="MetroLog.NetCore, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.WinRT">
-      <HintPath>..\packages\MetroLog.0.8.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
+    <Reference Include="MetroLog.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT">
-      <HintPath>..\packages\WriteableBitmapEx.1.0.6.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.7.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WriteableBitmapEx.1.0.7.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
