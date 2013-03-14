@@ -135,7 +135,8 @@ namespace Dicom {
 			}
 
 			if (entry.MaskTag == null) {
-				_entries.Add(entry.Tag, entry);
+				// allow overwriting of existing entries
+				_entries[entry.Tag] = entry;
 			} else {
 				_masked.Add(entry);
 				_sortMasked = true;
