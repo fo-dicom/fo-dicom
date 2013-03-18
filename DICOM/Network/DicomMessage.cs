@@ -84,27 +84,27 @@ namespace Dicom.Network {
 		}
 
 		public string ToString(bool printDatasets) {
-			var output = ToString();
+			var output = new StringBuilder(ToString());
 
 			if (!printDatasets)
-				return output;
+				return output.ToString();
 
-			output += "\n";
-			output += "--------------------------------------------------------------------------------\n";
-			output += " DIMSE Command:\n";
-			output += "--------------------------------------------------------------------------------\n";
-			output += Command.WriteToString();
+			output.AppendLine();
+			output.AppendLine("--------------------------------------------------------------------------------");
+			output.AppendLine(" DIMSE Command:");
+			output.AppendLine("--------------------------------------------------------------------------------");
+			output.AppendLine(Command.WriteToString());
 
 			if (HasDataset) {
-				output += "--------------------------------------------------------------------------------\n";
-				output += " DIMSE Dataset:\n";
-				output += "--------------------------------------------------------------------------------\n";
-				output += Dataset.WriteToString();
+				output.AppendLine("--------------------------------------------------------------------------------");
+				output.AppendLine(" DIMSE Dataset:");
+				output.AppendLine("--------------------------------------------------------------------------------");
+				output.AppendLine(Dataset.WriteToString());
 			}
 
-			output += "--------------------------------------------------------------------------------";
+			output.AppendLine("--------------------------------------------------------------------------------");
 
-			return output;
+			return output.ToString();
 		}
 
 		public static string ToString(DicomCommandField type) {
