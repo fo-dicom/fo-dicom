@@ -694,40 +694,6 @@
     </Compile>
     <Compile Include="Store\Dicom\Log\ConsoleLogger.cs" />
     <Compile Include="Store\Dicom\Log\MetroLogManager.cs" />
-    <Compile Include="Store\Override\System\Environment.cs" />
-    <Compile Include="Store\Override\System\IO\Path.cs" />
-    <Compile Include="Store\Override\System\Reflection\Assembly.cs" />
-    <Compile Include="Store\System\Collections\Generic\ListExtensions.cs" />
-    <Compile Include="Store\System\Collections\Generic\SortedList.cs" />
-    <Compile Include="Store\System\Drawing\Point.cs" />
-    <Compile Include="Store\System\IO\BinaryReaderExtensions.cs" />
-    <Compile Include="Store\System\IO\Directory.cs" />
-    <Compile Include="Store\System\IO\DirectoryInfo.cs" />
-    <Compile Include="Store\System\IO\File.cs" />
-    <Compile Include="Store\System\IO\FileAttributes.cs" />
-    <Compile Include="Store\System\IO\FileHelper.cs" />
-    <Compile Include="Store\System\IO\FileInfo.cs" />
-    <Compile Include="Store\System\IO\FileMode.cs" />
-    <Compile Include="Store\System\IO\FileStream.cs" />
-    <Compile Include="Store\System\IO\StreamExtensions.cs" />
-    <Compile Include="Store\System\Net\IPAddress.cs" />
-    <Compile Include="Store\System\Net\Security\SslStream.cs" />
-    <Compile Include="Store\System\Net\Sockets\SocketException.cs" />
-    <Compile Include="Store\System\Net\Sockets\TcpClient.cs" />
-    <Compile Include="Store\System\Net\Sockets\TcpListener.cs" />
-    <Compile Include="Store\System\Reflection\BindingFlags.cs" />
-    <Compile Include="Store\System\Security\Authentication\SslProtocols.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\OpenFlags.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\StoreLocation.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\StoreName.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\X509Certificate.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\X509Certificate2Collection.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\X509FindType.cs" />
-    <Compile Include="Store\System\Security\Cryptography\X509Certificates\X509Store.cs" />
-    <Compile Include="Store\System\Threading\Thread.cs" />
-    <Compile Include="Store\System\Threading\ThreadPool.cs" />
-    <Compile Include="Store\System\Threading\Timer.cs" />
-    <Compile Include="Store\System\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
@@ -770,6 +736,10 @@
     <ProjectReference Include="..\Store.DICOM.Native\Store.DICOM.Native.vcxproj">
       <Project>{010a89b2-89f8-46c6-bde0-631e252bf984}</Project>
       <Name>Store.DICOM.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Store.Net\Store.Net.csproj">
+      <Project>{ce0511c1-4432-4591-88a4-4db568860e2d}</Project>
+      <Name>Store.Net</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
