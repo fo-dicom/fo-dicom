@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Store\System\Collections\Generic\SortedListTests.cs" />
     <Compile Include="Store\System\Drawing\PointTests.cs" />
+    <Compile Include="Store\System\Helpers\AppxManifestTests.cs" />
     <Compile Include="Store\System\IO\DirectoryTests.cs" />
     <Compile Include="Store\Override\System\IO\PathTests.cs" />
     <Compile Include="Store\System\IO\FileStreamTests.cs" />

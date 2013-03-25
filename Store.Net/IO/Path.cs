@@ -6,7 +6,7 @@
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
 // WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
-using System.IO;
+using System.Helpers;
 using Windows.Storage;
 
 // ReSharper disable CheckNamespace
@@ -17,9 +17,12 @@ namespace Override.System.IO
 	{
 		#region FIELDS
 
-	    private static readonly string DefaultFileExtension = ".dcm";
+	    private static readonly string DefaultFileExtension = AppxManifest.SupportedFileExtensions.Length > 0
+		                                                          ? AppxManifest.SupportedFileExtensions[0]
+		                                                          : ".txt";
 
 		#endregion
+
 		#region METHODS
 
 		public static string GetTempPath()
@@ -38,9 +41,9 @@ namespace Override.System.IO
             return path;
         }
 
-        public static string Combine(string path1, string path2)
+        public static string Combine(params string[] paths)
         {
-            return global::System.IO.Path.Combine(path1, path2);
+            return global::System.IO.Path.Combine(paths);
 		}
 
 		#endregion
