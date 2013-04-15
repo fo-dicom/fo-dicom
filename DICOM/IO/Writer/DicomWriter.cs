@@ -18,7 +18,7 @@ namespace Dicom.IO.Writer {
 
 		public DicomWriter(DicomTransferSyntax syntax, DicomWriteOptions options, IByteTarget target) {
 			_syntax = syntax;
-			_options = new DicomWriteOptions();
+			_options = options ?? DicomWriteOptions.Default;
 			_target = target;
 		}
 
