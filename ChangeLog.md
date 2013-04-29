@@ -1,4 +1,4 @@
-#### v1.0.33
+#### v1.0.33 (4/28/2013)
 * Add logging abstraction layer to remove runtime dependency on NLog
 * Fix bug reading duplicate entries in DICOM dictionary
 * Fix bug storing AT values
