@@ -87,19 +87,15 @@ namespace Dicom {
 			if (Group != other.Group)
 				return Group.CompareTo(other.Group);
 
-			// DICOM tags should not be sorted by private creator name
-			//if (PrivateCreator != null || other.PrivateCreator != null) {
-			//    if (PrivateCreator == null)
-			//        return -1;
-			//    if (other.PrivateCreator == null)
-			//        return 1;
+			// sort by private creator only if element values are equal
+			if (Element == other.Element && (PrivateCreator != null || other.PrivateCreator != null)) {
+			    if (PrivateCreator == null)
+			        return -1;
+			    if (other.PrivateCreator == null)
+			        return 1;
 
-			//    int compare = PrivateCreator.CompareTo(other.PrivateCreator);
-			//    if (compare != 0)
-			//        return compare;
-
-			//    return (Element & 0xff).CompareTo(other.Element & 0xff);
-			//}
+				return PrivateCreator.CompareTo(other.PrivateCreator);
+			}
 
 			if (Element != other.Element)
 				return Element.CompareTo(other.Element);
