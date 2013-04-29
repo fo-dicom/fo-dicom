@@ -1,3 +1,10 @@
+#### v1.0.33
+* Add logging abstraction layer to remove runtime dependency on NLog
+* Fix bug reading duplicate entries in DICOM dictionary
+* Fix bug storing AT values
+* Fix bug sorting private DICOM tags
+* Fix bug using custom DicomWriteOptions
+
 #### v1.0.32 (3/12/2013)
 * DICOM Media example by Hesham Desouky
 * Move DicomFileScanner to Dicom.Media namespace
