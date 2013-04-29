@@ -351,9 +351,9 @@ namespace Dicom {
 				byte[] buffer = new byte[length];
 				for (int i = 0; i < _values.Length; i++) {
 					var bytes = BitConverter.GetBytes(_values[i].Group);
-					Array.Copy(bytes, buffer, i * 4);
+					Array.Copy(bytes, 0, buffer, i * 4, 2);
 					bytes = BitConverter.GetBytes(_values[i].Element);
-					Array.Copy(bytes, buffer, i * 4 + 2);
+					Array.Copy(bytes, 0, buffer, i * 4 + 2, 2);
 				}
 				Buffer = new MemoryByteBuffer(buffer);
 			}
