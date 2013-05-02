@@ -36,7 +36,16 @@ namespace Dicom.Imaging.LUT {
 		}
 
 		public int this[int value] {
-			get { return _table[value + _offset]; }
+			get {
+				unchecked {
+					int p = value + _offset;
+					if (p < 0)
+						return _table[0];
+					if (p >= _table.Length)
+						p = _table[_table.Length - 1];
+					return _table[p];
+				}
+			}
 		}
 		#endregion
 
