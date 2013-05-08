@@ -1,3 +1,6 @@
+#### v1.0.34
+* Fix bug returning default value for zero length elements
+
 #### v1.0.33 (4/28/2013)
 * Add logging abstraction layer to remove runtime dependency on NLog
 * Fix bug reading duplicate entries in DICOM dictionary
