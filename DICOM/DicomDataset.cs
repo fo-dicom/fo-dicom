@@ -76,8 +76,9 @@ namespace Dicom {
 				if (typeof(T) == typeof(byte[]))
 					return (T)(object)element.Buffer.Data;
 
-				if (n >= element.Count)
+				if (n >= element.Count || element.Count == 0)
 					return defaultValue;
+
 				return (T)(object)element.Get<T>(n);
 			}
 
