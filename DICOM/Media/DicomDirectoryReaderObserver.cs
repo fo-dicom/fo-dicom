@@ -6,7 +6,6 @@ using System.Text;
 using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Buffer;
-using Dicom.Media;
 
 namespace Dicom.Media {
 	public class DicomDirectoryReaderObserver : IDicomReaderObserver {
