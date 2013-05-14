@@ -1,5 +1,6 @@
 #### v1.0.34
 * Fix bug returning default value for zero length elements
+* Fix exception when disposing DicomDirectory
 
 #### v1.0.33 (4/28/2013)
 * Add logging abstraction layer to remove runtime dependency on NLog
