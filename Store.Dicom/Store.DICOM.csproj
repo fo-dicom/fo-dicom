@@ -415,9 +415,6 @@
     <Compile Include="..\DICOM\IO\Reader\DicomDatasetReaderObserver.cs">
       <Link>IO\Reader\DicomDatasetReaderObserver.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\Reader\DicomDirectoryReaderObserver.cs">
-      <Link>IO\Reader\DicomDirectoryReaderObserver.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\IO\Reader\DicomFileReader.cs">
       <Link>IO\Reader\DicomFileReader.cs</Link>
     </Compile>
@@ -498,6 +495,9 @@
     </Compile>
     <Compile Include="..\DICOM\Media\DicomDirectory.cs">
       <Link>Media\DicomDirectory.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectoryReaderObserver.cs">
+      <Link>Media\DicomDirectoryReaderObserver.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Media\DicomDirectoryRecord.cs">
       <Link>Media\DicomDirectoryRecord.cs</Link>
