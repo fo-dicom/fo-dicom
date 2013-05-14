@@ -8,7 +8,7 @@ using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 
 namespace Dicom.Media {
-	public class DicomDirectory : DicomFile, IDisposable {
+	public class DicomDirectory : DicomFile {
 		#region Properties and Attributes
 
 		private DicomSequence _directoryRecordSequence;
@@ -419,14 +419,6 @@ namespace Dicom.Media {
 
 			return sequenceItem;
 		}
-		#endregion
-
-		#region IDisposable Members
-
-		public void Dispose() {
-			throw new NotImplementedException();
-		}
-
 		#endregion
 	}
 }
