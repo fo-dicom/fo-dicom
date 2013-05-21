@@ -658,8 +658,23 @@
     <Compile Include="..\DICOM\StringExtensions.cs">
       <Link>StringExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomCodeItem.cs">
+      <Link>StructuredReport\DicomCodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomContentItem.cs">
+      <Link>StructuredReport\DicomContentItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomMeasuredValue.cs">
+      <Link>StructuredReport\DicomMeasuredValue.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomReferencedSOP.cs">
+      <Link>StructuredReport\DicomReferencedSOP.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\StructuredReport\DicomStructuredReport.cs">
       <Link>StructuredReport\DicomStructuredReport.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomStructuredReportException.cs">
+      <Link>StructuredReport\DicomStructuredReportException.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Threading\ActionCallback.cs">
       <Link>Threading\ActionCallback.cs</Link>
