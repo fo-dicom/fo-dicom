@@ -54,6 +54,7 @@
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "DICOM Image Display";
+			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnKeyUp);
 			((System.ComponentModel.ISupportInitialize)(this.pbDisplay)).EndInit();
 			this.ResumeLayout(false);
 

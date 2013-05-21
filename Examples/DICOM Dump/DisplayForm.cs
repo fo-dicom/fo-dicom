@@ -13,6 +13,7 @@ namespace Dicom.Dump {
 		private bool _grayscale;
 		private double _windowWidth;
 		private double _windowCenter;
+		private int _frame;
 
 		public DisplayForm(DicomFile file) {
 			_file = file;
@@ -28,6 +29,7 @@ namespace Dicom.Dump {
 						_windowWidth = _image.WindowWidth;
 						_windowCenter = _image.WindowCenter;
 					}
+					_frame = 0;
 			        Invoke(new WaitCallback(DisplayImage), _image);
 			                             });
 			
@@ -83,7 +85,7 @@ namespace Dicom.Dump {
 						Left = 0;
 				}
 
-				pbDisplay.Image = image.RenderImage();
+				pbDisplay.Image = image.RenderImage(_frame);
 
 				if (_grayscale)
 					Text = String.Format("DICOM Image Display [wc: {0}, ww: {1}]", image.WindowCenter, image.WindowWidth);
@@ -128,6 +130,24 @@ namespace Dicom.Dump {
 			_image.WindowWidth = _windowWidth;
 
 			DisplayImage(_image);
+		}
+
+		private void OnKeyUp(object sender, KeyEventArgs e) {
+			if (e.KeyCode == Keys.Right) {
+				_frame++;
+				if (_frame >= _image.NumberOfFrames)
+					_frame--;
+				DisplayImage(_image);
+				return;
+			}
+
+			if (e.KeyCode == Keys.Left) {
+				_frame--;
+				if (_frame < 0)
+					_frame++;
+				DisplayImage(_image);
+				return;
+			}
 		}
 	}
 }
