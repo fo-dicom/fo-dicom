@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom.IO.Buffer;
 
+using Dicom.StructuredReport;
+
 namespace Dicom {
 	public class DicomDataset : IEnumerable<DicomItem> {
 		private IDictionary<DicomTag, DicomItem> _items;
@@ -80,6 +82,17 @@ namespace Dicom {
 					return defaultValue;
 
 				return (T)(object)element.Get<T>(n);
+			}
+
+			if (item.GetType() == typeof(DicomSequence)) {
+				if (typeof(T) == typeof(DicomCodeItem))
+					return (T)(object)new DicomCodeItem((DicomSequence)item);
+
+				if (typeof(T) == typeof(DicomMeasuredValue))
+					return (T)(object)new DicomMeasuredValue((DicomSequence)item);
+
+				if (typeof(T) == typeof(DicomReferencedSOP))
+					return (T)(object)new DicomReferencedSOP((DicomSequence)item);
 			}
 
 			throw new DicomDataException("Unable to get a value type of {0} from DICOM item of type {1}", typeof(T), item.GetType());
@@ -256,6 +269,15 @@ namespace Dicom {
 					return Add(new DicomSignedLong(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(int))
 					return Add(new DicomSignedLong(tag, values.Cast<int>().ToArray()));
+			}
+
+			if (vr == DicomVR.SQ) {
+				if (values == null)
+					return Add(new DicomSequence(tag));
+				if (typeof(T) == typeof(DicomContentItem))
+					return Add(new DicomSequence(tag, values.Cast<DicomContentItem>().Select(x => x.Dataset).ToArray()));
+				if (typeof(T) == typeof(DicomDataset) || typeof(T) == typeof(DicomCodeItem) || typeof(T) == typeof(DicomMeasuredValue) || typeof(T) == typeof(DicomReferencedSOP))
+					return Add(new DicomSequence(tag, values.Cast<DicomDataset>().ToArray()));
 			}
 
 			if (vr == DicomVR.SS) {
