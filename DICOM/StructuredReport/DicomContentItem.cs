@@ -44,9 +44,10 @@ namespace Dicom.StructuredReport {
 			Dataset = dataset;
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomValueType type, string value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, string value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = type;
 
 			if (type == DicomValueType.Text)
@@ -57,9 +58,10 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of string is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomValueType type, DateTime value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DateTime value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = type;
 
 			if (type == DicomValueType.Date)
@@ -72,33 +74,37 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of DateTime is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomUID value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomUID value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = DicomValueType.UIDReference;
 
 			Dataset.Add(DicomTag.UID, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomCodeItem value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomCodeItem value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = DicomValueType.Code;
 
 			Dataset.Add(DicomTag.ConceptCodeSequence, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomMeasuredValue value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomMeasuredValue value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = DicomValueType.Numeric;
 
 			Dataset.Add(DicomTag.MeasuredValueSequence, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomValueType type, DicomReferencedSOP value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DicomReferencedSOP value) {
 			Dataset = new DicomDataset();
 			Code = code;
+			Relationship = relationship;
 			Type = type;
 
 			if (type == DicomValueType.Composite || type == DicomValueType.Image || type == DicomValueType.Waveform)
@@ -107,10 +113,12 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of DicomReferencedSOP is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, params DicomContentItem[] items) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomContinuity continuity, params DicomContentItem[] items) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
+			Type = DicomValueType.Container;
+			Continuity = continuity;
 
 			Dataset.Add(DicomTag.ContentSequence, items);
 		}
