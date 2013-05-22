@@ -233,6 +233,17 @@ namespace Dicom.StructuredReport {
 				yield return new DicomContentItem(item);
 		}
 
+		public void Add(DicomContentItem item) {
+			var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence);
+
+			if (sequence == null) {
+				sequence = new DicomSequence(DicomTag.ContentSequence);
+				Dataset.Add(sequence);
+			}
+
+			sequence.Items.Add(item.Dataset);
+		}
+
 		public T Get<T>() {
 			if (typeof(T) == typeof(string)) {
 				if (Type == DicomValueType.Text)
