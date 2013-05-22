@@ -4,29 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.StructuredReport {
-	public class DicomStructuredReport {
-		private DicomDataset _dataset;
-
-		public DicomStructuredReport(DicomDataset dataset) {
-			Dataset = dataset;
+	public class DicomStructuredReport : DicomContentItem {
+		public DicomStructuredReport(DicomDataset dataset) : base(dataset) {
 		}
 
-		public DicomDataset Dataset {
-			get {
-				return _dataset;
-			}
-			private set {
-				_dataset = value;
-			}
-		}
-
-		public DicomContentItem Root {
-			get {
-				return new DicomContentItem(Dataset);
-			}
-			set {
-				Dataset.Add(value.Dataset);
-			}
+		public DicomStructuredReport(DicomCodeItem code) : base(code, DicomRelationshipType.Contains, DicomContinuity.Separate) {
+			// relationship type is not needed for root element
+			Dataset.Remove(DicomTag.RelationshipType);
 		}
 	}
 }
