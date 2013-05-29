@@ -233,7 +233,7 @@ namespace Dicom.StructuredReport {
 				yield return new DicomContentItem(item);
 		}
 
-		public void Add(DicomContentItem item) {
+		public DicomContentItem Add(DicomContentItem item) {
 			var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence);
 
 			if (sequence == null) {
@@ -242,6 +242,36 @@ namespace Dicom.StructuredReport {
 			}
 
 			sequence.Items.Add(item.Dataset);
+
+			return item;
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, string value) {
+			return Add(new DicomContentItem(code, relationship, type, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DateTime value) {
+			return Add(new DicomContentItem(code, relationship, type, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomUID value) {
+			return Add(new DicomContentItem(code, relationship, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomCodeItem value) {
+			return Add(new DicomContentItem(code, relationship, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomMeasuredValue value) {
+			return Add(new DicomContentItem(code, relationship, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DicomReferencedSOP value) {
+			return Add(new DicomContentItem(code, relationship, type, value));
+		}
+
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomContinuity continuity, params DicomContentItem[] items) {
+			return Add(new DicomContentItem(code, relationship, continuity, items));
 		}
 
 		public T Get<T>() {
