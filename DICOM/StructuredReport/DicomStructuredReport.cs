@@ -8,7 +8,7 @@ namespace Dicom.StructuredReport {
 		public DicomStructuredReport(DicomDataset dataset) : base(dataset) {
 		}
 
-		public DicomStructuredReport(DicomCodeItem code, params DicomContentItem[] items) : base(code, DicomRelationshipType.Contains, DicomContinuity.Separate, items) {
+		public DicomStructuredReport(DicomCodeItem code, params DicomContentItem[] items) : base(code, DicomRelationship.Contains, DicomContinuity.Separate, items) {
 			// relationship type is not needed for root element
 			Dataset.Remove(DicomTag.RelationshipType);
 		}
