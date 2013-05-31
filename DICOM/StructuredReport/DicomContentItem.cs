@@ -27,7 +27,7 @@ namespace Dicom.StructuredReport {
 		Continuous
 	}
 
-	public enum DicomRelationshipType {
+	public enum DicomRelationship {
 		Contains,
 		HasProperties,
 		InferredFrom,
@@ -44,7 +44,7 @@ namespace Dicom.StructuredReport {
 			Dataset = dataset;
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, string value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, string value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -58,7 +58,7 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of string is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DateTime value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, DateTime value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -74,7 +74,7 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of DateTime is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomUID value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomUID value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -83,7 +83,7 @@ namespace Dicom.StructuredReport {
 			Dataset.Add(DicomTag.UID, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomCodeItem value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomCodeItem value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -92,7 +92,7 @@ namespace Dicom.StructuredReport {
 			Dataset.Add(DicomTag.ConceptCodeSequence, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomMeasuredValue value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomMeasuredValue value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -101,7 +101,7 @@ namespace Dicom.StructuredReport {
 			Dataset.Add(DicomTag.MeasuredValueSequence, value);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DicomReferencedSOP value) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, DicomReferencedSOP value) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -113,7 +113,7 @@ namespace Dicom.StructuredReport {
 				throw new DicomStructuredReportException("Type of DicomReferencedSOP is not the correct value type for {0} content item.", type);
 		}
 
-		public DicomContentItem(DicomCodeItem code, DicomRelationshipType relationship, DicomContinuity continuity, params DicomContentItem[] items) {
+		public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomContinuity continuity, params DicomContentItem[] items) {
 			Dataset = new DicomDataset();
 			Code = code;
 			Relationship = relationship;
@@ -184,30 +184,30 @@ namespace Dicom.StructuredReport {
 			}
 		}
 
-		public DicomRelationshipType Relationship {
+		public DicomRelationship Relationship {
 			get {
 				var type = Dataset.Get<string>(DicomTag.RelationshipType, 0, "UNKNOWN");
 				switch (type) {
-				case "CONTAINS": return DicomRelationshipType.Contains;
-				case "HAS PROPERTIES": return DicomRelationshipType.HasProperties;
-				case "INFERRED FROM": return DicomRelationshipType.InferredFrom;
-				case "SELECTED FROM": return DicomRelationshipType.SelectedFrom;
-				case "HAS OBS CONTEXT": return DicomRelationshipType.HasObservationContext;
-				case "HAS ACQ CONTEXT": return DicomRelationshipType.HasAcquisitionContext;
-				case "HAS CONCEPT MOD": return DicomRelationshipType.HasConceptModifier;
+				case "CONTAINS": return DicomRelationship.Contains;
+				case "HAS PROPERTIES": return DicomRelationship.HasProperties;
+				case "INFERRED FROM": return DicomRelationship.InferredFrom;
+				case "SELECTED FROM": return DicomRelationship.SelectedFrom;
+				case "HAS OBS CONTEXT": return DicomRelationship.HasObservationContext;
+				case "HAS ACQ CONTEXT": return DicomRelationship.HasAcquisitionContext;
+				case "HAS CONCEPT MOD": return DicomRelationship.HasConceptModifier;
 				default:
 					throw new DicomStructuredReportException("Unknown relationship type: {0}", type);
 				}
 			}
 			private set {
 				switch (value) {
-				case DicomRelationshipType.Contains: Dataset.Add(DicomTag.RelationshipType, "CONTAINS"); return;
-				case DicomRelationshipType.HasProperties: Dataset.Add(DicomTag.RelationshipType, "HAS PROPERTIES"); return;
-				case DicomRelationshipType.InferredFrom: Dataset.Add(DicomTag.RelationshipType, "INFERRED FROM"); return;
-				case DicomRelationshipType.SelectedFrom: Dataset.Add(DicomTag.RelationshipType, "SELECTED FROM"); return;
-				case DicomRelationshipType.HasObservationContext: Dataset.Add(DicomTag.RelationshipType, "HAS OBS CONTEXT"); return;
-				case DicomRelationshipType.HasAcquisitionContext: Dataset.Add(DicomTag.RelationshipType, "HAS ACQ CONTEXT"); return;
-				case DicomRelationshipType.HasConceptModifier: Dataset.Add(DicomTag.RelationshipType, "HAS CONCEPT MOD"); return;
+				case DicomRelationship.Contains: Dataset.Add(DicomTag.RelationshipType, "CONTAINS"); return;
+				case DicomRelationship.HasProperties: Dataset.Add(DicomTag.RelationshipType, "HAS PROPERTIES"); return;
+				case DicomRelationship.InferredFrom: Dataset.Add(DicomTag.RelationshipType, "INFERRED FROM"); return;
+				case DicomRelationship.SelectedFrom: Dataset.Add(DicomTag.RelationshipType, "SELECTED FROM"); return;
+				case DicomRelationship.HasObservationContext: Dataset.Add(DicomTag.RelationshipType, "HAS OBS CONTEXT"); return;
+				case DicomRelationship.HasAcquisitionContext: Dataset.Add(DicomTag.RelationshipType, "HAS ACQ CONTEXT"); return;
+				case DicomRelationship.HasConceptModifier: Dataset.Add(DicomTag.RelationshipType, "HAS CONCEPT MOD"); return;
 				default: break;
 				}
 			}
@@ -246,31 +246,31 @@ namespace Dicom.StructuredReport {
 			return item;
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, string value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, string value) {
 			return Add(new DicomContentItem(code, relationship, type, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DateTime value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, DateTime value) {
 			return Add(new DicomContentItem(code, relationship, type, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomUID value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomUID value) {
 			return Add(new DicomContentItem(code, relationship, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomCodeItem value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomCodeItem value) {
 			return Add(new DicomContentItem(code, relationship, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomMeasuredValue value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomMeasuredValue value) {
 			return Add(new DicomContentItem(code, relationship, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomValueType type, DicomReferencedSOP value) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, DicomReferencedSOP value) {
 			return Add(new DicomContentItem(code, relationship, type, value));
 		}
 
-		public DicomContentItem Add(DicomCodeItem code, DicomRelationshipType relationship, DicomContinuity continuity, params DicomContentItem[] items) {
+		public DicomContentItem Add(DicomCodeItem code, DicomRelationship relationship, DicomContinuity continuity, params DicomContentItem[] items) {
 			return Add(new DicomContentItem(code, relationship, continuity, items));
 		}
 
