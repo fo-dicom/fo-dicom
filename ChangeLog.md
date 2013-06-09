@@ -4,6 +4,7 @@
 * Fix menu bug in DICOM Dump utility when changing syntax to JPEG Lossless
 * Ability to browse multiframe images in DICOM Dump utility
 * Add classes for basic structured report creation
+* Ability to recover when parsing invalid sequences
 
 #### v1.0.33 (4/28/2013)
 * Add logging abstraction layer to remove runtime dependency on NLog

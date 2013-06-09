@@ -24,6 +24,7 @@ namespace Dicom.IO.Reader {
 		private DicomTag _tag;
 		private DicomVR _vr;
 		private uint _length;
+		private bool _implicit;
 
 		private int _fragmentItem;
 
@@ -240,8 +241,11 @@ namespace Dicom.IO.Reader {
 							// start of sequence
 							_observer.OnBeginSequence(source, _tag, _length);
 							_state = ParseState.Tag;
-							if (_length != UndefinedLength)
+							if (_length != UndefinedLength) {
+								_implicit = false;
 								source.PushMilestone(_length);
+							} else
+								_implicit = true;
 							PushState(state);
 							ParseItemSequence(source, null);
 							continue;
@@ -316,8 +320,14 @@ namespace Dicom.IO.Reader {
 
 						_tag = new DicomTag(group, element);
 
-						if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem)
-							throw new DicomReaderException("Unexpected tag in DICOM sequence: {0}", _tag);
+						if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem) {
+							// assume invalid sequence
+							source.Rewind();
+							if (!_implicit)
+								source.PopMilestone();
+							_observer.OnEndSequence();
+							return;
+						}
 
 						_length = source.GetUInt32();
 
