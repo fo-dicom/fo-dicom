@@ -74,5 +74,17 @@ namespace Dicom {
 				return destinationUid;
 			}
 		}
+
+		public void RegenerateAll(DicomDataset dataset) {
+			foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI)) {
+				dataset.Add(ui.Tag, Generate(dataset.Get<DicomUID>(ui.Tag)));
+			}
+
+			foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
+				foreach (var item in sq) {
+					RegenerateAll(item);
+				}
+			}
+		}
 	}
 }
