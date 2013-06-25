@@ -88,19 +88,17 @@ namespace Dicom {
 				return Group.CompareTo(other.Group);
 
 			// sort by private creator only if element values are equal
-			if (Element == other.Element && (PrivateCreator != null || other.PrivateCreator != null)) {
+			if (PrivateCreator != null || other.PrivateCreator != null) {
 			    if (PrivateCreator == null)
 			        return -1;
 			    if (other.PrivateCreator == null)
 			        return 1;
 
-				return PrivateCreator.CompareTo(other.PrivateCreator);
+				if (PrivateCreator != other.PrivateCreator)
+					return PrivateCreator.CompareTo(other.PrivateCreator);
 			}
 
-			if (Element != other.Element)
-				return Element.CompareTo(other.Element);
-
-			return 0;
+			return Element.CompareTo(other.Element);
 		}
 
 		public int CompareTo(object obj) {
@@ -122,7 +120,25 @@ namespace Dicom {
 		}
 
 		public bool Equals(DicomTag other) {
-			return CompareTo(other) == 0;
+			if (ReferenceEquals(other, null))
+				return false;
+			if (ReferenceEquals(this, other))
+				return true;
+
+			if (Group != other.Group)
+				return false;
+
+			if (PrivateCreator != null || other.PrivateCreator != null) {
+				if (PrivateCreator == null || other.PrivateCreator == null)
+					return false;
+
+				if (PrivateCreator.Creator != other.PrivateCreator.Creator)
+					return false;
+
+				return (Element & 0xff) == (other.Element & 0xff);
+			}
+
+			return Element == other.Element;
 		}
 
 		public static bool operator ==(DicomTag a, DicomTag b) {
