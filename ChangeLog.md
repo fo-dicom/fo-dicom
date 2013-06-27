@@ -1,4 +1,4 @@
-#### v1.0.34
+#### v1.0.34 (6/27/2013)
 * Fix bug returning default value for zero length elements
 * Fix exception when disposing DicomDirectory
 * Fix menu bug in DICOM Dump utility when changing syntax to JPEG Lossless
