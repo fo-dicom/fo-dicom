@@ -35,6 +35,7 @@ namespace Dicom.IO.Reader {
 		private volatile DicomReaderResult _result;
 
 		private bool _explicit;
+		private bool _badPrivateSequence;
 
 		private DicomDictionary _dict;
 
@@ -237,6 +238,17 @@ namespace Dicom.IO.Reader {
 							return;
 						}
 
+						if (_vr == DicomVR.SQ && _tag.IsPrivate) {
+							if (!IsPrivateSequence(source))
+								_vr = DicomVR.UN;
+
+							if (IsPrivateSequenceBad(source)) {
+								_badPrivateSequence = true;
+								_explicit = !_explicit;
+								//_vr = DicomVR.UN;
+							}
+						}
+
 						if (_vr == DicomVR.SQ) {
 							// start of sequence
 							_observer.OnBeginSequence(source, _tag, _length);
@@ -326,6 +338,10 @@ namespace Dicom.IO.Reader {
 							if (!_implicit)
 								source.PopMilestone();
 							_observer.OnEndSequence();
+							if (_badPrivateSequence) {
+								_explicit = !_explicit;
+								_badPrivateSequence = false;
+							}
 							return;
 						}
 
@@ -334,8 +350,11 @@ namespace Dicom.IO.Reader {
 						if (_tag == DicomTag.SequenceDelimitationItem) {
 							// end of sequence
 							_observer.OnEndSequence();
+							if (_badPrivateSequence) {
+								_explicit = !_explicit;
+								_badPrivateSequence = false;
+							}
 							ResetState();
-							//ParseDataset(source, PopState());
 							return;
 						}
 
@@ -368,6 +387,10 @@ namespace Dicom.IO.Reader {
 					source.PopMilestone();
 
 				_observer.OnEndSequence();
+				if (_badPrivateSequence) {
+					_explicit = !_explicit;
+					_badPrivateSequence = false;
+				}
 			} catch (Exception e) {
 				_exception = e;
 				_result = DicomReaderResult.Error;
@@ -376,6 +399,53 @@ namespace Dicom.IO.Reader {
 					_async.Set();
 				}
 			}
+		}
+
+		private bool IsPrivateSequence(IByteSource source) {
+			source.Mark();
+
+			try {
+				var group = source.GetUInt16();
+				var element = source.GetUInt16();
+				var tag = new DicomTag(group, element);
+
+				if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem)
+					return true;
+			} finally {
+				source.Rewind();
+			}
+
+			return false;
+		}
+
+		private bool IsPrivateSequenceBad(IByteSource source) {
+			source.Mark();
+
+			try {
+				var group = source.GetUInt16();
+				var element = source.GetUInt16();
+				var tag = new DicomTag(group, element);
+				var length = source.GetUInt32();
+
+				group = source.GetUInt16();
+				element = source.GetUInt16();
+				tag = new DicomTag(group, element);
+
+				byte[] bytes = source.GetBytes(2);
+				string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+				try {
+					DicomVR.Parse(vr);
+					return !_explicit;
+				} catch {
+					// unable to parse VR
+					if (_explicit)
+						return true;
+				}
+			} finally {
+				source.Rewind();
+			}
+
+			return false;
 		}
 
 		private void ParseFragmentSequence(IByteSource source, object state) {
