@@ -19,7 +19,12 @@ namespace Dicom.Network {
 			if (_pc.Count == 0)
 				return 1;
 
-			return (byte)(_pc.Max(x => x.Key) + 2);
+			var id = _pc.Max(x => x.Key) + 2;
+
+			if (id >= 256)
+				throw new DicomNetworkException("Too many presentation contexts configured for this association!");
+
+			return (byte)id;
 		}
 
 		public void Add(DicomUID abstractSyntax, params DicomTransferSyntax[] transferSyntaxes) {
