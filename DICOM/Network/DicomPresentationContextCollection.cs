@@ -43,7 +43,14 @@ namespace Dicom.Network {
 		public void AddFromRequest(DicomRequest request) {
 			if (request is DicomCStoreRequest) {
 				var cstore = request as DicomCStoreRequest;
-				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID && x.AcceptedTransferSyntax == cstore.TransferSyntax);
+
+				var pcs = _pc.Values.Where(x => x.AbstractSyntax == request.SOPClassUID);
+				if (cstore.TransferSyntax == DicomTransferSyntax.ImplicitVRLittleEndian)
+					pcs = _pc.Values.Where(x => x.GetTransferSyntaxes().Contains(DicomTransferSyntax.ImplicitVRLittleEndian));
+				else
+					pcs = _pc.Values.Where(x => x.AcceptedTransferSyntax == cstore.TransferSyntax);
+
+				var pc = pcs.FirstOrDefault();
 				if (pc == null) {
 					var tx = new List<DicomTransferSyntax>();
 					if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
