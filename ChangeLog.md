@@ -1,3 +1,8 @@
+#### v1.0.35
+* Fix bug adding presentation contexts with Implicit Little Endian syntax
+* Add option to use the remote AE Title as the logger name
+* Miscellaneous improvements and fixes
+
 #### v1.0.34 (6/27/2013)
 * Fix bug returning default value for zero length elements
 * Fix exception when disposing DicomDirectory
