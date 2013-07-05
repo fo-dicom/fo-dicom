@@ -15,6 +15,7 @@ namespace Dicom.Network {
 		public DicomServiceOptions() {
 			LogDataPDUs = false;
 			LogDimseDatasets = false;
+			UseRemoteAEForLogName = false;
 			MaxCommandBuffer = 1 * 1024;		//1KB
 			MaxDataBuffer = 1 * 1024 * 1024;	//1MB
 			ThreadPoolLinger = 200;
@@ -28,6 +29,12 @@ namespace Dicom.Network {
 
 		/// <summary>Write command and data datasets to log.</summary>
 		public bool LogDimseDatasets {
+			get;
+			set;
+		}
+
+		/// <summary>Use the AE Title of the remote host as the log name.</summary>
+		public bool UseRemoteAEForLogName {
 			get;
 			set;
 		}
