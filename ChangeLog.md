@@ -1,3 +1,7 @@
+#### v1.0.36
+* Fix bug sorting private tags
+* Ability to add private tags to dataset
+
 #### v1.0.35 (7/5/2013)
 * Fix bug adding presentation contexts with Implicit Little Endian syntax
 * Add option to use the remote AE Title as the logger name
