@@ -1,4 +1,4 @@
-#### v1.0.35
+#### v1.0.35 (7/5/2013)
 * Fix bug adding presentation contexts with Implicit Little Endian syntax
 * Add option to use the remote AE Title as the logger name
 * Miscellaneous improvements and fixes
