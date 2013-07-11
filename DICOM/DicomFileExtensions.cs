@@ -9,6 +9,7 @@ namespace Dicom {
 			var df = new DicomFile();
 			df.FileMetaInfo.Add(original.FileMetaInfo);
 			df.Dataset.Add(original.Dataset);
+			df.Dataset.InternalTransferSyntax = original.Dataset.InternalTransferSyntax;
 			return df;
 		}
 	}
