@@ -238,15 +238,17 @@ namespace Dicom.IO.Reader {
 							return;
 						}
 
-						if (_vr == DicomVR.SQ && _tag.IsPrivate) {
-							if (!IsPrivateSequence(source))
+						while (_vr == DicomVR.SQ && _tag.IsPrivate) {
+							if (!IsPrivateSequence(source)) {
 								_vr = DicomVR.UN;
+								break;
+							}
 
 							if (IsPrivateSequenceBad(source)) {
 								_badPrivateSequence = true;
 								_explicit = !_explicit;
-								//_vr = DicomVR.UN;
 							}
+							break;
 						}
 
 						if (_vr == DicomVR.SQ) {
