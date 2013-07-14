@@ -291,6 +291,33 @@ namespace Dicom.StructuredReport {
 					return (T)(object)Dataset.Get<DateTime>(DicomTag.DateTime, 0, DateTime.Today);
 			}
 
+			if (typeof(T) == typeof(decimal)) {
+				if (Type == DicomValueType.Numeric) {
+					var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+					if (mv == null)
+						return default(T);
+					return (T)(object)mv.Value;
+				}
+			}
+
+			if (typeof(T) == typeof(double)) {
+				if (Type == DicomValueType.Numeric) {
+					var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+					if (mv == null)
+						return default(T);
+					return (T)(object)(double)mv.Value;
+				}
+			}
+
+			if (typeof(T) == typeof(int)) {
+				if (Type == DicomValueType.Numeric) {
+					var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+					if (mv == null)
+						return default(T);
+					return (T)(object)(int)mv.Value;
+				}
+			}
+
 			if (typeof(T) == typeof(DicomUID)) {
 				if (Type == DicomValueType.UIDReference)
 					return (T)(object)Dataset.Get<DicomUID>(DicomTag.UID);
