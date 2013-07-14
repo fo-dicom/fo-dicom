@@ -125,7 +125,7 @@ namespace Dicom.Imaging {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
-				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX, overlay.OriginY, OverlayColor);
+				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX-1, overlay.OriginY-1, OverlayColor);
 				graphic.AddOverlay(og);
 			}
 
