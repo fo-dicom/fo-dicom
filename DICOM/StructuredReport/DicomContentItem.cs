@@ -313,5 +313,16 @@ namespace Dicom.StructuredReport {
 
 			throw new DicomStructuredReportException("Unable to get type of {0} from {1} content item.", typeof(T), Type);
 		}
+
+		public T Get<T>(DicomCodeItem code, T defaultValue) {
+			var item = Children().FirstOrDefault(x => x.Code == code);
+			if (item == null)
+				return default(T);
+
+			if (typeof(T) == typeof(DicomContentItem))
+				return (T)(object)item;
+
+			return item.Get<T>();
+		}
 	}
 }
