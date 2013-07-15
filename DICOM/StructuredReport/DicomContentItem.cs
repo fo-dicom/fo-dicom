@@ -280,6 +280,26 @@ namespace Dicom.StructuredReport {
 					return (T)(object)Dataset.Get<string>(DicomTag.TextValue, 0, String.Empty);
 				if (Type == DicomValueType.PersonName)
 					return (T)(object)Dataset.Get<string>(DicomTag.PersonName, 0, String.Empty);
+				if (Type == DicomValueType.Numeric) {
+					var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+					if (mv == null)
+						return default(T);
+					return (T)(object)mv.ToString();
+				}
+				if (Type == DicomValueType.Date)
+					return (T)(object)Dataset.Get<string>(DicomTag.Date, 0, String.Empty);
+				if (Type == DicomValueType.Time)
+					return (T)(object)Dataset.Get<string>(DicomTag.Time, 0, String.Empty);
+				if (Type == DicomValueType.DateTime)
+					return (T)(object)Dataset.Get<string>(DicomTag.DateTime, 0, String.Empty);
+				if (Type == DicomValueType.UIDReference)
+					return (T)(object)Dataset.Get<string>(DicomTag.UID);
+				if (Type == DicomValueType.Code) {
+					var c = Dataset.Get<DicomCodeItem>(DicomTag.ConceptCodeSequence);
+					if (c == null)
+						return default(T);
+					return (T)(object)c.ToString();
+				}
 			}
 
 			if (typeof(T) == typeof(DateTime)) {
@@ -350,6 +370,15 @@ namespace Dicom.StructuredReport {
 				return (T)(object)item;
 
 			return item.Get<T>();
+		}
+
+		public override string ToString() {
+			var s = String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+			try {
+				s += String.Format(" [{0}]", Get<string>());
+			} catch {
+			}
+			return s;
 		}
 	}
 }
