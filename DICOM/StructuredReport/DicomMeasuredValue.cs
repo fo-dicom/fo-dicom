@@ -28,7 +28,7 @@ namespace Dicom.StructuredReport {
 		}
 
 		public override string ToString() {
-			return String.Format("{0}{1}", Value, Code.Value);
+			return String.Format("{0} {1}", Value, Code.Value);
 		}
 	}
 }

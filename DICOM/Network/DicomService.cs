@@ -192,6 +192,8 @@ namespace Dicom.Network {
 						var pdu = new AAssociateRQ(Association);
 						pdu.Read(raw);
 						LogID = Association.CallingAE;
+						if (Options.UseRemoteAEForLogName)
+							Logger = LogManager.Default.GetLogger(LogID);
 						Logger.Info("{0} <- Association request:\n{1}", LogID, Association.ToString());
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAssociationRequest(Association);
@@ -924,6 +926,8 @@ namespace Dicom.Network {
 		#region Send Methods
 		protected void SendAssociationRequest(DicomAssociation association) {
 			LogID = association.CalledAE;
+			if (Options.UseRemoteAEForLogName)
+				Logger = LogManager.Default.GetLogger(LogID);
 			Logger.Info("{0} -> Association request:\n{1}", LogID, association.ToString());
 			Association = association;
 			SendPDU(new AAssociateRQ(Association));

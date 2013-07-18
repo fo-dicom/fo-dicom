@@ -1,10 +1,22 @@
-#### v1.0.34
+#### v1.0.36
+* Fix bug sorting private tags
+* Ability to add private tags to dataset
+* Better handling of improperly encoded private sequences
+
+#### v1.0.35 (7/5/2013)
+* Fix bug adding presentation contexts with Implicit Little Endian syntax
+* Add option to use the remote AE Title as the logger name
+* Miscellaneous improvements and fixes
+
+#### v1.0.34 (6/27/2013)
 * Fix bug returning default value for zero length elements
 * Fix exception when disposing DicomDirectory
 * Fix menu bug in DICOM Dump utility when changing syntax to JPEG Lossless
-* Ability to browse multiframe images in DICOM Dump utility
+* Fix bug matching private DICOM tags
 * Add classes for basic structured report creation
+* Ability to browse multiframe images in DICOM Dump utility
 * Ability to recover when parsing invalid sequences
+* Ability to parse improperly encoded private sequences
 
 #### v1.0.33 (4/28/2013)
 * Add logging abstraction layer to remove runtime dependency on NLog

@@ -66,6 +66,7 @@
 			this.columnHeaderValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.cmDicom = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.copyTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.cmDicom.SuspendLayout();
 			this.SuspendLayout();
@@ -193,49 +194,49 @@
 			// quality100ToolStripMenuItem
 			// 
 			this.quality100ToolStripMenuItem.Name = "quality100ToolStripMenuItem";
-			this.quality100ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality100ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality100ToolStripMenuItem.Text = "Quality: 100";
 			this.quality100ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality100);
 			// 
 			// quality90ToolStripMenuItem
 			// 
 			this.quality90ToolStripMenuItem.Name = "quality90ToolStripMenuItem";
-			this.quality90ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality90ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality90ToolStripMenuItem.Text = "Quality: 90";
 			this.quality90ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality90);
 			// 
 			// quality80ToolStripMenuItem
 			// 
 			this.quality80ToolStripMenuItem.Name = "quality80ToolStripMenuItem";
-			this.quality80ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality80ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality80ToolStripMenuItem.Text = "Quality: 80";
 			this.quality80ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality80);
 			// 
 			// quality75ToolStripMenuItem
 			// 
 			this.quality75ToolStripMenuItem.Name = "quality75ToolStripMenuItem";
-			this.quality75ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality75ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality75ToolStripMenuItem.Text = "Quality: 75";
 			this.quality75ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality75);
 			// 
 			// quality70ToolStripMenuItem
 			// 
 			this.quality70ToolStripMenuItem.Name = "quality70ToolStripMenuItem";
-			this.quality70ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality70ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality70ToolStripMenuItem.Text = "Quality: 70";
 			this.quality70ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality70);
 			// 
 			// quality60ToolStripMenuItem
 			// 
 			this.quality60ToolStripMenuItem.Name = "quality60ToolStripMenuItem";
-			this.quality60ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality60ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality60ToolStripMenuItem.Text = "Quality: 60";
 			this.quality60ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality60);
 			// 
 			// quality50ToolStripMenuItem
 			// 
 			this.quality50ToolStripMenuItem.Name = "quality50ToolStripMenuItem";
-			this.quality50ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quality50ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
 			this.quality50ToolStripMenuItem.Text = "Quality: 50";
 			this.quality50ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEGLossyQuality50);
 			// 
@@ -261,35 +262,35 @@
 			// rate5ToolStripMenuItem
 			// 
 			this.rate5ToolStripMenuItem.Name = "rate5ToolStripMenuItem";
-			this.rate5ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.rate5ToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
 			this.rate5ToolStripMenuItem.Text = "Rate: 5";
 			this.rate5ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEG2000LossyRate5);
 			// 
 			// rate10ToolStripMenuItem
 			// 
 			this.rate10ToolStripMenuItem.Name = "rate10ToolStripMenuItem";
-			this.rate10ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.rate10ToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
 			this.rate10ToolStripMenuItem.Text = "Rate: 10";
 			this.rate10ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEG2000LossyRate10);
 			// 
 			// rate20ToolStripMenuItem
 			// 
 			this.rate20ToolStripMenuItem.Name = "rate20ToolStripMenuItem";
-			this.rate20ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.rate20ToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
 			this.rate20ToolStripMenuItem.Text = "Rate: 20";
 			this.rate20ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEG2000LossyRate20);
 			// 
 			// rate40ToolStripMenuItem
 			// 
 			this.rate40ToolStripMenuItem.Name = "rate40ToolStripMenuItem";
-			this.rate40ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.rate40ToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
 			this.rate40ToolStripMenuItem.Text = "Rate: 40";
 			this.rate40ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEG2000LossyRate40);
 			// 
 			// rate80ToolStripMenuItem
 			// 
 			this.rate80ToolStripMenuItem.Name = "rate80ToolStripMenuItem";
-			this.rate80ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.rate80ToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
 			this.rate80ToolStripMenuItem.Text = "Rate: 80";
 			this.rate80ToolStripMenuItem.Click += new System.EventHandler(this.OnClickJPEG2000LossyRate80);
 			// 
@@ -394,17 +395,25 @@
 			// cmDicom
 			// 
 			this.cmDicom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyValueToolStripMenuItem});
+            this.copyValueToolStripMenuItem,
+            this.copyTagToolStripMenuItem});
 			this.cmDicom.Name = "cmDicom";
-			this.cmDicom.Size = new System.Drawing.Size(135, 26);
+			this.cmDicom.Size = new System.Drawing.Size(153, 70);
 			this.cmDicom.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
 			// 
 			// copyValueToolStripMenuItem
 			// 
 			this.copyValueToolStripMenuItem.Name = "copyValueToolStripMenuItem";
-			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-			this.copyValueToolStripMenuItem.Text = "&Copy Value";
+			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyValueToolStripMenuItem.Text = "Copy &Value";
 			this.copyValueToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyValue);
+			// 
+			// copyTagToolStripMenuItem
+			// 
+			this.copyTagToolStripMenuItem.Name = "copyTagToolStripMenuItem";
+			this.copyTagToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyTagToolStripMenuItem.Text = "Copy &Tag";
+			this.copyTagToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyTag);
 			// 
 			// MainForm
 			// 
@@ -469,6 +478,7 @@
 		private System.Windows.Forms.ToolStripMenuItem quality70ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem quality60ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem quality50ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem copyTagToolStripMenuItem;
 	}
 }
 
