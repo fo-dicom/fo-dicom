@@ -76,11 +76,11 @@ namespace Dicom {
 		}
 
 		public void RegenerateAll(DicomDataset dataset) {
-			foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI)) {
+			foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray()) {
 				dataset.Add(ui.Tag, Generate(dataset.Get<DicomUID>(ui.Tag)));
 			}
 
-			foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>()) {
+			foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>().ToArray()) {
 				foreach (var item in sq) {
 					RegenerateAll(item);
 				}

@@ -56,8 +56,12 @@ namespace Dicom.Imaging.Render {
 			int oy = (int)(_offsetY * _scale);
 
 			Parallel.For(0, _scaledData.Height, y => {
-				for (int i = _scaledData.Width * y, e = i + _scaledData.Width; i < e; i++) {
+				if ((oy + y) >= height)
+					return;
+				for (int i = _scaledData.Width * y, e = i + _scaledData.Width, x = 0; i < e; i++, x++) {
 					if (data[i] > 0) {
+						if ((ox + x) >= width)
+							break;
 						int p = (oy * width) + ox + i;
 						pixels[p] = _color;
 					}

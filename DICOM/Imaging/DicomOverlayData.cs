@@ -235,8 +235,8 @@ namespace Dicom.Imaging {
 				// (1,1) indicates top left pixel of image
 				int ox = Math.Max(0, _originX - 1);
 				int oy = Math.Max(0, _originY - 1);
-				int ow = Math.Min(_rows, pixels.Width - _rows - ox);
-				int oh = Math.Min(_columns, pixels.Height - _columns - oy);
+				int ow = _rows - (pixels.Width - _rows - ox);
+				int oh =  _columns - (pixels.Height - _columns - oy);
 
 				var frame = pixels.GetFrame(0);
 

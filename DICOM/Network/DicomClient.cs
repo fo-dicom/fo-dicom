@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
@@ -15,6 +16,7 @@ namespace Dicom.Network {
 		private EventAsyncResult _async;
 		private Exception _exception;
 		private List<DicomRequest> _requests;
+		private List<DicomPresentationContext> _contexts;
 		private DicomServiceUser _service;
 		private int _asyncInvoked;
 		private int _asyncPerformed;
@@ -22,6 +24,7 @@ namespace Dicom.Network {
 
 		public DicomClient() {
 			_requests = new List<DicomRequest>();
+			_contexts = new List<DicomPresentationContext>();
 			_asyncInvoked = 1;
 			_asyncPerformed = 1;
 			Linger = 50;
@@ -56,15 +59,25 @@ namespace Dicom.Network {
 			set;
 		}
 
+		/// <summary>
+		/// Additional presentation contexts to negotiate with association.
+		/// </summary>
+		public List<DicomPresentationContext> AdditionalPresentationContexts {
+			get;
+			set;
+		}
+
 		public object UserState {
 			get;
 			set;
 		}
 
 		public void AddRequest(DicomRequest request) {
-			if (_service != null && _service.IsConnected)
+			if (_service != null && _service.IsConnected) {
 				_service.SendRequest(request);
-			else
+				if (_service._timer != null)
+					_service._timer.Change(Timeout.Infinite, Timeout.Infinite);
+			} else
 				_requests.Add(request);
 		}
 
@@ -96,6 +109,8 @@ namespace Dicom.Network {
 			assoc.MaxAsyncOpsPerformed = _asyncPerformed;
 			foreach (var request in _requests)
 				assoc.PresentationContexts.AddFromRequest(request);
+			foreach (var context in _contexts)
+				assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
 
 			_service = new DicomServiceUser(this, stream, assoc, Logger);
 
@@ -121,8 +136,8 @@ namespace Dicom.Network {
 		}
 
 		private class DicomServiceUser : DicomService, IDicomServiceUser {
-			private DicomClient _client;
-			private Timer _timer;
+			public DicomClient _client;
+			public Timer _timer;
 
 			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
 				_client = client;

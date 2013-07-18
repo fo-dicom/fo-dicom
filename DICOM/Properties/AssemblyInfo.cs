@@ -33,7 +33,8 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.33.0")]
 
-[assembly: AssemblyFileVersionAttribute("1.0.33.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.35.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.35.0")]
 
 #if NETFX_CORE
 [assembly: InternalsVisibleTo("Store.Dicom.Tests")]

@@ -234,6 +234,17 @@ namespace Dicom.Dump {
 			Clipboard.SetText(value);			
 		}
 
+		private void OnClickContextMenuCopyTag(object sender, EventArgs e) {
+			if (lvDicom.SelectedItems.Count == 0)
+				return;
+
+			var item = lvDicom.SelectedItems[0];
+			var value = item.Text.Substring(1);
+			value = value.Substring(0, value.IndexOf(')'));
+
+			Clipboard.SetText(value);
+		}
+
 		private void ChangeSyntax(DicomTransferSyntax syntax, DicomCodecParams param = null) {
 			var file = _file.ChangeTransferSyntax(syntax, param);
 			OpenFile(file);
