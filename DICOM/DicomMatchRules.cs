@@ -57,6 +57,9 @@ namespace Dicom {
 		}
 
 		public bool Match(DicomDataset dataset) {
+			if (_rules.Count == 0)
+				return true;
+
 			if (_operator == DicomMatchOperator.Or) {
 				foreach (var rule in _rules)
 					if (rule.Match(dataset))
