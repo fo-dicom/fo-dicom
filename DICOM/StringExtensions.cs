@@ -45,6 +45,9 @@ namespace Dicom {
 		/// <param name="caseSensitive"></param>
 		/// <returns></returns>
 		public static bool Wildcard(this string s, string pattern, bool caseSensitive) {
+			if (pattern == "*")
+				return true;
+
 			// if not concerned about case, convert both string and pattern
 			// to lower case for comparison
 			if (!caseSensitive) {
