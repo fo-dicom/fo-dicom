@@ -30,14 +30,27 @@ namespace ConsoleTest {
 					Console.ForegroundColor = old;
 				};
 
+				var config = new LoggingConfiguration();
+
+				var target = new ColoredConsoleTarget();
+				target.Layout = @"${date:format=HH\:mm\:ss}  ${message}";
+				config.AddTarget("Console", target);
+				config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, target));
+
+				NLog.LogManager.Configuration = config;
+
+				Dicom.Log.LogManager.Default = new Dicom.Log.NLogManager();
+
 				//var server = new DicomServer<DicomCEchoProvider>(12345);
 
 
-				//var client = new DicomClient();
+				var client = new DicomClient();
 				//client.NegotiateAsyncOps();
 				//for (int i = 0; i < 10; i++)
 				//    client.AddRequest(new DicomCEchoRequest());
-				//client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+				client.AddRequest(new DicomCStoreRequest(@"Z:\test1.dcm"));
+				client.AddRequest(new DicomCStoreRequest(@"Z:\test2.dcm"));
+				client.Send("127.0.0.1", 104,false, "SCU", "ANY-SCP");
 
 				var samplesDir = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory), "Development", "fo-dicom-samples");
 				var testDir = Path.Combine(samplesDir, "Test");
@@ -48,13 +61,13 @@ namespace ConsoleTest {
 				//var img = new DicomImage(samplesDir + @"\ClearCanvas\CRStudy\1.3.51.5145.5142.20010109.1105627.1.0.1.dcm");
 				//img.RenderImage().Save(testDir + @"\test.jpg");
 
-				var df = DicomFile.Open(samplesDir + @"\User Submitted\overlays.dcm");
+				//var df = DicomFile.Open(samplesDir + @"\User Submitted\overlays.dcm");
 
 				//Console.WriteLine(df.FileMetaInfo.Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID).UID.Name);
 				//Console.WriteLine(df.Dataset.Get<PlanarConfiguration>(DicomTag.PlanarConfiguration));
 
-				var img = new DicomImage(df.Dataset);
-				img.RenderImage().Save(testDir + @"\test.jpg");
+				//var img = new DicomImage(df.Dataset);
+				//img.RenderImage().Save(testDir + @"\test.jpg");
 
 				//df = df.ChangeTransferSyntax(DicomTransferSyntax.JPEGLSLossless);
 				//df.Save(testDir + @"\test-jls.dcm");
