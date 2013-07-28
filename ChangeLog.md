@@ -2,6 +2,7 @@
 * Fix bug sorting private tags
 * Ability to add private tags to dataset
 * Better handling of improperly encoded private sequences
+* Fix bug adding presentation contexts from requests
 
 #### v1.0.35 (7/5/2013)
 * Fix bug adding presentation contexts with Implicit Little Endian syntax
