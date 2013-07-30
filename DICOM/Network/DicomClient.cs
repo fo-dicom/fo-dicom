@@ -91,7 +91,7 @@ namespace Dicom.Network {
 			Stream stream = _client.GetStream();
 
 			if (useTls) {
-				var ssl = new SslStream(stream);
+				var ssl = new SslStream(stream, false, ValidateServerCertificate);
 				ssl.AuthenticateAsClient(host);
 				stream = ssl;
 			}
@@ -116,6 +116,19 @@ namespace Dicom.Network {
 
 			_async = new EventAsyncResult(callback, state);
 			return _async;
+		}
+
+		private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+			if (sslPolicyErrors == SslPolicyErrors.None)
+				return true;
+
+			if (Options != null) {
+				if (Options.IgnoreSslPolicyErrors)
+					return true;
+			} else if (DicomServiceOptions.Default.IgnoreSslPolicyErrors)
+				return true;
+
+			return false;
 		}
 
 		public void EndSend(IAsyncResult result) {
