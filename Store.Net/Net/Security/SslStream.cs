@@ -13,18 +13,22 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace System.Net.Security
 {
+	public delegate bool RemoteCertificateValidationCallback(
+		object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors);
+	
 	public class SslStream : MemoryStream
 	{
 		#region FIELDS
 
 		private readonly TcpClient.Stream _innerStream;
-		private bool _leaveInnerStreamOpen;
+		private readonly bool _leaveInnerStreamOpen;
+		private readonly RemoteCertificateValidationCallback _validateServerCertificate;
 		
 		#endregion
 
 		#region CONSTRUCTORS
 
-		public SslStream(Stream innerStream, bool leaveInnerStreamOpen)
+		public SslStream(Stream innerStream, bool leaveInnerStreamOpen, RemoteCertificateValidationCallback validateServerCertificate)
 		{
 			var tcpClientStream = innerStream as TcpClient.Stream;
 			if (tcpClientStream == null)
@@ -32,12 +36,17 @@ namespace System.Net.Security
 
 			_innerStream = tcpClientStream;
 			_leaveInnerStreamOpen = leaveInnerStreamOpen;
+			_validateServerCertificate = validateServerCertificate;
+		}
+
+		public SslStream(Stream innerStream, bool leaveInnerStreamOpen) : this(innerStream, leaveInnerStreamOpen, null)
+		{
 		}
 
 		public SslStream(Stream innerStream) : this(innerStream, true)
 		{
 		}
-		
+
 		#endregion
 
 		#region METHODS

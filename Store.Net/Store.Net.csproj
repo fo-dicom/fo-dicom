@@ -53,6 +53,7 @@
     <Compile Include="IO\Path.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
     <Compile Include="Net\IPAddress.cs" />
+    <Compile Include="Net\Security\SslPolicyErrors.cs" />
     <Compile Include="Net\Security\SslStream.cs" />
     <Compile Include="Net\Sockets\SocketException.cs" />
     <Compile Include="Net\Sockets\TcpClient.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Security\Cryptography\X509Certificates\StoreName.cs" />
     <Compile Include="Security\Cryptography\X509Certificates\X509Certificate.cs" />
     <Compile Include="Security\Cryptography\X509Certificates\X509Certificate2Collection.cs" />
+    <Compile Include="Security\Cryptography\X509Certificates\X509Chain.cs" />
     <Compile Include="Security\Cryptography\X509Certificates\X509FindType.cs" />
     <Compile Include="Security\Cryptography\X509Certificates\X509Store.cs" />
     <Compile Include="Threading\Thread.cs" />
