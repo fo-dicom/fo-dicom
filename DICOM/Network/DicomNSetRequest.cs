@@ -17,14 +17,14 @@ namespace Dicom.Network {
 			private set { Command.Add(DicomTag.RequestedSOPInstanceUID, value); }
 		}
 
-		public delegate void ResponseDelegate(DicomNSetRequest request, DicomNGetResponse response);
+		public delegate void ResponseDelegate(DicomNSetRequest request, DicomNSetResponse response);
 
 		public ResponseDelegate OnResponseReceived;
 
 		internal override void PostResponse(DicomService service, DicomResponse response) {
 			try {
 				if (OnResponseReceived != null)
-					OnResponseReceived(this, (DicomNGetResponse)response);
+					OnResponseReceived(this, (DicomNSetResponse)response);
 			} catch {
 			}
 		}
