@@ -63,8 +63,8 @@ namespace Dicom.Network {
 		/// Additional presentation contexts to negotiate with association.
 		/// </summary>
 		public List<DicomPresentationContext> AdditionalPresentationContexts {
-			get;
-			set;
+			get { return _contexts; }
+			set { _contexts = value; }
 		}
 
 		public object UserState {
