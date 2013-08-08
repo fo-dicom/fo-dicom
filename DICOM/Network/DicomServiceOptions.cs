@@ -20,6 +20,7 @@ namespace Dicom.Network {
 			MaxDataBuffer = 1 * 1024 * 1024;	//1MB
 			ThreadPoolLinger = 200;
 			IgnoreSslPolicyErrors = false;
+			TcpNoDelay = true;
 		}
 
 		/// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
@@ -58,8 +59,14 @@ namespace Dicom.Network {
 			set;
 		}
 
-		/// <summary>DICOM client should ignore SSL certificate errors</summary>
+		/// <summary>DICOM client should ignore SSL certificate errors.</summary>
 		public bool IgnoreSslPolicyErrors {
+			get;
+			set;
+		}
+
+		/// <summary>Enable or disable TCP Nagle algorithm.</summary>
+		public bool TcpNoDelay {
 			get;
 			set;
 		}
