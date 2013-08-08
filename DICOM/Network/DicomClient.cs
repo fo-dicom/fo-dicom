@@ -88,6 +88,11 @@ namespace Dicom.Network {
 		public IAsyncResult BeginSend(string host, int port, bool useTls, string callingAe, string calledAe, AsyncCallback callback, object state) {
 			_client = new TcpClient(host, port);
 
+			if (Options != null)
+				_client.NoDelay = Options.TcpNoDelay;
+			else
+				_client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
+
 			Stream stream = _client.GetStream();
 
 			if (useTls) {

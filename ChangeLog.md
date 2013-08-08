@@ -1,3 +1,6 @@
+#### v1.0.37
+* Add support for disabling TCP Nagle algorithm
+
 #### v1.0.36 (8/6/2013)
 * Fix bug sorting private tags
 * Ability to add private tags to dataset
