@@ -142,7 +142,7 @@ namespace Dicom.Threading {
 					var linger = DateTime.Now.AddMilliseconds(Linger);
 					while (empty && DateTime.Now < linger) {
 						Thread.Sleep(0);
-						lock (_lock) {
+						lock (group.Lock) {
 							empty = group.Items.Count == 0;
 
 							if (!empty)
@@ -151,14 +151,15 @@ namespace Dicom.Threading {
 					}
 
 					if (empty) {
-						lock (_lock) {
-							lock (group.Lock)
-								group.Executing = false;
+						lock (group.Lock) {
+							group.Executing = false;
 
-							if (!group.Key.Equals(DefaultGroup))
-								_groups.Remove(group.Key);
+							lock (_lock) {
+								if (!group.Key.Equals(DefaultGroup))
+									_groups.Remove(group.Key);
 
-							return;
+								return;
+							}
 						}
 					}
 				}
