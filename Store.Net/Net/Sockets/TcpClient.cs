@@ -41,6 +41,12 @@ namespace System.Net.Sockets
 
 		#endregion
 
+		#region PROPERTIES
+
+		public bool NoDelay { get; set; }
+
+		#endregion
+		
 		#region METHODS
 
 		public global::System.IO.Stream GetStream()
