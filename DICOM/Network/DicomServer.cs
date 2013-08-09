@@ -58,6 +58,11 @@ namespace Dicom.Network {
 			try {
 				var client = _listener.EndAcceptTcpClient(result);
 
+				if (Options != null)
+					client.NoDelay = Options.TcpNoDelay;
+				else
+					client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
+
 				Stream stream = client.GetStream();
 
 				if (_cert != null) {
