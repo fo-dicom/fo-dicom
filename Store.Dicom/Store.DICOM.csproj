@@ -742,9 +742,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.7.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.8.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WriteableBitmapEx.1.0.7.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+      <HintPath>..\packages\WriteableBitmapEx.1.0.8.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
