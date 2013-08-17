@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Dicom.Threading {
@@ -23,6 +24,7 @@ namespace Dicom.Threading {
 		}
 
 		private object _lock = new object();
+		private volatile bool _stopped = false;
 		private Dictionary<T, WorkGroup> _groups;
 
 		public ThreadPoolQueue() {
@@ -37,10 +39,25 @@ namespace Dicom.Threading {
 			set;
 		}
 
+		public bool IsRunning {
+			get { return !_stopped; }
+		}
+
 		/// <summary>Value of key for default group.</summary>
 		public T DefaultGroup {
 			get;
 			set;
+		}
+
+		public void Start() {
+			_stopped = false;
+
+			foreach (var group in _groups.Keys.ToArray())
+				Execute(group);
+		}
+
+		public void Stop() {
+			_stopped = true;
 		}
 
 		public void Queue(Action action) {
@@ -103,6 +120,9 @@ namespace Dicom.Threading {
 		}
 
 		private void Execute(T groupKey) {
+			if (_stopped)
+				return;
+
 			WorkGroup group = null;
 			lock (_lock) {
 				if (!_groups.TryGetValue(groupKey, out group))
@@ -128,6 +148,9 @@ namespace Dicom.Threading {
 			var group = (WorkGroup)state;
 
 			do {
+				if (_stopped)
+					return;
+
 				WorkItem item = null;
 
 				bool empty;
