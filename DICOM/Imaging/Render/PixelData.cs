@@ -36,6 +36,14 @@ namespace Dicom.Imaging.Render {
 		/// <returns>Range of claculated minimum and max</returns>
 		DicomRange<double> GetMinMax(int padding);
 
+		/// <summary>
+		/// Gets the value of the pixel at the specified coordinates.
+		/// </summary>
+		/// <param name="x">X</param>
+		/// <param name="y">Y</param>
+		/// <returns>Pixel value</returns>
+		double GetPixel(int x, int y);
+
 		IPixelData Rescale(double scale);
 
 		/// <summary>
@@ -178,6 +186,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -301,6 +313,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -393,6 +409,10 @@ namespace Dicom.Imaging.Render {
 			}
 
 			return new DicomRange<double>(min, max);
+		}
+
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
 		}
 
 		public IPixelData Rescale(double scale) {
@@ -492,6 +512,10 @@ namespace Dicom.Imaging.Render {
 			}
 
 			return new DicomRange<double>(min, max);
+		}
+
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
 		}
 
         public IPixelData Rescale(double scale)
@@ -604,6 +628,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
         public IPixelData Rescale(double scale)
         {
             if (scale == 1.0)
@@ -686,6 +714,11 @@ namespace Dicom.Imaging.Render {
 		#region Public Methods
 		public DicomRange<double> GetMinMax(int padding) {
 			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
+		}
+
+		public double GetPixel(int x, int y) {
+			var p = ((y * Width) + x) * 3;
+			return (double)((_data[p++] << 16) | (_data[p++] << 8) | _data[p++]);
 		}
 
 		public IPixelData Rescale(double scale) {
