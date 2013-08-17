@@ -21,6 +21,7 @@ namespace Dicom.Network {
 		private int _asyncInvoked;
 		private int _asyncPerformed;
 		private TcpClient _client;
+		private bool _abort;
 
 		public DicomClient() {
 			_requests = new List<DicomRequest>();
@@ -149,8 +150,16 @@ namespace Dicom.Network {
 			_service = null;
 			_async = null;
 
-			if (_exception != null)
+			if (_exception != null && !_abort)
 				throw _exception;
+		}
+
+		public void Abort() {
+			try {
+				_abort = true;
+				_client.Close();
+			} catch {
+			}
 		}
 
 		private class DicomServiceUser : DicomService, IDicomServiceUser {
