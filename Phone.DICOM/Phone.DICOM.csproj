@@ -700,17 +700,38 @@
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
       <Link>Phone\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
     </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLossless14SV1Codec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegLossless14SV1Codec.cs</Link>
+    </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
       <Link>Phone\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs</Link>
     </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
       <Link>Phone\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs</Link>
     </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegNativeCodec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegNativeCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegProcess1Codec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegProcess1Codec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegProcess4Codec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegProcess4Codec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomRleCodecImpl.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomRleCodecImpl.cs</Link>
+    </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs">
       <Link>Phone\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs">
       <Link>Phone\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativeJpegParametersExtensions.cs">
+      <Link>Phone\Dicom\Imaging\Codec\NativeJpegParametersExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativePixelDataExtensions.cs">
       <Link>Phone\Dicom\Imaging\Codec\NativePixelDataExtensions.cs</Link>

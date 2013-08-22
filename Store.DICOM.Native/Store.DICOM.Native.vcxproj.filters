@@ -136,6 +136,9 @@
     <ClCompile Include="Dicom.Imaging.Codec.JpegLSParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\bio.h">
@@ -283,6 +286,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dicom.Imaging.Codec.ArrayCopy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

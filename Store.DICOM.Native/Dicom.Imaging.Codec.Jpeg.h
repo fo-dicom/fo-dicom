@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h"
 #include "Dicom.Imaging.Codec.PixelData.h"
 #include "Dicom.Imaging.Codec.JpegParameters.h"
 

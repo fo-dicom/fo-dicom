@@ -58,7 +58,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_PHONE;CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
@@ -75,7 +75,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_PHONE;CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
@@ -92,7 +92,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_PHONE;CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
@@ -109,7 +109,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_PHONE;CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
@@ -172,10 +172,13 @@
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tcd.h" />
     <ClInclude Include="..\DICOM [Native]\OpenJPEG\tgt.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.ArrayCopy.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLS.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegParameters.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Rle.h" />
   </ItemGroup>
@@ -334,11 +337,33 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLS.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegParameters.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_8.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Rle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DICOM [Native]\Common\libijg12.vcxproj">
+      <Project>{b3c673bd-6c8a-4992-94ca-01635706d20f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DICOM [Native]\Common\libijg16.vcxproj">
+      <Project>{dba3b79e-46eb-4769-9789-a3a912c59faa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DICOM [Native]\Common\libijg8.vcxproj">
+      <Project>{f8d42452-b8c2-41ad-9c0a-2aeb2518d434}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg.i">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

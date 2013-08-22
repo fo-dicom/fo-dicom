@@ -99,6 +99,12 @@
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLS.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.cpp" />
     <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegParameters.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_8.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Rle.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DICOM [Native]\CharLS\colortransform.h">
@@ -228,5 +234,11 @@
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.h" />
     <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Rle.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegParameters.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg.i" />
   </ItemGroup>
 </Project>
