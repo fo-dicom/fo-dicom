@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-#if NETFX_CORE
+#if NETFX_CORE || WINDOWS_PHONE
 using Environment = Override.System.Environment;
 #endif
 

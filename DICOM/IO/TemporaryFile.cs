@@ -59,7 +59,11 @@ namespace Dicom.IO {
 			try {
 				// set temporary file attribute so that the file system
 				// will attempt to keep all of the data in memory
+#if WINDOWS_PHONE
+				File.SetAttributes(path, WPFile.GetAttributes(path) | FileAttributes.Temporary);
+#else
 				File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Temporary);
+#endif
 			} catch {
 				// sometimes fails with invalid argument exception
 			}

@@ -8,8 +8,11 @@ namespace Dicom.IO.Buffer {
 
 		public TempFileBuffer(byte[] data) {
 			_file = new TemporaryFile();
-
+#if WINDOWS_PHONE
+			WPFile.WriteAllBytes(_file.Name, data);
+#else
 			File.WriteAllBytes(_file.Name, data);
+#endif
 			_size = (uint)data.Length;
 		}
 
@@ -22,7 +25,11 @@ namespace Dicom.IO.Buffer {
 		}
 
 		public byte[] Data {
+#if WINDOWS_PHONE
+			get { return WPFile.ReadAllBytes(_file.Name); }
+#else
 			get { return File.ReadAllBytes(_file.Name); }
+#endif
 		}
 
 		public byte[] GetByteRange(int offset, int count) {

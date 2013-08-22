@@ -54,7 +54,7 @@ namespace System.Net.Security
 		public void AuthenticateAsServer(X509Certificate serverCertificate, 
 			bool clientCertificateRequired, SslProtocols enabledSslProtocols, bool checkCertificateRevocation)
 		{
-			throw new SocketException("SSL server support is not implemented");
+			throw new NotImplementedException("SSL server support is not implemented");
 		}
 
 		public void AuthenticateAsClient(string targetHost)

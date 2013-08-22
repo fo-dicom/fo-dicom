@@ -83,7 +83,7 @@ namespace System.Net.Sockets
 			internal void UpgradeToSsl(string validationHost)
 			{
 				if (!Task.Run(async () => await _socket.UpgradeToSslAsync(SocketProtectionLevel.Ssl, new HostName(validationHost))).Wait(10000))
-					throw new SocketException("Could not authenticate '{0}' as SSL server", validationHost);
+					throw new InvalidOperationException(String.Format("Could not authenticate '{0}' as SSL server", validationHost));
 			}
 
 			public override void Flush()

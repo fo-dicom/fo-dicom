@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-#if !NETFX_CORE
+#if !NETFX_CORE && !WINDOWS_PHONE
 using System.ComponentModel.Composition.Hosting;
 #endif
 using System.Linq;
@@ -28,7 +28,7 @@ namespace Dicom.Imaging.Codec {
 			return codec;
 		}
 
-#if NETFX_CORE
+#if NETFX_CORE || WINDOWS_PHONE
 		public static void LoadCodecs(Assembly assembly = null, string overwriteIfEmpty = null)
 		{
 			if (assembly == null)
