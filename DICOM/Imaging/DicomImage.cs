@@ -37,7 +37,6 @@ namespace Dicom.Imaging {
 			Load(dataset, frame);
 		}
 
-#if !SILVERLIGHT
 		/// <summary>Creates DICOM image object from file</summary>
 		/// <param name="fileName">Source file</param>
 		/// <param name="frame">Zero indexed frame number</param>
@@ -46,7 +45,6 @@ namespace Dicom.Imaging {
 			var file = DicomFile.Open(fileName);
 			Load(file.Dataset, frame);
 		}
-#endif
 
 		/// <summary>Source DICOM dataset</summary>
 		public DicomDataset Dataset {
