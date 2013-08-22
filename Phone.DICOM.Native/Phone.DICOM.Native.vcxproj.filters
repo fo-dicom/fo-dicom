@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>5fd0e509-b6ae-4f29-bd2a-4d2cc10f3aa0</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="CharLS">
+      <UniqueIdentifier>{ec50b632-fa69-4000-9bb8-6f494729d114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenJPEG">
+      <UniqueIdentifier>{1a56adb3-3957-4ff8-8653-62e649e59d69}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\bio.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\cidx_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\cio.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\dwt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\event.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\image.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\j2k.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\j2k_lib.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\jp2.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\jpt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\mct.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\mqc.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\openjpeg.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\phix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\pi.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\ppix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\raw.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\t1.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\t2.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\tcd.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\tgt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\thix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\OpenJPEG\tpix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\CharLS\header.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\CharLS\interface.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\CharLS\jpegls.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DICOM [Native]\CharLS\stdafx.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLS.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.cpp" />
+    <ClCompile Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\DICOM [Native]\CharLS\colortransform.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\config.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\context.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\contextrunmode.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\decoderstrategy.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\defaulttraits.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\encoderstrategy.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\header.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\interface.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\lookuptable.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\losslesstraits.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\processline.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\scan.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\CharLS\util.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\bio.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\cidx_manager.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\cio.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\dwt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\event.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\fix.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\image.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\indexbox_manager.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\int.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\j2k.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\j2k_lib.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\jp2.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\jpt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\mct.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\mqc.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\openjpeg.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\opj_config.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\opj_includes.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\opj_malloc.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\pi.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\raw.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\t1.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\t1_luts.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\t2.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\tcd.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DICOM [Native]\OpenJPEG\tgt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.ArrayCopy.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLS.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.JpegLSParameters.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.PixelData.h" />
+    <ClInclude Include="..\Store.DICOM.Native\Dicom.Imaging.Codec.Rle.h" />
+  </ItemGroup>
+</Project>

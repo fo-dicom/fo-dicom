@@ -694,6 +694,27 @@
     <Compile Include="..\DICOM\Threading\WorkQueue.cs">
       <Link>Threading\WorkQueue.cs</Link>
     </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
+      <Link>Phone\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs">
+      <Link>Phone\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs">
+      <Link>Phone\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Imaging\Codec\NativePixelDataExtensions.cs">
+      <Link>Phone\Dicom\Imaging\Codec\NativePixelDataExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Store.Dicom\Store\Dicom\Log\ConsoleLogger.cs">
       <Link>Phone\Log\ConsoleLogger.cs</Link>
     </Compile>
@@ -716,6 +737,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Phone.DICOM.Native\Phone.DICOM.Native.vcxproj">
+      <Project>{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}</Project>
+      <Name>Phone.DICOM.Native</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Phone.Net\Phone.Net.csproj">
       <Project>{6CF844E0-177B-4694-A8CE-0232AF7CAD7C}</Project>
       <Name>Phone.Net</Name>

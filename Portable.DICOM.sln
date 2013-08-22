@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phone.Net", "Phone.Net\Phon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phone.DICOM", "Phone.DICOM\Phone.DICOM.csproj", "{61FDEDC8-CAE2-45EF-ACB4-85F8B43C6C84}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phone.DICOM.Native", "Phone.DICOM.Native\Phone.DICOM.Native.vcxproj", "{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
@@ -362,6 +364,18 @@ Global
 		{61FDEDC8-CAE2-45EF-ACB4-85F8B43C6C84}.Release|x64.ActiveCfg = Release|Any CPU
 		{61FDEDC8-CAE2-45EF-ACB4-85F8B43C6C84}.Release|x86.ActiveCfg = Release|x86
 		{61FDEDC8-CAE2-45EF-ACB4-85F8B43C6C84}.Release|x86.Build.0 = Release|x86
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|ARM.ActiveCfg = Debug|ARM
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|ARM.Build.0 = Debug|ARM
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|x64.ActiveCfg = Debug|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|x86.ActiveCfg = Debug|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Debug|x86.Build.0 = Debug|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|ARM.ActiveCfg = Release|ARM
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|ARM.Build.0 = Release|ARM
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|x64.ActiveCfg = Release|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|x86.ActiveCfg = Release|Win32
+		{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
