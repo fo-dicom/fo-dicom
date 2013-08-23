@@ -71,6 +71,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Store.DICOM.Dump\DicomDumpWalker.cs">
+      <Link>DicomDumpWalker.cs</Link>
+    </Compile>
+    <Compile Include="..\Store.DICOM.Dump\DicomTextItem.cs">
+      <Link>DicomTextItem.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -96,7 +102,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\Flowers.dcm">
+    <Content Include="Images\CT-MONO2-16-ankle.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\IM-0001-0029.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\LEADTOOLS_FLOWERS-16-MONO2-JpegLossless.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
