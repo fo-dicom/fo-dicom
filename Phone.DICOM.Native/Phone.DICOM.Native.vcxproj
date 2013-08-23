@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{658407aa-ea2b-47da-b53f-c8af3cfddd9c}</ProjectGuid>
-    <RootNamespace>Phone_DICOM_Native</RootNamespace>
+    <RootNamespace>Dicom.Imaging.Codec</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <WinMDAssembly>true</WinMDAssembly>

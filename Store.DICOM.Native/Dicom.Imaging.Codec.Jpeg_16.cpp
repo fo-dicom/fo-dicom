@@ -15,7 +15,6 @@ using namespace Windows::Storage::Streams;
 namespace Dicom {
 namespace Imaging {
 namespace Codec {
-namespace Jpeg {
 
 extern "C" {
 #define boolean ijg_boolean
@@ -35,7 +34,6 @@ extern "C" {
 
 #include "Dicom.Imaging.Codec.Jpeg.i"
 
-} // Jpeg
 } // Codec
 } // Imaging
 } // Dicom

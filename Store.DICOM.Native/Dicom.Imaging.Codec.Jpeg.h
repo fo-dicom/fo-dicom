@@ -13,7 +13,6 @@ using namespace Dicom::Imaging::Codec;
 namespace Dicom {
 namespace Imaging {
 namespace Codec {
-namespace Jpeg {
 
 public enum class JpegMode : int {
 	Baseline,
@@ -90,7 +89,6 @@ private:
 	int _predictor;
 	int _pointTransform;
 };
-} // Jpeg
 } // Codec
 } // Imaging
 } // Dicom
