@@ -20,6 +20,7 @@ namespace System.IO.Compression
 
 		public GZipStream(Stream deflatedStream, CompressionMode compressionMode)
 		{
+			if (deflatedStream == null) throw new ArgumentNullException("deflatedStream");
 			if (compressionMode != CompressionMode.Decompress)
 				throw new ArgumentOutOfRangeException("compressionMode", compressionMode, "Only decompression is supported.");
 
