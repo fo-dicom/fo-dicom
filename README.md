@@ -16,7 +16,7 @@ To sufficiently use the library in a Windows Store application, consider enablin
 At this stage, the *Store.DICOM* and *Phone.DICOM* class libraries expose the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* and *Phone.DICOM* currently do not publicly expose 
 [Windows Runtime API](http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx) asynchronous methods for file and network I/O etc. 
 
-The libraries have dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* (only Windows Store) and *ARM*.
+The libraries have dependencies to native (C/C++) codec classes and therefore have to be built separately for each platform. Supported platforms are *x86*, *x64* (only Windows Store) and *ARM*.
 
 Compared to the regular *fo-dicom* class library, *Store.DICOM* and *Phone.DICOM* exhibit the following known limitations:
 * Only Secure Sockets Layer (SSL) client is supported, SSL server functionality is *not* enabled.
