@@ -1,11 +1,10 @@
-# Fellow Oak DICOM for Windows Store apps
+# Fellow Oak DICOM for Windows Store and Windows Phone 8 apps
 
-Last updated February 6, 2013.
+Last updated August 25, 2013.
 
-Copyright (c) 2012-2013 Colby Dillion, adaptations to Windows Store platform (c) 2012-2013 Anders Gustafsson, Cureos AB
+Copyright (c) 2012-2013 Colby Dillion, adaptations to Windows Store and Windows Phone 8 (c) 2012-2013 Anders Gustafsson, Cureos AB
 
-This is a fork of Colby Dillion's [fo-dicom](https://github.com/rcd/fo-dicom) toolkit, aimed at Windows Store applications. This repository provides a Windows Store class library project *Store.DICOM* that can be 
-applied in any Windows Store application.
+This is a fork of Colby Dillion's [fo-dicom](https://github.com/rcd/fo-dicom) toolkit, aimed at Windows Store and Windows Phone 8 applications. This repository provides libraries with prefixes *Store* and *Phone*, targetting Windows Store and Windows Phone, respectively.
 
 To sufficiently use the library in a Windows Store application, consider enabling the following capabilities and declarations in the application manifest file:
 * Documents Library capability
@@ -14,16 +13,16 @@ To sufficiently use the library in a Windows Store application, consider enablin
 * Removable Storage capability
 * File Type Associations declaration e.g. for files with extensions *.dcm* and *.dic*
 
-At this stage, the *Store.DICOM* class library exposes the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* currently does not publicly expose 
+At this stage, the *Store.DICOM* and *Phone.DICOM* class libraries expose the same API as the regular .NET Framework *fo-dicom* class library. *Store.DICOM* and *Phone.DICOM* currently do not publicly expose 
 [Windows Runtime API](http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx) asynchronous methods for file and network I/O etc. 
 
-The library has dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* and *ARM*.
+The libraries have dependencies to native (C/C++) codec classes and therefore has to be built separately for each platform. Supported platforms are *x86*, *x64* (only Windows Store) and *ARM*.
 
-Compared to the regular *fo-dicom* class library, *Store.DICOM* exhibits the following known limitations:
+Compared to the regular *fo-dicom* class library, *Store.DICOM* and *Phone.DICOM* exhibit the following known limitations:
 * Only Secure Sockets Layer (SSL) client is supported, SSL server functionality is *not* enabled.
 * Database query transforms are not supported, i.e. it is not possible to update a DICOM dataset based on a database query.
 
-Issues directly related to using *fo-dicom* in Windows Store applications can be reported [here](https://github.com/cureos/fo-dicom/issues). 
+Issues directly related to using *fo-dicom* in Windows Store or Windows Phone 8 applications can be reported [here](https://github.com/cureos/fo-dicom/issues). 
 General *fo-dicom* issues should be reported to the parent repository [Issues page](https://github.com/rcd/fo-dicom/issues).
 
 
