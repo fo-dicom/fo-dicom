@@ -215,11 +215,11 @@ namespace Dicom.Imaging.Render {
 #if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			bool render = false;
+			var render = false;
 
 			if (_bitmap == null) {
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-				_bitmap = new WriteableBitmap(ScaledData.Width, ScaledData.Height);
+				_bitmap = BitmapFactory.New(ScaledData.Width, ScaledData.Height);
 				render = true;
 			}
 
@@ -239,14 +239,12 @@ namespace Dicom.Imaging.Render {
 			using (var context = _bitmap.GetBitmapContext())
 			{
 				Array.Copy(_pixels.Data, context.Pixels, _pixels.Count);
+
+				_bitmap.Rotate(_rotation);
+				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
+				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
 			}
 
-			_bitmap.Rotate(_rotation);
-
-			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
-			if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
-
-			_bitmap.Invalidate();
 			return _bitmap;
 		}
 #else

@@ -105,10 +105,7 @@
     <Content Include="Images\CT-MONO2-16-ankle.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\IM-0001-0029.dcm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\LEADTOOLS_FLOWERS-16-MONO2-JpegLossless.dcm">
+    <Content Include="Images\LEADTOOLS_FLOWERS-24-RGB-JpegLossy.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
