@@ -132,8 +132,6 @@
       <Link>TypeExtensions.cs</Link>
     </Compile>
     <Compile Include="Collections\Concurrent\ConcurrentDictionary.cs" />
-    <Compile Include="IO\Compression\CompressionMode.cs" />
-    <Compile Include="IO\Compression\GZipStream.cs" />
     <Compile Include="IO\WPFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading\Tasks\Parallel.cs" />

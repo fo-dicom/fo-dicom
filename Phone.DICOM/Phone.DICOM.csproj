@@ -750,6 +750,9 @@
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.1.2\lib\sl4-windowsphone71\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression">
+      <HintPath>..\packages\Microsoft.Bcl.Compression.3.9.69\lib\wp8\System.IO.Compression.dll</HintPath>
+    </Reference>
     <Reference Include="WriteableBitmapExWinPhone">
       <HintPath>..\packages\WriteableBitmapEx.1.0.8.0\lib\WindowsPhone8\WriteableBitmapExWinPhone.dll</HintPath>
     </Reference>
@@ -764,6 +767,16 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Compression.3.9.69\tools\Microsoft.Bcl.Compression.targets" Condition="Exists('..\packages\Microsoft.Bcl.Compression.3.9.69\tools\Microsoft.Bcl.Compression.targets')" />
+  <Target Name="EnsureBclCompressionImported" BeforeTargets="BeforeBuild" Condition="'$(BclCompressionImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Compression.3.9.69\tools\Microsoft.Bcl.Compression.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Compression.3.9.69\tools\Microsoft.Bcl.Compression.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
