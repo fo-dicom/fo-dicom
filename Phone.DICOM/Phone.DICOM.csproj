@@ -637,6 +637,9 @@
     <Compile Include="..\DICOM\Network\PDU.cs">
       <Link>Network\PDU.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\StringExtensions.cs">
       <Link>StringExtensions.cs</Link>
     </Compile>
@@ -718,7 +721,6 @@
     <Compile Include="..\Store.Dicom\Store\Dicom\Log\ConsoleLogger.cs">
       <Link>Phone\Log\ConsoleLogger.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
