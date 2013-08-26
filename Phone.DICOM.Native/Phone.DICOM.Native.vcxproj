@@ -56,6 +56,22 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WINDOWS_PHONE;CHARLS_STATIC;OPJ_STATIC;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
