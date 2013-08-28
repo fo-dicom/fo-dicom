@@ -102,6 +102,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Icons\download.png" />
+    <Content Include="Assets\Icons\feature.settings.png" />
     <Content Include="Images\CT-MONO2-16-ankle.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
