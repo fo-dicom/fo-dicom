@@ -64,9 +64,6 @@
     <Compile Include="..\Store.Net\IO\Path.cs">
       <Link>IO\Path.cs</Link>
     </Compile>
-    <Compile Include="..\Store.Net\IO\StreamExtensions.cs">
-      <Link>IO\StreamExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\Store.Net\Net\Security\SslPolicyErrors.cs">
       <Link>Net\Security\SslPolicyErrors.cs</Link>
     </Compile>
