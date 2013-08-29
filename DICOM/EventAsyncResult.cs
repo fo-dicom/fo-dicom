@@ -20,7 +20,7 @@ namespace Dicom {
 			_event.Set();
 
 			if (_callback != null)
-#if WINDOWS_PHONE
+#if SILVERLIGHT
 				System.Threading.Tasks.Task.Run(() => _callback(this));
 		}
 #else
