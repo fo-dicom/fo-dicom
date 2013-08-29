@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -23,7 +25,7 @@ namespace System.Net.Sockets
 				_stream = Task.Run(async () =>
 					                         {
 						                         var socket = new StreamSocket();
-						                         await socket.ConnectAsync(new HostName(host), port.ToString());
+						                         await socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture));
 						                         return new Stream(socket);
 					                         }).Result;
 			}
@@ -49,7 +51,9 @@ namespace System.Net.Sockets
 		
 		#region METHODS
 
+// ReSharper disable RedundantNameQualifier
 		public global::System.IO.Stream GetStream()
+// ReSharper restore RedundantNameQualifier
 		{
 			return _stream;
 		}
@@ -61,7 +65,9 @@ namespace System.Net.Sockets
 
 		#endregion
 
+// ReSharper disable RedundantNameQualifier
 		internal class Stream : global::System.IO.Stream
+// ReSharper restore RedundantNameQualifier
 		{
 			#region FIELDS
 
@@ -140,6 +146,37 @@ namespace System.Net.Sockets
 					throw e.InnerException ?? e;
 				}
 			}
+
+#if SILVERLIGHT
+			public override IAsyncResult BeginRead(byte[] buffer, int offset, int count,
+												  AsyncCallback callback, object state)
+			{
+				return new TaskFactory<int>().StartNew(asyncState => Read(buffer, offset, count), state)
+											 .ContinueWith(task =>
+											 {
+												 callback(task);
+												 return task.Result;
+											 });
+			}
+
+			public override int EndRead(IAsyncResult asyncResult)
+			{
+				var task = asyncResult as Task<int>;
+				return task != null ? task.Result : 0;
+			}
+
+			public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count,
+												  AsyncCallback callback, object state)
+			{
+				return
+					new TaskFactory().StartNew(asyncState => Write(buffer, offset, count), state)
+									 .ContinueWith(task => callback(task));
+			}
+
+			public override void EndWrite(IAsyncResult asyncResult)
+			{
+			}
+#endif
 
 			protected override void Dispose(bool disposing)
 			{
