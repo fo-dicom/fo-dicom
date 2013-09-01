@@ -47,7 +47,7 @@ namespace Dicom.Imaging.Mathematics {
 			}
 		}
 
-		public float Next(int value) {
+		public float Next(float value) {
 			_values[_count % _window] = value;
 			_count++;
 			if (_count < _window)
@@ -73,7 +73,7 @@ namespace Dicom.Imaging.Mathematics {
 			}
 		}
 
-		public double Next(int value) {
+		public double Next(double value) {
 			_values[_count % _window] = value;
 			_count++;
 			if (_count < _window)
