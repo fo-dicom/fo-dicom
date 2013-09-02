@@ -68,6 +68,7 @@
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
+    <Compile Include="Imaging\Mathematics\BitList.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
@@ -279,7 +280,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
