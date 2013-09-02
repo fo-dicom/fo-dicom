@@ -1,7 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+#if NETFX_CORE
+using Windows.UI;
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
+#endif
 using System.Linq;
 using System.Text;
 
@@ -215,15 +223,24 @@ namespace Dicom.Imaging {
 		/// <param name="bitmap">Bitmap</param>
 		/// <param name="mask">Color mask for overlay</param>
 		/// <returns>DICOM overlay</returns>
+#if NETFX_CORE || SILVERLIGHT
+		public static DicomOverlayData FromBitmap(DicomDataset ds, WriteableBitmap bitmap, Color mask) {
+#else
 		public static DicomOverlayData FromBitmap(DicomDataset ds, Bitmap bitmap, Color mask) {
+#endif
 			ushort group = 0x6000;
 			while (ds.Contains(new DicomTag(group, DicomTag.OverlayBitPosition.Element)))
 				group++;
 
 			var overlay = new DicomOverlayData(ds, group);
 			overlay.Type = DicomOverlayType.Graphics;
+#if NETFX_CORE || SILVERLIGHT
+			overlay.Rows = bitmap.PixelHeight;
+			overlay.Columns = bitmap.PixelWidth;
+#else
 			overlay.Rows = bitmap.Height;
 			overlay.Columns = bitmap.Width;
+#endif
 			overlay.OriginX = 1;
 			overlay.OriginY = 1;
 			overlay.BitsAllocated = 1;
@@ -236,11 +253,21 @@ namespace Dicom.Imaging {
 			var array = new BitList();
 			array.Capacity = overlay.Rows * overlay.Columns;
 
+#if NETFX_CORE || SILVERLIGHT
+			int p = 0;
+			for (int y = 0; y < bitmap.PixelHeight; y++)
+			{
+				for (int x = 0; x < bitmap.PixelWidth; x++, p++)
+				{
+					if (bitmap.GetPixel(x, y).ToArgb() == mask.ToArgb())
+						array[p] = true;
+#else
 			int p = 0;
 			for (int y = 0; y < bitmap.Height; y++) {
 				for (int x = 0; x < bitmap.Width; x++, p++) {
 					if (bitmap.GetPixel(x, y).ToArgb() == mask.ToArgb())
 						array[p] = true;
+#endif
 				}
 			}
 

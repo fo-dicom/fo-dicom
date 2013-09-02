@@ -74,6 +74,7 @@
     <Compile Include="Threading\ThreadPool.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="TypeExtensions.cs" />
+    <Compile Include="UI\ColorExtensions.cs" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
