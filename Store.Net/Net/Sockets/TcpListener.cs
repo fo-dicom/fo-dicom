@@ -6,6 +6,7 @@
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
 // WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
@@ -18,7 +19,7 @@ namespace System.Net.Sockets
 		private readonly IPAddress _address;
 		private readonly string _port;
 		private StreamSocketListener _listener;
-		private StreamSocket _socket;
+		private TcpClient _client;
 
 		#region CONSTRUCTORS
 
@@ -26,7 +27,7 @@ namespace System.Net.Sockets
 		{
 			_event = new ManualResetEventSlim();
 			_address = address;
-			_port = port.ToString();
+			_port = port.ToString(CultureInfo.InvariantCulture);
 		}
 
 		#endregion
@@ -35,46 +36,33 @@ namespace System.Net.Sockets
 
 		public void Start()
 		{
+			_client = null;
+
 			_listener = new StreamSocketListener();
 			_listener.ConnectionReceived += OnConnectionReceived;
-			_socket = null;
+
+			// Binding to specific endpoint is currently not supported.
+			_event.Reset();
+			Task.Run(async () => await _listener.BindServiceNameAsync(_port));
 		}
 
 		public IAsyncResult BeginAcceptTcpClient(AsyncCallback callback, object state)
 		{
 			return
-				new TaskFactory().StartNew(new Action<object>(async asyncState =>
-					                                                    {
-						                                                    _event.Reset();
-						                                                    var couldBind = false;
-						                                                    while (!couldBind)
-						                                                    {
-							                                                    try
-							                                                    {
-																					// Binding to specific endpoint is currently not supported.
-								                                                    await _listener.BindServiceNameAsync(_port);
-								                                                    couldBind = true;
-							                                                    }
-							                                                    catch (InvalidOperationException)
-							                                                    {
-																					// If listening fails because port has already been bound, sleep and try again
-								                                                    Thread.Sleep(1000);
-							                                                    }
-						                                                    }
-						                                                    _event.Wait();
-					                                                    }),
-				                           state).ContinueWith(task => callback(task));
+				new TaskFactory().StartNew(new Action<object>(asyncState => _event.Wait()), state)
+				                 .ContinueWith(task => callback(task));
 		}
 
 		private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
 		{
-			_socket = args.Socket;
 			_event.Set();
+			_client = new TcpClient(args.Socket);
 		}
 
 		public TcpClient EndAcceptTcpClient(IAsyncResult asyncResult)
 		{
-			return new TcpClient(_socket);
+			_event.Reset();
+			return _client;
 		}
 
 		public void Stop()
