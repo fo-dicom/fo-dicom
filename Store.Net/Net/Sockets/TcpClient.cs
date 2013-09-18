@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -23,11 +22,11 @@ namespace System.Net.Sockets
 			try
 			{
 				_stream = Task.Run(async () =>
-					                         {
-						                         var socket = new StreamSocket();
-						                         await socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture));
-						                         return new Stream(socket);
-					                         }).Result;
+											 {
+												 var socket = new StreamSocket();
+												 await socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture));
+												 return new Stream(socket);
+											 }).Result;
 			}
 			catch (Exception e)
 			{
@@ -96,28 +95,31 @@ namespace System.Net.Sockets
 			{
 			}
 
-			public override int Read(byte[] buffer, int offset, int count)
-			{
-				try
-				{
-					Task.Run(async () =>
-						               {
-							               var reader = new DataReader(_socket.InputStream);
-							               await reader.LoadAsync((uint)count);
-							               var buf = new byte[count];
-							               reader.ReadBytes(buf);
-							               reader.DetachStream();
-							               Array.Copy(buf, 0, buffer, offset, count);
-						               }).Wait();
-					return count;
-				}
-				catch (Exception e)
-				{
-					throw e.InnerException ?? e;
-				}
-			}
+		    public override int Read(byte[] buffer, int offset, int count)
+		    {
+		        return Task.Run(async () =>
+		            {
+		                try
+		                {
+		                    using (var reader = new DataReader(_socket.InputStream))
+		                    {
+		                        await reader.LoadAsync((uint)count);
+		                        var length = Math.Min((int)reader.UnconsumedBufferLength, count);
+		                        var buf = new byte[length];
+		                        reader.ReadBytes(buf);
+		                        reader.DetachStream();
+		                        Array.Copy(buf, 0, buffer, offset, length);
+		                        return length;
+		                    }
+		                }
+		                catch
+		                {
+		                    return 0;
+		                }
+		            }).Result;
+		    }
 
-			public override long Seek(long offset, SeekOrigin origin)
+		    public override long Seek(long offset, SeekOrigin origin)
 			{
 				throw new NotSupportedException();
 			}
@@ -132,18 +134,20 @@ namespace System.Net.Sockets
 				try
 				{
 					Task.Run(async () =>
-					{
-						var buf = new byte[count];
-						Array.Copy(buffer, offset, buf, 0, count);
-						var writer = new DataWriter(_socket.OutputStream);
-						writer.WriteBytes(buf);
-						await writer.StoreAsync();
-						writer.DetachStream();
-					}).Wait();
+						{
+							var buf = new byte[count];
+							Array.Copy(buffer, offset, buf, 0, count);
+							using (var writer = new DataWriter(_socket.OutputStream))
+							{
+								writer.WriteBytes(buf);
+								await writer.StoreAsync();
+								writer.DetachStream();
+							}
+						}).Wait();
 				}
 				catch (Exception e)
 				{
-					throw e.InnerException ?? e;
+					throw new IOException("Socket write failure.", e.InnerException ?? e);
 				}
 			}
 
