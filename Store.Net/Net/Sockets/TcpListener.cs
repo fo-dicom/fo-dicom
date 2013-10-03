@@ -55,8 +55,8 @@ namespace System.Net.Sockets
 
 		private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
 		{
-			_event.Set();
 			_client = new TcpClient(args.Socket);
+			_event.Set();
 		}
 
 		public TcpClient EndAcceptTcpClient(IAsyncResult asyncResult)
