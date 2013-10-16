@@ -10,6 +10,10 @@ namespace Dicom.Log {
 
 		public override void Log(LogLevel level, string msg, params object[] args) {
 			lock (_lock) {
+#if TOUCH
+				Console.Write("{0} ", level.ToString().ToUpperInvariant());
+				Console.WriteLine(msg, args);
+#else
 				var previous = Console.ForegroundColor;
 				switch (level) {
 				case LogLevel.Debug:
@@ -32,6 +36,7 @@ namespace Dicom.Log {
 				}
 				Console.WriteLine(msg, args);
 				Console.ForegroundColor = previous;
+#endif
 			}
 		}
 	}

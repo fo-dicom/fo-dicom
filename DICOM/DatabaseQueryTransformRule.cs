@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+#if !TOUCH
 using System.Data.Odbc;
+#endif
 using System.Data.SqlClient;
 
 namespace Dicom
@@ -74,7 +76,11 @@ namespace Dicom
 
             try {
                 if (_dbType == DatabaseType.Odbc)
+#if TOUCH
+	                throw new NotSupportedException("ODBC data provider not supported on Monotouch platform.");
+#else
                     connection = new OdbcConnection(_connectionString);
+#endif
                 else if (_dbType == DatabaseType.MsSql)
                     connection = new SqlConnection(_connectionString);
 

@@ -2,6 +2,8 @@
 using Windows.UI.Xaml.Media;
 #elif SILVERLIGHT
 using System.Windows.Media;
+#elif TOUCH
+using ImageSource = MonoTouch.CoreGraphics.CGBitmapContext;
 #else
 using System.Drawing;
 using System.Windows.Media;
@@ -109,7 +111,7 @@ namespace Dicom.Imaging {
 			}
 		}
 
-#if !NETFX_CORE && !SILVERLIGHT
+#if !NETFX_CORE && !SILVERLIGHT && !TOUCH
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>

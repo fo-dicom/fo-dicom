@@ -7,6 +7,9 @@ using Dicom.IO;
 using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows.Media.Imaging;
+#elif TOUCH
+using MonoTouch.CoreGraphics;
+using BitmapSource = MonoTouch.CoreGraphics.CGBitmapContext;
 #else
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -27,6 +30,8 @@ namespace Dicom.Imaging.Render {
 		protected PinnedIntArray _pixels;
 #if NETFX_CORE || SILVERLIGHT
 		protected WriteableBitmap _bitmap;
+#elif TOUCH
+		protected CGBitmapContext _bitmap;
 #else
 	    private const int DPI = 96;
 		protected BitmapSource _bitmapSource;
@@ -244,6 +249,45 @@ namespace Dicom.Imaging.Render {
 				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
 				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
 			}
+
+			return _bitmap;
+		}
+#elif TOUCH
+		public BitmapSource RenderImageSource(ILUT lut)
+		{
+/*			var render = false;
+
+			if (_bitmap == null)
+			{
+				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+				_bitmap = BitmapFactory.New(ScaledData.Width, ScaledData.Height);
+				render = true;
+			}
+
+			if (_applyLut && lut != null && !lut.IsValid)
+			{
+				lut.Recalculate();
+				render = true;
+			}
+
+			if (render)
+			{
+				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays)
+				{
+					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+				}
+			}
+
+			using (var context = _bitmap.GetBitmapContext())
+			{
+				Array.Copy(_pixels.Data, context.Pixels, _pixels.Count);
+
+				_bitmap.Rotate(_rotation);
+				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
+				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+			}*/
 
 			return _bitmap;
 		}

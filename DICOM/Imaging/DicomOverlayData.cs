@@ -216,6 +216,8 @@ namespace Dicom.Imaging {
 			return overlays.ToArray();
 		}
 
+		// TODO Re-enable this method for Monotouch platform!
+#if !TOUCH
 		/// <summary>
 		/// Creates a DICOM overlay from a GDI+ Bitmap.
 		/// </summary>
@@ -276,6 +278,7 @@ namespace Dicom.Imaging {
 
 			return overlay;
 		}
+#endif
 		#endregion
 
 		#region Private Methods

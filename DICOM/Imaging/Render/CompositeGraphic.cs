@@ -8,6 +8,8 @@ using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows;
 using System.Windows.Media.Imaging;
+#elif TOUCH
+using BitmapSource = MonoTouch.CoreGraphics.CGBitmapContext;
 #else
 using System.Drawing;
 using System.Windows;
@@ -133,6 +135,7 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
+
 #if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
@@ -148,6 +151,27 @@ namespace Dicom.Imaging.Render {
 					{
 						var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
 						img.Blit(rect, layer, rect);
+					}
+				}
+			}
+			return img;
+		}
+#elif TOUCH
+		public BitmapSource RenderImageSource(ILUT lut)
+		{
+			var img = BackgroundLayer.RenderImageSource(lut);
+			if (img != null && _layers.Count > 1)
+			{
+				for (int i = 1; i < _layers.Count; ++i)
+				{
+					var g = _layers[i];
+					var layer = _layers[i].RenderImageSource(null);
+
+					if (layer != null)
+					{
+						// TODO Use Monotouch methods
+						//var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
+						//img.Blit(rect, layer, rect);
 					}
 				}
 			}
