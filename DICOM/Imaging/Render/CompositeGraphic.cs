@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Windows;
 using System.Windows.Media.Imaging;
 #elif TOUCH
-using BitmapSource = MonoTouch.CoreGraphics.CGBitmapContext;
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
 #else
 using System.Drawing;
 using System.Windows;
@@ -159,23 +159,21 @@ namespace Dicom.Imaging.Render {
 #elif TOUCH
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			var img = BackgroundLayer.RenderImageSource(lut);
-			if (img != null && _layers.Count > 1)
+			var img = new MonoTouch.CoreGraphics.CGBitmapContext(IntPtr.Zero, OriginalWidth, OriginalHeight, 8, 4 * OriginalWidth,
+			                                                     MonoTouch.CoreGraphics.CGColorSpace.CreateDeviceRGB(),
+			                                                     MonoTouch.CoreGraphics.CGImageAlphaInfo.PremultipliedFirst);
+			for (var i = 0; i < _layers.Count; ++i)
 			{
-				for (int i = 1; i < _layers.Count; ++i)
-				{
-					var g = _layers[i];
-					var layer = _layers[i].RenderImageSource(null);
+				var g = _layers[i];
+				var layer = _layers[i].RenderImageSource(i == 0 ? lut : null);
 
-					if (layer != null)
-					{
-						// TODO Use Monotouch methods
-						//var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
-						//img.Blit(rect, layer, rect);
-					}
+				if (layer != null)
+				{
+					var rect = new System.Drawing.RectangleF(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
+					img.DrawImage(rect, layer);
 				}
 			}
-			return img;
+			return img.ToImage();
 		}
 #else
 		public BitmapSource RenderImageSource(ILUT lut)

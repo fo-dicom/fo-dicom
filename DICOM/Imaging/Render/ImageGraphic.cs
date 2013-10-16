@@ -8,8 +8,7 @@ using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows.Media.Imaging;
 #elif TOUCH
-using MonoTouch.CoreGraphics;
-using BitmapSource = MonoTouch.CoreGraphics.CGBitmapContext;
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
 #else
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -31,7 +30,7 @@ namespace Dicom.Imaging.Render {
 #if NETFX_CORE || SILVERLIGHT
 		protected WriteableBitmap _bitmap;
 #elif TOUCH
-		protected CGBitmapContext _bitmap;
+		protected BitmapSource _bitmap;
 #else
 	    private const int DPI = 96;
 		protected BitmapSource _bitmapSource;
@@ -255,6 +254,7 @@ namespace Dicom.Imaging.Render {
 #elif TOUCH
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
+			// TODO Implement Monotouch specific rendering
 /*			var render = false;
 
 			if (_bitmap == null)
@@ -287,8 +287,8 @@ namespace Dicom.Imaging.Render {
 				_bitmap.Rotate(_rotation);
 				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
 				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
-			}*/
-
+			}
+			*/
 			return _bitmap;
 		}
 #else

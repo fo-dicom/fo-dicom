@@ -3,7 +3,7 @@ using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows.Media.Imaging;
 #elif TOUCH
-using BitmapSource = MonoTouch.CoreGraphics.CGBitmapContext;
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
 #else
 using System.Drawing;
 using System.Windows.Media.Imaging;
