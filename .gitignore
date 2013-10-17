@@ -18,3 +18,4 @@ TestResults/
 ipch/
 [Dd]istribute/
 [Pp]ackages/
+*.userprefs

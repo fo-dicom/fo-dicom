@@ -34,8 +34,13 @@ namespace Dicom {
 				return 0;
 			}
 		}
-
+#if TOUCH
+		public virtual T Get<T>(int item = -1) {
+			return default(T);
+		}
+#else
 		public abstract T Get<T>(int item = -1);
+#endif
 	}
 
 	/// <summary>

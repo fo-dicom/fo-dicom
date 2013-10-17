@@ -24,30 +24,23 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.DICOM", "Touch.DICOM\Touch.DICOM.csproj", "{60A2DAF3-E204-4D17-8441-0548F3EDF06D}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DICOM.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|ARM = Debug|ARM
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|ARM = Release|ARM
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|ARM.ActiveCfg = Release|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|x64.ActiveCfg = Release|Any CPU
-		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Touch.DICOM\Touch.DICOM.csproj
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
