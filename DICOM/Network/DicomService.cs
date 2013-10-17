@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.ServiceModel.Channels;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
 using Dicom.Imaging.Codec;
 using Dicom.IO;
 using Dicom.IO.Reader;

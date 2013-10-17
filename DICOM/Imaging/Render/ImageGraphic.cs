@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media.Imaging;
 #elif SILVERLIGHT
 using System.Windows.Media.Imaging;
 #elif TOUCH
+using MonoTouch.CoreGraphics;
 using BitmapSource = MonoTouch.CoreGraphics.CGImage;
 #else
 using System.Drawing;
@@ -254,13 +255,11 @@ namespace Dicom.Imaging.Render {
 #elif TOUCH
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			// TODO Implement Monotouch specific rendering
-/*			var render = false;
+			var render = false;
 
 			if (_bitmap == null)
 			{
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-				_bitmap = BitmapFactory.New(ScaledData.Width, ScaledData.Height);
 				render = true;
 			}
 
@@ -280,15 +279,18 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 
-			using (var context = _bitmap.GetBitmapContext())
+			using (
+				var context = new CGBitmapContext(_pixels, ScaledWidth, ScaledHeight, 8, 4 * ScaledWidth,
+				                                  CGColorSpace.CreateDeviceRGB(), CGImageAlphaInfo.PremultipliedFirst))
 			{
-				Array.Copy(_pixels.Data, context.Pixels, _pixels.Count);
+				var transform = CGAffineTransform.MakeRotation((float)(_rotation * Math.PI / 180.0));
+				transform.Scale(_flipX ? -1.0f : 1.0f, _flipY ? -1.0f : 1.0f);
+				transform.Translate(_flipX ? ScaledWidth : 0.0f, _flipY ? ScaledHeight : 0.0f);
+				context.ConcatCTM(transform);
 
-				_bitmap.Rotate(_rotation);
-				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
-				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+				_bitmap = context.ToImage();
 			}
-			*/
+
 			return _bitmap;
 		}
 #else
