@@ -23,21 +23,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2E2DAD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.DICOM", "Touch.DICOM\Touch.DICOM.csproj", "{60A2DAF3-E204-4D17-8441-0548F3EDF06D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.DICOM.Viewer", "Touch.DICOM.Viewer\Touch.DICOM.Viewer.csproj", "{BE19F741-7E13-47A9-9D10-EF1B45AE363C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		AppStore|iPhone = AppStore|iPhone
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|iPhone.Build.0 = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhone.Build.0 = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|iPhone.Build.0 = Debug|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhone.ActiveCfg = Release|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhone.Build.0 = Release|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Touch.DICOM\Touch.DICOM.csproj
+		StartupItem = Touch.DICOM.Viewer\Touch.DICOM.Viewer.csproj
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

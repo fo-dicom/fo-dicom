@@ -34,13 +34,8 @@ namespace Dicom {
 				return 0;
 			}
 		}
-#if TOUCH
-		public virtual T Get<T>(int item = -1) {
-			return default(T);
-		}
-#else
-		public abstract T Get<T>(int item = -1);
-#endif
+
+ 		public abstract T Get<T>(int item = -1);
 	}
 
 	/// <summary>
@@ -159,6 +154,34 @@ namespace Dicom {
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
 		}
+
+#if TOUCH
+		internal string GetString(int item) {
+			LoadValues ();
+			if (item == -1)
+				return StringValue;
+
+			if (item < 0 || item >= Count)
+				throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
+			return _values[item];
+		}
+
+		internal string[] GetStrings() {
+			LoadValues ();
+			return _values;
+		}
+
+		private void LoadValues() {
+			if (_values == null) {
+				if (String.IsNullOrEmpty(StringValue))
+					_values = new string[0];
+				else
+					_values = StringValue.Split('\\');
+				_count = _values.Length;
+			}
+		}
+#endif
 	}
 
 	public abstract class DicomDateElement : DicomMultiStringElement {
@@ -190,7 +213,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (typeof(T) == typeof(DicomDateRange)) {
+#if TOUCH
+				string[] vals = base.GetString(item).Split('-');
+#else
 				string[] vals = base.Get<string>(item).Split('-');
+#endif
 				var range = new DicomDateRange();
 				if (vals.Length >= 2) {
 					if (!String.IsNullOrEmpty(vals[0]))
@@ -205,7 +232,11 @@ namespace Dicom {
 			}
 
 			if (_values == null) {
+#if TOUCH
+				string[] vals = base.GetStrings();
+#else
 				string[] vals = base.Get<string[]>();
+#endif
 				if (vals.Length == 1 && String.IsNullOrEmpty(vals[0]))
 					_values = new DateTime[0];
 				else {
@@ -488,7 +519,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
@@ -615,7 +650,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(object)) {
@@ -1072,7 +1111,11 @@ namespace Dicom {
 		private DicomUID[] _values;
 		public override T Get<T>(int item = -1) {
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => DicomUID.Parse(x)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => DicomUID.Parse(x)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(DicomTransferSyntax)) {

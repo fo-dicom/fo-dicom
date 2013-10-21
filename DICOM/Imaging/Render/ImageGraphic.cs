@@ -281,7 +281,7 @@ namespace Dicom.Imaging.Render {
 
 			using (
 				var context = new CGBitmapContext(_pixels, ScaledWidth, ScaledHeight, 8, 4 * ScaledWidth,
-				                                  CGColorSpace.CreateDeviceRGB(), CGImageAlphaInfo.PremultipliedFirst))
+				                                  CGColorSpace.CreateDeviceRGB(), CGImageAlphaInfo.PremultipliedLast))
 			{
 				var transform = CGAffineTransform.MakeRotation((float)(_rotation * Math.PI / 180.0));
 				transform.Scale(_flipX ? -1.0f : 1.0f, _flipY ? -1.0f : 1.0f);
