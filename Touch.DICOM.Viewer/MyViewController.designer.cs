@@ -15,6 +15,9 @@ namespace Touch.DICOM.Viewer
 		[Outlet]
 		MonoTouch.UIKit.UIImageView dicomImageView { get; set; }
 
+		[Outlet]
+		MonoTouch.UIKit.UILabel FirstStudyUidLabel { get; set; }
+
 		[Action ("buttonClick:")]
 		partial void buttonClick (MonoTouch.UIKit.UIButton sender);
 		
@@ -23,6 +26,11 @@ namespace Touch.DICOM.Viewer
 			if (dicomImageView != null) {
 				dicomImageView.Dispose ();
 				dicomImageView = null;
+			}
+
+			if (FirstStudyUidLabel != null) {
+				FirstStudyUidLabel.Dispose ();
+				FirstStudyUidLabel = null;
 			}
 		}
 	}
