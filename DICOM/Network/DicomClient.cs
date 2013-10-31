@@ -183,8 +183,7 @@ namespace Dicom.Network {
 				if (_client.Linger == Timeout.Infinite) {
 					OnLingerTimeout(null);
 				} else {
-					_timer = new Timer(OnLingerTimeout);
-					_timer.Change(_client.Linger, Timeout.Infinite);
+					_timer = new Timer(OnLingerTimeout, null, _client.Linger, Timeout.Infinite);
 				}
 			}
 
@@ -200,8 +199,7 @@ namespace Dicom.Network {
 					return;
 				}
 
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				_timer = new Timer(OnReleaseTimeout, null, 2500, Timeout.Infinite);
 			}
 
 			private void OnReleaseTimeout(object state) {

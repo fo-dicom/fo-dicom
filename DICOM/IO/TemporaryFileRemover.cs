@@ -12,7 +12,7 @@ namespace Dicom.IO {
 		private bool _running = false;
 
 		private TemporaryFileRemover() {
-			_timer = new Timer(OnTick);
+			_timer = new Timer(OnTick, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
 		~TemporaryFileRemover() {
