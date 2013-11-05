@@ -26,21 +26,34 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.DICOM.Viewer", "Touch.DICOM.Viewer\Touch.DICOM.Viewer.csproj", "{BE19F741-7E13-47A9-9D10-EF1B45AE363C}"
 EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-		Debug|iPhoneSimulator = Debug|iPhoneSimulator
-		Release|iPhoneSimulator = Release|iPhoneSimulator
-		Debug|iPhone = Debug|iPhone
-		Release|iPhone = Release|iPhone
+		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		Ad-Hoc|iPhoneSimulator = Ad-Hoc|iPhoneSimulator
+		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|iPhone = AppStore|iPhone
+		AppStore|iPhoneSimulator = AppStore|iPhoneSimulator
+		Debug|Any CPU = Debug|Any CPU
+		Debug|iPhone = Debug|iPhone
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|Any CPU = Release|Any CPU
+		Release|iPhone = Release|iPhone
+		Release|iPhoneSimulator = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
@@ -53,10 +66,14 @@ Global
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhone.Build.0 = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{60A2DAF3-E204-4D17-8441-0548F3EDF06D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|Any CPU.ActiveCfg = Ad-Hoc|iPhone
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Ad-Hoc|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|Any CPU.ActiveCfg = AppStore|iPhone
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.AppStore|iPhoneSimulator.ActiveCfg = AppStore|iPhone
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Debug|iPhone.ActiveCfg = Debug|iPhone
@@ -70,18 +87,13 @@ Global
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{BE19F741-7E13-47A9-9D10-EF1B45AE363C}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Touch.DICOM.Viewer\Touch.DICOM.Viewer.csproj
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DICOM.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Touch.DICOM.Viewer\Touch.DICOM.Viewer.csproj
 	EndGlobalSection
 EndGlobal

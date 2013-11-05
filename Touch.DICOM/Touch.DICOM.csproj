@@ -666,12 +666,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
+    <None Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
       <Link>Dictionaries\DICOM Dictionary.xml</Link>
-    </Content>
-    <Content Include="..\DICOM\Dictionaries\Private Dictionary.xml">
+    </None>
+    <None Include="..\DICOM\Dictionaries\Private Dictionary.xml">
       <Link>Dictionaries\Private Dictionary.xml</Link>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
