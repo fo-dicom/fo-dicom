@@ -511,18 +511,18 @@ namespace Dicom {
 		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
-				    _formats = new string[12];
-					_formats[1] = "yyyyMMddHHmmsszzz";
-					_formats[2] = "yyyyMMddHHmmsszz";
-					_formats[3] = "yyyyMMddHHmmssz";
-					_formats[4] = "yyyyMMddHHmmss.fff";
-					_formats[5] = "yyyyMMddHHmmss.ff";
-					_formats[6] = "yyyyMMddHHmmss.f";
-					_formats[7] = "yyyyMMddHHmmss";
-					_formats[8] = "yyyyMMddHHmm";
-					_formats[9] = "yyyyMMdd";
-					_formats[10] = "yyyy.MM.dd";
-					_formats[11] = "yyyy/MM/dd";
+				    _formats = new string[11];
+					_formats[0] = "yyyyMMddHHmmsszzz";
+					_formats[1] = "yyyyMMddHHmmsszz";
+					_formats[2] = "yyyyMMddHHmmssz";
+					_formats[3] = "yyyyMMddHHmmss.fff";
+					_formats[4] = "yyyyMMddHHmmss.ff";
+					_formats[5] = "yyyyMMddHHmmss.f";
+					_formats[6] = "yyyyMMddHHmmss";
+					_formats[7] = "yyyyMMddHHmm";
+					_formats[8] = "yyyyMMdd";
+					_formats[9] = "yyyy.MM.dd";
+					_formats[10] = "yyyy/MM/dd";
 				}
 				return _formats;
 			}
@@ -969,7 +969,7 @@ namespace Dicom {
 		private static string[] PrivateDateFormats {
 			get {
 				if (_formats == null) {
-					_formats = new string[37];
+					_formats = new string[31];
 					_formats[0] = "HHmmss";
 					_formats[1] = "HH";
 					_formats[2] = "HHmm";
