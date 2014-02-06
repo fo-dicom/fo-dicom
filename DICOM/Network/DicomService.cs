@@ -89,8 +89,16 @@ namespace Dicom.Network {
 		}
 
 		private void CloseConnection(int errorCode) {
+			if (!_isConnected)
+				return;
+
 			_isConnected = false;
 			try { _network.Close(); } catch { }
+
+			if (errorCode > 0)
+				Logger.Error("Connection closed with error: {0}", errorCode);
+			else
+				Logger.Error("Connection closed");
 
 			if (this is IDicomServiceProvider)
 				(this as IDicomServiceProvider).OnConnectionClosed(errorCode);

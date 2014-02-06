@@ -138,7 +138,8 @@ namespace Dicom.Network {
 		}
 
 		public void EndSend(IAsyncResult result) {
-			_async.AsyncWaitHandle.WaitOne();
+			if (_async != null)
+				_async.AsyncWaitHandle.WaitOne();
 
 			if (_client != null) {
 				try {
@@ -159,6 +160,13 @@ namespace Dicom.Network {
 				_abort = true;
 				_client.Close();
 			} catch {
+			} finally {
+				_client = null;
+				try {
+					_async.Set();
+				} catch {
+				}
+				_async = null;
 			}
 		}
 
