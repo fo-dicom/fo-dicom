@@ -752,8 +752,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.2.0.1.2\lib\sl4-windowsphone71\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\rtbench\packages\NLog.2.1.0\lib\sl4-windowsphone71\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression">
       <HintPath>..\packages\Microsoft.Bcl.Compression.3.9.69\lib\wp8\System.IO.Compression.dll</HintPath>
