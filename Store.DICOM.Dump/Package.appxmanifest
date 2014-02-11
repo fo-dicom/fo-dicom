@@ -1,20 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="a7ef217d-7a84-41a1-9204-be09adbf6efd" Publisher="CN=anders" Version="1.1.0.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="a7ef217d-7a84-41a1-9204-be09adbf6efd" Publisher="CN=Cureos AB" Version="1.0.0.0" />
   <Properties>
     <DisplayName>Store.DICOM.Dump</DisplayName>
     <PublisherDisplayName>anders</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
-    <OSMinVersion>6.3.0</OSMinVersion>
-    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
   </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Store.DICOM.Dump.App">
+      <VisualElements DisplayName="Store.DICOM.Dump" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Store.DICOM.Dump" ForegroundText="light" BackgroundColor="#464646">
+        <DefaultTile ShowName="logoOnly" />
+        <SplashScreen Image="Assets\SplashScreen.png" />
+        <InitialRotationPreference>
+          <Rotation Preference="landscape" />
+        </InitialRotationPreference>
+      </VisualElements>
       <Extensions>
         <Extension Category="windows.fileTypeAssociation">
           <FileTypeAssociation Name=".dcm">
@@ -25,17 +32,6 @@
           </FileTypeAssociation>
         </Extension>
       </Extensions>
-      <m2:VisualElements DisplayName="Store.DICOM.Dump" Description="Store.DICOM.Dump" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
-        <m2:DefaultTile>
-          <m2:ShowNameOnTiles>
-            <m2:ShowOn Tile="square150x150Logo" />
-          </m2:ShowNameOnTiles>
-        </m2:DefaultTile>
-        <m2:InitialRotationPreference>
-          <m2:Rotation Preference="landscape" />
-        </m2:InitialRotationPreference>
-        <m2:SplashScreen Image="Assets\SplashScreen.png" />
-      </m2:VisualElements>
     </Application>
   </Applications>
   <Capabilities>

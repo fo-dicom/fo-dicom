@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM", "DICOM\DICOM.csproj", "{D6E309B0-4837-459E-8C85-ABC268440D62}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x86", "DICOM [Native]\x86\libijg8.x86.vcxproj", "{8DC28743-3826-453A-B400-B0AE7B2C04E7}"
@@ -72,9 +74,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phone.DICOM.Tests", "Phone.DICOM.Tests\Phone.DICOM.Tests.csproj", "{D9F7EBFF-DE7A-4461-9745-80735557B7A8}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DICOM.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -90,12 +89,16 @@ Global
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|x64.Build.0 = Debug|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|x86.Build.0 = Debug|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|ARM.ActiveCfg = Release|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|x64.ActiveCfg = Release|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|x64.Build.0 = Release|Any CPU
 		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|x86.Build.0 = Release|Any CPU
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Debug|Any CPU.Build.0 = Debug|Win32
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7}.Debug|ARM.ActiveCfg = Debug|Win32
@@ -196,12 +199,16 @@ Global
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|x64.Build.0 = Debug|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Debug|x86.Build.0 = Debug|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|ARM.ActiveCfg = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x64.Build.0 = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x86.Build.0 = Release|Any CPU
 		{3EBDF8A1-5C43-4A82-A402-1406BF3CE83D}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{3EBDF8A1-5C43-4A82-A402-1406BF3CE83D}.Debug|Any CPU.Build.0 = Debug|x86
 		{3EBDF8A1-5C43-4A82-A402-1406BF3CE83D}.Debug|Any CPU.Deploy.0 = Debug|x86
@@ -318,12 +325,10 @@ Global
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|Any CPU.Build.0 = Release|x86
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|ARM.ActiveCfg = Release|ARM
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|ARM.Build.0 = Release|ARM
-		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|ARM.Deploy.0 = Release|ARM
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|x64.ActiveCfg = Release|x64
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|x64.Build.0 = Release|x64
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|x86.ActiveCfg = Release|x86
 		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|x86.Build.0 = Release|x86
-		{45CCAA4D-0A17-413A-AD37-B334CEE74207}.Release|x86.Deploy.0 = Release|x86
 		{CE0511C1-4432-4591-88A4-4DB568860E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE0511C1-4432-4591-88A4-4DB568860E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE0511C1-4432-4591-88A4-4DB568860E2D}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -404,24 +409,18 @@ Global
 		{C3AFCDCE-22D3-4B8E-92AE-F4D5EDCF51BE}.Release|x86.Deploy.0 = Release|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|Any CPU.Build.0 = Debug|x86
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|ARM.ActiveCfg = Debug|ARM
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|ARM.Build.0 = Debug|ARM
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|ARM.Deploy.0 = Debug|ARM
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|x64.ActiveCfg = Debug|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|x86.ActiveCfg = Debug|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|x86.Build.0 = Debug|x86
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Debug|x86.Deploy.0 = Debug|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|Any CPU.ActiveCfg = Release|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|Any CPU.Build.0 = Release|x86
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|Any CPU.Deploy.0 = Release|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|ARM.ActiveCfg = Release|ARM
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|ARM.Build.0 = Release|ARM
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|ARM.Deploy.0 = Release|ARM
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|x64.ActiveCfg = Release|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|x86.ActiveCfg = Release|x86
 		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|x86.Build.0 = Release|x86
-		{D9F7EBFF-DE7A-4461-9745-80735557B7A8}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -439,5 +438,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
 	EndGlobalSection
 EndGlobal
