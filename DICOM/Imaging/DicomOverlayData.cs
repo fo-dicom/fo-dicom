@@ -249,6 +249,18 @@ namespace Dicom.Imaging {
 
 			return overlay;
 		}
+
+		public static bool HasEmbeddedOverlays(DicomDataset ds) {
+			var groups = new List<ushort>();
+			groups.AddRange(ds.Where(x => x.Tag.Group >= 0x6000 && x.Tag.Group <= 0x60FF && x.Tag.Element == 0x0010).Select(x => x.Tag.Group));
+
+			foreach (var group in groups) {
+				if (!ds.Contains(new DicomTag(group, DicomTag.OverlayData.Element)))
+					return true;
+			}
+
+			return false;
+		}
 		#endregion
 
 		#region Private Methods
@@ -276,14 +288,8 @@ namespace Dicom.Imaging {
 
 				var frame = pixels.GetFrame(0);
 
-				// calculate length of output buffer
-				var count = (Rows * Columns) / 8;
-				if (((Rows * Columns) % 8) != 0)
-					count++;
-				if ((count & 1) != 0)
-					count++;
-
 				var bits = new BitList();
+				bits.Capacity = Rows * Columns;
 				int mask = 1 << BitPosition;
 
 				if (pixels.BitsAllocated == 8) {

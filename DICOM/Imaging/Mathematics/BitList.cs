@@ -46,8 +46,8 @@ namespace Dicom.Imaging.Mathematics {
 				int p = pos / 8;
 				int m = pos % 8;
 
-				if (p > _bytes.Count)
-					Capacity = p + 1;
+				if (p >= _bytes.Count)
+					Capacity = pos + 1;
 
 				if (value)
 					_bytes[p] |= (byte)(1 << m);

@@ -145,6 +145,9 @@ namespace Dicom.Imaging {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
+				if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+					continue;
+
 				// DICOM overlay origin begins at (1,1)
 				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
 				graphic.AddOverlay(og);
@@ -162,6 +165,7 @@ namespace Dicom.Imaging {
 		/// <param name="frame">The frame number to create pixeldata for</param>
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
+			DicomTranscoder.ExtractOverlays(Dataset);
 
 			if (PixelData == null) {
 				PixelData = DicomPixelData.Create(Dataset);
