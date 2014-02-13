@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 
 namespace Dicom.Imaging {
@@ -159,9 +160,6 @@ namespace Dicom.Imaging {
 		}
 
 		public static GrayscaleRenderOptions FromMinMax(DicomDataset dataset) {
-			if (dataset.InternalTransferSyntax.IsEncapsulated)
-				throw new ArgumentException("Min/Max pixel values can only be calculated for uncompressed images.", "dataset");
-
 			var bits = BitDepth.FromDataset(dataset);
 			var options = new GrayscaleRenderOptions(bits);
 
@@ -170,8 +168,9 @@ namespace Dicom.Imaging {
 
 			int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
 
-			var pixelData = DicomPixelData.Create(dataset);
-			var pixels = PixelDataFactory.Create(pixelData, 0);
+			var transcoder = new DicomTranscoder(dataset.InternalTransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian);
+
+			var pixels = transcoder.DecodePixelData(dataset, 0);
 			var range = pixels.GetMinMax(padding);
 
 			if (range.Minimum < bits.MinimumValue || range.Minimum == Double.MaxValue)
@@ -205,17 +204,15 @@ namespace Dicom.Imaging {
 		}
 
 		public static GrayscaleRenderOptions FromHistogram(DicomDataset dataset, int percent = 90) {
-			if (dataset.InternalTransferSyntax.IsEncapsulated)
-				throw new ArgumentException("Histogram can only be calculated for uncompressed images.", "dataset");
-
 			var bits = BitDepth.FromDataset(dataset);
 			var options = new GrayscaleRenderOptions(bits);
 
 			options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
 			options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
 
-			var pixelData = DicomPixelData.Create(dataset);
-			var pixels = PixelDataFactory.Create(pixelData, 0);
+			var transcoder = new DicomTranscoder(dataset.InternalTransferSyntax, DicomTransferSyntax.ExplicitVRLittleEndian);
+
+			var pixels = transcoder.DecodePixelData(dataset, 0);
 			var histogram = pixels.GetHistogram(0);
 
 			int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
