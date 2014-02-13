@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
+using Dicom.Imaging.Render;
 using Dicom.IO;
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
@@ -163,9 +164,30 @@ namespace Dicom.Imaging.Codec {
 			oldPixelData.AddFrame(buffer);
 
 			var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
-
 			var newPixelData = DicomPixelData.Create(newDataset, false);
+
 			return newPixelData.GetFrame(0);
+		}
+
+		public IPixelData DecodePixelData(DicomDataset dataset, int frame) {
+			var pixelData = DicomPixelData.Create(dataset, false);
+			
+			// is pixel data already uncompressed?
+			if (!dataset.InternalTransferSyntax.IsEncapsulated)
+				return PixelDataFactory.Create(pixelData, frame);
+
+			var buffer = pixelData.GetFrame(frame);
+
+			// clone dataset to prevent changes to source
+			var cloneDataset = dataset.Clone();
+
+			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+			oldPixelData.AddFrame(buffer);
+
+			var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
+			var newPixelData = DicomPixelData.Create(newDataset, false);
+
+			return PixelDataFactory.Create(newPixelData, 0);
 		}
 
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {
@@ -240,16 +262,19 @@ namespace Dicom.Imaging.Codec {
 			}
 		}
 
-		public static void ExtractOverlays(DicomDataset dataset) {
+		public static DicomDataset ExtractOverlays(DicomDataset dataset) {
 			if (!DicomOverlayData.HasEmbeddedOverlays(dataset))
-				return;
+				return dataset;
+
+			dataset = dataset.Clone();
 
 			var input = dataset;
-
 			if (input.InternalTransferSyntax.IsEncapsulated)
 				input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
 
 			ProcessOverlays(input, dataset);
+
+			return dataset;
 		}
 	}
 }
