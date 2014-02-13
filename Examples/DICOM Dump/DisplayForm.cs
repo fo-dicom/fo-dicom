@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 using Dicom;
 using Dicom.Imaging;
-using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 
 namespace Dicom.Dump {
@@ -25,10 +24,7 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
-					var dataset = _file.Dataset;
-					if (dataset.InternalTransferSyntax.IsEncapsulated && DicomOverlayData.HasEmbeddedOverlays(dataset))
-						dataset = dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
-					_image = new DicomImage(dataset);
+					_image = new DicomImage(_file.Dataset);
 					_grayscale = !_image.PhotometricInterpretation.IsColor;
 					if (_grayscale) {
 						_windowWidth = _image.WindowWidth;
