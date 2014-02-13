@@ -17,7 +17,7 @@ namespace Dicom.Imaging.Mathematics {
 		private int _wtotal;
 
 		public Histogram(int min, int max) {
-			int range = max - min;
+			int range = max - min + 1;
 			_values = new int[range];
 			_min = min;
 			_max = max;
@@ -45,12 +45,17 @@ namespace Dicom.Imaging.Mathematics {
 
 		public int this[int value] {
 			get {
-				return _values[value + _offset];
+				int pos = value + _offset;
+				if (pos < 0 || pos >= _values.Length)
+					return 0;
+				return _values[pos];
 			}
 		}
 
 		public void Add(int value) {
 			int pos = value + _offset;
+			if (pos < 0 || pos >= _values.Length)
+				return;
 
 			_values[pos]++;
 			_total++;
@@ -60,7 +65,9 @@ namespace Dicom.Imaging.Mathematics {
 		}
 
 		public void Clear(int value) {
-			int pos = value + _offset;
+			int pos = value + _offset - 1;
+			if (pos < 0 || pos >= _values.Length)
+				return;
 
 			_total -= _values[pos];
 			if (pos >= _wstart && pos <= _wend)
