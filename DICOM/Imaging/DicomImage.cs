@@ -36,6 +36,7 @@ namespace Dicom.Imaging {
 		/// <param name="frame">Zero indexed frame number</param>
 		public DicomImage(DicomDataset dataset, int frame = 0) {
 			_scale = 1.0;
+			ShowOverlays = true;
 			Load(dataset, frame);
 		}
 
@@ -44,6 +45,7 @@ namespace Dicom.Imaging {
 		/// <param name="frame">Zero indexed frame number</param>
 		public DicomImage(string fileName, int frame = 0) {
 			_scale = 1.0;
+			ShowOverlays = true;
 			var file = DicomFile.Open(fileName);
 			Load(file.Dataset, frame);
 		}
@@ -112,6 +114,10 @@ namespace Dicom.Imaging {
 		}
 
 #if !NETFX_CORE && !SILVERLIGHT && !TOUCH
+		public bool ShowOverlays {
+			get;
+			set;
+		}
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
@@ -121,9 +127,11 @@ namespace Dicom.Imaging {
 
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
-			foreach (var overlay in _overlays) {
-				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX-1, overlay.OriginY-1, OverlayColor);
-				graphic.AddOverlay(og);
+			if (ShowOverlays) {
+				foreach (var overlay in _overlays) {
+					OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
+					graphic.AddOverlay(og);
+				}
 			}
 
 			return graphic.RenderImage(_pipeline.LUT);
@@ -142,6 +150,9 @@ namespace Dicom.Imaging {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 
 			foreach (var overlay in _overlays) {
+				if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+					continue;
+
 				// DICOM overlay origin begins at (1,1)
 				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
 				graphic.AddOverlay(og);
@@ -159,6 +170,7 @@ namespace Dicom.Imaging {
 		/// <param name="frame">The frame number to create pixeldata for</param>
 		private void Load(DicomDataset dataset, int frame) {
 			Dataset = dataset;
+			DicomTranscoder.ExtractOverlays(Dataset);
 
 			if (PixelData == null) {
 				PixelData = DicomPixelData.Create(Dataset);

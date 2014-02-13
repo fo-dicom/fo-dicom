@@ -189,7 +189,7 @@ namespace Dicom.Imaging.Codec {
 			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
 			oldPixelData.AddFrame(buffer);
 
-			var newDataset = Decode(cloneDataset, InputSyntax, InputCodec, InputCodecParams);
+			var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
 
 			var newPixelData = DicomPixelData.Create(newDataset, false);
 			return newPixelData.GetFrame(0);
@@ -243,7 +243,11 @@ namespace Dicom.Imaging.Codec {
 		}
 
 		private static void ProcessOverlays(DicomDataset input, DicomDataset output) {
-			var overlays = DicomOverlayData.FromDataset(input);
+			DicomOverlayData[] overlays = null;
+			if (input.InternalTransferSyntax.IsEncapsulated)
+				overlays = DicomOverlayData.FromDataset(output);
+			else
+				overlays = DicomOverlayData.FromDataset(input);
 
 			foreach (var overlay in overlays) {
 				var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
@@ -261,6 +265,18 @@ namespace Dicom.Imaging.Codec {
 				else
 					output.Add(new DicomOtherWord(dataTag, data));
 			}
+		}
+
+		public static void ExtractOverlays(DicomDataset dataset) {
+			if (!DicomOverlayData.HasEmbeddedOverlays(dataset))
+				return;
+
+			var input = dataset;
+
+			if (input.InternalTransferSyntax.IsEncapsulated)
+				input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+
+			ProcessOverlays(input, dataset);
 		}
 	}
 }

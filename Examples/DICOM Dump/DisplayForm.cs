@@ -5,6 +5,8 @@ using System.Windows.Forms;
 
 using Dicom;
 using Dicom.Imaging;
+using Dicom.Imaging.Codec;
+using Dicom.Imaging.Render;
 
 namespace Dicom.Dump {
 	public partial class DisplayForm : Form {
@@ -23,7 +25,10 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
-					_image = new DicomImage(_file.Dataset);
+					var dataset = _file.Dataset;
+					if (dataset.InternalTransferSyntax.IsEncapsulated)
+						dataset = dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+					_image = new DicomImage(dataset);
 					_grayscale = !_image.PhotometricInterpretation.IsColor;
 					if (_grayscale) {
 						_windowWidth = _image.WindowWidth;
@@ -126,8 +131,10 @@ namespace Dicom.Dump {
 		}
 
 		private void OnMouseDoubleClick(object sender, MouseEventArgs e) {
-			_image.WindowCenter = _windowCenter;
-			_image.WindowWidth = _windowWidth;
+			if (e.Button == MouseButtons.Left) {
+				_image.WindowCenter = _windowCenter;
+				_image.WindowWidth = _windowWidth;
+			}
 
 			DisplayImage(_image);
 		}
@@ -147,6 +154,34 @@ namespace Dicom.Dump {
 					_frame++;
 				DisplayImage(_image);
 				return;
+			}
+
+			if (e.KeyCode == Keys.O) {
+				_image.ShowOverlays = !_image.ShowOverlays;
+				DisplayImage(_image);
+				return;
+			}
+
+			GrayscaleRenderOptions options = null;
+
+			if (e.KeyCode == Keys.D0)
+				options = GrayscaleRenderOptions.FromDataset(_image.Dataset);
+			else if (e.KeyCode == Keys.D1)
+				options = GrayscaleRenderOptions.FromWindowLevel(_image.Dataset);
+			else if (e.KeyCode == Keys.D2)
+				options = GrayscaleRenderOptions.FromImagePixelValueTags(_image.Dataset);
+			else if (e.KeyCode == Keys.D3)
+				options = GrayscaleRenderOptions.FromMinMax(_image.Dataset);
+			else if (e.KeyCode == Keys.D4)
+				options = GrayscaleRenderOptions.FromBitRange(_image.Dataset);
+			else if (e.KeyCode == Keys.D5)
+				options = GrayscaleRenderOptions.FromHistogram(_image.Dataset, 90);
+
+			if (options != null) {
+				_image.WindowWidth = options.WindowWidth;
+				_image.WindowCenter = options.WindowCenter;
+
+				DisplayImage(_image);
 			}
 		}
 	}

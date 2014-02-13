@@ -70,6 +70,7 @@
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
     <Compile Include="Imaging\Mathematics\BitList.cs" />
+    <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
