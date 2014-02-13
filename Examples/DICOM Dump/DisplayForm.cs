@@ -26,7 +26,7 @@ namespace Dicom.Dump {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
 					var dataset = _file.Dataset;
-					if (dataset.InternalTransferSyntax.IsEncapsulated)
+					if (dataset.InternalTransferSyntax.IsEncapsulated && DicomOverlayData.HasEmbeddedOverlays(dataset))
 						dataset = dataset.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
 					_image = new DicomImage(dataset);
 					_grayscale = !_image.PhotometricInterpretation.IsColor;

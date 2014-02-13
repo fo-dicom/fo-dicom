@@ -240,16 +240,19 @@ namespace Dicom.Imaging.Codec {
 			}
 		}
 
-		public static void ExtractOverlays(DicomDataset dataset) {
+		public static DicomDataset ExtractOverlays(DicomDataset dataset) {
 			if (!DicomOverlayData.HasEmbeddedOverlays(dataset))
-				return;
+				return dataset;
+
+			dataset = dataset.Clone();
 
 			var input = dataset;
-
 			if (input.InternalTransferSyntax.IsEncapsulated)
 				input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
 
 			ProcessOverlays(input, dataset);
+
+			return dataset;
 		}
 	}
 }
