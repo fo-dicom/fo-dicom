@@ -278,6 +278,7 @@ namespace Dicom.Imaging {
 
 			return overlay;
 		}
+#endif
 
 		public static bool HasEmbeddedOverlays(DicomDataset ds) {
 			var groups = new List<ushort>();

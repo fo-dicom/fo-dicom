@@ -113,12 +113,13 @@ namespace Dicom.Imaging {
 			}
 		}
 
-#if !NETFX_CORE && !SILVERLIGHT && !TOUCH
 		public bool ShowOverlays {
 			get;
 			set;
 		}
-		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
+
+#if !NETFX_CORE && !SILVERLIGHT && !TOUCH
+        /// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
 		public Image RenderImage(int frame = 0) {

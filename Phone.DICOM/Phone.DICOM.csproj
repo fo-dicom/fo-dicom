@@ -277,6 +277,9 @@
     <Compile Include="..\DICOM\Imaging\Mathematics\Geometry3D.cs">
       <Link>Imaging\Mathematics\Geometry3D.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\Histogram.cs">
+      <Link>Imaging\Mathematics\Histogram.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Imaging\Mathematics\Matrix.cs">
       <Link>Imaging\Mathematics\Matrix.cs</Link>
     </Compile>
