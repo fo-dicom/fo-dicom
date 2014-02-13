@@ -156,6 +156,12 @@ namespace Dicom.Dump {
 				return;
 			}
 
+			if (e.KeyCode == Keys.O) {
+				_image.ShowOverlays = !_image.ShowOverlays;
+				DisplayImage(_image);
+				return;
+			}
+
 			GrayscaleRenderOptions options = null;
 
 			if (e.KeyCode == Keys.D0)
