@@ -218,6 +218,10 @@ namespace Dicom.Imaging {
 			var pixels = PixelDataFactory.Create(pixelData, 0);
 			var histogram = pixels.GetHistogram(0);
 
+			int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
+			if (padding != Int32.MinValue)
+				histogram.Clear(padding);
+
 			histogram.ApplyWindow(percent);
 
 			options.WindowWidth = histogram.WindowEnd - histogram.WindowStart;
