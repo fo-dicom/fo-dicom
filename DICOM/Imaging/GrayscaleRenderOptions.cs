@@ -168,14 +168,19 @@ namespace Dicom.Imaging {
 			options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
 			options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
 
-			int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, bits.MinimumValue);
+			int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
 
 			var pixelData = DicomPixelData.Create(dataset);
 			var pixels = PixelDataFactory.Create(pixelData, 0);
 			var range = pixels.GetMinMax(padding);
 
+			if (range.Minimum < bits.MinimumValue || range.Minimum == Double.MaxValue)
+				range.Minimum = bits.MinimumValue;
+			if (range.Maximum > bits.MaximumValue || range.Maximum == Double.MinValue)
+				range.Maximum = bits.MaximumValue;
+
 			options.WindowWidth = Math.Abs(range.Maximum - range.Minimum);
-			options.WindowCenter = (range.Maximum + range.Minimum) / 2.0;
+			options.WindowCenter = range.Minimum + (options.WindowWidth / 2.0);
 
 			options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
