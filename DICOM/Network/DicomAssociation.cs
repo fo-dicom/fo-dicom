@@ -68,7 +68,10 @@ namespace Dicom.Network {
 			sb.AppendFormat("Presentation Contexts:  {0}\n", PresentationContexts.Count);
 			foreach (var pc in PresentationContexts) {
 				sb.AppendFormat("  Presentation Context:  {0} [{1}]\n", pc.ID, pc.Result);
-				sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
+				if (pc.AbstractSyntax.Name != "Unknown")
+					sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
+				else
+					sb.AppendFormat("       Abstract Syntax:  {0} [{1}]\n", pc.AbstractSyntax.Name, pc.AbstractSyntax.UID);
 				foreach (var tx in pc.GetTransferSyntaxes()) {
 					sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
 				}

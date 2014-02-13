@@ -119,6 +119,9 @@ namespace Dicom.Network {
 			} catch (ObjectDisposedException) {
 				// silently ignore
 				CloseConnection(0);
+			} catch (NullReferenceException) {
+				// connection already closed; silently ignore
+				CloseConnection(0);
 			} catch (IOException e) {
 				int error = 0;
 				if (e.InnerException is SocketException) {
@@ -159,6 +162,9 @@ namespace Dicom.Network {
 				_network.BeginRead(buffer, 6, length, EndReadPDU, buffer);
 			} catch (ObjectDisposedException) {
 				// silently ignore
+				CloseConnection(0);
+			} catch (NullReferenceException) {
+				// connection already closed; silently ignore
 				CloseConnection(0);
 			} catch (IOException e) {
 				int error = 0;
@@ -277,6 +283,9 @@ namespace Dicom.Network {
 					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
 
 				CloseConnection(error);
+			} catch (NullReferenceException) {
+				// connection already closed; silently ignore
+				CloseConnection(0);
 			} catch (Exception e) {
 				Logger.Error("Exception processing PDU: {0}", e.ToString());
 				CloseConnection(0);
