@@ -8,8 +8,9 @@
 
 namespace System.Security.Authentication
 {
+    [Flags]
 	public enum SslProtocols
 	{
-		Tls
+		Tls = 0x00c0
 	}
 }

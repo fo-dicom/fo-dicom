@@ -10,6 +10,6 @@ namespace System.Security.Cryptography.X509Certificates
 {
 	public enum X509FindType
 	{
-		FindBySubjectName
+		FindBySubjectName = 1
 	}
 }

@@ -8,8 +8,9 @@
 
 namespace System.Security.Cryptography.X509Certificates
 {
+    [Flags]
 	public enum OpenFlags
 	{
-		ReadOnly
+		ReadOnly = 0x0000
 	}
 }

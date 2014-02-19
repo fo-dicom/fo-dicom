@@ -11,9 +11,9 @@ namespace System.Reflection
     [Flags]
     public enum BindingFlags
     {
-        Instance = 0x0001,
-        Static = 0x0010,
-        NonPublic = 0x0100,
-        Public = 0x1000
+        Instance = 0x0004,
+        Static = 0x0008,
+        NonPublic = 0x0010,
+        Public = 0x0020
     }
 }

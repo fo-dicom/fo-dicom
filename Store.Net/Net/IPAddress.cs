@@ -8,8 +8,19 @@
 
 namespace System.Net
 {
-	public enum IPAddress
+	public sealed class IPAddress
 	{
-		Any
+        #region FIELDS
+
+	    private readonly long _address;
+
+		public static readonly IPAddress Any = new IPAddress(0);
+
+	    private IPAddress(long address)
+	    {
+	        _address = address;
+	    }
+
+	    #endregion
 	}
 }

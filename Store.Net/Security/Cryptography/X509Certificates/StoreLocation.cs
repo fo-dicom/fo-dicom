@@ -10,6 +10,6 @@ namespace System.Security.Cryptography.X509Certificates
 {
 	public enum StoreLocation
 	{
-		LocalMachine
+		LocalMachine = 2
 	}
 }

@@ -8,8 +8,9 @@
 
 namespace System.Net.Security
 {
+    [Flags]
 	public enum SslPolicyErrors
 	{
-		None
+		None = 0
 	}
 }

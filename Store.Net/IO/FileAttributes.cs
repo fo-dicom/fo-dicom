@@ -11,7 +11,7 @@ namespace System.IO
     [Flags]
     public enum FileAttributes
     {
-        Normal,
-        Temporary
+        Normal = 0x00080,
+        Temporary = 0x00100
     }
 }
