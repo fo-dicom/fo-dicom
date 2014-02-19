@@ -727,6 +727,9 @@
     <Compile Include="..\Store.Dicom\Store\Dicom\Log\ConsoleLogger.cs">
       <Link>Phone\Log\ConsoleLogger.cs</Link>
     </Compile>
+    <Compile Include="..\Store.Dicom\_Platform\ColorExtensions.cs">
+      <Link>_Platform\ColorExtensions.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">

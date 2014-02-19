@@ -103,9 +103,6 @@
     <Compile Include="..\Store.Net\TypeExtensions.cs">
       <Link>TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Store.Net\UI\ColorExtensions.cs">
-      <Link>Windows\Media\ColorExtensions.cs</Link>
-    </Compile>
     <Compile Include="Collections\Concurrent\ConcurrentDictionary.cs" />
     <Compile Include="IO\WPFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

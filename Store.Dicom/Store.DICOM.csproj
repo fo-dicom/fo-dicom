@@ -718,6 +718,7 @@
     </Compile>
     <Compile Include="Store\Dicom\Log\ConsoleLogger.cs" />
     <Compile Include="Store\Dicom\Log\MetroLogManager.cs" />
+    <Compile Include="_Platform\ColorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
