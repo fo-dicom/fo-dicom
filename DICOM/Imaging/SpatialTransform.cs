@@ -1,27 +1,51 @@
-﻿#if !NETFX_CORE && !WINDOWS_PHONE && !TOUCH
+﻿#if !NETFX_CORE && !WINDOWS_PHONE
 using System.Drawing;
 #endif
 
 namespace Dicom.Imaging {
 	public class SpatialTransform {
-		#region Private Members
-		private double _scale;
+
+#if NETFX_CORE || WINDOWS_PHONE
+        #region INNER TYPES
+
+        public struct Point
+        {
+            private int _x;
+            private int _y;
+
+            public Point(int x, int y)
+            {
+                _x = x;
+                _y = y;
+            }
+
+            public int X
+            {
+                get { return _x; }
+                set { _x = value; }
+            }
+
+            public int Y
+            {
+                get { return _y; }
+                set { _y = value; }
+            }
+        }
+
+        #endregion
+#endif
+
+        #region Private Members
+        private double _scale;
 		private int _rotate;
 		private bool _flipx;
 		private bool _flipy;
-#if NETFX_CORE || WINDOWS_PHONE || TOUCH
-	    private int _panX;
-	    private int _panY;
-#else
 		private Point _pan;
-#endif
 		#endregion
 
 		#region Public Constructors
 		public SpatialTransform() {
-#if !NETFX_CORE && !WINDOWS_PHONE && !TOUCH
 			_pan = new Point(0, 0);
-#endif
 			Reset();
 		}
 		#endregion
@@ -47,34 +71,17 @@ namespace Dicom.Imaging {
 			set { _flipy = value; }
 		}
 
-#if NETFX_CORE || WINDOWS_PHONE || TOUCH
-        public int PanX
-        {
-            get { return _panX; }
-            set { _panX = value; }
-        }
-
-        public int PanY
-        {
-            get { return _panY; }
-            set { _panY = value; }
-        }
-#else
 		public Point Pan {
 			get { return _pan; }
 			set { _pan = value; }
 		}
-#endif
 
 		public bool IsTransformed {
 			get {
 				return _scale != 1.0f ||
 					_rotate != 0.0f ||
-#if NETFX_CORE || WINDOWS_PHONE || TOUCH
-                    _panX != 0 || _panY != 0;
-#else
-					_pan != Point.Empty;
-#endif
+					_pan.X != 0 || 
+                    _pan.Y != 0;
 			}
 		}
 		#endregion
@@ -89,13 +96,8 @@ namespace Dicom.Imaging {
 			_rotate = 0;
 			_flipx = false;
 			_flipy = false;
-#if NETFX_CORE || WINDOWS_PHONE || TOUCH
-            _panX = 0;
-            _panY = 0;
-#else
 			_pan.X = 0;
 			_pan.Y = 0;
-#endif
 		}
 		#endregion
 	}
