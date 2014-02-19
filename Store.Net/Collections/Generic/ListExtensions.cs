@@ -6,13 +6,15 @@
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
 // WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
+using System.Collections.ObjectModel;
+
 namespace System.Collections.Generic
 {
 	public static class ListExtensions
 	{
-		 public static IList<T> AsReadOnly<T>(this List<T> list)
+		 public static ReadOnlyCollection<T> AsReadOnly<T>(this List<T> list)
 		 {
-			 return list;
+			 return new ReadOnlyCollection<T>(list);
 		 }
 	}
 }

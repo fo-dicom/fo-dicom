@@ -43,9 +43,6 @@
     <Compile Include="..\Store.Net\Collections\Generic\ListExtensions.cs">
       <Link>Collections\Generic\ListExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Store.Net\Collections\Generic\SortedList.cs">
-      <Link>Collections\Generic\SortedList.cs</Link>
-    </Compile>
     <Compile Include="..\Store.Net\Environment.cs">
       <Link>Environment.cs</Link>
     </Compile>

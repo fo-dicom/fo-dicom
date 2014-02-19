@@ -11,7 +11,7 @@ namespace Dicom {
 		private DicomTransferSyntax _syntax;
 
 		public DicomDataset() {
-			_items = new SortedList<DicomTag, DicomItem>();
+			_items = new SortedDictionary<DicomTag, DicomItem>();
 			InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 		}
 

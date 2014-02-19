@@ -37,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Generic\ListExtensions.cs" />
-    <Compile Include="Collections\Generic\SortedList.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Helpers\AppxManifest.cs" />
     <Compile Include="IO\BinaryReaderExtensions.cs" />
