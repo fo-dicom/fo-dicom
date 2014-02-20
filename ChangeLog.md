@@ -1,4 +1,4 @@
-#### v1.0.37
+#### v1.0.37 (2/19/2014)
 * Add DICOM Compare tool to project
 * Add support for disabling TCP Nagle algorithm
 * Better handling of aborted connections
