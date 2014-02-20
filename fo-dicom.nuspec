@@ -1,23 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata>
-    <id>fo-dicom</id>
-    <version>1.0.36</version>
-	<title>Fellow Oak DICOM for .NET</title>
-    <authors>Colby Dillion</authors>
-    <description>A DICOM library for .NET</description>
-    <language>en-US</language>
-    <projectUrl>https://github.com/rcd/fo-dicom</projectUrl>
-    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
-	<dependencies>
-      <dependency id="NLog"/>
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="DICOM\bin\Release\Dicom.dll" target="lib\net40" />
-    <file src="DICOM\bin\Release\Dicom.pdb" target="lib\net40" />
-	  <file src="DICOM\bin\Release\Dicom.xml" target="lib\net40" />
-	  <file src="DICOM [Native]\Release\Dicom.Native.dll" target="lib\net40" />
-	  <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="lib\net40" />
-  </files>
+    <metadata>
+        <id>fo-dicom</id>
+        <version>1.0.37</version>
+        <title>Fellow Oak DICOM for .NET</title>
+        <authors>Colby Dillion</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/rcd/fo-dicom</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A DICOM library for .NET</description>
+        <language>en-US</language>
+        <dependencies>
+            <dependency id="NLog" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="ChangeLog.md" target="content\ChangeLog.md" />
+        <file src="License.txt" target="content\License.txt" />
+        <file src="README.md" target="content\README.md" />
+        <file src="DICOM\bin\Release\Dicom.dll" target="lib\net40\Dicom.dll" />
+        <file src="DICOM [Native]\Release\Dicom.Native.dll" target="lib\net40\Dicom.Native.dll" />
+        <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="lib\net40\Dicom.Native64.dll" />
+        <file src="DICOM\bin\Release\Dicom.pdb" target="lib\net40\Dicom.pdb" />
+        <file src="DICOM\bin\Release\Dicom.xml" target="lib\net40\Dicom.xml" />
+        <file src="Tools\DICOM Compare\bin\Release\Dicom.Compare.exe" target="tools\Dicom.Compare.exe" />
+        <file src="DICOM\bin\Release\Dicom.dll" target="tools\Dicom.dll" />
+        <file src="Tools\DICOM Dump\bin\Release\Dicom.Dump.exe" target="tools\Dicom.Dump.exe" />
+        <file src="DICOM [Native]\Release\Dicom.Native.dll" target="tools\Dicom.Native.dll" />
+        <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="tools\Dicom.Native64.dll" />
+        <file src="DICOM\bin\Release\NLog.dll" target="tools\NLog.dll" />
+    </files>
 </package>
