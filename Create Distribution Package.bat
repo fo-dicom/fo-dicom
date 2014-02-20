@@ -19,6 +19,7 @@ copy "DICOM [Native]\Release\Dicom.Native64.dll" Distribute\Examples\ /Y
 copy "packages\NLog.2.1.0\lib\net40\NLog.dll" Distribute\Examples\ /Y
 mkdir Distribute\Tools\
 copy "Tools\DICOM Dump\bin\Release\Dicom.Dump.exe" Distribute\Tools\ /Y
+copy "Tools\DICOM Compare\bin\Release\Dicom.Compare.exe" Distribute\Tools\ /Y
 copy "DICOM\bin\Release\Dicom.dll" Distribute\Tools\ /Y
 copy "DICOM [Native]\Release\Dicom.Native.dll" Distribute\Tools\ /Y
 copy "DICOM [Native]\Release\Dicom.Native64.dll" Distribute\Tools\ /Y
