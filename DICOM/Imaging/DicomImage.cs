@@ -19,8 +19,6 @@ namespace Dicom.Imaging {
 	/// </summary>
 	public class DicomImage {
 		#region Private Members
-		private const int OverlayColor = unchecked((int)0xffff00ff);
-
 		private int _currentFrame;
 		private IPixelData _pixelData;
 		private IPipeline _pipeline;
@@ -29,6 +27,7 @@ namespace Dicom.Imaging {
 		private GrayscaleRenderOptions _renderOptions;
 
 		private DicomOverlayData[] _overlays;
+		private int _overlayColor = unchecked((int)0xffff00ff);
 		#endregion
 
 		/// <summary>Creates DICOM image object from dataset</summary>
@@ -113,24 +112,34 @@ namespace Dicom.Imaging {
 			}
 		}
 
+		/// <summary>Show or hide DICOM overlays</summary>
 		public bool ShowOverlays {
 			get;
 			set;
 		}
 
+		/// <summary>Color used for displaying DICOM overlays. Default is magenta.</summary>
+		public int OverlayColor {
+			get { return _overlayColor; }
+			set { _overlayColor = value; }
+		}
+
 #if !NETFX_CORE && !SILVERLIGHT && !TOUCH
-        /// <summary>Renders DICOM image to System.Drawing.Image</summary>
+		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
 		public Image RenderImage(int frame = 0) {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
-			ImageGraphic graphic = new ImageGraphic(_pixelData);
+			var graphic = new ImageGraphic(_pixelData);
 
 			if (ShowOverlays) {
 				foreach (var overlay in _overlays) {
-					OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
+					if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+						continue;
+
+					var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
 					graphic.AddOverlay(og);
 				}
 			}
@@ -148,15 +157,16 @@ namespace Dicom.Imaging {
 			if (frame != _currentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
-			ImageGraphic graphic = new ImageGraphic(_pixelData);
+			var graphic = new ImageGraphic(_pixelData);
 
-			foreach (var overlay in _overlays) {
-				if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
-					continue;
+			if (ShowOverlays) {
+				foreach (var overlay in _overlays) {
+					if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+						continue;
 
-				// DICOM overlay origin begins at (1,1)
-				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
-				graphic.AddOverlay(og);
+					var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
+					graphic.AddOverlay(og);
+				}
 			}
 
 			return graphic.RenderImageSource(_pipeline.LUT);

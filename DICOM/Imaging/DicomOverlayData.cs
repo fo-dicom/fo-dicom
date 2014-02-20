@@ -232,7 +232,7 @@ namespace Dicom.Imaging {
 #endif
 			ushort group = 0x6000;
 			while (ds.Contains(new DicomTag(group, DicomTag.OverlayBitPosition.Element)))
-				group++;
+				group += 2;
 
 			var overlay = new DicomOverlayData(ds, group);
 			overlay.Type = DicomOverlayType.Graphics;
