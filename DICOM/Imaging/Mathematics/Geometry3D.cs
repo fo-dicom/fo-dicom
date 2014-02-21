@@ -151,6 +151,15 @@ namespace Dicom.Imaging.Mathematics {
 			return rotatePerpendicular + parallel;
 		}
 
+		public Vector3D Reflect(Vector3D normal) {
+			double dot = DotProduct(normal);
+			return new Vector3D(
+					X - ((dot * 2.0f) * normal.X),
+					Y - ((dot * 2.0f) * normal.Y),
+					Z - ((dot * 2.0f) * normal.Z)
+				);
+		}
+
 		public Vector3D NearestAxis() {
 			Vector3D b = Vector3D.Zero.Clone();
 			double xabs = Math.Abs(X);
