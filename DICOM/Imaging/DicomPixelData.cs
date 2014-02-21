@@ -359,7 +359,7 @@ namespace Dicom.Imaging {
 				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
 				// mainly for GE Private Implicit VR Big Endian
-				if (BytesAllocated == 1 || Syntax.SwapPixelData)
+				if (Syntax.SwapPixelData)
 					buffer = new SwapByteBuffer(buffer, 2);
 
 				return buffer;
@@ -371,7 +371,7 @@ namespace Dicom.Imaging {
 
 				CompositeByteBuffer buffer = Element.Buffer as CompositeByteBuffer;
 
-				if (BytesAllocated == 1 || Syntax.SwapPixelData)
+				if (Syntax.SwapPixelData)
 					data = new SwapByteBuffer(data , 2);
 
 				buffer.Buffers.Add(data);
