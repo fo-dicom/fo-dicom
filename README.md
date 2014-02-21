@@ -37,7 +37,7 @@ client.AddRequest(new DicomCStoreRequest(@"test.dcm"));
 client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 ```
 
-#### C-Echo SCP
+#### C-Echo SCU/SCP
 ```csharp
 var server = new DicomServer<DicomCEchoProvider>(12345);
 
@@ -46,6 +46,27 @@ client.NegotiateAsyncOps();
 for (int i = 0; i < 10; i++)
     client.AddRequest(new DicomCEchoRequest());
 client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+```
+
+#### C-Find SCU
+```csharp
+var cfind = DicomCFindRequest.CreateStudyQuery(patientId: "12345");
+cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
+	Console.WriteLine("Study UID: {0}", rp.Dataset.Get<string>(DicomTag.StudyInstanceUID));
+};
+
+var client = new DicomClient();
+client.AddRequest(cfind);
+client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
+```
+
+#### C-Move SCU
+```csharp
+var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
+
+var client = new DicomClient();
+client.AddRequest(cmove);
+client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
 ```
 
 ### Contributors
