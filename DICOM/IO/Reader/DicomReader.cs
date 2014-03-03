@@ -170,7 +170,7 @@ namespace Dicom.IO.Reader {
 						}
 
 						if (_tag.IsPrivate) {
-							if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff)
+							if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff && _vr == DicomVR.UN)
 								_vr = DicomVR.LO; // force private creator to LO
 						}
 					}
