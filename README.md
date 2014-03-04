@@ -36,6 +36,9 @@ Please join the [Google group](http://groups.google.com/group/fo-dicom) for upda
 * Supports very large datasets with content loading on demand
 * Image rendering
 
+### Notes
+* Support for compressed images requires the Visual Studio 2010 SP1 Redistributable Package to be installed. ([x86](http://www.microsoft.com/en-us/download/details.aspx?id=8328) or [x64](http://www.microsoft.com/en-us/download/details.aspx?id=14632)) 
+
 ### Examples
 
 #### File Operations

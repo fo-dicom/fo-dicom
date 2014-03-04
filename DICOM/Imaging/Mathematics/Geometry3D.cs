@@ -261,6 +261,12 @@ namespace Dicom.Imaging.Mathematics {
 		}
 
 		public static bool operator ==(Vector3D a, Vector3D b) {
+			if (ReferenceEquals(a, b))
+				return true;
+
+			if (((object)a == null) || ((object)b == null))
+				return false;
+
 			return Math.Abs(a.X - b.X) <= Double.Epsilon &&
 					Math.Abs(a.Y - b.Y) <= Double.Epsilon &&
 					Math.Abs(a.Z - b.Z) <= Double.Epsilon;
