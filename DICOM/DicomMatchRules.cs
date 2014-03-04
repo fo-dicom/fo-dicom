@@ -323,7 +323,7 @@ namespace Dicom {
 		public RegexDicomMatchRule(DicomTag tag, string pattern) {
 			_tag = tag;
 			_pattern = pattern;
-			_regex = new Regex(_pattern);
+			_regex = new Regex(_pattern, RegexOptions.Compiled);
 		}
 		#endregion
 
@@ -374,6 +374,31 @@ namespace Dicom {
 			}
 			sb.Append("']");
 			return sb.ToString();
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Rule that always returns true or false.
+	/// </summary>
+	public class BoolDicomMatchRule : IDicomMatchRule {
+		#region Private Members
+		private bool _value;
+		#endregion
+
+		#region Public Constructor
+		public BoolDicomMatchRule(bool value) {
+			_value = value;
+		}
+		#endregion
+
+		#region Public Methods
+		public bool Match(DicomDataset dataset) {
+			return _value;
+		}
+
+		public override string ToString() {
+			return _value.ToString();
 		}
 		#endregion
 	}
