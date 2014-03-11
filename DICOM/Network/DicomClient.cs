@@ -155,6 +155,17 @@ namespace Dicom.Network {
 				throw _exception;
 		}
 
+		public void Release() {
+			try {
+				_service._SendAssociationReleaseRequest();
+
+				_async.AsyncWaitHandle.WaitOne(10000);
+			} catch {
+			} finally {
+				Abort();
+			}
+		}
+
 		public void Abort() {
 			try {
 				_abort = true;
@@ -181,6 +192,19 @@ namespace Dicom.Network {
 				SendAssociationRequest(association);
 			}
 
+			public void _SendAssociationReleaseRequest() {
+				try {
+					SendAssociationReleaseRequest();
+				} catch {
+					// may have already disconnected
+					_client._async.Set();
+					return;
+				}
+
+				_timer = new Timer(OnReleaseTimeout);
+				_timer.Change(2500, Timeout.Infinite);
+			}
+
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
 				foreach (var request in _client._requests)
 					SendRequest(request);
@@ -200,16 +224,7 @@ namespace Dicom.Network {
 				if (!IsSendQueueEmpty)
 					return;
 
-				try {
-					SendAssociationReleaseRequest();
-				} catch {
-					// may have already disconnected
-					_client._async.Set();
-					return;
-				}
-
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				_SendAssociationReleaseRequest();
 			}
 
 			private void OnReleaseTimeout(object state) {
