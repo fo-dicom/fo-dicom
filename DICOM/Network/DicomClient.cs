@@ -14,6 +14,7 @@ using Dicom.Log;
 namespace Dicom.Network {
 	public class DicomClient {
 		private EventAsyncResult _async;
+		private ManualResetEventSlim _assoc;
 		private Exception _exception;
 		private List<DicomRequest> _requests;
 		private List<DicomPresentationContext> _contexts;
@@ -120,6 +121,8 @@ namespace Dicom.Network {
 
 			_service = new DicomServiceUser(this, stream, assoc, Logger);
 
+			_assoc = new ManualResetEventSlim(false);
+
 			_async = new EventAsyncResult(callback, state);
 			return _async;
 		}
@@ -141,6 +144,9 @@ namespace Dicom.Network {
 			if (_async != null)
 				_async.AsyncWaitHandle.WaitOne();
 
+			if (_assoc != null)
+				_assoc.Set();
+
 			if (_client != null) {
 				try {
 					_client.Close();
@@ -150,9 +156,17 @@ namespace Dicom.Network {
 
 			_service = null;
 			_async = null;
+			_assoc = null;
 
 			if (_exception != null && !_abort)
 				throw _exception;
+		}
+
+		public void WaitForAssociation(int millisecondsTimeout = 5000) {
+			if (_assoc == null)
+				return;
+
+			_assoc.Wait(millisecondsTimeout);
 		}
 
 		public void Release() {
@@ -206,6 +220,9 @@ namespace Dicom.Network {
 			}
 
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
+				_client._assoc.Set();
+				_client._assoc = null;
+
 				foreach (var request in _client._requests)
 					SendRequest(request);
 				_client._requests.Clear();
