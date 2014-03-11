@@ -155,6 +155,7 @@ namespace Dicom.Network {
 			}
 
 			_service = null;
+			_client = null;
 			_async = null;
 			_assoc = null;
 
@@ -241,10 +242,14 @@ namespace Dicom.Network {
 				if (!IsSendQueueEmpty)
 					return;
 
-				_SendAssociationReleaseRequest();
+				if (IsConnected)
+					_SendAssociationReleaseRequest();
 			}
 
 			private void OnReleaseTimeout(object state) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				try {
 					if (_client._async != null)
 						_client._async.Set();
