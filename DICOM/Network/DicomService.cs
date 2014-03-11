@@ -684,7 +684,10 @@ namespace Dicom.Network {
 
 			if (pc == null) {
 				Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
-				SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.InvalidPDUParameter);
+				lock (_lock)
+					_sending = false;
+				SendNextMessage();
+				return;
 			}
 
 			var dimse = new Dimse();
