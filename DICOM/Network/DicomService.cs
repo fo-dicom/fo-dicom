@@ -678,8 +678,14 @@ namespace Dicom.Network {
 				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
 			}
 
-			if (pc == null)
-			throw new DicomNetworkException("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
+			if (pc == null) {
+				Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
+				lock (_lock)
+					_sending = false;
+				SendNextMessage();
+				return;
+			}
+
 			var dimse = new Dimse();
 			dimse.Message = msg;
 			dimse.PresentationContext = pc;
