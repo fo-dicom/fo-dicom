@@ -14,6 +14,7 @@ using Dicom.Log;
 namespace Dicom.Network {
 	public class DicomClient {
 		private EventAsyncResult _async;
+		private ManualResetEventSlim _assoc;
 		private Exception _exception;
 		private List<DicomRequest> _requests;
 		private List<DicomPresentationContext> _contexts;
@@ -120,6 +121,8 @@ namespace Dicom.Network {
 
 			_service = new DicomServiceUser(this, stream, assoc, Logger);
 
+			_assoc = new ManualResetEventSlim(false);
+
 			_async = new EventAsyncResult(callback, state);
 			return _async;
 		}
@@ -141,6 +144,9 @@ namespace Dicom.Network {
 			if (_async != null)
 				_async.AsyncWaitHandle.WaitOne();
 
+			if (_assoc != null)
+				_assoc.Set();
+
 			if (_client != null) {
 				try {
 					_client.Close();
@@ -149,10 +155,30 @@ namespace Dicom.Network {
 			}
 
 			_service = null;
+			_client = null;
 			_async = null;
+			_assoc = null;
 
 			if (_exception != null && !_abort)
 				throw _exception;
+		}
+
+		public void WaitForAssociation(int millisecondsTimeout = 5000) {
+			if (_assoc == null)
+				return;
+
+			_assoc.Wait(millisecondsTimeout);
+		}
+
+		public void Release() {
+			try {
+				_service._SendAssociationReleaseRequest();
+
+				_async.AsyncWaitHandle.WaitOne(10000);
+			} catch {
+			} finally {
+				Abort();
+			}
 		}
 
 		public void Abort() {
@@ -181,7 +207,23 @@ namespace Dicom.Network {
 				SendAssociationRequest(association);
 			}
 
+			public void _SendAssociationReleaseRequest() {
+				try {
+					SendAssociationReleaseRequest();
+				} catch {
+					// may have already disconnected
+					_client._async.Set();
+					return;
+				}
+
+				_timer = new Timer(OnReleaseTimeout);
+				_timer.Change(2500, Timeout.Infinite);
+			}
+
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
+				_client._assoc.Set();
+				_client._assoc = null;
+
 				foreach (var request in _client._requests)
 					SendRequest(request);
 				_client._requests.Clear();
@@ -200,19 +242,14 @@ namespace Dicom.Network {
 				if (!IsSendQueueEmpty)
 					return;
 
-				try {
-					SendAssociationReleaseRequest();
-				} catch {
-					// may have already disconnected
-					_client._async.Set();
-					return;
-				}
-
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				if (IsConnected)
+					_SendAssociationReleaseRequest();
 			}
 
 			private void OnReleaseTimeout(object state) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				try {
 					if (_client._async != null)
 						_client._async.Set();
