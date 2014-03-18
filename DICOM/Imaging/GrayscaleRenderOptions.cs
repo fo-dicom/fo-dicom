@@ -178,8 +178,11 @@ namespace Dicom.Imaging {
 			if (range.Maximum > bits.MaximumValue || range.Maximum == Double.MinValue)
 				range.Maximum = bits.MaximumValue;
 
-			options.WindowWidth = Math.Abs(range.Maximum - range.Minimum);
-			options.WindowCenter = range.Minimum + (options.WindowWidth / 2.0);
+			var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
+			var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
+
+			options.WindowWidth = Math.Abs(max - min);
+			options.WindowCenter = (max + min) / 2.0;
 
 			options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
@@ -194,8 +197,11 @@ namespace Dicom.Imaging {
 			options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
 			options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
 
-			options.WindowWidth = bits.MaximumValue - bits.MinimumValue;
-			options.WindowCenter = bits.MinimumValue + (options.WindowWidth / 2.0);
+			var min = bits.MinimumValue * options.RescaleSlope + options.RescaleIntercept;
+			var max = bits.MaximumValue * options.RescaleSlope + options.RescaleIntercept;
+
+			options.WindowWidth = Math.Abs(max - min);
+			options.WindowCenter = (max + min) / 2.0;
 
 			options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
@@ -221,8 +227,11 @@ namespace Dicom.Imaging {
 
 			histogram.ApplyWindow(percent);
 
-			options.WindowWidth = histogram.WindowEnd - histogram.WindowStart;
-			options.WindowCenter = histogram.WindowStart + (options.WindowWidth / 2.0);
+			var min = histogram.WindowStart * options.RescaleSlope + options.RescaleIntercept;
+			var max = histogram.WindowEnd * options.RescaleSlope + options.RescaleIntercept;
+
+			options.WindowWidth = Math.Abs(max - min);
+			options.WindowCenter = (max + min) / 2.0;
 
 			options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
 			options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation) == PhotometricInterpretation.Monochrome1;
