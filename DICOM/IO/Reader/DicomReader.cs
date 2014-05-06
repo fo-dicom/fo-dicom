@@ -22,6 +22,7 @@ namespace Dicom.IO.Reader {
 
 		private ParseState _state;
 		private DicomTag _tag;
+		private DicomDictionaryEntry _entry;
 		private DicomVR _vr;
 		private uint _length;
 		private bool _implicit;
@@ -112,6 +113,10 @@ namespace Dicom.IO.Reader {
 						}
 
 						_tag = new DicomTag(group, element, creator);
+						_entry = Dictionary[_tag];
+
+						if (!_tag.IsPrivate && _entry != null && _entry.MaskTag == null)
+							_tag = _entry.Tag; // Use dictionary tag
 
 						if (_stop != null && _tag.CompareTo(_stop) >= 0) {
 							_result = DicomReaderResult.Stopped;
@@ -143,14 +148,13 @@ namespace Dicom.IO.Reader {
 								_vr = DicomVR.UN;
 							}
 						} else {
-							DicomDictionaryEntry entry = Dictionary[_tag];
-							if (entry != null) {
-								if (entry == DicomDictionary.UnknownTag)
+							if (_entry != null) {
+								if (_entry == DicomDictionary.UnknownTag)
 									_vr = DicomVR.UN;
-								else if (entry.ValueRepresentations.Contains(DicomVR.OB) && entry.ValueRepresentations.Contains(DicomVR.OW))
+								else if (_entry.ValueRepresentations.Contains(DicomVR.OB) && _entry.ValueRepresentations.Contains(DicomVR.OW))
 									_vr = DicomVR.OW; // ???
 								else
-									_vr = entry.ValueRepresentations.FirstOrDefault();
+									_vr = _entry.ValueRepresentations.FirstOrDefault();
 							}
 						}
 
@@ -525,6 +529,7 @@ namespace Dicom.IO.Reader {
 		private void ResetState() {
 			_state = ParseState.Tag;
 			_tag = null;
+			_entry = null;
 			_vr = null;
 			_length = 0;
 		}
