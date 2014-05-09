@@ -141,9 +141,7 @@ namespace Dicom.IO.Reader {
 
 							byte[] bytes = source.GetBytes(2);
 							string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-							try {
-								_vr = DicomVR.Parse(vr);
-							} catch {
+							if (!DicomVR.TryParse(vr, out _vr)) {
 								// unable to parse VR
 								_vr = DicomVR.UN;
 							}
@@ -439,14 +437,12 @@ namespace Dicom.IO.Reader {
 
 				byte[] bytes = source.GetBytes(2);
 				string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-				try {
-					DicomVR.Parse(vr);
+				DicomVR dummy;
+				if (DicomVR.TryParse(vr,out dummy))
 					return !_explicit;
-				} catch {
-					// unable to parse VR
-					if (_explicit)
-						return true;
-				}
+				// unable to parse VR
+				if (_explicit)
+					return true;
 			} finally {
 				source.Rewind();
 			}
