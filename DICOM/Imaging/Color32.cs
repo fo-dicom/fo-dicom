@@ -22,13 +22,13 @@ namespace Dicom.Imaging {
 		/// <summary>Red</summary>
 		public byte R {
 			get { return (byte)unchecked((Value & 0x00ff0000) >> 16); }
-			set { Value = (int)unchecked((Value & 0xff00ffff) | ((int)value << 16)); }
+			set { Value = (int)unchecked((Value & 0xff00ffff) | ((uint)value << 16)); }
 		}
 
 		/// <summary>Green</summary>
 		public byte G {
 			get { return (byte)unchecked((Value & 0x0000ff00) >> 8); }
-			set { Value = (int)unchecked((Value & 0xffff00ff) | ((int)value << 8)); }
+			set { Value = (int)unchecked((Value & 0xffff00ff) | ((uint)value << 8)); }
 		}
 
 		/// <summary>Blue</summary>
