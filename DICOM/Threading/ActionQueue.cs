@@ -101,6 +101,9 @@ namespace Dicom.Threading {
 					} catch {
 						// log this somewhere?
 					}
+
+					// force dereference
+					action = null;
 				}
 
 				if (_stop)

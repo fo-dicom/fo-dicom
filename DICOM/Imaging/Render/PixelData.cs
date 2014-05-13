@@ -218,7 +218,7 @@ namespace Dicom.Imaging.Render {
 			}
 		}
 
-		public Histogram GetHistogram(int channel) {
+		public virtual Histogram GetHistogram(int channel) {
 			if (channel != 0)
 				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
 
@@ -256,7 +256,7 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Methods
-		public Histogram GetHistogram(int channel) {
+		public override Histogram GetHistogram(int channel) {
 			if (channel != 0)
 				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
 
