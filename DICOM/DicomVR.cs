@@ -92,7 +92,29 @@ namespace Dicom {
 		/// <param name="vr">String representation of VR</param>
 		/// <returns>VR</returns>
 		public static DicomVR Parse(string vr) {
-			switch (vr) {
+			bool valid;
+			DicomVR result = TryParse(vr, out valid);
+			if (!valid)
+				throw new DicomDataException(string.Format("Unknown VR: '{0}'", vr) );
+			return result;
+		}
+
+		/// <summary>
+		/// Try to get VR for given string value.
+		/// </summary>
+		/// <param name="vr">String representation of VR</param>
+		/// <param name="result">VR code</param>
+		/// <returns>true if VR was successfully parsed, false otherwise</returns>
+		public static bool TryParse(string vr, out DicomVR result) {
+			bool valid;
+			result = TryParse(vr, out valid);
+			return valid;
+		}
+
+		private static DicomVR TryParse(string vr, out bool valid) {
+			valid = true;
+			switch ( vr )
+			{
 			case "NONE": return DicomVR.NONE;
 			case "AE": return DicomVR.AE;
 			case "AS": return DicomVR.AS;
@@ -122,7 +144,8 @@ namespace Dicom {
 			case "US": return DicomVR.US;
 			case "UT": return DicomVR.UT;
 			default:
-				throw new DicomDataException("Unknown VR: '" + vr + "'");
+				valid = false;
+				return DicomVR.NONE;
 			}
 		}
 
