@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>fo-dicom</id>
+        <id>fo-dicom-raysearch</id>
         <version>1.0.37</version>
         <title>Fellow Oak DICOM for .NET</title>
         <authors>Colby Dillion</authors>
