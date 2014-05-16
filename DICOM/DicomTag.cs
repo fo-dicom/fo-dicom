@@ -19,6 +19,11 @@ namespace Dicom {
 			return new DicomTag((ushort)((tag >> 16) & 0xffff), (ushort)(tag & 0xffff));
 		}
 
+		static public explicit operator UInt32(DicomTag tag)
+		{
+			return (UInt32)(tag.Group << 16) | tag.Element;
+		}
+
 		public DicomTag(ushort group, ushort element, string privateCreator) : this(group, element, DicomDictionary.Default.GetPrivateCreator(privateCreator)) {
 		}
 
