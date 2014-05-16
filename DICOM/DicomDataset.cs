@@ -136,6 +136,8 @@ namespace Dicom {
 			return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
 		}
 
+		public DicomItem this[DicomTag tag] { get { return Get<DicomItem>(tag); } }
+
 		public DicomDataset Add(params DicomItem[] items) {
 			if (items != null) {
 				foreach (DicomItem item in items) {
