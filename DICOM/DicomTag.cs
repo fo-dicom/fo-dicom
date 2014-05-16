@@ -15,6 +15,10 @@ namespace Dicom {
 			Element = element;
 		}
 
+		static public implicit operator DicomTag(UInt32 tag) {
+			return new DicomTag((ushort)((tag >> 16) & 0xffff), (ushort)(tag & 0xffff));
+		}
+
 		public DicomTag(ushort group, ushort element, string privateCreator) : this(group, element, DicomDictionary.Default.GetPrivateCreator(privateCreator)) {
 		}
 
