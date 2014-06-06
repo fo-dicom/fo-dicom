@@ -125,6 +125,13 @@ namespace Dicom {
 				throw eventResult.InternalState as Exception;
 		}
 
+        /// <summary>
+        /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
+        /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
+        /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
+        /// </summary>
+        /// <param name="fileName">The filename of the DICOM file</param>
+        /// <returns>DicomFile instance</returns>
 		public static DicomFile Open(string fileName) {
 			DicomFile df = new DicomFile();
 
