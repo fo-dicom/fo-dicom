@@ -43,6 +43,7 @@
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\DirectoryInfo.cs" />
     <Compile Include="IO\File.cs" />
+    <Compile Include="IO\FileAccess.cs" />
     <Compile Include="IO\FileAttributes.cs" />
     <Compile Include="IO\FileHelper.cs" />
     <Compile Include="IO\FileInfo.cs" />

@@ -23,7 +23,11 @@ namespace System.IO
 
         #region CONSTRUCTORS
 
-        public FileStream(string name, FileMode mode)
+        public FileStream(string name, FileMode mode) : this(name, mode, FileAccess.ReadWrite)
+        {
+        }
+
+        public FileStream(string name, FileMode mode, FileAccess access)
         {
 			try
 			{
@@ -76,7 +80,7 @@ namespace System.IO
 							                         default:
 								                         throw new ArgumentOutOfRangeException("mode");
 						                         }
-												 var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
+												 var stream = await file.OpenAsync(GetFileAccessMode(access));
 												 stream.Seek(position);
 						                         return stream;
 					                         }).Result;
@@ -219,6 +223,20 @@ namespace System.IO
 			base.Dispose(disposing);
 		}
 
-	    #endregion
+        private static FileAccessMode GetFileAccessMode(FileAccess access)
+        {
+            switch (access)
+            {
+                case FileAccess.Read:
+                    return FileAccessMode.Read;
+                case FileAccess.ReadWrite:
+                case FileAccess.Write:
+                    return FileAccessMode.ReadWrite;
+                default:
+                    throw new ArgumentOutOfRangeException("access");
+            }
+        }
+
+        #endregion
     }
 }
