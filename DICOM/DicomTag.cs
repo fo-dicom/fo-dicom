@@ -73,6 +73,9 @@ namespace Dicom {
 					else
 						return String.Format("{0:x4},{1:x4}", Group, Element);
 				}
+            case "J": {
+                        return String.Format("{0:X4}{1:X4}", Group, Element);
+                }
 			case "G":
 			default: {
 				if (PrivateCreator != null)
