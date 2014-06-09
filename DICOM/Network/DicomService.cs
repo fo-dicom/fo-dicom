@@ -22,6 +22,7 @@ namespace Dicom.Network {
 		private List<DicomRequest> _pending;
 		private DicomMessage _dimse;
 		private Stream _dimseStream;
+	    private bool _isTempFile;
 		private int _readLength;
 		private bool _isConnected;
 		private ThreadPoolQueue<int> _processQueue;
@@ -299,26 +300,21 @@ namespace Dicom.Network {
 					} else {
 						// create stream for receiving dataset
 						if (_dimseStream == null) {
-							if (_dimse.Type == DicomCommandField.CStoreRequest) {
-								var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+						    if (_dimse.Type == DicomCommandField.CStoreRequest) {
+                                var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
-								var file = new DicomFile();
-								file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
-								file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
-								file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
-								file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplemetationClassUID;
-								file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
-								file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
+                                var file = new DicomFile();
+                                file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
+                                file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                                file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
+                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplemetationClassUID;
+                                file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
+                                file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
-								var fileName = TemporaryFile.Create();
-
-								file.Save(fileName);
-
-								_dimseStream = File.OpenWrite(fileName);
-								_dimseStream.Seek(0, SeekOrigin.End);
-							} else {
-								_dimseStream = new MemoryStream();
-							}
+                                _dimseStream = CreateCStoreReceiveStream(file);
+                            } else {
+                                _dimseStream = new MemoryStream();
+						    }
 						}
 					}
 
@@ -326,17 +322,17 @@ namespace Dicom.Network {
 
 					if (pdv.IsLastFragment) {
 						if (pdv.IsCommand) {
-							_dimseStream.Seek(0, SeekOrigin.Begin);
+                            _dimseStream.Seek(0, SeekOrigin.Begin);
 
-							var command = new DicomDataset();
+                            var command = new DicomDataset();
 
-							var reader = new DicomReader();
-							reader.IsExplicitVR = false;
-							reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
+                            var reader = new DicomReader();
+                            reader.IsExplicitVR = false;
+                            reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
+                            
+                            _dimseStream = null;
 
-							_dimseStream = null;
-
-							var type = command.Get<DicomCommandField>(DicomTag.CommandField);
+						    var type = command.Get<DicomCommandField>(DicomTag.CommandField);
 							switch (type) {
 							case DicomCommandField.CStoreRequest:
 								_dimse = new DicomCStoreRequest(command);
@@ -412,42 +408,55 @@ namespace Dicom.Network {
 								return;
 							}
 						} else {
-							if (_dimse.Type != DicomCommandField.CStoreRequest) {
-								_dimseStream.Seek(0, SeekOrigin.Begin);
+                            if (_dimse.Type != DicomCommandField.CStoreRequest) {
+                                _dimseStream.Seek(0, SeekOrigin.Begin);
 
-								var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+                                var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
-								_dimse.Dataset = new DicomDataset();
-								_dimse.Dataset.InternalTransferSyntax = pc.AcceptedTransferSyntax;
+                                _dimse.Dataset = new DicomDataset();
+                                _dimse.Dataset.InternalTransferSyntax = pc.AcceptedTransferSyntax;
 
-								var source = new StreamByteSource(_dimseStream);
-								source.Endian = pc.AcceptedTransferSyntax.Endian;
+                                var source = new StreamByteSource(_dimseStream);
+                                source.Endian = pc.AcceptedTransferSyntax.Endian;
 
-								var reader = new DicomReader();
-								reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
-								reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
+                                var reader = new DicomReader();
+                                reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
+                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
-								_dimseStream = null;
-							} else {
-								var fileName = (_dimseStream as FileStream).Name;
-								_dimseStream.Close();
-								_dimseStream = null;
+                                _dimseStream = null;
+                            } else {
+                                var request = _dimse as DicomCStoreRequest;
 
-								var request = _dimse as DicomCStoreRequest;
+                                try
+                                {
+                                    var dicomFile = GetCStoreDicomFile();
+                                    _dimseStream = null;
+                                    _isTempFile = false;
 
-								try {
-									request.File = DicomFile.Open(fileName);
-								} catch (Exception e) {
-									// failed to parse received DICOM file; send error response instead of aborting connection
-									SendResponse(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
-									Logger.Error("Error parsing C-Store dataset: " + e.ToString());
-									(this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
-									return;
-								}
-
-								request.File.File.IsTempFile = true;
-								request.Dataset = request.File.Dataset;
-							}
+                                    // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
+                                    // GetCStoreDicomFile(), but can be null if a child class overrides either method and changes behavior.
+                                    // See documentation on CreateCStoreReceiveStream() and GetCStoreDicomFile() for information about why
+                                    // this might be desired.
+                                    request.File = dicomFile;
+                                    if (request.File != null)
+                                    {
+                                        request.Dataset = request.File.Dataset;
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    var fileName = "";
+                                    if (_dimseStream is FileStream)
+                                    {
+                                        fileName = (_dimseStream as FileStream).Name;
+                                    }
+                                    // failed to parse received DICOM file; send error response instead of aborting connection
+                                    SendResponse(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
+                                    Logger.Error("Error parsing C-Store dataset: " + e.ToString());
+                                    (this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
+                                    return;
+                                }
+                            }
 
 							if (DicomMessage.IsRequest(_dimse.Type))
 								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
@@ -465,7 +474,56 @@ namespace Dicom.Network {
 			}
 		}
 
-		private void PerformDimseCallback(object state) {
+        /// <summary>
+        /// The purpose of this method is to return the Stream that a SopInstance received
+        /// via CStoreSCP will be written to.  This default implementation creates a temporary
+        /// file and returns a FileStream on top of it.  Child classes can override this to write
+        /// to another stream and avoid the I/O associated with the temporary file if so desired.
+        /// Beware that some SopInstances can be very large so using a MemoryStream() could cause
+        /// out of memory situations.
+        /// </summary>
+        /// <param name="file">A DicomFile with FileMetaInfo populated</param>
+        /// <returns>The stream to write the SopInstance to</returns>
+        protected virtual Stream CreateCStoreReceiveStream(DicomFile file)
+        {
+            var fileName = TemporaryFile.Create();
+
+            file.Save(fileName);
+
+            var dimseStream = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite);
+            _isTempFile = true;
+            dimseStream.Seek(0, SeekOrigin.End);
+            return dimseStream;
+        }
+        
+        /// <summary>
+        /// The purpose of this method is to create a DicomFile for the SopInstance received via
+        /// CStoreSCP to pass to the IDicomCStoreProvider.OnCStoreRequest method for processing.
+        /// This default implementation will return a DicomFile if the stream created by
+        /// CreateCStoreReceiveStream() is seekable or null if it is not.  Child classes that 
+        /// override CreateCStoreReceiveStream may also want override this to return a DicomFile 
+        /// for unseekable streams or to do cleanup related to receiving that specific instance.  
+        /// </summary>
+        /// <returns>The DicomFile or null if the stream is not seekable</returns>
+        protected virtual DicomFile GetCStoreDicomFile()
+        {
+            if (_dimseStream.CanSeek)
+            {
+                _dimseStream.Seek(0, SeekOrigin.Begin);
+                var file = DicomFile.Open(_dimseStream);
+                if (_isTempFile)
+                {
+                    file.File.IsTempFile = _isTempFile;
+                }
+                return file;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+	    private void PerformDimseCallback(object state) {
 			var dimse = state as DicomMessage;
 
 			try {
