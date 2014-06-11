@@ -507,14 +507,17 @@ namespace Dicom.Network {
         /// <returns>The DicomFile or null if the stream is not seekable</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (_dimseStream.CanSeek)
-            {
+			if (_dimseStream is FileStream) {
+				var name = (_dimseStream as FileStream).Name;
+				_dimseStream.Close();
+				_dimseStream = null;
+
+				var file = DicomFile.Open(name);
+				file.File.IsTempFile = _isTempFile;
+				return file;
+			} else if (_dimseStream.CanSeek) {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
                 var file = DicomFile.Open(_dimseStream);
-                if (_isTempFile)
-                {
-                    file.File.IsTempFile = _isTempFile;
-                }
                 return file;
             }
             else
