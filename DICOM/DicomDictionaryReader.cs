@@ -79,7 +79,7 @@ namespace Dicom {
 
 					string group = xentry.Attribute("group").Value;
 					string element = xentry.Attribute("element").Value;
-					if (group.ToLower().Contains('x') || element.ToLower().Contains('x')) {
+					if (group.ToLower().Contains("x") || element.ToLower().Contains("x")) {
 						DicomMaskedTag tag = DicomMaskedTag.Parse(group, element);
 						tag.Tag.PrivateCreator = dict.PrivateCreator;
 						dict.Add(new DicomDictionaryEntry(tag, name, keyword, vm, retired, vrs.ToArray()));

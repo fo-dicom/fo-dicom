@@ -48,11 +48,13 @@ namespace Dicom.Imaging.LUT {
 
 		public int this[int value] {
 			get {
-				//if (value < 0)
-				//    return _table[0];
-				//if (value > 255)
-				//    return _table[255];
-				return _lut[value].Value;
+				unchecked {
+					if (value < 0)
+						return _lut[0].Value;
+					if (value > 255)
+						return _lut[255].Value;
+					return _lut[value].Value;
+				}
 			}
 		}
 		#endregion

@@ -1418,13 +1418,13 @@ namespace Dicom {
 		public readonly static DicomUID StudyComponentManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.2", "Study Component Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
 		/// <summary>SOP Class: Modality Performed Procedure Step SOP Class</summary>
-		public readonly static DicomUID ModalityPerformedProcedureStepSOPClass = new DicomUID("1.­2.840.10008.3.1.2.3.3", "Modality Performed Procedure Step SOP Class", DicomUidType.SOPClass, false);
+		public readonly static DicomUID ModalityPerformedProcedureStepSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.3", "Modality Performed Procedure Step SOP Class", DicomUidType.SOPClass, false);
 
 		/// <summary>SOP Class: Modality Performed Procedure Step Retrieve SOP Class</summary>
-		public readonly static DicomUID ModalityPerformedProcedureStepRetrieveSOPClass = new DicomUID("1.­2.840.10008.3.1.2.3.4", "Modality Performed Procedure Step Retrieve SOP Class", DicomUidType.SOPClass, false);
+		public readonly static DicomUID ModalityPerformedProcedureStepRetrieveSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.4", "Modality Performed Procedure Step Retrieve SOP Class", DicomUidType.SOPClass, false);
 
 		/// <summary>SOP Class: Modality Performed Procedure Step Notification SOP Class</summary>
-		public readonly static DicomUID ModalityPerformedProcedureStepNotificationSOPClass = new DicomUID("1.­2.840.10008.3.1.2.3.5", "Modality Performed Procedure Step Notification SOP Class", DicomUidType.SOPClass, false);
+		public readonly static DicomUID ModalityPerformedProcedureStepNotificationSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.5", "Modality Performed Procedure Step Notification SOP Class", DicomUidType.SOPClass, false);
 
 		/// <summary>SOP Class: Detached Results Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedResultsManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.1", "Detached Results Management SOP Class (Retired)", DicomUidType.SOPClass, true);

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 
 namespace Dicom {
 	public enum DicomUidType {
@@ -66,6 +69,17 @@ namespace Dicom {
 			get {
 				return _retired;
 			}
+		}
+
+		public static DicomUID Generate() {
+			var generator = new DicomUIDGenerator();
+			return generator.Generate();
+		}
+
+		public static DicomUID Append(DicomUID baseUid, long nextSeq) {
+			StringBuilder uid = new StringBuilder();
+			uid.Append(baseUid.UID).Append('.').Append(nextSeq);
+			return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
 		}
 
 		public static bool IsValid(string uid) {
@@ -182,7 +196,7 @@ namespace Dicom {
 		}
 
 		public override string ToString() {
-			return UID;
+			return String.Format("{0} [{1}]", Name, UID);
 		}
 	}
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 using Dicom.Imaging.Mathematics;
 
@@ -9,8 +7,7 @@ namespace Dicom {
 	/// <summary>
 	/// DICOM Tag
 	/// </summary>
-	[Serializable]
-	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable, ISerializable {
+	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable {
 		public readonly static DicomTag Unknown = new DicomTag(0xffff, 0xffff);
 
 		public DicomTag(ushort group, ushort element) {
@@ -27,17 +24,6 @@ namespace Dicom {
 			PrivateCreator = privateCreator;
 		}
 
-		private DicomTag(SerializationInfo info, StreamingContext ctx) {
-			Group = info.GetUInt16("group");
-			Element = info.GetUInt16("element");
-			try {
-				string creator = info.GetString("creator");
-				if (!String.IsNullOrWhiteSpace(creator))
-					PrivateCreator = DicomDictionary.Default.GetPrivateCreator(creator);
-			} catch (SerializationException) {
-			}
-		}
-
 		public ushort Group {
 			get;
 			private set;
@@ -46,10 +32,6 @@ namespace Dicom {
 		public ushort Element {
 			get;
 			private set;
-		}
-
-		private int HashCode {
-			get { return (Group << 16) | Element; }
 		}
 
 		public bool IsPrivate {
@@ -79,19 +61,28 @@ namespace Dicom {
 			}
 
 			switch (format) {
-				case "g": {
-						if (PrivateCreator != null)
-							return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
-						else
-							return String.Format("{0:x4},{1:x4}", Group, Element);
-					}
-				case "G":
-				default: {
+			case "X": {
+				if (PrivateCreator != null)
+					return String.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator);
+				else
+					return String.Format("({0:x4},{1:x4})", Group, Element);
+			}
+			case "g": {
 					if (PrivateCreator != null)
-						return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
+						return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
 					else
-						return String.Format("({0:x4},{1:x4})", Group, Element);
-					}
+						return String.Format("{0:x4},{1:x4}", Group, Element);
+				}
+            case "J": {
+                        return String.Format("{0:X4}{1:X4}", Group, Element);
+                }
+			case "G":
+			default: {
+				if (PrivateCreator != null)
+					return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
+				else
+					return String.Format("({0:x4},{1:x4})", Group, Element);
+				}
 			}
 		}
 
@@ -99,21 +90,19 @@ namespace Dicom {
 			if (Group != other.Group)
 				return Group.CompareTo(other.Group);
 
-			if (PrivateCreator != null || other.PrivateCreator != null) {
-				if (PrivateCreator == null)
-					return -1;
-				if (other.PrivateCreator == null)
-					return 1;
-
-				int compare = PrivateCreator.CompareTo(other.PrivateCreator);
-				if (compare != 0)
-					return compare;
-
-				return (Element & 0xff).CompareTo(other.Element & 0xff);
-			}
-
 			if (Element != other.Element)
 				return Element.CompareTo(other.Element);
+
+			// sort by private creator only if element values are equal
+			if (PrivateCreator != null || other.PrivateCreator != null) {
+			    if (PrivateCreator == null)
+			        return -1;
+			    if (other.PrivateCreator == null)
+			        return 1;
+
+				if (PrivateCreator != other.PrivateCreator)
+					return PrivateCreator.CompareTo(other.PrivateCreator);
+			}
 
 			return 0;
 		}
@@ -137,7 +126,25 @@ namespace Dicom {
 		}
 
 		public bool Equals(DicomTag other) {
-			return CompareTo(other) == 0;
+			if (ReferenceEquals(other, null))
+				return false;
+			if (ReferenceEquals(this, other))
+				return true;
+
+			if (Group != other.Group)
+				return false;
+
+			if (PrivateCreator != null || other.PrivateCreator != null) {
+				if (PrivateCreator == null || other.PrivateCreator == null)
+					return false;
+
+				if (PrivateCreator.Creator != other.PrivateCreator.Creator)
+					return false;
+
+				return (Element & 0xff) == (other.Element & 0xff);
+			}
+
+			return Element == other.Element;
 		}
 
 		public static bool operator ==(DicomTag a, DicomTag b) {
@@ -152,22 +159,12 @@ namespace Dicom {
 			return !(a == b);
 		}
 
-		public override int GetHashCode() {
-			//unchecked {
-			//    if (PrivateCreator == null)
-			//        return (Group << 16) + Element + String.Empty.GetHashCode();
-			//    else
-			//        return (Group << 16) + Element + PrivateCreator.Creator.GetHashCode();
-			//}
-			return HashCode;
-		}
+		private int _hash = 0;
 
-		[SecurityPermission(SecurityAction.Demand, SerializationFormatter=true)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {
-			info.AddValue("group", Group);
-			info.AddValue("element", Element);
-			if (PrivateCreator != null)
-				info.AddValue("creator", PrivateCreator.Creator);
+		public override int GetHashCode() {
+			if (_hash == 0)
+				_hash = ToString("X", null).GetHashCode();
+			return _hash;
 		}
 
 		public static DicomTag Parse(string s) {

@@ -22,8 +22,10 @@ namespace Dicom.IO.Reader {
 
 		private ParseState _state;
 		private DicomTag _tag;
+		private DicomDictionaryEntry _entry;
 		private DicomVR _vr;
 		private uint _length;
+		private bool _implicit;
 
 		private int _fragmentItem;
 
@@ -34,6 +36,7 @@ namespace Dicom.IO.Reader {
 		private volatile DicomReaderResult _result;
 
 		private bool _explicit;
+		private bool _badPrivateSequence;
 
 		private DicomDictionary _dict;
 
@@ -110,6 +113,10 @@ namespace Dicom.IO.Reader {
 						}
 
 						_tag = new DicomTag(group, element, creator);
+						_entry = Dictionary[_tag];
+
+						if (!_tag.IsPrivate && _entry != null && _entry.MaskTag == null)
+							_tag = _entry.Tag; // Use dictionary tag
 
 						if (_stop != null && _tag.CompareTo(_stop) >= 0) {
 							_result = DicomReaderResult.Stopped;
@@ -133,17 +140,19 @@ namespace Dicom.IO.Reader {
 							}
 
 							byte[] bytes = source.GetBytes(2);
-							string vr = Encoding.ASCII.GetString(bytes);
-							_vr = DicomVR.Parse(vr);
+							string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+							if (!DicomVR.TryParse(vr, out _vr)) {
+								// unable to parse VR
+								_vr = DicomVR.UN;
+							}
 						} else {
-							DicomDictionaryEntry entry = Dictionary[_tag];
-							if (entry != null) {
-								if (entry == DicomDictionary.UnknownTag)
+							if (_entry != null) {
+								if (_entry == DicomDictionary.UnknownTag)
 									_vr = DicomVR.UN;
-								else if (entry.ValueRepresentations.Contains(DicomVR.OB) && entry.ValueRepresentations.Contains(DicomVR.OW))
+								else if (_entry.ValueRepresentations.Contains(DicomVR.OB) && _entry.ValueRepresentations.Contains(DicomVR.OW))
 									_vr = DicomVR.OW; // ???
 								else
-									_vr = entry.ValueRepresentations.FirstOrDefault();
+									_vr = _entry.ValueRepresentations.FirstOrDefault();
 							}
 						}
 
@@ -163,7 +172,7 @@ namespace Dicom.IO.Reader {
 						}
 
 						if (_tag.IsPrivate) {
-							if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff)
+							if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff && _vr == DicomVR.UN)
 								_vr = DicomVR.LO; // force private creator to LO
 						}
 					}
@@ -231,12 +240,28 @@ namespace Dicom.IO.Reader {
 							return;
 						}
 
+						while (_vr == DicomVR.SQ && _tag.IsPrivate) {
+							if (!IsPrivateSequence(source)) {
+								_vr = DicomVR.UN;
+								break;
+							}
+
+							if (IsPrivateSequenceBad(source)) {
+								_badPrivateSequence = true;
+								_explicit = !_explicit;
+							}
+							break;
+						}
+
 						if (_vr == DicomVR.SQ) {
 							// start of sequence
 							_observer.OnBeginSequence(source, _tag, _length);
 							_state = ParseState.Tag;
-							if (_length != UndefinedLength)
+							if (_length != UndefinedLength) {
+								_implicit = false;
 								source.PushMilestone(_length);
+							} else
+								_implicit = true;
 							PushState(state);
 							ParseItemSequence(source, null);
 							continue;
@@ -263,7 +288,7 @@ namespace Dicom.IO.Reader {
 
 						// parse private creator value and add to lookup table
 						if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff) {
-							var creator = DicomEncoding.Default.GetString(buffer.Data).TrimEnd((char)DicomVR.LO.PaddingValue);
+							var creator = DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length).TrimEnd((char)DicomVR.LO.PaddingValue);
 							var card = (uint)(_tag.Group << 16) + (uint)(_tag.Element);
 							_private[card] = creator;
 						}
@@ -311,16 +336,29 @@ namespace Dicom.IO.Reader {
 
 						_tag = new DicomTag(group, element);
 
-						if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem)
-							throw new DicomReaderException("Unexpected tag in DICOM sequence: {0}", _tag);
+						if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem) {
+							// assume invalid sequence
+							source.Rewind();
+							if (!_implicit)
+								source.PopMilestone();
+							_observer.OnEndSequence();
+							if (_badPrivateSequence) {
+								_explicit = !_explicit;
+								_badPrivateSequence = false;
+							}
+							return;
+						}
 
 						_length = source.GetUInt32();
 
 						if (_tag == DicomTag.SequenceDelimitationItem) {
 							// end of sequence
 							_observer.OnEndSequence();
+							if (_badPrivateSequence) {
+								_explicit = !_explicit;
+								_badPrivateSequence = false;
+							}
 							ResetState();
-							//ParseDataset(source, PopState());
 							return;
 						}
 
@@ -353,6 +391,10 @@ namespace Dicom.IO.Reader {
 					source.PopMilestone();
 
 				_observer.OnEndSequence();
+				if (_badPrivateSequence) {
+					_explicit = !_explicit;
+					_badPrivateSequence = false;
+				}
 			} catch (Exception e) {
 				_exception = e;
 				_result = DicomReaderResult.Error;
@@ -361,6 +403,51 @@ namespace Dicom.IO.Reader {
 					_async.Set();
 				}
 			}
+		}
+
+		private bool IsPrivateSequence(IByteSource source) {
+			source.Mark();
+
+			try {
+				var group = source.GetUInt16();
+				var element = source.GetUInt16();
+				var tag = new DicomTag(group, element);
+
+				if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem)
+					return true;
+			} finally {
+				source.Rewind();
+			}
+
+			return false;
+		}
+
+		private bool IsPrivateSequenceBad(IByteSource source) {
+			source.Mark();
+
+			try {
+				var group = source.GetUInt16();
+				var element = source.GetUInt16();
+				var tag = new DicomTag(group, element);
+				var length = source.GetUInt32();
+
+				group = source.GetUInt16();
+				element = source.GetUInt16();
+				tag = new DicomTag(group, element);
+
+				byte[] bytes = source.GetBytes(2);
+				string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+				DicomVR dummy;
+				if (DicomVR.TryParse(vr,out dummy))
+					return !_explicit;
+				// unable to parse VR
+				if (_explicit)
+					return true;
+			} finally {
+				source.Rewind();
+			}
+
+			return false;
 		}
 
 		private void ParseFragmentSequence(IByteSource source, object state) {
@@ -438,6 +525,7 @@ namespace Dicom.IO.Reader {
 		private void ResetState() {
 			_state = ParseState.Tag;
 			_tag = null;
+			_entry = null;
 			_vr = null;
 			_length = 0;
 		}

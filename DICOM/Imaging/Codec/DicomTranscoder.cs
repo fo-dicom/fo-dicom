@@ -4,10 +4,11 @@ using System.IO;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
-using NLog;
-
+using Dicom.Imaging.Render;
+using Dicom.IO;
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
+using Dicom.Log;
 
 namespace Dicom.Imaging.Codec {
 	public class DicomTranscoder {
@@ -29,7 +30,7 @@ namespace Dicom.Imaging.Codec {
 			if (path == null)
 				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-			var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+			var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
 
 			var catalog = (search == null) ?
 				new DirectoryCatalog(path) :
@@ -90,6 +91,7 @@ namespace Dicom.Imaging.Codec {
 			DicomFile f = new DicomFile();
 			f.FileMetaInfo.Add(file.FileMetaInfo);
 			f.FileMetaInfo.TransferSyntax = OutputSyntax;
+			f.Dataset.InternalTransferSyntax = OutputSyntax;
 			f.Dataset.Add(Transcode(file.Dataset));
 			return f;
 		}
@@ -114,6 +116,8 @@ namespace Dicom.Imaging.Codec {
 					var frame = oldPixelData.GetFrame(i);
 					newPixelData.AddFrame(frame);
 				}
+
+				ProcessOverlays(dataset, newDataset);
 
 				newDataset.RecalculateGroupLengths(false);
 
@@ -159,10 +163,31 @@ namespace Dicom.Imaging.Codec {
 			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
 			oldPixelData.AddFrame(buffer);
 
-			var newDataset = Decode(cloneDataset, InputSyntax, InputCodec, InputCodecParams);
-
+			var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
 			var newPixelData = DicomPixelData.Create(newDataset, false);
-			return newPixelData.GetFrame(frame);
+
+			return newPixelData.GetFrame(0);
+		}
+
+		public IPixelData DecodePixelData(DicomDataset dataset, int frame) {
+			var pixelData = DicomPixelData.Create(dataset, false);
+			
+			// is pixel data already uncompressed?
+			if (!dataset.InternalTransferSyntax.IsEncapsulated)
+				return PixelDataFactory.Create(pixelData, frame);
+
+			var buffer = pixelData.GetFrame(frame);
+
+			// clone dataset to prevent changes to source
+			var cloneDataset = dataset.Clone();
+
+			var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+			oldPixelData.AddFrame(buffer);
+
+			var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
+			var newPixelData = DicomPixelData.Create(newDataset, false);
+
+			return PixelDataFactory.Create(newPixelData, 0);
 		}
 
 		private DicomDataset Decode(DicomDataset oldDataset, DicomTransferSyntax outSyntax, IDicomCodec codec, DicomCodecParams parameters) {
@@ -173,6 +198,8 @@ namespace Dicom.Imaging.Codec {
 			DicomPixelData newPixelData = DicomPixelData.Create(newDataset, true);
 
 			codec.Decode(oldPixelData, newPixelData, parameters);
+
+			ProcessOverlays(oldDataset, newDataset);
 
 			newDataset.RecalculateGroupLengths(false);
 
@@ -203,11 +230,51 @@ namespace Dicom.Imaging.Codec {
 				newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
 			}
 
+			ProcessOverlays(oldDataset, newDataset);
+
 			newDataset.RecalculateGroupLengths(false);
 
 			return newDataset;
 		}
 
+		private static void ProcessOverlays(DicomDataset input, DicomDataset output) {
+			DicomOverlayData[] overlays = null;
+			if (input.InternalTransferSyntax.IsEncapsulated)
+				overlays = DicomOverlayData.FromDataset(output);
+			else
+				overlays = DicomOverlayData.FromDataset(input);
 
+			foreach (var overlay in overlays) {
+				var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
+
+				// don't run conversion on non-embedded overlays
+				if (output.Contains(dataTag))
+					continue;
+
+				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
+				output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
+
+				var data = overlay.Data;
+				if (output.InternalTransferSyntax.IsExplicitVR)
+					output.Add(new DicomOtherByte(dataTag, data));
+				else
+					output.Add(new DicomOtherWord(dataTag, data));
+			}
+		}
+
+		public static DicomDataset ExtractOverlays(DicomDataset dataset) {
+			if (!DicomOverlayData.HasEmbeddedOverlays(dataset))
+				return dataset;
+
+			dataset = dataset.Clone();
+
+			var input = dataset;
+			if (input.InternalTransferSyntax.IsEncapsulated)
+				input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+
+			ProcessOverlays(input, dataset);
+
+			return dataset;
+		}
 	}
 }

@@ -213,6 +213,7 @@ void DicomRleNativeCodec::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ n
 			buffer = gcnew TempFileBuffer(data);
 		else
 			buffer = gcnew MemoryByteBuffer(data);
+		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
 	}
 }
@@ -363,6 +364,7 @@ void DicomRleNativeCodec::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ n
 			buffer = gcnew TempFileBuffer(frameData);
 		else
 			buffer = gcnew MemoryByteBuffer(frameData);
+		buffer = EvenLengthBuffer::Create(buffer);
 		newPixelData->AddFrame(buffer);
 	}
 }

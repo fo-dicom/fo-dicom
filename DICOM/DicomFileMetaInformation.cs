@@ -6,13 +6,7 @@ using System.Text;
 namespace Dicom {
 	public class DicomFileMetaInformation : DicomDataset {
 		public DicomFileMetaInformation() : base() {
-		}
-
-		public DicomFileMetaInformation(DicomDataset dataset) : base() {
 			Version = new byte[] { 0x00, 0x01 };
-			MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
-			MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
-			TransferSyntax = dataset.InternalTransferSyntax;
 			ImplementationClassUID = DicomImplementation.ClassUID;
 			ImplementationVersionName = DicomImplementation.Version;
 
@@ -20,6 +14,12 @@ namespace Dicom {
 			if (machine.Length > 16)
 				machine = machine.Substring(0, 16);
 			SourceApplicationEntityTitle = machine;
+		}
+
+		public DicomFileMetaInformation(DicomDataset dataset) : this() {
+			MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
+			MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+			TransferSyntax = dataset.InternalTransferSyntax;
 		}
 
 		public byte[] Version {
@@ -55,6 +55,10 @@ namespace Dicom {
 		public string SourceApplicationEntityTitle {
 			get { return Get<string>(DicomTag.SourceApplicationEntityTitle); }
 			set { Add(DicomTag.SourceApplicationEntityTitle, value); }
+		}
+
+		public override string ToString() {
+			return "DICOM File Meta Info";
 		}
 	}
 }

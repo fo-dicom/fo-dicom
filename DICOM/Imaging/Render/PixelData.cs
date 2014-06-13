@@ -8,6 +8,7 @@ using Dicom.IO.Buffer;
 
 using Dicom.Imaging.Algorithms;
 using Dicom.Imaging.LUT;
+using Dicom.Imaging.Mathematics;
 
 namespace Dicom.Imaging.Render {
 	/// <summary>
@@ -36,6 +37,14 @@ namespace Dicom.Imaging.Render {
 		/// <returns>Range of claculated minimum and max</returns>
 		DicomRange<double> GetMinMax(int padding);
 
+		/// <summary>
+		/// Gets the value of the pixel at the specified coordinates.
+		/// </summary>
+		/// <param name="x">X</param>
+		/// <param name="y">Y</param>
+		/// <returns>Pixel value</returns>
+		double GetPixel(int x, int y);
+
 		IPixelData Rescale(double scale);
 
 		/// <summary>
@@ -44,6 +53,8 @@ namespace Dicom.Imaging.Render {
 		/// <param name="lut">Lookup table to render the pixels into output pixels</param>
 		/// <param name="output">The output array to store the result in</param>
 		void Render(ILUT lut, int[] output);
+
+		Histogram GetHistogram(int channel);
 	}
 
 	/// <summary>
@@ -75,7 +86,14 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 
-			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
+			if (pixelData.BitsStored == 1) {
+				if (pixelData.Dataset.Get<DicomUID>(DicomTag.SOPClassUID) == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
+					// Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
+					return new SingleBitPixelData(pixelData.Width, pixelData.Height, PixelDataConverter.ReverseBits(pixelData.GetFrame(frame)));
+				else
+					// Need sample images to verify that this is correct
+					return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+			} else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
 				if (pixelData.BitsAllocated <= 8)
 					return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
 				else if (pixelData.BitsAllocated <= 16) {
@@ -178,6 +196,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -201,6 +223,18 @@ namespace Dicom.Imaging.Render {
 					}
 				});
 			}
+		}
+
+		public virtual Histogram GetHistogram(int channel) {
+			if (channel != 0)
+				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
+
+			var histogram = new Histogram(Byte.MinValue, Byte.MaxValue);
+
+			for (int i = 0; i < Data.Length; i++)
+				histogram.Add(Data[i]);
+
+			return histogram;
 		}
 		#endregion
 	}
@@ -227,6 +261,20 @@ namespace Dicom.Imaging.Render {
 			return output;
 		}
 		#endregion
+
+		#region Public Methods
+		public override Histogram GetHistogram(int channel) {
+			if (channel != 0)
+				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
+
+			var histogram = new Histogram(0, 1);
+
+			for (int i = 0; i < Data.Length; i++)
+				histogram.Add(Data[i]);
+
+			return histogram;
+		}
+		#endregion
 	}
 
 	/// <summary>
@@ -234,6 +282,7 @@ namespace Dicom.Imaging.Render {
 	/// </summary>
 	public class GrayscalePixelDataS16 : IPixelData {
 		#region Private Members
+		BitDepth _bits;
 		int _width;
 		int _height;
 		short[] _data;
@@ -241,6 +290,7 @@ namespace Dicom.Imaging.Render {
 
 		#region Public Constructor
 		public GrayscalePixelDataS16(int width, int height, BitDepth bitDepth, IByteBuffer data) {
+			_bits = bitDepth;
 			_width = width;
 			_height = height;
 			_data = ByteBufferEnumerator<short>.Create(data).ToArray();
@@ -301,6 +351,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -325,6 +379,18 @@ namespace Dicom.Imaging.Render {
 				});
 			}
 		}
+
+		public Histogram GetHistogram(int channel) {
+			if (channel != 0)
+				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
+
+			var histogram = new Histogram(_bits.MinimumValue, _bits.MaximumValue);
+
+			for (int i = 0; i < Data.Length; i++)
+				histogram.Add(Data[i]);
+
+			return histogram;
+		}
 		#endregion
 	}
 
@@ -333,6 +399,7 @@ namespace Dicom.Imaging.Render {
 	/// </summary>
 	public class GrayscalePixelDataU16 : IPixelData {
 		#region Private Members
+		BitDepth _bits;
 		int _width;
 		int _height;
 		ushort[] _data;
@@ -340,6 +407,7 @@ namespace Dicom.Imaging.Render {
 
 		#region Public Constructor
 		public GrayscalePixelDataU16(int width, int height, BitDepth bitDepth, IByteBuffer data) {
+			_bits = bitDepth;
 			_width = width;
 			_height = height;
 			_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
@@ -395,6 +463,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -418,6 +490,18 @@ namespace Dicom.Imaging.Render {
 					}
 				});
 			}
+		}
+
+		public Histogram GetHistogram(int channel) {
+			if (channel != 0)
+				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel 0 for grayscale image.");
+
+			var histogram = new Histogram(_bits.MinimumValue, _bits.MaximumValue);
+
+			for (int i = 0; i < Data.Length; i++)
+				histogram.Add(Data[i]);
+
+			return histogram;
 		}
 		#endregion
 	}
@@ -494,6 +578,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
         public IPixelData Rescale(double scale)
         {
             if (scale == 1.0)
@@ -527,6 +615,10 @@ namespace Dicom.Imaging.Render {
                 });
             }
         }
+
+		public Histogram GetHistogram(int channel) {
+			throw new NotSupportedException("Histograms are not supported for signed 32-bit images.");
+		}
         #endregion
     }
 
@@ -604,6 +696,10 @@ namespace Dicom.Imaging.Render {
 			return new DicomRange<double>(min, max);
 		}
 
+		public double GetPixel(int x, int y) {
+			return (double)_data[(y * Width) + x];
+		}
+
         public IPixelData Rescale(double scale)
         {
             if (scale == 1.0)
@@ -637,6 +733,10 @@ namespace Dicom.Imaging.Render {
                 });
             }
         }
+
+		public Histogram GetHistogram(int channel) {
+			throw new NotSupportedException("Histograms are not supported for unsigned 32-bit images.");
+		}
         #endregion
     }
 
@@ -688,6 +788,11 @@ namespace Dicom.Imaging.Render {
 			throw new InvalidOperationException("Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
 		}
 
+		public double GetPixel(int x, int y) {
+			var p = ((y * Width) + x) * 3;
+			return (double)((_data[p++] << 16) | (_data[p++] << 8) | _data[p++]);
+		}
+
 		public IPixelData Rescale(double scale) {
 			if (scale == 1.0)
 				return this;
@@ -711,6 +816,18 @@ namespace Dicom.Imaging.Render {
 					}
 				});
 			}
+		}
+
+		public Histogram GetHistogram(int channel) {
+			if (channel < 0 || channel > 2)
+				throw new ArgumentOutOfRangeException("channel", channel, "Expected channel between 0 and 2 for 24-bit color image.");
+
+			var histogram = new Histogram(Byte.MinValue, Byte.MaxValue);
+
+			for (int i = channel; i < Data.Length; i += 3)
+				histogram.Add(Data[i]);
+
+			return histogram;
 		}
 		#endregion
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
@@ -8,20 +9,24 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
-using NLog;
+using Dicom.Log;
 
 namespace Dicom.Network {
 	public class DicomClient {
 		private EventAsyncResult _async;
+		private ManualResetEventSlim _assoc;
 		private Exception _exception;
 		private List<DicomRequest> _requests;
+		private List<DicomPresentationContext> _contexts;
 		private DicomServiceUser _service;
 		private int _asyncInvoked;
 		private int _asyncPerformed;
 		private TcpClient _client;
+		private bool _abort;
 
 		public DicomClient() {
 			_requests = new List<DicomRequest>();
+			_contexts = new List<DicomPresentationContext>();
 			_asyncInvoked = 1;
 			_asyncPerformed = 1;
 			Linger = 50;
@@ -56,15 +61,25 @@ namespace Dicom.Network {
 			set;
 		}
 
+		/// <summary>
+		/// Additional presentation contexts to negotiate with association.
+		/// </summary>
+		public List<DicomPresentationContext> AdditionalPresentationContexts {
+			get { return _contexts; }
+			set { _contexts = value; }
+		}
+
 		public object UserState {
 			get;
 			set;
 		}
 
 		public void AddRequest(DicomRequest request) {
-			if (_service != null && _service.IsConnected)
+			if (_service != null && _service.IsConnected) {
 				_service.SendRequest(request);
-			else
+				if (_service._timer != null)
+					_service._timer.Change(Timeout.Infinite, Timeout.Infinite);
+			} else
 				_requests.Add(request);
 		}
 
@@ -75,10 +90,15 @@ namespace Dicom.Network {
 		public IAsyncResult BeginSend(string host, int port, bool useTls, string callingAe, string calledAe, AsyncCallback callback, object state) {
 			_client = new TcpClient(host, port);
 
+			if (Options != null)
+				_client.NoDelay = Options.TcpNoDelay;
+			else
+				_client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
+
 			Stream stream = _client.GetStream();
 
 			if (useTls) {
-				var ssl = new SslStream(stream);
+				var ssl = new SslStream(stream, false, ValidateServerCertificate);
 				ssl.AuthenticateAsClient(host);
 				stream = ssl;
 			}
@@ -96,15 +116,36 @@ namespace Dicom.Network {
 			assoc.MaxAsyncOpsPerformed = _asyncPerformed;
 			foreach (var request in _requests)
 				assoc.PresentationContexts.AddFromRequest(request);
+			foreach (var context in _contexts)
+				assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
 
 			_service = new DicomServiceUser(this, stream, assoc, Logger);
+
+			_assoc = new ManualResetEventSlim(false);
 
 			_async = new EventAsyncResult(callback, state);
 			return _async;
 		}
 
+		private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+			if (sslPolicyErrors == SslPolicyErrors.None)
+				return true;
+
+			if (Options != null) {
+				if (Options.IgnoreSslPolicyErrors)
+					return true;
+			} else if (DicomServiceOptions.Default.IgnoreSslPolicyErrors)
+				return true;
+
+			return false;
+		}
+
 		public void EndSend(IAsyncResult result) {
-			_async.AsyncWaitHandle.WaitOne();
+			if (_async != null)
+				_async.AsyncWaitHandle.WaitOne();
+
+			if (_assoc != null)
+				_assoc.Set();
 
 			if (_client != null) {
 				try {
@@ -114,15 +155,50 @@ namespace Dicom.Network {
 			}
 
 			_service = null;
+			_client = null;
 			_async = null;
+			_assoc = null;
 
-			if (_exception != null)
+			if (_exception != null && !_abort)
 				throw _exception;
 		}
 
+		public void WaitForAssociation(int millisecondsTimeout = 5000) {
+			if (_assoc == null)
+				return;
+
+			_assoc.Wait(millisecondsTimeout);
+		}
+
+		public void Release() {
+			try {
+				_service._SendAssociationReleaseRequest();
+
+				_async.AsyncWaitHandle.WaitOne(10000);
+			} catch {
+			} finally {
+				Abort();
+			}
+		}
+
+		public void Abort() {
+			try {
+				_abort = true;
+				_client.Close();
+			} catch {
+			} finally {
+				_client = null;
+				try {
+					_async.Set();
+				} catch {
+				}
+				_async = null;
+			}
+		}
+
 		private class DicomServiceUser : DicomService, IDicomServiceUser {
-			private DicomClient _client;
-			private Timer _timer;
+			public DicomClient _client;
+			public Timer _timer;
 
 			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
 				_client = client;
@@ -131,7 +207,23 @@ namespace Dicom.Network {
 				SendAssociationRequest(association);
 			}
 
+			public void _SendAssociationReleaseRequest() {
+				try {
+					SendAssociationReleaseRequest();
+				} catch {
+					// may have already disconnected
+					_client._async.Set();
+					return;
+				}
+
+				_timer = new Timer(OnReleaseTimeout);
+				_timer.Change(2500, Timeout.Infinite);
+			}
+
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
+				_client._assoc.Set();
+				_client._assoc = null;
+
 				foreach (var request in _client._requests)
 					SendRequest(request);
 				_client._requests.Clear();
@@ -150,19 +242,14 @@ namespace Dicom.Network {
 				if (!IsSendQueueEmpty)
 					return;
 
-				try {
-					SendAssociationReleaseRequest();
-				} catch {
-					// may have already disconnected
-					_client._async.Set();
-					return;
-				}
-
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				if (IsConnected)
+					_SendAssociationReleaseRequest();
 			}
 
 			private void OnReleaseTimeout(object state) {
+				if (_timer != null)
+					_timer.Change(Timeout.Infinite, Timeout.Infinite);
+
 				try {
 					if (_client._async != null)
 						_client._async.Set();

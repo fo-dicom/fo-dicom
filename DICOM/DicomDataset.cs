@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-
 using Dicom.IO.Buffer;
-using Dicom.Log;
+
+using Dicom.StructuredReport;
 
 namespace Dicom {
 	public class DicomDataset : IEnumerable<DicomItem> {
@@ -18,13 +16,19 @@ namespace Dicom {
 		}
 
 		public DicomDataset(params DicomItem[] items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		public DicomDataset(IEnumerable<DicomItem> items) : this() {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items)
+					if (item != null)
+						_items[item.Tag] = item;
+			}
 		}
 
 		/// <summary>DICOM transfer syntax of this dataset.</summary>
@@ -74,23 +78,89 @@ namespace Dicom {
 				if (typeof(T) == typeof(byte[]))
 					return (T)(object)element.Buffer.Data;
 
-				if (n >= element.Count)
+				if (n >= element.Count || element.Count == 0)
 					return defaultValue;
+
 				return (T)(object)element.Get<T>(n);
+			}
+
+			if (item.GetType() == typeof(DicomSequence)) {
+				if (typeof(T) == typeof(DicomCodeItem))
+					return (T)(object)new DicomCodeItem((DicomSequence)item);
+
+				if (typeof(T) == typeof(DicomMeasuredValue))
+					return (T)(object)new DicomMeasuredValue((DicomSequence)item);
+
+				if (typeof(T) == typeof(DicomReferencedSOP))
+					return (T)(object)new DicomReferencedSOP((DicomSequence)item);
 			}
 
 			throw new DicomDataException("Unable to get a value type of {0} from DICOM item of type {1}", typeof(T), item.GetType());
 		}
 
+		/// <summary>
+		/// Converts a dictionary tag to a valid private tag. Creates the private creator tag if needed.
+		/// </summary>
+		/// <param name="tag">Dictionary DICOM tag</param>
+		/// <returns>Private DICOM tag</returns>
+		public DicomTag GetPrivateTag(DicomTag tag) {
+			// not a private tag
+			if (!tag.IsPrivate)
+				return tag;
+
+			// group length
+			if (tag.Element == 0x0000)
+				return tag;
+
+			// private creator?
+			if (tag.PrivateCreator == null)
+				return tag;
+
+			// already a valid private tag
+			if (tag.Element >= 0xff)
+				return tag;
+
+			ushort group = 0x0010;
+			for (; ; group++) {
+				var creator = new DicomTag(tag.Group, group);
+				if (!Contains(creator)) {
+					Add(new DicomLongString(creator, tag.PrivateCreator.Creator));
+					break;
+				}
+
+				var value = Get<string>(creator, String.Empty);
+				if (tag.PrivateCreator.Creator == value)
+					return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
+			}
+
+			return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
+		}
+
 		public DicomDataset Add(params DicomItem[] items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items) {
+					if (item != null) {
+						if (item.Tag.IsPrivate)
+							_items[GetPrivateTag(item.Tag)] = item;
+						else
+							_items[item.Tag] = item;
+					}
+				}
+			}
 			return this;
 		}
 
 		public DicomDataset Add(IEnumerable<DicomItem> items) {
-			foreach (DicomItem item in items)
-				_items[item.Tag] = item;
+			if (items != null) {
+				foreach (DicomItem item in items) {
+					if (item != null) {
+						if (item.Tag.IsPrivate)
+							_items[GetPrivateTag(item.Tag)] = item;
+						else
+							_items[item.Tag] = item;
+					}
+				}
+			}
 			return this;
 		}
 
@@ -245,6 +315,15 @@ namespace Dicom {
 					return Add(new DicomSignedLong(tag, values.Cast<int>().ToArray()));
 			}
 
+			if (vr == DicomVR.SQ) {
+				if (values == null)
+					return Add(new DicomSequence(tag));
+				if (typeof(T) == typeof(DicomContentItem))
+					return Add(new DicomSequence(tag, values.Cast<DicomContentItem>().Select(x => x.Dataset).ToArray()));
+				if (typeof(T) == typeof(DicomDataset) || typeof(T) == typeof(DicomCodeItem) || typeof(T) == typeof(DicomMeasuredValue) || typeof(T) == typeof(DicomReferencedSOP))
+					return Add(new DicomSequence(tag, values.Cast<DicomDataset>().ToArray()));
+			}
+
 			if (vr == DicomVR.SS) {
 				if (values == null)
 					return Add(new DicomSignedShort(tag, EmptyBuffer.Value));
@@ -344,6 +423,52 @@ namespace Dicom {
 		}
 
 		/// <summary>
+		/// Removes all items from the dataset.
+		/// </summary>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset Clear() {
+			_items.Clear();
+			return this;
+		}
+
+		/// <summary>
+		/// Copies all items to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination) {
+			if (destination != null)
+				destination.Add(this);
+			return this;
+		}
+
+		/// <summary>
+		/// Copies tags to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <param name="tags">Tags to copy</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags) {
+			if (destination != null) {
+				foreach (var tag in tags)
+					destination.Add(Get<DicomItem>(tag));
+			}
+			return this;
+		}
+
+		/// <summary>
+		/// Copies tags matching mask to the destination dataset.
+		/// </summary>
+		/// <param name="destination">Destination Dataset</param>
+		/// <param name="mask">Tags to copy</param>
+		/// <returns>Current Dataset</returns>
+		public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask) {
+			if (destination != null)
+				destination.Add(_items.Values.Where(x => mask.IsMatch(x.Tag)));
+			return this;
+		}
+
+		/// <summary>
 		/// Enumerates all DICOM items.
 		/// </summary>
 		/// <returns>Enumeration of DICOM items</returns>
@@ -359,13 +484,8 @@ namespace Dicom {
 			return _items.Values.GetEnumerator();
 		}
 
-		/// <summary>
-		/// Enumerates DICOM items for specified group.
-		/// </summary>
-		/// <param name="group">Group</param>
-		/// <returns>Enumeration of DICOM items</returns>
-		public IEnumerable<DicomItem> GetGroup(ushort group) {
-			return _items.Values.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
+		public override string ToString() {
+			return String.Format("DICOM Dataset [{0} items]", _items.Count);
 		}
 	}
 }

@@ -15,9 +15,12 @@ namespace Dicom.Network {
 		public DicomServiceOptions() {
 			LogDataPDUs = false;
 			LogDimseDatasets = false;
+			UseRemoteAEForLogName = false;
 			MaxCommandBuffer = 1 * 1024;		//1KB
 			MaxDataBuffer = 1 * 1024 * 1024;	//1MB
 			ThreadPoolLinger = 200;
+			IgnoreSslPolicyErrors = false;
+			TcpNoDelay = true;
 		}
 
 		/// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
@@ -28,6 +31,12 @@ namespace Dicom.Network {
 
 		/// <summary>Write command and data datasets to log.</summary>
 		public bool LogDimseDatasets {
+			get;
+			set;
+		}
+
+		/// <summary>Use the AE Title of the remote host as the log name.</summary>
+		public bool UseRemoteAEForLogName {
 			get;
 			set;
 		}
@@ -46,6 +55,18 @@ namespace Dicom.Network {
 
 		/// <summary>Amount of time in milliseconds to retain Thread Pool thread to process additional requests.</summary>
 		public int ThreadPoolLinger {
+			get;
+			set;
+		}
+
+		/// <summary>DICOM client should ignore SSL certificate errors.</summary>
+		public bool IgnoreSslPolicyErrors {
+			get;
+			set;
+		}
+
+		/// <summary>Enable or disable TCP Nagle algorithm.</summary>
+		public bool TcpNoDelay {
 			get;
 			set;
 		}

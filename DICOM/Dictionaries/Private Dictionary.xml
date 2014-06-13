@@ -356,7 +356,7 @@
 <tag group="01f1" element="xx0e" vr="FL" vm="1">Unknown</tag>
 <tag group="01f1" element="xx26" vr="DS" vm="1">Unknown</tag>
 <tag group="01f1" element="xx27" vr="DS" vm="1">Unknown</tag>
-<tag group="01f1" element="xx28" vr="UN" vm="1">Unknown</tag>
+<tag group="01f1" element="xx28" vr="DS" vm="1">Table Feed</tag>
 <tag group="01f1" element="xx30" vr="UN" vm="1">Unknown</tag>
 <tag group="01f1" element="xx32" vr="CS" vm="1">Unknown</tag>
 <tag group="01f1" element="xx33" vr="UN" vm="1">Unknown</tag>

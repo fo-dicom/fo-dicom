@@ -21,9 +21,32 @@ namespace Dicom.Network {
 			set { Command.Add(DicomTag.CommandField, (ushort)value); }
 		}
 
-		public DicomUID AffectedSOPClassUID {
-			get { return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID); }
-			set { Command.Add(DicomTag.AffectedSOPClassUID, value); }
+		/// <summary>Affected or requested SOP Class UID</summary>
+		public DicomUID SOPClassUID {
+			get {
+				switch (Type) {
+				case DicomCommandField.NGetRequest:
+				case DicomCommandField.NSetRequest:
+				case DicomCommandField.NActionRequest:
+				case DicomCommandField.NDeleteRequest:
+					return Command.Get<DicomUID>(DicomTag.RequestedSOPClassUID);
+				default:
+					return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID);
+				}
+			}
+			set {
+				switch (Type) {
+				case DicomCommandField.NGetRequest:
+				case DicomCommandField.NSetRequest:
+				case DicomCommandField.NActionRequest:
+				case DicomCommandField.NDeleteRequest:
+					Command.Add(DicomTag.RequestedSOPClassUID, value);
+					break;
+				default:
+					Command.Add(DicomTag.AffectedSOPClassUID, value);
+					break;
+				}
+			}
 		}
 
 		public ushort MessageID {
@@ -61,27 +84,27 @@ namespace Dicom.Network {
 		}
 
 		public string ToString(bool printDatasets) {
-			var output = ToString();
+			var output = new StringBuilder(ToString());
 
 			if (!printDatasets)
-				return output;
+				return output.ToString();
 
-			output += "\n";
-			output += "--------------------------------------------------------------------------------\n";
-			output += " DIMSE Command:\n";
-			output += "--------------------------------------------------------------------------------\n";
-			output += Command.WriteToString();
+			output.AppendLine();
+			output.AppendLine("--------------------------------------------------------------------------------");
+			output.AppendLine(" DIMSE Command:");
+			output.AppendLine("--------------------------------------------------------------------------------");
+			output.AppendLine(Command.WriteToString());
 
 			if (HasDataset) {
-				output += "--------------------------------------------------------------------------------\n";
-				output += " DIMSE Dataset:\n";
-				output += "--------------------------------------------------------------------------------\n";
-				output += Dataset.WriteToString();
+				output.AppendLine("--------------------------------------------------------------------------------");
+				output.AppendLine(" DIMSE Dataset:");
+				output.AppendLine("--------------------------------------------------------------------------------");
+				output.AppendLine(Dataset.WriteToString());
 			}
 
-			output += "--------------------------------------------------------------------------------";
+			output.AppendLine("--------------------------------------------------------------------------------");
 
-			return output;
+			return output.ToString();
 		}
 
 		public static string ToString(DicomCommandField type) {

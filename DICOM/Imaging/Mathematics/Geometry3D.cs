@@ -151,6 +151,15 @@ namespace Dicom.Imaging.Mathematics {
 			return rotatePerpendicular + parallel;
 		}
 
+		public Vector3D Reflect(Vector3D normal) {
+			double dot = DotProduct(normal);
+			return new Vector3D(
+					X - ((dot * 2.0f) * normal.X),
+					Y - ((dot * 2.0f) * normal.Y),
+					Z - ((dot * 2.0f) * normal.Z)
+				);
+		}
+
 		public Vector3D NearestAxis() {
 			Vector3D b = Vector3D.Zero.Clone();
 			double xabs = Math.Abs(X);
@@ -252,6 +261,12 @@ namespace Dicom.Imaging.Mathematics {
 		}
 
 		public static bool operator ==(Vector3D a, Vector3D b) {
+			if (ReferenceEquals(a, b))
+				return true;
+
+			if (((object)a == null) || ((object)b == null))
+				return false;
+
 			return Math.Abs(a.X - b.X) <= Double.Epsilon &&
 					Math.Abs(a.Y - b.Y) <= Double.Epsilon &&
 					Math.Abs(a.Z - b.Z) <= Double.Epsilon;

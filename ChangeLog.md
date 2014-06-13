@@ -1,5 +1,85 @@
-#### v1.0.28
+#### v1.0.37 (2/19/2014)
+* Add DICOM Compare tool to project
+* Add support for disabling TCP Nagle algorithm
+* Better handling of aborted connections
+* Fix some UID values containing encoding characters
+* Fix extraction of embedded overlays
+* Utility methods for calculating window/level
+* Use number keys to change W/L calculation mode in dump utility
+* Use O key to show/hide overlays in dump utility
+* Fix byte swapping for Implicit VR single byte images
+
+#### v1.0.36 (8/6/2013)
+* Fix bug sorting private tags
+* Ability to add private tags to dataset
+* Better handling of improperly encoded private sequences
+* Fix bug adding presentation contexts from requests
+* Fix typo in N-Set response handler
+
+#### v1.0.35 (7/5/2013)
+* Fix bug adding presentation contexts with Implicit Little Endian syntax
+* Add option to use the remote AE Title as the logger name
+* Miscellaneous improvements and fixes
+
+#### v1.0.34 (6/27/2013)
+* Fix bug returning default value for zero length elements
+* Fix exception when disposing DicomDirectory
+* Fix menu bug in DICOM Dump utility when changing syntax to JPEG Lossless
+* Fix bug matching private DICOM tags
+* Add classes for basic structured report creation
+* Ability to browse multiframe images in DICOM Dump utility
+* Ability to recover when parsing invalid sequences
+* Ability to parse improperly encoded private sequences
+
+#### v1.0.33 (4/28/2013)
+* Add logging abstraction layer to remove runtime dependency on NLog
+* Fix bug reading duplicate entries in DICOM dictionary
+* Fix bug storing AT values
+* Fix bug sorting private DICOM tags
+* Fix bug using custom DicomWriteOptions
+
+#### v1.0.32 (3/12/2013)
+* DICOM Media example by Hesham Desouky
+* Move DicomFileScanner to Dicom.Media namespace
+* Add WriteToConsole logging extension method
+* Increase line length of dataset logging extension methods
+* Fix reading of sequences in DICOMDIR files (Hesham Desouky)
+* Improve rendering performance by precalculating grayscale LUT
+* Ability to render single-bit images
+* Fix hash code implementation for private tags
+* Miscellaneous improvements and fixes
+
+#### v1.0.31 (1/13/2013)
+* Improved portability and fewer compiler warnings (Anders Gustafsson)
+* Ensure frame buffers created by codecs have even length
+* Import DicomFileScanner from mDCM
+* Ability to save datasets and images in DICOM Dump utility
+* Ability to change tranfer syntax in DICOM Dump utility
+* Fix loss of embedded overlay data during compression
+* Fix rendering of big endian images
+* Miscellaneous improvements and fixes
+
+#### v1.0.30 (1/1/2013)
+* Fix bug rescaling DicomImage (Mahesh Dubey)
+* Add rules for matching and transforming DICOM datasets
+* Miscellaneous improvements and fixes
+
+#### v1.0.29 (12/22/2012)
+* Minor modifications to facilitate library porting to Windows Store apps (Anders Gustafsson)
+* Convert unit tests to use MS Unit Testing framework
+* Move DICOMDIR classes back to Dicom.Media namespace
+* Change DicomDirectory Open/Save methods to be consistent with DicomFile usage
+* Fix bug decoding single frame from a multiframe image (Mahesh Dubey)
+
+#### v1.0.28 (12/12/2012)
 * Display exception message in DICOM Dump for image rendering errors
+* Remove serialization members
+* Fix bug where frame is not added to OtherWordPixelData (Mahesh Dubey)
+* Fix bug where exception is not thrown for out of range frame numbers in GetFrame() (Mahesh Dubey)
+* Fix bug where internal transfer syntax is not set when transcoding file (Mahesh Dubey)
+* Add request/response classes for DICOM Normalized services
+* Change DicomCStoreRequest constructor to use SOP Class/Instance UIDs from dataset instead of FMI
+* Experimental support for DICOM directory files (Hesham Desouky)
 
 #### v1.0.27 (10/30/2012)
 * Ensure that file handles are closed after opening or saving DICOM file

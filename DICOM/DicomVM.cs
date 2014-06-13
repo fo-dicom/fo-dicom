@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Dicom {
 	public class DicomVM {
@@ -84,7 +81,7 @@ namespace Dicom {
 					vm.Minimum = int.Parse(parts[0]);
 					vm.Multiplicity = 1;
 
-					if (parts[1].EndsWith("n", StringComparison.InvariantCultureIgnoreCase)) {
+					if (parts[1].EndsWith("n", StringComparison.OrdinalIgnoreCase)) {
 						vm.Maximum = int.MaxValue;
 						parts[1] = parts[1].TrimEnd('n', 'N');
 

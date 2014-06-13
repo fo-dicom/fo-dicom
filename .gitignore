@@ -2,7 +2,10 @@
 *.sdf
 *.opensdf
 *.user
+*.vsmdi
 *.VisualState.xml
+*.testsettings
+TestResults/
 obj/
 bin/
 Debug/
@@ -13,3 +16,4 @@ TestResult.xml
 *.StyleCop
 ipch/
 Distribute/
+packages/

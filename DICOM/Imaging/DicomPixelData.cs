@@ -165,6 +165,12 @@ namespace Dicom.Imaging {
 		/// </summary>
 		public int UncompressedFrameSize {
 			get {
+				if (BitsAllocated == 1) {
+					var bytes = (Width * Height) / 8;
+					if (((Width * Height) % 8) > 0)
+						bytes++;
+					return bytes;
+				}
 				return BytesAllocated * SamplesPerPixel * Width * Height;
 			}
 		}
@@ -301,6 +307,9 @@ namespace Dicom.Imaging {
 				private set;
 			}
 			public override IByteBuffer GetFrame(int frame) {
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
+
 				int offset = UncompressedFrameSize * frame;
 				return new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 			}
@@ -343,14 +352,13 @@ namespace Dicom.Imaging {
 			}
 
 			public override IByteBuffer GetFrame(int frame) {
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
+
 				int offset = UncompressedFrameSize * frame;
 				IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
-				//TODO: trace down the need for this additional byte swap
-				if (Syntax.Endian == Endian.Big && !Syntax.SwapPixelData)
-					buffer = new SwapByteBuffer(buffer, 2);
-
-				// mainly for GE Private Implicit VR Little Endian
+				// mainly for GE Private Implicit VR Big Endian
 				if (Syntax.SwapPixelData)
 					buffer = new SwapByteBuffer(buffer, 2);
 
@@ -362,10 +370,11 @@ namespace Dicom.Imaging {
 					throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
 
 				CompositeByteBuffer buffer = Element.Buffer as CompositeByteBuffer;
-				if (BytesAllocated == 1)
-					data = new SwapByteBuffer(buffer, 2);
-				buffer.Buffers.Add(data);
 
+				if (Syntax.SwapPixelData)
+					data = new SwapByteBuffer(data , 2);
+
+				buffer.Buffers.Add(data);
 				NumberOfFrames++;
 			}
 		}
@@ -398,7 +407,10 @@ namespace Dicom.Imaging {
 			}
 
 			public override IByteBuffer GetFrame(int frame) {
-				IByteBuffer buffer = null;
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
+
+                IByteBuffer buffer = null;
 
 				if (NumberOfFrames == 1) {
 					if (Element.Fragments.Count == 1)
