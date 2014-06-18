@@ -132,6 +132,7 @@
     <ClInclude Include="..\OpenJPEG\tgt.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\AssemblyInfo.cpp" />
     <ClCompile Include="..\CharLS\header.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
