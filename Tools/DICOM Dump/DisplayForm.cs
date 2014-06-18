@@ -24,6 +24,7 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
+				try {
 					_image = new DicomImage(_file.Dataset);
 					_grayscale = !_image.PhotometricInterpretation.IsColor;
 					if (_grayscale) {
@@ -32,7 +33,10 @@ namespace Dicom.Dump {
 					}
 					_frame = 0;
 					Invoke(new WaitCallback(SizeForImage), _image);
-			        Invoke(new WaitCallback(DisplayImage), _image);
+					Invoke(new WaitCallback(DisplayImage), _image);
+				} catch (Exception ex) {
+					OnException(ex);
+				}
 			                             });
 			
 		}
@@ -45,7 +49,7 @@ namespace Dicom.Dump {
 				return;
 			}
 
-			MessageBox.Show(this, e.ToString(), "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show(this, e.Message, "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			Close();
 		}
 
