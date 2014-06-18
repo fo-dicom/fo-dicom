@@ -231,5 +231,31 @@ namespace Dicom {
 		public override string ToString() {
 			return String.Format("DICOM File [{0}]", Format);
 		}
+
+		/// <summary>
+		/// Test if file has a valid preamble and DICOM 3.0 header.
+		/// </summary>
+		/// <param name="path">Path to file</param>
+		/// <returns>True if valid DICOM 3.0 file header is detected.</returns>
+		public static bool HasValidHeader(string path) {
+			try {
+				using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+					fs.Seek(128, SeekOrigin.Begin);
+
+					bool magic = false;
+					if (fs.ReadByte() == 'D' &&
+						fs.ReadByte() == 'I' &&
+						fs.ReadByte() == 'C' &&
+						fs.ReadByte() == 'M')
+						magic = true;
+
+					fs.Close();
+
+					return magic;
+				}
+			} catch {
+				return false;
+			}
+		}
 	}
 }
