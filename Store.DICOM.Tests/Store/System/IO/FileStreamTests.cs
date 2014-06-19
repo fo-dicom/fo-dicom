@@ -50,7 +50,7 @@ namespace System.IO
 			var expected = new byte[] { 69, 70, 71, 72 };
 			Task.Run(async () =>
 				               {
-					               var file = await FileHelper.CreateStorageFileAsync(_fileName);
+					               var file = await CreateStorageFileAsync(_fileName);
 					               await FileIO.WriteBytesAsync(file, expected);
 				               }).Wait();
 
@@ -63,5 +63,15 @@ namespace System.IO
 
 			CollectionAssert.AreEqual(expected, actual);
 		}
-	}
+
+        public static async Task<StorageFile> CreateStorageFileAsync(string path)
+        {
+            var folderName = Path.GetDirectoryName(path);
+            if (!Directory.Exists(folderName)) Directory.CreateDirectory(folderName);
+            var folder = await StorageFolder.GetFolderFromPathAsync(folderName);
+
+            var fileName = Path.GetFileName(path);
+            return await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+        }
+    }
 }
