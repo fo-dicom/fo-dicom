@@ -53,6 +53,76 @@ namespace Dicom.Imaging {
 			return new MemoryByteBuffer(newPixels);
 		}
 
+		public static IByteBuffer YbrFullToRgb(IByteBuffer data) {
+			byte[] oldPixels = data.Data;
+			byte[] newPixels = new byte[oldPixels.Length];
+
+			unchecked {
+				int y, b, r;
+				for (int n = 0; n < newPixels.Length; n += 3) {
+					y = oldPixels[n + 0];
+					b = oldPixels[n + 1];
+					r = oldPixels[n + 2];
+
+					newPixels[n + 0] = (byte)(y + 1.4020 * (r - 128) + 0.5);
+					newPixels[n + 1] = (byte)(y - 0.3441 * (b - 128) - 0.7141 * (r - 128) + 0.5);
+					newPixels[n + 2] = (byte)(y + 1.7720 * (b - 128) + 0.5);
+				}
+			}
+
+			return new MemoryByteBuffer(newPixels);
+		}
+
+		public static IByteBuffer YbrFull422ToRgb(IByteBuffer data) {
+			byte[] oldPixels = data.Data;
+			byte[] newPixels = new byte[(oldPixels.Length / 4) * 2 * 3];
+
+			unchecked {
+				int y1, y2, cb, cr;
+				for (int n = 0, p = 0; n < oldPixels.Length; ) {
+					y1 = oldPixels[n++];
+					y2 = oldPixels[n++];
+					cb = oldPixels[n++];
+					cr = oldPixels[n++];
+
+					newPixels[p++] = (byte)(y1 + 1.4020 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(y1 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(y1 + 1.7720 * (cb - 128) + 0.5);
+
+					newPixels[p++] = (byte)(y2 + 1.4020 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(y2 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(y2 + 1.7720 * (cb - 128) + 0.5);
+				}
+			}
+
+			return new MemoryByteBuffer(newPixels);
+		}
+
+		public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data) {
+			byte[] oldPixels = data.Data;
+			byte[] newPixels = new byte[(oldPixels.Length / 4) * 2 * 3];
+
+			unchecked {
+				int y1, y2, cb, cr;
+				for (int n = 0, p = 0; n < oldPixels.Length; ) {
+					y1 = oldPixels[n++];
+					y2 = oldPixels[n++];
+					cb = oldPixels[n++];
+					cr = oldPixels[n++];
+
+					newPixels[p++] = (byte)(1.1644 * (y1 - 16) + 1.5960 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(1.1644 * (y1 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(1.1644 * (y1 - 16) + 2.0173 * (cb - 128) + 0.5);
+
+					newPixels[p++] = (byte)(1.1644 * (y2 - 16) + 1.5960 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(1.1644 * (y2 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
+					newPixels[p++] = (byte)(1.1644 * (y2 - 16) + 2.0173 * (cb - 128) + 0.5);
+				}
+			}
+
+			return new MemoryByteBuffer(newPixels);
+		}
+
 		private readonly static byte[] BitReverseTable =
 		{
 			0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,

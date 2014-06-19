@@ -33,7 +33,7 @@
 			this.pbDisplay.Location = new System.Drawing.Point(0, 0);
 			this.pbDisplay.Name = "pbDisplay";
 			this.pbDisplay.Size = new System.Drawing.Size(284, 262);
-			this.pbDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.pbDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pbDisplay.TabIndex = 0;
 			this.pbDisplay.TabStop = false;
 			this.pbDisplay.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
@@ -48,13 +48,16 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
 			this.Controls.Add(this.pbDisplay);
+			this.DoubleBuffered = true;
 			this.MinimizeBox = false;
 			this.Name = "DisplayForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "DICOM Image Display";
+			this.ClientSizeChanged += new System.EventHandler(this.OnClientSizeChanged);
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnKeyUp);
+			this.StyleChanged += new System.EventHandler(this.OnClientSizeChanged);
 			((System.ComponentModel.ISupportInitialize)(this.pbDisplay)).EndInit();
 			this.ResumeLayout(false);
 
