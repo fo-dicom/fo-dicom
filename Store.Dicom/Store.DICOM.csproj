@@ -700,6 +700,9 @@
     <Compile Include="..\DICOM\Threading\WorkQueue.cs">
       <Link>Threading\WorkQueue.cs</Link>
     </Compile>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Store\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs" />
     <Compile Include="Store\Dicom\Imaging\Codec\DicomJpegLossless14SV1Codec.cs" />
     <Compile Include="Store\Dicom\Imaging\Codec\DicomJpegNativeCodec.cs" />
