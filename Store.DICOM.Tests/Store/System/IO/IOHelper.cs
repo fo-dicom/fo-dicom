@@ -13,7 +13,7 @@ namespace System.IO
 			return Task.Run(async () =>
 				                      {
 					                      var folders = await KnownFolders.DocumentsLibrary.GetFoldersAsync();
-					                      return Path.Combine(Path.GetDirectoryName(folders.First().Path), relativePath);
+					                      return Path.Combine(Path.GetDirectoryName(folders.First(f => !f.Path.ToLowerInvariant().Contains("skydrive")).Path), relativePath);
 				                      }).Result;
 		}
 	}
