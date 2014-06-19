@@ -59,6 +59,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
     <Compile Include="DicomDataException.cs" />
     <Compile Include="DicomDataset.cs" />

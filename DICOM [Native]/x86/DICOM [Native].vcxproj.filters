@@ -126,6 +126,9 @@
     <ClCompile Include="..\OpenJPEG\tpix_manager.c">
       <Filter>Source Files\OpenJPEG</Filter>
     </ClCompile>
+    <ClCompile Include="..\AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg2000.h">

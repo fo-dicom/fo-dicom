@@ -226,6 +226,10 @@ namespace Dicom.IO.Reader {
 					if (_state == ParseState.Value) {
 						// check dictionary for VR after reading length to handle 16-bit lengths
 						// check before reading value to handle SQ elements
+						var parsedVR = _vr;
+
+						// check dictionary for VR after reading length to handle 16-bit lengths
+						// check before reading value to handle SQ elements
 						if (_vr == DicomVR.UN && IsExplicitVR) {
 							var entry = Dictionary[_tag];
 							if (entry != null)
@@ -263,8 +267,17 @@ namespace Dicom.IO.Reader {
 							} else
 								_implicit = true;
 							PushState(state);
+							var last = source.Position;
 							ParseItemSequence(source, null);
-							continue;
+
+							// Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
+							// Fix reading of SQ with parsed VR of UN
+							if (source.Position > last)
+								continue;
+							else {
+								_state = ParseState.Value;
+								_vr = parsedVR;
+							}
 						}
 
 						if (_length == UndefinedLength) {

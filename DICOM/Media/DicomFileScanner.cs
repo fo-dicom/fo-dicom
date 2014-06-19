@@ -15,6 +15,7 @@ namespace Dicom.Media {
 		private bool _stop;
 		private bool _progressOnDirectory;
 		private int _progressAfterCount;
+		private bool _checkForValidHeader;
 		private int _count;
 		#endregion
 
@@ -40,6 +41,11 @@ namespace Dicom.Media {
 		public int ProgressFilesCount {
 			get { return _progressAfterCount; }
 			set { _progressAfterCount = value; }
+		}
+
+		public bool CheckForValidHeader {
+			get { return _checkForValidHeader; }
+			set { _checkForValidHeader = value; }
 		}
 		#endregion
 
@@ -105,6 +111,9 @@ namespace Dicom.Media {
 
 		private void ScanFile(string file) {
 			try {
+				if (CheckForValidHeader && !DicomFile.HasValidHeader(file))
+					return;
+
 				var df = DicomFile.Open(file);
 
 				if (FileFound != null)

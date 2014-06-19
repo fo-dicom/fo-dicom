@@ -11,16 +11,17 @@
         <description>A DICOM library for .NET</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="NLog" />
+            <dependency id="NLog" version="2.1.0" />
         </dependencies>
     </metadata>
     <files>
         <file src="ChangeLog.md" target="content\ChangeLog.md" />
         <file src="License.txt" target="content\License.txt" />
         <file src="README.md" target="content\README.md" />
+        <file src="fo-dicom.targets" target="build\fo-dicom.targets" />
         <file src="DICOM\bin\Release\Dicom.dll" target="lib\net40\Dicom.dll" />
-        <file src="DICOM [Native]\Release\Dicom.Native.dll" target="lib\net40\Dicom.Native.dll" />
-        <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="lib\net40\Dicom.Native64.dll" />
+        <file src="DICOM [Native]\Release\Dicom.Native.dll" target="build\lib\net40\Dicom.Native.dll" />
+        <file src="DICOM [Native]\Release\Dicom.Native64.dll" target="build\lib\net40\Dicom.Native64.dll" />
         <file src="DICOM\bin\Release\Dicom.pdb" target="lib\net40\Dicom.pdb" />
         <file src="DICOM\bin\Release\Dicom.xml" target="lib\net40\Dicom.xml" />
         <file src="Tools\DICOM Compare\bin\Release\Dicom.Compare.exe" target="tools\Dicom.Compare.exe" />

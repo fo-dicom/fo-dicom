@@ -108,10 +108,19 @@ namespace Dicom.Imaging.Render {
 						return new GrayscalePixelDataU32(pixelData.Width, pixelData.Height, pixelData.BitDepth, pixelData.GetFrame(frame));
 				} else
 					throw new DicomImagingException("Unsupported pixel data value for bits stored: {0}", pixelData.BitsStored);
-			} else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull) {
+			} else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422) {
 				var buffer = pixelData.GetFrame(frame);
+
 				if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
 					buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
+
+				if (pi == PhotometricInterpretation.YbrFull)
+					buffer = PixelDataConverter.YbrFullToRgb(buffer);
+				else if (pi == PhotometricInterpretation.YbrFull422)
+					buffer = PixelDataConverter.YbrFull422ToRgb(buffer);
+				else if (pi == PhotometricInterpretation.YbrPartial422)
+					buffer = PixelDataConverter.YbrPartial422ToRgb(buffer);
+
 				return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
 			} else {
 				throw new DicomImagingException("Unsupported pixel data photometric interpretation: {0}", pi.Value);
