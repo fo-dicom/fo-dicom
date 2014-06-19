@@ -9,7 +9,9 @@ using Path = System.IO.ShimPath;
 #endif
 
 namespace Dicom.IO {
-	public class TemporaryFile : IDisposable {
+    using System.Windows;
+
+    public class TemporaryFile : IDisposable {
 		private string _file;
 
 		public TemporaryFile() {
@@ -59,11 +61,7 @@ namespace Dicom.IO {
 			try {
 				// set temporary file attribute so that the file system
 				// will attempt to keep all of the data in memory
-#if WINDOWS_PHONE
-				File.SetAttributes(path, WPFile.GetAttributes(path) | FileAttributes.Temporary);
-#else
-				File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Temporary);
-#endif
+				File.SetAttributes(path, new FileInfo(path).Attributes | FileAttributes.Temporary);
 			} catch {
 				// sometimes fails with invalid argument exception
 			}

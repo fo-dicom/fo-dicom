@@ -32,12 +32,14 @@ namespace Dicom.Imaging {
 
 		public static Color32[] LoadLUT(string file) {
 			try {
-#if WINDOWS_PHONE
-				byte[] data = WPFile.ReadAllBytes(file);
-#else
-				byte[] data = File.ReadAllBytes(file);
-#endif
-				if (data.Length != (256 * 3))
+				byte[] data; //= File.ReadAllBytes(file);
+			    using (var stream = File.OpenRead(file))
+			    {
+			        var count = stream.Length;
+                    data = new byte[count];
+			        stream.Read(data, 0, (int)count);
+			    }
+			    if (data.Length != (256 * 3))
 					return null;
 
 				Color32[] LUT = new Color32[256];
