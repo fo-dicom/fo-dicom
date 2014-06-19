@@ -2,7 +2,7 @@
 using System.IO;
 
 #if NETFX_CORE
-using Path = Override.System.IO.Path;
+using Path = System.IO.ShimPath;
 #endif
 
 namespace Dicom.IO {

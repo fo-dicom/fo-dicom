@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 
 #if NETFX_CORE
-using Assembly = Override.System.Reflection.Assembly;
+using Assembly = System.Reflection.ShimAssembly;
 #endif
 
 namespace Dicom {
