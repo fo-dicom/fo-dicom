@@ -373,7 +373,10 @@ namespace Dicom.StructuredReport {
 		}
 
 		public override string ToString() {
-			var s = String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+			var s = Dataset.Get<string>(DicomTag.RelationshipType, 0, String.Empty);
+			if (!String.IsNullOrEmpty(s))
+				s += " ";
+			s += String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
 			try {
 				s += String.Format(" [{0}]", Get<string>());
 			} catch {

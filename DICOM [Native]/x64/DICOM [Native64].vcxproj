@@ -47,12 +47,14 @@
     <TargetName>Dicom.Native64</TargetName>
     <OutDir>$(ProjectDir)..\$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Dicom.Native64</TargetName>
     <OutDir>$(ProjectDir)..\$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
