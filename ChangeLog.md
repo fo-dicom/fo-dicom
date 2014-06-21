@@ -1,3 +1,8 @@
+#### v1.0.38 (6/20/2014)
+* Fix OW swap for single byte images
+* Better handling of long duration and aborted connections
+* Many imported extensions and bug fixes!
+
 #### v1.0.37 (2/19/2014)
 * Add DICOM Compare tool to project
 * Add support for disabling TCP Nagle algorithm

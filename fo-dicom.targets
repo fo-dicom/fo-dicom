@@ -8,14 +8,14 @@
     <When Condition="'$(PlatformTarget)' == 'x64'">
       <ItemGroup>
         <Reference Include="Dicom.Native64">
-          <HintPath>$(MSBuildThisFileDirectory)\lib\net40\Dicom.Native64.dll</HintPath>
+          <HintPath>$(MSBuildThisFileDirectory)\net40\Dicom.Native64.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
     <When Condition="'$(PlatformTarget)' == 'x86'">
       <ItemGroup>
         <Reference Include="Dicom.Native">
-          <HintPath>$(MSBuildThisFileDirectory)\lib\net40\Dicom.Native.dll</HintPath>
+          <HintPath>$(MSBuildThisFileDirectory)\net40\Dicom.Native.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
