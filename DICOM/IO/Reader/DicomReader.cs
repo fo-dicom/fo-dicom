@@ -272,7 +272,7 @@ namespace Dicom.IO.Reader {
 
 							// Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
 							// Fix reading of SQ with parsed VR of UN
-							if (source.Position > last)
+							if (source.Position > last || _length == 0)
 								continue;
 							else {
 								_state = ParseState.Value;
