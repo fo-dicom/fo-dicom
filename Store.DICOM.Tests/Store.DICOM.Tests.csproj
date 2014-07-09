@@ -126,10 +126,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\shim\Sources\Shim\_Store\Store.Shim.csproj">
-      <Project>{ab25d53a-a1c1-4815-9cc8-15012fb7e416}</Project>
-      <Name>Store.Shim</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Store.Dicom\Store.DICOM.csproj">
       <Project>{03fe7c6b-be2c-4138-be6a-eba951122ec8}</Project>
       <Name>Store.DICOM</Name>
@@ -147,6 +143,10 @@
     <Reference Include="MetroLog.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
+    </Reference>
+    <Reference Include="Shim, Version=0.9.0.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\shim.0.9.0-pre\lib\netcore45\Shim.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">

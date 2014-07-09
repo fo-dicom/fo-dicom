@@ -751,10 +751,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\shim\Sources\Shim\_Phone\Phone.Shim.csproj">
-      <Project>{8a8a3ec5-94b0-4579-9c09-c4dd6431f958}</Project>
-      <Name>Phone.Shim</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Phone.DICOM.Native\Phone.DICOM.Native.vcxproj">
       <Project>{658407AA-EA2B-47DA-B53F-C8AF3CFDDD9C}</Project>
       <Name>Phone.DICOM.Native</Name>
@@ -764,6 +760,10 @@
     <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\rtbench\packages\NLog.2.1.0\lib\sl4-windowsphone71\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Shim, Version=0.9.0.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\shim.0.9.0-pre\lib\wp8\Shim.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression">
       <HintPath>..\packages\Microsoft.Bcl.Compression.3.9.69\lib\wp8\System.IO.Compression.dll</HintPath>
