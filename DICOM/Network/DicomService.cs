@@ -744,6 +744,22 @@ namespace Dicom.Network {
 			}
 
 			if (pc == null) {
+				_pending.Remove(msg as DicomRequest);
+
+				try {
+					if (msg is DicomCStoreRequest)
+						(msg as DicomCStoreRequest).PostResponse(this, new DicomCStoreResponse(msg as DicomCStoreRequest, DicomStatus.SOPClassNotSupported));
+					else if (msg is DicomCEchoRequest)
+						(msg as DicomCEchoRequest).PostResponse(this, new DicomCEchoResponse(msg as DicomCEchoRequest, DicomStatus.SOPClassNotSupported));
+					else if (msg is DicomCFindRequest)
+						(msg as DicomCFindRequest).PostResponse(this, new DicomCFindResponse(msg as DicomCFindRequest, DicomStatus.SOPClassNotSupported));
+					else if (msg is DicomCMoveRequest)
+						(msg as DicomCMoveRequest).PostResponse(this, new DicomCMoveResponse(msg as DicomCMoveRequest, DicomStatus.SOPClassNotSupported));
+
+					//TODO: add N services
+				} catch {
+				}
+
 				Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
 				lock (_lock)
 					_sending = false;
