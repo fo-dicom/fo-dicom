@@ -376,7 +376,12 @@ namespace Dicom.StructuredReport {
 			var s = Dataset.Get<string>(DicomTag.RelationshipType, 0, String.Empty);
 			if (!String.IsNullOrEmpty(s))
 				s += " ";
-			s += String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+			else
+				s = String.Empty;
+			if (Code != null)
+				s += String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+			else
+				s += String.Format("{0} {1}", "(no code provided)", Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
 			try {
 				s += String.Format(" [{0}]", Get<string>());
 			} catch {
