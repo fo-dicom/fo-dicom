@@ -756,9 +756,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\shim.0.9.0-pre\lib\netcore45\Shim.dll</HintPath>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.8.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.12.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WriteableBitmapEx.1.0.8.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+      <HintPath>..\packages\WriteableBitmapEx.1.0.12.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
