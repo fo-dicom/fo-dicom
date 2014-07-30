@@ -740,17 +740,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MetroLog, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
+    <Reference Include="MetroLog, Version=0.8.6.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.dll</HintPath>
+      <HintPath>..\packages\MetroLog.0.8.6\lib\netcore45\MetroLog.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.NetCore, Version=0.6.2.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.NetCore.dll</HintPath>
+    <Reference Include="MetroLog.Platform">
+      <HintPath>..\packages\MetroLog.0.8.6\lib\netcore45\MetroLog.Platform.dll</HintPath>
     </Reference>
     <Reference Include="MetroLog.WinRT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.1.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
+      <HintPath>..\packages\MetroLog.0.8.6\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
     <Reference Include="Shim, Version=0.9.0.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
