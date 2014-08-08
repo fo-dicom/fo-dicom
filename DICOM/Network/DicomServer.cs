@@ -16,7 +16,7 @@ namespace Dicom.Network {
 		private TcpListener _listener;
 		private List<T> _clients;
 		private Timer _timer;
-		public Func<Stream, T> ConstructClient;
+		public Func<Stream, Logger, T> DicomServiceFactory;
 
 		public DicomServer(int port, string certificateName = null) {
 			_clients = new List<T>();
@@ -39,8 +39,8 @@ namespace Dicom.Network {
 			_listener.Start();
 			_listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
 
-			if(ConstructClient == null)
-				ConstructClient = (stream) => (T)Activator.CreateInstance(typeof(T), stream, Logger);
+			if(DicomServiceFactory == null)
+				DicomServiceFactory = (stream, log) => (T)Activator.CreateInstance(typeof(T), stream, log);
 
 			_timer = new Timer(OnTimerTick, false, 1000, 1000);
 		}
@@ -76,7 +76,7 @@ namespace Dicom.Network {
 					stream = ssl;
 				}
 
-				T scp = ConstructClient(stream);
+				T scp = DicomServiceFactory(stream, Logger);
 
 				if (Options != null)
 					scp.Options = Options;
