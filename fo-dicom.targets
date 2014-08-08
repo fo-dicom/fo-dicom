@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="Warn-FO-DICOM-Platform">
+    <Message Importance="high" Text="FO-DICOM native libraries require the target platform to be explicitely specified." />
+    <Message Importance="high" Text="Change '$(MSBuildProjectName)' Platform Target Build Project Property from '$(PlatformTarget)' to either x86 or x64 to remove this message." />
+  </Target>
+  <Choose>
+    <When Condition="'$(PlatformTarget)' == 'x64'">
+      <ItemGroup>
+        <Reference Include="Dicom.Native64">
+          <HintPath>$(MSBuildThisFileDirectory)\net40\Dicom.Native64.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(PlatformTarget)' == 'x86'">
+      <ItemGroup>
+        <Reference Include="Dicom.Native">
+          <HintPath>$(MSBuildThisFileDirectory)\net40\Dicom.Native.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <BuildDependsOn>
+          $(BuildDependsOn);
+          Warn-FO-DICOM-Platform
+        </BuildDependsOn>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+</Project>

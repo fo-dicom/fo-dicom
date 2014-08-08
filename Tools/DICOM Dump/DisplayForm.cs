@@ -24,6 +24,7 @@ namespace Dicom.Dump {
 		protected override void OnLoad(EventArgs e) {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
+				try {
 					_image = new DicomImage(_file.Dataset);
 					_grayscale = !_image.PhotometricInterpretation.IsColor;
 					if (_grayscale) {
@@ -31,7 +32,11 @@ namespace Dicom.Dump {
 						_windowCenter = _image.WindowCenter;
 					}
 					_frame = 0;
-			        Invoke(new WaitCallback(DisplayImage), _image);
+					Invoke(new WaitCallback(SizeForImage), _image);
+					Invoke(new WaitCallback(DisplayImage), _image);
+				} catch (Exception ex) {
+					OnException(ex);
+				}
 			                             });
 			
 		}
@@ -44,7 +49,7 @@ namespace Dicom.Dump {
 				return;
 			}
 
-			MessageBox.Show(this, e.ToString(), "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show(this, e.Message, "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			Close();
 		}
 
@@ -52,46 +57,45 @@ namespace Dicom.Dump {
 			try {
 				var image = (DicomImage)state;
 
-				double scale = 1.0;
-				Size max = SystemInformation.WorkingArea.Size;
-
-				int maxW = max.Width - (Width - pbDisplay.Width);
-				int maxH = max.Height - (Height - pbDisplay.Height);
-
-				if (image.Width > image.Height) {
-					if (image.Width > maxW)
-						scale = (double)maxW / (double)image.Width;
-				} else {
-					if (image.Height > maxH)
-						scale = (double)maxH / (double)image.Height;
-				}
-
-				if (scale != 1.0)
-					image.Scale = scale;
-
-				Width = (int)(image.Width * scale) + (Width - pbDisplay.Width);
-				Height = (int)(image.Height * scale) + (Height - pbDisplay.Height);
-
-				if (Width >= (max.Width * 0.99) || Height >= (max.Height * 0.99))
-					CenterToScreen(); // center very large images on the screen
-				else {
-					CenterToParent();
-					if (Bottom > max.Height)
-						Top -= Bottom - max.Height;
-					if (Top < 0)
-						Top = 0;
-					if (Right > max.Width)
-						Left -= Right - max.Width;
-					if (Left < 0)
-						Left = 0;
-				}
-
 				pbDisplay.Image = image.RenderImage(_frame);
 
 				if (_grayscale)
-					Text = String.Format("DICOM Image Display [wc: {0}, ww: {1}]", image.WindowCenter, image.WindowWidth);
+					Text = String.Format("DICOM Image Display [scale: {0}, wc: {1}, ww: {2}]", Math.Round(image.Scale, 1), image.WindowCenter, image.WindowWidth);
+				else
+					Text = String.Format("DICOM Image Display [scale: {0}]", Math.Round(image.Scale, 1));
 			} catch (Exception e) {
 				OnException(e);
+			}
+		}
+
+		protected void SizeForImage(object state) {
+			var image = (DicomImage)state;
+
+			Size max = SystemInformation.WorkingArea.Size;
+
+			int maxW = max.Width - (Width - pbDisplay.Width);
+			int maxH = max.Height - (Height - pbDisplay.Height);
+
+			if (image.Width > maxW || image.Height > maxH)
+				image.Scale = Math.Min((double)maxW / (double)image.Width, (double)maxH / (double)image.Height);
+			else
+				image.Scale = 1.0;
+
+			Width = (int)(image.Width * image.Scale) + (Width - pbDisplay.Width);
+			Height = (int)(image.Height * image.Scale) + (Height - pbDisplay.Height);
+
+			if (Width >= (max.Width * 0.99) || Height >= (max.Height * 0.99))
+				CenterToScreen(); // center very large images on the screen
+			else {
+				CenterToParent();
+				if (Bottom > max.Height)
+					Top -= Bottom - max.Height;
+				if (Top < 0)
+					Top = 0;
+				if (Right > max.Width)
+					Left -= Right - max.Width;
+				if (Left < 0)
+					Left = 0;
 			}
 		}
 
@@ -131,7 +135,7 @@ namespace Dicom.Dump {
 				_image.WindowCenter = _windowCenter;
 				_image.WindowWidth = _windowWidth;
 			}
-
+			
 			DisplayImage(_image);
 		}
 
@@ -179,6 +183,36 @@ namespace Dicom.Dump {
 
 				DisplayImage(_image);
 			}
+		}
+
+		private void OnClientSizeChanged(object sender, EventArgs e) {
+			var image = _image;
+			if (image == null || pbDisplay.Image == null)
+				return;
+
+			if (WindowState == FormWindowState.Normal) {
+				if (pbDisplay.Width > pbDisplay.Height) {
+					if (image.Width > image.Height)
+						image.Scale = (double)pbDisplay.Height / (double)image.Height;
+					else
+						image.Scale = (double)pbDisplay.Width / (double)image.Width;
+				} else {
+					if (image.Width > image.Height)
+						image.Scale = (double)pbDisplay.Width / (double)image.Width;
+					else
+						image.Scale = (double)pbDisplay.Height / (double)image.Height;
+				}
+
+				// scale viewing window to match rescaled image size
+				Width = (int)(image.Width * image.Scale) + (Width - pbDisplay.Width);
+				Height = (int)(image.Height * image.Scale) + (Height - pbDisplay.Height);
+			}
+
+			if (WindowState == FormWindowState.Maximized) {
+				image.Scale = Math.Min((double)pbDisplay.Width / (double)image.Width, (double)pbDisplay.Height / (double)image.Height);
+			}
+
+			DisplayImage(image);
 		}
 	}
 }
