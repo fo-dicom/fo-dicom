@@ -1,6 +1,7 @@
 ﻿using System;
 using Dicom;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace DICOM__Unit_Tests_
 {
@@ -64,6 +65,13 @@ namespace DICOM__Unit_Tests_
             string actual = string.Empty;
             actual = target.ToString(format, formatProvider);
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ToJson()
+        {
+            var target = new DicomTag(0x7fe0, 0x00ff);
+            Console.WriteLine(JsonConvert.SerializeObject(target, Formatting.Indented));
         }
     }
 }

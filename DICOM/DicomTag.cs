@@ -2,12 +2,15 @@
 using System.Globalization;
 
 using Dicom.Imaging.Mathematics;
+using System.Runtime.Serialization;
 
 namespace Dicom {
 	/// <summary>
 	/// DICOM Tag
 	/// </summary>
-	public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable {
+    [DataContract]
+    public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable
+    {
 		public readonly static DicomTag Unknown = new DicomTag(0xffff, 0xffff);
 
 		public DicomTag(ushort group, ushort element) {
@@ -33,11 +36,13 @@ namespace Dicom {
 			PrivateCreator = privateCreator;
 		}
 
+        [DataMember]
 		public ushort Group {
 			get;
 			private set;
 		}
 
+        [DataMember]
 		public ushort Element {
 			get;
 			private set;
@@ -47,6 +52,7 @@ namespace Dicom {
 			get { return Group.IsOdd(); }
 		}
 
+        [DataMember]
 		public DicomPrivateCreator PrivateCreator {
 			get;
 			internal set;
