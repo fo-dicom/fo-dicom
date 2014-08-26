@@ -487,5 +487,17 @@ namespace Dicom {
 		public override string ToString() {
 			return String.Format("DICOM Dataset [{0} items]", _items.Count);
 		}
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as DicomDataset);
+        }
+
+        public bool Equals(DicomDataset other)
+        {
+            if(other == null)
+                return false;
+            return this.Zip(other, (x, y) => x.Equals(y)).All(x => x);
+        }
 	}
 }
