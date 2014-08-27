@@ -32,18 +32,5 @@ namespace Dicom.IO.Buffer {
 			Array.Copy(Data, offset, buffer, 0, count);
 			return buffer;
 		}
-
-        public override bool Equals(object obj) {
-            return Equals(obj as IByteBuffer);
-        }
-
-        public bool Equals(IByteBuffer other) {
-            if (other == null)
-                return false;
-            if (other.IsMemory)
-                return Data.SequenceEqual(other.Data);
-            else
-                return false;
-        }
 	}
 }

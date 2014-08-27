@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Dicom {
@@ -25,17 +24,5 @@ namespace Dicom {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return _items.GetEnumerator();
 		}
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as DicomSequence);
-        }
-
-        public bool Equals(DicomSequence other)
-        {
-            if (other == null)
-                return false;
-            return Items.Zip(other.Items, (x, y) => x == null ? x == y : x.Equals(y)).All(x => x);
-        }
 	}
 }

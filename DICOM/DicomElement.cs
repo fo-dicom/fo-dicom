@@ -36,18 +36,6 @@ namespace Dicom {
 		}
 
 		public abstract T Get<T>(int item = -1);
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as DicomElement);
-        }
-
-        public bool Equals(DicomElement other)
-        {
-            if (other == null)
-                return false;
-            return ValueRepresentation == other.ValueRepresentation && Tag == other.Tag && Buffer.Equals(other.Buffer);
-        }
 	}
 
 	/// <summary>
