@@ -38,19 +38,6 @@ namespace Dicom.IO.Buffer {
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as BulkUriByteBuffer);
-        }
-
-        public bool Equals(BulkUriByteBuffer other)
-        {
-            if(other == null)
-                return false;
-            return other.BulkDataUri == BulkDataUri;
-        }
-
-
         public uint Size
         {
             get

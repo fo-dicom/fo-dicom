@@ -97,7 +97,7 @@ namespace DICOM__Unit_Tests_
             Console.WriteLine(json);
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
             Assert.AreEqual(json, json2);
-            Assert.AreEqual(target, reconstituated);
+            Assert.IsTrue(ValueEquals(target, reconstituated));
 
             byte[] expectedPixelData = File.ReadAllBytes("test.txt");
 
@@ -105,6 +105,88 @@ namespace DICOM__Unit_Tests_
             Assert.IsTrue(target.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
             Assert.AreEqual(reconstituated.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
             Assert.IsTrue(reconstituated.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+        }
+
+        private static bool ValueEquals(DicomDataset a, DicomDataset b)
+        {
+            if (a == null || b == null)
+                return a == b;
+            else if (a == b)
+                return true;
+            else
+                return a.Zip(b, (x, y) => ValueEquals(x, y)).All(x => x);
+        }
+
+        private static bool ValueEquals(DicomItem a, DicomItem b)
+        {
+            if (a == null || b == null)
+                return a == b;
+            else if (a == b)
+                return true;
+            else if (a.ValueRepresentation != b.ValueRepresentation || a.Tag != b.Tag)
+                return false;
+            else if (a is DicomElement)
+            {
+                if (b is DicomElement == false)
+                    return false;
+                else 
+                   return ValueEquals(((DicomElement)a).Buffer, ((DicomElement)b).Buffer);
+            }
+            else if (a is DicomSequence)
+            {
+                if (b is DicomSequence == false)
+                    return false;
+                else
+                    return ((DicomSequence)a).Items.Zip(((DicomSequence)b).Items, (x, y) => ValueEquals(x, y)).All(x => x);
+            }
+            else if (a is DicomFragmentSequence)
+            {
+                if (b is DicomFragmentSequence == false)
+                    return false;
+                else
+                    return ((DicomFragmentSequence)a).Fragments.Zip(((DicomFragmentSequence)b).Fragments, (x, y) => ValueEquals(x, y)).All(x => x);
+            }
+            else 
+                return a.Equals(b);
+        }
+
+        private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
+        {
+            if (a == null || b == null)
+                return a == b;
+            else if (a == b)
+                return true;
+            else if (a.IsMemory)
+            {
+                if (b.IsMemory)
+                    return a.Data.SequenceEqual(b.Data);
+                else
+                    return false;
+            }
+            else if (a is BulkUriByteBuffer)
+            {
+                if (b is BulkUriByteBuffer)
+                    return ((BulkUriByteBuffer)a).BulkDataUri == ((BulkUriByteBuffer)b).BulkDataUri;
+                else
+                    return false;
+            }
+            else if (a is EmptyBuffer && b is EmptyBuffer)
+                return true;
+            else if (a is StreamByteBuffer && b is StreamByteBuffer)
+            {
+                var asbb = (StreamByteBuffer)a;
+                var bsbb = (StreamByteBuffer)b;
+                if (asbb.Stream == null || bsbb.Stream == null)
+                    return asbb.Stream == bsbb.Stream;
+                else
+                    return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
+            }
+            else if (a is CompositeByteBuffer && b is CompositeByteBuffer)
+            {
+                return ((CompositeByteBuffer)a).Buffers.Zip(((CompositeByteBuffer)b).Buffers, (x, y) => ValueEquals(x, y)).All(x => x);
+            }
+            else
+                return a.Equals(b);
         }
 
         private static DicomDataset BuildZooDataset()
@@ -140,7 +222,7 @@ namespace DICOM__Unit_Tests_
             var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             var json2 = JsonConvert.SerializeObject(reconstituatedDataset, new JsonDicomConverter());
             Assert.AreEqual(json, json2);
-            Assert.AreEqual(originalDataset, reconstituatedDataset);
+            Assert.IsTrue(ValueEquals(originalDataset, reconstituatedDataset));
         }
     }
 }
