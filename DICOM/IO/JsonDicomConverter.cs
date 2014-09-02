@@ -136,14 +136,14 @@ namespace Dicom.IO
                 case "UN":
                     WriteJsonOX(writer, (DicomElement)item);
                     break;
-                default:
-                    WriteJsonMultiString(writer, (DicomMultiStringElement)item);
+              default:
+                    WriteJsonString(writer, (DicomStringElement)item);
                     break;
             }
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonMultiString(JsonWriter writer, DicomMultiStringElement elem)
+        private static void WriteJsonString(JsonWriter writer, DicomStringElement elem)
         {
             if (elem.Count != 0)
             {
