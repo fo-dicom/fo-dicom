@@ -137,13 +137,13 @@ namespace Dicom.IO
                     WriteJsonOX(writer, (DicomElement)item);
                     break;
               default:
-                    WriteJsonString(writer, (DicomStringElement)item);
+                    WriteJsonElement(writer, (DicomElement)item);
                     break;
             }
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonString(JsonWriter writer, DicomStringElement elem)
+        private static void WriteJsonElement(JsonWriter writer, DicomElement elem)
         {
             if (elem.Count != 0)
             {
