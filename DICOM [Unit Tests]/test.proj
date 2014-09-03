@@ -7,7 +7,7 @@
     TaskName="Xunit.Runner.MSBuild.xunit"/>
 
   <Target Name="Test">
-    <xunit Assembly="bin\Debug\DICOM [Unit Tests].dll" />
+    <xunit Assembly="bin\Release\DICOM [Unit Tests].dll" />
   </Target>
 
 </Project>
