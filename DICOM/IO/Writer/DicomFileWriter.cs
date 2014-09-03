@@ -70,8 +70,8 @@ namespace Dicom.IO.Writer {
 					walker.EndWalk(result);
 				}
 
-				DicomTransferSyntax syntax = _fileMetaInfo.TransferSyntax;
-
+				//DicomTransferSyntax syntax = _fileMetaInfo.TransferSyntax;
+                DicomTransferSyntax syntax = _fileMetaInfo.InternalTransferSyntax;
 				if (_options.KeepGroupLengths) {
 					// update transfer syntax and recalculate existing group lengths
 					_dataset.InternalTransferSyntax = syntax;
