@@ -1,6 +1,6 @@
 ﻿using System;
 using Dicom;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -12,12 +12,9 @@ using Dicom.IO;
 
 namespace DICOM__Unit_Tests_
 {
-    [TestClass]
     public class JsonDicomConverterTest
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public void SerializeAndDeserializeZoo()
         {
             var target = BuildZooDataset();
@@ -27,15 +24,15 @@ namespace DICOM__Unit_Tests_
         /// <summary>
         ///     A test for ToString
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestKeywordDeserialization()
         {
             string json = "{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\" }] } }";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            Assert.AreEqual("Kalle", reconstituated.Get<string>(DicomTag.PatientName));
+            Assert.Equal("Kalle", reconstituated.Get<string>(DicomTag.PatientName));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestBulkDataUri()
         {
             string json = @"
@@ -48,11 +45,11 @@ namespace DICOM__Unit_Tests_
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             var buffer = reconstituated.Get<IByteBuffer>(DicomTag.PixelData);
-            Assert.IsInstanceOfType(buffer, typeof(BulkUriByteBuffer));
-            Assert.AreEqual("http://www.example.com/testdicom.dcm", ((BulkUriByteBuffer)buffer).BulkDataUri);
+            Assert.True(buffer is BulkUriByteBuffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", ((BulkUriByteBuffer)buffer).BulkDataUri);
         }
 
-        [TestMethod]
+        [Fact]
         public void RunExamplesFromPS3_18_F_2_1_1_2()
         {
             var json = @"
@@ -72,11 +69,11 @@ namespace DICOM__Unit_Tests_
 ]";
 
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
-            Assert.AreEqual("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
-            Assert.AreEqual("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
         }
 
-        [TestMethod]
+        [Fact]
         public void BulkDataRoundTrip()
         {
             var target = new DicomDataset();
@@ -84,7 +81,7 @@ namespace DICOM__Unit_Tests_
             VerifyJsonTripleTrip(target);
         }
 
-        [TestMethod]
+        [Fact]
         public void BulkDataRead()
         {
             var path = System.IO.Path.GetFullPath("test.txt");
@@ -96,15 +93,15 @@ namespace DICOM__Unit_Tests_
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             Console.WriteLine(json);
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
-            Assert.AreEqual(json, json2);
-            Assert.IsTrue(ValueEquals(target, reconstituated));
+            Assert.Equal(json, json2);
+            Assert.True(ValueEquals(target, reconstituated));
 
             byte[] expectedPixelData = File.ReadAllBytes("test.txt");
 
-            Assert.AreEqual(target.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
-            Assert.IsTrue(target.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
-            Assert.AreEqual(reconstituated.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
-            Assert.IsTrue(reconstituated.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.Equal(target.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
+            Assert.True(target.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.Equal(reconstituated.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
+            Assert.True(reconstituated.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
         }
 
         private static bool ValueEquals(DicomDataset a, DicomDataset b)
@@ -221,8 +218,8 @@ namespace DICOM__Unit_Tests_
             var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
             var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             var json2 = JsonConvert.SerializeObject(reconstituatedDataset, new JsonDicomConverter());
-            Assert.AreEqual(json, json2);
-            Assert.IsTrue(ValueEquals(originalDataset, reconstituatedDataset));
+            Assert.Equal(json, json2);
+            Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
         }
     }
 }

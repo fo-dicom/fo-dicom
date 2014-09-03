@@ -3,29 +3,30 @@
 
 using System.Runtime.Serialization;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 using Dicom.Helpers;
 
 namespace Dicom.Imaging.Mathematics
 {
-    [TestClass]
     public class Point2Tests
     {
-		[TestMethod]
+		[Fact]
         public void Serialization_RegularPoint_CanBeDeserialized()
         {
             var expected = new Point2(3, -5);
             var actual = expected.GetDataContractSerializerDeserializedObject();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod, ExpectedException(typeof(SerializationException))]
+        [Fact]
         public void Serialization_BinaryFormatter_Throws()
         {
             var expected = new Point2(-2, 12);
-            var actual = expected.GetBinaryFormatterDeserializedObject();
-            Assert.AreEqual(expected, actual);
+            Assert.Throws<SerializationException>(() =>
+            {
+              var actual = expected.GetBinaryFormatterDeserializedObject();
+            });
         }
     }
 }

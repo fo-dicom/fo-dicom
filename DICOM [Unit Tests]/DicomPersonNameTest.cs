@@ -1,5 +1,5 @@
 ﻿using Dicom;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Text;
 
@@ -11,163 +11,111 @@ namespace DICOM__Unit_Tests_
     ///This is a test class for DicomPersonNameTest and is intended
     ///to contain all DicomPersonNameTest Unit Tests
     ///</summary>
-    [TestClass()]
     public class DicomPersonNameTest
     {
-
-
-        private TestContext testContextInstance;
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        ///A test for DicomPersonName Constructor
-        ///</summary>
-        [TestMethod()]
+        /// A test for DicomPersonName Constructor
+        /// </summary>
+        [Fact]
         public void DicomPersonNameConstructorTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("Last^First^Middle^Prefix^Suffix", target.Get<string>());
+            Assert.Equal("Last^First^Middle^Prefix^Suffix", target.Get<string>());
             target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "", "");
-            Assert.AreEqual("Last^First^Middle", target.Get<string>());
+            Assert.Equal("Last^First^Middle", target.Get<string>());
             target = new DicomPersonName(DicomTag.PatientName, "Last", "First", null, "");
-            Assert.AreEqual("Last^First", target.Get<string>());
+            Assert.Equal("Last^First", target.Get<string>());
             target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "", null, "Suffix");
-            Assert.AreEqual("Last^First^^^Suffix", target.Get<string>());
+            Assert.Equal("Last^First^^^Suffix", target.Get<string>());
             target = new DicomPersonName(DicomTag.PatientName, "", "", "", null, null);
-            Assert.AreEqual("", target.Get<string>());
+            Assert.Equal("", target.Get<string>());
         }
 
         /// <summary>
         ///A test for DicomPersonName Constructor
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void DicomPersonNameConstructorTest1()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, DicomEncoding.GetEncoding("ISO IR 144"), "Тарковский", "Андрей", "Арсеньевич");
             byte[] b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             byte[] c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей^Арсеньевич");
-            CollectionAssert.AreEqual(c, b);
+            Assert.Equal(c, b);
             // foloowing test checks also padding with space!
             target = new DicomPersonName(DicomTag.PatientName, DicomEncoding.GetEncoding("ISO IR 144"), "Тарковский", "Андрей");
             b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей ");
-            CollectionAssert.AreEqual(c, b);
+            Assert.Equal(c, b);
         }
 
         /// <summary>
         ///A test for Last
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void LastTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("Last", target.Last);
+            Assert.Equal("Last", target.Last);
             target = new DicomPersonName(DicomTag.PatientName, "");
-            Assert.AreEqual("", target.Last);
+            Assert.Equal("", target.Last);
             target = new DicomPersonName(DicomTag.PatientName, "=Doe^John");
-            Assert.AreEqual("", target.Last);
+            Assert.Equal("", target.Last);
         }
 
         /// <summary>
         ///A test for First
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void FirstTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("First", target.First);
+            Assert.Equal("First", target.First);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
-            Assert.AreEqual("", target.First);
+            Assert.Equal("", target.First);
             target = new DicomPersonName(DicomTag.PatientName, "Last=Doe^John");
-            Assert.AreEqual("", target.First);
+            Assert.Equal("", target.First);
         }
 
         /// <summary>
         ///A test for Middle
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void MiddleTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("Middle", target.Middle);
+            Assert.Equal("Middle", target.Middle);
             target = new DicomPersonName(DicomTag.PatientName, "Last^First");
-            Assert.AreEqual("", target.Middle);
+            Assert.Equal("", target.Middle);
             target = new DicomPersonName(DicomTag.PatientName, "Last^First=Doe^John^Peter");
-            Assert.AreEqual("", target.Middle);
+            Assert.Equal("", target.Middle);
         }
 
         /// <summary>
         ///A test for Prefix
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void PrefixTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("Prefix", target.Prefix);
+            Assert.Equal("Prefix", target.Prefix);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
-            Assert.AreEqual("", target.Prefix);
+            Assert.Equal("", target.Prefix);
             target = new DicomPersonName(DicomTag.PatientName, "Last^First^Middle=Doe^John^Peter^MD^xx");
-            Assert.AreEqual("", target.Prefix);
+            Assert.Equal("", target.Prefix);
         }
 
         /// <summary>
         ///A test for Suffix
         ///</summary>
-        [TestMethod()]
+        [Fact]
         public void SuffixTest()
         {
             DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
-            Assert.AreEqual("Suffix", target.Suffix);
+            Assert.Equal("Suffix", target.Suffix);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
-            Assert.AreEqual("", target.Suffix);
+            Assert.Equal("", target.Suffix);
             target = new DicomPersonName(DicomTag.PatientName, "Last^First^Middle^Prefix=Doe^John^Peter^MD");
-            Assert.AreEqual("", target.Suffix);
+            Assert.Equal("", target.Suffix);
         }
     }
 }
