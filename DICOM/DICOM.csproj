@@ -77,6 +77,7 @@
     <Compile Include="Log\LogLevel.cs" />
     <Compile Include="Log\LogManager.cs" />
     <Compile Include="Log\NLogManager.cs" />
+    <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
     <Compile Include="Media\DicomFileScanner.cs" />
     <Compile Include="DicomMatchRules.cs" />
     <Compile Include="DicomTransformRules.cs" />
@@ -179,7 +180,6 @@
     <Compile Include="IO\IByteSource.cs" />
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
-    <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
     <Compile Include="IO\Reader\DicomFileReader.cs" />
     <Compile Include="IO\Reader\DicomReader.cs" />
     <Compile Include="IO\Reader\DicomReaderCallbackObserver.cs" />
@@ -208,11 +208,6 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
-    <Compile Include="Media\DicomDirectory.cs" />
-    <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
-    <Compile Include="Media\DirectoryRecordCollection.cs" />
-    <Compile Include="Media\DirectoryRecordSequenceItem.cs" />
-    <Compile Include="Media\DirectoryRecordType.cs" />
     <Compile Include="Network\IDicomNServiceProvider.cs" />
     <Compile Include="Network\DicomNDeleteRequest.cs" />
     <Compile Include="Network\DicomNDeleteResponse.cs" />
@@ -260,6 +255,10 @@
     <Compile Include="Network\IDicomServiceProvider.cs" />
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
+    <Compile Include="Printing\FilmBox.cs" />
+    <Compile Include="Printing\FilmSession.cs" />
+    <Compile Include="Printing\ImageBox.cs" />
+    <Compile Include="Printing\PresentationLut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="StructuredReport\DicomCodeItem.cs" />
@@ -288,7 +287,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

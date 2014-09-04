@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -130,6 +131,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\DICOM\DICOM.csproj">
       <Project>{d6e309b0-4837-459e-8c85-abc268440d62}</Project>
+    </ProjectReference>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>

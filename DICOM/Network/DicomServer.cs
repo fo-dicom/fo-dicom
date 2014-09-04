@@ -56,6 +56,10 @@ namespace Dicom.Network {
 
 		private void OnAcceptTcpClient(IAsyncResult result) {
 			try {
+				if (_listener == null)
+				{
+					return;
+				}
 				var client = _listener.EndAcceptTcpClient(result);
 
 				if (Options != null)

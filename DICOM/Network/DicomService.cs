@@ -103,7 +103,7 @@ namespace Dicom.Network {
 			if (errorCode > 0)
 				Logger.Error("Connection closed with error: {0}", errorCode);
 			else
-				Logger.Error("Connection closed");
+				Logger.Info("Connection closed");
 
 			if (this is IDicomServiceProvider)
 				(this as IDicomServiceProvider).OnConnectionClosed(errorCode);
@@ -402,7 +402,7 @@ namespace Dicom.Network {
 								_dimse = new DicomMessage(command);
 								break;
 							}
-
+                            _dimse.PresentationContext = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 							if (!_dimse.HasDataset) {
 								if (DicomMessage.IsRequest(_dimse.Type))
 									ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
@@ -743,12 +743,18 @@ namespace Dicom.Network {
 				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
 			}
 
-			if (pc == null) {
-				Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
-				lock (_lock)
-					_sending = false;
-				SendNextMessage();
-				return;
+			if (pc == null)
+			{
+                pc = msg.PresentationContext;
+
+                if (pc == null)
+                {
+					Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
+					lock (_lock)
+						_sending = false;
+					SendNextMessage();
+					return;
+				}
 			}
 
 			var dimse = new Dimse();

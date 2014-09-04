@@ -58,6 +58,12 @@ namespace Dicom.Network {
 			get { return Command.Get<ushort>(DicomTag.CommandDataSetType, 0, 0x0101) != 0x0101; }
 		}
 
+
+        /// <summary>
+        /// Presentation Context
+        /// </summary>
+        public DicomPresentationContext PresentationContext { get; set; }
+
 		public DicomDataset Command {
 			get;
 			set;
