@@ -57,6 +57,9 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="DicomPersonNameTest.cs" />
     <Compile Include="DicomTagTest.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
