@@ -413,6 +413,7 @@ namespace Dicom.Imaging.Render {
 			_width = width;
 			_height = height;
 			_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+            //_data = IO.ByteConverter.ToArray<ushort>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int mask = (1 << (bitDepth.HighBit + 1)) - 1;
