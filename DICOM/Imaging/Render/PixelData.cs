@@ -295,7 +295,8 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<short>.Create(data).ToArray();
+            //_data = ByteBufferEnumerator<short>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<short>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int sign = 1 << bitDepth.HighBit;
@@ -412,7 +413,8 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+            //_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<ushort>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int mask = (1 << (bitDepth.HighBit + 1)) - 1;
