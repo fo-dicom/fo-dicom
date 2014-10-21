@@ -36,20 +36,29 @@ namespace Dicom.Media {
 			}
 		}
 
-		private static void WriteMedia(string path) {
-			var dicomDirPath = Path.Combine(path, "DICOMDIR");
+        private static void WriteMedia(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            var dicomDir = new DicomDirectory();
+            foreach (var file in dirInfo.GetFiles("*.*", SearchOption.AllDirectories))
+            {
+                if (!file.FullName.StartsWith(dirInfo.FullName))
+                    throw new ArgumentException("file");
+                if (file.Name == "DICOMDIR")
+                    continue;
+                try
+                {
+                    dicomDir.AddFile(DicomFile.Open(file.FullName), file.FullName.Substring(dirInfo.FullName.Length).TrimStart(Path.DirectorySeparatorChar));
+                }
+                catch
+                {
 
-			var dirInfo = new DirectoryInfo(path);
+                }
+            }
+            if (dicomDir.RootDirectoryRecord != null)
+                dicomDir.Save(Path.Combine(path, "DICOMDIR"));
+        }
 
-			var dicomDir = new DicomDirectory();
-			foreach (var file in dirInfo.GetFiles("*.*", SearchOption.AllDirectories)) {
-				var dicomFile = Dicom.DicomFile.Open(file.FullName);
-
-				dicomDir.AddFile(dicomFile, String.Format(@"000001\{0}", file.Name));
-			}
-
-			dicomDir.Save(dicomDirPath);
-		}
 
 		private static void ReadMedia(string fileName) {
 			var dicomDirectory = DicomDirectory.Open(fileName);
