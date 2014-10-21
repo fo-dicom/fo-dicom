@@ -76,14 +76,7 @@ namespace Dicom.Media {
 
             _directoryRecordSequence.Items.Clear();
             var calculator = new DicomWriteLengthCalculator(FileMetaInfo.TransferSyntax, DicomWriteOptions.Default);
-
-            // ensure write length calculator does not include end of sequence item
-            //Dataset.Remove(DicomTag.DirectoryRecordSequence);
-
-            //_fileOffset = 128 + calculator.Calculate(FileMetaInfo) + calculator.Calculate(Dataset);
-
-            //Add the offset for the Directory Record sequence tag itself
-            //_fileOffset += 4;//sequence element tag
+            
             if (FileMetaInfo.TransferSyntax.IsExplicitVR)
             {
                 _fileOffset = 128 + calculator.Calculate(FileMetaInfo) + calculator.Calculate(Dataset);

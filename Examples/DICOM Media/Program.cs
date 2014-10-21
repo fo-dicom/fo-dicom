@@ -39,7 +39,7 @@ namespace Dicom.Media {
         private static void WriteMedia(string path)
         {
             var dirInfo = new DirectoryInfo(path);
-            var dicomDir = new DicomDirectory();
+            var dicomDir = new DicomDirectory(false);
             foreach (var file in dirInfo.GetFiles("*.*", SearchOption.AllDirectories))
             {
                 if (!file.FullName.StartsWith(dirInfo.FullName))
