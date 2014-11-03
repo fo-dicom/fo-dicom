@@ -482,9 +482,6 @@
     <Compile Include="..\DICOM\Log\LogManager.cs">
       <Link>Log\LogManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Log\NLogManager.cs">
-      <Link>Log\NLogManager.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\Media\DicomDirectory.cs">
       <Link>Media\DicomDirectory.cs</Link>
     </Compile>
@@ -731,6 +728,9 @@
     <Compile Include="..\Store.Dicom\Store\Dicom\Log\ConsoleLogger.cs">
       <Link>Phone\Log\ConsoleLogger.cs</Link>
     </Compile>
+    <Compile Include="..\Store.Dicom\Store\Dicom\Log\MetroLogManager.cs">
+      <Link>Phone\Log\MetroLogManager.cs</Link>
+    </Compile>
     <Compile Include="..\Store.Dicom\_Platform\ColorExtensions.cs">
       <Link>_Platform\ColorExtensions.cs</Link>
     </Compile>
@@ -758,9 +758,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.2.1.0\lib\sl4-windowsphone71\NLog.dll</HintPath>
+    <Reference Include="MetroLog">
+      <HintPath>..\packages\MetroLog.0.8.6.1\lib\wp8\MetroLog.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroLog.Platform">
+      <HintPath>..\packages\MetroLog.0.8.6.1\lib\wp8\MetroLog.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Shim, Version=0.9.3.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -780,6 +782,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
