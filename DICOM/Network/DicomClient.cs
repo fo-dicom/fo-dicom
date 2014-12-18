@@ -280,12 +280,12 @@ namespace Dicom.Network {
 				_client._async.Set();
 			}
 
-			public void OnConnectionClosed(int errorCode) {
+			public void OnConnectionClosed(Exception exception)
+			{
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				if (errorCode != 0)
-					_client._exception = new SocketException(errorCode);
+				_client._exception = exception;
 
 				try {
 					if (_client._async != null)
