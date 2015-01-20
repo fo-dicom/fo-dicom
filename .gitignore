@@ -17,3 +17,5 @@ TestResult.xml
 ipch/
 Distribute/
 packages/
+*~
+*.DotSettings

@@ -13,7 +13,7 @@
 
   public class DicomVRTest
   {
-    private static string[] AllVRs = new[] { "AE", "AS", "AT", "CS", "DA", "DS", "DT", "FD", "FL", "IS", "LO", "LT", "OB", "OF", "OW", "PN", "SH", "SL", "SQ", "SS", "ST", "TM", "UI", "UL", "UN", "US", "UT" };
+    private static string[] AllVRs = new[] { "AE", "AS", "AT", "CS", "DA", "DS", "DT", "FD", "FL", "IS", "LO", "LT", "OB", "OD", "OF", "OW", "PN", "SH", "SL", "SQ", "SS", "ST", "TM", "UC", "UI", "UL", "UN", "UR", "US", "UT" };
     
     [Fact]
     public void All_Defined_VRs_Can_Roundtrip()

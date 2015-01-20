@@ -129,6 +129,7 @@ namespace Dicom {
 			case "LO": return DicomVR.LO;
 			case "LT": return DicomVR.LT;
 			case "OB": return DicomVR.OB;
+			case "OD": return DicomVR.OD;
 			case "OF": return DicomVR.OF;
 			case "OW": return DicomVR.OW;
 			case "PN": return DicomVR.PN;
@@ -138,9 +139,11 @@ namespace Dicom {
 			case "SS": return DicomVR.SS;
 			case "ST": return DicomVR.ST;
 			case "TM": return DicomVR.TM;
+			case "UC": return DicomVR.UC;
 			case "UI": return DicomVR.UI;
 			case "UL": return DicomVR.UL;
 			case "UN": return DicomVR.UN;
+			case "UR": return DicomVR.UR;
 			case "US": return DicomVR.US;
 			case "UT": return DicomVR.UT;
 			default:
@@ -360,6 +363,21 @@ namespace Dicom {
 			ValueType = typeof(byte[])
 		};
 
+		/// <summary>Other Double</summary>
+		public readonly static DicomVR OD = new DicomVR {
+			Code = "OD",
+			Name = "Other Double",
+			IsString = false,
+			IsStringEncoded = false,
+			Is16bitLength = false,
+			IsMultiValue = true,
+			PaddingValue = PadZero,
+			MaximumLength = 0,
+			UnitSize = 8,
+			ByteSwap = 8,
+			ValueType = typeof(double[])
+		};
+
 		/// <summary>Other Float</summary>
 		public readonly static DicomVR OF = new DicomVR {
 			Code = "OF",
@@ -497,7 +515,23 @@ namespace Dicom {
 			ValueType = typeof(DateTime)
 		};
 
-		/// <summary>Unique Identifier</summary>
+    /// <summary>Unlimited Characters</summary>
+    public readonly static DicomVR UC = new DicomVR
+    {
+      Code = "UC",
+      Name = "Unlimited Characters",
+			IsString = true,
+			IsStringEncoded = true,
+			Is16bitLength = false,
+      IsMultiValue = true,
+			PaddingValue = PadSpace,
+      MaximumLength = 0,
+			UnitSize = 1,
+			ByteSwap = 1,
+			ValueType = typeof(string)
+    };
+
+    /// <summary>Unique Identifier</summary>
 		public readonly static DicomVR UI = new DicomVR {
 			Code = "UI",
 			Name = "Unique Identifier",
@@ -540,6 +574,21 @@ namespace Dicom {
 			UnitSize = 1,
 			ByteSwap = 1,
 			ValueType = typeof(byte[])
+		};
+
+    /// <summary>Universal Resource Identifier or Universal Resource Locator (URI/URL)</summary>
+		public readonly static DicomVR UR = new DicomVR {
+			Code = "UR",
+      Name = "Universal Resource Identifier or Universal Resource Locator",
+			IsString = true,
+			IsStringEncoded = true,
+			Is16bitLength = false,
+			IsMultiValue = false,
+			PaddingValue = PadSpace,
+			MaximumLength = 0,
+			UnitSize = 1,
+			ByteSwap = 1,
+			ValueType = typeof(string)
 		};
 
 		/// <summary>Unsigned Short</summary>

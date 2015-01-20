@@ -740,6 +740,23 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Other Double (OD)</summary>
+	public class DicomOtherDouble: DicomValueElement<double> {
+		#region Public Constructors
+		public DicomOtherDouble(DicomTag tag, params double[] values) : base(tag, values) {
+		}
+
+		public DicomOtherDouble(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.OD; }
+		}
+		#endregion
+	}
+
 	/// <summary>Other Float (OF)</summary>
 	public class DicomOtherFloat : DicomValueElement<float> {
 		#region Public Constructors
@@ -1014,7 +1031,34 @@ namespace Dicom {
 		#endregion
 	}
 
-	/// <summary>Unique Identifier (UI)</summary>
+  /// <summary>Unlimited Characters (UC)</summary>
+  public class DicomUnlimitedCharacters : DicomStringElement
+  {
+    #region Public Constructors
+    public DicomUnlimitedCharacters(DicomTag tag, string value)
+      : base(tag, value)
+    {
+    }
+
+    public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, string value)
+      : base(tag, encoding, value)
+    {
+    }
+
+    public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data)
+      : base(tag, encoding, data)
+    {
+    }
+    #endregion
+
+    #region Public Properties
+    public override DicomVR ValueRepresentation
+    {
+      get { return DicomVR.UC; }
+    }
+    #endregion
+  }
+  /// <summary>Unique Identifier (UI)</summary>
 	public class DicomUniqueIdentifier : DicomMultiStringElement {
 		#region Public Constructors
 		public DicomUniqueIdentifier(DicomTag tag, params string[] values) : base(tag, values) {
@@ -1098,7 +1142,34 @@ namespace Dicom {
 		#endregion
 	}
 
-	/// <summary>Unsigned Short (US)</summary>
+  /// <summary>Universal Resource Identifier or Universal Resource Locator [URI/URL] (UR)</summary>
+  public class DicomUniversalResource : DicomStringElement
+  {
+    #region Public Constructors
+    public DicomUniversalResource(DicomTag tag, string value)
+      : base(tag, value)
+    {
+    }
+
+    public DicomUniversalResource(DicomTag tag, Encoding encoding, string value)
+      : base(tag, encoding, value)
+    {
+    }
+
+    public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
+      : base(tag, encoding, data)
+    {
+    }
+    #endregion
+
+    #region Public Properties
+    public override DicomVR ValueRepresentation
+    {
+      get { return DicomVR.UR; }
+    }
+    #endregion
+  }
+  /// <summary>Unsigned Short (US)</summary>
 	public class DicomUnsignedShort : DicomValueElement<ushort> {
 		#region Public Constructors
 		public DicomUnsignedShort(DicomTag tag, params ushort[] values) : base(tag, values) {
