@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DICOM__Unit_Tests_
+﻿namespace DICOM__Unit_Tests_
 {
-  using System.CodeDom.Compiler;
+  using System.IO;
 
   using Dicom;
+  using Dicom.IO;
+  using Dicom.IO.Buffer;
+  using Dicom.IO.Reader;
+  using Dicom.IO.Writer;
 
   using Xunit;
 
@@ -52,12 +51,13 @@ namespace DICOM__Unit_Tests_
                      };
       dataset.Add(
         DicomTag.ReferencedFrameOfReferenceSequence,
-        new[] { new DicomDataset {
-          { DicomTag.ReferencedFrameOfReferenceUID, uidGenerator.Generate() },
-          { DicomTag.ReferencedFrameOfReferenceUID, uidGenerator.Generate() }
-      } });
+        new[]
+          {
+            new DicomDataset { { DicomTag.ReferencedFrameOfReferenceUID, uidGenerator.Generate() } },
+            new DicomDataset { { DicomTag.ReferencedFrameOfReferenceUID, uidGenerator.Generate() } }
+          });
 
-      var clone = dataset.Clone();
+      var clone = this.DeepClone_(dataset);
 
       uidGenerator.RegenerateAll(clone);
 
@@ -72,6 +72,22 @@ namespace DICOM__Unit_Tests_
       Assert.NotEqual(
         dataset.Get<DicomSequence>(DicomTag.ReferencedFrameOfReferenceSequence).Items[1].Get<string>(DicomTag.ReferencedFrameOfReferenceUID),
         clone.Get<DicomSequence>(DicomTag.ReferencedFrameOfReferenceSequence).Items[1].Get<string>(DicomTag.ReferencedFrameOfReferenceUID));
+    }
+
+    private DicomDataset DeepClone_(DicomDataset dataset)
+    {
+      var ms = new MemoryStream();
+      var target = new StreamByteTarget(ms);
+      var writer = new DicomWriter(DicomTransferSyntax.ImplicitVRLittleEndian, DicomWriteOptions.Default, target);
+      var walker = new DicomDatasetWalker(dataset);
+      walker.Walk(writer);
+
+      var clone = new DicomDataset();
+      var reader = new DicomReader { IsExplicitVR = false };
+      var byteSource = new ByteBufferByteSource(
+        new MemoryByteBuffer(ms.ToArray()));
+      reader.Read(byteSource, new DicomDatasetReaderObserver(clone));
+      return clone;
     }
   }
 }
