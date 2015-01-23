@@ -6,48 +6,50 @@ using Dicom.Log;
 
 namespace Store.DICOM.Dump
 {
-	public class CEchoScp : DicomService, IDicomServiceProvider, IDicomCEchoProvider
-	{
-		public CEchoScp(Stream stream, Logger log) : base(stream, log)
-		{
-		}
+    using System;
 
-		public void OnReceiveAssociationRequest(DicomAssociation association)
-		{
-			if (association.CalledAE != "STORESCP")
-			{
-				SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser, DicomRejectReason.CalledAENotRecognized);
-				return;
-			}
+    public class CEchoScp : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+    {
+        public CEchoScp(Stream stream, Logger log) : base(stream, log)
+        {
+        }
 
-			foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.Verification))
-			{
-				pc.AcceptTransferSyntaxes(new[] {
-					                                DicomTransferSyntax.ExplicitVRLittleEndian,
-					                                DicomTransferSyntax.ExplicitVRBigEndian,
-					                                DicomTransferSyntax.ImplicitVRLittleEndian
-				                                });
-			}
+        public void OnReceiveAssociationRequest(DicomAssociation association)
+        {
+            if (association.CalledAE != "STORESCP")
+            {
+                SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser, DicomRejectReason.CalledAENotRecognized);
+                return;
+            }
 
-			SendAssociationAccept(association);
-		}
+            foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.Verification))
+            {
+                pc.AcceptTransferSyntaxes(new[] {
+                                                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                                                    DicomTransferSyntax.ExplicitVRBigEndian,
+                                                    DicomTransferSyntax.ImplicitVRLittleEndian
+                                                });
+            }
 
-		public void OnReceiveAssociationReleaseRequest()
-		{
-			SendAssociationReleaseResponse();
-		}
+            SendAssociationAccept(association);
+        }
 
-		public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-		{
-		}
+        public void OnReceiveAssociationReleaseRequest()
+        {
+            SendAssociationReleaseResponse();
+        }
 
-		public void OnConnectionClosed(int errorCode)
-		{
-		}
+        public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        {
+        }
 
-		public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
-		{
-			return new DicomCEchoResponse(request, DicomStatus.Success);
-		}
-	}
+        public void OnConnectionClosed(Exception exception)
+        {
+        }
+
+        public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
+        {
+            return new DicomCEchoResponse(request, DicomStatus.Success);
+        }
+    }
 }
