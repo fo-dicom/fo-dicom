@@ -752,13 +752,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.6.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="Shim, Version=0.9.3.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\shim.0.9.3-pre1\lib\netcore45\Shim.dll</HintPath>
+    <Reference Include="Shim">
+      <HintPath>..\packages\shim.1.0.0.50126\lib\netcore45\Shim.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.12.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+    <Reference Include="WriteableBitmapEx.WinRT, Version=1.0.14.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WriteableBitmapEx.1.0.13.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
+      <HintPath>..\packages\WriteableBitmapEx.1.0.14.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
