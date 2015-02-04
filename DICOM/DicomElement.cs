@@ -249,11 +249,14 @@ namespace Dicom {
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-				return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
+				var x = ByteConverter.Get<Tv>(Buffer, item);
+
+				if (x as IConvertible == null) return (T)(object)x.ToString();
+				return (T)(object)((IConvertible)x).ToString(CultureInfo.InvariantCulture);
 			}
 
 			if (typeof(T) == typeof(string[])) {
-				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
+				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => (x as IConvertible == null) ? x.ToString() : ((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
 			}
 
 			if (typeof(T).IsEnum) {
