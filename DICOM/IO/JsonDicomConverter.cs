@@ -8,6 +8,13 @@ namespace Dicom.IO
 {
     public class JsonDicomConverter : JsonConverter
     {
+      private bool writeTagsAsKeywords_;
+
+      public JsonDicomConverter(bool writeTagsAsKeywords = false)
+      {
+        writeTagsAsKeywords_ = writeTagsAsKeywords;
+      }
+
         #region JsonConverter overrides
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -22,6 +29,9 @@ namespace Dicom.IO
             writer.WriteStartObject();
             foreach (var item in dataset)
             {
+              if (writeTagsAsKeywords_ && item.Tag.DictionaryEntry != null && String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false)
+                writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
+              else
                 writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
                 WriteJsonDicomItem(writer, item, serializer);
             }
