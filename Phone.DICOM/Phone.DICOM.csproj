@@ -758,15 +758,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MetroLog">
-      <HintPath>..\packages\MetroLog.0.8.6.1\lib\wp8\MetroLog.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroLog.Platform">
-      <HintPath>..\packages\MetroLog.0.8.6.1\lib\wp8\MetroLog.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Shim, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+    <Reference Include="MetroLog, Version=0.8.6.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\shim.1.0.0.50126\lib\wp8\Shim.dll</HintPath>
+      <HintPath>..\packages\MetroLog.0.8.7.1\lib\wp8\MetroLog.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroLog.Platform, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroLog.0.8.7.1\lib\wp8\MetroLog.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Shim, Version=1.0.1.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\shim.1.0.1.50208\lib\wp8\Shim.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression, Version=3.9.85.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
