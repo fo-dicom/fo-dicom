@@ -57,7 +57,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12", "DICOM [Native]\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16", "DICOM [Native]\Common\libijg16.vcxproj", "{DBA3B79E-46EB-4769-9789-A3A912C59FAA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM.Native.Windows", "Store.DICOM.Native\Store.DICOM.Native.vcxproj", "{010A89B2-89F8-46C6-BDE0-631E252BF984}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM.Native.Windows", "Store.DICOM.Native\DICOM.Native.Windows.vcxproj", "{010A89B2-89F8-46C6-BDE0-631E252BF984}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DICOM.Tests", "Store.DICOM.Tests\Store.DICOM.Tests.csproj", "{45CCAA4D-0A17-413A-AD37-B334CEE74207}"
 EndProject

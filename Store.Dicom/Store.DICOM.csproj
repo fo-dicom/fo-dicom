@@ -767,7 +767,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Store.DICOM.Native\Store.DICOM.Native.vcxproj">
+    <ProjectReference Include="..\Store.DICOM.Native\DICOM.Native.Windows.vcxproj">
       <Project>{010a89b2-89f8-46c6-bde0-631e252bf984}</Project>
       <Name>DICOM.Native.Windows</Name>
     </ProjectReference>
