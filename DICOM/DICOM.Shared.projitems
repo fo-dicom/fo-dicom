@@ -201,7 +201,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\PDU.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs" />
