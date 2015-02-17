@@ -234,12 +234,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Threading\WorkQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Platform\Windows\UI\ColorExtensions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml.gz" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml.gz" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml" />
-    <Content Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
-  </ItemGroup>
 </Project>

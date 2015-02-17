@@ -99,6 +99,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
+      <Link>Dictionaries\DICOM Dictionary.xml.gz</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DICOM\Dictionaries\Private Dictionary.xml.gz">
+      <Link>Dictionaries\Private Dictionary.xml.gz</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="MetroLog">
       <HintPath>..\packages\MetroLog.0.8.7.1\lib\wpa81\MetroLog.dll</HintPath>
     </Reference>
