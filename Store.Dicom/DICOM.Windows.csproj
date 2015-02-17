@@ -743,17 +743,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MetroLog, Version=0.8.6.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.6.1\lib\netcore45\MetroLog.dll</HintPath>
+    <Reference Include="MetroLog">
+      <HintPath>..\packages\MetroLog.0.8.7.1\lib\win81\MetroLog.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.Platform, Version=0.8.6.0, Culture=neutral, PublicKeyToken=ba4ace74c3b410f3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.6.1\lib\netcore45\MetroLog.Platform.dll</HintPath>
+    <Reference Include="MetroLog.Platform">
+      <HintPath>..\packages\MetroLog.0.8.7.1\lib\win81\MetroLog.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="MetroLog.WinRT, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MetroLog.0.8.6.1\lib\netcore45\MetroLog.WinRT.winmd</HintPath>
+    <Reference Include="MetroLog.WinRT">
+      <HintPath>..\packages\MetroLog.0.8.7.1\lib\win81\MetroLog.WinRT.winmd</HintPath>
     </Reference>
     <Reference Include="Shim">
       <HintPath>..\packages\shim.1.0.1.50208\lib\portable-win81+wpa81\Shim.dll</HintPath>
