@@ -769,7 +769,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Store.DICOM.Native\Store.DICOM.Native.vcxproj">
       <Project>{010a89b2-89f8-46c6-bde0-631e252bf984}</Project>
-      <Name>Store.DICOM.Native</Name>
+      <Name>DICOM.Native.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">

@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0737bc83-6277-450c-b908-dc387f392d70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenJPEG">
+      <UniqueIdentifier>{05131f4b-02c4-4576-80f1-e471afb5c43c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CharLS">
+      <UniqueIdentifier>{1538398c-d0eb-47f9-bdae-0574c6b649a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ac01ac62-a0c2-4a8c-a6d9-d61038c60f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenJPEG">
+      <UniqueIdentifier>{a36fb358-a59f-4805-ab0a-5a4b9fee3c92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CharLS">
+      <UniqueIdentifier>{1d04f0f9-7971-4aea-aff6-6e4aab6849f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.ArrayCopy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000Parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLSParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.PixelData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Rle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\bio.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cidx_manager.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cio.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\dwt.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\event.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\fix.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\image.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\indexbox_manager.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\int.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k_lib.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jp2.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jpt.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mct.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mqc.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\openjpeg.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_config.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_includes.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_malloc.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\pi.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\raw.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1_luts.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t2.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tcd.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tgt.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\colortransform.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\config.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\context.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\contextrunmode.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\decoderstrategy.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\defaulttraits.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\encoderstrategy.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\header.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\interface.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\lookuptable.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\losslesstraits.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\processline.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\scan.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\util.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg.i">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000Parameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLSParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_16.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.PixelData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Rle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\bio.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cidx_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cio.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\dwt.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\event.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\image.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k_lib.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jp2.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jpt.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mct.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mqc.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\openjpeg.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\phix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\pi.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\ppix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\raw.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t2.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tcd.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tgt.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\thix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tpix_manager.c">
+      <Filter>Source Files\OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\header.cpp">
+      <Filter>Source Files\CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\interface.cpp">
+      <Filter>Source Files\CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\jpegls.cpp">
+      <Filter>Source Files\CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\stdafx.cpp">
+      <Filter>Source Files\CharLS</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

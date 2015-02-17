@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a8980eca-d7ce-481e-9f42-1ddb8981791d</SharedGUID>
+    <ItemsProjectGuid>{a03d1d52-94d1-4805-8e87-6d1748f75342}</ItemsProjectGuid>
+    <ItemsRootNamespace>Dicom.Imaging.Codec</ItemsRootNamespace>
+    <ItemsProjectName>DICOM.Native.Shared</ItemsProjectName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\colortransform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\config.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\context.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\contextrunmode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\decoderstrategy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\defaulttraits.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\encoderstrategy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\header.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\interface.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\lookuptable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\losslesstraits.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\processline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\scan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\util.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\bio.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cidx_manager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cio.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\dwt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\event.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\fix.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\image.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\indexbox_manager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\int.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k_lib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jp2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jpt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mct.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mqc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\openjpeg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_config.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\opj_malloc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\pi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\raw.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1_luts.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tcd.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tgt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.ArrayCopy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLS.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLSParameters.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegParameters.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.PixelData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Rle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg.i" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\header.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\interface.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\jpegls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\CharLS\stdafx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\bio.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cidx_manager.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\cio.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\dwt.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\event.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\image.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\j2k_lib.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jp2.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\jpt.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mct.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\mqc.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\openjpeg.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\phix_manager.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\pi.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\ppix_manager.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\raw.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t1.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\t2.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tcd.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tgt.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\thix_manager.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\DICOM [Native]\OpenJPEG\tpix_manager.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLS.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegLSParameters.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.JpegParameters.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Jpeg_8.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.PixelData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Dicom.Imaging.Codec.Rle.cpp" />
+  </ItemGroup>
+</Project>
