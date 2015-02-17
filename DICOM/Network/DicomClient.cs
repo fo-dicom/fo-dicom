@@ -216,8 +216,7 @@ namespace Dicom.Network {
 					return;
 				}
 
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				_timer = new Timer(OnReleaseTimeout, null, 2500, Timeout.Infinite);
 			}
 
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
