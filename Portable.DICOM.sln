@@ -74,10 +74,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DICOM", "DICOM", "{0D16929C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Phone", "DICOM.Phone\DICOM.Phone.csproj", "{9E800271-B9A4-49A0-AF25-6E5D57133722}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "DICOM\DICOM.Shared.shproj", "{52AAD5E5-C181-4F3B-9F64-C2970B4A9710}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Store.DICOM.Native\DICOM.Native.Shared.vcxitems*{010a89b2-89f8-46c6-bde0-631e252bf984}*SharedItemsImports = 4
 		Store.DICOM.Native\DICOM.Native.Shared.vcxitems*{a7c581aa-f132-4a50-9ca9-6528a54663a8}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{52aad5e5-c181-4f3b-9f64-c2970b4a9710}*SharedItemsImports = 13
 		Store.DICOM.Native\DICOM.Native.Shared.vcxitems*{a03d1d52-94d1-4805-8e87-6d1748f75342}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -347,6 +350,7 @@ Global
 		{A7C581AA-F132-4A50-9CA9-6528A54663A8} = {1CF1D770-2CD3-475B-9DF8-1A7BE4E11D2F}
 		{A03D1D52-94D1-4805-8E87-6D1748F75342} = {1CF1D770-2CD3-475B-9DF8-1A7BE4E11D2F}
 		{9E800271-B9A4-49A0-AF25-6E5D57133722} = {0D16929C-08F8-4402-BA19-0C82127AC10D}
+		{52AAD5E5-C181-4F3B-9F64-C2970B4A9710} = {0D16929C-08F8-4402-BA19-0C82127AC10D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
