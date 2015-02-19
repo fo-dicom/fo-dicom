@@ -82,12 +82,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
-      <Link>Dictionaries\DICOM Dictionary.xml</Link>
-    </None>
-    <None Include="..\DICOM\Dictionaries\Private Dictionary.xml">
-      <Link>Dictionaries\Private Dictionary.xml</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
