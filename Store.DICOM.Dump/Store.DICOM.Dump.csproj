@@ -15,7 +15,7 @@
     <PackageCertificateKeyFile>Store.DICOM.Dump_TemporaryKey.pfx</PackageCertificateKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <PackageCertificateThumbprint>990C1CD76669239089F3342456F687F591673F83</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>AE85EC66232CCC80EEE628FADB6F569D627ABB08</PackageCertificateThumbprint>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <TargetFrameworkVersion />
