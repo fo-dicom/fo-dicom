@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>fd7f017a-1f94-4998-af6c-9f324fbf1180</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Dicom</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLossless14SV1Codec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegNativeCodec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegProcess1Codec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegProcess4Codec.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomRleCodecImpl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpegParametersExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativePixelDataExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Log\ConsoleLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Log\MetroLogManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Windows\UI\ColorExtensions.cs" />
+  </ItemGroup>
+</Project>

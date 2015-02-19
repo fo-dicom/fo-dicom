@@ -201,24 +201,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\PDU.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LosslessCodec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpeg2000LossyCodec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLossless14Codec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLossless14SV1Codec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLsLosslessCodec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegNativeCodec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegProcess1Codec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomJpegProcess4Codec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\DicomRleCodecImpl.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpegLsParametersExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativeJpegParametersExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Imaging\Codec\NativePixelDataExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Log\ConsoleLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Dicom\Log\MetroLogManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomCodeItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomContentItem.cs" />
@@ -231,6 +213,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Threading\ActionQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\ThreadPoolQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\WorkQueue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Platform\Windows\UI\ColorExtensions.cs" />
   </ItemGroup>
 </Project>
