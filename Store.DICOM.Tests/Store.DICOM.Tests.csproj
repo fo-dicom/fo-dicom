@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Store.DICOM.Tests_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>ADBFDA253B437F10C0D5137D6C4A33053A244C4B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2E682F0A29E79F800A338E58983DC32010450C58</PackageCertificateThumbprint>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
@@ -112,7 +112,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="packages.config" />
-    <None Include="Store.DICOM.Tests.TemporaryKey.pfx" />
     <None Include="Store.DICOM.Tests_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
