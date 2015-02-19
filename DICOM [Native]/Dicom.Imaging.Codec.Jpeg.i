@@ -339,6 +339,10 @@ void JPEGCODEC::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 		newPixelData->AddFrame(buffer);
 	} finally {
 		MemoryBuffer = nullptr;
+		if(frameArray != nullptr){
+			delete frameArray;
+			frameArray = nullptr;
+		}
 	}
 }
 
