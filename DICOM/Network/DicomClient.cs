@@ -80,7 +80,7 @@ namespace Dicom.Network {
 				if (_service._timer != null)
 					_service._timer.Change(Timeout.Infinite, Timeout.Infinite);
 			} else
-				_requests.Add(request);
+				_requests.Add(request); 
 		}
 
 		public void Send(string host, int port, bool useTls, string callingAe, string calledAe) {
@@ -262,38 +262,57 @@ namespace Dicom.Network {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationRejectedException(result, source, reason);
-				_client._async.Set();
+			  var client = _client;
+			  if (client != null)
+			  {
+			    client._exception = new DicomAssociationRejectedException(result, source, reason);
+			    client._async.Set();
+			  }
 			}
 
 			public void OnReceiveAssociationReleaseResponse() {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._async.Set();
+        var client = _client;
+        if (client != null)
+        {
+          client._async.Set();
+			  }
 			}
 
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationAbortedException(source, reason);
-				_client._async.Set();
+        var client = _client;
+        if (client != null)
+        {
+          client._exception = new DicomAssociationAbortedException(source, reason);
+			    client._async.Set();
+			  }
 			}
 
 			public void OnConnectionClosed(int errorCode) {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				if (errorCode != 0)
-					_client._exception = new SocketException(errorCode);
+			  var client = _client;
+			  if (client != null)
+			  {
+			    if (errorCode != 0) 
+            client._exception = new SocketException(errorCode);
 
-				try {
-					if (_client._async != null)
-						_client._async.Set();
-				} catch {
-					// event handler has already fired
-				}
+			    try
+			    {
+			      if (client._async != null) 
+              client._async.Set();
+			    }
+			    catch
+			    {
+			      // event handler has already fired
+			    }
+			  }
 			}
 		}
 	}
