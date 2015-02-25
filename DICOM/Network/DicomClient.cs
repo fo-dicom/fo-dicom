@@ -95,6 +95,8 @@ namespace Dicom.Network {
 			else
 				_client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
 
+            //_client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+
 			Stream stream = _client.GetStream();
 
 			if (useTls) {

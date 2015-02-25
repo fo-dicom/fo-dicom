@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM", "DICOM\DICOM.csproj", "{D6E309B0-4837-459E-8C85-ABC268440D62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{16FD143D-6E25-4CD9-AEC0-B096644B0045}"
@@ -56,10 +58,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM Media", "Examples\DIC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Print SCP", "Examples\Print SCP\Print SCP.csproj", "{7D7F92D4-0992-42A4-8290-4770BCA67F49}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7FF8F81D-C181-485E-9093-81CAF3C2A2A4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DICOM.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -200,19 +206,22 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{0331D451-7C7A-4DB7-A11D-61708F2E8D05} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{63088DEC-9F99-404C-B4E8-D823D2A0018F} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{1B3557D4-1146-428A-AEC9-12CADF994527} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
-		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{D9AF008C-EE25-49B3-96F6-E81B8A59D017} = {96052E4E-90EF-431F-A599-8723506A424B}
-		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC} = {96052E4E-90EF-431F-A599-8723506A424B}
-		{7D7F92D4-0992-42A4-8290-4770BCA67F49} = {96052E4E-90EF-431F-A599-8723506A424B}
 		{8C433ABF-AFE5-4A76-BEBC-74116EC3460E} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
 		{1C0C476C-507D-453F-90C2-C1C5E4B35BEF} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
+		{00A56C9C-8237-4CB8-ACC9-437C8D366EFC} = {96052E4E-90EF-431F-A599-8723506A424B}
+		{7D7F92D4-0992-42A4-8290-4770BCA67F49} = {96052E4E-90EF-431F-A599-8723506A424B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DICOM.vsmdi
 	EndGlobalSection
 EndGlobal
