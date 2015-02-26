@@ -1,14 +1,17 @@
 ﻿namespace DICOM__Unit_Tests_
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
 
   using Dicom;
   using Dicom.IO;
   using Dicom.IO.Buffer;
 
   using Newtonsoft.Json;
+  using Newtonsoft.Json.Linq;
 
   using Xunit;
 
@@ -25,6 +28,38 @@
     {
       var target = BuildZooDataset();
       VerifyJsonTripleTrip(target);
+    }
+
+    /// <summary>
+    /// Tests a "triple trip" test of serializing, de-serializing and re-serializing for a DICOM dataset containing a zoo of different types.
+    /// </summary>
+    [Fact]
+    public void SerializeAndDeserializeAllVRs()
+    {
+      var target = BuildAllTypesDataset_();
+
+      foreach (DicomVR vr in typeof(DicomVR).GetFields(BindingFlags.Static | BindingFlags.Public)
+        .Where(field => field.FieldType == typeof(DicomVR))
+        .Select(field => field.GetValue(null))
+        .Where(vr => vr != DicomVR.NONE))
+        Assert.True(target.Any(item => item.ValueRepresentation == vr));
+
+      VerifyJsonTripleTrip(target);
+    }
+
+    /// <summary>
+    /// Tests that empty strings serialize to null, and not "", per PS3.18, F.3.1 "Native DICOM Model XML"
+    /// </summary>
+    [Fact]
+    public void EmptyStringsShouldSerializeAsNull()
+    {
+      var ds = new DicomDataset { { DicomTag.PatientAge, new[] { "1Y", "", "3Y" } } };
+      var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
+      dynamic obj = JObject.Parse(json);
+      Assert.Equal("1Y", (string)obj["00101010"].Value[0]);
+      Assert.Equal(null, (string)obj["00101010"].Value[1]);
+      Assert.NotEqual("", (string)obj["00101010"].Value[1]);
+      Assert.Equal("3Y", (string)obj["00101010"].Value[2]);
     }
 
     /// <summary>
@@ -138,7 +173,7 @@
         return a == b;
       else if (a == b)
         return true;
-      else if (a.ValueRepresentation != b.ValueRepresentation || a.Tag != b.Tag)
+      else if (a.ValueRepresentation != b.ValueRepresentation || (uint)a.Tag != (uint)b.Tag)
         return false;
       else if (a is DicomElement)
       {
@@ -207,6 +242,46 @@
       }
     }
 
+    private static DicomDataset BuildAllTypesDataset_()
+    {
+      var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+      return new DicomDataset {                         
+                           new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
+                           new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator), "AETITLE"),
+                           new DicomAgeString(new DicomTag(3, 0x1003, privateCreator), "34y"),
+                           new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator), new[] { DicomTag.SOPInstanceUID }),
+                           new DicomCodeString(new DicomTag(3, 0x1005, privateCreator), "FOOBAR"),
+                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), "20000229"),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { 1.1m }),
+                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), "20141231194212"),
+                           new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator), new[] { 0.25f }),
+                           new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator), new[] { Math.PI }),
+                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), 2147483647),
+                           new DicomLongString(new DicomTag(3, 0x100c, privateCreator), "(╯°□°）╯︵ ┻━┻"),
+                           new DicomLongText(new DicomTag(3, 0x100d, privateCreator), "┬──┬ ノ( ゜-゜ノ)"),
+                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[] { 1, 2, 3, 0, 255 }),
+                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[] { 1.0, 2.5 }),
+                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[] { 1.0f, 2.9f }),
+                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[] { 0xffff, 0x0000, 0x1234 }),
+                           new DicomPersonName(new DicomTag(3, 0x1012, privateCreator), "Morrison-Jones^Susan^^^Ph.D."),
+                           new DicomShortString(new DicomTag(3, 0x1013, privateCreator), "顔文字"),
+                           new DicomSignedLong(new DicomTag(3, 0x1104, privateCreator), -65538),
+                           new DicomSequence(new DicomTag(3, 0x1015, privateCreator), new [] { 
+                             new DicomDataset { new DicomShortText(new DicomTag(3, 0x1016, privateCreator), "ಠ_ಠ") } 
+                           }),
+                           new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator), -32768),
+                           new DicomShortText(new DicomTag(3, 0x1018, privateCreator), "ಠ_ಠ"),
+                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), "123456"),
+                           new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), "Hmph."),
+                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), DicomUID.CTImageStorage),
+                           new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator), 0xffffffff),
+                           new DicomUnknown(new DicomTag(3, 0x101d, privateCreator), new byte[] { 1, 2, 3, 0, 255 }),
+                           new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), "http://example.com?q=1"),
+                           new DicomUnsignedShort(new DicomTag(3, 0x101f, privateCreator), 0xffff),
+                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), "unlimited!") 
+                         };
+    }
+
     private static DicomDataset BuildZooDataset()
     {
       var target = new DicomDataset
@@ -215,7 +290,7 @@
                              { DicomTag.SOPClassUID, DicomUID.RTPlanStorage },
                              { DicomTag.SOPInstanceUID, new DicomUIDGenerator().Generate() },
                              { DicomTag.SeriesInstanceUID, new DicomUID[] { } },
-                             { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } }
+                             { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } },
                            };
 
       target.Add<DicomSequence>(DicomTag.ControlPointSequence, null);
@@ -225,8 +300,7 @@
         beam.Add(DicomTag.BeamNumber, beamNumber);
         beam.Add(DicomTag.BeamName, string.Format("Beam #{0}", beamNumber));
         return beam;
-      }
-          ).ToList();
+      }).ToList();
       beams.Insert(1, null);
       target.Add(DicomTag.BeamSequence, beams.ToArray());
       return target;

@@ -3,17 +3,18 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Dicom.IO
 {
     public class JsonDicomConverter : JsonConverter
     {
-      private bool writeTagsAsKeywords_;
+        private bool writeTagsAsKeywords_;
 
-      public JsonDicomConverter(bool writeTagsAsKeywords = false)
-      {
-        writeTagsAsKeywords_ = writeTagsAsKeywords;
-      }
+        public JsonDicomConverter(bool writeTagsAsKeywords = false)
+        {
+            writeTagsAsKeywords_ = writeTagsAsKeywords;
+        }
 
         #region JsonConverter overrides
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -95,28 +96,31 @@ namespace Dicom.IO
                 case "AT": item = new DicomAttributeTag(tag, ((string[])data).Select(s => ParseTag(s)).ToArray()); break;
                 case "CS": item = new DicomCodeString(tag, (string[])data); break;
                 case "DA": item = new DicomDate(tag, (string[])data); break;
-                case "DS": item = new DicomDecimalString(tag, (string[])data); break;
+                case "DS": item = new DicomDecimalString(tag, (decimal[])data); break;
                 case "DT": item = new DicomDateTime(tag, (string[])data); break;
-                case "FD": item = new DicomFloatingPointDouble(tag, ((string[])data).Select(s => double.Parse(s)).ToArray()); break;
-                case "FL": item = new DicomFloatingPointSingle(tag, ((string[])data).Select(s => float.Parse(s)).ToArray()); break;
-                case "IS": item = new DicomIntegerString(tag, (string[])data); break;
+                case "FD": item = new DicomFloatingPointDouble(tag, (double[])data); break;
+                case "FL": item = new DicomFloatingPointSingle(tag, (float[])data); break;
+                case "IS": item = new DicomIntegerString(tag, (int[])data); break;
                 case "LO": item = new DicomLongString(tag, (string[])data); break;
-                case "LT": item = new DicomLongText(tag, ((string[])data)[0]); break;
+                case "LT": item = new DicomLongText(tag, ((string[])data).Single()); break;
                 case "OB": item = new DicomOtherByte(tag, (IByteBuffer)data); break;
+                case "OD": item = new DicomOtherDouble(tag, (IByteBuffer)data); break;
                 case "OF": item = new DicomOtherFloat(tag, (IByteBuffer)data); break;
                 case "OW": item = new DicomOtherWord(tag, (IByteBuffer)data); break;
                 case "PN": item = new DicomPersonName(tag, (string[])data); break;
                 case "SH": item = new DicomShortString(tag, (string[])data); break;
-                case "SL": item = new DicomSignedLong(tag, ((string[])data).Select(s => int.Parse(s)).ToArray()); break;
-                case "SS": item = new DicomSignedShort(tag, ((string[])data).Select(s => short.Parse(s)).ToArray()); break;
+                case "SL": item = new DicomSignedLong(tag, (int[])data); break;
+                case "SS": item = new DicomSignedShort(tag, (short[])data); break;
                 case "ST": item = new DicomShortText(tag, ((string[])data)[0]); break;
                 case "SQ": item = new DicomSequence(tag, ((DicomDataset[])data)); break;
                 case "TM": item = new DicomTime(tag, (string[])data); break;
+                case "UC": item = new DicomUnlimitedCharacters(tag, ((string[])data).Single()); break;
                 case "UI": item = new DicomUniqueIdentifier(tag, (string[])data); break;
-                case "UL": item = new DicomUnsignedLong(tag, ((string[])data).Select(s => uint.Parse(s)).ToArray()); break;
-                case "UN": item = new DicomUnknown(tag, (byte[])data); break;
-                case "US": item = new DicomUnsignedShort(tag, ((string[])data).Select(s => ushort.Parse(s)).ToArray()); break;
-                case "UT": item = new DicomUnlimitedText(tag, ((string[])data)[0]); break;
+                case "UL": item = new DicomUnsignedLong(tag, (uint[])data); break;
+                case "UN": item = new DicomUnknown(tag, (IByteBuffer)data); break;
+                case "UR": item = new DicomUniversalResource(tag, ((string[])data).Single()); break;
+                case "US": item = new DicomUnsignedShort(tag, (ushort[])data); break;
+                case "UT": item = new DicomUnlimitedText(tag, ((string[])data).Single()); break;
                 default:
                     throw new NotSupportedException("Unsupported value representation");
             }
@@ -140,31 +144,73 @@ namespace Dicom.IO
                     WriteJsonSQ(writer, (DicomSequence)item, serializer);
                     break;
                 case "OB":
-                // case "OD": /* Currently unsupported by fodicom, and does not appear in the PS3.5 Data Dictionary...
+                case "OD":
                 case "OF":
                 case "OW":
                 case "UN":
                     WriteJsonOX(writer, (DicomElement)item);
                     break;
-              default:
-                    WriteJsonElement(writer, (DicomElement)item);
+                case "FL":
+                    WriteJsonElement<float>(writer, (DicomElement)item);
+                    break;
+                case "FD":
+                    WriteJsonElement<double>(writer, (DicomElement)item);
+                    break;
+                case "IS":
+                case "SL":
+                    WriteJsonElement<int>(writer, (DicomElement)item);
+                    break;
+                case "SS":
+                    WriteJsonElement<short>(writer, (DicomElement)item);
+                    break;
+                case "UL":
+                    WriteJsonElement<uint>(writer, (DicomElement)item);
+                    break;
+                case "US":
+                    WriteJsonElement<ushort>(writer, (DicomElement)item);
+                    break;
+                case "DS":
+                    WriteJsonElement<decimal>(writer, (DicomElement)item);
+                    break;
+                case "AT":
+                    WriteJsonAT(writer, (DicomElement)item);
+                    break;
+                default:
+                    WriteJsonElement<string>(writer, (DicomElement)item);
                     break;
             }
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonElement(JsonWriter writer, DicomElement elem)
+        private static void WriteJsonElement<T>(JsonWriter writer, DicomElement elem)
         {
             if (elem.Count != 0)
             {
                 writer.WritePropertyName("Value");
                 writer.WriteStartArray();
-                foreach (var val in elem.Get<string[]>())
+                foreach (var val in elem.Get<T[]>())
                 {
-                    if (String.IsNullOrEmpty(val))
+                    if (val == null || (typeof(T) == typeof(string) && val.Equals("")))
                         writer.WriteNull();
                     else
                         writer.WriteValue(val);
+                }
+                writer.WriteEndArray();
+            }
+        }
+
+        private static void WriteJsonAT(JsonWriter writer, DicomElement elem)
+        {
+            if (elem.Count != 0)
+            {
+                writer.WritePropertyName("Value");
+                writer.WriteStartArray();
+                foreach (var val in elem.Get<DicomTag[]>())
+                {
+                    if (val == null)
+                        writer.WriteNull();
+                    else
+                      writer.WriteValue(((uint)val).ToString("X8"));
                 }
                 writer.WriteEndArray();
             }
@@ -207,7 +253,7 @@ namespace Dicom.IO
 
                 foreach (var val in pn.Get<string[]>())
                 {
-                    if (String.IsNullOrEmpty(val))
+                    if (string.IsNullOrEmpty(val))
                     {
                         writer.WriteNull();
                     }
@@ -256,6 +302,28 @@ namespace Dicom.IO
                 case "PN":
                     data = ReadJsonPN(reader);
                     break;
+                case "FL":
+                    data = ReadJsonMultiNumber<float>(reader);
+                    break;
+                case "FD":
+                    data = ReadJsonMultiNumber<double>(reader);
+                    break;
+                case "IS":
+                case "SL":
+                    data = ReadJsonMultiNumber<int>(reader);
+                    break;
+                case "SS":
+                    data = ReadJsonMultiNumber<short>(reader);
+                    break;
+                case "UL":
+                    data = ReadJsonMultiNumber<uint>(reader);
+                    break;
+                case "US":
+                    data = ReadJsonMultiNumber<ushort>(reader);
+                    break;
+                case "DS":
+                    data = ReadJsonMultiNumber<decimal>(reader);
+                    break;
                 default:
                     data = ReadJsonMultiString(reader);
                     break;
@@ -299,6 +367,29 @@ namespace Dicom.IO
                     childStrings.Add(null);
                 else
                     childStrings.Add((string)reader.Value);
+                reader.Read();
+            }
+            if (reader.TokenType != JsonToken.EndArray)
+                throw new JsonReaderException("Malformed DICOM json");
+            var data = childStrings.ToArray();
+            reader.Read();
+            return data;
+        }
+
+        private static T[] ReadJsonMultiNumber<T>(JsonReader reader) 
+        {
+            reader.Read();
+            if (!(reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Value"))
+                throw new JsonReaderException("Malformed DICOM json");
+            var childStrings = new List<T>();
+            reader.Read();
+            if (reader.TokenType != JsonToken.StartArray)
+                throw new JsonReaderException("Malformed DICOM json");
+            reader.Read();
+            while (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
+            {
+                var token = JToken.Load(reader);
+                childStrings.Add(token.ToObject<T>());
                 reader.Read();
             }
             if (reader.TokenType != JsonToken.EndArray)
