@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace Dicom.IO
 {
@@ -381,20 +380,24 @@ namespace Dicom.IO
             reader.Read();
             if (!(reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Value"))
                 throw new JsonReaderException("Malformed DICOM json");
-            var childStrings = new List<T>();
+            var childValues = new List<T>();
             reader.Read();
             if (reader.TokenType != JsonToken.StartArray)
                 throw new JsonReaderException("Malformed DICOM json");
+            FloatParseHandling fph = reader.FloatParseHandling;
+            if (typeof(T) == typeof(decimal)) 
+                reader.FloatParseHandling = FloatParseHandling.Decimal;
             reader.Read();
             while (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
             {
-                var token = JToken.Load(reader);
-                childStrings.Add(token.ToObject<T>());
+                childValues.Add((T)Convert.ChangeType(reader.Value, typeof(T)));
                 reader.Read();
             }
+            if (typeof(T) == typeof(decimal))
+                reader.FloatParseHandling = fph;
             if (reader.TokenType != JsonToken.EndArray)
                 throw new JsonReaderException("Malformed DICOM json");
-            var data = childStrings.ToArray();
+            var data = childValues.ToArray();
             reader.Read();
             return data;
         }

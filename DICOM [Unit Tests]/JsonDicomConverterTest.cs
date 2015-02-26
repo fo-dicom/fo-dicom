@@ -1,7 +1,6 @@
 ﻿namespace DICOM__Unit_Tests_
 {
   using System;
-  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using System.Reflection;
@@ -48,7 +47,7 @@
     }
 
     /// <summary>
-    /// Tests that empty strings serialize to null, and not "", per PS3.18, F.3.1 "Native DICOM Model XML"
+    /// Tests that empty strings serialize to null, and not "", per PS3.18, F.2.5 "DICOM JSON Model Null Values"
     /// </summary>
     [Fact]
     public void EmptyStringsShouldSerializeAsNull()
@@ -179,6 +178,8 @@
       {
         if (b is DicomElement == false)
           return false;
+        else if (b is DicomStringElement && a is DicomDecimalString) 
+          return ((DicomDecimalString)a).Get<decimal[]>().SequenceEqual(((DicomDecimalString)b).Get<decimal[]>());
         else
           return ValueEquals(((DicomElement)a).Buffer, ((DicomElement)b).Buffer);
       }
@@ -252,7 +253,7 @@
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator), new[] { DicomTag.SOPInstanceUID }),
                            new DicomCodeString(new DicomTag(3, 0x1005, privateCreator), "FOOBAR"),
                            new DicomDate(new DicomTag(3, 0x1006, privateCreator), "20000229"),
-                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { 1.1m }),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { 9876543210123457m }),
                            new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), "20141231194212"),
                            new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator), new[] { 0.25f }),
                            new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator), new[] { Math.PI }),
