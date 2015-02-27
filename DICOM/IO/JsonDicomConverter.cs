@@ -29,11 +29,11 @@ namespace Dicom.IO
             writer.WriteStartObject();
             foreach (var item in dataset)
             {
-              var unknown = item.Tag.DictionaryEntry.MaskTag.Mask != 0;
-              if (writeTagsAsKeywords_ && item.Tag.DictionaryEntry != null && !unknown && String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false)
-                writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
-              else
-                writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
+                var unknown = item.Tag.DictionaryEntry == null || (String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false) || (item.Tag.DictionaryEntry.MaskTag != null && item.Tag.DictionaryEntry.MaskTag.Mask == 0);
+                if (writeTagsAsKeywords_ && !unknown)
+                    writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
+                else
+                    writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
                 WriteJsonDicomItem(writer, item, serializer);
             }
             writer.WriteEndObject();
