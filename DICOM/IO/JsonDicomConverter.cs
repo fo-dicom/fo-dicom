@@ -29,7 +29,8 @@ namespace Dicom.IO
             writer.WriteStartObject();
             foreach (var item in dataset)
             {
-              if (writeTagsAsKeywords_ && item.Tag.DictionaryEntry != null && item.Tag.DictionaryEntry != DicomDictionary.UnknownTag && String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false)
+              var unknown = item.Tag.DictionaryEntry.MaskTag.Mask != 0;
+              if (writeTagsAsKeywords_ && item.Tag.DictionaryEntry != null && !unknown && String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false)
                 writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
               else
                 writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
