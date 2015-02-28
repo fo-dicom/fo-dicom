@@ -14,7 +14,7 @@ namespace Dicom {
 				Name = name;
 
 			if (String.IsNullOrWhiteSpace(keyword))
-				Keyword = Name;
+				Keyword = Name.Replace(" ", "");
 			else
 				Keyword = keyword;
 
@@ -33,7 +33,7 @@ namespace Dicom {
 				Name = name;
 
 			if (String.IsNullOrWhiteSpace(keyword))
-				Keyword = Name;
+				Keyword = Name.Replace(" ", "");
 			else
 				Keyword = keyword;
 
