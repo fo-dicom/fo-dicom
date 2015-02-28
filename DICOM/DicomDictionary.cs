@@ -17,7 +17,8 @@ namespace Dicom {
 		#region Private Members
 		public readonly static DicomDictionaryEntry UnknownTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","xxxx"), "Unknown", "Unknown", DicomVM.VM_1_n, false, 
 			DicomVR.UN, DicomVR.AE, DicomVR.AS, DicomVR.AT, DicomVR.CS, DicomVR.DA, DicomVR.DS, DicomVR.DT, DicomVR.FD, DicomVR.FL, DicomVR.IS, DicomVR.LO, DicomVR.LT, DicomVR.OB, 
-			DicomVR.OF, DicomVR.OW, DicomVR.PN, DicomVR.SH, DicomVR.SL, DicomVR.SQ, DicomVR.SS, DicomVR.ST, DicomVR.TM, DicomVR.UI, DicomVR.UL, DicomVR.US, DicomVR.UT);
+			DicomVR.OD, DicomVR.OF, DicomVR.OW, DicomVR.PN, DicomVR.SH, DicomVR.SL, DicomVR.SQ, DicomVR.SS, DicomVR.ST, DicomVR.TM, DicomVR.UC, DicomVR.UI, DicomVR.UL, DicomVR.UR,
+			DicomVR.US, DicomVR.UT);
 
 		public readonly static DicomDictionaryEntry PrivateCreatorTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx", "00xx"), "Private Creator", "PrivateCreator", DicomVM.VM_1, false, DicomVR.LO);
 
