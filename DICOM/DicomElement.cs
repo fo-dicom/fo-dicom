@@ -296,11 +296,17 @@ namespace Dicom {
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-				return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
+				var x = ByteConverter.Get<Tv>(Buffer, item);
+
+				if (x as IConvertible == null) return (T)(object)x.ToString();
+				return (T)(object)((IConvertible)x).ToString(CultureInfo.InvariantCulture);
 			}
 
 			if (typeof(T) == typeof(string[])) {
-				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
+				return (T)(object)ByteConverter.ToArray<Tv>(Buffer)
+					.Select(x => (x as IConvertible == null) ?
+						x.ToString() :
+						((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
 			}
 
 #if NETFX_CORE
@@ -495,7 +501,7 @@ namespace Dicom {
 	/// <summary>Decimal String (DS)</summary>
 	public class DicomDecimalString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomDecimalString(DicomTag tag, params decimal[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray()) {
+		public DicomDecimalString(DicomTag tag, params decimal[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray()) {
 		}
 
 		public DicomDecimalString(DicomTag tag, params string[] values) : base(tag, DicomEncoding.Default, values) {
@@ -626,7 +632,7 @@ namespace Dicom {
 	/// <summary>Integer String (IS)</summary>
 	public class DicomIntegerString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomIntegerString(DicomTag tag, params int[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray()) {
+		public DicomIntegerString(DicomTag tag, params int[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray()) {
 		}
 
 		public DicomIntegerString(DicomTag tag, params string[] values) : base(tag, DicomEncoding.Default, values) {
