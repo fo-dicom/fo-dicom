@@ -323,7 +323,11 @@ namespace Dicom {
 		public RegexDicomMatchRule(DicomTag tag, string pattern) {
 			_tag = tag;
 			_pattern = pattern;
-			_regex = new Regex(_pattern, RegexOptions.Compiled);
+#if NETFX_CORE
+			_regex = new Regex(_pattern);
+#else
+            _regex = new Regex(_pattern, RegexOptions.Compiled);
+#endif
 		}
 		#endregion
 

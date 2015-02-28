@@ -16,6 +16,7 @@ namespace Dicom.Log {
 			new DicomDatasetWalker(file.Dataset).Walk(logger);
 		}
 
+#if !NETFX_CORE
 		public static void WriteToConsole(this IEnumerable<DicomItem> dataset) {
 			var log = new StringBuilder();
 			var dumper = new DicomDatasetDumper(log, 80, 60);
@@ -30,6 +31,7 @@ namespace Dicom.Log {
 			new DicomDatasetWalker(file.Dataset).Walk(dumper);
 			Console.WriteLine(log);
 		}
+#endif
 
 		public static string WriteToString(this IEnumerable<DicomItem> dataset) {
 			var log = new StringBuilder();

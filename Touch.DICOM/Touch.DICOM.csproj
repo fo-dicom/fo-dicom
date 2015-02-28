@@ -1,0 +1,685 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{60A2DAF3-E204-4D17-8441-0548F3EDF06D}</ProjectGuid>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Dicom</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Dicom</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG;TOUCH</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <DefineConstants>TOUCH</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="monotouch" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
+      <Link>DatabaseQueryTransformRule.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDataException.cs">
+      <Link>DicomDataException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDataset.cs">
+      <Link>DicomDataset.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDatasetExtensions.cs">
+      <Link>DicomDatasetExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDatasetWalker.cs">
+      <Link>DicomDatasetWalker.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDateRange.cs">
+      <Link>DicomDateRange.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDictionary.cs">
+      <Link>DicomDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDictionaryEntry.cs">
+      <Link>DicomDictionaryEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDictionaryReader.cs">
+      <Link>DicomDictionaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomElement.cs">
+      <Link>DicomElement.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomEncoding.cs">
+      <Link>DicomEncoding.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomException.cs">
+      <Link>DicomException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFile.cs">
+      <Link>DicomFile.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFileException.cs">
+      <Link>DicomFileException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFileExtensions.cs">
+      <Link>DicomFileExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFileFormat.cs">
+      <Link>DicomFileFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFileMetaInformation.cs">
+      <Link>DicomFileMetaInformation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFragmentSequence.cs">
+      <Link>DicomFragmentSequence.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomImplementation.cs">
+      <Link>DicomImplementation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomItem.cs">
+      <Link>DicomItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomMaskedTag.cs">
+      <Link>DicomMaskedTag.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomMatchRules.cs">
+      <Link>DicomMatchRules.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomParseable.cs">
+      <Link>DicomParseable.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomPrivateCreator.cs">
+      <Link>DicomPrivateCreator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomRange.cs">
+      <Link>DicomRange.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomSequence.cs">
+      <Link>DicomSequence.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomTag.cs">
+      <Link>DicomTag.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomTagGenerated.cs">
+      <Link>DicomTagGenerated.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomTransferSyntax.cs">
+      <Link>DicomTransferSyntax.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomTransformRules.cs">
+      <Link>DicomTransformRules.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomUID.cs">
+      <Link>DicomUID.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomUIDGenerated.cs">
+      <Link>DicomUIDGenerated.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomUIDGenerator.cs">
+      <Link>DicomUIDGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomUIDPrivate.cs">
+      <Link>DicomUIDPrivate.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomVM.cs">
+      <Link>DicomVM.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomVR.cs">
+      <Link>DicomVR.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\EventAsyncResult.cs">
+      <Link>EventAsyncResult.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Extensions.cs">
+      <Link>Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Generators\DicomDictionaryGenerator.cs">
+      <Link>Generators\DicomDictionaryGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Generators\DicomTagGenerator.cs">
+      <Link>Generators\DicomTagGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Generators\DicomUIDGenerator.cs">
+      <Link>Generators\DicomUIDGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Algorithms\BilinearInterpolation.cs">
+      <Link>Imaging\Algorithms\BilinearInterpolation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\BitDepth.cs">
+      <Link>Imaging\BitDepth.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomCodecException.cs">
+      <Link>Imaging\Codec\DicomCodecException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomCodecExtensions.cs">
+      <Link>Imaging\Codec\DicomCodecExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomCodecParams.cs">
+      <Link>Imaging\Codec\DicomCodecParams.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomJpeg2000Codec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000Codec.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegCodec.cs">
+      <Link>Imaging\Codec\DicomJpegCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegLsCodec.cs">
+      <Link>Imaging\Codec\DicomJpegLsCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomRleCodec.cs">
+      <Link>Imaging\Codec\DicomRleCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\DicomTranscoder.cs">
+      <Link>Imaging\Codec\DicomTranscoder.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\IDicomCodec.cs">
+      <Link>Imaging\Codec\IDicomCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Color32.cs">
+      <Link>Imaging\Color32.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\ColorSpace.cs">
+      <Link>Imaging\ColorSpace.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\ColorTable.cs">
+      <Link>Imaging\ColorTable.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\DicomImage.cs">
+      <Link>Imaging\DicomImage.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\DicomImagingException.cs">
+      <Link>Imaging\DicomImagingException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\DicomOverlayData.cs">
+      <Link>Imaging\DicomOverlayData.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\DicomPixelData.cs">
+      <Link>Imaging\DicomPixelData.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\GrayscaleRenderOptions.cs">
+      <Link>Imaging\GrayscaleRenderOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\CompositeLUT.cs">
+      <Link>Imaging\LUT\CompositeLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\ILUT.cs">
+      <Link>Imaging\LUT\ILUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\InvertLUT.cs">
+      <Link>Imaging\LUT\InvertLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\ModalityLUT.cs">
+      <Link>Imaging\LUT\ModalityLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\OutputLUT.cs">
+      <Link>Imaging\LUT\OutputLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\PaddingLUT.cs">
+      <Link>Imaging\LUT\PaddingLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\PaletteColorLUT.cs">
+      <Link>Imaging\LUT\PaletteColorLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\PrecalculatedLUT.cs">
+      <Link>Imaging\LUT\PrecalculatedLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\LUT\VOILUT.cs">
+      <Link>Imaging\LUT\VOILUT.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\BitList.cs">
+      <Link>Imaging\Mathematics\BitList.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\Extensions.cs">
+      <Link>Imaging\Mathematics\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\Geometry3D.cs">
+      <Link>Imaging\Mathematics\Geometry3D.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\Matrix.cs">
+      <Link>Imaging\Mathematics\Matrix.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\MovingAverage.cs">
+      <Link>Imaging\Mathematics\MovingAverage.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Mathematics\Point2.cs">
+      <Link>Imaging\Mathematics\Point2.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\PhotometricInterpretation.cs">
+      <Link>Imaging\PhotometricInterpretation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\PixelDataConverter.cs">
+      <Link>Imaging\PixelDataConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\PixelRepresentation.cs">
+      <Link>Imaging\PixelRepresentation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\PlanarConfiguration.cs">
+      <Link>Imaging\PlanarConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\CompositeGraphic.cs">
+      <Link>Imaging\Render\CompositeGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\GenericGrayscalePipeline.cs">
+      <Link>Imaging\Render\GenericGrayscalePipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\IGraphic.cs">
+      <Link>Imaging\Render\IGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\ImageGraphic.cs">
+      <Link>Imaging\Render\ImageGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\IPipeline.cs">
+      <Link>Imaging\Render\IPipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\OverlayGraphic.cs">
+      <Link>Imaging\Render\OverlayGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\PaletteColorPipeline.cs">
+      <Link>Imaging\Render\PaletteColorPipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\PixelData.cs">
+      <Link>Imaging\Render\PixelData.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Render\RgbColorPipeline.cs">
+      <Link>Imaging\Render\RgbColorPipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\SpatialTransform.cs">
+      <Link>Imaging\SpatialTransform.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\ByteBufferByteSource.cs">
+      <Link>IO\Buffer\ByteBufferByteSource.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\ByteBufferEnumerator.cs">
+      <Link>IO\Buffer\ByteBufferEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\ByteBufferExtensions.cs">
+      <Link>IO\Buffer\ByteBufferExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\CompositeByteBuffer.cs">
+      <Link>IO\Buffer\CompositeByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\EmptyBuffer.cs">
+      <Link>IO\Buffer\EmptyBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\EndianByteBuffer.cs">
+      <Link>IO\Buffer\EndianByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\EvenLengthBuffer.cs">
+      <Link>IO\Buffer\EvenLengthBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\FileByteBuffer.cs">
+      <Link>IO\Buffer\FileByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\IByteBuffer.cs">
+      <Link>IO\Buffer\IByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\MemoryByteBuffer.cs">
+      <Link>IO\Buffer\MemoryByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\RangeByteBuffer.cs">
+      <Link>IO\Buffer\RangeByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\StreamByteBuffer.cs">
+      <Link>IO\Buffer\StreamByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\SwapByteBuffer.cs">
+      <Link>IO\Buffer\SwapByteBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Buffer\TempFileBuffer.cs">
+      <Link>IO\Buffer\TempFileBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\ByteConverter.cs">
+      <Link>IO\ByteConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\DicomIoException.cs">
+      <Link>IO\DicomIoException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Endian.cs">
+      <Link>IO\Endian.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\FileByteSource.cs">
+      <Link>IO\FileByteSource.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\FileByteTarget.cs">
+      <Link>IO\FileByteTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\FileReference.cs">
+      <Link>IO\FileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\IByteSource.cs">
+      <Link>IO\IByteSource.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\IByteTarget.cs">
+      <Link>IO\IByteTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\PinnedArray.cs">
+      <Link>IO\PinnedArray.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomDatasetReaderObserver.cs">
+      <Link>IO\Reader\DicomDatasetReaderObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomFileReader.cs">
+      <Link>IO\Reader\DicomFileReader.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReader.cs">
+      <Link>IO\Reader\DicomReader.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReaderCallbackObserver.cs">
+      <Link>IO\Reader\DicomReaderCallbackObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReaderEventArgs.cs">
+      <Link>IO\Reader\DicomReaderEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReaderException.cs">
+      <Link>IO\Reader\DicomReaderException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReaderMultiObserver.cs">
+      <Link>IO\Reader\DicomReaderMultiObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\IDicomReader.cs">
+      <Link>IO\Reader\IDicomReader.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\IDicomReaderObserver.cs">
+      <Link>IO\Reader\IDicomReaderObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\MockObserver.cs">
+      <Link>IO\Reader\MockObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\StreamByteSource.cs">
+      <Link>IO\StreamByteSource.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\StreamByteTarget.cs">
+      <Link>IO\StreamByteTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\TemporaryFile.cs">
+      <Link>IO\TemporaryFile.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\TemporaryFileRemover.cs">
+      <Link>IO\TemporaryFileRemover.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomDatasetExtensions.cs">
+      <Link>IO\Writer\DicomDatasetExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomFileWriter.cs">
+      <Link>IO\Writer\DicomFileWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomWriteLengthCalculator.cs">
+      <Link>IO\Writer\DicomWriteLengthCalculator.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomWriteOptions.cs">
+      <Link>IO\Writer\DicomWriteOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomWriter.cs">
+      <Link>IO\Writer\DicomWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
+      <Link>Log\ConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\DicomDatasetDumper.cs">
+      <Link>Log\DicomDatasetDumper.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\DicomDatasetLogger.cs">
+      <Link>Log\DicomDatasetLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\DicomParserLogger.cs">
+      <Link>Log\DicomParserLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\Extensions.cs">
+      <Link>Log\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\HexWriter.cs">
+      <Link>Log\HexWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\Logger.cs">
+      <Link>Log\Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\LogLevel.cs">
+      <Link>Log\LogLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\LogManager.cs">
+      <Link>Log\LogManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectory.cs">
+      <Link>Media\DicomDirectory.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectoryReaderObserver.cs">
+      <Link>Media\DicomDirectoryReaderObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectoryRecord.cs">
+      <Link>Media\DicomDirectoryRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectoryRecordCollection.cs">
+      <Link>Media\DicomDirectoryRecordCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectoryRecordType.cs">
+      <Link>Media\DicomDirectoryRecordType.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomFileScanner.cs">
+      <Link>Media\DicomFileScanner.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomAssociation.cs">
+      <Link>Network\DicomAssociation.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomAssociationAbortedException.cs">
+      <Link>Network\DicomAssociationAbortedException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomAssociationRejectedException.cs">
+      <Link>Network\DicomAssociationRejectedException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCEchoProvider.cs">
+      <Link>Network\DicomCEchoProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCEchoRequest.cs">
+      <Link>Network\DicomCEchoRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCEchoResponse.cs">
+      <Link>Network\DicomCEchoResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCFindRequest.cs">
+      <Link>Network\DicomCFindRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCFindResponse.cs">
+      <Link>Network\DicomCFindResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomClient.cs">
+      <Link>Network\DicomClient.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCMoveRequest.cs">
+      <Link>Network\DicomCMoveRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCMoveResponse.cs">
+      <Link>Network\DicomCMoveResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCommandField.cs">
+      <Link>Network\DicomCommandField.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCStoreRequest.cs">
+      <Link>Network\DicomCStoreRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomCStoreResponse.cs">
+      <Link>Network\DicomCStoreResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomMessage.cs">
+      <Link>Network\DicomMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNActionRequest.cs">
+      <Link>Network\DicomNActionRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNActionResponse.cs">
+      <Link>Network\DicomNActionResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNCreateRequest.cs">
+      <Link>Network\DicomNCreateRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNCreateResponse.cs">
+      <Link>Network\DicomNCreateResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNDeleteRequest.cs">
+      <Link>Network\DicomNDeleteRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNDeleteResponse.cs">
+      <Link>Network\DicomNDeleteResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNetworkException.cs">
+      <Link>Network\DicomNetworkException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNEventReportRequest.cs">
+      <Link>Network\DicomNEventReportRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNEventReportResponse.cs">
+      <Link>Network\DicomNEventReportResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNGetRequest.cs">
+      <Link>Network\DicomNGetRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNGetResponse.cs">
+      <Link>Network\DicomNGetResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNSetRequest.cs">
+      <Link>Network\DicomNSetRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomNSetResponse.cs">
+      <Link>Network\DicomNSetResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomPresentationContext.cs">
+      <Link>Network\DicomPresentationContext.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomPresentationContextCollection.cs">
+      <Link>Network\DicomPresentationContextCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomPriority.cs">
+      <Link>Network\DicomPriority.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomQueryRetrieveLevel.cs">
+      <Link>Network\DicomQueryRetrieveLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomRequest.cs">
+      <Link>Network\DicomRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomResponse.cs">
+      <Link>Network\DicomResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomServer.cs">
+      <Link>Network\DicomServer.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomService.cs">
+      <Link>Network\DicomService.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomServiceOptions.cs">
+      <Link>Network\DicomServiceOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomStatus.cs">
+      <Link>Network\DicomStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomTimeout.cs">
+      <Link>Network\DicomTimeout.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomCEchoProvider.cs">
+      <Link>Network\IDicomCEchoProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomCFindProvider.cs">
+      <Link>Network\IDicomCFindProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomCMoveProvider.cs">
+      <Link>Network\IDicomCMoveProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomCStoreProvider.cs">
+      <Link>Network\IDicomCStoreProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomNServiceProvider.cs">
+      <Link>Network\IDicomNServiceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomServiceProvider.cs">
+      <Link>Network\IDicomServiceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\IDicomServiceUser.cs">
+      <Link>Network\IDicomServiceUser.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\PDU.cs">
+      <Link>Network\PDU.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StringExtensions.cs">
+      <Link>StringExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomCodeItem.cs">
+      <Link>StructuredReport\DicomCodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomContentItem.cs">
+      <Link>StructuredReport\DicomContentItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomMeasuredValue.cs">
+      <Link>StructuredReport\DicomMeasuredValue.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomReferencedSOP.cs">
+      <Link>StructuredReport\DicomReferencedSOP.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomStructuredReport.cs">
+      <Link>StructuredReport\DicomStructuredReport.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\StructuredReport\DicomStructuredReportException.cs">
+      <Link>StructuredReport\DicomStructuredReportException.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Threading\ActionCallback.cs">
+      <Link>Threading\ActionCallback.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Threading\ActionQueue.cs">
+      <Link>Threading\ActionQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Threading\CompoundAction.cs">
+      <Link>Threading\CompoundAction.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Threading\ThreadPoolQueue.cs">
+      <Link>Threading\ThreadPoolQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Threading\WorkQueue.cs">
+      <Link>Threading\WorkQueue.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\DICOM\Dictionaries\DICOM Dictionary.xml">
+      <Link>Dictionaries\DICOM Dictionary.xml</Link>
+    </None>
+    <None Include="..\DICOM\Dictionaries\Private Dictionary.xml">
+      <Link>Dictionaries\Private Dictionary.xml</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
+      <Link>Dictionaries\DICOM Dictionary.xml.gz</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DICOM\Dictionaries\Private Dictionary.xml.gz">
+      <Link>Dictionaries\Private Dictionary.xml.gz</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+</Project>

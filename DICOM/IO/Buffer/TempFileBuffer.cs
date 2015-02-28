@@ -8,8 +8,10 @@ namespace Dicom.IO.Buffer {
 
 		public TempFileBuffer(byte[] data) {
 			_file = new TemporaryFile();
-
-			File.WriteAllBytes(_file.Name, data);
+		    using (var stream = File.OpenWrite(_file.Name))
+		    {
+                stream.Write(data, 0, data.Length);
+		    }
 			_size = (uint)data.Length;
 		}
 
@@ -22,7 +24,16 @@ namespace Dicom.IO.Buffer {
 		}
 
 		public byte[] Data {
-			get { return File.ReadAllBytes(_file.Name); }
+		    get
+		    {
+		        using (var stream = File.OpenRead(_file.Name))
+		        {
+		            var count = stream.Length;
+		            var buffer = new byte[count];
+		            stream.Read(buffer, 0, (int)count);
+		            return buffer;
+		        }
+		    }
 		}
 
 		public byte[] GetByteRange(int offset, int count) {

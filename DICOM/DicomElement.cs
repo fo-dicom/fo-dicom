@@ -35,7 +35,7 @@ namespace Dicom {
 			}
 		}
 
-		public abstract T Get<T>(int item = -1);
+ 		public abstract T Get<T>(int item = -1);
 	}
 
 	/// <summary>
@@ -85,7 +85,11 @@ namespace Dicom {
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(StringValue);
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum())
+#else
 			if (typeof(T).IsEnum)
+#endif
 				return (T)Enum.Parse(typeof(T), StringValue, true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -141,11 +145,43 @@ namespace Dicom {
 			if (typeof(T).IsSubclassOf(typeof(DicomParseable)))
 				return (T)DicomParseable.Parse<T>(_values[item]);
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum())
+#else
 			if (typeof(T).IsEnum)
+#endif
 				return (T)Enum.Parse(typeof(T), _values[item], true);
 
 			throw new InvalidCastException("Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
 		}
+
+#if TOUCH
+		internal string GetString(int item) {
+			LoadValues ();
+			if (item == -1)
+				return StringValue;
+
+			if (item < 0 || item >= Count)
+				throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
+			return _values[item];
+		}
+
+		internal string[] GetStrings() {
+			LoadValues ();
+			return _values;
+		}
+
+		private void LoadValues() {
+			if (_values == null) {
+				if (String.IsNullOrEmpty(StringValue))
+					_values = new string[0];
+				else
+					_values = StringValue.Split('\\');
+				_count = _values.Length;
+			}
+		}
+#endif
 	}
 
 	public abstract class DicomDateElement : DicomMultiStringElement {
@@ -177,7 +213,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (typeof(T) == typeof(DicomDateRange)) {
+#if TOUCH
+				string[] vals = base.GetString(item).Split('-');
+#else
 				string[] vals = base.Get<string>(item).Split('-');
+#endif
 				var range = new DicomDateRange();
 				if (vals.Length >= 2) {
 					if (!String.IsNullOrEmpty(vals[0]))
@@ -192,7 +232,11 @@ namespace Dicom {
 			}
 
 			if (_values == null) {
+#if TOUCH
+				string[] vals = base.GetStrings();
+#else
 				string[] vals = base.Get<string[]>();
+#endif
 				if (vals.Length == 1 && String.IsNullOrEmpty(vals[0]))
 					_values = new DateTime[0];
 				else {
@@ -262,7 +306,11 @@ namespace Dicom {
 				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => (x as IConvertible == null) ? x.ToString() : ((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum()) {
+#else
 			if (typeof(T).IsEnum) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -270,7 +318,11 @@ namespace Dicom {
 				return (T)Enum.Parse(typeof(T), s, true);
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsValueType()) {
+#else
 			if (typeof(T).IsValueType) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -470,7 +522,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object)) {
@@ -597,7 +653,11 @@ namespace Dicom {
 				return base.Get<T>(item);
 
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(object)) {
@@ -608,14 +668,22 @@ namespace Dicom {
 				return (T)(object)_values;
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsEnum()) {
+#else
 			if (typeof(T).IsEnum) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				return (T)(object)_values[item];
 			}
 
+#if NETFX_CORE
+			if (typeof(T).IsValueType()) {
+#else
 			if (typeof(T).IsValueType) {
+#endif
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -1090,7 +1158,11 @@ namespace Dicom {
 		private DicomUID[] _values;
 		public override T Get<T>(int item = -1) {
 			if (_values == null) {
+#if TOUCH
+				_values = base.GetStrings().Select(x => DicomUID.Parse(x)).ToArray();
+#else
 				_values = base.Get<string[]>().Select(x => DicomUID.Parse(x)).ToArray();
+#endif
 			}
 
 			if (typeof(T) == typeof(DicomTransferSyntax)) {

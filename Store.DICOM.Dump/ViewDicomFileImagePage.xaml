@@ -1,0 +1,99 @@
+﻿<Page x:Name="Self"
+    x:Class="Store.DICOM.Dump.ViewDicomFileImagePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Store.DICOM.Dump"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="TransferSyntaxAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+            <Setter Property="AutomationProperties.AutomationId" Value="TransferSyntaxAppBarButton"/>
+            <Setter Property="AutomationProperties.Name" Value="Transfer Syntax"/>
+            <Setter Property="Content" Value="&#xE17C;"/>
+        </Style>
+    </Page.Resources>
+    <Grid Background="#FF003060">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="116"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackButton" IsEnabled="{Binding Frame.CanGoBack, ElementName=Self}" Click="OnBackButtonClick" Style="{StaticResource BackButtonStyle}"/>
+            <TextBlock x:Name="PageTitle" Text="{Binding FileImage.DisplayName, ElementName=Self}" Grid.Column="1" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/> 
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>                
+            </Grid.ColumnDefinitions>
+            <ListView Grid.Column="0" ItemsSource="{Binding TextItems, ElementName=Self}" SelectionMode="None"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollMode="Enabled">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="320"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Tag}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ValueRepresentation}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Length}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Value}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid Grid.Column="1">
+                <FlipView ItemsSource="{Binding ImageFrames, ElementName=Self}">
+                    <FlipView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Image Grid.Row="0" Stretch="Uniform" Source="{Binding}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </FlipView.ItemTemplate>
+                </FlipView>
+            </Grid>
+        </Grid>
+        <Popup x:Name="TransferSyntaxPopup" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="1" 
+               IsLightDismissEnabled="True" Width="400" Height="300" Margin="0,0,5,95">
+            <Grid Width="400" Height="300">
+                <Rectangle Stroke="Black" StrokeThickness="3"/>
+                <ListView x:Name="TransferSyntaxesView" Background="White" Grid.Column="0" ItemsSource="{Binding TransferSyntaxes, ElementName=Self}" 
+                          SelectionMode="None" IsItemClickEnabled="True" ItemClick="TransferSyntaxesViewOnItemClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Foreground="Black" Padding="4,1" Text="{Binding UID.Name}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Popup>
+    </Grid>
+    <Page.BottomAppBar>
+        <AppBar x:Name="BottomAppBar" Background="#FF001040">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource SaveAppBarButtonStyle}" Tapped="SaveFileButtonOnTapped"/>
+                    <!--                    <Rectangle Margin="5,15,5,15" Stroke="White" StrokeThickness="2" VerticalAlignment="Stretch" Width="1" Opacity="0.25"/>-->
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource TransferSyntaxAppBarButtonStyle}" Tapped="TransferSyntaxButtonOnTapped"/>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+</Page>

@@ -20,6 +20,10 @@ namespace Dicom {
 			_event.Set();
 
 			if (_callback != null)
+#if SILVERLIGHT
+				System.Threading.Tasks.Task.Run(() => _callback(this));
+		}
+#else
 				_callback.BeginInvoke(this, OnAsyncCallbackComplete, null);
 		}
 		private void OnAsyncCallbackComplete(IAsyncResult ar) {
@@ -28,6 +32,7 @@ namespace Dicom {
 			} catch {
 			}
 		}
+#endif
 
 		public object AsyncState {
 			get { return _state; }

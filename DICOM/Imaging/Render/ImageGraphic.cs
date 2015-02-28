@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
+using Dicom.Imaging.LUT;
+using Dicom.IO;
+
+#if NETFX_CORE
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
+using System.Windows.Media.Imaging;
+#elif TOUCH
+using MonoTouch.CoreGraphics;
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
+#else
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-#endif
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Threading;
-
-using Dicom.Imaging.Algorithms;
-using Dicom.Imaging.LUT;
-using Dicom.Imaging.Render;
-using Dicom.IO;
+#endif
 
 namespace Dicom.Imaging.Render {
 	/// <summary>
@@ -25,8 +28,10 @@ namespace Dicom.Imaging.Render {
 		protected IPixelData _scaledData;
 
 		protected PinnedIntArray _pixels;
-#if SILVERLIGHT
+#if NETFX_CORE || SILVERLIGHT
 		protected WriteableBitmap _bitmap;
+#elif TOUCH
+		protected BitmapSource _bitmap;
 #else
 	    private const int DPI = 96;
 		protected BitmapSource _bitmapSource;
@@ -212,14 +217,14 @@ namespace Dicom.Imaging.Render {
 			_flipY = flipy;
 		}
 
-#if SILVERLIGHT
+#if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			bool render = false;
+			var render = false;
 
 			if (_bitmap == null) {
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-				_bitmap = new WriteableBitmap(ScaledData.Width, ScaledData.Height);
+				_bitmap = BitmapFactory.New(ScaledData.Width, ScaledData.Height);
 				render = true;
 			}
 
@@ -236,14 +241,55 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 
-			MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
+			using (var context = _bitmap.GetBitmapContext())
+			{
+				Array.Copy(_pixels.Data, context.Pixels, _pixels.Count);
 
-			_bitmap.Rotate(_rotation);
+				_bitmap.Rotate(_rotation);
+				if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
+				if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+			}
 
-			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
-			if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+			return _bitmap;
+		}
+#elif TOUCH
+		public BitmapSource RenderImageSource(ILUT lut)
+		{
+			var render = false;
 
-			_bitmap.Invalidate();
+			if (_bitmap == null)
+			{
+				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+				render = true;
+			}
+
+			if (_applyLut && lut != null && !lut.IsValid)
+			{
+				lut.Recalculate();
+				render = true;
+			}
+
+			if (render)
+			{
+				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays)
+				{
+					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+				}
+			}
+
+			using (
+				var context = new CGBitmapContext(_pixels, ScaledWidth, ScaledHeight, 8, 4 * ScaledWidth,
+				                                  CGColorSpace.CreateDeviceRGB(), CGImageAlphaInfo.PremultipliedLast))
+			{
+				var transform = CGAffineTransform.MakeRotation((float)(_rotation * Math.PI / 180.0));
+				transform.Scale(_flipX ? -1.0f : 1.0f, _flipY ? -1.0f : 1.0f);
+				transform.Translate(_flipX ? ScaledWidth : 0.0f, _flipY ? ScaledHeight : 0.0f);
+				context.ConcatCTM(transform);
+
+				_bitmap = context.ToImage();
+			}
 
 			return _bitmap;
 		}

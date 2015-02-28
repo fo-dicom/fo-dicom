@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Dicom.Network {
 	public class DicomPresentationContextCollection : ICollection<DicomPresentationContext> {
-		private SortedList<byte, DicomPresentationContext> _pc;
+		private SortedDictionary<byte, DicomPresentationContext> _pc;
 
 		public DicomPresentationContextCollection() {
-			_pc = new SortedList<byte, DicomPresentationContext>();
+			_pc = new SortedDictionary<byte, DicomPresentationContext>();
 		}
 
 		public DicomPresentationContext this[byte id] {

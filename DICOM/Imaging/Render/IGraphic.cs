@@ -1,9 +1,14 @@
-using System;
-#if !SILVERLIGHT
-using System.Drawing;
-#endif
-using System.Windows.Media;
+#if NETFX_CORE
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
 using System.Windows.Media.Imaging;
+#elif TOUCH
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
+#else
+using System.Drawing;
+using System.Windows.Media.Imaging;
+#endif
+
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
@@ -92,7 +97,8 @@ namespace Dicom.Imaging.Render {
 		/// <param name="flipx">True to flip vertically</param>
 		/// <param name="flipy">True to flip horizontally</param>
 		void Transform(double scale, int rotation, bool flipx, bool flipy);
-#if !SILVERLIGHT
+
+#if !NETFX_CORE && !SILVERLIGHT && !TOUCH
 		/// <summary>
 		/// Render the image and return the result as <seealso cref="Image"/>
 		/// </summary>
@@ -100,6 +106,7 @@ namespace Dicom.Imaging.Render {
 		/// <returns>Image after applying LUT and transformation</returns>
 		Image RenderImage(ILUT lut);
 #endif
+
 		/// <summary>
 		/// Render the image and return the result as <seealso cref="BitmapSource"/>
 		/// </summary>

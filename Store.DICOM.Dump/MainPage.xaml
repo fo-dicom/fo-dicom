@@ -1,0 +1,85 @@
+﻿<Page
+    x:Class="Store.DICOM.Dump.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:local="using:Store.DICOM.Dump"
+    mc:Ignorable="d" x:Name="Self">
+    <Page.Resources>
+        <CollectionViewSource x:Key="DicomImageSource" IsSourceGrouped="True" ItemsPath="FileImages" Source="{Binding ModalityGroups, ElementName=Self}"/>
+        <Style x:Key="DicomEchoAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+            <Setter Property="AutomationProperties.AutomationId" Value="DicomEchoAppBarButton"/>
+            <Setter Property="AutomationProperties.Name" Value="DICOM Echo"/>
+            <Setter Property="Content" Value="&#xE201;"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="#FF003060">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="116"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text=" Cureos DICOM Viewer" Grid.Column="1" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/> 
+        </Grid>
+        <Grid Grid.Row="1">
+            <GridView x:Name="DicomFilesView" ItemsSource="{Binding Source={StaticResource DicomImageSource}}" Padding="116,0,40,0" 
+                      IsItemClickEnabled="True" ItemClick="DicomFilesViewOnItemClick" SelectionMode="None">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5,0,0,15">
+                                    <TextBlock Text="{Binding Modality}" Style="{StaticResource GroupHeaderTextStyle}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                        <GroupStyle.Panel>
+                            <ItemsPanelTemplate>
+                                <VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,50,0"/>
+                            </ItemsPanelTemplate>
+                        </GroupStyle.Panel>
+                    </GroupStyle>
+                </GridView.GroupStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="150" Height="150">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="0.30*" />
+                            </Grid.RowDefinitions>
+                            <Image Grid.Row="0" Grid.RowSpan="2" Stretch="Uniform" Source="{Binding FirstFrameImage}"/>
+                            <Rectangle Grid.Row="1" Fill="#FF0055AA" Opacity="0.85"/>
+                            <TextBlock Grid.Row="1" Foreground="White" Margin="5" TextAlignment="Left" TextWrapping="Wrap" FontSize="12" Text="{Binding DisplayName}" /> 
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </Grid>
+    </Grid>
+    <Page.BottomAppBar>
+        <AppBar Background="#FF001040" IsOpen="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource OpenFileAppBarButtonStyle}" Tapped="OpenFileButtonOnTapped"/>
+                    <Rectangle Margin="5,15,5,15" Stroke="White" StrokeThickness="2" VerticalAlignment="Stretch" Width="1" Opacity="0.25"/>
+                    <Button Style="{StaticResource RemoveAppBarButtonStyle}" Tapped="RemoveButtonOnTapped"/>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+</Page>

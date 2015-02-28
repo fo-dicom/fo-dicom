@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.ComponentModel.Composition.Hosting;
 
+#if !NETFX_CORE && !SILVERLIGHT
+using System.ComponentModel.Composition.Hosting;
+#endif
+using System.Linq;
+using System.Reflection;
 using Dicom.Imaging.Render;
 using Dicom.IO;
 using Dicom.IO.Buffer;
@@ -26,6 +29,29 @@ namespace Dicom.Imaging.Codec {
 			return codec;
 		}
 
+#if NETFX_CORE || SILVERLIGHT
+		public static void LoadCodecs(Assembly assembly = null, string overwriteIfEmpty = null)
+		{
+			if (assembly == null)
+				assembly = typeof(IDicomCodec).GetTypeInfo().Assembly;
+			var types =
+				assembly.DefinedTypes.Where(
+					ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
+
+			var notOverwrite = !String.IsNullOrEmpty(overwriteIfEmpty);
+			foreach (var ti in types)
+			{
+				var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
+				if (notOverwrite)
+				{
+					IDicomCodec codecInDict;
+					if (_codecs.TryGetValue(codec.TransferSyntax, out codecInDict))
+						throw new DicomCodecException("Non-overwrite mode, attempt to overwrite codec already in dictionary");
+				}
+				_codecs[codec.TransferSyntax] = codec;
+			}
+		}
+#else
 		public static void LoadCodecs(string path = null, string search = null) {
 			if (path == null)
 				path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
@@ -42,6 +68,7 @@ namespace Dicom.Imaging.Codec {
 				_codecs[codec.TransferSyntax] = codec;
 			}
 		}
+#endif
 		#endregion
 
 		public DicomTranscoder(DicomTransferSyntax input, DicomTransferSyntax output) {

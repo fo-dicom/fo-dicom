@@ -295,7 +295,8 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<short>.Create(data).ToArray();
+            //_data = ByteBufferEnumerator<short>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<short>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int sign = 1 << bitDepth.HighBit;
@@ -412,7 +413,8 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+            //_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<ushort>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int mask = (1 << (bitDepth.HighBit + 1)) - 1;
@@ -805,16 +807,21 @@ namespace Dicom.Imaging.Render {
 		}
 
 		public void Render(ILUT lut, int[] output) {
+#if NETFX_CORE || SILVERLIGHT
+			const int opaqueAlpha = 0xff << 24;
+#else
+			const int opaqueAlpha = 0;
+#endif
 			if (lut == null) {
 				Parallel.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++) {
-						output[i] = (_data[p++] << 16) | (_data[p++] << 8) | _data[p++];
+						output[i] = opaqueAlpha | (_data[p++] << 16) | (_data[p++] << 8) | _data[p++];
 					}
 				});
 			} else {
 				Parallel.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++) {
-						output[i] = (lut[_data[p++]] << 16) | (lut[_data[p++]] << 8) | lut[_data[p++]];
+						output[i] = opaqueAlpha | (lut[_data[p++]] << 16) | (lut[_data[p++]] << 8) | lut[_data[p++]];
 					}
 				});
 			}

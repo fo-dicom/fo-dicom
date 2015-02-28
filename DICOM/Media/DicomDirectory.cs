@@ -46,22 +46,25 @@ namespace Dicom.Media {
 
 		#region Constructors
 
-		public DicomDirectory() : base() {
-			FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, new byte[] { 0x00, 0x01 });
-			FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
-			FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
-			FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
-			FileMetaInfo.TransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian;
-			FileMetaInfo.ImplementationClassUID = DicomImplementation.ClassUID;
-			FileMetaInfo.ImplementationVersionName = DicomImplementation.Version;
+        public DicomDirectory(Boolean explicitVr = true) : base(){
+            FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, new byte[] { 0x00, 0x01 });
+            FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
+            FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
+            FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
+            FileMetaInfo.TransferSyntax = explicitVr 
+                                                ? DicomTransferSyntax.ExplicitVRLittleEndian 
+                                                : DicomTransferSyntax.ImplicitVRLittleEndian;
+            FileMetaInfo.ImplementationClassUID = DicomImplementation.ClassUID;
+            FileMetaInfo.ImplementationVersionName = DicomImplementation.Version;
 
-			_directoryRecordSequence = new DicomSequence(DicomTag.DirectoryRecordSequence);
+            _directoryRecordSequence = new DicomSequence(DicomTag.DirectoryRecordSequence);
 
-			Dataset.Add<string>(DicomTag.FileSetID, string.Empty)
-				   .Add<ushort>(DicomTag.FileSetConsistencyFlag, 0)
-				   .Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0)
-				   .Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
-		}
+            Dataset.Add<string>(DicomTag.FileSetID, string.Empty)
+                   .Add<ushort>(DicomTag.FileSetConsistencyFlag, 0)
+                   .Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0)
+                   .Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0)
+                   .Add(_directoryRecordSequence);
+        }
 
 		#endregion
 
@@ -71,27 +74,26 @@ namespace Dicom.Media {
 			if (RootDirectoryRecord == null)
 				throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
 
-			var calculator = new DicomWriteLengthCalculator(FileMetaInfo.TransferSyntax, DicomWriteOptions.Default);
+            _directoryRecordSequence.Items.Clear();
+            var calculator = new DicomWriteLengthCalculator(FileMetaInfo.TransferSyntax, DicomWriteOptions.Default);
+            
+            if (FileMetaInfo.TransferSyntax.IsExplicitVR)
+            {
+                _fileOffset = 128 + calculator.Calculate(FileMetaInfo) + calculator.Calculate(Dataset);
+                _fileOffset += 2; // vr
+                _fileOffset += 2; // padding
+                _fileOffset += 4; // length
+            }
+            else
+            {
+                _fileOffset = 128 + 4 + calculator.Calculate(FileMetaInfo) + calculator.Calculate(Dataset);
+                
+                _fileOffset += 4;//sequence element tag
+                _fileOffset += 4; //length
+            }
 
-			// ensure write length calculator does not include end of sequence item
-			Dataset.Remove(DicomTag.DirectoryRecordSequence);
-
-			_fileOffset = 128 + 4 + calculator.Calculate(FileMetaInfo) + calculator.Calculate(Dataset);
-
-			//Add the offset for the Directory Record sequence tag itself
-			_fileOffset += 4;//sequence element tag
-			if (FileMetaInfo.TransferSyntax.IsExplicitVR) {
-				_fileOffset += 2; // vr
-				_fileOffset += 2; // padding
-				_fileOffset += 4; // length
-			} else {
-				_fileOffset += 4; //length
-			}
-
-			_directoryRecordSequence.Items.Clear();
 			AddDirectoryRecordsToSequenceItem(RootDirectoryRecord);
-			Dataset.Add(_directoryRecordSequence);
-
+			
 			if (RootDirectoryRecord != null) {
 				CalculateOffsets(calculator);
 

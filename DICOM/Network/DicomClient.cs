@@ -216,8 +216,7 @@ namespace Dicom.Network {
 					return;
 				}
 
-				_timer = new Timer(OnReleaseTimeout);
-				_timer.Change(2500, Timeout.Infinite);
+				_timer = new Timer(OnReleaseTimeout, null, 2500, Timeout.Infinite);
 			}
 
 			public void OnReceiveAssociationAccept(DicomAssociation association) {
@@ -233,8 +232,7 @@ namespace Dicom.Network {
 				if (_client.Linger == Timeout.Infinite) {
 					OnLingerTimeout(null);
 				} else {
-					_timer = new Timer(OnLingerTimeout);
-					_timer.Change(_client.Linger, Timeout.Infinite);
+					_timer = new Timer(OnLingerTimeout, null, _client.Linger, Timeout.Infinite);
 				}
 			}
 
@@ -293,15 +291,15 @@ namespace Dicom.Network {
 			  }
 			}
 
-			public void OnConnectionClosed(int errorCode) {
+			public void OnConnectionClosed(Exception exception)
+			{
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
 			  var client = _client;
 			  if (client != null)
 			  {
-			    if (errorCode != 0) 
-            client._exception = new SocketException(errorCode);
+				_client._exception = exception;
 
 			    try
 			    {

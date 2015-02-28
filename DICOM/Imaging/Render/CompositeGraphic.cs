@@ -1,13 +1,20 @@
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
-using System.Drawing;
-#endif
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Text;
 using Dicom.Imaging.LUT;
+
+#if NETFX_CORE
+using Windows.Foundation;
+using Windows.UI.Xaml.Media.Imaging;
+#elif SILVERLIGHT
+using System.Windows;
+using System.Windows.Media.Imaging;
+#elif TOUCH
+using BitmapSource = MonoTouch.CoreGraphics.CGImage;
+#else
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media.Imaging;
+#endif
 
 namespace Dicom.Imaging.Render {
 	/// <summary>
@@ -128,7 +135,8 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
-#if SILVERLIGHT
+
+#if NETFX_CORE || SILVERLIGHT
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
@@ -147,6 +155,25 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 			return img;
+		}
+#elif TOUCH
+		public BitmapSource RenderImageSource(ILUT lut)
+		{
+			var img = new MonoTouch.CoreGraphics.CGBitmapContext(IntPtr.Zero, OriginalWidth, OriginalHeight, 8, 4 * OriginalWidth,
+			                                                     MonoTouch.CoreGraphics.CGColorSpace.CreateDeviceRGB(),
+			                                                     MonoTouch.CoreGraphics.CGImageAlphaInfo.PremultipliedFirst);
+			for (var i = 0; i < _layers.Count; ++i)
+			{
+				var g = _layers[i];
+				var layer = _layers[i].RenderImageSource(i == 0 ? lut : null);
+
+				if (layer != null)
+				{
+					var rect = new System.Drawing.RectangleF(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
+					img.DrawImage(rect, layer);
+				}
+			}
+			return img.ToImage();
 		}
 #else
 		public BitmapSource RenderImageSource(ILUT lut)

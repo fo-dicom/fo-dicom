@@ -14,7 +14,7 @@ namespace Dicom {
 				if (_instanceRootUid == null) {
 					lock (GenerateUidLock) {
 						if (_instanceRootUid == null) {
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 							for (int i = 0; i < interfaces.Length; i++) {
 								if (NetworkInterface.LoopbackInterfaceIndex != i && interfaces[i].OperationalStatus == OperationalStatus.Up) {

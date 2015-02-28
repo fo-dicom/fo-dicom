@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+#if NETFX_CORE
+using Environment = System.ShimEnvironment;
+#elif WINDOWS_PHONE
+using Environment = System.ShimEnvironment;
+#endif
+
 namespace Dicom {
 	public class DicomFileMetaInformation : DicomDataset {
 		public DicomFileMetaInformation() : base() {

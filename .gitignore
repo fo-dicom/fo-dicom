@@ -20,3 +20,6 @@ ipch/
 [Pp]ackages/
 *~
 *.DotSettings
+*.userprefs
+[Bb]ackup/
+/Backup2

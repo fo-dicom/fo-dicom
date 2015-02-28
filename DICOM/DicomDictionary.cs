@@ -8,6 +8,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+#if NETFX_CORE
+using Assembly = System.Reflection.ShimAssembly;
+#endif
+
 namespace Dicom {
 	public partial class DicomDictionary : IEnumerable<DicomDictionaryEntry> {
 		#region Private Members

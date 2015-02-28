@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-#if !SILVERLIGHT
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
-using System.Linq;
+﻿#if NETFX_CORE
+using Windows.UI.Xaml.Media;
+#elif SILVERLIGHT
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Text;
+#elif TOUCH
+using ImageSource = MonoTouch.CoreGraphics.CGImage;
+#else
+using System.Drawing;
+using System.Windows.Media;
+#endif
 
-using Dicom;
+using System.Linq;
 using Dicom.Imaging.Codec;
-using Dicom.Imaging.LUT;
 using Dicom.Imaging.Render;
 
 namespace Dicom.Imaging {
@@ -40,7 +39,6 @@ namespace Dicom.Imaging {
 			Load(dataset, frame);
 		}
 
-#if !SILVERLIGHT
 		/// <summary>Creates DICOM image object from file</summary>
 		/// <param name="fileName">Source file</param>
 		/// <param name="frame">Zero indexed frame number</param>
@@ -50,7 +48,6 @@ namespace Dicom.Imaging {
 			var file = DicomFile.Open(fileName);
 			Load(file.Dataset, frame);
 		}
-#endif
 
 		/// <summary>Source DICOM dataset</summary>
 		public DicomDataset Dataset {
@@ -127,7 +124,7 @@ namespace Dicom.Imaging {
 			set { _overlayColor = value; }
 		}
 
-#if !SILVERLIGHT
+#if !NETFX_CORE && !SILVERLIGHT && !TOUCH
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
