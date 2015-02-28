@@ -4,6 +4,7 @@
   using System.IO;
   using System.Linq;
   using System.Reflection;
+  using System.Text;
 
   using Dicom;
   using Dicom.IO;
@@ -30,18 +31,24 @@
     }
 
     /// <summary>
-    /// Tests a "triple trip" test of serializing, de-serializing and re-serializing for a DICOM dataset containing a zoo of different types.
+    /// Tests a "triple trip" test of serializing, de-serializing and re-serializing for a DICOM dataset containing attributes with all VRs.
     /// </summary>
     [Fact]
     public void SerializeAndDeserializeAllVRs()
     {
       var target = BuildAllTypesDataset_();
 
-      foreach (DicomVR vr in typeof(DicomVR).GetFields(BindingFlags.Static | BindingFlags.Public)
-        .Where(field => field.FieldType == typeof(DicomVR))
-        .Select(field => field.GetValue(null))
-        .Where(vr => vr != DicomVR.NONE))
-        Assert.True(target.Any(item => item.ValueRepresentation == vr));
+      var allVRs =
+        typeof(DicomVR).GetFields(BindingFlags.Static | BindingFlags.Public)
+          .Where(field => field.FieldType == typeof(DicomVR))
+          .Select(field => (DicomVR)field.GetValue(null))
+          .Where(vr => vr != DicomVR.NONE)
+            .ToArray();
+
+      var includedVRs = target.Select(item => item.ValueRepresentation).ToArray();
+
+      Assert.True(allVRs.All(includedVRs.Contains));
+      Assert.True(includedVRs.All(allVRs.Contains));
 
       VerifyJsonTripleTrip(target);
     }

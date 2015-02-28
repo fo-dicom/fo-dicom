@@ -279,13 +279,14 @@ namespace Dicom.IO
             reader.Read();
             if (reader.TokenType != JsonToken.PropertyName)
                 throw new JsonReaderException("Malformed DICOM json");
-            if (reader.Value != "vr")
-                reader.Read();
+            if ((string)reader.Value != "vr")
+              throw new JsonReaderException("Malformed DICOM json");
+            reader.Read();
             if (reader.TokenType != JsonToken.String)
                 throw new JsonReaderException("Malformed DICOM json");
             string vr = (string)reader.Value;
 
-            object data = null;
+            object data;
 
             switch (vr)
             {
@@ -385,17 +386,12 @@ namespace Dicom.IO
             reader.Read();
             if (reader.TokenType != JsonToken.StartArray)
                 throw new JsonReaderException("Malformed DICOM json");
-            FloatParseHandling fph = reader.FloatParseHandling;
-            if (typeof(T) == typeof(decimal)) 
-                reader.FloatParseHandling = FloatParseHandling.Decimal;
-            reader.Read();
+            reader.ReadAsDecimal();
             while (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
             {
                 childValues.Add((T)Convert.ChangeType(reader.Value, typeof(T)));
                 reader.Read();
             }
-            if (typeof(T) == typeof(decimal))
-                reader.FloatParseHandling = fph;
             if (reader.TokenType != JsonToken.EndArray)
                 throw new JsonReaderException("Malformed DICOM json");
             var data = childValues.ToArray();
