@@ -260,23 +260,35 @@ namespace Dicom.Network {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationRejectedException(result, source, reason);
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._exception = new DicomAssociationRejectedException(result, source, reason);
+					client._async.Set();
+				}
 			}
 
 			public void OnReceiveAssociationReleaseResponse() {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._async.Set();
+				}
 			}
 
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationAbortedException(source, reason);
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._exception = new DicomAssociationAbortedException(source, reason);
+					client._async.Set();
+				}
 			}
 
 			public void OnConnectionClosed(Exception exception)
@@ -284,13 +296,20 @@ namespace Dicom.Network {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = exception;
+				var client = _client;
+				if (client != null)
+				{
+					_client._exception = exception;
 
-				try {
-					if (_client._async != null)
-						_client._async.Set();
-				} catch {
-					// event handler has already fired
+					try
+					{
+						if (client._async != null)
+							client._async.Set();
+					}
+					catch
+					{
+						// event handler has already fired
+					}
 				}
 			}
 		}
