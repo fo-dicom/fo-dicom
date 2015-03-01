@@ -128,7 +128,7 @@ namespace Dicom {
 				ushort e = ushort.Parse(element.ToLower().Replace('x', '0'), NumberStyles.HexNumber);
 				tag.Tag = new DicomTag(g, e);
 
-				string mask = group + element;
+				string mask = (group + element).ToLower();
 				mask = mask.Replace('0', 'f').Replace('1', 'f').Replace('2', 'f')
 							.Replace('3', 'f').Replace('4', 'f').Replace('5', 'f')
 							.Replace('6', 'f').Replace('7', 'f').Replace('8', 'f')

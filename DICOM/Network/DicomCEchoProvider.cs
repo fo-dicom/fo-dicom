@@ -4,8 +4,10 @@ using System.IO;
 using Dicom.Log;
 
 namespace Dicom.Network {
+	using System.Net;
+
 	public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {
-		public DicomCEchoProvider(Stream stream, Logger log) : base(stream, log) {
+		public DicomCEchoProvider(Stream stream, Logger log, EndPoint endPoint) : base(stream, log, endPoint) {
 		}
 
 		public void OnReceiveAssociationRequest(DicomAssociation association) {

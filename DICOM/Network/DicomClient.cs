@@ -119,7 +119,7 @@ namespace Dicom.Network {
 			foreach (var context in _contexts)
 				assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
 
-			_service = new DicomServiceUser(this, stream, assoc, Logger);
+			_service = new DicomServiceUser(this, stream, assoc, Logger, _client.Client.RemoteEndPoint);
 
 			_assoc = new ManualResetEventSlim(false);
 
@@ -200,7 +200,7 @@ namespace Dicom.Network {
 			public DicomClient _client;
 			public Timer _timer;
 
-			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
+			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log, EndPoint endPoint) : base(stream, log, endPoint) {
 				_client = client;
 				if (_client.Options != null)
 					Options = _client.Options;
@@ -260,23 +260,35 @@ namespace Dicom.Network {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationRejectedException(result, source, reason);
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._exception = new DicomAssociationRejectedException(result, source, reason);
+					client._async.Set();
+				}
 			}
 
 			public void OnReceiveAssociationReleaseResponse() {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._async.Set();
+				}
 			}
 
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = new DicomAssociationAbortedException(source, reason);
-				_client._async.Set();
+				var client = _client;
+				if (client != null)
+				{
+					client._exception = new DicomAssociationAbortedException(source, reason);
+					client._async.Set();
+				}
 			}
 
 			public void OnConnectionClosed(Exception exception)
@@ -284,13 +296,20 @@ namespace Dicom.Network {
 				if (_timer != null)
 					_timer.Change(Timeout.Infinite, Timeout.Infinite);
 
-				_client._exception = exception;
+				var client = _client;
+				if (client != null)
+				{
+					_client._exception = exception;
 
-				try {
-					if (_client._async != null)
-						_client._async.Set();
-				} catch {
-					// event handler has already fired
+					try
+					{
+						if (client._async != null)
+							client._async.Set();
+					}
+					catch
+					{
+						// event handler has already fired
+					}
 				}
 			}
 		}

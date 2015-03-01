@@ -296,11 +296,17 @@ namespace Dicom {
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-				return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
+				var x = ByteConverter.Get<Tv>(Buffer, item);
+
+				if (x as IConvertible == null) return (T)(object)x.ToString();
+				return (T)(object)((IConvertible)x).ToString(CultureInfo.InvariantCulture);
 			}
 
 			if (typeof(T) == typeof(string[])) {
-				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
+				return (T)(object)ByteConverter.ToArray<Tv>(Buffer)
+					.Select(x => (x as IConvertible == null) ?
+						x.ToString() :
+						((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
 			}
 
 #if NETFX_CORE
@@ -495,7 +501,7 @@ namespace Dicom {
 	/// <summary>Decimal String (DS)</summary>
 	public class DicomDecimalString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomDecimalString(DicomTag tag, params decimal[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray()) {
+		public DicomDecimalString(DicomTag tag, params decimal[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray()) {
 		}
 
 		public DicomDecimalString(DicomTag tag, params string[] values) : base(tag, DicomEncoding.Default, values) {
@@ -626,7 +632,7 @@ namespace Dicom {
 	/// <summary>Integer String (IS)</summary>
 	public class DicomIntegerString : DicomMultiStringElement {
 		#region Public Constructors
-		public DicomIntegerString(DicomTag tag, params int[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray()) {
+		public DicomIntegerString(DicomTag tag, params int[] values) : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray()) {
 		}
 
 		public DicomIntegerString(DicomTag tag, params string[] values) : base(tag, DicomEncoding.Default, values) {
@@ -811,6 +817,23 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Other Double (OD)</summary>
+	public class DicomOtherDouble: DicomValueElement<double> {
+		#region Public Constructors
+		public DicomOtherDouble(DicomTag tag, params double[] values) : base(tag, values) {
+		}
+
+		public DicomOtherDouble(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.OD; }
+		}
+		#endregion
+	}
+
 	/// <summary>Other Float (OF)</summary>
 	public class DicomOtherFloat : DicomValueElement<float> {
 		#region Public Constructors
@@ -831,19 +854,19 @@ namespace Dicom {
 	/// <summary>Person Name (PN)</summary>
 	public sealed class DicomPersonName : DicomMultiStringElement {
 		#region Public Constructors
-        public DicomPersonName(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomPersonName(DicomTag tag, params string[] values) : base(tag, values) {
 		}
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
-        }
-
-        public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
-            base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
 		}
 
-        public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
-            base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
-        }
+		public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+			base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		}
+
+		public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+			base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		}
 
 		public DicomPersonName(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -935,11 +958,11 @@ namespace Dicom {
 	/// <summary>Short String (SH)</summary>
 	public class DicomShortString : DicomMultiStringElement {
 		#region Public Constructors
-        public DicomShortString(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomShortString(DicomTag tag, params string[] values) : base(tag, values) {
 		}
 
-        public DicomShortString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
-        }
+		public DicomShortString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+		}
 
 		public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -1001,8 +1024,8 @@ namespace Dicom {
 		public DicomShortText(DicomTag tag, string value) : base(tag, value) {
 		}
 
-        public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
-        }
+		public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+		}
 
 		public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}
@@ -1081,6 +1104,31 @@ namespace Dicom {
 				}
 				return _formats;
 			}
+		}
+		#endregion
+	}
+
+	/// <summary>Unlimited Characters (UC)</summary>
+	public class DicomUnlimitedCharacters : DicomStringElement
+	{
+		#region Public Constructors
+		public DicomUnlimitedCharacters(DicomTag tag, string value) : base(tag, value)
+		{
+		}
+
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value)
+		{
+		}
+
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data)
+		{
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation
+		{
+			get { return DicomVR.UC; }
 		}
 		#endregion
 	}
@@ -1169,6 +1217,31 @@ namespace Dicom {
 		#region Public Properties
 		public override DicomVR ValueRepresentation {
 			get { return DicomVR.UN; }
+		}
+		#endregion
+	}
+
+	/// <summary>Universal Resource Identifier or Universal Resource Locator [URI/URL] (UR)</summary>
+	public class DicomUniversalResource : DicomStringElement
+	{
+		#region Public Constructors
+		public DicomUniversalResource(DicomTag tag, string value) : base(tag, value)
+		{
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value)
+		{
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data)
+		{
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation
+		{
+			get { return DicomVR.UR; }
 		}
 		#endregion
 	}

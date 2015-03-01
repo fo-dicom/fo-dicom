@@ -16,6 +16,7 @@ namespace Dicom.Network {
 		private TcpListener _listener;
 		private List<T> _clients;
 		private Timer _timer;
+		public Func<Stream, Logger, EndPoint, T> DicomServiceFactory;
 		private bool _isDisposing;
 
 		public DicomServer(int port, string certificateName = null) {
@@ -38,6 +39,9 @@ namespace Dicom.Network {
 			_listener = new TcpListener(IPAddress.Any, port);
 			_listener.Start();
 			_listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
+
+			if(DicomServiceFactory == null)
+				DicomServiceFactory = (stream, log, endpoint) => (T)Activator.CreateInstance(typeof(T), stream, log, endpoint);
 
 			_timer = new Timer(OnTimerTick, false, 1000, 1000);
 		}
@@ -76,7 +80,7 @@ namespace Dicom.Network {
 					stream = ssl;
 				}
 
-				T scp = (T)Activator.CreateInstance(typeof(T), stream, Logger);
+				T scp = DicomServiceFactory(stream, Logger, client.Client.RemoteEndPoint);
 
 				if (Options != null)
 					scp.Options = Options;
