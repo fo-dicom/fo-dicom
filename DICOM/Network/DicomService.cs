@@ -12,8 +12,11 @@ using Dicom.Log;
 using Dicom.Threading;
 
 namespace Dicom.Network {
+	using System.Net;
+
 	public abstract class DicomService {
 		private Stream _network;
+		private EndPoint _endPoint;
 		private object _lock;
 		private volatile bool _writing;
 		private volatile bool _sending;
@@ -28,8 +31,9 @@ namespace Dicom.Network {
 		private ThreadPoolQueue<int> _processQueue;
 		private DicomServiceOptions _options;
 
-		protected DicomService(Stream stream, Logger log) {
+		protected DicomService(Stream stream, Logger log, EndPoint endPoint) {
 			_network = stream;
+			_endPoint = endPoint;
 			_lock = new object();
 			_pduQueue = new Queue<PDU>();
 			MaximumPDUsInQueue = 16;

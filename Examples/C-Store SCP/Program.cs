@@ -9,6 +9,9 @@ using Dicom.Log;
 using Dicom.Network;
 
 namespace Dicom.CStoreSCP {
+	using System.Net;
+	using System.Net.Sockets;
+
 	class Program {
 		static string StoragePath = @".\DICOM";
 
@@ -53,7 +56,7 @@ namespace Dicom.CStoreSCP {
 				DicomTransferSyntax.ImplicitVRLittleEndian
 			};
 
-			public CStoreSCP(Stream stream, Logger log) : base(stream, log) {
+			public CStoreSCP(Stream stream, Logger log, EndPoint endPoint) : base(stream, log, endPoint) {
 			}
 
 			public void OnReceiveAssociationRequest(DicomAssociation association) {

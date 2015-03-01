@@ -119,7 +119,7 @@ namespace Dicom.Network {
 			foreach (var context in _contexts)
 				assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
 
-			_service = new DicomServiceUser(this, stream, assoc, Logger);
+			_service = new DicomServiceUser(this, stream, assoc, Logger, _client.Client.RemoteEndPoint);
 
 			_assoc = new ManualResetEventSlim(false);
 
@@ -200,7 +200,7 @@ namespace Dicom.Network {
 			public DicomClient _client;
 			public Timer _timer;
 
-			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log) : base(stream, log) {
+			public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log, EndPoint endPoint) : base(stream, log, endPoint) {
 				_client = client;
 				if (_client.Options != null)
 					Options = _client.Options;
