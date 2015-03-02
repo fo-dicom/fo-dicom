@@ -12,7 +12,8 @@ namespace Dicom.Generators {
 			output.AppendFormat("\tpublic partial class {0} {{", vclass).AppendLine();
 			output.AppendFormat("\t\tpublic static void {0}(DicomDictionary dict) {{", vmethod).AppendLine();
 
-			foreach (DicomDictionaryEntry entry in dict) {
+			foreach (DicomDictionaryEntry entry in dict.OrderBy(entry => (uint)entry.Tag))
+			{
 				string vm = null;
 				switch (entry.ValueMultiplicity.ToString()) {
 					case "1": vm = "DicomVM.VM_1"; break;

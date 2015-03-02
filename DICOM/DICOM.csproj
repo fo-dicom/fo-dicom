@@ -78,6 +78,10 @@
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
+    <Compile Include="Generators\DocBookParser\DataElementsTable.cs" />
+    <Compile Include="Generators\DocBookParser\DocBookTable.cs" />
+    <Compile Include="Generators\DocBookParser\Part6Parser.cs" />
+    <Compile Include="Generators\DocBookParser\UidTable.cs" />
     <Compile Include="Imaging\Mathematics\BitList.cs" />
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
@@ -293,7 +297,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
