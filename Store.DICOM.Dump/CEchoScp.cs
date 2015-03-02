@@ -10,7 +10,7 @@ namespace Store.DICOM.Dump
 
     public class CEchoScp : DicomService, IDicomServiceProvider, IDicomCEchoProvider
     {
-        public CEchoScp(Stream stream, Logger log) : base(stream, log)
+        public CEchoScp(Stream stream, Logger log) : base(stream, log, null)
         {
         }
 
