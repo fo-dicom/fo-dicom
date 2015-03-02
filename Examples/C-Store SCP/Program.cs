@@ -43,7 +43,7 @@ namespace Dicom.CStoreSCP {
 				DicomTransferSyntax.JPEGProcess14SV1,
 				DicomTransferSyntax.JPEGProcess14,
 				DicomTransferSyntax.RLELossless,
-			
+
 				// Lossy
 				DicomTransferSyntax.JPEGLSNearLossless,
 				DicomTransferSyntax.JPEG2000Lossy,
@@ -66,7 +66,7 @@ namespace Dicom.CStoreSCP {
 				}
 
 				foreach (var pc in association.PresentationContexts) {
-					if (pc.AbstractSyntax == DicomUID.Verification)
+					if (pc.AbstractSyntax == DicomUID.VerificationSOPClass)
 						pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
 					else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
 						pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);

@@ -5,6 +5,7 @@ using System.Xml.Linq;
 
 namespace Dicom.Generators {
 	using System.Linq;
+	using System.Text.RegularExpressions;
 
 	public class DicomUIDGenerator {
 		public static string Process(string file)
@@ -97,25 +98,19 @@ namespace Dicom.Generators {
 			foreach (DicomUID uid in uidList)
 			{
 				var keyword =
-					string.Join(string.Empty,
-					uid.Name
-						.Replace("@", " ")
-						.Replace("&", " ")
-						.Replace("(Process", " ")
-						.Replace("(", " ")
-						.Replace(")", " ")
-						.Replace("/", " ")
-						.Replace("-", " ")
-						.Replace(",", " ")
-						.Replace("Retired", "RETIRED")
-						.Replace(".", " ")
-						.Split(' ').Select(x => x.Length > 0 ? char.ToUpper(x[0]) + x.Substring(1) : ""));
+					ConvertNameToKeyword_(uid.Name);
+
+				var name = uid.Name;
+				if (name.Contains('\t'))
+				{
+					name = name.Substring(0, name.IndexOf('\t')) + " (" + name.Substring(name.IndexOf('\t') + 1) + ")";
+				}
 
 				list.AppendFormat("\t\t\t_uids.Add(DicomUID.{0}.UID, DicomUID.{0});", keyword).AppendLine();
 
 				uids.AppendLine();
-				uids.AppendFormat("\t\t/// <summary>{0}: {1}</summary>", uid.Type, uid.Name).AppendLine();
-				uids.AppendFormat("\t\tpublic readonly static DicomUID {0} = new DicomUID(\"{1}\", \"{2}\", DicomUidType.{3}, {4});", keyword, uid.UID, uid.Name, uid.Type, uid.IsRetired ? "true" : "false").AppendLine();
+				uids.AppendFormat("\t\t/// <summary>{0}: {1}</summary>", uid.Type, name).AppendLine();
+				uids.AppendFormat("\t\tpublic readonly static DicomUID {0} = new DicomUID(\"{1}\", \"{2}\", DicomUidType.{3}, {4});", keyword, uid.UID, name, uid.Type, uid.IsRetired ? "true" : "false").AppendLine();
 			}
 
 			string code = @"using System;
@@ -135,6 +130,35 @@ namespace Dicom {
 			code += @"	}
 }";
 			return code;
+		}
+
+		private static string ConvertNameToKeyword_(string name)
+		{
+			if (name.Contains(':'))
+				name = name.Substring(0, name.IndexOf(':'));
+
+			if(name.Contains('['))
+				name = Regex.Replace(name, "\\[[^]]*]", string.Empty);
+
+			if (name.StartsWith("12"))
+				name = "Twelve" + name.Substring(2);
+
+			return string.Join(
+				string.Empty,
+				name.Replace("@", " ")
+					.Replace("&", " ")
+					.Replace("(Process", " ")
+					.Replace("(", " ")
+					.Replace(")", " ")
+					.Replace("/", " ")
+					.Replace("-", " ")
+					.Replace("\t", " ")
+					.Replace("®", "")
+					.Replace("Image Compression", string.Empty)
+					.Replace(",", " ")
+					.Replace("Retired", "RETIRED")
+					.Replace(".", " ")
+					.Split(' ').Select(x => x.Length > 0 ? char.ToUpper(x[0]) + x.Substring(1) : string.Empty));
 		}
 	}
 }

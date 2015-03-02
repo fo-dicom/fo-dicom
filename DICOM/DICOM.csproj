@@ -55,6 +55,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
@@ -76,8 +77,10 @@
     <Compile Include="DicomDateRange.cs" />
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
+    <Compile Include="DicomDictionaryGenerated.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
+    <Compile Include="DicomUIDGenerated.cs" />
     <Compile Include="Generators\DocBookParser\DataElementsTable.cs" />
     <Compile Include="Generators\DocBookParser\DocBookTable.cs" />
     <Compile Include="Generators\DocBookParser\Part6Parser.cs" />
@@ -119,7 +122,6 @@
     <Compile Include="DicomTagGenerated.cs" />
     <Compile Include="DicomTransferSyntax.cs" />
     <Compile Include="DicomUID.cs" />
-    <Compile Include="DicomUIDGenerated.cs" />
     <Compile Include="DicomUIDPrivate.cs" />
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />

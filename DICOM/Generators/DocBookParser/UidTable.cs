@@ -70,21 +70,22 @@ namespace Dicom.Generators.DocBookParser
 				var targetsel = targetobj.Descendants(DocBookNS + "title").SingleOrDefault();
 				if (targetsel == null)
 					targetsel = targetobj.Descendants(DocBookNS + "caption").SingleOrDefault();
-				name = targetsel.Value;
+
+				name = targetsel.Value + "\t" + targetptr.Substring(targetptr.LastIndexOf("_") + 1).Replace("\u200b", string.Empty);
 				type = DicomUidType.ContextGroupName;
-				uid = row["Context UID"].Value;
+				uid = row["Context UID"].Value.Replace("\u200b", string.Empty);
 				retired = false;
 			}
 			else if (Caption == "Standard Color Palettes")
 			{
-				name = row["Content Description (0070,0081)"].Value;
+				name = row["Content Description (0070,0081)"].Value.Replace("\u200b", string.Empty);
 				type = DicomUidType.SOPInstance;
 				retired = false;
 				uid = row["Well-known SOP Instance UID"].Value.Replace("\u200b", string.Empty);
 			}
 			else
 			{
-				name = row["UID Name"].Value;
+				name = row["UID Name"].Value.Replace("\u200b", string.Empty);
 				if (Caption == "Well-known Frames of Reference") type = DicomUidType.FrameOfReference;
 				else type = ParseType(row["UID Type"].Value.Replace("\u200b", string.Empty));
 				uid = row["UID Value"].Value.Replace("\u200b", string.Empty);

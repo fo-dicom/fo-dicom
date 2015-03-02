@@ -4,7 +4,10 @@ using System.Linq;
 
 namespace Dicom.Generators.DocBookParser
 {
+	using System.Numerics;
 	using System.Xml.Linq;
+
+	using NLog.Targets;
 
 	public class Part6Parser
 	{
@@ -63,6 +66,30 @@ namespace Dicom.Generators.DocBookParser
 			return entries;
 		}
 
+		private class OidComparer : IComparer<string>
+		{
+			public int Compare(string x, string y)
+			{
+				if (x == y) return 0;
+
+				var xs = x.Replace("\u200b", string.Empty).Split('.');
+				var ys = y.Replace("\u200b", string.Empty).Split('.');
+				foreach (var pair in xs.Zip(ys, (a, b) => new Tuple<string, string>(a, b)))
+				{
+					if (pair.Item1 == pair.Item2) continue;
+					var int1 = BigInteger.Parse(pair.Item1);
+					var int2 = BigInteger.Parse(pair.Item2);
+					if (int1 < int2) return -1;
+					if (int2 < int1) return 1;
+				}
+
+				if (xs.Length < ys.Length) return -1;
+				if (ys.Length < xs.Length) return 1;
+
+				return 0;
+			}
+		}
+
 		public static IEnumerable<DicomUID> ParseUIDTables(string part6filename, string part16filename)
 		{
 			var xml = XDocument.Load(part6filename);
@@ -75,7 +102,11 @@ namespace Dicom.Generators.DocBookParser
 					                "Standard Color Palettes"
 				                };
 
-			return Tables(xml, uidtables.Contains).SelectMany(table => new UidTable(table, part16xml).Items).OrderBy(uid => uid.UID).GroupBy(uid => uid.UID).Select(uids => uids.First());
+			return Tables(xml, uidtables.Contains)
+				.SelectMany(table => new UidTable(table, part16xml).Items)
+				.OrderBy(uid => uid.UID, new OidComparer())
+				.GroupBy(uid => uid.UID)
+				.Select(uids => uids.First());
 		}
 	}
 }

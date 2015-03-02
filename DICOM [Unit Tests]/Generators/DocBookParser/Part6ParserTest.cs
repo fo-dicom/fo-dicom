@@ -11,7 +11,7 @@ namespace DICOM__Unit_Tests_.Generators.DocBookParser
 
 	public class Part6ParserTest
 	{
-		[Fact]
+		[Fact(Skip="Only run manually")]
 		public void ParsePart6()
 		{
 			var dd = Part6Parser.ParseDataDictionaries("Generators/DocBookParser/part06.xml", "Generators/DocBookParser/part07.xml");
@@ -21,7 +21,7 @@ namespace DICOM__Unit_Tests_.Generators.DocBookParser
 			foreach (var ddentry in dd)
 				dicomDict.Add(ddentry);
 
-			var a = Dicom.Generators.DicomDictionaryGenerator.Generate("testns", "vclass", "vmethod", dicomDict);
+			var a = Dicom.Generators.DicomDictionaryGenerator.Generate("Dicom", "DicomDictionary", "InstallDefaultDictionaryElements_", dicomDict);
 			var b = Dicom.Generators.DicomTagGenerator.Generate("Dicom", "DicomTag", dicomDict);
 			var c = Dicom.Generators.DicomUIDGenerator.Emit(uids);
 
