@@ -15,8 +15,8 @@ using Assembly = System.Reflection.ShimAssembly;
 namespace Dicom {
 	public partial class DicomDictionary : IEnumerable<DicomDictionaryEntry> {
 		#region Private Members
-		public readonly static DicomDictionaryEntry UnknownTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","xxxx"), "Unknown", "Unknown", DicomVM.VM_1_n, false, 
-			DicomVR.UN, DicomVR.AE, DicomVR.AS, DicomVR.AT, DicomVR.CS, DicomVR.DA, DicomVR.DS, DicomVR.DT, DicomVR.FD, DicomVR.FL, DicomVR.IS, DicomVR.LO, DicomVR.LT, DicomVR.OB, 
+		public readonly static DicomDictionaryEntry UnknownTag = new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx","xxxx"), "Unknown", "Unknown", DicomVM.VM_1_n, false,
+			DicomVR.UN, DicomVR.AE, DicomVR.AS, DicomVR.AT, DicomVR.CS, DicomVR.DA, DicomVR.DS, DicomVR.DT, DicomVR.FD, DicomVR.FL, DicomVR.IS, DicomVR.LO, DicomVR.LT, DicomVR.OB,
 			DicomVR.OD, DicomVR.OF, DicomVR.OW, DicomVR.PN, DicomVR.SH, DicomVR.SL, DicomVR.SQ, DicomVR.SS, DicomVR.ST, DicomVR.TM, DicomVR.UC, DicomVR.UI, DicomVR.UL, DicomVR.UR,
 			DicomVR.US, DicomVR.UT);
 
@@ -54,15 +54,7 @@ namespace Dicom {
 				if (_default == null) {
 					_default = new DicomDictionary();
 					_default.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("xxxx", "0000"), "Group Length", "GroupLength", DicomVM.VM_1, false, DicomVR.UL));
-					try {
-						var assembly = Assembly.GetExecutingAssembly();
-						var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
-						var gzip = new GZipStream(stream, CompressionMode.Decompress);
-						var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
-						reader.Process();
-					} catch (Exception e) {
-						throw new DicomDataException("Unable to load DICOM dictionary from resources.\n\n" + e.Message, e);
-					}
+					LoadGeneratedDictionary_(_default);
 					try {
 						var assembly = Assembly.GetExecutingAssembly();
 						var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");

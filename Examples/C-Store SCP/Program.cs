@@ -66,7 +66,7 @@ namespace Dicom.CStoreSCP {
 				}
 
 				foreach (var pc in association.PresentationContexts) {
-					if (pc.AbstractSyntax == DicomUID.Verification)
+					if (pc.AbstractSyntax == DicomUID.VerificationSOPClass)
 						pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
 					else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
 						pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);

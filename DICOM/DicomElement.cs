@@ -305,7 +305,7 @@ namespace Dicom {
 #endif
 			}
 
-            if (typeof(T) == typeof(string[])) {
+			if (typeof(T) == typeof(string[])) {
 				return (T)(object)ByteConverter.ToArray<Tv>(Buffer)
 #if NETFX_CORE
                     .Select(x => x.ToString()).ToArray();

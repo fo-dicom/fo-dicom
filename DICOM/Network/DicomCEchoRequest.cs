@@ -8,7 +8,7 @@ namespace Dicom.Network {
 		public DicomCEchoRequest(DicomDataset command) : base(command) {
 		}
 
-		public DicomCEchoRequest(DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CEchoRequest, DicomUID.Verification, priority) {
+		public DicomCEchoRequest(DicomPriority priority = DicomPriority.Medium) : base(DicomCommandField.CEchoRequest, DicomUID.VerificationSOPClass, priority) {
 		}
 
 		public delegate void ResponseDelegate(DicomCEchoRequest request, DicomCEchoResponse response);

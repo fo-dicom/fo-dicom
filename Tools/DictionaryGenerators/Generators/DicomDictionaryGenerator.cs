@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dicom;
 
-namespace Dicom.Generators {
+namespace DictionaryGenerators.Generators {
 	public class DicomDictionaryGenerator {
 		public static string Generate(string vnamespace, string vclass, string vmethod, DicomDictionary dict) {
 			StringBuilder output = new StringBuilder();
@@ -12,7 +13,8 @@ namespace Dicom.Generators {
 			output.AppendFormat("\tpublic partial class {0} {{", vclass).AppendLine();
 			output.AppendFormat("\t\tpublic static void {0}(DicomDictionary dict) {{", vmethod).AppendLine();
 
-			foreach (DicomDictionaryEntry entry in dict) {
+			foreach (DicomDictionaryEntry entry in dict.OrderBy(entry => (uint)entry.Tag))
+			{
 				string vm = null;
 				switch (entry.ValueMultiplicity.ToString()) {
 					case "1": vm = "DicomVM.VM_1"; break;
@@ -36,7 +38,7 @@ namespace Dicom.Generators {
 						break;
 				}
 
-				if (entry.MaskTag == null) {
+				if (entry.MaskTag == null || entry.MaskTag.Mask == 0xffffffff) {
 					output.AppendFormat("\t\t\tdict._entries.Add(DicomTag.{3}{6}, new DicomDictionaryEntry(DicomTag.{3}{6}, \"{2}\", \"{3}\", {4}, {5}",
 						entry.Tag.ToString("g", null), entry.Tag.ToString("e", null), entry.Name, entry.Keyword, vm, entry.IsRetired ? "true" : "false", entry.IsRetired ? "RETIRED" : "");
 				} else {

@@ -87,7 +87,7 @@ namespace Dicom {
 		#region Dicom Transfer Syntax
 		/// <summary>Virtual transfer syntax for reading datasets improperly encoded in Big Endian format with implicit VR.</summary>
 		public static DicomTransferSyntax ImplicitVRBigEndian = new DicomTransferSyntax {
-			UID = new DicomUID(DicomUID.ExplicitVRBigEndian.UID + ".123456", "Implicit VR Big Endian", DicomUidType.TransferSyntax),
+			UID = new DicomUID(DicomUID.ExplicitVRBigEndianRETIRED.UID + ".123456", "Implicit VR Big Endian", DicomUidType.TransferSyntax),
 			IsExplicitVR = false,
 			Endian = Endian.Big
 		};
@@ -116,7 +116,7 @@ namespace Dicom {
 
 		/// <summary>Explicit VR Big Endian</summary>
 		public static DicomTransferSyntax ExplicitVRBigEndian = new DicomTransferSyntax {
-			UID = DicomUID.ExplicitVRBigEndian,
+			UID = DicomUID.ExplicitVRBigEndianRETIRED,
 			IsExplicitVR = true,
 			Endian = Endian.Big
 		};
@@ -307,7 +307,7 @@ namespace Dicom {
 
 		/// <summary>JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1])</summary>
 		public static DicomTransferSyntax JPEGProcess14SV1 = new DicomTransferSyntax {
-			UID = DicomUID.JPEGLossless,
+			UID = DicomUID.JPEGLosslessNonHierarchicalFirstOrderPrediction14,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			Endian = Endian.Little
@@ -351,7 +351,7 @@ namespace Dicom {
 
 		/// <summary>MPEG2 Main Profile @ Main Level</summary>
 		public static DicomTransferSyntax MPEG2 = new DicomTransferSyntax {
-			UID = DicomUID.MPEG2,
+			UID = DicomUID.MPEG2MainProfileMainLevel,
 			IsExplicitVR = true,
 			IsEncapsulated = true,
 			IsLossy = true,
