@@ -31,7 +31,7 @@ namespace Dicom.IO
 			foreach (var item in dataset)
 			{
 				var unknown = item.Tag.DictionaryEntry == null
-				              || (String.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword) == false)
+				              || string.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword)
 				              || (item.Tag.DictionaryEntry.MaskTag != null && item.Tag.DictionaryEntry.MaskTag.Mask == 0);
 				if (writeTagsAsKeywords_ && !unknown) writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
 				else writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
