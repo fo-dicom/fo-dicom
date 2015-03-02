@@ -297,16 +297,23 @@ namespace Dicom {
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
 				var x = ByteConverter.Get<Tv>(Buffer, item);
-
+#if NETFX_CORE
+                return (T)(object)x.ToString();
+#else
 				if (x as IConvertible == null) return (T)(object)x.ToString();
 				return (T)(object)((IConvertible)x).ToString(CultureInfo.InvariantCulture);
+#endif
 			}
 
-			if (typeof(T) == typeof(string[])) {
+            if (typeof(T) == typeof(string[])) {
 				return (T)(object)ByteConverter.ToArray<Tv>(Buffer)
+#if NETFX_CORE
+                    .Select(x => x.ToString()).ToArray();
+#else
 					.Select(x => (x as IConvertible == null) ?
 						x.ToString() :
 						((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
+#endif
 			}
 
 #if NETFX_CORE
