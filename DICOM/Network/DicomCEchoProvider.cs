@@ -4,9 +4,9 @@ using System.IO;
 using Dicom.Log;
 
 namespace Dicom.Network {
-  using System.Net;
+	using System.Net;
 
-  public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {
+	public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {
 		public DicomCEchoProvider(Stream stream, Logger log, EndPoint endPoint) : base(stream, log, endPoint) {
 		}
 

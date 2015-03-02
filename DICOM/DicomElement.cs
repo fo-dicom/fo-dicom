@@ -303,7 +303,10 @@ namespace Dicom {
 			}
 
 			if (typeof(T) == typeof(string[])) {
-				return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => (x as IConvertible == null) ? x.ToString() : ((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
+				return (T)(object)ByteConverter.ToArray<Tv>(Buffer)
+					.Select(x => (x as IConvertible == null) ?
+						x.ToString() :
+						((IConvertible)x).ToString(CultureInfo.InvariantCulture)).ToArray();
 			}
 
 #if NETFX_CORE
@@ -851,19 +854,19 @@ namespace Dicom {
 	/// <summary>Person Name (PN)</summary>
 	public sealed class DicomPersonName : DicomMultiStringElement {
 		#region Public Constructors
-        public DicomPersonName(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomPersonName(DicomTag tag, params string[] values) : base(tag, values) {
 		}
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
-        }
-
-        public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
-            base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
 		}
 
-        public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
-            base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
-        }
+		public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+			base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		}
+
+		public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+			base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
+		}
 
 		public DicomPersonName(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -955,11 +958,11 @@ namespace Dicom {
 	/// <summary>Short String (SH)</summary>
 	public class DicomShortString : DicomMultiStringElement {
 		#region Public Constructors
-        public DicomShortString(DicomTag tag, params string[] values) : base(tag, values) {
+		public DicomShortString(DicomTag tag, params string[] values) : base(tag, values) {
 		}
 
-        public DicomShortString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
-        }
+		public DicomShortString(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+		}
 
 		public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
 		}
@@ -1021,8 +1024,8 @@ namespace Dicom {
 		public DicomShortText(DicomTag tag, string value) : base(tag, value) {
 		}
 
-        public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
-        }
+		public DicomShortText(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+		}
 
 		public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
 		}
@@ -1105,34 +1108,32 @@ namespace Dicom {
 		#endregion
 	}
 
-  /// <summary>Unlimited Characters (UC)</summary>
-  public class DicomUnlimitedCharacters : DicomStringElement
-  {
-    #region Public Constructors
-    public DicomUnlimitedCharacters(DicomTag tag, string value)
-      : base(tag, value)
-    {
-    }
+	/// <summary>Unlimited Characters (UC)</summary>
+	public class DicomUnlimitedCharacters : DicomStringElement
+	{
+		#region Public Constructors
+		public DicomUnlimitedCharacters(DicomTag tag, string value) : base(tag, value)
+		{
+		}
 
-    public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, string value)
-      : base(tag, encoding, value)
-    {
-    }
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value)
+		{
+		}
 
-    public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data)
-      : base(tag, encoding, data)
-    {
-    }
-    #endregion
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data)
+		{
+		}
+		#endregion
 
-    #region Public Properties
-    public override DicomVR ValueRepresentation
-    {
-      get { return DicomVR.UC; }
-    }
-    #endregion
-  }
-  /// <summary>Unique Identifier (UI)</summary>
+		#region Public Properties
+		public override DicomVR ValueRepresentation
+		{
+			get { return DicomVR.UC; }
+		}
+		#endregion
+	}
+
+	/// <summary>Unique Identifier (UI)</summary>
 	public class DicomUniqueIdentifier : DicomMultiStringElement {
 		#region Public Constructors
 		public DicomUniqueIdentifier(DicomTag tag, params string[] values) : base(tag, values) {
@@ -1220,34 +1221,32 @@ namespace Dicom {
 		#endregion
 	}
 
-  /// <summary>Universal Resource Identifier or Universal Resource Locator [URI/URL] (UR)</summary>
-  public class DicomUniversalResource : DicomStringElement
-  {
-    #region Public Constructors
-    public DicomUniversalResource(DicomTag tag, string value)
-      : base(tag, value)
-    {
-    }
+	/// <summary>Universal Resource Identifier or Universal Resource Locator [URI/URL] (UR)</summary>
+	public class DicomUniversalResource : DicomStringElement
+	{
+		#region Public Constructors
+		public DicomUniversalResource(DicomTag tag, string value) : base(tag, value)
+		{
+		}
 
-    public DicomUniversalResource(DicomTag tag, Encoding encoding, string value)
-      : base(tag, encoding, value)
-    {
-    }
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value)
+		{
+		}
 
-    public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
-      : base(tag, encoding, data)
-    {
-    }
-    #endregion
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data)
+		{
+		}
+		#endregion
 
-    #region Public Properties
-    public override DicomVR ValueRepresentation
-    {
-      get { return DicomVR.UR; }
-    }
-    #endregion
-  }
-  /// <summary>Unsigned Short (US)</summary>
+		#region Public Properties
+		public override DicomVR ValueRepresentation
+		{
+			get { return DicomVR.UR; }
+		}
+		#endregion
+	}
+
+	/// <summary>Unsigned Short (US)</summary>
 	public class DicomUnsignedShort : DicomValueElement<ushort> {
 		#region Public Constructors
 		public DicomUnsignedShort(DicomTag tag, params ushort[] values) : base(tag, values) {

@@ -515,23 +515,23 @@ namespace Dicom {
 			ValueType = typeof(DateTime)
 		};
 
-    /// <summary>Unlimited Characters</summary>
-    public readonly static DicomVR UC = new DicomVR
-    {
-      Code = "UC",
-      Name = "Unlimited Characters",
+		/// <summary>Unlimited Characters</summary>
+		public readonly static DicomVR UC = new DicomVR
+		{
+			Code = "UC",
+			Name = "Unlimited Characters",
 			IsString = true,
 			IsStringEncoded = true,
 			Is16bitLength = false,
-      IsMultiValue = true,
+			IsMultiValue = true,
 			PaddingValue = PadSpace,
-      MaximumLength = 0,
+			MaximumLength = 0,
 			UnitSize = 1,
 			ByteSwap = 1,
 			ValueType = typeof(string)
-    };
+		};
 
-    /// <summary>Unique Identifier</summary>
+		/// <summary>Unique Identifier</summary>
 		public readonly static DicomVR UI = new DicomVR {
 			Code = "UI",
 			Name = "Unique Identifier",
@@ -576,10 +576,10 @@ namespace Dicom {
 			ValueType = typeof(byte[])
 		};
 
-    /// <summary>Universal Resource Identifier or Universal Resource Locator (URI/URL)</summary>
+		/// <summary>Universal Resource Identifier or Universal Resource Locator (URI/URL)</summary>
 		public readonly static DicomVR UR = new DicomVR {
 			Code = "UR",
-      Name = "Universal Resource Identifier or Universal Resource Locator",
+			Name = "Universal Resource Identifier or Universal Resource Locator",
 			IsString = true,
 			IsStringEncoded = true,
 			Is16bitLength = false,

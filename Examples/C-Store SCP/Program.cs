@@ -9,10 +9,10 @@ using Dicom.Log;
 using Dicom.Network;
 
 namespace Dicom.CStoreSCP {
-  using System.Net;
-  using System.Net.Sockets;
+	using System.Net;
+	using System.Net.Sockets;
 
-  class Program {
+	class Program {
 		static string StoragePath = @".\DICOM";
 
 		static void Main(string[] args) {

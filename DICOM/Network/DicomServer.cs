@@ -80,7 +80,7 @@ namespace Dicom.Network {
 					stream = ssl;
 				}
 
-        T scp = DicomServiceFactory(stream, Logger, client.Client.RemoteEndPoint);
+				T scp = DicomServiceFactory(stream, Logger, client.Client.RemoteEndPoint);
 
 				if (Options != null)
 					scp.Options = Options;
