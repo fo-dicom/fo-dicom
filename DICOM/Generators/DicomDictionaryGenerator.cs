@@ -37,7 +37,7 @@ namespace Dicom.Generators {
 						break;
 				}
 
-				if (entry.MaskTag == null) {
+				if (entry.MaskTag == null || entry.MaskTag.Mask == 0xffffffff) {
 					output.AppendFormat("\t\t\tdict._entries.Add(DicomTag.{3}{6}, new DicomDictionaryEntry(DicomTag.{3}{6}, \"{2}\", \"{3}\", {4}, {5}",
 						entry.Tag.ToString("g", null), entry.Tag.ToString("e", null), entry.Name, entry.Keyword, vm, entry.IsRetired ? "true" : "false", entry.IsRetired ? "RETIRED" : "");
 				} else {
