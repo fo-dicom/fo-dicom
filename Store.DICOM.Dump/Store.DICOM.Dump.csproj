@@ -152,6 +152,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MetroLog.0.8.7.1\lib\win81\MetroLog.WinRT.winmd</HintPath>
     </Reference>
+    <Reference Include="Shim, Version=1.0.1.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\shim.1.0.1.50302\lib\netcore451\Shim.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
