@@ -73,8 +73,10 @@
     <Compile Include="DicomDateRange.cs" />
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
+    <Compile Include="DicomDictionaryGenerated.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
+    <Compile Include="DicomUIDGenerated.cs" />
     <Compile Include="Imaging\Mathematics\BitList.cs" />
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
@@ -110,16 +112,12 @@
     <Compile Include="DicomTagGenerated.cs" />
     <Compile Include="DicomTransferSyntax.cs" />
     <Compile Include="DicomUID.cs" />
-    <Compile Include="DicomUIDGenerated.cs" />
     <Compile Include="DicomUIDPrivate.cs" />
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
     <Compile Include="DicomException.cs" />
     <Compile Include="EventAsyncResult.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Generators\DicomDictionaryGenerator.cs" />
-    <Compile Include="Generators\DicomTagGenerator.cs" />
-    <Compile Include="Generators\DicomUIDGenerator.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />
@@ -275,13 +273,11 @@
     <Compile Include="Threading\WorkQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
     <EmbeddedResource Include="Dictionaries\Private Dictionary.xml.gz" />
     <None Include="fo-dicom.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dictionaries\DICOM Dictionary.xml" />
     <Content Include="Dictionaries\Private Dictionary.xml" />
   </ItemGroup>
   <ItemGroup />
