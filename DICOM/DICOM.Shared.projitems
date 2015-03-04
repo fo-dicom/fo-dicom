@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomDateRange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDictionaryEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DicomDictionaryGenerated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDictionaryReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomFileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\BitList.cs" />
@@ -58,9 +59,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventAsyncResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Generators\DicomDictionaryGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Generators\DicomTagGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Generators\DicomUIDGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\BitDepth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Codec\DicomCodecException.cs" />

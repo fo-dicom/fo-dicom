@@ -1,6 +1,6 @@
 ﻿namespace Dicom {
 	public partial class DicomDictionary {
-		public static void InstallDefaultDictionaryElements_(DicomDictionary dict) {
+		public static void LoadGeneratedDictionary_(DicomDictionary dict) {
 			dict._entries.Add(DicomTag.CommandGroupLength, new DicomDictionaryEntry(DicomTag.CommandGroupLength, "Command Group Length", "CommandGroupLength", DicomVM.VM_1, false, DicomVR.UL));
 			dict._entries.Add(DicomTag.CommandLengthToEndRETIRED, new DicomDictionaryEntry(DicomTag.CommandLengthToEndRETIRED, "Command Length to End", "CommandLengthToEnd", DicomVM.VM_1, true, DicomVR.UL));
 			dict._entries.Add(DicomTag.AffectedSOPClassUID, new DicomDictionaryEntry(DicomTag.AffectedSOPClassUID, "Affected SOP Class UID", "AffectedSOPClassUID", DicomVM.VM_1, false, DicomVR.UI));

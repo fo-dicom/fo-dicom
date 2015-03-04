@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dicom;
 
-namespace Dicom.Generators {
+namespace DictionaryGenerators.Generators {
 	public class DicomDictionaryGenerator {
 		public static string Generate(string vnamespace, string vclass, string vmethod, DicomDictionary dict) {
 			StringBuilder output = new StringBuilder();

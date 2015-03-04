@@ -339,6 +339,10 @@ void JPEGCODEC::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 		newPixelData->AddFrame(buffer);
 	} finally {
 		MemoryBuffer = nullptr;
+		if(frameArray != nullptr){
+			delete frameArray;
+			frameArray = nullptr;
+		}
 	}
 }
 
@@ -417,89 +421,98 @@ namespace IJGVERS {
 
 void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomJpegParams^ params, int frame) {
 	PinnedByteArray^ jpegArray = gcnew PinnedByteArray(oldPixelData->GetFrame(frame)->Data);
-	
-	jpeg_decompress_struct dinfo;
-	memset(&dinfo, 0, sizeof(dinfo));
+	try{
+		jpeg_decompress_struct dinfo;
+		memset(&dinfo, 0, sizeof(dinfo));
 
-	IJGVERS::SourceManagerStruct src;
-	memset(&src, 0, sizeof(IJGVERS::SourceManagerStruct));
-	src.pub.init_source       = IJGVERS::initSource;
-	src.pub.fill_input_buffer = IJGVERS::fillInputBuffer;
-	src.pub.skip_input_data   = IJGVERS::skipInputData;
-	src.pub.resync_to_restart = jpeg_resync_to_restart;
-	src.pub.term_source       = IJGVERS::termSource;
-	src.pub.bytes_in_buffer   = 0;
-	src.pub.next_input_byte   = NULL;
-	src.skip_bytes            = 0;
-	src.next_buffer           = (unsigned char*)(void*)jpegArray->Pointer;
-	src.next_buffer_size      = (unsigned int*)jpegArray->ByteSize;
+		IJGVERS::SourceManagerStruct src;
+		memset(&src, 0, sizeof(IJGVERS::SourceManagerStruct));
+		src.pub.init_source       = IJGVERS::initSource;
+		src.pub.fill_input_buffer = IJGVERS::fillInputBuffer;
+		src.pub.skip_input_data   = IJGVERS::skipInputData;
+		src.pub.resync_to_restart = jpeg_resync_to_restart;
+		src.pub.term_source       = IJGVERS::termSource;
+		src.pub.bytes_in_buffer   = 0;
+		src.pub.next_input_byte   = NULL;
+		src.skip_bytes            = 0;
+		src.next_buffer           = (unsigned char*)(void*)jpegArray->Pointer;
+		src.next_buffer_size      = (unsigned int*)jpegArray->ByteSize;
 
-    IJGVERS::ErrorStruct jerr;
-	memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));
-	dinfo.err = jpeg_std_error(&jerr.pub);
-	jerr.pub.error_exit = IJGVERS::ErrorExit;
-	jerr.pub.output_message = IJGVERS::OutputMessage;
+		IJGVERS::ErrorStruct jerr;
+		memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));
+		dinfo.err = jpeg_std_error(&jerr.pub);
+		jerr.pub.error_exit = IJGVERS::ErrorExit;
+		jerr.pub.output_message = IJGVERS::OutputMessage;
 
-	jpeg_create_decompress(&dinfo);
-	dinfo.src = (jpeg_source_mgr*)&src.pub;
+		jpeg_create_decompress(&dinfo);
+		dinfo.src = (jpeg_source_mgr*)&src.pub;
 
-	if (jpeg_read_header(&dinfo, TRUE) == JPEG_SUSPENDED)
-		throw gcnew DicomCodecException("Unable to decompress JPEG: Suspended");
+		if (jpeg_read_header(&dinfo, TRUE) == JPEG_SUSPENDED)
+			throw gcnew DicomCodecException("Unable to decompress JPEG: Suspended");
+			
+		if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422 || newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422)
+			newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
+		else
+			newPixelData->PhotometricInterpretation = oldPixelData->PhotometricInterpretation;
+
+		if (params->ConvertColorspaceToRGB && (dinfo.out_color_space == JCS_YCbCr || dinfo.out_color_space == JCS_RGB)) { 
+			if (oldPixelData->PixelRepresentation == PixelRepresentation::Signed) 
+				throw gcnew DicomCodecException("JPEG codec unable to perform colorspace conversion on signed pixel data");
+			//dinfo.jpeg_color_space = JCS_YCbCr;
+			dinfo.out_color_space = JCS_RGB;
+			newPixelData->PhotometricInterpretation = PhotometricInterpretation::Rgb;
+			newPixelData->PlanarConfiguration = PlanarConfiguration::Interleaved;
+		}
+		else {
+			dinfo.jpeg_color_space = JCS_UNKNOWN; 
+			dinfo.out_color_space = JCS_UNKNOWN;
+		}
 		
-	if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422 || newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422)
-		newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
-	else
-		newPixelData->PhotometricInterpretation = oldPixelData->PhotometricInterpretation;
+		if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull)
+			newPixelData->PlanarConfiguration = PlanarConfiguration::Planar;
 
-	if (params->ConvertColorspaceToRGB && (dinfo.out_color_space == JCS_YCbCr || dinfo.out_color_space == JCS_RGB)) { 
-		if (oldPixelData->PixelRepresentation == PixelRepresentation::Signed) 
-			throw gcnew DicomCodecException("JPEG codec unable to perform colorspace conversion on signed pixel data");
-		//dinfo.jpeg_color_space = JCS_YCbCr;
-		dinfo.out_color_space = JCS_RGB;
-		newPixelData->PhotometricInterpretation = PhotometricInterpretation::Rgb;
-		newPixelData->PlanarConfiguration = PlanarConfiguration::Interleaved;
+		jpeg_calc_output_dimensions(&dinfo);
+		jpeg_start_decompress(&dinfo);
+
+		int rowSize = dinfo.output_width * dinfo.output_components * sizeof(JSAMPLE);
+		int frameSize = rowSize * dinfo.output_height;
+		if ((frameSize % 2) != 0)
+			frameSize++;
+
+		PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameSize);
+		unsigned char* framePtr = (unsigned char*)(void*)frameArray->Pointer;
+
+		while (dinfo.output_scanline < dinfo.output_height) {
+			int rows = jpeg_read_scanlines(&dinfo, (JSAMPARRAY)&framePtr, 1);
+			framePtr += rows * rowSize;
+		}
+
+		jpeg_destroy_decompress(&dinfo);
+
+		IByteBuffer^ buffer;
+		if (frameArray->Count >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
+			buffer = gcnew TempFileBuffer(frameArray->Data);
+		else
+			buffer = gcnew MemoryByteBuffer(frameArray->Data);
+		buffer = EvenLengthBuffer::Create(buffer);
+		
+		if (newPixelData->PlanarConfiguration == PlanarConfiguration::Planar && newPixelData->SamplesPerPixel > 1) {
+			if (oldPixelData->SamplesPerPixel != 3 || oldPixelData->BitsStored > 8)
+					throw gcnew DicomCodecException("Planar reconfiguration only implemented for SamplesPerPixel=3 && BitsStores <= 8");
+
+			buffer = PixelDataConverter::InterleavedToPlanar24(buffer);
+		}
+
+		newPixelData->AddFrame(buffer);
+		
+		delete frameArray;
 	}
-	else {
-		dinfo.jpeg_color_space = JCS_UNKNOWN; 
-		dinfo.out_color_space = JCS_UNKNOWN;
+	finally{
+		if(jpegArray != nullptr){
+			delete jpegArray;
+			jpegArray = nullptr;
+		}
 	}
-	
-	if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull)
-		newPixelData->PlanarConfiguration = PlanarConfiguration::Planar;
-
-	jpeg_calc_output_dimensions(&dinfo);
-	jpeg_start_decompress(&dinfo);
-
-	int rowSize = dinfo.output_width * dinfo.output_components * sizeof(JSAMPLE);
-	int frameSize = rowSize * dinfo.output_height;
-	if ((frameSize % 2) != 0)
-		frameSize++;
-
-	PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameSize);
-	unsigned char* framePtr = (unsigned char*)(void*)frameArray->Pointer;
-
-	while (dinfo.output_scanline < dinfo.output_height) {
-		int rows = jpeg_read_scanlines(&dinfo, (JSAMPARRAY)&framePtr, 1);
-		framePtr += rows * rowSize;
-	}
-
-	jpeg_destroy_decompress(&dinfo);
-
-	IByteBuffer^ buffer;
-	if (frameArray->Count >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
-		buffer = gcnew TempFileBuffer(frameArray->Data);
-	else
-		buffer = gcnew MemoryByteBuffer(frameArray->Data);
-	buffer = EvenLengthBuffer::Create(buffer);
-	
-	if (newPixelData->PlanarConfiguration == PlanarConfiguration::Planar && newPixelData->SamplesPerPixel > 1) {
-		if (oldPixelData->SamplesPerPixel != 3 || oldPixelData->BitsStored > 8)
-				throw gcnew DicomCodecException("Planar reconfiguration only implemented for SamplesPerPixel=3 && BitsStores <= 8");
-
-		buffer = PixelDataConverter::InterleavedToPlanar24(buffer);
-	}
-
-	newPixelData->AddFrame(buffer);
 }
 
 int JPEGCODEC::ScanHeaderForPrecision(DicomPixelData^ pixelData) {

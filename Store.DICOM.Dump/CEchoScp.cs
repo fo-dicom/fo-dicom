@@ -10,7 +10,7 @@ namespace Store.DICOM.Dump
 
     public class CEchoScp : DicomService, IDicomServiceProvider, IDicomCEchoProvider
     {
-        public CEchoScp(Stream stream, Logger log) : base(stream, log)
+        public CEchoScp(Stream stream, Logger log) : base(stream, log, null)
         {
         }
 
@@ -22,7 +22,7 @@ namespace Store.DICOM.Dump
                 return;
             }
 
-            foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.Verification))
+            foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.VerificationSOPClass))
             {
                 pc.AcceptTransferSyntaxes(new[] {
                                                     DicomTransferSyntax.ExplicitVRLittleEndian,

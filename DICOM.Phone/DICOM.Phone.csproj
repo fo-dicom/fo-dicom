@@ -93,9 +93,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
-      <Link>Dictionaries\DICOM Dictionary.xml.gz</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\DICOM\Dictionaries\Private Dictionary.xml.gz">
       <Link>Dictionaries\Private Dictionary.xml.gz</Link>
     </EmbeddedResource>
@@ -107,8 +104,9 @@
     <Reference Include="MetroLog.Platform">
       <HintPath>..\packages\MetroLog.0.8.7.1\lib\wpa81\MetroLog.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="Shim">
-      <HintPath>..\packages\shim.1.0.1.50208\lib\portable-win81+wpa81\Shim.dll</HintPath>
+    <Reference Include="Shim, Version=1.0.1.0, Culture=neutral, PublicKeyToken=c55ec16d10c4b366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\shim.1.0.1.50302\lib\portable-win81+wpa81\Shim.dll</HintPath>
     </Reference>
     <Reference Include="WriteableBitmapEx.WinRT">
       <HintPath>..\packages\WriteableBitmapEx.1.0.14.0\lib\wpa81\WriteableBitmapEx.WinRT.dll</HintPath>

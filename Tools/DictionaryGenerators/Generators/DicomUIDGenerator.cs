@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
+using Dicom;
 
-namespace Dicom.Generators {
+namespace DictionaryGenerators.Generators {
 	using System.Linq;
 	using System.Text.RegularExpressions;
 

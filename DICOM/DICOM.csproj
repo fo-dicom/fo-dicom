@@ -128,9 +128,6 @@
     <Compile Include="DicomException.cs" />
     <Compile Include="EventAsyncResult.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Generators\DicomDictionaryGenerator.cs" />
-    <Compile Include="Generators\DicomTagGenerator.cs" />
-    <Compile Include="Generators\DicomUIDGenerator.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />
