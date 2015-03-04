@@ -22,7 +22,7 @@ namespace Store.DICOM.Dump
                 return;
             }
 
-            foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.Verification))
+            foreach (var pc in association.PresentationContexts.Where(pc => pc.AbstractSyntax == DicomUID.VerificationSOPClass))
             {
                 pc.AcceptTransferSyntaxes(new[] {
                                                     DicomTransferSyntax.ExplicitVRLittleEndian,
