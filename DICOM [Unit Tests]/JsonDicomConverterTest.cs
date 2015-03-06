@@ -290,6 +290,45 @@
                          };
     }
 
+		private static DicomDataset BuildAllTypesNullDataset_()
+		{
+			var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+			return new DicomDataset {
+                           new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
+                           new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator)),
+                           new DicomAgeString(new DicomTag(3, 0x1003, privateCreator)),
+                           new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator)),
+                           new DicomCodeString(new DicomTag(3, 0x1005, privateCreator)),
+                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), new string[0]),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new string[0]),
+                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), new string[0]),
+                           new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator)),
+                           new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator)),
+                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), new string[0]),
+                           new DicomLongString(new DicomTag(3, 0x100c, privateCreator)),
+                           new DicomLongText(new DicomTag(3, 0x100d, privateCreator), null),
+                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[0]),
+                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[0]),
+                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[0]),
+                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[0]),
+                           new DicomPersonName(new DicomTag(3, 0x1012, privateCreator)),
+                           new DicomShortString(new DicomTag(3, 0x1013, privateCreator)),
+                           new DicomSignedLong(new DicomTag(3, 0x1104, privateCreator)),
+                           new DicomSequence(new DicomTag(3, 0x1015, privateCreator)),
+                           new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator)),
+                           new DicomShortText(new DicomTag(3, 0x1018, privateCreator), null),
+                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), new string[0]),
+                           new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), null),
+                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), new string[0]),
+                           new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator)),
+                           new DicomUnknown(new DicomTag(3, 0x101d, privateCreator)),
+                           new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), null),
+                           new DicomUnsignedShort(new DicomTag(3, 0x101f, privateCreator)),
+                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), null)
+                         };
+		}
+
+
     private static DicomDataset BuildZooDataset()
     {
       var target = new DicomDataset
@@ -326,5 +365,28 @@
       Assert.Equal(json, json2);
       Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
     }
+
+		[Fact]
+		private static void TestKeywordSerialization()
+	  {
+		  var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+		  var ds = new DicomDataset
+			         {
+				         new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
+				         new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator), "AETITLE"),
+				         new DicomUnknown(new DicomTag(3, 0x1003, privateCreator), Encoding.ASCII.GetBytes("WHATISTHIS")),
+				         new DicomDecimalString(DicomTag.GantryAngle, 36)
+			         };
+			var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter(writeTagsAsKeywords: true));
+			Assert.Equal("{\"PrivateCreator\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":\"V0hBVElTVEhJUw==\"},\"PrivateCreator\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36.0]}}",
+				json);
+	  }
+
+	  [Fact]
+	  private static void TripleTripNulls()
+	  {
+		  var x = BuildAllTypesNullDataset_();
+			VerifyJsonTripleTrip(x);
+	  }
   }
 }
