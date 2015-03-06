@@ -412,6 +412,7 @@ namespace Dicom.IO
 		{
 			var childStrings = new List<string>();
 			reader.Read();
+			if (reader.TokenType == JsonToken.EndObject) return new string[0];
 			if (reader.TokenType != JsonToken.StartArray) throw new JsonReaderException("Malformed DICOM json");
 			reader.Read();
 			while (reader.TokenType == JsonToken.String || reader.TokenType == JsonToken.Null)
@@ -429,6 +430,7 @@ namespace Dicom.IO
 		private static T[] ReadJsonMultiNumber<T>(JsonReader reader)
 		{
 			reader.Read();
+			if (reader.TokenType == JsonToken.EndObject) return new T[0];
 			if (!(reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Value")) throw new JsonReaderException("Malformed DICOM json");
 			var childValues = new List<T>();
 			reader.Read();
@@ -526,7 +528,7 @@ namespace Dicom.IO
 			{
 				return ReadJsonBulkDataUri(reader);
 			}
-			else return null;
+			else return new EmptyBuffer();
 		}
 
 		private static IByteBuffer ReadJsonInlineBinary(JsonReader reader)
