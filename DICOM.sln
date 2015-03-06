@@ -1,7 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM", "DICOM\DICOM.csproj", "{D6E309B0-4837-459E-8C85-ABC268440D62}"
@@ -61,7 +60,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{88D1F2
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DictionaryGenerators", "Tools\DictionaryGenerators\DictionaryGenerators.csproj", "{C7C0BE13-DA68-47A5-B6A0-904A00F5940C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DicomJsonConverter", "Tools\DicomJsonConverter\DicomJsonConverter.csproj", "{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,10 @@ Global
 		{C7C0BE13-DA68-47A5-B6A0-904A00F5940C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7C0BE13-DA68-47A5-B6A0-904A00F5940C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7C0BE13-DA68-47A5-B6A0-904A00F5940C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,6 +155,7 @@ Global
 		{8C433ABF-AFE5-4A76-BEBC-74116EC3460E} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
 		{1C0C476C-507D-453F-90C2-C1C5E4B35BEF} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
 		{C7C0BE13-DA68-47A5-B6A0-904A00F5940C} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
+		{A3479AFD-3AF2-4C57-AFE7-A5ABD1CA9B0D} = {C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True

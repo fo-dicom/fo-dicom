@@ -77,7 +77,6 @@
     <Compile Include="BulkDataUriTest.cs" />
     <Compile Include="DicomUIDGeneratorTest.cs" />
     <Compile Include="DicomVRTest.cs" />
-    <Compile Include="Generators\DocBookParser\Part6ParserTest.cs" />
     <Compile Include="Helpers\SuperSimpleDicomWriter.cs" />
     <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="JsonDicomConverterTest.cs" />
@@ -96,15 +95,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Generators\DocBookParser\part06.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Generators\DocBookParser\part07.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Generators\DocBookParser\part16.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
