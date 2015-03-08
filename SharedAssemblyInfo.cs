@@ -4,12 +4,12 @@ using namespace System::Reflection;
 using System.Reflection;
 #endif
 
-[assembly: AssemblyCompanyAttribute("Fellow Oak")]
-[assembly: AssemblyProductAttribute("Fellow Oak DICOM for .NET")]
-[assembly: AssemblyCopyrightAttribute("Copyright © Fellow Oak, Inc. 2012-2014")]
+[assembly: AssemblyCompanyAttribute("Dicom.Net")]
+[assembly: AssemblyProductAttribute("DICOM Library for .NET")]
+[assembly: AssemblyCopyrightAttribute("Copyright © Dicom.Net 2012-2015")]
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
 
-[assembly: AssemblyVersionAttribute("1.0.38.0")]
-[assembly: AssemblyFileVersion("1.0.38.0")]
-[assembly: AssemblyInformationalVersionAttribute("1.0.3")]
+[assembly: AssemblyVersionAttribute("1.0.39.0")]
+[assembly: AssemblyFileVersion("1.0.39.0")]
+[assembly: AssemblyInformationalVersionAttribute("1.0.39")]

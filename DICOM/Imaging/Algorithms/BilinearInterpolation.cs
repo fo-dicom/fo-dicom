@@ -258,23 +258,23 @@ namespace Dicom.Imaging.Algorithms {
 						dx1 = ox0 - ox1;
 						dx2 = 1.0 - dx1;
 
-						ox1 *= 3;
-						ox2 *= 3;
+                        int x1 =  ox1 * 3;//first byte of first pixel
+                        int x2 =  ox2 * 3;//first byte of second pixel
 
-						output[yo0 + px] =
-							(byte)((dy2 * ((dx2 * input[yo1 + ox1]) + (dx1 * input[yo1 + ox2]))) +
-								   (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
-						px++; ox1++; ox2++;
+                        output[yo0 + px] =
+                            (byte)((dy2 * ((dx2 * input[yo1 + x1]) + (dx1 * input[yo1 + x2]))) +
+                                   (dy1 * ((dx2 * input[yo2 + x1]) + (dx1 * input[yo2 + x2]))));
+                        px++; x1++; x2++;
 
-						output[yo0 + px] =
-							(byte)((dy2 * ((dx2 * input[yo1 + ox1]) + (dx1 * input[yo1 + ox2]))) +
-								   (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
-						px++; ox1++; ox2++;
+                        output[yo0 + px] =
+                            (byte)((dy2 * ((dx2 * input[yo1 + x1]) + (dx1 * input[yo1 + x2]))) +
+                                   (dy1 * ((dx2 * input[yo2 + x1]) + (dx1 * input[yo2 + x2]))));
+                        px++; x1++; x2++;
 
-						output[yo0 + px] =
-							(byte)((dy2 * ((dx2 * input[yo1 + ox1]) + (dx1 * input[yo1 + ox2]))) +
-								   (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
-						px++;
+                        output[yo0 + px] =
+                            (byte)((dy2 * ((dx2 * input[yo1 + x1]) + (dx1 * input[yo1 + x2]))) +
+                                   (dy1 * ((dx2 * input[yo2 + x1]) + (dx1 * input[yo2 + x2]))));
+                        px++; x1++; x2++;
 					}
 				});
 			}
@@ -314,9 +314,6 @@ namespace Dicom.Imaging.Algorithms {
 
 						dx1 = ox0 - ox1;
 						dx2 = 1.0 - dx1;
-
-						ox1 *= 4;
-						ox2 *= 4;
 
 						output[yo0 + px] =
 							(byte)((dy2 * ((dx2 * input[yo1 + ox1]) + (dx1 * input[yo1 + ox2]))) +

@@ -301,7 +301,7 @@ namespace Dicom.Printing
 
         void OnPrintPage(object sender, PrintPageEventArgs e)
         {
-            _currentFilmBox.Print(e.Graphics, e.MarginBounds);
+            _currentFilmBox.Print(e.Graphics, e.MarginBounds, 100);
 
             _currentFilmBox = null;
             _currentPage++;

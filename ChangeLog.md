@@ -1,3 +1,6 @@
+#### v1.0.39 (2/25/2015)
+* Fixed JPEG Codec memory corruption when encoding decoding on the same process for long period
+
 #### v1.0.38 (6/20/2014)
 * Fix OW swap for single byte images
 * Better handling of long duration and aborted connections

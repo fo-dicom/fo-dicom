@@ -28,7 +28,7 @@ namespace Dicom.Imaging.Codec {
 
 		public static void LoadCodecs(string path = null, string search = null) {
 			if (path == null)
-				path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+				path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
 			var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
 

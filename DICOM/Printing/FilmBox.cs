@@ -599,7 +599,7 @@ namespace Dicom.Printing
             return new SizeF(210 / 2.54f, 297 / 2.54f);
         }
 
-        public void Print(Graphics graphics, Rectangle marginBounds)
+        public void Print(Graphics graphics, Rectangle marginBounds, int imageResolution)
         {
             var parts = this.ImageDisplayFormat.Split('\\', ',');
 
@@ -626,12 +626,12 @@ namespace Dicom.Printing
 
                 for (int i = 0; i < BasicImageBoxes.Count; i++)
                 {
-                    BasicImageBoxes[i].Print(graphics, boxes[i]);
+                    BasicImageBoxes[i].Print(graphics, boxes[i], imageResolution);
                 }
             }
         }
 
-        private RectangleF[] PrintColumnFormat(string[] parts, Rectangle marginBounds)
+        protected RectangleF[] PrintColumnFormat(string[] parts, RectangleF marginBounds)
         {
             if (parts.Length >= 2)
             {
@@ -667,7 +667,7 @@ namespace Dicom.Printing
             }
         }
 
-        private RectangleF[] PrintRowFormat(string[] parts, Rectangle marginBounds)
+        protected RectangleF[] PrintRowFormat(string[] parts, RectangleF marginBounds)
         {
             if (parts.Length >= 2)
             {
@@ -703,7 +703,7 @@ namespace Dicom.Printing
             }
         }
 
-        private RectangleF[] PrintStandardFormat(string[] parts, Rectangle marginBounds)
+        protected RectangleF[] PrintStandardFormat(string[] parts, RectangleF marginBounds)
         {
             if (parts.Length >= 3)
             {

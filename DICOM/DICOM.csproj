@@ -75,6 +75,7 @@
     <Compile Include="Imaging\Mathematics\BitList.cs" />
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
+    <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
@@ -151,7 +152,6 @@
     <Compile Include="Imaging\Render\CompositeGraphic.cs" />
     <Compile Include="Imaging\Render\GenericGrayscalePipeline.cs" />
     <Compile Include="Imaging\Render\IGraphic.cs" />
-    <Compile Include="Imaging\Render\ImageGraphic.cs" />
     <Compile Include="Imaging\Render\IPipeline.cs" />
     <Compile Include="Imaging\Render\OverlayGraphic.cs" />
     <Compile Include="Imaging\Render\PaletteColorPipeline.cs" />
@@ -280,7 +280,9 @@
     <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
     <EmbeddedResource Include="Dictionaries\Private Dictionary.xml.gz" />
     <None Include="fo-dicom.snk" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dictionaries\DICOM Dictionary.xml" />
@@ -290,7 +292,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
