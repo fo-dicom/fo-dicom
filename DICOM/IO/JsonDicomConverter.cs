@@ -30,6 +30,12 @@ namespace Dicom.IO
 			writer.WriteStartObject();
 			foreach (var item in dataset)
 			{
+				if (((uint)item.Tag & 0xffff) == 0)
+				{
+					// Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
+					continue;
+				}
+
 				// Unknown or masked tags cannot be written as keywords
 				var unknown = item.Tag.DictionaryEntry == null
 				              || string.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword)
