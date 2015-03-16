@@ -53,6 +53,16 @@
       VerifyJsonTripleTrip(target);
     }
 
+		/// <summary>
+    /// Tests that DS values are not mangled
+    /// </summary>
+    [Fact(Skip="Json.NET does not support accessing the string value of a json floating point number")]
+    public void DSValuesShouldPass()
+    {
+      var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000" } } };
+			VerifyJsonTripleTrip(ds);
+    }
+
     /// <summary>
     /// Tests that empty strings serialize to null, and not "", per PS3.18, F.2.5 "DICOM JSON Model Null Values"
     /// </summary>
@@ -146,6 +156,11 @@
       var path = Path.GetFullPath("test.txt");
       var bulkData = new BulkUriByteBuffer("file:" + path);
 
+	    Assert.Throws<InvalidOperationException>(() => bulkData.Data);
+	    Assert.Throws<InvalidOperationException>(() => bulkData.Size);
+
+	    bulkData.GetData();
+
       var target = new DicomDataset();
       target.Add(new DicomOtherWord(DicomTag.PixelData, bulkData));
       var json = JsonConvert.SerializeObject(target, Formatting.Indented, new JsonDicomConverter());
@@ -153,7 +168,10 @@
       Console.WriteLine(json);
       var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
       Assert.Equal(json, json2);
-      Assert.True(ValueEquals(target, reconstituated));
+
+	    ((BulkUriByteBuffer)reconstituated.Get<IByteBuffer>(DicomTag.PixelData)).GetData();
+
+			Assert.True(ValueEquals(target, reconstituated));
 
       byte[] expectedPixelData = File.ReadAllBytes("test.txt");
 
@@ -185,7 +203,7 @@
       {
         if (b is DicomElement == false)
           return false;
-        else if (b is DicomStringElement && a is DicomDecimalString) 
+        else if (b is DicomStringElement && a is DicomDecimalString)
           return ((DicomDecimalString)a).Get<decimal[]>().SequenceEqual(((DicomDecimalString)b).Get<decimal[]>());
         else
           return ValueEquals(((DicomElement)a).Buffer, ((DicomElement)b).Buffer);
@@ -253,14 +271,14 @@
     private static DicomDataset BuildAllTypesDataset_()
     {
       var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
-      return new DicomDataset {                         
+      return new DicomDataset {
                            new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
                            new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator), "AETITLE"),
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator), "34y"),
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator), new[] { DicomTag.SOPInstanceUID }),
                            new DicomCodeString(new DicomTag(3, 0x1005, privateCreator), "FOOBAR"),
                            new DicomDate(new DicomTag(3, 0x1006, privateCreator), "20000229"),
-                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { 9876543210123457m }),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { "9876543210123457" }),
                            new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), "20141231194212"),
                            new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator), new[] { 0.25f }),
                            new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator), new[] { Math.PI }),
@@ -274,8 +292,8 @@
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator), "Morrison-Jones^Susan^^^Ph.D."),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator), "顔文字"),
                            new DicomSignedLong(new DicomTag(3, 0x1104, privateCreator), -65538),
-                           new DicomSequence(new DicomTag(3, 0x1015, privateCreator), new [] { 
-                             new DicomDataset { new DicomShortText(new DicomTag(3, 0x1016, privateCreator), "ಠ_ಠ") } 
+                           new DicomSequence(new DicomTag(3, 0x1015, privateCreator), new [] {
+                             new DicomDataset { new DicomShortText(new DicomTag(3, 0x1016, privateCreator), "ಠ_ಠ") }
                            }),
                            new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator), -32768),
                            new DicomShortText(new DicomTag(3, 0x1018, privateCreator), "ಠ_ಠ"),
@@ -286,7 +304,7 @@
                            new DicomUnknown(new DicomTag(3, 0x101d, privateCreator), new byte[] { 1, 2, 3, 0, 255 }),
                            new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), "http://example.com?q=1"),
                            new DicomUnsignedShort(new DicomTag(3, 0x101f, privateCreator), 0xffff),
-                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), "unlimited!") 
+                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), "unlimited!")
                          };
     }
 
@@ -354,7 +372,7 @@
     }
 
     /// <summary>
-    /// Serializes originalDataset to JSON, deserializes, and re-serializes. 
+    /// Serializes originalDataset to JSON, deserializes, and re-serializes.
     /// Verifies that both datasets are equal, and both json serializations are equal.
     /// </summary>
     private static void VerifyJsonTripleTrip(DicomDataset originalDataset)
@@ -378,7 +396,7 @@
 				         new DicomDecimalString(DicomTag.GantryAngle, 36)
 			         };
 			var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter(writeTagsAsKeywords: true));
-			Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":\"V0hBVElTVEhJUw==\"},\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36.0]}}",
+			Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":\"V0hBVElTVEhJUw==\"},\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36]}}",
 				json);
 	  }
 

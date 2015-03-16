@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace Dicom.IO
 {
+	using System.Globalization;
+
 	public class JsonDicomConverter : JsonConverter
 	{
 		private bool writeTagsAsKeywords_;
@@ -113,7 +115,7 @@ namespace Dicom.IO
 					item = new DicomDate(tag, (string[])data);
 					break;
 				case "DS":
-					item = new DicomDecimalString(tag, (decimal[])data);
+					item = new DicomDecimalString(tag, (string[])data);
 					break;
 				case "DT":
 					item = new DicomDateTime(tag, (string[])data);
@@ -238,7 +240,7 @@ namespace Dicom.IO
 					WriteJsonElement<ushort>(writer, (DicomElement)item);
 					break;
 				case "DS":
-					WriteJsonElement<decimal>(writer, (DicomElement)item);
+					WriteJsonElement<string>(writer, (DicomElement)item, raw: true);
 					break;
 				case "AT":
 					WriteJsonAT(writer, (DicomElement)item);
@@ -250,7 +252,7 @@ namespace Dicom.IO
 			writer.WriteEndObject();
 		}
 
-		private static void WriteJsonElement<T>(JsonWriter writer, DicomElement elem)
+		private static void WriteJsonElement<T>(JsonWriter writer, DicomElement elem, bool raw = false)
 		{
 			if (elem.Count != 0)
 			{
@@ -259,6 +261,7 @@ namespace Dicom.IO
 				foreach (var val in elem.Get<T[]>())
 				{
 					if (val == null || (typeof(T) == typeof(string) && val.Equals(""))) writer.WriteNull();
+					else if (raw) writer.WriteRawValue(val as string);
 					else writer.WriteValue(val);
 				}
 				writer.WriteEndArray();
@@ -384,7 +387,7 @@ namespace Dicom.IO
 					data = ReadJsonMultiNumber<ushort>(reader);
 					break;
 				case "DS":
-					data = ReadJsonMultiNumber<decimal>(reader);
+					data = ReadJsonMultiString(reader);
 					break;
 				default:
 					data = ReadJsonMultiString(reader);
@@ -421,12 +424,12 @@ namespace Dicom.IO
 			reader.Read();
 			if (reader.TokenType == JsonToken.EndObject) return new string[0];
 			if (reader.TokenType != JsonToken.StartArray) throw new JsonReaderException("Malformed DICOM json");
-			reader.Read();
+			reader.ReadAsString();
 			while (reader.TokenType == JsonToken.String || reader.TokenType == JsonToken.Null)
 			{
 				if (reader.TokenType == JsonToken.Null) childStrings.Add(null);
 				else childStrings.Add((string)reader.Value);
-				reader.Read();
+				reader.ReadAsString();
 			}
 			if (reader.TokenType != JsonToken.EndArray) throw new JsonReaderException("Malformed DICOM json");
 			var data = childStrings.ToArray();
