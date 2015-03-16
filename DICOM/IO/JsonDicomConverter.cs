@@ -30,9 +30,10 @@ namespace Dicom.IO
 			writer.WriteStartObject();
 			foreach (var item in dataset)
 			{
+				// Unknown or masked tags cannot be written as keywords
 				var unknown = item.Tag.DictionaryEntry == null
 				              || string.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword)
-				              || (item.Tag.DictionaryEntry.MaskTag != null && item.Tag.DictionaryEntry.MaskTag.Mask == 0);
+				              || (item.Tag.DictionaryEntry.MaskTag != null && item.Tag.DictionaryEntry.MaskTag.Mask != 0xffffffff);
 				if (writeTagsAsKeywords_ && !unknown) writer.WritePropertyName(item.Tag.DictionaryEntry.Keyword);
 				else writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
 				WriteJsonDicomItem(writer, item, serializer);
