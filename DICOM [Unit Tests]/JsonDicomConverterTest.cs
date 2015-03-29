@@ -63,6 +63,25 @@
 			VerifyJsonTripleTrip(ds);
     }
 
+	  /// <summary>
+	  /// Tests that DS values that are not proper json numbers get fixed on serialization.
+	  /// </summary>
+	  [Fact]
+	  public void NonJsonDSValuesGetFixed()
+	  {
+			var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } } };
+			var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
+			dynamic obj = JObject.Parse(json);
+
+			Assert.Equal("1", (string)obj["00200032"].Value[0]);
+			Assert.Equal("13", (string)obj["00200032"].Value[1]);
+			Assert.Equal("0", (string)obj["00200032"].Value[2]);
+			// Would be nice, but Json.NET mangles the parsed json. Verify string instead:
+			// Assert.Equal("-0", (string)obj["00200032"].Value[3]);
+			Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000]}}");
+	  }
+
+
     /// <summary>
     /// Tests that empty strings serialize to null, and not "", per PS3.18, F.2.5 "DICOM JSON Model Null Values"
     /// </summary>

@@ -7,6 +7,7 @@ using System.Linq;
 namespace Dicom.IO
 {
 	using System.Globalization;
+	using System.Text.RegularExpressions;
 
 	public class JsonDicomConverter : JsonConverter
 	{
@@ -240,7 +241,7 @@ namespace Dicom.IO
 					WriteJsonElement<ushort>(writer, (DicomElement)item);
 					break;
 				case "DS":
-					WriteJsonElement<string>(writer, (DicomElement)item, raw: true);
+					WriteJsonDS(writer, (DicomElement)item);
 					break;
 				case "AT":
 					WriteJsonAT(writer, (DicomElement)item);
@@ -252,7 +253,72 @@ namespace Dicom.IO
 			writer.WriteEndObject();
 		}
 
-		private static void WriteJsonElement<T>(JsonWriter writer, DicomElement elem, bool raw = false)
+		private static void WriteJsonDS(JsonWriter writer, DicomElement elem)
+		{
+			if (elem.Count != 0)
+			{
+				writer.WritePropertyName("Value");
+				writer.WriteStartArray();
+				foreach (var val in elem.Get<String[]>())
+				{
+					if (val == null || val.Equals("")) writer.WriteNull();
+					else writer.WriteRawValue(FixDS(val));
+				}
+				writer.WriteEndArray();
+			}
+		}
+
+		private static bool IsValidJsonNumber(string val)
+		{
+			// This is not very inefficient- uses .NET regex caching
+			return Regex.IsMatch(val, "^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][-+]?[0-9]+)?$");
+		}
+
+		private static string FixDS(string val)
+		{
+			if (IsValidJsonNumber(val))
+				return val;
+
+			val = val.Trim();
+
+			// Strip leading superfluous plus signs zeros and try again
+			if (val.StartsWith("+") || (val.Length > 1 && val[0] == '0' && val[1] != '.'))
+			{
+				if (val.StartsWith("+")) val = val.Substring(1);
+
+				int i = 0;
+				while (i < val.Length - 1 && val[i] == '0' && val[i + 1] != '.') i++;
+				var s = val.Substring(i);
+				if (IsValidJsonNumber(s))
+				  return s;
+			}
+
+			const NumberStyles dsStyle = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign
+			                             | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite;
+
+			decimal m;
+			if (decimal.TryParse(val, dsStyle, CultureInfo.InvariantCulture, out m))
+			{
+				var s = m.ToString(CultureInfo.InvariantCulture);
+				// Preserve signedness of zero
+				if (val.StartsWith("-") && !s.StartsWith("-")) s = "-" + s;
+				if (s.Length <= 16 && IsValidJsonNumber(s)) return s;
+			}
+
+			double d;
+			if (double.TryParse(val, dsStyle, CultureInfo.InvariantCulture, out d))
+			{
+				for (int prec = 16; prec > 0; prec--)
+				{
+					var s = d.ToString(string.Format("G{0}", prec), CultureInfo.InvariantCulture).Replace("E+", "E");
+					if (s.Length <= 16 && IsValidJsonNumber(s)) return s;
+				}
+			}
+
+			throw new ArgumentException("Failed converting DS value to json");
+		}
+
+		private static void WriteJsonElement<T>(JsonWriter writer, DicomElement elem)
 		{
 			if (elem.Count != 0)
 			{
@@ -261,7 +327,6 @@ namespace Dicom.IO
 				foreach (var val in elem.Get<T[]>())
 				{
 					if (val == null || (typeof(T) == typeof(string) && val.Equals(""))) writer.WriteNull();
-					else if (raw) writer.WriteRawValue(val as string);
 					else writer.WriteValue(val);
 				}
 				writer.WriteEndArray();
