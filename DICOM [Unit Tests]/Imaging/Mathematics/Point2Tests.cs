@@ -22,11 +22,13 @@ namespace Dicom.Imaging.Mathematics
         [Fact]
         public void Serialization_BinaryFormatter_Throws()
         {
-            var expected = new Point2(-2, 12);
-            Assert.Throws<SerializationException>(() =>
-            {
-              var actual = expected.GetBinaryFormatterDeserializedObject();
-            });
+	        Assert.Throws<SerializationException>(
+		        () =>
+			        {
+				        var expected = new Point2(-2, 12);
+				        var actual = expected.GetBinaryFormatterDeserializedObject();
+				        Assert.Equal(expected, actual);
+			        });
         }
     }
 }
