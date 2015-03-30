@@ -78,7 +78,7 @@
 			Assert.Equal("0", (string)obj["00200032"].Value[2]);
 			// Would be nice, but Json.NET mangles the parsed json. Verify string instead:
 			// Assert.Equal("-0", (string)obj["00200032"].Value[3]);
-			Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000]}}");
+			Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000E+00]}}");
 	  }
 
 

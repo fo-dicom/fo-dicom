@@ -270,50 +270,50 @@ namespace Dicom.IO
 
 		private static bool IsValidJsonNumber(string val)
 		{
-			// This is not very inefficient- uses .NET regex caching
+			// This is not very inefficient - uses .NET regex caching
 			return Regex.IsMatch(val, "^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][-+]?[0-9]+)?$");
 		}
 
+		/// <summary>
+		/// Fix-up a Dicom DS number for use with json.
+		/// Rationale: There is a requirement that DS numbers shall be written as json numbers in part 18.F json, but the
+		/// requirements on DS allows values that are not json numbers. This method "fixes" them to conform to json numbers.
+		/// </summary>
+		/// <param name="val">A valid DS value</param>
+		/// <returns>A json number equivalent to the supplied DS value</returns>
 		private static string FixDS(string val)
 		{
 			if (IsValidJsonNumber(val))
 				return val;
 
+			if (String.IsNullOrWhiteSpace(val)) return null;
+
 			val = val.Trim();
 
-			// Strip leading superfluous plus signs zeros and try again
-			if (val.StartsWith("+") || (val.Length > 1 && val[0] == '0' && val[1] != '.'))
+			var negative = false;
+			// Strip leading superfluous plus signs
+			if (val[0] == '+')
+				val = val.Substring(1);
+			else if (val[0] == '-')
 			{
-				if (val.StartsWith("+")) val = val.Substring(1);
+				// Temporarily remove negation sign for zero-stripping later
+				negative = true;
+				val = val.Substring(1);
+			}
 
+			// Strip leading superfluous zeros
+			if (val.Length > 1 && val[0] == '0' && val[1] != '.')
+			{
 				int i = 0;
 				while (i < val.Length - 1 && val[i] == '0' && val[i + 1] != '.') i++;
-				var s = val.Substring(i);
-				if (IsValidJsonNumber(s))
-				  return s;
+				val = val.Substring(i);
 			}
 
-			const NumberStyles dsStyle = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign
-			                             | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite;
+			// Re-add negation sign
+			if (negative) val = "-" + val;
 
-			decimal m;
-			if (decimal.TryParse(val, dsStyle, CultureInfo.InvariantCulture, out m))
-			{
-				var s = m.ToString(CultureInfo.InvariantCulture);
-				// Preserve signedness of zero
-				if (val.StartsWith("-") && !s.StartsWith("-")) s = "-" + s;
-				if (s.Length <= 16 && IsValidJsonNumber(s)) return s;
-			}
-
-			double d;
-			if (double.TryParse(val, dsStyle, CultureInfo.InvariantCulture, out d))
-			{
-				for (int prec = 16; prec > 0; prec--)
-				{
-					var s = d.ToString(string.Format("G{0}", prec), CultureInfo.InvariantCulture).Replace("E+", "E");
-					if (s.Length <= 16 && IsValidJsonNumber(s)) return s;
-				}
-			}
+			if (IsValidJsonNumber(val))
+				  return val;
 
 			throw new ArgumentException("Failed converting DS value to json");
 		}
