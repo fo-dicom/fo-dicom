@@ -582,20 +582,27 @@ namespace Dicom {
 		private static string[] _formats;
 		private static string[] PrivateDateFormats {
 			get {
-				if (_formats == null) {
-				    _formats = new string[11];
-					_formats[0] = "yyyyMMddHHmmsszzz";
-					_formats[1] = "yyyyMMddHHmmsszz";
-					_formats[2] = "yyyyMMddHHmmssz";
-					_formats[3] = "yyyyMMddHHmmss.fff";
-					_formats[4] = "yyyyMMddHHmmss.ff";
-					_formats[5] = "yyyyMMddHHmmss.f";
-					_formats[6] = "yyyyMMddHHmmss";
-					_formats[7] = "yyyyMMddHHmm";
-					_formats[8] = "yyyyMMdd";
-					_formats[9] = "yyyy.MM.dd";
-					_formats[10] = "yyyy/MM/dd";
+				if (_formats == null)
+				{
+					_formats = new[]
+					{
+						"yyyyMMddHHmmsszzz",
+						"yyyyMMddHHmmsszz",
+						"yyyyMMddHHmmssz",
+						"yyyyMMddHHmmss.ffffff",
+						"yyyyMMddHHmmss.fffff",
+						"yyyyMMddHHmmss.ffff",
+						"yyyyMMddHHmmss.fff",
+						"yyyyMMddHHmmss.ff",
+						"yyyyMMddHHmmss.f",
+						"yyyyMMddHHmmss",
+						"yyyyMMddHHmm",
+						"yyyyMMdd",
+						"yyyy.MM.dd",
+						"yyyy/MM/dd"
+					};
 				}
+
 				return _formats;
 			}
 		}
@@ -867,11 +874,11 @@ namespace Dicom {
 		public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
 		}
 
-		public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+		public DicomPersonName(DicomTag tag, string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) :
 			base(tag, ConcatName(Last, First, Middle, Prefix, Suffix)) {
 		}
 
-		public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) : 
+		public DicomPersonName(DicomTag tag, Encoding encoding,  string Last, string First, string Middle = null, string Prefix = null, string Suffix = null) :
 			base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix)) {
 		}
 
@@ -909,7 +916,7 @@ namespace Dicom {
                 return s[1];
             }
         }
-        
+
         public string Middle
         {
             get {
