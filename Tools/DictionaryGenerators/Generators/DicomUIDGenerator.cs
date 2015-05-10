@@ -110,7 +110,7 @@ namespace DictionaryGenerators.Generators {
 				list.AppendFormat("\t\t\t_uids.Add(DicomUID.{0}.UID, DicomUID.{0});", keyword).AppendLine();
 
 				uids.AppendLine();
-				uids.AppendFormat("\t\t/// <summary>{0}: {1}</summary>", uid.Type, name).AppendLine();
+				uids.AppendFormat("\t\t/// <summary>{0}: {1}</summary>", SeparateWordsInKeyword_(uid.Type.ToString()), name).AppendLine();
 				uids.AppendFormat("\t\tpublic readonly static DicomUID {0} = new DicomUID(\"{1}\", \"{2}\", DicomUidType.{3}, {4});", keyword, uid.UID, name, uid.Type, uid.IsRetired ? "true" : "false").AppendLine();
 			}
 
@@ -131,6 +131,21 @@ namespace Dicom {
 			code += @"	}
 }";
 			return code;
+		}
+
+		private static string SeparateWordsInKeyword_(string keyword)
+		{
+			StringBuilder s = new StringBuilder();
+			s.Append(keyword[0]);
+			for (int i = 1; i < keyword.Length - 1; i++)
+			{
+				if (char.IsUpper(keyword[i - 1]) && char.IsUpper(keyword[i]) && char.IsLower(keyword[i + 1])) s.Append(' ');
+				s.Append(keyword[i]);
+				if (char.IsLower(keyword[i]) && char.IsUpper(keyword[i + 1])) s.Append(' ');
+			}
+			s.Append(keyword[keyword.Length - 1]);
+
+			return s.ToString();
 		}
 
 		private static string ConvertNameToKeyword_(string name)

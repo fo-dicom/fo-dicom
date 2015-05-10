@@ -203,6 +203,8 @@ namespace Dicom {
 			_uids.Add(DicomUID.OphthalmicPhotography16BitImageStorage.UID, DicomUID.OphthalmicPhotography16BitImageStorage);
 			_uids.Add(DicomUID.StereometricRelationshipStorage.UID, DicomUID.StereometricRelationshipStorage);
 			_uids.Add(DicomUID.OphthalmicTomographyImageStorage.UID, DicomUID.OphthalmicTomographyImageStorage);
+			_uids.Add(DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage.UID, DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage);
+			_uids.Add(DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage.UID, DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage);
 			_uids.Add(DicomUID.VLWholeSlideMicroscopyImageStorage.UID, DicomUID.VLWholeSlideMicroscopyImageStorage);
 			_uids.Add(DicomUID.VLMultiFrameImageStorageTrialRETIRED.UID, DicomUID.VLMultiFrameImageStorageTrialRETIRED);
 			_uids.Add(DicomUID.LensometryMeasurementsStorage.UID, DicomUID.LensometryMeasurementsStorage);
@@ -510,7 +512,7 @@ namespace Dicom {
 			_uids.Add(DicomUID.OtherFiltersRETIRED3675.UID, DicomUID.OtherFiltersRETIRED3675);
 			_uids.Add(DicomUID.LeadMeasurementTechnique3676.UID, DicomUID.LeadMeasurementTechnique3676);
 			_uids.Add(DicomUID.SummaryCodesECG3677.UID, DicomUID.SummaryCodesECG3677);
-			_uids.Add(DicomUID.QtCorrectionAlgorithms3678.UID, DicomUID.QtCorrectionAlgorithms3678);
+			_uids.Add(DicomUID.QTCorrectionAlgorithms3678.UID, DicomUID.QTCorrectionAlgorithms3678);
 			_uids.Add(DicomUID.ECGMorphologyDescriptionsRETIRED3679.UID, DicomUID.ECGMorphologyDescriptionsRETIRED3679);
 			_uids.Add(DicomUID.ECGLeadNoiseDescriptions3680.UID, DicomUID.ECGLeadNoiseDescriptions3680);
 			_uids.Add(DicomUID.ECGLeadNoiseModifiersRETIRED3681.UID, DicomUID.ECGLeadNoiseModifiersRETIRED3681);
@@ -1089,7 +1091,7 @@ namespace Dicom {
 			_uids.Add(DicomUID.CardiacUltrasoundInterventricularSeptumFindingSites12286.UID, DicomUID.CardiacUltrasoundInterventricularSeptumFindingSites12286);
 			_uids.Add(DicomUID.CardiacUltrasoundVentriclesFindingSites12287.UID, DicomUID.CardiacUltrasoundVentriclesFindingSites12287);
 			_uids.Add(DicomUID.CardiacUltrasoundOutflowTractsFindingSites12288.UID, DicomUID.CardiacUltrasoundOutflowTractsFindingSites12288);
-			_uids.Add(DicomUID.CardiacUltrasoundSemilunarValvesAnnulateAndSinusesFindingSites12289.UID, DicomUID.CardiacUltrasoundSemilunarValvesAnnulateAndSinusesFindingSites12289);
+			_uids.Add(DicomUID.CardiacUltrasoundSemilunarValvesAnnulusAndSinusesFindingSites12289.UID, DicomUID.CardiacUltrasoundSemilunarValvesAnnulusAndSinusesFindingSites12289);
 			_uids.Add(DicomUID.CardiacUltrasoundPulmonaryArteriesFindingSites12290.UID, DicomUID.CardiacUltrasoundPulmonaryArteriesFindingSites12290);
 			_uids.Add(DicomUID.CardiacUltrasoundAortaFindingSites12291.UID, DicomUID.CardiacUltrasoundAortaFindingSites12291);
 			_uids.Add(DicomUID.CardiacUltrasoundCoronaryArteriesFindingSites12292.UID, DicomUID.CardiacUltrasoundCoronaryArteriesFindingSites12292);
@@ -1107,7 +1109,7 @@ namespace Dicom {
 			_uids.Add(DicomUID.AnteriorChamberDepthDefinition4239.UID, DicomUID.AnteriorChamberDepthDefinition4239);
 			_uids.Add(DicomUID.OphthalmicMeasurementOrCalculationDataSource4240.UID, DicomUID.OphthalmicMeasurementOrCalculationDataSource4240);
 			_uids.Add(DicomUID.OphthalmicAxialLengthSelectionMethod4241.UID, DicomUID.OphthalmicAxialLengthSelectionMethod4241);
-			_uids.Add(DicomUID.OphthalmicAxialLengthQualityMetricType4243.UID, DicomUID.OphthalmicAxialLengthQualityMetricType4243);
+			_uids.Add(DicomUID.OphthalmicQualityMetricType4243.UID, DicomUID.OphthalmicQualityMetricType4243);
 			_uids.Add(DicomUID.OphthalmicAgentConcentrationUnits4244.UID, DicomUID.OphthalmicAgentConcentrationUnits4244);
 			_uids.Add(DicomUID.FunctionalConditionPresentDuringAcquisition91.UID, DicomUID.FunctionalConditionPresentDuringAcquisition91);
 			_uids.Add(DicomUID.JointPositionDuringAcquisition92.UID, DicomUID.JointPositionDuringAcquisition92);
@@ -1219,7 +1221,7 @@ namespace Dicom {
 			_uids.Add(DicomUID.ResponseCriteria6147.UID, DicomUID.ResponseCriteria6147);
 			_uids.Add(DicomUID.FetalBiometryAnatomicSites12020.UID, DicomUID.FetalBiometryAnatomicSites12020);
 			_uids.Add(DicomUID.FetalLongBoneAnatomicSites12021.UID, DicomUID.FetalLongBoneAnatomicSites12021);
-			_uids.Add(DicomUID.FetalCraniumBoneAnatomicSites12022.UID, DicomUID.FetalCraniumBoneAnatomicSites12022);
+			_uids.Add(DicomUID.FetalCraniumAnatomicSites12022.UID, DicomUID.FetalCraniumAnatomicSites12022);
 			_uids.Add(DicomUID.PelvisAndUterusAnatomicSites12023.UID, DicomUID.PelvisAndUterusAnatomicSites12023);
 			_uids.Add(DicomUID.ParametricMapDerivationImagePurposeOfReference7222.UID, DicomUID.ParametricMapDerivationImagePurposeOfReference7222);
 			_uids.Add(DicomUID.PhysicalQuantityDescriptors9000.UID, DicomUID.PhysicalQuantityDescriptors9000);
@@ -1233,6 +1235,15 @@ namespace Dicom {
 			_uids.Add(DicomUID.CranialNerves7706.UID, DicomUID.CranialNerves7706);
 			_uids.Add(DicomUID.SpinalCordFibers7707.UID, DicomUID.SpinalCordFibers7707);
 			_uids.Add(DicomUID.TractographyAnatomicSites7710.UID, DicomUID.TractographyAnatomicSites7710);
+			_uids.Add(DicomUID.PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025.UID, DicomUID.PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025);
+			_uids.Add(DicomUID.PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026.UID, DicomUID.PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026);
+			_uids.Add(DicomUID.IEC6127DevicePositionParameters9401.UID, DicomUID.IEC6127DevicePositionParameters9401);
+			_uids.Add(DicomUID.IEC6127GantryPositionParameters9402.UID, DicomUID.IEC6127GantryPositionParameters9402);
+			_uids.Add(DicomUID.IEC6127PatientSupportPositionParameters9403.UID, DicomUID.IEC6127PatientSupportPositionParameters9403);
+			_uids.Add(DicomUID.ActionableFindingClassification7035.UID, DicomUID.ActionableFindingClassification7035);
+			_uids.Add(DicomUID.ImageQualityAssessment7036.UID, DicomUID.ImageQualityAssessment7036);
+			_uids.Add(DicomUID.SummaryRadiationExposureQuantities10050.UID, DicomUID.SummaryRadiationExposureQuantities10050);
+			_uids.Add(DicomUID.WideFieldOphthalmicPhotographyTransformationMethod4245.UID, DicomUID.WideFieldOphthalmicPhotographyTransformationMethod4245);
 			_uids.Add(DicomUID.NativeDICOMModel.UID, DicomUID.NativeDICOMModel);
 			_uids.Add(DicomUID.AbstractMultiDimensionalImageModel.UID, DicomUID.AbstractMultiDimensionalImageModel);
 			_uids.Add(DicomUID.DICOMContentMappingResource.UID, DicomUID.DICOMContentMappingResource);
@@ -1277,3691 +1288,3724 @@ namespace Dicom {
 			_uids.Add(DicomUID.DicomTransferCapability.UID, DicomUID.DicomTransferCapability);
 			_uids.Add(DicomUID.UniversalCoordinatedTime.UID, DicomUID.UniversalCoordinatedTime);
 		}
-		/// <summary>SOPClass: Verification SOP Class</summary>
+		/// <summary>SOP Class: Verification SOP Class</summary>
 		public readonly static DicomUID VerificationSOPClass = new DicomUID("1.2.840.10008.1.1", "Verification SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>TransferSyntax: Implicit VR Little Endian: Default Transfer Syntax for DICOM</summary>
+		/// <summary>Transfer Syntax: Implicit VR Little Endian: Default Transfer Syntax for DICOM</summary>
 		public readonly static DicomUID ImplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2", "Implicit VR Little Endian: Default Transfer Syntax for DICOM", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: Explicit VR Little Endian</summary>
+		/// <summary>Transfer Syntax: Explicit VR Little Endian</summary>
 		public readonly static DicomUID ExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1", "Explicit VR Little Endian", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: Deflated Explicit VR Little Endian</summary>
+		/// <summary>Transfer Syntax: Deflated Explicit VR Little Endian</summary>
 		public readonly static DicomUID DeflatedExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1.99", "Deflated Explicit VR Little Endian", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: Explicit VR Big Endian (Retired)</summary>
+		/// <summary>Transfer Syntax: Explicit VR Big Endian (Retired)</summary>
 		public readonly static DicomUID ExplicitVRBigEndianRETIRED = new DicomUID("1.2.840.10008.1.2.2", "Explicit VR Big Endian (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression</summary>
 		public readonly static DicomUID JPEGBaseline1 = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)</summary>
+		/// <summary>Transfer Syntax: JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)</summary>
 		public readonly static DicomUID JPEGExtended24 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG Extended (Process 3 & 5) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Extended (Process 3 & 5) (Retired)</summary>
 		public readonly static DicomUID JPEGExtended35RETIRED = new DicomUID("1.2.840.10008.1.2.4.52", "JPEG Extended (Process 3 & 5) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Spectral Selection, Non-Hierarchical (Process 6 & 8) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Spectral Selection, Non-Hierarchical (Process 6 & 8) (Retired)</summary>
 		public readonly static DicomUID JPEGSpectralSelectionNonHierarchical68RETIRED = new DicomUID("1.2.840.10008.1.2.4.53", "JPEG Spectral Selection, Non-Hierarchical (Process 6 & 8) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Spectral Selection, Non-Hierarchical (Process 7 & 9) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Spectral Selection, Non-Hierarchical (Process 7 & 9) (Retired)</summary>
 		public readonly static DicomUID JPEGSpectralSelectionNonHierarchical79RETIRED = new DicomUID("1.2.840.10008.1.2.4.54", "JPEG Spectral Selection, Non-Hierarchical (Process 7 & 9) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Full Progression, Non-Hierarchical (Process 10 & 12) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Full Progression, Non-Hierarchical (Process 10 & 12) (Retired)</summary>
 		public readonly static DicomUID JPEGFullProgressionNonHierarchical1012RETIRED = new DicomUID("1.2.840.10008.1.2.4.55", "JPEG Full Progression, Non-Hierarchical (Process 10 & 12) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Full Progression, Non-Hierarchical (Process 11 & 13) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Full Progression, Non-Hierarchical (Process 11 & 13) (Retired)</summary>
 		public readonly static DicomUID JPEGFullProgressionNonHierarchical1113RETIRED = new DicomUID("1.2.840.10008.1.2.4.56", "JPEG Full Progression, Non-Hierarchical (Process 11 & 13) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Lossless, Non-Hierarchical (Process 14)</summary>
+		/// <summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical (Process 14)</summary>
 		public readonly static DicomUID JPEGLosslessNonHierarchical14 = new DicomUID("1.2.840.10008.1.2.4.57", "JPEG Lossless, Non-Hierarchical (Process 14)", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG Lossless, Non-Hierarchical (Process 15) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical (Process 15) (Retired)</summary>
 		public readonly static DicomUID JPEGLosslessNonHierarchical15RETIRED = new DicomUID("1.2.840.10008.1.2.4.58", "JPEG Lossless, Non-Hierarchical (Process 15) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Extended, Hierarchical (Process 16 & 18) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Extended, Hierarchical (Process 16 & 18) (Retired)</summary>
 		public readonly static DicomUID JPEGExtendedHierarchical1618RETIRED = new DicomUID("1.2.840.10008.1.2.4.59", "JPEG Extended, Hierarchical (Process 16 & 18) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Extended, Hierarchical (Process 17 & 19) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Extended, Hierarchical (Process 17 & 19) (Retired)</summary>
 		public readonly static DicomUID JPEGExtendedHierarchical1719RETIRED = new DicomUID("1.2.840.10008.1.2.4.60", "JPEG Extended, Hierarchical (Process 17 & 19) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Spectral Selection, Hierarchical (Process 20 & 22) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Spectral Selection, Hierarchical (Process 20 & 22) (Retired)</summary>
 		public readonly static DicomUID JPEGSpectralSelectionHierarchical2022RETIRED = new DicomUID("1.2.840.10008.1.2.4.61", "JPEG Spectral Selection, Hierarchical (Process 20 & 22) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Spectral Selection, Hierarchical (Process 21 & 23) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Spectral Selection, Hierarchical (Process 21 & 23) (Retired)</summary>
 		public readonly static DicomUID JPEGSpectralSelectionHierarchical2123RETIRED = new DicomUID("1.2.840.10008.1.2.4.62", "JPEG Spectral Selection, Hierarchical (Process 21 & 23) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Full Progression, Hierarchical (Process 24 & 26) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Full Progression, Hierarchical (Process 24 & 26) (Retired)</summary>
 		public readonly static DicomUID JPEGFullProgressionHierarchical2426RETIRED = new DicomUID("1.2.840.10008.1.2.4.63", "JPEG Full Progression, Hierarchical (Process 24 & 26) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Full Progression, Hierarchical (Process 25 & 27) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Full Progression, Hierarchical (Process 25 & 27) (Retired)</summary>
 		public readonly static DicomUID JPEGFullProgressionHierarchical2527RETIRED = new DicomUID("1.2.840.10008.1.2.4.64", "JPEG Full Progression, Hierarchical (Process 25 & 27) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Lossless, Hierarchical (Process 28) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Lossless, Hierarchical (Process 28) (Retired)</summary>
 		public readonly static DicomUID JPEGLosslessHierarchical28RETIRED = new DicomUID("1.2.840.10008.1.2.4.65", "JPEG Lossless, Hierarchical (Process 28) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Lossless, Hierarchical (Process 29) (Retired)</summary>
+		/// <summary>Transfer Syntax: JPEG Lossless, Hierarchical (Process 29) (Retired)</summary>
 		public readonly static DicomUID JPEGLosslessHierarchical29RETIRED = new DicomUID("1.2.840.10008.1.2.4.66", "JPEG Lossless, Hierarchical (Process 29) (Retired)", DicomUidType.TransferSyntax, true);
 
-		/// <summary>TransferSyntax: JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression</summary>
 		public readonly static DicomUID JPEGLosslessNonHierarchicalFirstOrderPrediction14 = new DicomUID("1.2.840.10008.1.2.4.70", "JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG-LS Lossless Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG-LS Lossless Image Compression</summary>
 		public readonly static DicomUID JPEGLSLossless = new DicomUID("1.2.840.10008.1.2.4.80", "JPEG-LS Lossless Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG-LS Lossy (Near-Lossless) Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG-LS Lossy (Near-Lossless) Image Compression</summary>
 		public readonly static DicomUID JPEGLSLossyNearLossless = new DicomUID("1.2.840.10008.1.2.4.81", "JPEG-LS Lossy (Near-Lossless) Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG 2000 Image Compression (Lossless Only)</summary>
+		/// <summary>Transfer Syntax: JPEG 2000 Image Compression (Lossless Only)</summary>
 		public readonly static DicomUID JPEG2000LosslessOnly = new DicomUID("1.2.840.10008.1.2.4.90", "JPEG 2000 Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG 2000 Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG 2000 Image Compression</summary>
 		public readonly static DicomUID JPEG2000 = new DicomUID("1.2.840.10008.1.2.4.91", "JPEG 2000 Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)</summary>
+		/// <summary>Transfer Syntax: JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)</summary>
 		public readonly static DicomUID JPEG2000Part2MultiComponentLosslessOnly = new DicomUID("1.2.840.10008.1.2.4.92", "JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPEG 2000 Part 2 Multi-component Image Compression</summary>
+		/// <summary>Transfer Syntax: JPEG 2000 Part 2 Multi-component Image Compression</summary>
 		public readonly static DicomUID JPEG2000Part2MultiComponent = new DicomUID("1.2.840.10008.1.2.4.93", "JPEG 2000 Part 2 Multi-component Image Compression", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPIP Referenced</summary>
+		/// <summary>Transfer Syntax: JPIP Referenced</summary>
 		public readonly static DicomUID JPIPReferenced = new DicomUID("1.2.840.10008.1.2.4.94", "JPIP Referenced", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: JPIP Referenced Deflate</summary>
+		/// <summary>Transfer Syntax: JPIP Referenced Deflate</summary>
 		public readonly static DicomUID JPIPReferencedDeflate = new DicomUID("1.2.840.10008.1.2.4.95", "JPIP Referenced Deflate", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: MPEG2 Main Profile @ Main Level</summary>
+		/// <summary>Transfer Syntax: MPEG2 Main Profile @ Main Level</summary>
 		public readonly static DicomUID MPEG2MainProfileMainLevel = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile @ Main Level", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: MPEG2 Main Profile @ High Level</summary>
+		/// <summary>Transfer Syntax: MPEG2 Main Profile @ High Level</summary>
 		public readonly static DicomUID MPEG2MainProfileHighLevel = new DicomUID("1.2.840.10008.1.2.4.101", "MPEG2 Main Profile @ High Level", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
+		/// <summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
 		public readonly static DicomUID MPEG4AVCH264HighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.102", "MPEG-4 AVC/H.264 High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
+		/// <summary>Transfer Syntax: MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
 		public readonly static DicomUID MPEG4AVCH264BDCompatibleHighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.103", "MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: RLE Lossless</summary>
+		/// <summary>Transfer Syntax: RLE Lossless</summary>
 		public readonly static DicomUID RLELossless = new DicomUID("1.2.840.10008.1.2.5", "RLE Lossless", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: RFC 2557 MIME encapsulation</summary>
+		/// <summary>Transfer Syntax: RFC 2557 MIME encapsulation</summary>
 		public readonly static DicomUID RFC2557MIMEEncapsulation = new DicomUID("1.2.840.10008.1.2.6.1", "RFC 2557 MIME encapsulation", DicomUidType.TransferSyntax, false);
 
-		/// <summary>TransferSyntax: XML Encoding</summary>
+		/// <summary>Transfer Syntax: XML Encoding</summary>
 		public readonly static DicomUID XMLEncoding = new DicomUID("1.2.840.10008.1.2.6.2", "XML Encoding", DicomUidType.TransferSyntax, false);
 
-		/// <summary>SOPClass: Media Storage Directory Storage</summary>
+		/// <summary>SOP Class: Media Storage Directory Storage</summary>
 		public readonly static DicomUID MediaStorageDirectoryStorage = new DicomUID("1.2.840.10008.1.3.10", "Media Storage Directory Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>FrameOfReference: Talairach Brain Atlas Frame of Reference</summary>
+		/// <summary>Frame Of Reference: Talairach Brain Atlas Frame of Reference</summary>
 		public readonly static DicomUID TalairachBrainAtlasFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.1", "Talairach Brain Atlas Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 T1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 T1 Frame of Reference</summary>
 		public readonly static DicomUID SPM2T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.2", "SPM2 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 T2 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 T2 Frame of Reference</summary>
 		public readonly static DicomUID SPM2T2FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.3", "SPM2 T2 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 PD Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 PD Frame of Reference</summary>
 		public readonly static DicomUID SPM2PDFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.4", "SPM2 PD Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 EPI Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 EPI Frame of Reference</summary>
 		public readonly static DicomUID SPM2EPIFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.5", "SPM2 EPI Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 FIL T1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 FIL T1 Frame of Reference</summary>
 		public readonly static DicomUID SPM2FILT1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.6", "SPM2 FIL T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 PET Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 PET Frame of Reference</summary>
 		public readonly static DicomUID SPM2PETFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.7", "SPM2 PET Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 TRANSM Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 TRANSM Frame of Reference</summary>
 		public readonly static DicomUID SPM2TRANSMFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.8", "SPM2 TRANSM Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 SPECT Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 SPECT Frame of Reference</summary>
 		public readonly static DicomUID SPM2SPECTFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.9", "SPM2 SPECT Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 GRAY Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 GRAY Frame of Reference</summary>
 		public readonly static DicomUID SPM2GRAYFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.10", "SPM2 GRAY Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 WHITE Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 WHITE Frame of Reference</summary>
 		public readonly static DicomUID SPM2WHITEFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.11", "SPM2 WHITE Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 CSF Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 CSF Frame of Reference</summary>
 		public readonly static DicomUID SPM2CSFFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.12", "SPM2 CSF Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 BRAINMASK Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 BRAINMASK Frame of Reference</summary>
 		public readonly static DicomUID SPM2BRAINMASKFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.13", "SPM2 BRAINMASK Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 AVG305T1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 AVG305T1 Frame of Reference</summary>
 		public readonly static DicomUID SPM2AVG305T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.14", "SPM2 AVG305T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 AVG152T1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 AVG152T1 Frame of Reference</summary>
 		public readonly static DicomUID SPM2AVG152T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.15", "SPM2 AVG152T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 AVG152T2 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 AVG152T2 Frame of Reference</summary>
 		public readonly static DicomUID SPM2AVG152T2FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.16", "SPM2 AVG152T2 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 AVG152PD Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 AVG152PD Frame of Reference</summary>
 		public readonly static DicomUID SPM2AVG152PDFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.17", "SPM2 AVG152PD Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: SPM2 SINGLESUBJT1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: SPM2 SINGLESUBJT1 Frame of Reference</summary>
 		public readonly static DicomUID SPM2SINGLESUBJT1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.18", "SPM2 SINGLESUBJT1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: ICBM 452 T1 Frame of Reference</summary>
+		/// <summary>Frame Of Reference: ICBM 452 T1 Frame of Reference</summary>
 		public readonly static DicomUID ICBM452T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.2.1", "ICBM 452 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>FrameOfReference: ICBM Single Subject MRI Frame of Reference</summary>
+		/// <summary>Frame Of Reference: ICBM Single Subject MRI Frame of Reference</summary>
 		public readonly static DicomUID ICBMSingleSubjectMRIFrameOfReference = new DicomUID("1.2.840.10008.1.4.2.2", "ICBM Single Subject MRI Frame of Reference", DicomUidType.FrameOfReference, false);
 
-		/// <summary>SOPInstance: Hot Iron Color Palette SOP Instance</summary>
+		/// <summary>SOP Instance: Hot Iron Color Palette SOP Instance</summary>
 		public readonly static DicomUID HotIronColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.1", "Hot Iron Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPInstance: PET Color Palette SOP Instance</summary>
+		/// <summary>SOP Instance: PET Color Palette SOP Instance</summary>
 		public readonly static DicomUID PETColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.2", "PET Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPInstance: Hot Metal Blue Color Palette SOP Instance</summary>
+		/// <summary>SOP Instance: Hot Metal Blue Color Palette SOP Instance</summary>
 		public readonly static DicomUID HotMetalBlueColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.3", "Hot Metal Blue Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPInstance: PET 20 Step Color Palette SOP Instance</summary>
+		/// <summary>SOP Instance: PET 20 Step Color Palette SOP Instance</summary>
 		public readonly static DicomUID PET20StepColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.4", "PET 20 Step Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPClass: Basic Study Content Notification SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Basic Study Content Notification SOP Class (Retired)</summary>
 		public readonly static DicomUID BasicStudyContentNotificationSOPClassRETIRED = new DicomUID("1.2.840.10008.1.9", "Basic Study Content Notification SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Storage Commitment Push Model SOP Class</summary>
+		/// <summary>SOP Class: Storage Commitment Push Model SOP Class</summary>
 		public readonly static DicomUID StorageCommitmentPushModelSOPClass = new DicomUID("1.2.840.10008.1.20.1", "Storage Commitment Push Model SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPInstance: Storage Commitment Push Model SOP Instance</summary>
+		/// <summary>SOP Instance: Storage Commitment Push Model SOP Instance</summary>
 		public readonly static DicomUID StorageCommitmentPushModelSOPInstance = new DicomUID("1.2.840.10008.1.20.1.1", "Storage Commitment Push Model SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPClass: Storage Commitment Pull Model SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Storage Commitment Pull Model SOP Class (Retired)</summary>
 		public readonly static DicomUID StorageCommitmentPullModelSOPClassRETIRED = new DicomUID("1.2.840.10008.1.20.2", "Storage Commitment Pull Model SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPInstance: Storage Commitment Pull Model SOP Instance (Retired)</summary>
+		/// <summary>SOP Instance: Storage Commitment Pull Model SOP Instance (Retired)</summary>
 		public readonly static DicomUID StorageCommitmentPullModelSOPInstanceRETIRED = new DicomUID("1.2.840.10008.1.20.2.1", "Storage Commitment Pull Model SOP Instance (Retired)", DicomUidType.SOPInstance, true);
 
-		/// <summary>SOPClass: Procedural Event Logging SOP Class</summary>
+		/// <summary>SOP Class: Procedural Event Logging SOP Class</summary>
 		public readonly static DicomUID ProceduralEventLoggingSOPClass = new DicomUID("1.2.840.10008.1.40", "Procedural Event Logging SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPInstance: Procedural Event Logging SOP Instance</summary>
+		/// <summary>SOP Instance: Procedural Event Logging SOP Instance</summary>
 		public readonly static DicomUID ProceduralEventLoggingSOPInstance = new DicomUID("1.2.840.10008.1.40.1", "Procedural Event Logging SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPClass: Substance Administration Logging SOP Class</summary>
+		/// <summary>SOP Class: Substance Administration Logging SOP Class</summary>
 		public readonly static DicomUID SubstanceAdministrationLoggingSOPClass = new DicomUID("1.2.840.10008.1.42", "Substance Administration Logging SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPInstance: Substance Administration Logging SOP Instance</summary>
+		/// <summary>SOP Instance: Substance Administration Logging SOP Instance</summary>
 		public readonly static DicomUID SubstanceAdministrationLoggingSOPInstance = new DicomUID("1.2.840.10008.1.42.1", "Substance Administration Logging SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>CodingScheme: DICOM UID Registry</summary>
+		/// <summary>Coding Scheme: DICOM UID Registry</summary>
 		public readonly static DicomUID DICOMUIDRegistry = new DicomUID("1.2.840.10008.2.6.1", "DICOM UID Registry", DicomUidType.CodingScheme, false);
 
-		/// <summary>CodingScheme: DICOM Controlled Terminology</summary>
+		/// <summary>Coding Scheme: DICOM Controlled Terminology</summary>
 		public readonly static DicomUID DICOMControlledTerminology = new DicomUID("1.2.840.10008.2.16.4", "DICOM Controlled Terminology", DicomUidType.CodingScheme, false);
 
-		/// <summary>ApplicationContextName: DICOM Application Context Name</summary>
+		/// <summary>Application Context Name: DICOM Application Context Name</summary>
 		public readonly static DicomUID DICOMApplicationContextName = new DicomUID("1.2.840.10008.3.1.1.1", "DICOM Application Context Name", DicomUidType.ApplicationContextName, false);
 
-		/// <summary>SOPClass: Detached Patient Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Detached Patient Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedPatientManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.1", "Detached Patient Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>MetaSOPClass: Detached Patient Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Detached Patient Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedPatientManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.4", "Detached Patient Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: Detached Visit Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Detached Visit Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedVisitManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.2.1", "Detached Visit Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Detached Study Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Detached Study Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedStudyManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.1", "Detached Study Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Study Component Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Study Component Management SOP Class (Retired)</summary>
 		public readonly static DicomUID StudyComponentManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.2", "Study Component Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Modality Performed Procedure Step SOP Class</summary>
+		/// <summary>SOP Class: Modality Performed Procedure Step SOP Class</summary>
 		public readonly static DicomUID ModalityPerformedProcedureStepSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.3", "Modality Performed Procedure Step SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Modality Performed Procedure Step Retrieve SOP Class</summary>
+		/// <summary>SOP Class: Modality Performed Procedure Step Retrieve SOP Class</summary>
 		public readonly static DicomUID ModalityPerformedProcedureStepRetrieveSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.4", "Modality Performed Procedure Step Retrieve SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Modality Performed Procedure Step Notification SOP Class</summary>
+		/// <summary>SOP Class: Modality Performed Procedure Step Notification SOP Class</summary>
 		public readonly static DicomUID ModalityPerformedProcedureStepNotificationSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.5", "Modality Performed Procedure Step Notification SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Detached Results Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Detached Results Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedResultsManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.1", "Detached Results Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>MetaSOPClass: Detached Results Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Detached Results Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedResultsManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.4", "Detached Results Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>MetaSOPClass: Detached Study Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Detached Study Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedStudyManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.5", "Detached Study Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: Detached Interpretation Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Detached Interpretation Management SOP Class (Retired)</summary>
 		public readonly static DicomUID DetachedInterpretationManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.6.1", "Detached Interpretation Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>ServiceClass: Storage Service Class</summary>
+		/// <summary>Service Class: Storage Service Class</summary>
 		public readonly static DicomUID StorageServiceClass = new DicomUID("1.2.840.10008.4.2", "Storage Service Class", DicomUidType.ServiceClass, false);
 
-		/// <summary>SOPClass: Basic Film Session SOP Class</summary>
+		/// <summary>SOP Class: Basic Film Session SOP Class</summary>
 		public readonly static DicomUID BasicFilmSessionSOPClass = new DicomUID("1.2.840.10008.5.1.1.1", "Basic Film Session SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Film Box SOP Class</summary>
+		/// <summary>SOP Class: Basic Film Box SOP Class</summary>
 		public readonly static DicomUID BasicFilmBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.2", "Basic Film Box SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Grayscale Image Box SOP Class</summary>
+		/// <summary>SOP Class: Basic Grayscale Image Box SOP Class</summary>
 		public readonly static DicomUID BasicGrayscaleImageBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.4", "Basic Grayscale Image Box SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Color Image Box SOP Class</summary>
+		/// <summary>SOP Class: Basic Color Image Box SOP Class</summary>
 		public readonly static DicomUID BasicColorImageBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.4.1", "Basic Color Image Box SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Referenced Image Box SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Referenced Image Box SOP Class (Retired)</summary>
 		public readonly static DicomUID ReferencedImageBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.4.2", "Referenced Image Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>MetaSOPClass: Basic Grayscale Print Management Meta SOP Class</summary>
+		/// <summary>Meta SOP Class: Basic Grayscale Print Management Meta SOP Class</summary>
 		public readonly static DicomUID BasicGrayscalePrintManagementMetaSOPClass = new DicomUID("1.2.840.10008.5.1.1.9", "Basic Grayscale Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
 
-		/// <summary>MetaSOPClass: Referenced Grayscale Print Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Referenced Grayscale Print Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID ReferencedGrayscalePrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.9.1", "Referenced Grayscale Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: Print Job SOP Class</summary>
+		/// <summary>SOP Class: Print Job SOP Class</summary>
 		public readonly static DicomUID PrintJobSOPClass = new DicomUID("1.2.840.10008.5.1.1.14", "Print Job SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Annotation Box SOP Class</summary>
+		/// <summary>SOP Class: Basic Annotation Box SOP Class</summary>
 		public readonly static DicomUID BasicAnnotationBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.15", "Basic Annotation Box SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Printer SOP Class</summary>
+		/// <summary>SOP Class: Printer SOP Class</summary>
 		public readonly static DicomUID PrinterSOPClass = new DicomUID("1.2.840.10008.5.1.1.16", "Printer SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Printer Configuration Retrieval SOP Class</summary>
+		/// <summary>SOP Class: Printer Configuration Retrieval SOP Class</summary>
 		public readonly static DicomUID PrinterConfigurationRetrievalSOPClass = new DicomUID("1.2.840.10008.5.1.1.16.376", "Printer Configuration Retrieval SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPInstance: Printer SOP Instance</summary>
+		/// <summary>SOP Instance: Printer SOP Instance</summary>
 		public readonly static DicomUID PrinterSOPInstance = new DicomUID("1.2.840.10008.5.1.1.17", "Printer SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPInstance: Printer Configuration Retrieval SOP Instance</summary>
+		/// <summary>SOP Instance: Printer Configuration Retrieval SOP Instance</summary>
 		public readonly static DicomUID PrinterConfigurationRetrievalSOPInstance = new DicomUID("1.2.840.10008.5.1.1.17.376", "Printer Configuration Retrieval SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>MetaSOPClass: Basic Color Print Management Meta SOP Class</summary>
+		/// <summary>Meta SOP Class: Basic Color Print Management Meta SOP Class</summary>
 		public readonly static DicomUID BasicColorPrintManagementMetaSOPClass = new DicomUID("1.2.840.10008.5.1.1.18", "Basic Color Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
 
-		/// <summary>MetaSOPClass: Referenced Color Print Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Referenced Color Print Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID ReferencedColorPrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.18.1", "Referenced Color Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: VOI LUT Box SOP Class</summary>
+		/// <summary>SOP Class: VOI LUT Box SOP Class</summary>
 		public readonly static DicomUID VOILUTBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.22", "VOI LUT Box SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Presentation LUT SOP Class</summary>
+		/// <summary>SOP Class: Presentation LUT SOP Class</summary>
 		public readonly static DicomUID PresentationLUTSOPClass = new DicomUID("1.2.840.10008.5.1.1.23", "Presentation LUT SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Image Overlay Box SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Image Overlay Box SOP Class (Retired)</summary>
 		public readonly static DicomUID ImageOverlayBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.24", "Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Basic Print Image Overlay Box SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Basic Print Image Overlay Box SOP Class (Retired)</summary>
 		public readonly static DicomUID BasicPrintImageOverlayBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.24.1", "Basic Print Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPInstance: Print Queue SOP Instance (Retired)</summary>
+		/// <summary>SOP Instance: Print Queue SOP Instance (Retired)</summary>
 		public readonly static DicomUID PrintQueueSOPInstanceRETIRED = new DicomUID("1.2.840.10008.5.1.1.25", "Print Queue SOP Instance (Retired)", DicomUidType.SOPInstance, true);
 
-		/// <summary>SOPClass: Print Queue Management SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Print Queue Management SOP Class (Retired)</summary>
 		public readonly static DicomUID PrintQueueManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.26", "Print Queue Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Stored Print Storage SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Stored Print Storage SOP Class (Retired)</summary>
 		public readonly static DicomUID StoredPrintStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.27", "Stored Print Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Hardcopy Grayscale Image Storage SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Hardcopy Grayscale Image Storage SOP Class (Retired)</summary>
 		public readonly static DicomUID HardcopyGrayscaleImageStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.29", "Hardcopy Grayscale Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Hardcopy Color Image Storage SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Hardcopy Color Image Storage SOP Class (Retired)</summary>
 		public readonly static DicomUID HardcopyColorImageStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.30", "Hardcopy Color Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Pull Print Request SOP Class (Retired)</summary>
+		/// <summary>SOP Class: Pull Print Request SOP Class (Retired)</summary>
 		public readonly static DicomUID PullPrintRequestSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.31", "Pull Print Request SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>MetaSOPClass: Pull Stored Print Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: Pull Stored Print Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID PullStoredPrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.32", "Pull Stored Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: Media Creation Management SOP Class UID</summary>
+		/// <summary>SOP Class: Media Creation Management SOP Class UID</summary>
 		public readonly static DicomUID MediaCreationManagementSOPClassUID = new DicomUID("1.2.840.10008.5.1.1.33", "Media Creation Management SOP Class UID", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Display System SOP Class</summary>
+		/// <summary>SOP Class: Display System SOP Class</summary>
 		public readonly static DicomUID DisplaySystemSOPClass = new DicomUID("1.2.840.10008.5.1.1.40", "Display System SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPInstance: Display System SOP Instance</summary>
+		/// <summary>SOP Instance: Display System SOP Instance</summary>
 		public readonly static DicomUID DisplaySystemSOPInstance = new DicomUID("1.2.840.10008.5.1.1.40.1", "Display System SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPClass: Computed Radiography Image Storage</summary>
+		/// <summary>SOP Class: Computed Radiography Image Storage</summary>
 		public readonly static DicomUID ComputedRadiographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.1", "Computed Radiography Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital X-Ray Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: Digital X-Ray Image Storage - For Presentation</summary>
 		public readonly static DicomUID DigitalXRayImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.1.1", "Digital X-Ray Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital X-Ray Image Storage - For Processing</summary>
+		/// <summary>SOP Class: Digital X-Ray Image Storage - For Processing</summary>
 		public readonly static DicomUID DigitalXRayImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.1.1.1", "Digital X-Ray Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital Mammography X-Ray Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: Digital Mammography X-Ray Image Storage - For Presentation</summary>
 		public readonly static DicomUID DigitalMammographyXRayImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.1.2", "Digital Mammography X-Ray Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital Mammography X-Ray Image Storage - For Processing</summary>
+		/// <summary>SOP Class: Digital Mammography X-Ray Image Storage - For Processing</summary>
 		public readonly static DicomUID DigitalMammographyXRayImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.1.2.1", "Digital Mammography X-Ray Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital Intra-Oral X-Ray Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: Digital Intra-Oral X-Ray Image Storage - For Presentation</summary>
 		public readonly static DicomUID DigitalIntraOralXRayImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.1.3", "Digital Intra-Oral X-Ray Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Digital Intra-Oral X-Ray Image Storage - For Processing</summary>
+		/// <summary>SOP Class: Digital Intra-Oral X-Ray Image Storage - For Processing</summary>
 		public readonly static DicomUID DigitalIntraOralXRayImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.1.3.1", "Digital Intra-Oral X-Ray Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: CT Image Storage</summary>
+		/// <summary>SOP Class: CT Image Storage</summary>
 		public readonly static DicomUID CTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.2", "CT Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced CT Image Storage</summary>
+		/// <summary>SOP Class: Enhanced CT Image Storage</summary>
 		public readonly static DicomUID EnhancedCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.2.1", "Enhanced CT Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Legacy Converted Enhanced CT Image Storage</summary>
+		/// <summary>SOP Class: Legacy Converted Enhanced CT Image Storage</summary>
 		public readonly static DicomUID LegacyConvertedEnhancedCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.2.2", "Legacy Converted Enhanced CT Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ultrasound Multi-frame Image Storage (Retired)</summary>
+		/// <summary>SOP Class: Ultrasound Multi-frame Image Storage (Retired)</summary>
 		public readonly static DicomUID UltrasoundMultiFrameImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.3", "Ultrasound Multi-frame Image Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Ultrasound Multi-frame Image Storage</summary>
+		/// <summary>SOP Class: Ultrasound Multi-frame Image Storage</summary>
 		public readonly static DicomUID UltrasoundMultiFrameImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.3.1", "Ultrasound Multi-frame Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: MR Image Storage</summary>
+		/// <summary>SOP Class: MR Image Storage</summary>
 		public readonly static DicomUID MRImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4", "MR Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced MR Image Storage</summary>
+		/// <summary>SOP Class: Enhanced MR Image Storage</summary>
 		public readonly static DicomUID EnhancedMRImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4.1", "Enhanced MR Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: MR Spectroscopy Storage</summary>
+		/// <summary>SOP Class: MR Spectroscopy Storage</summary>
 		public readonly static DicomUID MRSpectroscopyStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4.2", "MR Spectroscopy Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced MR Color Image Storage</summary>
+		/// <summary>SOP Class: Enhanced MR Color Image Storage</summary>
 		public readonly static DicomUID EnhancedMRColorImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4.3", "Enhanced MR Color Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Legacy Converted Enhanced MR Image Storage</summary>
+		/// <summary>SOP Class: Legacy Converted Enhanced MR Image Storage</summary>
 		public readonly static DicomUID LegacyConvertedEnhancedMRImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4.4", "Legacy Converted Enhanced MR Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Nuclear Medicine Image Storage (Retired)</summary>
+		/// <summary>SOP Class: Nuclear Medicine Image Storage (Retired)</summary>
 		public readonly static DicomUID NuclearMedicineImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.5", "Nuclear Medicine Image Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Ultrasound Image Storage (Retired)</summary>
+		/// <summary>SOP Class: Ultrasound Image Storage (Retired)</summary>
 		public readonly static DicomUID UltrasoundImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.6", "Ultrasound Image Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Ultrasound Image Storage</summary>
+		/// <summary>SOP Class: Ultrasound Image Storage</summary>
 		public readonly static DicomUID UltrasoundImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.6.1", "Ultrasound Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced US Volume Storage</summary>
+		/// <summary>SOP Class: Enhanced US Volume Storage</summary>
 		public readonly static DicomUID EnhancedUSVolumeStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.6.2", "Enhanced US Volume Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Secondary Capture Image Storage</summary>
+		/// <summary>SOP Class: Secondary Capture Image Storage</summary>
 		public readonly static DicomUID SecondaryCaptureImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.7", "Secondary Capture Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Multi-frame Single Bit Secondary Capture Image Storage</summary>
+		/// <summary>SOP Class: Multi-frame Single Bit Secondary Capture Image Storage</summary>
 		public readonly static DicomUID MultiFrameSingleBitSecondaryCaptureImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.7.1", "Multi-frame Single Bit Secondary Capture Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Multi-frame Grayscale Byte Secondary Capture Image Storage</summary>
+		/// <summary>SOP Class: Multi-frame Grayscale Byte Secondary Capture Image Storage</summary>
 		public readonly static DicomUID MultiFrameGrayscaleByteSecondaryCaptureImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.7.2", "Multi-frame Grayscale Byte Secondary Capture Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Multi-frame Grayscale Word Secondary Capture Image Storage</summary>
+		/// <summary>SOP Class: Multi-frame Grayscale Word Secondary Capture Image Storage</summary>
 		public readonly static DicomUID MultiFrameGrayscaleWordSecondaryCaptureImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.7.3", "Multi-frame Grayscale Word Secondary Capture Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Multi-frame True Color Secondary Capture Image Storage</summary>
+		/// <summary>SOP Class: Multi-frame True Color Secondary Capture Image Storage</summary>
 		public readonly static DicomUID MultiFrameTrueColorSecondaryCaptureImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.7.4", "Multi-frame True Color Secondary Capture Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Standalone Overlay Storage (Retired)</summary>
+		/// <summary>SOP Class: Standalone Overlay Storage (Retired)</summary>
 		public readonly static DicomUID StandaloneOverlayStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.8", "Standalone Overlay Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Standalone Curve Storage (Retired)</summary>
+		/// <summary>SOP Class: Standalone Curve Storage (Retired)</summary>
 		public readonly static DicomUID StandaloneCurveStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.9", "Standalone Curve Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Waveform Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: Waveform Storage - Trial (Retired)</summary>
 		public readonly static DicomUID WaveformStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.9.1", "Waveform Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: 12-lead ECG Waveform Storage</summary>
+		/// <summary>SOP Class: 12-lead ECG Waveform Storage</summary>
 		public readonly static DicomUID TwelveLeadECGWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.1.1", "12-lead ECG Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: General ECG Waveform Storage</summary>
+		/// <summary>SOP Class: General ECG Waveform Storage</summary>
 		public readonly static DicomUID GeneralECGWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.1.2", "General ECG Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ambulatory ECG Waveform Storage</summary>
+		/// <summary>SOP Class: Ambulatory ECG Waveform Storage</summary>
 		public readonly static DicomUID AmbulatoryECGWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.1.3", "Ambulatory ECG Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Hemodynamic Waveform Storage</summary>
+		/// <summary>SOP Class: Hemodynamic Waveform Storage</summary>
 		public readonly static DicomUID HemodynamicWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.2.1", "Hemodynamic Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Cardiac Electrophysiology Waveform Storage</summary>
+		/// <summary>SOP Class: Cardiac Electrophysiology Waveform Storage</summary>
 		public readonly static DicomUID CardiacElectrophysiologyWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.3.1", "Cardiac Electrophysiology Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Voice Audio Waveform Storage</summary>
+		/// <summary>SOP Class: Basic Voice Audio Waveform Storage</summary>
 		public readonly static DicomUID BasicVoiceAudioWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.4.1", "Basic Voice Audio Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: General Audio Waveform Storage</summary>
+		/// <summary>SOP Class: General Audio Waveform Storage</summary>
 		public readonly static DicomUID GeneralAudioWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.4.2", "General Audio Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Arterial Pulse Waveform Storage</summary>
+		/// <summary>SOP Class: Arterial Pulse Waveform Storage</summary>
 		public readonly static DicomUID ArterialPulseWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.5.1", "Arterial Pulse Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Respiratory Waveform Storage</summary>
+		/// <summary>SOP Class: Respiratory Waveform Storage</summary>
 		public readonly static DicomUID RespiratoryWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.6.1", "Respiratory Waveform Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Standalone Modality LUT Storage (Retired)</summary>
+		/// <summary>SOP Class: Standalone Modality LUT Storage (Retired)</summary>
 		public readonly static DicomUID StandaloneModalityLUTStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.10", "Standalone Modality LUT Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Standalone VOI LUT Storage (Retired)</summary>
+		/// <summary>SOP Class: Standalone VOI LUT Storage (Retired)</summary>
 		public readonly static DicomUID StandaloneVOILUTStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.11", "Standalone VOI LUT Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Grayscale Softcopy Presentation State Storage SOP Class</summary>
+		/// <summary>SOP Class: Grayscale Softcopy Presentation State Storage SOP Class</summary>
 		public readonly static DicomUID GrayscaleSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.1", "Grayscale Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Color Softcopy Presentation State Storage SOP Class</summary>
+		/// <summary>SOP Class: Color Softcopy Presentation State Storage SOP Class</summary>
 		public readonly static DicomUID ColorSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.2", "Color Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Pseudo-Color Softcopy Presentation State Storage SOP Class</summary>
+		/// <summary>SOP Class: Pseudo-Color Softcopy Presentation State Storage SOP Class</summary>
 		public readonly static DicomUID PseudoColorSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.3", "Pseudo-Color Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Blending Softcopy Presentation State Storage SOP Class</summary>
+		/// <summary>SOP Class: Blending Softcopy Presentation State Storage SOP Class</summary>
 		public readonly static DicomUID BlendingSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.4", "Blending Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: XA/XRF Grayscale Softcopy Presentation State Storage</summary>
+		/// <summary>SOP Class: XA/XRF Grayscale Softcopy Presentation State Storage</summary>
 		public readonly static DicomUID XAXRFGrayscaleSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.5", "XA/XRF Grayscale Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: X-Ray Angiographic Image Storage</summary>
+		/// <summary>SOP Class: X-Ray Angiographic Image Storage</summary>
 		public readonly static DicomUID XRayAngiographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.1", "X-Ray Angiographic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced XA Image Storage</summary>
+		/// <summary>SOP Class: Enhanced XA Image Storage</summary>
 		public readonly static DicomUID EnhancedXAImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.1.1", "Enhanced XA Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: X-Ray Radiofluoroscopic Image Storage</summary>
+		/// <summary>SOP Class: X-Ray Radiofluoroscopic Image Storage</summary>
 		public readonly static DicomUID XRayRadiofluoroscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.2", "X-Ray Radiofluoroscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced XRF Image Storage</summary>
+		/// <summary>SOP Class: Enhanced XRF Image Storage</summary>
 		public readonly static DicomUID EnhancedXRFImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.2.1", "Enhanced XRF Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: X-Ray Angiographic Bi-Plane Image Storage (Retired)</summary>
+		/// <summary>SOP Class: X-Ray Angiographic Bi-Plane Image Storage (Retired)</summary>
 		public readonly static DicomUID XRayAngiographicBiPlaneImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.12.3", "X-Ray Angiographic Bi-Plane Image Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: X-Ray 3D Angiographic Image Storage</summary>
+		/// <summary>SOP Class: X-Ray 3D Angiographic Image Storage</summary>
 		public readonly static DicomUID XRay3DAngiographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.1", "X-Ray 3D Angiographic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: X-Ray 3D Craniofacial Image Storage</summary>
+		/// <summary>SOP Class: X-Ray 3D Craniofacial Image Storage</summary>
 		public readonly static DicomUID XRay3DCraniofacialImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.2", "X-Ray 3D Craniofacial Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Breast Tomosynthesis Image Storage</summary>
+		/// <summary>SOP Class: Breast Tomosynthesis Image Storage</summary>
 		public readonly static DicomUID BreastTomosynthesisImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.3", "Breast Tomosynthesis Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Breast Projection X-Ray Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: Breast Projection X-Ray Image Storage - For Presentation</summary>
 		public readonly static DicomUID BreastProjectionXRayImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.4", "Breast Projection X-Ray Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Breast Projection X-Ray Image Storage - For Processing</summary>
+		/// <summary>SOP Class: Breast Projection X-Ray Image Storage - For Processing</summary>
 		public readonly static DicomUID BreastProjectionXRayImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.5", "Breast Projection X-Ray Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Intravascular Optical Coherence Tomography Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: Intravascular Optical Coherence Tomography Image Storage - For Presentation</summary>
 		public readonly static DicomUID IntravascularOpticalCoherenceTomographyImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.14.1", "Intravascular Optical Coherence Tomography Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Intravascular Optical Coherence Tomography Image Storage - For Processing</summary>
+		/// <summary>SOP Class: Intravascular Optical Coherence Tomography Image Storage - For Processing</summary>
 		public readonly static DicomUID IntravascularOpticalCoherenceTomographyImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.14.2", "Intravascular Optical Coherence Tomography Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Nuclear Medicine Image Storage</summary>
+		/// <summary>SOP Class: Nuclear Medicine Image Storage</summary>
 		public readonly static DicomUID NuclearMedicineImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.20", "Nuclear Medicine Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Parametric Map Storage</summary>
+		/// <summary>SOP Class: Parametric Map Storage</summary>
 		public readonly static DicomUID ParametricMapStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.30", "Parametric Map Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Raw Data Storage</summary>
+		/// <summary>SOP Class: Raw Data Storage</summary>
 		public readonly static DicomUID RawDataStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66", "Raw Data Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Spatial Registration Storage</summary>
+		/// <summary>SOP Class: Spatial Registration Storage</summary>
 		public readonly static DicomUID SpatialRegistrationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66.1", "Spatial Registration Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Spatial Fiducials Storage</summary>
+		/// <summary>SOP Class: Spatial Fiducials Storage</summary>
 		public readonly static DicomUID SpatialFiducialsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66.2", "Spatial Fiducials Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Deformable Spatial Registration Storage</summary>
+		/// <summary>SOP Class: Deformable Spatial Registration Storage</summary>
 		public readonly static DicomUID DeformableSpatialRegistrationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66.3", "Deformable Spatial Registration Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Segmentation Storage</summary>
+		/// <summary>SOP Class: Segmentation Storage</summary>
 		public readonly static DicomUID SegmentationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66.4", "Segmentation Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Surface Segmentation Storage</summary>
+		/// <summary>SOP Class: Surface Segmentation Storage</summary>
 		public readonly static DicomUID SurfaceSegmentationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66.5", "Surface Segmentation Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Real World Value Mapping Storage</summary>
+		/// <summary>SOP Class: Real World Value Mapping Storage</summary>
 		public readonly static DicomUID RealWorldValueMappingStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.67", "Real World Value Mapping Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Surface Scan Mesh Storage</summary>
+		/// <summary>SOP Class: Surface Scan Mesh Storage</summary>
 		public readonly static DicomUID SurfaceScanMeshStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.68.1", "Surface Scan Mesh Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Surface Scan Point Cloud Storage</summary>
+		/// <summary>SOP Class: Surface Scan Point Cloud Storage</summary>
 		public readonly static DicomUID SurfaceScanPointCloudStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.68.2", "Surface Scan Point Cloud Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Image Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: VL Image Storage - Trial (Retired)</summary>
 		public readonly static DicomUID VLImageStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1", "VL Image Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: VL Endoscopic Image Storage</summary>
+		/// <summary>SOP Class: VL Endoscopic Image Storage</summary>
 		public readonly static DicomUID VLEndoscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.1", "VL Endoscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Video Endoscopic Image Storage</summary>
+		/// <summary>SOP Class: Video Endoscopic Image Storage</summary>
 		public readonly static DicomUID VideoEndoscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.1.1", "Video Endoscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Microscopic Image Storage</summary>
+		/// <summary>SOP Class: VL Microscopic Image Storage</summary>
 		public readonly static DicomUID VLMicroscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.2", "VL Microscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Video Microscopic Image Storage</summary>
+		/// <summary>SOP Class: Video Microscopic Image Storage</summary>
 		public readonly static DicomUID VideoMicroscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.2.1", "Video Microscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Slide-Coordinates Microscopic Image Storage</summary>
+		/// <summary>SOP Class: VL Slide-Coordinates Microscopic Image Storage</summary>
 		public readonly static DicomUID VLSlideCoordinatesMicroscopicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.3", "VL Slide-Coordinates Microscopic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Photographic Image Storage</summary>
+		/// <summary>SOP Class: VL Photographic Image Storage</summary>
 		public readonly static DicomUID VLPhotographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.4", "VL Photographic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Video Photographic Image Storage</summary>
+		/// <summary>SOP Class: Video Photographic Image Storage</summary>
 		public readonly static DicomUID VideoPhotographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.4.1", "Video Photographic Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Photography 8 Bit Image Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Photography 8 Bit Image Storage</summary>
 		public readonly static DicomUID OphthalmicPhotography8BitImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.1", "Ophthalmic Photography 8 Bit Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Photography 16 Bit Image Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Photography 16 Bit Image Storage</summary>
 		public readonly static DicomUID OphthalmicPhotography16BitImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.2", "Ophthalmic Photography 16 Bit Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Stereometric Relationship Storage</summary>
+		/// <summary>SOP Class: Stereometric Relationship Storage</summary>
 		public readonly static DicomUID StereometricRelationshipStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.3", "Stereometric Relationship Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Tomography Image Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Tomography Image Storage</summary>
 		public readonly static DicomUID OphthalmicTomographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.4", "Ophthalmic Tomography Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Whole Slide Microscopy Image Storage</summary>
+		/// <summary>SOP Class: Wide Field Ophthalmic Photography Stereographic Projection Image Storage</summary>
+		public readonly static DicomUID WideFieldOphthalmicPhotographyStereographicProjectionImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.5", "Wide Field Ophthalmic Photography Stereographic Projection Image Storage", DicomUidType.SOPClass, false);
+
+		/// <summary>SOP Class: Wide Field Ophthalmic Photography 3D Coordinates Image Storage</summary>
+		public readonly static DicomUID WideFieldOphthalmicPhotography3DCoordinatesImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.6", "Wide Field Ophthalmic Photography 3D Coordinates Image Storage", DicomUidType.SOPClass, false);
+
+		/// <summary>SOP Class: VL Whole Slide Microscopy Image Storage</summary>
 		public readonly static DicomUID VLWholeSlideMicroscopyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.6", "VL Whole Slide Microscopy Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: VL Multi-frame Image Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: VL Multi-frame Image Storage - Trial (Retired)</summary>
 		public readonly static DicomUID VLMultiFrameImageStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.77.2", "VL Multi-frame Image Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Lensometry Measurements Storage</summary>
+		/// <summary>SOP Class: Lensometry Measurements Storage</summary>
 		public readonly static DicomUID LensometryMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.1", "Lensometry Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Autorefraction Measurements Storage</summary>
+		/// <summary>SOP Class: Autorefraction Measurements Storage</summary>
 		public readonly static DicomUID AutorefractionMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.2", "Autorefraction Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Keratometry Measurements Storage</summary>
+		/// <summary>SOP Class: Keratometry Measurements Storage</summary>
 		public readonly static DicomUID KeratometryMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.3", "Keratometry Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Subjective Refraction Measurements Storage</summary>
+		/// <summary>SOP Class: Subjective Refraction Measurements Storage</summary>
 		public readonly static DicomUID SubjectiveRefractionMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.4", "Subjective Refraction Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Visual Acuity Measurements Storage</summary>
+		/// <summary>SOP Class: Visual Acuity Measurements Storage</summary>
 		public readonly static DicomUID VisualAcuityMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.5", "Visual Acuity Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Spectacle Prescription Report Storage</summary>
+		/// <summary>SOP Class: Spectacle Prescription Report Storage</summary>
 		public readonly static DicomUID SpectaclePrescriptionReportStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.6", "Spectacle Prescription Report Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Axial Measurements Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Axial Measurements Storage</summary>
 		public readonly static DicomUID OphthalmicAxialMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.7", "Ophthalmic Axial Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Intraocular Lens Calculations Storage</summary>
+		/// <summary>SOP Class: Intraocular Lens Calculations Storage</summary>
 		public readonly static DicomUID IntraocularLensCalculationsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.8", "Intraocular Lens Calculations Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Macular Grid Thickness and Volume Report Storage</summary>
+		/// <summary>SOP Class: Macular Grid Thickness and Volume Report Storage</summary>
 		public readonly static DicomUID MacularGridThicknessAndVolumeReportStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.79.1", "Macular Grid Thickness and Volume Report Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Visual Field Static Perimetry Measurements Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Visual Field Static Perimetry Measurements Storage</summary>
 		public readonly static DicomUID OphthalmicVisualFieldStaticPerimetryMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.80.1", "Ophthalmic Visual Field Static Perimetry Measurements Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Ophthalmic Thickness Map Storage</summary>
+		/// <summary>SOP Class: Ophthalmic Thickness Map Storage</summary>
 		public readonly static DicomUID OphthalmicThicknessMapStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.81.1", "Ophthalmic Thickness Map Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Corneal Topography Map Storage</summary>
+		/// <summary>SOP Class: Corneal Topography Map Storage</summary>
 		public readonly static DicomUID CornealTopographyMapStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.82.1", "Corneal Topography Map Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Text SR Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: Text SR Storage - Trial (Retired)</summary>
 		public readonly static DicomUID TextSRStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.88.1", "Text SR Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Audio SR Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: Audio SR Storage - Trial (Retired)</summary>
 		public readonly static DicomUID AudioSRStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.88.2", "Audio SR Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Detail SR Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: Detail SR Storage - Trial (Retired)</summary>
 		public readonly static DicomUID DetailSRStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.88.3", "Detail SR Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Comprehensive SR Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: Comprehensive SR Storage - Trial (Retired)</summary>
 		public readonly static DicomUID ComprehensiveSRStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.88.4", "Comprehensive SR Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Basic Text SR Storage</summary>
+		/// <summary>SOP Class: Basic Text SR Storage</summary>
 		public readonly static DicomUID BasicTextSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.11", "Basic Text SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Enhanced SR Storage</summary>
+		/// <summary>SOP Class: Enhanced SR Storage</summary>
 		public readonly static DicomUID EnhancedSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.22", "Enhanced SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Comprehensive SR Storage</summary>
+		/// <summary>SOP Class: Comprehensive SR Storage</summary>
 		public readonly static DicomUID ComprehensiveSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.33", "Comprehensive SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Comprehensive 3D SR Storage</summary>
+		/// <summary>SOP Class: Comprehensive 3D SR Storage</summary>
 		public readonly static DicomUID Comprehensive3DSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.34", "Comprehensive 3D SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Procedure Log Storage</summary>
+		/// <summary>SOP Class: Procedure Log Storage</summary>
 		public readonly static DicomUID ProcedureLogStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.40", "Procedure Log Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Mammography CAD SR Storage</summary>
+		/// <summary>SOP Class: Mammography CAD SR Storage</summary>
 		public readonly static DicomUID MammographyCADSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.50", "Mammography CAD SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Key Object Selection Document Storage</summary>
+		/// <summary>SOP Class: Key Object Selection Document Storage</summary>
 		public readonly static DicomUID KeyObjectSelectionDocumentStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.59", "Key Object Selection Document Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Chest CAD SR Storage</summary>
+		/// <summary>SOP Class: Chest CAD SR Storage</summary>
 		public readonly static DicomUID ChestCADSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.65", "Chest CAD SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: X-Ray Radiation Dose SR Storage</summary>
+		/// <summary>SOP Class: X-Ray Radiation Dose SR Storage</summary>
 		public readonly static DicomUID XRayRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.67", "X-Ray Radiation Dose SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Radiopharmaceutical Radiation Dose SR Storage</summary>
+		/// <summary>SOP Class: Radiopharmaceutical Radiation Dose SR Storage</summary>
 		public readonly static DicomUID RadiopharmaceuticalRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.68", "Radiopharmaceutical Radiation Dose SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Colon CAD SR Storage</summary>
+		/// <summary>SOP Class: Colon CAD SR Storage</summary>
 		public readonly static DicomUID ColonCADSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.69", "Colon CAD SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implantation Plan SR Storage</summary>
+		/// <summary>SOP Class: Implantation Plan SR Storage</summary>
 		public readonly static DicomUID ImplantationPlanSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.70", "Implantation Plan SR Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Encapsulated PDF Storage</summary>
+		/// <summary>SOP Class: Encapsulated PDF Storage</summary>
 		public readonly static DicomUID EncapsulatedPDFStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.1", "Encapsulated PDF Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Encapsulated CDA Storage</summary>
+		/// <summary>SOP Class: Encapsulated CDA Storage</summary>
 		public readonly static DicomUID EncapsulatedCDAStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.2", "Encapsulated CDA Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Positron Emission Tomography Image Storage</summary>
+		/// <summary>SOP Class: Positron Emission Tomography Image Storage</summary>
 		public readonly static DicomUID PositronEmissionTomographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.128", "Positron Emission Tomography Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Legacy Converted Enhanced PET Image Storage</summary>
+		/// <summary>SOP Class: Legacy Converted Enhanced PET Image Storage</summary>
 		public readonly static DicomUID LegacyConvertedEnhancedPETImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.128.1", "Legacy Converted Enhanced PET Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Standalone PET Curve Storage (Retired)</summary>
+		/// <summary>SOP Class: Standalone PET Curve Storage (Retired)</summary>
 		public readonly static DicomUID StandalonePETCurveStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.129", "Standalone PET Curve Storage (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Enhanced PET Image Storage</summary>
+		/// <summary>SOP Class: Enhanced PET Image Storage</summary>
 		public readonly static DicomUID EnhancedPETImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.130", "Enhanced PET Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Basic Structured Display Storage</summary>
+		/// <summary>SOP Class: Basic Structured Display Storage</summary>
 		public readonly static DicomUID BasicStructuredDisplayStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.131", "Basic Structured Display Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Image Storage</summary>
+		/// <summary>SOP Class: RT Image Storage</summary>
 		public readonly static DicomUID RTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.1", "RT Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Dose Storage</summary>
+		/// <summary>SOP Class: RT Dose Storage</summary>
 		public readonly static DicomUID RTDoseStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.2", "RT Dose Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Structure Set Storage</summary>
+		/// <summary>SOP Class: RT Structure Set Storage</summary>
 		public readonly static DicomUID RTStructureSetStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.3", "RT Structure Set Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Beams Treatment Record Storage</summary>
+		/// <summary>SOP Class: RT Beams Treatment Record Storage</summary>
 		public readonly static DicomUID RTBeamsTreatmentRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.4", "RT Beams Treatment Record Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Plan Storage</summary>
+		/// <summary>SOP Class: RT Plan Storage</summary>
 		public readonly static DicomUID RTPlanStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.5", "RT Plan Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Brachy Treatment Record Storage</summary>
+		/// <summary>SOP Class: RT Brachy Treatment Record Storage</summary>
 		public readonly static DicomUID RTBrachyTreatmentRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.6", "RT Brachy Treatment Record Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Treatment Summary Record Storage</summary>
+		/// <summary>SOP Class: RT Treatment Summary Record Storage</summary>
 		public readonly static DicomUID RTTreatmentSummaryRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.7", "RT Treatment Summary Record Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Ion Plan Storage</summary>
+		/// <summary>SOP Class: RT Ion Plan Storage</summary>
 		public readonly static DicomUID RTIonPlanStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.8", "RT Ion Plan Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Ion Beams Treatment Record Storage</summary>
+		/// <summary>SOP Class: RT Ion Beams Treatment Record Storage</summary>
 		public readonly static DicomUID RTIonBeamsTreatmentRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.9", "RT Ion Beams Treatment Record Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS CT Image Storage</summary>
+		/// <summary>SOP Class: DICOS CT Image Storage</summary>
 		public readonly static DicomUID DICOSCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.1", "DICOS CT Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS Digital X-Ray Image Storage - For Presentation</summary>
+		/// <summary>SOP Class: DICOS Digital X-Ray Image Storage - For Presentation</summary>
 		public readonly static DicomUID DICOSDigitalXRayImageStorageForPresentation = new DicomUID("1.2.840.10008.5.1.4.1.1.501.2.1", "DICOS Digital X-Ray Image Storage - For Presentation", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS Digital X-Ray Image Storage - For Processing</summary>
+		/// <summary>SOP Class: DICOS Digital X-Ray Image Storage - For Processing</summary>
 		public readonly static DicomUID DICOSDigitalXRayImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.501.2.2", "DICOS Digital X-Ray Image Storage - For Processing", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS Threat Detection Report Storage</summary>
+		/// <summary>SOP Class: DICOS Threat Detection Report Storage</summary>
 		public readonly static DicomUID DICOSThreatDetectionReportStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.3", "DICOS Threat Detection Report Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS 2D AIT Storage</summary>
+		/// <summary>SOP Class: DICOS 2D AIT Storage</summary>
 		public readonly static DicomUID DICOS2DAITStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.4", "DICOS 2D AIT Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS 3D AIT Storage</summary>
+		/// <summary>SOP Class: DICOS 3D AIT Storage</summary>
 		public readonly static DicomUID DICOS3DAITStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.5", "DICOS 3D AIT Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: DICOS Quadrupole Resonance (QR) Storage</summary>
+		/// <summary>SOP Class: DICOS Quadrupole Resonance (QR) Storage</summary>
 		public readonly static DicomUID DICOSQuadrupoleResonanceQRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.6", "DICOS Quadrupole Resonance (QR) Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Eddy Current Image Storage</summary>
+		/// <summary>SOP Class: Eddy Current Image Storage</summary>
 		public readonly static DicomUID EddyCurrentImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.601.1", "Eddy Current Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Eddy Current Multi-frame Image Storage</summary>
+		/// <summary>SOP Class: Eddy Current Multi-frame Image Storage</summary>
 		public readonly static DicomUID EddyCurrentMultiFrameImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.601.2", "Eddy Current Multi-frame Image Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Patient Root Query/Retrieve Information Model - FIND</summary>
+		/// <summary>SOP Class: Patient Root Query/Retrieve Information Model - FIND</summary>
 		public readonly static DicomUID PatientRootQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.2.1.1", "Patient Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Patient Root Query/Retrieve Information Model - MOVE</summary>
+		/// <summary>SOP Class: Patient Root Query/Retrieve Information Model - MOVE</summary>
 		public readonly static DicomUID PatientRootQueryRetrieveInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.1.2", "Patient Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Patient Root Query/Retrieve Information Model - GET</summary>
+		/// <summary>SOP Class: Patient Root Query/Retrieve Information Model - GET</summary>
 		public readonly static DicomUID PatientRootQueryRetrieveInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.2.1.3", "Patient Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Study Root Query/Retrieve Information Model - FIND</summary>
+		/// <summary>SOP Class: Study Root Query/Retrieve Information Model - FIND</summary>
 		public readonly static DicomUID StudyRootQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.2.2.1", "Study Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Study Root Query/Retrieve Information Model - MOVE</summary>
+		/// <summary>SOP Class: Study Root Query/Retrieve Information Model - MOVE</summary>
 		public readonly static DicomUID StudyRootQueryRetrieveInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.2.2", "Study Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Study Root Query/Retrieve Information Model - GET</summary>
+		/// <summary>SOP Class: Study Root Query/Retrieve Information Model - GET</summary>
 		public readonly static DicomUID StudyRootQueryRetrieveInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.2.2.3", "Study Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Patient/Study Only Query/Retrieve Information Model - FIND (Retired)</summary>
+		/// <summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - FIND (Retired)</summary>
 		public readonly static DicomUID PatientStudyOnlyQueryRetrieveInformationModelFINDRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.1", "Patient/Study Only Query/Retrieve Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)</summary>
+		/// <summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)</summary>
 		public readonly static DicomUID PatientStudyOnlyQueryRetrieveInformationModelMOVERETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.2", "Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Patient/Study Only Query/Retrieve Information Model - GET (Retired)</summary>
+		/// <summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - GET (Retired)</summary>
 		public readonly static DicomUID PatientStudyOnlyQueryRetrieveInformationModelGETRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.3", "Patient/Study Only Query/Retrieve Information Model - GET (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Composite Instance Root Retrieve - MOVE</summary>
+		/// <summary>SOP Class: Composite Instance Root Retrieve - MOVE</summary>
 		public readonly static DicomUID CompositeInstanceRootRetrieveMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.4.2", "Composite Instance Root Retrieve - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Composite Instance Root Retrieve - GET</summary>
+		/// <summary>SOP Class: Composite Instance Root Retrieve - GET</summary>
 		public readonly static DicomUID CompositeInstanceRootRetrieveGET = new DicomUID("1.2.840.10008.5.1.4.1.2.4.3", "Composite Instance Root Retrieve - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Composite Instance Retrieve Without Bulk Data - GET</summary>
+		/// <summary>SOP Class: Composite Instance Retrieve Without Bulk Data - GET</summary>
 		public readonly static DicomUID CompositeInstanceRetrieveWithoutBulkDataGET = new DicomUID("1.2.840.10008.5.1.4.1.2.5.3", "Composite Instance Retrieve Without Bulk Data - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Modality Worklist Information Model - FIND</summary>
+		/// <summary>SOP Class: Modality Worklist Information Model - FIND</summary>
 		public readonly static DicomUID ModalityWorklistInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.31", "Modality Worklist Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>MetaSOPClass: General Purpose Worklist Management Meta SOP Class (Retired)</summary>
+		/// <summary>Meta SOP Class: General Purpose Worklist Management Meta SOP Class (Retired)</summary>
 		public readonly static DicomUID GeneralPurposeWorklistManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32", "General Purpose Worklist Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
-		/// <summary>SOPClass: General Purpose Worklist Information Model - FIND (Retired)</summary>
+		/// <summary>SOP Class: General Purpose Worklist Information Model - FIND (Retired)</summary>
 		public readonly static DicomUID GeneralPurposeWorklistInformationModelFINDRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.1", "General Purpose Worklist Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: General Purpose Scheduled Procedure Step SOP Class (Retired)</summary>
+		/// <summary>SOP Class: General Purpose Scheduled Procedure Step SOP Class (Retired)</summary>
 		public readonly static DicomUID GeneralPurposeScheduledProcedureStepSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.2", "General Purpose Scheduled Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: General Purpose Performed Procedure Step SOP Class (Retired)</summary>
+		/// <summary>SOP Class: General Purpose Performed Procedure Step SOP Class (Retired)</summary>
 		public readonly static DicomUID GeneralPurposePerformedProcedureStepSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.3", "General Purpose Performed Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Instance Availability Notification SOP Class</summary>
+		/// <summary>SOP Class: Instance Availability Notification SOP Class</summary>
 		public readonly static DicomUID InstanceAvailabilityNotificationSOPClass = new DicomUID("1.2.840.10008.5.1.4.33", "Instance Availability Notification SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Beams Delivery Instruction Storage - Trial (Retired)</summary>
+		/// <summary>SOP Class: RT Beams Delivery Instruction Storage - Trial (Retired)</summary>
 		public readonly static DicomUID RTBeamsDeliveryInstructionStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.1", "RT Beams Delivery Instruction Storage - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: RT Conventional Machine Verification - Trial (Retired)</summary>
+		/// <summary>SOP Class: RT Conventional Machine Verification - Trial (Retired)</summary>
 		public readonly static DicomUID RTConventionalMachineVerificationTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.2", "RT Conventional Machine Verification - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: RT Ion Machine Verification - Trial (Retired)</summary>
+		/// <summary>SOP Class: RT Ion Machine Verification - Trial (Retired)</summary>
 		public readonly static DicomUID RTIonMachineVerificationTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.3", "RT Ion Machine Verification - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>ServiceClass: Unified Worklist and Procedure Step Service Class - Trial (Retired)</summary>
+		/// <summary>Service Class: Unified Worklist and Procedure Step Service Class - Trial (Retired)</summary>
 		public readonly static DicomUID UnifiedWorklistAndProcedureStepServiceClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4", "Unified Worklist and Procedure Step Service Class - Trial (Retired)", DicomUidType.ServiceClass, true);
 
-		/// <summary>SOPClass: Unified Procedure Step - Push SOP Class - Trial (Retired)</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Push SOP Class - Trial (Retired)</summary>
 		public readonly static DicomUID UnifiedProcedureStepPushSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.1", "Unified Procedure Step - Push SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Unified Procedure Step - Watch SOP Class - Trial (Retired)</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Watch SOP Class - Trial (Retired)</summary>
 		public readonly static DicomUID UnifiedProcedureStepWatchSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.2", "Unified Procedure Step - Watch SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Unified Procedure Step - Pull SOP Class - Trial (Retired)</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Pull SOP Class - Trial (Retired)</summary>
 		public readonly static DicomUID UnifiedProcedureStepPullSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.3", "Unified Procedure Step - Pull SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPClass: Unified Procedure Step - Event SOP Class - Trial (Retired)</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Event SOP Class - Trial (Retired)</summary>
 		public readonly static DicomUID UnifiedProcedureStepEventSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.4", "Unified Procedure Step - Event SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
-		/// <summary>SOPInstance: UPS Global Subscription SOP Instance</summary>
+		/// <summary>SOP Instance: UPS Global Subscription SOP Instance</summary>
 		public readonly static DicomUID UPSGlobalSubscriptionSOPInstance = new DicomUID("1.2.840.10008.5.1.4.34.5", "UPS Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>SOPInstance: UPS Filtered Global Subscription SOP Instance</summary>
+		/// <summary>SOP Instance: UPS Filtered Global Subscription SOP Instance</summary>
 		public readonly static DicomUID UPSFilteredGlobalSubscriptionSOPInstance = new DicomUID("1.2.840.10008.5.1.4.34.5.1", "UPS Filtered Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
 
-		/// <summary>ServiceClass: Unified Worklist and Procedure Step Service Class</summary>
+		/// <summary>Service Class: Unified Worklist and Procedure Step Service Class</summary>
 		public readonly static DicomUID UnifiedWorklistAndProcedureStepServiceClass = new DicomUID("1.2.840.10008.5.1.4.34.6", "Unified Worklist and Procedure Step Service Class", DicomUidType.ServiceClass, false);
 
-		/// <summary>SOPClass: Unified Procedure Step - Push SOP Class</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Push SOP Class</summary>
 		public readonly static DicomUID UnifiedProcedureStepPushSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.1", "Unified Procedure Step - Push SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Unified Procedure Step - Watch SOP Class</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Watch SOP Class</summary>
 		public readonly static DicomUID UnifiedProcedureStepWatchSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.2", "Unified Procedure Step - Watch SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Unified Procedure Step - Pull SOP Class</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Pull SOP Class</summary>
 		public readonly static DicomUID UnifiedProcedureStepPullSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.3", "Unified Procedure Step - Pull SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Unified Procedure Step - Event SOP Class</summary>
+		/// <summary>SOP Class: Unified Procedure Step - Event SOP Class</summary>
 		public readonly static DicomUID UnifiedProcedureStepEventSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.4", "Unified Procedure Step - Event SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Beams Delivery Instruction Storage</summary>
+		/// <summary>SOP Class: RT Beams Delivery Instruction Storage</summary>
 		public readonly static DicomUID RTBeamsDeliveryInstructionStorage = new DicomUID("1.2.840.10008.5.1.4.34.7", "RT Beams Delivery Instruction Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Conventional Machine Verification</summary>
+		/// <summary>SOP Class: RT Conventional Machine Verification</summary>
 		public readonly static DicomUID RTConventionalMachineVerification = new DicomUID("1.2.840.10008.5.1.4.34.8", "RT Conventional Machine Verification", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: RT Ion Machine Verification</summary>
+		/// <summary>SOP Class: RT Ion Machine Verification</summary>
 		public readonly static DicomUID RTIonMachineVerification = new DicomUID("1.2.840.10008.5.1.4.34.9", "RT Ion Machine Verification", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: General Relevant Patient Information Query</summary>
+		/// <summary>SOP Class: General Relevant Patient Information Query</summary>
 		public readonly static DicomUID GeneralRelevantPatientInformationQuery = new DicomUID("1.2.840.10008.5.1.4.37.1", "General Relevant Patient Information Query", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Breast Imaging Relevant Patient Information Query</summary>
+		/// <summary>SOP Class: Breast Imaging Relevant Patient Information Query</summary>
 		public readonly static DicomUID BreastImagingRelevantPatientInformationQuery = new DicomUID("1.2.840.10008.5.1.4.37.2", "Breast Imaging Relevant Patient Information Query", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Cardiac Relevant Patient Information Query</summary>
+		/// <summary>SOP Class: Cardiac Relevant Patient Information Query</summary>
 		public readonly static DicomUID CardiacRelevantPatientInformationQuery = new DicomUID("1.2.840.10008.5.1.4.37.3", "Cardiac Relevant Patient Information Query", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Hanging Protocol Storage</summary>
+		/// <summary>SOP Class: Hanging Protocol Storage</summary>
 		public readonly static DicomUID HangingProtocolStorage = new DicomUID("1.2.840.10008.5.1.4.38.1", "Hanging Protocol Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Hanging Protocol Information Model - FIND</summary>
+		/// <summary>SOP Class: Hanging Protocol Information Model - FIND</summary>
 		public readonly static DicomUID HangingProtocolInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.38.2", "Hanging Protocol Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Hanging Protocol Information Model - MOVE</summary>
+		/// <summary>SOP Class: Hanging Protocol Information Model - MOVE</summary>
 		public readonly static DicomUID HangingProtocolInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.38.3", "Hanging Protocol Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Hanging Protocol Information Model - GET</summary>
+		/// <summary>SOP Class: Hanging Protocol Information Model - GET</summary>
 		public readonly static DicomUID HangingProtocolInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.38.4", "Hanging Protocol Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>TransferSyntax: Color Palette Storage</summary>
+		/// <summary>Transfer Syntax: Color Palette Storage</summary>
 		public readonly static DicomUID ColorPaletteStorage = new DicomUID("1.2.840.10008.5.1.4.39.1", "Color Palette Storage", DicomUidType.TransferSyntax, false);
 
-		/// <summary>SOPClass: Color Palette Information Model - FIND</summary>
+		/// <summary>SOP Class: Color Palette Information Model - FIND</summary>
 		public readonly static DicomUID ColorPaletteInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.39.2", "Color Palette Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Color Palette Information Model - MOVE</summary>
+		/// <summary>SOP Class: Color Palette Information Model - MOVE</summary>
 		public readonly static DicomUID ColorPaletteInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.39.3", "Color Palette Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Color Palette Information Model - GET</summary>
+		/// <summary>SOP Class: Color Palette Information Model - GET</summary>
 		public readonly static DicomUID ColorPaletteInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.39.4", "Color Palette Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Product Characteristics Query SOP Class</summary>
+		/// <summary>SOP Class: Product Characteristics Query SOP Class</summary>
 		public readonly static DicomUID ProductCharacteristicsQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.41", "Product Characteristics Query SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Substance Approval Query SOP Class</summary>
+		/// <summary>SOP Class: Substance Approval Query SOP Class</summary>
 		public readonly static DicomUID SubstanceApprovalQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.42", "Substance Approval Query SOP Class", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Generic Implant Template Storage</summary>
+		/// <summary>SOP Class: Generic Implant Template Storage</summary>
 		public readonly static DicomUID GenericImplantTemplateStorage = new DicomUID("1.2.840.10008.5.1.4.43.1", "Generic Implant Template Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Generic Implant Template Information Model - FIND</summary>
+		/// <summary>SOP Class: Generic Implant Template Information Model - FIND</summary>
 		public readonly static DicomUID GenericImplantTemplateInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.43.2", "Generic Implant Template Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Generic Implant Template Information Model - MOVE</summary>
+		/// <summary>SOP Class: Generic Implant Template Information Model - MOVE</summary>
 		public readonly static DicomUID GenericImplantTemplateInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.43.3", "Generic Implant Template Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Generic Implant Template Information Model - GET</summary>
+		/// <summary>SOP Class: Generic Implant Template Information Model - GET</summary>
 		public readonly static DicomUID GenericImplantTemplateInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.43.4", "Generic Implant Template Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Assembly Template Storage</summary>
+		/// <summary>SOP Class: Implant Assembly Template Storage</summary>
 		public readonly static DicomUID ImplantAssemblyTemplateStorage = new DicomUID("1.2.840.10008.5.1.4.44.1", "Implant Assembly Template Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Assembly Template Information Model - FIND</summary>
+		/// <summary>SOP Class: Implant Assembly Template Information Model - FIND</summary>
 		public readonly static DicomUID ImplantAssemblyTemplateInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.44.2", "Implant Assembly Template Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Assembly Template Information Model - MOVE</summary>
+		/// <summary>SOP Class: Implant Assembly Template Information Model - MOVE</summary>
 		public readonly static DicomUID ImplantAssemblyTemplateInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.44.3", "Implant Assembly Template Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Assembly Template Information Model - GET</summary>
+		/// <summary>SOP Class: Implant Assembly Template Information Model - GET</summary>
 		public readonly static DicomUID ImplantAssemblyTemplateInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.44.4", "Implant Assembly Template Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Template Group Storage</summary>
+		/// <summary>SOP Class: Implant Template Group Storage</summary>
 		public readonly static DicomUID ImplantTemplateGroupStorage = new DicomUID("1.2.840.10008.5.1.4.45.1", "Implant Template Group Storage", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Template Group Information Model - FIND</summary>
+		/// <summary>SOP Class: Implant Template Group Information Model - FIND</summary>
 		public readonly static DicomUID ImplantTemplateGroupInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.45.2", "Implant Template Group Information Model - FIND", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Template Group Information Model - MOVE</summary>
+		/// <summary>SOP Class: Implant Template Group Information Model - MOVE</summary>
 		public readonly static DicomUID ImplantTemplateGroupInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.45.3", "Implant Template Group Information Model - MOVE", DicomUidType.SOPClass, false);
 
-		/// <summary>SOPClass: Implant Template Group Information Model - GET</summary>
+		/// <summary>SOP Class: Implant Template Group Information Model - GET</summary>
 		public readonly static DicomUID ImplantTemplateGroupInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.45.4", "Implant Template Group Information Model - GET", DicomUidType.SOPClass, false);
 
-		/// <summary>ContextGroupName: Anatomic Modifier (2)</summary>
+		/// <summary>Context Group Name: Anatomic Modifier (2)</summary>
 		public readonly static DicomUID AnatomicModifier2 = new DicomUID("1.2.840.10008.6.1.1", "Anatomic Modifier (2)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anatomic Region (4)</summary>
+		/// <summary>Context Group Name: Anatomic Region (4)</summary>
 		public readonly static DicomUID AnatomicRegion4 = new DicomUID("1.2.840.10008.6.1.2", "Anatomic Region (4)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Transducer Approach (5)</summary>
+		/// <summary>Context Group Name: Transducer Approach (5)</summary>
 		public readonly static DicomUID TransducerApproach5 = new DicomUID("1.2.840.10008.6.1.3", "Transducer Approach (5)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Transducer Orientation (6)</summary>
+		/// <summary>Context Group Name: Transducer Orientation (6)</summary>
 		public readonly static DicomUID TransducerOrientation6 = new DicomUID("1.2.840.10008.6.1.4", "Transducer Orientation (6)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Beam Path (7)</summary>
+		/// <summary>Context Group Name: Ultrasound Beam Path (7)</summary>
 		public readonly static DicomUID UltrasoundBeamPath7 = new DicomUID("1.2.840.10008.6.1.5", "Ultrasound Beam Path (7)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Angiographic Interventional Devices (8)</summary>
+		/// <summary>Context Group Name: Angiographic Interventional Devices (8)</summary>
 		public readonly static DicomUID AngiographicInterventionalDevices8 = new DicomUID("1.2.840.10008.6.1.6", "Angiographic Interventional Devices (8)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Image Guided Therapeutic Procedures (9)</summary>
+		/// <summary>Context Group Name: Image Guided Therapeutic Procedures (9)</summary>
 		public readonly static DicomUID ImageGuidedTherapeuticProcedures9 = new DicomUID("1.2.840.10008.6.1.7", "Image Guided Therapeutic Procedures (9)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Interventional Drug (10)</summary>
+		/// <summary>Context Group Name: Interventional Drug (10)</summary>
 		public readonly static DicomUID InterventionalDrug10 = new DicomUID("1.2.840.10008.6.1.8", "Interventional Drug (10)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Route of Administration (11)</summary>
+		/// <summary>Context Group Name: Route of Administration (11)</summary>
 		public readonly static DicomUID RouteOfAdministration11 = new DicomUID("1.2.840.10008.6.1.9", "Route of Administration (11)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiographic Contrast Agent (12)</summary>
+		/// <summary>Context Group Name: Radiographic Contrast Agent (12)</summary>
 		public readonly static DicomUID RadiographicContrastAgent12 = new DicomUID("1.2.840.10008.6.1.10", "Radiographic Contrast Agent (12)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiographic Contrast Agent Ingredient (13)</summary>
+		/// <summary>Context Group Name: Radiographic Contrast Agent Ingredient (13)</summary>
 		public readonly static DicomUID RadiographicContrastAgentIngredient13 = new DicomUID("1.2.840.10008.6.1.11", "Radiographic Contrast Agent Ingredient (13)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Isotopes in Radiopharmaceuticals (18)</summary>
+		/// <summary>Context Group Name: Isotopes in Radiopharmaceuticals (18)</summary>
 		public readonly static DicomUID IsotopesInRadiopharmaceuticals18 = new DicomUID("1.2.840.10008.6.1.12", "Isotopes in Radiopharmaceuticals (18)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Orientation (19)</summary>
+		/// <summary>Context Group Name: Patient Orientation (19)</summary>
 		public readonly static DicomUID PatientOrientation19 = new DicomUID("1.2.840.10008.6.1.13", "Patient Orientation (19)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Orientation Modifier (20)</summary>
+		/// <summary>Context Group Name: Patient Orientation Modifier (20)</summary>
 		public readonly static DicomUID PatientOrientationModifier20 = new DicomUID("1.2.840.10008.6.1.14", "Patient Orientation Modifier (20)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Equipment Relationship (21)</summary>
+		/// <summary>Context Group Name: Patient Equipment Relationship (21)</summary>
 		public readonly static DicomUID PatientEquipmentRelationship21 = new DicomUID("1.2.840.10008.6.1.15", "Patient Equipment Relationship (21)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cranio-Caudad Angulation (23)</summary>
+		/// <summary>Context Group Name: Cranio-Caudad Angulation (23)</summary>
 		public readonly static DicomUID CranioCaudadAngulation23 = new DicomUID("1.2.840.10008.6.1.16", "Cranio-Caudad Angulation (23)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiopharmaceuticals (25)</summary>
+		/// <summary>Context Group Name: Radiopharmaceuticals (25)</summary>
 		public readonly static DicomUID Radiopharmaceuticals25 = new DicomUID("1.2.840.10008.6.1.17", "Radiopharmaceuticals (25)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Nuclear Medicine Projections (26)</summary>
+		/// <summary>Context Group Name: Nuclear Medicine Projections (26)</summary>
 		public readonly static DicomUID NuclearMedicineProjections26 = new DicomUID("1.2.840.10008.6.1.18", "Nuclear Medicine Projections (26)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Acquisition Modality (29)</summary>
+		/// <summary>Context Group Name: Acquisition Modality (29)</summary>
 		public readonly static DicomUID AcquisitionModality29 = new DicomUID("1.2.840.10008.6.1.19", "Acquisition Modality (29)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DICOM Devices (30)</summary>
+		/// <summary>Context Group Name: DICOM Devices (30)</summary>
 		public readonly static DicomUID DICOMDevices30 = new DicomUID("1.2.840.10008.6.1.20", "DICOM Devices (30)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Priors (31)</summary>
+		/// <summary>Context Group Name: Abstract Priors (31)</summary>
 		public readonly static DicomUID AbstractPriors31 = new DicomUID("1.2.840.10008.6.1.21", "Abstract Priors (31)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Numeric Value Qualifier (42)</summary>
+		/// <summary>Context Group Name: Numeric Value Qualifier (42)</summary>
 		public readonly static DicomUID NumericValueQualifier42 = new DicomUID("1.2.840.10008.6.1.22", "Numeric Value Qualifier (42)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Measurement (82)</summary>
+		/// <summary>Context Group Name: Units of Measurement (82)</summary>
 		public readonly static DicomUID UnitsOfMeasurement82 = new DicomUID("1.2.840.10008.6.1.23", "Units of Measurement (82)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units for Real World Value Mapping (83)</summary>
+		/// <summary>Context Group Name: Units for Real World Value Mapping (83)</summary>
 		public readonly static DicomUID UnitsForRealWorldValueMapping83 = new DicomUID("1.2.840.10008.6.1.24", "Units for Real World Value Mapping (83)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Level of Significance (220)</summary>
+		/// <summary>Context Group Name: Level of Significance (220)</summary>
 		public readonly static DicomUID LevelOfSignificance220 = new DicomUID("1.2.840.10008.6.1.25", "Level of Significance (220)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Range Concepts (221)</summary>
+		/// <summary>Context Group Name: Measurement Range Concepts (221)</summary>
 		public readonly static DicomUID MeasurementRangeConcepts221 = new DicomUID("1.2.840.10008.6.1.26", "Measurement Range Concepts (221)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Normality Codes (222)</summary>
+		/// <summary>Context Group Name: Normality Codes (222)</summary>
 		public readonly static DicomUID NormalityCodes222 = new DicomUID("1.2.840.10008.6.1.27", "Normality Codes (222)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Normal Range Values (223)</summary>
+		/// <summary>Context Group Name: Normal Range Values (223)</summary>
 		public readonly static DicomUID NormalRangeValues223 = new DicomUID("1.2.840.10008.6.1.28", "Normal Range Values (223)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Selection Method (224)</summary>
+		/// <summary>Context Group Name: Selection Method (224)</summary>
 		public readonly static DicomUID SelectionMethod224 = new DicomUID("1.2.840.10008.6.1.29", "Selection Method (224)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Uncertainty Concepts (225)</summary>
+		/// <summary>Context Group Name: Measurement Uncertainty Concepts (225)</summary>
 		public readonly static DicomUID MeasurementUncertaintyConcepts225 = new DicomUID("1.2.840.10008.6.1.30", "Measurement Uncertainty Concepts (225)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Population Statistical Descriptors (226)</summary>
+		/// <summary>Context Group Name: Population Statistical Descriptors (226)</summary>
 		public readonly static DicomUID PopulationStatisticalDescriptors226 = new DicomUID("1.2.840.10008.6.1.31", "Population Statistical Descriptors (226)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Sample Statistical Descriptors (227)</summary>
+		/// <summary>Context Group Name: Sample Statistical Descriptors (227)</summary>
 		public readonly static DicomUID SampleStatisticalDescriptors227 = new DicomUID("1.2.840.10008.6.1.32", "Sample Statistical Descriptors (227)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Equation or Table (228)</summary>
+		/// <summary>Context Group Name: Equation or Table (228)</summary>
 		public readonly static DicomUID EquationOrTable228 = new DicomUID("1.2.840.10008.6.1.33", "Equation or Table (228)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Yes-No (230)</summary>
+		/// <summary>Context Group Name: Yes-No (230)</summary>
 		public readonly static DicomUID YesNo230 = new DicomUID("1.2.840.10008.6.1.34", "Yes-No (230)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Present-Absent (240)</summary>
+		/// <summary>Context Group Name: Present-Absent (240)</summary>
 		public readonly static DicomUID PresentAbsent240 = new DicomUID("1.2.840.10008.6.1.35", "Present-Absent (240)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Normal-Abnormal (242)</summary>
+		/// <summary>Context Group Name: Normal-Abnormal (242)</summary>
 		public readonly static DicomUID NormalAbnormal242 = new DicomUID("1.2.840.10008.6.1.36", "Normal-Abnormal (242)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Laterality (244)</summary>
+		/// <summary>Context Group Name: Laterality (244)</summary>
 		public readonly static DicomUID Laterality244 = new DicomUID("1.2.840.10008.6.1.37", "Laterality (244)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Positive-Negative (250)</summary>
+		/// <summary>Context Group Name: Positive-Negative (250)</summary>
 		public readonly static DicomUID PositiveNegative250 = new DicomUID("1.2.840.10008.6.1.38", "Positive-Negative (250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Severity of Complication (251)</summary>
+		/// <summary>Context Group Name: Severity of Complication (251)</summary>
 		public readonly static DicomUID SeverityOfComplication251 = new DicomUID("1.2.840.10008.6.1.39", "Severity of Complication (251)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Observer Type (270)</summary>
+		/// <summary>Context Group Name: Observer Type (270)</summary>
 		public readonly static DicomUID ObserverType270 = new DicomUID("1.2.840.10008.6.1.40", "Observer Type (270)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Observation Subject Class (271)</summary>
+		/// <summary>Context Group Name: Observation Subject Class (271)</summary>
 		public readonly static DicomUID ObservationSubjectClass271 = new DicomUID("1.2.840.10008.6.1.41", "Observation Subject Class (271)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Audio Channel Source (3000)</summary>
+		/// <summary>Context Group Name: Audio Channel Source (3000)</summary>
 		public readonly static DicomUID AudioChannelSource3000 = new DicomUID("1.2.840.10008.6.1.42", "Audio Channel Source (3000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Leads (3001)</summary>
+		/// <summary>Context Group Name: ECG Leads (3001)</summary>
 		public readonly static DicomUID ECGLeads3001 = new DicomUID("1.2.840.10008.6.1.43", "ECG Leads (3001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Waveform Sources (3003)</summary>
+		/// <summary>Context Group Name: Hemodynamic Waveform Sources (3003)</summary>
 		public readonly static DicomUID HemodynamicWaveformSources3003 = new DicomUID("1.2.840.10008.6.1.44", "Hemodynamic Waveform Sources (3003)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiovascular Anatomic Locations (3010)</summary>
+		/// <summary>Context Group Name: Cardiovascular Anatomic Locations (3010)</summary>
 		public readonly static DicomUID CardiovascularAnatomicLocations3010 = new DicomUID("1.2.840.10008.6.1.45", "Cardiovascular Anatomic Locations (3010)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Anatomic Locations (3011)</summary>
+		/// <summary>Context Group Name: Electrophysiology Anatomic Locations (3011)</summary>
 		public readonly static DicomUID ElectrophysiologyAnatomicLocations3011 = new DicomUID("1.2.840.10008.6.1.46", "Electrophysiology Anatomic Locations (3011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Coronary Artery Segments (3014)</summary>
+		/// <summary>Context Group Name: Coronary Artery Segments (3014)</summary>
 		public readonly static DicomUID CoronaryArterySegments3014 = new DicomUID("1.2.840.10008.6.1.47", "Coronary Artery Segments (3014)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Coronary Arteries (3015)</summary>
+		/// <summary>Context Group Name: Coronary Arteries (3015)</summary>
 		public readonly static DicomUID CoronaryArteries3015 = new DicomUID("1.2.840.10008.6.1.48", "Coronary Arteries (3015)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiovascular Anatomic Location Modifiers (3019)</summary>
+		/// <summary>Context Group Name: Cardiovascular Anatomic Location Modifiers (3019)</summary>
 		public readonly static DicomUID CardiovascularAnatomicLocationModifiers3019 = new DicomUID("1.2.840.10008.6.1.49", "Cardiovascular Anatomic Location Modifiers (3019)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiology Units of Measurement (Retired) (3082)</summary>
+		/// <summary>Context Group Name: Cardiology Units of Measurement (Retired) (3082)</summary>
 		public readonly static DicomUID CardiologyUnitsOfMeasurementRETIRED3082 = new DicomUID("1.2.840.10008.6.1.50", "Cardiology Units of Measurement (Retired) (3082)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Time Synchronization Channel Types (3090)</summary>
+		/// <summary>Context Group Name: Time Synchronization Channel Types (3090)</summary>
 		public readonly static DicomUID TimeSynchronizationChannelTypes3090 = new DicomUID("1.2.840.10008.6.1.51", "Time Synchronization Channel Types (3090)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Procedural State Values (3101)</summary>
+		/// <summary>Context Group Name: Cardiac Procedural State Values (3101)</summary>
 		public readonly static DicomUID CardiacProceduralStateValues3101 = new DicomUID("1.2.840.10008.6.1.52", "Cardiac Procedural State Values (3101)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Measurement Functions and Techniques (3240)</summary>
+		/// <summary>Context Group Name: Electrophysiology Measurement Functions and Techniques (3240)</summary>
 		public readonly static DicomUID ElectrophysiologyMeasurementFunctionsAndTechniques3240 = new DicomUID("1.2.840.10008.6.1.53", "Electrophysiology Measurement Functions and Techniques (3240)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Measurement Techniques (3241)</summary>
+		/// <summary>Context Group Name: Hemodynamic Measurement Techniques (3241)</summary>
 		public readonly static DicomUID HemodynamicMeasurementTechniques3241 = new DicomUID("1.2.840.10008.6.1.54", "Hemodynamic Measurement Techniques (3241)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Catheterization Procedure Phase (3250)</summary>
+		/// <summary>Context Group Name: Catheterization Procedure Phase (3250)</summary>
 		public readonly static DicomUID CatheterizationProcedurePhase3250 = new DicomUID("1.2.840.10008.6.1.55", "Catheterization Procedure Phase (3250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Procedure Phase (3254)</summary>
+		/// <summary>Context Group Name: Electrophysiology Procedure Phase (3254)</summary>
 		public readonly static DicomUID ElectrophysiologyProcedurePhase3254 = new DicomUID("1.2.840.10008.6.1.56", "Electrophysiology Procedure Phase (3254)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Protocols (3261)</summary>
+		/// <summary>Context Group Name: Stress Protocols (3261)</summary>
 		public readonly static DicomUID StressProtocols3261 = new DicomUID("1.2.840.10008.6.1.57", "Stress Protocols (3261)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Patient State Values (3262)</summary>
+		/// <summary>Context Group Name: ECG Patient State Values (3262)</summary>
 		public readonly static DicomUID ECGPatientStateValues3262 = new DicomUID("1.2.840.10008.6.1.58", "ECG Patient State Values (3262)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrode Placement Values (3263)</summary>
+		/// <summary>Context Group Name: Electrode Placement Values (3263)</summary>
 		public readonly static DicomUID ElectrodePlacementValues3263 = new DicomUID("1.2.840.10008.6.1.59", "Electrode Placement Values (3263)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: XYZ Electrode Placement Values (Retired) (3264)</summary>
+		/// <summary>Context Group Name: XYZ Electrode Placement Values (Retired) (3264)</summary>
 		public readonly static DicomUID XYZElectrodePlacementValuesRETIRED3264 = new DicomUID("1.2.840.10008.6.1.60", "XYZ Electrode Placement Values (Retired) (3264)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Physiological Challenges (3271)</summary>
+		/// <summary>Context Group Name: Hemodynamic Physiological Challenges (3271)</summary>
 		public readonly static DicomUID HemodynamicPhysiologicalChallenges3271 = new DicomUID("1.2.840.10008.6.1.61", "Hemodynamic Physiological Challenges (3271)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Annotations (3335)</summary>
+		/// <summary>Context Group Name: ECG Annotations (3335)</summary>
 		public readonly static DicomUID ECGAnnotations3335 = new DicomUID("1.2.840.10008.6.1.62", "ECG Annotations (3335)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Annotations (3337)</summary>
+		/// <summary>Context Group Name: Hemodynamic Annotations (3337)</summary>
 		public readonly static DicomUID HemodynamicAnnotations3337 = new DicomUID("1.2.840.10008.6.1.63", "Hemodynamic Annotations (3337)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Annotations (3339)</summary>
+		/// <summary>Context Group Name: Electrophysiology Annotations (3339)</summary>
 		public readonly static DicomUID ElectrophysiologyAnnotations3339 = new DicomUID("1.2.840.10008.6.1.64", "Electrophysiology Annotations (3339)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Log Titles (3400)</summary>
+		/// <summary>Context Group Name: Procedure Log Titles (3400)</summary>
 		public readonly static DicomUID ProcedureLogTitles3400 = new DicomUID("1.2.840.10008.6.1.65", "Procedure Log Titles (3400)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Types of Log Notes (3401)</summary>
+		/// <summary>Context Group Name: Types of Log Notes (3401)</summary>
 		public readonly static DicomUID TypesOfLogNotes3401 = new DicomUID("1.2.840.10008.6.1.66", "Types of Log Notes (3401)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Status and Events (3402)</summary>
+		/// <summary>Context Group Name: Patient Status and Events (3402)</summary>
 		public readonly static DicomUID PatientStatusAndEvents3402 = new DicomUID("1.2.840.10008.6.1.67", "Patient Status and Events (3402)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Percutaneous Entry (3403)</summary>
+		/// <summary>Context Group Name: Percutaneous Entry (3403)</summary>
 		public readonly static DicomUID PercutaneousEntry3403 = new DicomUID("1.2.840.10008.6.1.68", "Percutaneous Entry (3403)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Staff Actions (3404)</summary>
+		/// <summary>Context Group Name: Staff Actions (3404)</summary>
 		public readonly static DicomUID StaffActions3404 = new DicomUID("1.2.840.10008.6.1.69", "Staff Actions (3404)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Action Values (3405)</summary>
+		/// <summary>Context Group Name: Procedure Action Values (3405)</summary>
 		public readonly static DicomUID ProcedureActionValues3405 = new DicomUID("1.2.840.10008.6.1.70", "Procedure Action Values (3405)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-coronary Transcatheter Interventions (3406)</summary>
+		/// <summary>Context Group Name: Non-coronary Transcatheter Interventions (3406)</summary>
 		public readonly static DicomUID NonCoronaryTranscatheterInterventions3406 = new DicomUID("1.2.840.10008.6.1.71", "Non-coronary Transcatheter Interventions (3406)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Purpose of Reference to Object (3407)</summary>
+		/// <summary>Context Group Name: Purpose of Reference to Object (3407)</summary>
 		public readonly static DicomUID PurposeOfReferenceToObject3407 = new DicomUID("1.2.840.10008.6.1.72", "Purpose of Reference to Object (3407)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Actions With Consumables (3408)</summary>
+		/// <summary>Context Group Name: Actions With Consumables (3408)</summary>
 		public readonly static DicomUID ActionsWithConsumables3408 = new DicomUID("1.2.840.10008.6.1.73", "Actions With Consumables (3408)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Administration of Drugs/Contrast (3409)</summary>
+		/// <summary>Context Group Name: Administration of Drugs/Contrast (3409)</summary>
 		public readonly static DicomUID AdministrationOfDrugsContrast3409 = new DicomUID("1.2.840.10008.6.1.74", "Administration of Drugs/Contrast (3409)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Numeric Parameters of Drugs/Contrast (3410)</summary>
+		/// <summary>Context Group Name: Numeric Parameters of Drugs/Contrast (3410)</summary>
 		public readonly static DicomUID NumericParametersOfDrugsContrast3410 = new DicomUID("1.2.840.10008.6.1.75", "Numeric Parameters of Drugs/Contrast (3410)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intracoronary Devices (3411)</summary>
+		/// <summary>Context Group Name: Intracoronary Devices (3411)</summary>
 		public readonly static DicomUID IntracoronaryDevices3411 = new DicomUID("1.2.840.10008.6.1.76", "Intracoronary Devices (3411)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intervention Actions and Status (3412)</summary>
+		/// <summary>Context Group Name: Intervention Actions and Status (3412)</summary>
 		public readonly static DicomUID InterventionActionsAndStatus3412 = new DicomUID("1.2.840.10008.6.1.77", "Intervention Actions and Status (3412)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Adverse Outcomes (3413)</summary>
+		/// <summary>Context Group Name: Adverse Outcomes (3413)</summary>
 		public readonly static DicomUID AdverseOutcomes3413 = new DicomUID("1.2.840.10008.6.1.78", "Adverse Outcomes (3413)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Urgency (3414)</summary>
+		/// <summary>Context Group Name: Procedure Urgency (3414)</summary>
 		public readonly static DicomUID ProcedureUrgency3414 = new DicomUID("1.2.840.10008.6.1.79", "Procedure Urgency (3414)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Rhythms (3415)</summary>
+		/// <summary>Context Group Name: Cardiac Rhythms (3415)</summary>
 		public readonly static DicomUID CardiacRhythms3415 = new DicomUID("1.2.840.10008.6.1.80", "Cardiac Rhythms (3415)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Respiration Rhythms (3416)</summary>
+		/// <summary>Context Group Name: Respiration Rhythms (3416)</summary>
 		public readonly static DicomUID RespirationRhythms3416 = new DicomUID("1.2.840.10008.6.1.81", "Respiration Rhythms (3416)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lesion Risk (3418)</summary>
+		/// <summary>Context Group Name: Lesion Risk (3418)</summary>
 		public readonly static DicomUID LesionRisk3418 = new DicomUID("1.2.840.10008.6.1.82", "Lesion Risk (3418)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Findings Titles (3419)</summary>
+		/// <summary>Context Group Name: Findings Titles (3419)</summary>
 		public readonly static DicomUID FindingsTitles3419 = new DicomUID("1.2.840.10008.6.1.83", "Findings Titles (3419)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Action (3421)</summary>
+		/// <summary>Context Group Name: Procedure Action (3421)</summary>
 		public readonly static DicomUID ProcedureAction3421 = new DicomUID("1.2.840.10008.6.1.84", "Procedure Action (3421)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Device Use Actions (3422)</summary>
+		/// <summary>Context Group Name: Device Use Actions (3422)</summary>
 		public readonly static DicomUID DeviceUseActions3422 = new DicomUID("1.2.840.10008.6.1.85", "Device Use Actions (3422)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Numeric Device Characteristics (3423)</summary>
+		/// <summary>Context Group Name: Numeric Device Characteristics (3423)</summary>
 		public readonly static DicomUID NumericDeviceCharacteristics3423 = new DicomUID("1.2.840.10008.6.1.86", "Numeric Device Characteristics (3423)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intervention Parameters (3425)</summary>
+		/// <summary>Context Group Name: Intervention Parameters (3425)</summary>
 		public readonly static DicomUID InterventionParameters3425 = new DicomUID("1.2.840.10008.6.1.87", "Intervention Parameters (3425)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Consumables Parameters (3426)</summary>
+		/// <summary>Context Group Name: Consumables Parameters (3426)</summary>
 		public readonly static DicomUID ConsumablesParameters3426 = new DicomUID("1.2.840.10008.6.1.88", "Consumables Parameters (3426)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Equipment Events (3427)</summary>
+		/// <summary>Context Group Name: Equipment Events (3427)</summary>
 		public readonly static DicomUID EquipmentEvents3427 = new DicomUID("1.2.840.10008.6.1.89", "Equipment Events (3427)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Imaging Procedures (3428)</summary>
+		/// <summary>Context Group Name: Imaging Procedures (3428)</summary>
 		public readonly static DicomUID ImagingProcedures3428 = new DicomUID("1.2.840.10008.6.1.90", "Imaging Procedures (3428)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Catheterization Devices (3429)</summary>
+		/// <summary>Context Group Name: Catheterization Devices (3429)</summary>
 		public readonly static DicomUID CatheterizationDevices3429 = new DicomUID("1.2.840.10008.6.1.91", "Catheterization Devices (3429)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DateTime Qualifiers (3430)</summary>
+		/// <summary>Context Group Name: DateTime Qualifiers (3430)</summary>
 		public readonly static DicomUID DateTimeQualifiers3430 = new DicomUID("1.2.840.10008.6.1.92", "DateTime Qualifiers (3430)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Peripheral Pulse Locations (3440)</summary>
+		/// <summary>Context Group Name: Peripheral Pulse Locations (3440)</summary>
 		public readonly static DicomUID PeripheralPulseLocations3440 = new DicomUID("1.2.840.10008.6.1.93", "Peripheral Pulse Locations (3440)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Assessments (3441)</summary>
+		/// <summary>Context Group Name: Patient Assessments (3441)</summary>
 		public readonly static DicomUID PatientAssessments3441 = new DicomUID("1.2.840.10008.6.1.94", "Patient Assessments (3441)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Peripheral Pulse Methods (3442)</summary>
+		/// <summary>Context Group Name: Peripheral Pulse Methods (3442)</summary>
 		public readonly static DicomUID PeripheralPulseMethods3442 = new DicomUID("1.2.840.10008.6.1.95", "Peripheral Pulse Methods (3442)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Skin Condition (3446)</summary>
+		/// <summary>Context Group Name: Skin Condition (3446)</summary>
 		public readonly static DicomUID SkinCondition3446 = new DicomUID("1.2.840.10008.6.1.96", "Skin Condition (3446)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Airway Assessment (3448)</summary>
+		/// <summary>Context Group Name: Airway Assessment (3448)</summary>
 		public readonly static DicomUID AirwayAssessment3448 = new DicomUID("1.2.840.10008.6.1.97", "Airway Assessment (3448)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calibration Objects (3451)</summary>
+		/// <summary>Context Group Name: Calibration Objects (3451)</summary>
 		public readonly static DicomUID CalibrationObjects3451 = new DicomUID("1.2.840.10008.6.1.98", "Calibration Objects (3451)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calibration Methods (3452)</summary>
+		/// <summary>Context Group Name: Calibration Methods (3452)</summary>
 		public readonly static DicomUID CalibrationMethods3452 = new DicomUID("1.2.840.10008.6.1.99", "Calibration Methods (3452)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Volume Methods (3453)</summary>
+		/// <summary>Context Group Name: Cardiac Volume Methods (3453)</summary>
 		public readonly static DicomUID CardiacVolumeMethods3453 = new DicomUID("1.2.840.10008.6.1.100", "Cardiac Volume Methods (3453)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Index Methods (3455)</summary>
+		/// <summary>Context Group Name: Index Methods (3455)</summary>
 		public readonly static DicomUID IndexMethods3455 = new DicomUID("1.2.840.10008.6.1.101", "Index Methods (3455)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Sub-segment Methods (3456)</summary>
+		/// <summary>Context Group Name: Sub-segment Methods (3456)</summary>
 		public readonly static DicomUID SubSegmentMethods3456 = new DicomUID("1.2.840.10008.6.1.102", "Sub-segment Methods (3456)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Contour Realignment (3458)</summary>
+		/// <summary>Context Group Name: Contour Realignment (3458)</summary>
 		public readonly static DicomUID ContourRealignment3458 = new DicomUID("1.2.840.10008.6.1.103", "Contour Realignment (3458)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Circumferential Extent (3460)</summary>
+		/// <summary>Context Group Name: Circumferential Extent (3460)</summary>
 		public readonly static DicomUID CircumferentialExtent3460 = new DicomUID("1.2.840.10008.6.1.104", "Circumferential Extent (3460)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Regional Extent (3461)</summary>
+		/// <summary>Context Group Name: Regional Extent (3461)</summary>
 		public readonly static DicomUID RegionalExtent3461 = new DicomUID("1.2.840.10008.6.1.105", "Regional Extent (3461)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chamber Identification (3462)</summary>
+		/// <summary>Context Group Name: Chamber Identification (3462)</summary>
 		public readonly static DicomUID ChamberIdentification3462 = new DicomUID("1.2.840.10008.6.1.106", "Chamber Identification (3462)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: QA Reference Methods (3465)</summary>
+		/// <summary>Context Group Name: QA Reference Methods (3465)</summary>
 		public readonly static DicomUID QAReferenceMethods3465 = new DicomUID("1.2.840.10008.6.1.107", "QA Reference Methods (3465)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Plane Identification (3466)</summary>
+		/// <summary>Context Group Name: Plane Identification (3466)</summary>
 		public readonly static DicomUID PlaneIdentification3466 = new DicomUID("1.2.840.10008.6.1.108", "Plane Identification (3466)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ejection Fraction (3467)</summary>
+		/// <summary>Context Group Name: Ejection Fraction (3467)</summary>
 		public readonly static DicomUID EjectionFraction3467 = new DicomUID("1.2.840.10008.6.1.109", "Ejection Fraction (3467)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ED Volume (3468)</summary>
+		/// <summary>Context Group Name: ED Volume (3468)</summary>
 		public readonly static DicomUID EDVolume3468 = new DicomUID("1.2.840.10008.6.1.110", "ED Volume (3468)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ES Volume (3469)</summary>
+		/// <summary>Context Group Name: ES Volume (3469)</summary>
 		public readonly static DicomUID ESVolume3469 = new DicomUID("1.2.840.10008.6.1.111", "ES Volume (3469)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vessel Lumen Cross-sectional Area Calculation Methods (3470)</summary>
+		/// <summary>Context Group Name: Vessel Lumen Cross-sectional Area Calculation Methods (3470)</summary>
 		public readonly static DicomUID VesselLumenCrossSectionalAreaCalculationMethods3470 = new DicomUID("1.2.840.10008.6.1.112", "Vessel Lumen Cross-sectional Area Calculation Methods (3470)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Estimated Volumes (3471)</summary>
+		/// <summary>Context Group Name: Estimated Volumes (3471)</summary>
 		public readonly static DicomUID EstimatedVolumes3471 = new DicomUID("1.2.840.10008.6.1.113", "Estimated Volumes (3471)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Contraction Phase (3472)</summary>
+		/// <summary>Context Group Name: Cardiac Contraction Phase (3472)</summary>
 		public readonly static DicomUID CardiacContractionPhase3472 = new DicomUID("1.2.840.10008.6.1.114", "Cardiac Contraction Phase (3472)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Procedure Phases (3480)</summary>
+		/// <summary>Context Group Name: IVUS Procedure Phases (3480)</summary>
 		public readonly static DicomUID IVUSProcedurePhases3480 = new DicomUID("1.2.840.10008.6.1.115", "IVUS Procedure Phases (3480)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Distance Measurements (3481)</summary>
+		/// <summary>Context Group Name: IVUS Distance Measurements (3481)</summary>
 		public readonly static DicomUID IVUSDistanceMeasurements3481 = new DicomUID("1.2.840.10008.6.1.116", "IVUS Distance Measurements (3481)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Area Measurements (3482)</summary>
+		/// <summary>Context Group Name: IVUS Area Measurements (3482)</summary>
 		public readonly static DicomUID IVUSAreaMeasurements3482 = new DicomUID("1.2.840.10008.6.1.117", "IVUS Area Measurements (3482)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Longitudinal Measurements (3483)</summary>
+		/// <summary>Context Group Name: IVUS Longitudinal Measurements (3483)</summary>
 		public readonly static DicomUID IVUSLongitudinalMeasurements3483 = new DicomUID("1.2.840.10008.6.1.118", "IVUS Longitudinal Measurements (3483)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Indices and Ratios (3484)</summary>
+		/// <summary>Context Group Name: IVUS Indices and Ratios (3484)</summary>
 		public readonly static DicomUID IVUSIndicesAndRatios3484 = new DicomUID("1.2.840.10008.6.1.119", "IVUS Indices and Ratios (3484)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Volume Measurements (3485)</summary>
+		/// <summary>Context Group Name: IVUS Volume Measurements (3485)</summary>
 		public readonly static DicomUID IVUSVolumeMeasurements3485 = new DicomUID("1.2.840.10008.6.1.120", "IVUS Volume Measurements (3485)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Measurement Sites (3486)</summary>
+		/// <summary>Context Group Name: Vascular Measurement Sites (3486)</summary>
 		public readonly static DicomUID VascularMeasurementSites3486 = new DicomUID("1.2.840.10008.6.1.121", "Vascular Measurement Sites (3486)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intravascular Volumetric Regions (3487)</summary>
+		/// <summary>Context Group Name: Intravascular Volumetric Regions (3487)</summary>
 		public readonly static DicomUID IntravascularVolumetricRegions3487 = new DicomUID("1.2.840.10008.6.1.122", "Intravascular Volumetric Regions (3487)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Min/Max/Mean (3488)</summary>
+		/// <summary>Context Group Name: Min/Max/Mean (3488)</summary>
 		public readonly static DicomUID MinMaxMean3488 = new DicomUID("1.2.840.10008.6.1.123", "Min/Max/Mean (3488)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calcium Distribution (3489)</summary>
+		/// <summary>Context Group Name: Calcium Distribution (3489)</summary>
 		public readonly static DicomUID CalciumDistribution3489 = new DicomUID("1.2.840.10008.6.1.124", "Calcium Distribution (3489)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Lesion Morphologies (3491)</summary>
+		/// <summary>Context Group Name: IVUS Lesion Morphologies (3491)</summary>
 		public readonly static DicomUID IVUSLesionMorphologies3491 = new DicomUID("1.2.840.10008.6.1.125", "IVUS Lesion Morphologies (3491)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Dissection Classifications (3492)</summary>
+		/// <summary>Context Group Name: Vascular Dissection Classifications (3492)</summary>
 		public readonly static DicomUID VascularDissectionClassifications3492 = new DicomUID("1.2.840.10008.6.1.126", "Vascular Dissection Classifications (3492)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Relative Stenosis Severities (3493)</summary>
+		/// <summary>Context Group Name: IVUS Relative Stenosis Severities (3493)</summary>
 		public readonly static DicomUID IVUSRelativeStenosisSeverities3493 = new DicomUID("1.2.840.10008.6.1.127", "IVUS Relative Stenosis Severities (3493)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Non Morphological Findings (3494)</summary>
+		/// <summary>Context Group Name: IVUS Non Morphological Findings (3494)</summary>
 		public readonly static DicomUID IVUSNonMorphologicalFindings3494 = new DicomUID("1.2.840.10008.6.1.128", "IVUS Non Morphological Findings (3494)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Plaque Composition (3495)</summary>
+		/// <summary>Context Group Name: IVUS Plaque Composition (3495)</summary>
 		public readonly static DicomUID IVUSPlaqueComposition3495 = new DicomUID("1.2.840.10008.6.1.129", "IVUS Plaque Composition (3495)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Fiducial Points (3496)</summary>
+		/// <summary>Context Group Name: IVUS Fiducial Points (3496)</summary>
 		public readonly static DicomUID IVUSFiducialPoints3496 = new DicomUID("1.2.840.10008.6.1.130", "IVUS Fiducial Points (3496)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IVUS Arterial Morphology (3497)</summary>
+		/// <summary>Context Group Name: IVUS Arterial Morphology (3497)</summary>
 		public readonly static DicomUID IVUSArterialMorphology3497 = new DicomUID("1.2.840.10008.6.1.131", "IVUS Arterial Morphology (3497)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pressure Units (3500)</summary>
+		/// <summary>Context Group Name: Pressure Units (3500)</summary>
 		public readonly static DicomUID PressureUnits3500 = new DicomUID("1.2.840.10008.6.1.132", "Pressure Units (3500)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Resistance Units (3502)</summary>
+		/// <summary>Context Group Name: Hemodynamic Resistance Units (3502)</summary>
 		public readonly static DicomUID HemodynamicResistanceUnits3502 = new DicomUID("1.2.840.10008.6.1.133", "Hemodynamic Resistance Units (3502)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Indexed Hemodynamic Resistance Units (3503)</summary>
+		/// <summary>Context Group Name: Indexed Hemodynamic Resistance Units (3503)</summary>
 		public readonly static DicomUID IndexedHemodynamicResistanceUnits3503 = new DicomUID("1.2.840.10008.6.1.134", "Indexed Hemodynamic Resistance Units (3503)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Catheter Size Units (3510)</summary>
+		/// <summary>Context Group Name: Catheter Size Units (3510)</summary>
 		public readonly static DicomUID CatheterSizeUnits3510 = new DicomUID("1.2.840.10008.6.1.135", "Catheter Size Units (3510)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Specimen Collection (3515)</summary>
+		/// <summary>Context Group Name: Specimen Collection (3515)</summary>
 		public readonly static DicomUID SpecimenCollection3515 = new DicomUID("1.2.840.10008.6.1.136", "Specimen Collection (3515)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Source Type (3520)</summary>
+		/// <summary>Context Group Name: Blood Source Type (3520)</summary>
 		public readonly static DicomUID BloodSourceType3520 = new DicomUID("1.2.840.10008.6.1.137", "Blood Source Type (3520)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Gas Pressures (3524)</summary>
+		/// <summary>Context Group Name: Blood Gas Pressures (3524)</summary>
 		public readonly static DicomUID BloodGasPressures3524 = new DicomUID("1.2.840.10008.6.1.138", "Blood Gas Pressures (3524)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Gas Content (3525)</summary>
+		/// <summary>Context Group Name: Blood Gas Content (3525)</summary>
 		public readonly static DicomUID BloodGasContent3525 = new DicomUID("1.2.840.10008.6.1.139", "Blood Gas Content (3525)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Gas Saturation (3526)</summary>
+		/// <summary>Context Group Name: Blood Gas Saturation (3526)</summary>
 		public readonly static DicomUID BloodGasSaturation3526 = new DicomUID("1.2.840.10008.6.1.140", "Blood Gas Saturation (3526)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Base Excess (3527)</summary>
+		/// <summary>Context Group Name: Blood Base Excess (3527)</summary>
 		public readonly static DicomUID BloodBaseExcess3527 = new DicomUID("1.2.840.10008.6.1.141", "Blood Base Excess (3527)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood pH (3528)</summary>
+		/// <summary>Context Group Name: Blood pH (3528)</summary>
 		public readonly static DicomUID BloodPH3528 = new DicomUID("1.2.840.10008.6.1.142", "Blood pH (3528)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Arterial / Venous Content (3529)</summary>
+		/// <summary>Context Group Name: Arterial / Venous Content (3529)</summary>
 		public readonly static DicomUID ArterialVenousContent3529 = new DicomUID("1.2.840.10008.6.1.143", "Arterial / Venous Content (3529)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Oxygen Administration Actions (3530)</summary>
+		/// <summary>Context Group Name: Oxygen Administration Actions (3530)</summary>
 		public readonly static DicomUID OxygenAdministrationActions3530 = new DicomUID("1.2.840.10008.6.1.144", "Oxygen Administration Actions (3530)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Oxygen Administration (3531)</summary>
+		/// <summary>Context Group Name: Oxygen Administration (3531)</summary>
 		public readonly static DicomUID OxygenAdministration3531 = new DicomUID("1.2.840.10008.6.1.145", "Oxygen Administration (3531)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Circulatory Support Actions (3550)</summary>
+		/// <summary>Context Group Name: Circulatory Support Actions (3550)</summary>
 		public readonly static DicomUID CirculatorySupportActions3550 = new DicomUID("1.2.840.10008.6.1.146", "Circulatory Support Actions (3550)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ventilation Actions (3551)</summary>
+		/// <summary>Context Group Name: Ventilation Actions (3551)</summary>
 		public readonly static DicomUID VentilationActions3551 = new DicomUID("1.2.840.10008.6.1.147", "Ventilation Actions (3551)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pacing Actions (3552)</summary>
+		/// <summary>Context Group Name: Pacing Actions (3552)</summary>
 		public readonly static DicomUID PacingActions3552 = new DicomUID("1.2.840.10008.6.1.148", "Pacing Actions (3552)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Circulatory Support (3553)</summary>
+		/// <summary>Context Group Name: Circulatory Support (3553)</summary>
 		public readonly static DicomUID CirculatorySupport3553 = new DicomUID("1.2.840.10008.6.1.149", "Circulatory Support (3553)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ventilation (3554)</summary>
+		/// <summary>Context Group Name: Ventilation (3554)</summary>
 		public readonly static DicomUID Ventilation3554 = new DicomUID("1.2.840.10008.6.1.150", "Ventilation (3554)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pacing (3555)</summary>
+		/// <summary>Context Group Name: Pacing (3555)</summary>
 		public readonly static DicomUID Pacing3555 = new DicomUID("1.2.840.10008.6.1.151", "Pacing (3555)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Pressure Methods (3560)</summary>
+		/// <summary>Context Group Name: Blood Pressure Methods (3560)</summary>
 		public readonly static DicomUID BloodPressureMethods3560 = new DicomUID("1.2.840.10008.6.1.152", "Blood Pressure Methods (3560)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Relative Times (3600)</summary>
+		/// <summary>Context Group Name: Relative Times (3600)</summary>
 		public readonly static DicomUID RelativeTimes3600 = new DicomUID("1.2.840.10008.6.1.153", "Relative Times (3600)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Patient State (3602)</summary>
+		/// <summary>Context Group Name: Hemodynamic Patient State (3602)</summary>
 		public readonly static DicomUID HemodynamicPatientState3602 = new DicomUID("1.2.840.10008.6.1.154", "Hemodynamic Patient State (3602)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Arterial Lesion Locations (3604)</summary>
+		/// <summary>Context Group Name: Arterial Lesion Locations (3604)</summary>
 		public readonly static DicomUID ArterialLesionLocations3604 = new DicomUID("1.2.840.10008.6.1.155", "Arterial Lesion Locations (3604)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Arterial Source Locations (3606)</summary>
+		/// <summary>Context Group Name: Arterial Source Locations (3606)</summary>
 		public readonly static DicomUID ArterialSourceLocations3606 = new DicomUID("1.2.840.10008.6.1.156", "Arterial Source Locations (3606)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Venous Source Locations (3607)</summary>
+		/// <summary>Context Group Name: Venous Source Locations (3607)</summary>
 		public readonly static DicomUID VenousSourceLocations3607 = new DicomUID("1.2.840.10008.6.1.157", "Venous Source Locations (3607)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Atrial Source Locations (3608)</summary>
+		/// <summary>Context Group Name: Atrial Source Locations (3608)</summary>
 		public readonly static DicomUID AtrialSourceLocations3608 = new DicomUID("1.2.840.10008.6.1.158", "Atrial Source Locations (3608)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ventricular Source Locations (3609)</summary>
+		/// <summary>Context Group Name: Ventricular Source Locations (3609)</summary>
 		public readonly static DicomUID VentricularSourceLocations3609 = new DicomUID("1.2.840.10008.6.1.159", "Ventricular Source Locations (3609)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Gradient Source Locations (3610)</summary>
+		/// <summary>Context Group Name: Gradient Source Locations (3610)</summary>
 		public readonly static DicomUID GradientSourceLocations3610 = new DicomUID("1.2.840.10008.6.1.160", "Gradient Source Locations (3610)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pressure Measurements (3611)</summary>
+		/// <summary>Context Group Name: Pressure Measurements (3611)</summary>
 		public readonly static DicomUID PressureMeasurements3611 = new DicomUID("1.2.840.10008.6.1.161", "Pressure Measurements (3611)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Velocity Measurements (3612)</summary>
+		/// <summary>Context Group Name: Blood Velocity Measurements (3612)</summary>
 		public readonly static DicomUID BloodVelocityMeasurements3612 = new DicomUID("1.2.840.10008.6.1.162", "Blood Velocity Measurements (3612)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Time Measurements (3613)</summary>
+		/// <summary>Context Group Name: Hemodynamic Time Measurements (3613)</summary>
 		public readonly static DicomUID HemodynamicTimeMeasurements3613 = new DicomUID("1.2.840.10008.6.1.163", "Hemodynamic Time Measurements (3613)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Valve Areas, Non-mitral (3614)</summary>
+		/// <summary>Context Group Name: Valve Areas, Non-mitral (3614)</summary>
 		public readonly static DicomUID ValveAreasNonMitral3614 = new DicomUID("1.2.840.10008.6.1.164", "Valve Areas, Non-mitral (3614)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Valve Areas (3615)</summary>
+		/// <summary>Context Group Name: Valve Areas (3615)</summary>
 		public readonly static DicomUID ValveAreas3615 = new DicomUID("1.2.840.10008.6.1.165", "Valve Areas (3615)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Period Measurements (3616)</summary>
+		/// <summary>Context Group Name: Hemodynamic Period Measurements (3616)</summary>
 		public readonly static DicomUID HemodynamicPeriodMeasurements3616 = new DicomUID("1.2.840.10008.6.1.166", "Hemodynamic Period Measurements (3616)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Valve Flows (3617)</summary>
+		/// <summary>Context Group Name: Valve Flows (3617)</summary>
 		public readonly static DicomUID ValveFlows3617 = new DicomUID("1.2.840.10008.6.1.167", "Valve Flows (3617)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Flows (3618)</summary>
+		/// <summary>Context Group Name: Hemodynamic Flows (3618)</summary>
 		public readonly static DicomUID HemodynamicFlows3618 = new DicomUID("1.2.840.10008.6.1.168", "Hemodynamic Flows (3618)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Resistance Measurements (3619)</summary>
+		/// <summary>Context Group Name: Hemodynamic Resistance Measurements (3619)</summary>
 		public readonly static DicomUID HemodynamicResistanceMeasurements3619 = new DicomUID("1.2.840.10008.6.1.169", "Hemodynamic Resistance Measurements (3619)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Ratios (3620)</summary>
+		/// <summary>Context Group Name: Hemodynamic Ratios (3620)</summary>
 		public readonly static DicomUID HemodynamicRatios3620 = new DicomUID("1.2.840.10008.6.1.170", "Hemodynamic Ratios (3620)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fractional Flow Reserve (3621)</summary>
+		/// <summary>Context Group Name: Fractional Flow Reserve (3621)</summary>
 		public readonly static DicomUID FractionalFlowReserve3621 = new DicomUID("1.2.840.10008.6.1.171", "Fractional Flow Reserve (3621)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Type (3627)</summary>
+		/// <summary>Context Group Name: Measurement Type (3627)</summary>
 		public readonly static DicomUID MeasurementType3627 = new DicomUID("1.2.840.10008.6.1.172", "Measurement Type (3627)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Output Methods (3628)</summary>
+		/// <summary>Context Group Name: Cardiac Output Methods (3628)</summary>
 		public readonly static DicomUID CardiacOutputMethods3628 = new DicomUID("1.2.840.10008.6.1.173", "Cardiac Output Methods (3628)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Intent (3629)</summary>
+		/// <summary>Context Group Name: Procedure Intent (3629)</summary>
 		public readonly static DicomUID ProcedureIntent3629 = new DicomUID("1.2.840.10008.6.1.174", "Procedure Intent (3629)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiovascular Anatomic Locations (3630)</summary>
+		/// <summary>Context Group Name: Cardiovascular Anatomic Locations (3630)</summary>
 		public readonly static DicomUID CardiovascularAnatomicLocations3630 = new DicomUID("1.2.840.10008.6.1.175", "Cardiovascular Anatomic Locations (3630)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hypertension (3640)</summary>
+		/// <summary>Context Group Name: Hypertension (3640)</summary>
 		public readonly static DicomUID Hypertension3640 = new DicomUID("1.2.840.10008.6.1.176", "Hypertension (3640)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Assessments (3641)</summary>
+		/// <summary>Context Group Name: Hemodynamic Assessments (3641)</summary>
 		public readonly static DicomUID HemodynamicAssessments3641 = new DicomUID("1.2.840.10008.6.1.177", "Hemodynamic Assessments (3641)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Degree Findings (3642)</summary>
+		/// <summary>Context Group Name: Degree Findings (3642)</summary>
 		public readonly static DicomUID DegreeFindings3642 = new DicomUID("1.2.840.10008.6.1.178", "Degree Findings (3642)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hemodynamic Measurement Phase (3651)</summary>
+		/// <summary>Context Group Name: Hemodynamic Measurement Phase (3651)</summary>
 		public readonly static DicomUID HemodynamicMeasurementPhase3651 = new DicomUID("1.2.840.10008.6.1.179", "Hemodynamic Measurement Phase (3651)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Body Surface Area Equations (3663)</summary>
+		/// <summary>Context Group Name: Body Surface Area Equations (3663)</summary>
 		public readonly static DicomUID BodySurfaceAreaEquations3663 = new DicomUID("1.2.840.10008.6.1.180", "Body Surface Area Equations (3663)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Oxygen Consumption Equations and Tables (3664)</summary>
+		/// <summary>Context Group Name: Oxygen Consumption Equations and Tables (3664)</summary>
 		public readonly static DicomUID OxygenConsumptionEquationsAndTables3664 = new DicomUID("1.2.840.10008.6.1.181", "Oxygen Consumption Equations and Tables (3664)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: P50 Equations (3666)</summary>
+		/// <summary>Context Group Name: P50 Equations (3666)</summary>
 		public readonly static DicomUID P50Equations3666 = new DicomUID("1.2.840.10008.6.1.182", "P50 Equations (3666)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Framingham Scores (3667)</summary>
+		/// <summary>Context Group Name: Framingham Scores (3667)</summary>
 		public readonly static DicomUID FraminghamScores3667 = new DicomUID("1.2.840.10008.6.1.183", "Framingham Scores (3667)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Framingham Tables (3668)</summary>
+		/// <summary>Context Group Name: Framingham Tables (3668)</summary>
 		public readonly static DicomUID FraminghamTables3668 = new DicomUID("1.2.840.10008.6.1.184", "Framingham Tables (3668)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Procedure Types (3670)</summary>
+		/// <summary>Context Group Name: ECG Procedure Types (3670)</summary>
 		public readonly static DicomUID ECGProcedureTypes3670 = new DicomUID("1.2.840.10008.6.1.185", "ECG Procedure Types (3670)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Reason for ECG Exam (3671)</summary>
+		/// <summary>Context Group Name: Reason for ECG Exam (3671)</summary>
 		public readonly static DicomUID ReasonForECGExam3671 = new DicomUID("1.2.840.10008.6.1.186", "Reason for ECG Exam (3671)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pacemakers (3672)</summary>
+		/// <summary>Context Group Name: Pacemakers (3672)</summary>
 		public readonly static DicomUID Pacemakers3672 = new DicomUID("1.2.840.10008.6.1.187", "Pacemakers (3672)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diagnosis (Retired) (3673)</summary>
+		/// <summary>Context Group Name: Diagnosis (Retired) (3673)</summary>
 		public readonly static DicomUID DiagnosisRETIRED3673 = new DicomUID("1.2.840.10008.6.1.188", "Diagnosis (Retired) (3673)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Other Filters (Retired) (3675)</summary>
+		/// <summary>Context Group Name: Other Filters (Retired) (3675)</summary>
 		public readonly static DicomUID OtherFiltersRETIRED3675 = new DicomUID("1.2.840.10008.6.1.189", "Other Filters (Retired) (3675)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lead Measurement Technique (3676)</summary>
+		/// <summary>Context Group Name: Lead Measurement Technique (3676)</summary>
 		public readonly static DicomUID LeadMeasurementTechnique3676 = new DicomUID("1.2.840.10008.6.1.190", "Lead Measurement Technique (3676)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Summary Codes ECG (3677)</summary>
+		/// <summary>Context Group Name: Summary Codes ECG (3677)</summary>
 		public readonly static DicomUID SummaryCodesECG3677 = new DicomUID("1.2.840.10008.6.1.191", "Summary Codes ECG (3677)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Qt Correction Algorithms (3678)</summary>
-		public readonly static DicomUID QtCorrectionAlgorithms3678 = new DicomUID("1.2.840.10008.6.1.192", "Qt Correction Algorithms (3678)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: QT Correction Algorithms (3678)</summary>
+		public readonly static DicomUID QTCorrectionAlgorithms3678 = new DicomUID("1.2.840.10008.6.1.192", "QT Correction Algorithms (3678)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Morphology Descriptions (Retired) (3679)</summary>
+		/// <summary>Context Group Name: ECG Morphology Descriptions (Retired) (3679)</summary>
 		public readonly static DicomUID ECGMorphologyDescriptionsRETIRED3679 = new DicomUID("1.2.840.10008.6.1.193", "ECG Morphology Descriptions (Retired) (3679)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Lead Noise Descriptions (3680)</summary>
+		/// <summary>Context Group Name: ECG Lead Noise Descriptions (3680)</summary>
 		public readonly static DicomUID ECGLeadNoiseDescriptions3680 = new DicomUID("1.2.840.10008.6.1.194", "ECG Lead Noise Descriptions (3680)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Lead Noise Modifiers (Retired) (3681)</summary>
+		/// <summary>Context Group Name: ECG Lead Noise Modifiers (Retired) (3681)</summary>
 		public readonly static DicomUID ECGLeadNoiseModifiersRETIRED3681 = new DicomUID("1.2.840.10008.6.1.195", "ECG Lead Noise Modifiers (Retired) (3681)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Probability (Retired) (3682)</summary>
+		/// <summary>Context Group Name: Probability (Retired) (3682)</summary>
 		public readonly static DicomUID ProbabilityRETIRED3682 = new DicomUID("1.2.840.10008.6.1.196", "Probability (Retired) (3682)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Modifiers (Retired) (3683)</summary>
+		/// <summary>Context Group Name: Modifiers (Retired) (3683)</summary>
 		public readonly static DicomUID ModifiersRETIRED3683 = new DicomUID("1.2.840.10008.6.1.197", "Modifiers (Retired) (3683)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Trend (Retired) (3684)</summary>
+		/// <summary>Context Group Name: Trend (Retired) (3684)</summary>
 		public readonly static DicomUID TrendRETIRED3684 = new DicomUID("1.2.840.10008.6.1.198", "Trend (Retired) (3684)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Conjunctive Terms (Retired) (3685)</summary>
+		/// <summary>Context Group Name: Conjunctive Terms (Retired) (3685)</summary>
 		public readonly static DicomUID ConjunctiveTermsRETIRED3685 = new DicomUID("1.2.840.10008.6.1.199", "Conjunctive Terms (Retired) (3685)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Interpretive Statements (Retired) (3686)</summary>
+		/// <summary>Context Group Name: ECG Interpretive Statements (Retired) (3686)</summary>
 		public readonly static DicomUID ECGInterpretiveStatementsRETIRED3686 = new DicomUID("1.2.840.10008.6.1.200", "ECG Interpretive Statements (Retired) (3686)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Waveform Durations (3687)</summary>
+		/// <summary>Context Group Name: Electrophysiology Waveform Durations (3687)</summary>
 		public readonly static DicomUID ElectrophysiologyWaveformDurations3687 = new DicomUID("1.2.840.10008.6.1.201", "Electrophysiology Waveform Durations (3687)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Electrophysiology Waveform Voltages (3688)</summary>
+		/// <summary>Context Group Name: Electrophysiology Waveform Voltages (3688)</summary>
 		public readonly static DicomUID ElectrophysiologyWaveformVoltages3688 = new DicomUID("1.2.840.10008.6.1.202", "Electrophysiology Waveform Voltages (3688)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cath Diagnosis (3700)</summary>
+		/// <summary>Context Group Name: Cath Diagnosis (3700)</summary>
 		public readonly static DicomUID CathDiagnosis3700 = new DicomUID("1.2.840.10008.6.1.203", "Cath Diagnosis (3700)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Valves and Tracts (3701)</summary>
+		/// <summary>Context Group Name: Cardiac Valves and Tracts (3701)</summary>
 		public readonly static DicomUID CardiacValvesAndTracts3701 = new DicomUID("1.2.840.10008.6.1.204", "Cardiac Valves and Tracts (3701)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Wall Motion (3703)</summary>
+		/// <summary>Context Group Name: Wall Motion (3703)</summary>
 		public readonly static DicomUID WallMotion3703 = new DicomUID("1.2.840.10008.6.1.205", "Wall Motion (3703)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardium Wall Morphology Findings (3704)</summary>
+		/// <summary>Context Group Name: Myocardium Wall Morphology Findings (3704)</summary>
 		public readonly static DicomUID MyocardiumWallMorphologyFindings3704 = new DicomUID("1.2.840.10008.6.1.206", "Myocardium Wall Morphology Findings (3704)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chamber Size (3705)</summary>
+		/// <summary>Context Group Name: Chamber Size (3705)</summary>
 		public readonly static DicomUID ChamberSize3705 = new DicomUID("1.2.840.10008.6.1.207", "Chamber Size (3705)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Overall Contractility (3706)</summary>
+		/// <summary>Context Group Name: Overall Contractility (3706)</summary>
 		public readonly static DicomUID OverallContractility3706 = new DicomUID("1.2.840.10008.6.1.208", "Overall Contractility (3706)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: VSD Description (3707)</summary>
+		/// <summary>Context Group Name: VSD Description (3707)</summary>
 		public readonly static DicomUID VSDDescription3707 = new DicomUID("1.2.840.10008.6.1.209", "VSD Description (3707)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Aortic Root Description (3709)</summary>
+		/// <summary>Context Group Name: Aortic Root Description (3709)</summary>
 		public readonly static DicomUID AorticRootDescription3709 = new DicomUID("1.2.840.10008.6.1.210", "Aortic Root Description (3709)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Coronary Dominance (3710)</summary>
+		/// <summary>Context Group Name: Coronary Dominance (3710)</summary>
 		public readonly static DicomUID CoronaryDominance3710 = new DicomUID("1.2.840.10008.6.1.211", "Coronary Dominance (3710)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Valvular Abnormalities (3711)</summary>
+		/// <summary>Context Group Name: Valvular Abnormalities (3711)</summary>
 		public readonly static DicomUID ValvularAbnormalities3711 = new DicomUID("1.2.840.10008.6.1.212", "Valvular Abnormalities (3711)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vessel Descriptors (3712)</summary>
+		/// <summary>Context Group Name: Vessel Descriptors (3712)</summary>
 		public readonly static DicomUID VesselDescriptors3712 = new DicomUID("1.2.840.10008.6.1.213", "Vessel Descriptors (3712)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: TIMI Flow Characteristics (3713)</summary>
+		/// <summary>Context Group Name: TIMI Flow Characteristics (3713)</summary>
 		public readonly static DicomUID TIMIFlowCharacteristics3713 = new DicomUID("1.2.840.10008.6.1.214", "TIMI Flow Characteristics (3713)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Thrombus (3714)</summary>
+		/// <summary>Context Group Name: Thrombus (3714)</summary>
 		public readonly static DicomUID Thrombus3714 = new DicomUID("1.2.840.10008.6.1.215", "Thrombus (3714)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lesion Margin (3715)</summary>
+		/// <summary>Context Group Name: Lesion Margin (3715)</summary>
 		public readonly static DicomUID LesionMargin3715 = new DicomUID("1.2.840.10008.6.1.216", "Lesion Margin (3715)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Severity (3716)</summary>
+		/// <summary>Context Group Name: Severity (3716)</summary>
 		public readonly static DicomUID Severity3716 = new DicomUID("1.2.840.10008.6.1.217", "Severity (3716)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardial Wall Segments (3717)</summary>
+		/// <summary>Context Group Name: Myocardial Wall Segments (3717)</summary>
 		public readonly static DicomUID MyocardialWallSegments3717 = new DicomUID("1.2.840.10008.6.1.218", "Myocardial Wall Segments (3717)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardial Wall Segments in Projection (3718)</summary>
+		/// <summary>Context Group Name: Myocardial Wall Segments in Projection (3718)</summary>
 		public readonly static DicomUID MyocardialWallSegmentsInProjection3718 = new DicomUID("1.2.840.10008.6.1.219", "Myocardial Wall Segments in Projection (3718)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Canadian Clinical Classification (3719)</summary>
+		/// <summary>Context Group Name: Canadian Clinical Classification (3719)</summary>
 		public readonly static DicomUID CanadianClinicalClassification3719 = new DicomUID("1.2.840.10008.6.1.220", "Canadian Clinical Classification (3719)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac History Dates (Retired) (3720)</summary>
+		/// <summary>Context Group Name: Cardiac History Dates (Retired) (3720)</summary>
 		public readonly static DicomUID CardiacHistoryDatesRETIRED3720 = new DicomUID("1.2.840.10008.6.1.221", "Cardiac History Dates (Retired) (3720)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiovascular Surgeries (3721)</summary>
+		/// <summary>Context Group Name: Cardiovascular Surgeries (3721)</summary>
 		public readonly static DicomUID CardiovascularSurgeries3721 = new DicomUID("1.2.840.10008.6.1.222", "Cardiovascular Surgeries (3721)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diabetic Therapy (3722)</summary>
+		/// <summary>Context Group Name: Diabetic Therapy (3722)</summary>
 		public readonly static DicomUID DiabeticTherapy3722 = new DicomUID("1.2.840.10008.6.1.223", "Diabetic Therapy (3722)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: MI Types (3723)</summary>
+		/// <summary>Context Group Name: MI Types (3723)</summary>
 		public readonly static DicomUID MITypes3723 = new DicomUID("1.2.840.10008.6.1.224", "MI Types (3723)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Smoking History (3724)</summary>
+		/// <summary>Context Group Name: Smoking History (3724)</summary>
 		public readonly static DicomUID SmokingHistory3724 = new DicomUID("1.2.840.10008.6.1.225", "Smoking History (3724)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Indications for Coronary Intervention (3726)</summary>
+		/// <summary>Context Group Name: Indications for Coronary Intervention (3726)</summary>
 		public readonly static DicomUID IndicationsForCoronaryIntervention3726 = new DicomUID("1.2.840.10008.6.1.226", "Indications for Coronary Intervention (3726)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Indications for Catheterization (3727)</summary>
+		/// <summary>Context Group Name: Indications for Catheterization (3727)</summary>
 		public readonly static DicomUID IndicationsForCatheterization3727 = new DicomUID("1.2.840.10008.6.1.227", "Indications for Catheterization (3727)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cath Findings (3728)</summary>
+		/// <summary>Context Group Name: Cath Findings (3728)</summary>
 		public readonly static DicomUID CathFindings3728 = new DicomUID("1.2.840.10008.6.1.228", "Cath Findings (3728)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Admission Status (3729)</summary>
+		/// <summary>Context Group Name: Admission Status (3729)</summary>
 		public readonly static DicomUID AdmissionStatus3729 = new DicomUID("1.2.840.10008.6.1.229", "Admission Status (3729)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Insurance Payor (3730)</summary>
+		/// <summary>Context Group Name: Insurance Payor (3730)</summary>
 		public readonly static DicomUID InsurancePayor3730 = new DicomUID("1.2.840.10008.6.1.230", "Insurance Payor (3730)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Primary Cause of Death (3733)</summary>
+		/// <summary>Context Group Name: Primary Cause of Death (3733)</summary>
 		public readonly static DicomUID PrimaryCauseOfDeath3733 = new DicomUID("1.2.840.10008.6.1.231", "Primary Cause of Death (3733)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Acute Coronary Syndrome Time Period (3735)</summary>
+		/// <summary>Context Group Name: Acute Coronary Syndrome Time Period (3735)</summary>
 		public readonly static DicomUID AcuteCoronarySyndromeTimePeriod3735 = new DicomUID("1.2.840.10008.6.1.232", "Acute Coronary Syndrome Time Period (3735)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: NYHA Classification (3736)</summary>
+		/// <summary>Context Group Name: NYHA Classification (3736)</summary>
 		public readonly static DicomUID NYHAClassification3736 = new DicomUID("1.2.840.10008.6.1.233", "NYHA Classification (3736)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-invasive Test - Ischemia (3737)</summary>
+		/// <summary>Context Group Name: Non-invasive Test - Ischemia (3737)</summary>
 		public readonly static DicomUID NonInvasiveTestIschemia3737 = new DicomUID("1.2.840.10008.6.1.234", "Non-invasive Test - Ischemia (3737)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pre-Cath Angina Type (3738)</summary>
+		/// <summary>Context Group Name: Pre-Cath Angina Type (3738)</summary>
 		public readonly static DicomUID PreCathAnginaType3738 = new DicomUID("1.2.840.10008.6.1.235", "Pre-Cath Angina Type (3738)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cath Procedure Type (3739)</summary>
+		/// <summary>Context Group Name: Cath Procedure Type (3739)</summary>
 		public readonly static DicomUID CathProcedureType3739 = new DicomUID("1.2.840.10008.6.1.236", "Cath Procedure Type (3739)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Thrombolytic Administration (3740)</summary>
+		/// <summary>Context Group Name: Thrombolytic Administration (3740)</summary>
 		public readonly static DicomUID ThrombolyticAdministration3740 = new DicomUID("1.2.840.10008.6.1.237", "Thrombolytic Administration (3740)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Medication Administration, Lab Visit (3741)</summary>
+		/// <summary>Context Group Name: Medication Administration, Lab Visit (3741)</summary>
 		public readonly static DicomUID MedicationAdministrationLabVisit3741 = new DicomUID("1.2.840.10008.6.1.238", "Medication Administration, Lab Visit (3741)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Medication Administration, PCI (3742)</summary>
+		/// <summary>Context Group Name: Medication Administration, PCI (3742)</summary>
 		public readonly static DicomUID MedicationAdministrationPCI3742 = new DicomUID("1.2.840.10008.6.1.239", "Medication Administration, PCI (3742)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Clopidogrel/ticlopidine Administration (3743)</summary>
-		public readonly static DicomUID ClopidogrelTiclopidineAdministration3743 = new DicomUID("1.2.840.10008.6.1.240", "Clopidogrel/ticlopidine Administration (3743)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Clopidogrel/Ticlopidine Administration (3743)</summary>
+		public readonly static DicomUID ClopidogrelTiclopidineAdministration3743 = new DicomUID("1.2.840.10008.6.1.240", "Clopidogrel/Ticlopidine Administration (3743)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: EF Testing Method (3744)</summary>
+		/// <summary>Context Group Name: EF Testing Method (3744)</summary>
 		public readonly static DicomUID EFTestingMethod3744 = new DicomUID("1.2.840.10008.6.1.241", "EF Testing Method (3744)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calculation Method (3745)</summary>
+		/// <summary>Context Group Name: Calculation Method (3745)</summary>
 		public readonly static DicomUID CalculationMethod3745 = new DicomUID("1.2.840.10008.6.1.242", "Calculation Method (3745)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Percutaneous Entry Site (3746)</summary>
+		/// <summary>Context Group Name: Percutaneous Entry Site (3746)</summary>
 		public readonly static DicomUID PercutaneousEntrySite3746 = new DicomUID("1.2.840.10008.6.1.243", "Percutaneous Entry Site (3746)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Percutaneous Closure (3747)</summary>
+		/// <summary>Context Group Name: Percutaneous Closure (3747)</summary>
 		public readonly static DicomUID PercutaneousClosure3747 = new DicomUID("1.2.840.10008.6.1.244", "Percutaneous Closure (3747)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Angiographic EF Testing Method (3748)</summary>
+		/// <summary>Context Group Name: Angiographic EF Testing Method (3748)</summary>
 		public readonly static DicomUID AngiographicEFTestingMethod3748 = new DicomUID("1.2.840.10008.6.1.245", "Angiographic EF Testing Method (3748)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PCI Procedure Result (3749)</summary>
+		/// <summary>Context Group Name: PCI Procedure Result (3749)</summary>
 		public readonly static DicomUID PCIProcedureResult3749 = new DicomUID("1.2.840.10008.6.1.246", "PCI Procedure Result (3749)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Previously Dilated Lesion (3750)</summary>
+		/// <summary>Context Group Name: Previously Dilated Lesion (3750)</summary>
 		public readonly static DicomUID PreviouslyDilatedLesion3750 = new DicomUID("1.2.840.10008.6.1.247", "Previously Dilated Lesion (3750)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Guidewire Crossing (3752)</summary>
+		/// <summary>Context Group Name: Guidewire Crossing (3752)</summary>
 		public readonly static DicomUID GuidewireCrossing3752 = new DicomUID("1.2.840.10008.6.1.248", "Guidewire Crossing (3752)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Complications (3754)</summary>
+		/// <summary>Context Group Name: Vascular Complications (3754)</summary>
 		public readonly static DicomUID VascularComplications3754 = new DicomUID("1.2.840.10008.6.1.249", "Vascular Complications (3754)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cath Complications (3755)</summary>
+		/// <summary>Context Group Name: Cath Complications (3755)</summary>
 		public readonly static DicomUID CathComplications3755 = new DicomUID("1.2.840.10008.6.1.250", "Cath Complications (3755)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Patient Risk Factors (3756)</summary>
+		/// <summary>Context Group Name: Cardiac Patient Risk Factors (3756)</summary>
 		public readonly static DicomUID CardiacPatientRiskFactors3756 = new DicomUID("1.2.840.10008.6.1.251", "Cardiac Patient Risk Factors (3756)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Diagnostic Procedures (3757)</summary>
+		/// <summary>Context Group Name: Cardiac Diagnostic Procedures (3757)</summary>
 		public readonly static DicomUID CardiacDiagnosticProcedures3757 = new DicomUID("1.2.840.10008.6.1.252", "Cardiac Diagnostic Procedures (3757)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiovascular Family History (3758)</summary>
+		/// <summary>Context Group Name: Cardiovascular Family History (3758)</summary>
 		public readonly static DicomUID CardiovascularFamilyHistory3758 = new DicomUID("1.2.840.10008.6.1.253", "Cardiovascular Family History (3758)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Hypertension Therapy (3760)</summary>
+		/// <summary>Context Group Name: Hypertension Therapy (3760)</summary>
 		public readonly static DicomUID HypertensionTherapy3760 = new DicomUID("1.2.840.10008.6.1.254", "Hypertension Therapy (3760)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Antilipemic Agents (3761)</summary>
+		/// <summary>Context Group Name: Antilipemic Agents (3761)</summary>
 		public readonly static DicomUID AntilipemicAgents3761 = new DicomUID("1.2.840.10008.6.1.255", "Antilipemic Agents (3761)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Antiarrhythmic Agents (3762)</summary>
+		/// <summary>Context Group Name: Antiarrhythmic Agents (3762)</summary>
 		public readonly static DicomUID AntiarrhythmicAgents3762 = new DicomUID("1.2.840.10008.6.1.256", "Antiarrhythmic Agents (3762)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardial Infarction Therapies (3764)</summary>
+		/// <summary>Context Group Name: Myocardial Infarction Therapies (3764)</summary>
 		public readonly static DicomUID MyocardialInfarctionTherapies3764 = new DicomUID("1.2.840.10008.6.1.257", "Myocardial Infarction Therapies (3764)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Concern Types (3769)</summary>
+		/// <summary>Context Group Name: Concern Types (3769)</summary>
 		public readonly static DicomUID ConcernTypes3769 = new DicomUID("1.2.840.10008.6.1.258", "Concern Types (3769)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Problem Status (3770)</summary>
+		/// <summary>Context Group Name: Problem Status (3770)</summary>
 		public readonly static DicomUID ProblemStatus3770 = new DicomUID("1.2.840.10008.6.1.259", "Problem Status (3770)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Health Status (3772)</summary>
+		/// <summary>Context Group Name: Health Status (3772)</summary>
 		public readonly static DicomUID HealthStatus3772 = new DicomUID("1.2.840.10008.6.1.260", "Health Status (3772)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Use Status (3773)</summary>
+		/// <summary>Context Group Name: Use Status (3773)</summary>
 		public readonly static DicomUID UseStatus3773 = new DicomUID("1.2.840.10008.6.1.261", "Use Status (3773)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Social History (3774)</summary>
+		/// <summary>Context Group Name: Social History (3774)</summary>
 		public readonly static DicomUID SocialHistory3774 = new DicomUID("1.2.840.10008.6.1.262", "Social History (3774)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Implanted Devices (3777)</summary>
+		/// <summary>Context Group Name: Implanted Devices (3777)</summary>
 		public readonly static DicomUID ImplantedDevices3777 = new DicomUID("1.2.840.10008.6.1.263", "Implanted Devices (3777)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Plaque Structures (3802)</summary>
+		/// <summary>Context Group Name: Plaque Structures (3802)</summary>
 		public readonly static DicomUID PlaqueStructures3802 = new DicomUID("1.2.840.10008.6.1.264", "Plaque Structures (3802)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stenosis Measurement Methods (3804)</summary>
+		/// <summary>Context Group Name: Stenosis Measurement Methods (3804)</summary>
 		public readonly static DicomUID StenosisMeasurementMethods3804 = new DicomUID("1.2.840.10008.6.1.265", "Stenosis Measurement Methods (3804)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stenosis Types (3805)</summary>
+		/// <summary>Context Group Name: Stenosis Types (3805)</summary>
 		public readonly static DicomUID StenosisTypes3805 = new DicomUID("1.2.840.10008.6.1.266", "Stenosis Types (3805)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stenosis Shape (3806)</summary>
+		/// <summary>Context Group Name: Stenosis Shape (3806)</summary>
 		public readonly static DicomUID StenosisShape3806 = new DicomUID("1.2.840.10008.6.1.267", "Stenosis Shape (3806)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Volume Measurement Methods (3807)</summary>
+		/// <summary>Context Group Name: Volume Measurement Methods (3807)</summary>
 		public readonly static DicomUID VolumeMeasurementMethods3807 = new DicomUID("1.2.840.10008.6.1.268", "Volume Measurement Methods (3807)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Aneurysm Types (3808)</summary>
+		/// <summary>Context Group Name: Aneurysm Types (3808)</summary>
 		public readonly static DicomUID AneurysmTypes3808 = new DicomUID("1.2.840.10008.6.1.269", "Aneurysm Types (3808)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Associated Conditions (3809)</summary>
+		/// <summary>Context Group Name: Associated Conditions (3809)</summary>
 		public readonly static DicomUID AssociatedConditions3809 = new DicomUID("1.2.840.10008.6.1.270", "Associated Conditions (3809)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Morphology (3810)</summary>
+		/// <summary>Context Group Name: Vascular Morphology (3810)</summary>
 		public readonly static DicomUID VascularMorphology3810 = new DicomUID("1.2.840.10008.6.1.271", "Vascular Morphology (3810)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stent Findings (3813)</summary>
+		/// <summary>Context Group Name: Stent Findings (3813)</summary>
 		public readonly static DicomUID StentFindings3813 = new DicomUID("1.2.840.10008.6.1.272", "Stent Findings (3813)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stent Composition (3814)</summary>
+		/// <summary>Context Group Name: Stent Composition (3814)</summary>
 		public readonly static DicomUID StentComposition3814 = new DicomUID("1.2.840.10008.6.1.273", "Stent Composition (3814)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Source of Vascular Finding (3815)</summary>
+		/// <summary>Context Group Name: Source of Vascular Finding (3815)</summary>
 		public readonly static DicomUID SourceOfVascularFinding3815 = new DicomUID("1.2.840.10008.6.1.274", "Source of Vascular Finding (3815)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Sclerosis Types (3817)</summary>
+		/// <summary>Context Group Name: Vascular Sclerosis Types (3817)</summary>
 		public readonly static DicomUID VascularSclerosisTypes3817 = new DicomUID("1.2.840.10008.6.1.275", "Vascular Sclerosis Types (3817)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-invasive Vascular Procedures (3820)</summary>
+		/// <summary>Context Group Name: Non-invasive Vascular Procedures (3820)</summary>
 		public readonly static DicomUID NonInvasiveVascularProcedures3820 = new DicomUID("1.2.840.10008.6.1.276", "Non-invasive Vascular Procedures (3820)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Papillary Muscle Included/excluded (3821)</summary>
-		public readonly static DicomUID PapillaryMuscleIncludedExcluded3821 = new DicomUID("1.2.840.10008.6.1.277", "Papillary Muscle Included/excluded (3821)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Papillary Muscle Included/Excluded (3821)</summary>
+		public readonly static DicomUID PapillaryMuscleIncludedExcluded3821 = new DicomUID("1.2.840.10008.6.1.277", "Papillary Muscle Included/Excluded (3821)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Respiratory Status (3823)</summary>
+		/// <summary>Context Group Name: Respiratory Status (3823)</summary>
 		public readonly static DicomUID RespiratoryStatus3823 = new DicomUID("1.2.840.10008.6.1.278", "Respiratory Status (3823)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Heart Rhythm (3826)</summary>
+		/// <summary>Context Group Name: Heart Rhythm (3826)</summary>
 		public readonly static DicomUID HeartRhythm3826 = new DicomUID("1.2.840.10008.6.1.279", "Heart Rhythm (3826)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vessel Segments (3827)</summary>
+		/// <summary>Context Group Name: Vessel Segments (3827)</summary>
 		public readonly static DicomUID VesselSegments3827 = new DicomUID("1.2.840.10008.6.1.280", "Vessel Segments (3827)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pulmonary Arteries (3829)</summary>
+		/// <summary>Context Group Name: Pulmonary Arteries (3829)</summary>
 		public readonly static DicomUID PulmonaryArteries3829 = new DicomUID("1.2.840.10008.6.1.281", "Pulmonary Arteries (3829)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stenosis Length (3831)</summary>
+		/// <summary>Context Group Name: Stenosis Length (3831)</summary>
 		public readonly static DicomUID StenosisLength3831 = new DicomUID("1.2.840.10008.6.1.282", "Stenosis Length (3831)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stenosis Grade (3832)</summary>
+		/// <summary>Context Group Name: Stenosis Grade (3832)</summary>
 		public readonly static DicomUID StenosisGrade3832 = new DicomUID("1.2.840.10008.6.1.283", "Stenosis Grade (3832)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ejection Fraction (3833)</summary>
+		/// <summary>Context Group Name: Cardiac Ejection Fraction (3833)</summary>
 		public readonly static DicomUID CardiacEjectionFraction3833 = new DicomUID("1.2.840.10008.6.1.284", "Cardiac Ejection Fraction (3833)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Volume Measurements (3835)</summary>
+		/// <summary>Context Group Name: Cardiac Volume Measurements (3835)</summary>
 		public readonly static DicomUID CardiacVolumeMeasurements3835 = new DicomUID("1.2.840.10008.6.1.285", "Cardiac Volume Measurements (3835)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Time-based Perfusion Measurements (3836)</summary>
+		/// <summary>Context Group Name: Time-based Perfusion Measurements (3836)</summary>
 		public readonly static DicomUID TimeBasedPerfusionMeasurements3836 = new DicomUID("1.2.840.10008.6.1.286", "Time-based Perfusion Measurements (3836)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fiducial Feature (3837)</summary>
+		/// <summary>Context Group Name: Fiducial Feature (3837)</summary>
 		public readonly static DicomUID FiducialFeature3837 = new DicomUID("1.2.840.10008.6.1.287", "Fiducial Feature (3837)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diameter Derivation (3838)</summary>
+		/// <summary>Context Group Name: Diameter Derivation (3838)</summary>
 		public readonly static DicomUID DiameterDerivation3838 = new DicomUID("1.2.840.10008.6.1.288", "Diameter Derivation (3838)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Coronary Veins (3839)</summary>
+		/// <summary>Context Group Name: Coronary Veins (3839)</summary>
 		public readonly static DicomUID CoronaryVeins3839 = new DicomUID("1.2.840.10008.6.1.289", "Coronary Veins (3839)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pulmonary Veins (3840)</summary>
+		/// <summary>Context Group Name: Pulmonary Veins (3840)</summary>
 		public readonly static DicomUID PulmonaryVeins3840 = new DicomUID("1.2.840.10008.6.1.290", "Pulmonary Veins (3840)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardial Subsegment (3843)</summary>
+		/// <summary>Context Group Name: Myocardial Subsegment (3843)</summary>
 		public readonly static DicomUID MyocardialSubsegment3843 = new DicomUID("1.2.840.10008.6.1.291", "Myocardial Subsegment (3843)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Partial View Section for Mammography (4005)</summary>
+		/// <summary>Context Group Name: Partial View Section for Mammography (4005)</summary>
 		public readonly static DicomUID PartialViewSectionForMammography4005 = new DicomUID("1.2.840.10008.6.1.292", "Partial View Section for Mammography (4005)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DX Anatomy Imaged (4009)</summary>
+		/// <summary>Context Group Name: DX Anatomy Imaged (4009)</summary>
 		public readonly static DicomUID DXAnatomyImaged4009 = new DicomUID("1.2.840.10008.6.1.293", "DX Anatomy Imaged (4009)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DX View (4010)</summary>
+		/// <summary>Context Group Name: DX View (4010)</summary>
 		public readonly static DicomUID DXView4010 = new DicomUID("1.2.840.10008.6.1.294", "DX View (4010)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DX View Modifier (4011)</summary>
+		/// <summary>Context Group Name: DX View Modifier (4011)</summary>
 		public readonly static DicomUID DXViewModifier4011 = new DicomUID("1.2.840.10008.6.1.295", "DX View Modifier (4011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Projection Eponymous Name (4012)</summary>
+		/// <summary>Context Group Name: Projection Eponymous Name (4012)</summary>
 		public readonly static DicomUID ProjectionEponymousName4012 = new DicomUID("1.2.840.10008.6.1.296", "Projection Eponymous Name (4012)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anatomic Region for Mammography (4013)</summary>
+		/// <summary>Context Group Name: Anatomic Region for Mammography (4013)</summary>
 		public readonly static DicomUID AnatomicRegionForMammography4013 = new DicomUID("1.2.840.10008.6.1.297", "Anatomic Region for Mammography (4013)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: View for Mammography (4014)</summary>
+		/// <summary>Context Group Name: View for Mammography (4014)</summary>
 		public readonly static DicomUID ViewForMammography4014 = new DicomUID("1.2.840.10008.6.1.298", "View for Mammography (4014)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: View Modifier for Mammography (4015)</summary>
+		/// <summary>Context Group Name: View Modifier for Mammography (4015)</summary>
 		public readonly static DicomUID ViewModifierForMammography4015 = new DicomUID("1.2.840.10008.6.1.299", "View Modifier for Mammography (4015)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anatomic Region for Intra-oral Radiography (4016)</summary>
+		/// <summary>Context Group Name: Anatomic Region for Intra-oral Radiography (4016)</summary>
 		public readonly static DicomUID AnatomicRegionForIntraOralRadiography4016 = new DicomUID("1.2.840.10008.6.1.300", "Anatomic Region for Intra-oral Radiography (4016)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anatomic Region Modifier for Intra-oral Radiography (4017)</summary>
+		/// <summary>Context Group Name: Anatomic Region Modifier for Intra-oral Radiography (4017)</summary>
 		public readonly static DicomUID AnatomicRegionModifierForIntraOralRadiography4017 = new DicomUID("1.2.840.10008.6.1.301", "Anatomic Region Modifier for Intra-oral Radiography (4017)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Primary Anatomic Structure for Intra-oral Radiography (permanent Dentition - Designation of Teeth) (4018)</summary>
-		public readonly static DicomUID PrimaryAnatomicStructureForIntraOralRadiographyPermanentDentitionDesignationOfTeeth4018 = new DicomUID("1.2.840.10008.6.1.302", "Primary Anatomic Structure for Intra-oral Radiography (permanent Dentition - Designation of Teeth) (4018)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Primary Anatomic Structure for Intra-oral Radiography (Permanent Dentition - Designation of Teeth) (4018)</summary>
+		public readonly static DicomUID PrimaryAnatomicStructureForIntraOralRadiographyPermanentDentitionDesignationOfTeeth4018 = new DicomUID("1.2.840.10008.6.1.302", "Primary Anatomic Structure for Intra-oral Radiography (Permanent Dentition - Designation of Teeth) (4018)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Primary Anatomic Structure for Intra-oral Radiography (Deciduous Dentition - Designation of Teeth) (4019)</summary>
+		/// <summary>Context Group Name: Primary Anatomic Structure for Intra-oral Radiography (Deciduous Dentition - Designation of Teeth) (4019)</summary>
 		public readonly static DicomUID PrimaryAnatomicStructureForIntraOralRadiographyDeciduousDentitionDesignationOfTeeth4019 = new DicomUID("1.2.840.10008.6.1.303", "Primary Anatomic Structure for Intra-oral Radiography (Deciduous Dentition - Designation of Teeth) (4019)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PET Radionuclide (4020)</summary>
+		/// <summary>Context Group Name: PET Radionuclide (4020)</summary>
 		public readonly static DicomUID PETRadionuclide4020 = new DicomUID("1.2.840.10008.6.1.304", "PET Radionuclide (4020)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PET Radiopharmaceutical (4021)</summary>
+		/// <summary>Context Group Name: PET Radiopharmaceutical (4021)</summary>
 		public readonly static DicomUID PETRadiopharmaceutical4021 = new DicomUID("1.2.840.10008.6.1.305", "PET Radiopharmaceutical (4021)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Craniofacial Anatomic Regions (4028)</summary>
+		/// <summary>Context Group Name: Craniofacial Anatomic Regions (4028)</summary>
 		public readonly static DicomUID CraniofacialAnatomicRegions4028 = new DicomUID("1.2.840.10008.6.1.306", "Craniofacial Anatomic Regions (4028)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CT, MR and PET Anatomy Imaged (4030)</summary>
+		/// <summary>Context Group Name: CT, MR and PET Anatomy Imaged (4030)</summary>
 		public readonly static DicomUID CTMRAndPETAnatomyImaged4030 = new DicomUID("1.2.840.10008.6.1.307", "CT, MR and PET Anatomy Imaged (4030)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Common Anatomic Regions (4031)</summary>
+		/// <summary>Context Group Name: Common Anatomic Regions (4031)</summary>
 		public readonly static DicomUID CommonAnatomicRegions4031 = new DicomUID("1.2.840.10008.6.1.308", "Common Anatomic Regions (4031)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: MR Spectroscopy Metabolites (4032)</summary>
+		/// <summary>Context Group Name: MR Spectroscopy Metabolites (4032)</summary>
 		public readonly static DicomUID MRSpectroscopyMetabolites4032 = new DicomUID("1.2.840.10008.6.1.309", "MR Spectroscopy Metabolites (4032)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: MR Proton Spectroscopy Metabolites (4033)</summary>
+		/// <summary>Context Group Name: MR Proton Spectroscopy Metabolites (4033)</summary>
 		public readonly static DicomUID MRProtonSpectroscopyMetabolites4033 = new DicomUID("1.2.840.10008.6.1.310", "MR Proton Spectroscopy Metabolites (4033)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Endoscopy Anatomic Regions (4040)</summary>
+		/// <summary>Context Group Name: Endoscopy Anatomic Regions (4040)</summary>
 		public readonly static DicomUID EndoscopyAnatomicRegions4040 = new DicomUID("1.2.840.10008.6.1.311", "Endoscopy Anatomic Regions (4040)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: XA/XRF Anatomy Imaged (4042)</summary>
+		/// <summary>Context Group Name: XA/XRF Anatomy Imaged (4042)</summary>
 		public readonly static DicomUID XAXRFAnatomyImaged4042 = new DicomUID("1.2.840.10008.6.1.312", "XA/XRF Anatomy Imaged (4042)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Drug Or Contrast Agent Characteristics (4050)</summary>
-		public readonly static DicomUID DrugOrContrastAgentCharacteristics4050 = new DicomUID("1.2.840.10008.6.1.313", "Drug Or Contrast Agent Characteristics (4050)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Drug or Contrast Agent Characteristics (4050)</summary>
+		public readonly static DicomUID DrugOrContrastAgentCharacteristics4050 = new DicomUID("1.2.840.10008.6.1.313", "Drug or Contrast Agent Characteristics (4050)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Devices (4051)</summary>
+		/// <summary>Context Group Name: General Devices (4051)</summary>
 		public readonly static DicomUID GeneralDevices4051 = new DicomUID("1.2.840.10008.6.1.314", "General Devices (4051)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Phantom Devices (4052)</summary>
+		/// <summary>Context Group Name: Phantom Devices (4052)</summary>
 		public readonly static DicomUID PhantomDevices4052 = new DicomUID("1.2.840.10008.6.1.315", "Phantom Devices (4052)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Imaging Agent (4200)</summary>
+		/// <summary>Context Group Name: Ophthalmic Imaging Agent (4200)</summary>
 		public readonly static DicomUID OphthalmicImagingAgent4200 = new DicomUID("1.2.840.10008.6.1.316", "Ophthalmic Imaging Agent (4200)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Patient Eye Movement Command (4201)</summary>
+		/// <summary>Context Group Name: Patient Eye Movement Command (4201)</summary>
 		public readonly static DicomUID PatientEyeMovementCommand4201 = new DicomUID("1.2.840.10008.6.1.317", "Patient Eye Movement Command (4201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Photography Acquisition Device (4202)</summary>
+		/// <summary>Context Group Name: Ophthalmic Photography Acquisition Device (4202)</summary>
 		public readonly static DicomUID OphthalmicPhotographyAcquisitionDevice4202 = new DicomUID("1.2.840.10008.6.1.318", "Ophthalmic Photography Acquisition Device (4202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Photography Illumination (4203)</summary>
+		/// <summary>Context Group Name: Ophthalmic Photography Illumination (4203)</summary>
 		public readonly static DicomUID OphthalmicPhotographyIllumination4203 = new DicomUID("1.2.840.10008.6.1.319", "Ophthalmic Photography Illumination (4203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Filter (4204)</summary>
+		/// <summary>Context Group Name: Ophthalmic Filter (4204)</summary>
 		public readonly static DicomUID OphthalmicFilter4204 = new DicomUID("1.2.840.10008.6.1.320", "Ophthalmic Filter (4204)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Lens (4205)</summary>
+		/// <summary>Context Group Name: Ophthalmic Lens (4205)</summary>
 		public readonly static DicomUID OphthalmicLens4205 = new DicomUID("1.2.840.10008.6.1.321", "Ophthalmic Lens (4205)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Channel Description (4206)</summary>
+		/// <summary>Context Group Name: Ophthalmic Channel Description (4206)</summary>
 		public readonly static DicomUID OphthalmicChannelDescription4206 = new DicomUID("1.2.840.10008.6.1.322", "Ophthalmic Channel Description (4206)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Image Position (4207)</summary>
+		/// <summary>Context Group Name: Ophthalmic Image Position (4207)</summary>
 		public readonly static DicomUID OphthalmicImagePosition4207 = new DicomUID("1.2.840.10008.6.1.323", "Ophthalmic Image Position (4207)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mydriatic Agent (4208)</summary>
+		/// <summary>Context Group Name: Mydriatic Agent (4208)</summary>
 		public readonly static DicomUID MydriaticAgent4208 = new DicomUID("1.2.840.10008.6.1.324", "Mydriatic Agent (4208)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Anatomic Structure Imaged (4209)</summary>
+		/// <summary>Context Group Name: Ophthalmic Anatomic Structure Imaged (4209)</summary>
 		public readonly static DicomUID OphthalmicAnatomicStructureImaged4209 = new DicomUID("1.2.840.10008.6.1.325", "Ophthalmic Anatomic Structure Imaged (4209)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Tomography Acquisition Device (4210)</summary>
+		/// <summary>Context Group Name: Ophthalmic Tomography Acquisition Device (4210)</summary>
 		public readonly static DicomUID OphthalmicTomographyAcquisitionDevice4210 = new DicomUID("1.2.840.10008.6.1.326", "Ophthalmic Tomography Acquisition Device (4210)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic OCT Anatomic Structure Imaged (4211)</summary>
+		/// <summary>Context Group Name: Ophthalmic OCT Anatomic Structure Imaged (4211)</summary>
 		public readonly static DicomUID OphthalmicOCTAnatomicStructureImaged4211 = new DicomUID("1.2.840.10008.6.1.327", "Ophthalmic OCT Anatomic Structure Imaged (4211)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Languages (5000)</summary>
+		/// <summary>Context Group Name: Languages (5000)</summary>
 		public readonly static DicomUID Languages5000 = new DicomUID("1.2.840.10008.6.1.328", "Languages (5000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Countries (5001)</summary>
+		/// <summary>Context Group Name: Countries (5001)</summary>
 		public readonly static DicomUID Countries5001 = new DicomUID("1.2.840.10008.6.1.329", "Countries (5001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Overall Breast Composition (6000)</summary>
+		/// <summary>Context Group Name: Overall Breast Composition (6000)</summary>
 		public readonly static DicomUID OverallBreastComposition6000 = new DicomUID("1.2.840.10008.6.1.330", "Overall Breast Composition (6000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Overall Breast Composition From BI-RADS® (6001)</summary>
-		public readonly static DicomUID OverallBreastCompositionFromBIRADS6001 = new DicomUID("1.2.840.10008.6.1.331", "Overall Breast Composition From BI-RADS® (6001)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Overall Breast Composition from BI-RADS® (6001)</summary>
+		public readonly static DicomUID OverallBreastCompositionFromBIRADS6001 = new DicomUID("1.2.840.10008.6.1.331", "Overall Breast Composition from BI-RADS® (6001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Change Since Last Mammogram Or Prior Surgery (6002)</summary>
-		public readonly static DicomUID ChangeSinceLastMammogramOrPriorSurgery6002 = new DicomUID("1.2.840.10008.6.1.332", "Change Since Last Mammogram Or Prior Surgery (6002)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Change Since Last Mammogram or Prior Surgery (6002)</summary>
+		public readonly static DicomUID ChangeSinceLastMammogramOrPriorSurgery6002 = new DicomUID("1.2.840.10008.6.1.332", "Change Since Last Mammogram or Prior Surgery (6002)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Change Since Last Mammogram Or Prior Surgery From BI-RADS® (6003)</summary>
-		public readonly static DicomUID ChangeSinceLastMammogramOrPriorSurgeryFromBIRADS6003 = new DicomUID("1.2.840.10008.6.1.333", "Change Since Last Mammogram Or Prior Surgery From BI-RADS® (6003)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Change Since Last Mammogram or Prior Surgery from BI-RADS® (6003)</summary>
+		public readonly static DicomUID ChangeSinceLastMammogramOrPriorSurgeryFromBIRADS6003 = new DicomUID("1.2.840.10008.6.1.333", "Change Since Last Mammogram or Prior Surgery from BI-RADS® (6003)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Characteristics of Shape (6004)</summary>
+		/// <summary>Context Group Name: Mammography Characteristics of Shape (6004)</summary>
 		public readonly static DicomUID MammographyCharacteristicsOfShape6004 = new DicomUID("1.2.840.10008.6.1.334", "Mammography Characteristics of Shape (6004)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Characteristics of Shape From BI-RADS® (6005)</summary>
-		public readonly static DicomUID CharacteristicsOfShapeFromBIRADS6005 = new DicomUID("1.2.840.10008.6.1.335", "Characteristics of Shape From BI-RADS® (6005)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Characteristics of Shape from BI-RADS® (6005)</summary>
+		public readonly static DicomUID CharacteristicsOfShapeFromBIRADS6005 = new DicomUID("1.2.840.10008.6.1.335", "Characteristics of Shape from BI-RADS® (6005)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Characteristics of Margin (6006)</summary>
+		/// <summary>Context Group Name: Mammography Characteristics of Margin (6006)</summary>
 		public readonly static DicomUID MammographyCharacteristicsOfMargin6006 = new DicomUID("1.2.840.10008.6.1.336", "Mammography Characteristics of Margin (6006)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Characteristics of Margin From BI-RADS® (6007)</summary>
-		public readonly static DicomUID CharacteristicsOfMarginFromBIRADS6007 = new DicomUID("1.2.840.10008.6.1.337", "Characteristics of Margin From BI-RADS® (6007)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Characteristics of Margin from BI-RADS® (6007)</summary>
+		public readonly static DicomUID CharacteristicsOfMarginFromBIRADS6007 = new DicomUID("1.2.840.10008.6.1.337", "Characteristics of Margin from BI-RADS® (6007)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Density Modifier (6008)</summary>
+		/// <summary>Context Group Name: Density Modifier (6008)</summary>
 		public readonly static DicomUID DensityModifier6008 = new DicomUID("1.2.840.10008.6.1.338", "Density Modifier (6008)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Density Modifier From BI-RADS® (6009)</summary>
-		public readonly static DicomUID DensityModifierFromBIRADS6009 = new DicomUID("1.2.840.10008.6.1.339", "Density Modifier From BI-RADS® (6009)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Density Modifier from BI-RADS® (6009)</summary>
+		public readonly static DicomUID DensityModifierFromBIRADS6009 = new DicomUID("1.2.840.10008.6.1.339", "Density Modifier from BI-RADS® (6009)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Calcification Types (6010)</summary>
+		/// <summary>Context Group Name: Mammography Calcification Types (6010)</summary>
 		public readonly static DicomUID MammographyCalcificationTypes6010 = new DicomUID("1.2.840.10008.6.1.340", "Mammography Calcification Types (6010)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calcification Types From BI-RADS® (6011)</summary>
-		public readonly static DicomUID CalcificationTypesFromBIRADS6011 = new DicomUID("1.2.840.10008.6.1.341", "Calcification Types From BI-RADS® (6011)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Calcification Types from BI-RADS® (6011)</summary>
+		public readonly static DicomUID CalcificationTypesFromBIRADS6011 = new DicomUID("1.2.840.10008.6.1.341", "Calcification Types from BI-RADS® (6011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calcification Distribution Modifier (6012)</summary>
+		/// <summary>Context Group Name: Calcification Distribution Modifier (6012)</summary>
 		public readonly static DicomUID CalcificationDistributionModifier6012 = new DicomUID("1.2.840.10008.6.1.342", "Calcification Distribution Modifier (6012)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calcification Distribution Modifier From BI-RADS® (6013)</summary>
-		public readonly static DicomUID CalcificationDistributionModifierFromBIRADS6013 = new DicomUID("1.2.840.10008.6.1.343", "Calcification Distribution Modifier From BI-RADS® (6013)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Calcification Distribution Modifier from BI-RADS® (6013)</summary>
+		public readonly static DicomUID CalcificationDistributionModifierFromBIRADS6013 = new DicomUID("1.2.840.10008.6.1.343", "Calcification Distribution Modifier from BI-RADS® (6013)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Single Image Finding (6014)</summary>
+		/// <summary>Context Group Name: Mammography Single Image Finding (6014)</summary>
 		public readonly static DicomUID MammographySingleImageFinding6014 = new DicomUID("1.2.840.10008.6.1.344", "Mammography Single Image Finding (6014)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Single Image Finding From BI-RADS® (6015)</summary>
-		public readonly static DicomUID SingleImageFindingFromBIRADS6015 = new DicomUID("1.2.840.10008.6.1.345", "Single Image Finding From BI-RADS® (6015)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Single Image Finding from BI-RADS® (6015)</summary>
+		public readonly static DicomUID SingleImageFindingFromBIRADS6015 = new DicomUID("1.2.840.10008.6.1.345", "Single Image Finding from BI-RADS® (6015)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Composite Feature (6016)</summary>
+		/// <summary>Context Group Name: Mammography Composite Feature (6016)</summary>
 		public readonly static DicomUID MammographyCompositeFeature6016 = new DicomUID("1.2.840.10008.6.1.346", "Mammography Composite Feature (6016)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Composite Feature From BI-RADS® (6017)</summary>
-		public readonly static DicomUID CompositeFeatureFromBIRADS6017 = new DicomUID("1.2.840.10008.6.1.347", "Composite Feature From BI-RADS® (6017)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Composite Feature from BI-RADS® (6017)</summary>
+		public readonly static DicomUID CompositeFeatureFromBIRADS6017 = new DicomUID("1.2.840.10008.6.1.347", "Composite Feature from BI-RADS® (6017)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Clockface Location or Region (6018)</summary>
+		/// <summary>Context Group Name: Clockface Location or Region (6018)</summary>
 		public readonly static DicomUID ClockfaceLocationOrRegion6018 = new DicomUID("1.2.840.10008.6.1.348", "Clockface Location or Region (6018)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Clockface Location Or Region From BI-RADS® (6019)</summary>
-		public readonly static DicomUID ClockfaceLocationOrRegionFromBIRADS6019 = new DicomUID("1.2.840.10008.6.1.349", "Clockface Location Or Region From BI-RADS® (6019)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Clockface Location or Region from BI-RADS® (6019)</summary>
+		public readonly static DicomUID ClockfaceLocationOrRegionFromBIRADS6019 = new DicomUID("1.2.840.10008.6.1.349", "Clockface Location or Region from BI-RADS® (6019)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Quadrant Location (6020)</summary>
+		/// <summary>Context Group Name: Quadrant Location (6020)</summary>
 		public readonly static DicomUID QuadrantLocation6020 = new DicomUID("1.2.840.10008.6.1.350", "Quadrant Location (6020)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Quadrant Location From BI-RADS® (6021)</summary>
-		public readonly static DicomUID QuadrantLocationFromBIRADS6021 = new DicomUID("1.2.840.10008.6.1.351", "Quadrant Location From BI-RADS® (6021)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Quadrant Location from BI-RADS® (6021)</summary>
+		public readonly static DicomUID QuadrantLocationFromBIRADS6021 = new DicomUID("1.2.840.10008.6.1.351", "Quadrant Location from BI-RADS® (6021)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Side (6022)</summary>
+		/// <summary>Context Group Name: Side (6022)</summary>
 		public readonly static DicomUID Side6022 = new DicomUID("1.2.840.10008.6.1.352", "Side (6022)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Side From BI-RADS® (6023)</summary>
-		public readonly static DicomUID SideFromBIRADS6023 = new DicomUID("1.2.840.10008.6.1.353", "Side From BI-RADS® (6023)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Side from BI-RADS® (6023)</summary>
+		public readonly static DicomUID SideFromBIRADS6023 = new DicomUID("1.2.840.10008.6.1.353", "Side from BI-RADS® (6023)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Depth (6024)</summary>
+		/// <summary>Context Group Name: Depth (6024)</summary>
 		public readonly static DicomUID Depth6024 = new DicomUID("1.2.840.10008.6.1.354", "Depth (6024)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Depth From BI-RADS® (6025)</summary>
-		public readonly static DicomUID DepthFromBIRADS6025 = new DicomUID("1.2.840.10008.6.1.355", "Depth From BI-RADS® (6025)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Depth from BI-RADS® (6025)</summary>
+		public readonly static DicomUID DepthFromBIRADS6025 = new DicomUID("1.2.840.10008.6.1.355", "Depth from BI-RADS® (6025)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Assessment (6026)</summary>
+		/// <summary>Context Group Name: Mammography Assessment (6026)</summary>
 		public readonly static DicomUID MammographyAssessment6026 = new DicomUID("1.2.840.10008.6.1.356", "Mammography Assessment (6026)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Assessment From BI-RADS® (6027)</summary>
-		public readonly static DicomUID AssessmentFromBIRADS6027 = new DicomUID("1.2.840.10008.6.1.357", "Assessment From BI-RADS® (6027)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Assessment from BI-RADS® (6027)</summary>
+		public readonly static DicomUID AssessmentFromBIRADS6027 = new DicomUID("1.2.840.10008.6.1.357", "Assessment from BI-RADS® (6027)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Recommended Follow-up (6028)</summary>
+		/// <summary>Context Group Name: Mammography Recommended Follow-up (6028)</summary>
 		public readonly static DicomUID MammographyRecommendedFollowUp6028 = new DicomUID("1.2.840.10008.6.1.358", "Mammography Recommended Follow-up (6028)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Recommended Follow-up From BI-RADS® (6029)</summary>
-		public readonly static DicomUID RecommendedFollowUpFromBIRADS6029 = new DicomUID("1.2.840.10008.6.1.359", "Recommended Follow-up From BI-RADS® (6029)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Recommended Follow-up from BI-RADS® (6029)</summary>
+		public readonly static DicomUID RecommendedFollowUpFromBIRADS6029 = new DicomUID("1.2.840.10008.6.1.359", "Recommended Follow-up from BI-RADS® (6029)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Pathology Codes (6030)</summary>
+		/// <summary>Context Group Name: Mammography Pathology Codes (6030)</summary>
 		public readonly static DicomUID MammographyPathologyCodes6030 = new DicomUID("1.2.840.10008.6.1.360", "Mammography Pathology Codes (6030)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Benign Pathology Codes From BI-RADS® (6031)</summary>
-		public readonly static DicomUID BenignPathologyCodesFromBIRADS6031 = new DicomUID("1.2.840.10008.6.1.361", "Benign Pathology Codes From BI-RADS® (6031)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Benign Pathology Codes from BI-RADS® (6031)</summary>
+		public readonly static DicomUID BenignPathologyCodesFromBIRADS6031 = new DicomUID("1.2.840.10008.6.1.361", "Benign Pathology Codes from BI-RADS® (6031)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: High Risk Lesions Pathology Codes From BI-RADS® (6032)</summary>
-		public readonly static DicomUID HighRiskLesionsPathologyCodesFromBIRADS6032 = new DicomUID("1.2.840.10008.6.1.362", "High Risk Lesions Pathology Codes From BI-RADS® (6032)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: High Risk Lesions Pathology Codes from BI-RADS® (6032)</summary>
+		public readonly static DicomUID HighRiskLesionsPathologyCodesFromBIRADS6032 = new DicomUID("1.2.840.10008.6.1.362", "High Risk Lesions Pathology Codes from BI-RADS® (6032)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Malignant Pathology Codes From BI-RADS® (6033)</summary>
-		public readonly static DicomUID MalignantPathologyCodesFromBIRADS6033 = new DicomUID("1.2.840.10008.6.1.363", "Malignant Pathology Codes From BI-RADS® (6033)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Malignant Pathology Codes from BI-RADS® (6033)</summary>
+		public readonly static DicomUID MalignantPathologyCodesFromBIRADS6033 = new DicomUID("1.2.840.10008.6.1.363", "Malignant Pathology Codes from BI-RADS® (6033)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intended Use of CAD Output (6034)</summary>
+		/// <summary>Context Group Name: Intended Use of CAD Output (6034)</summary>
 		public readonly static DicomUID IntendedUseOfCADOutput6034 = new DicomUID("1.2.840.10008.6.1.364", "Intended Use of CAD Output (6034)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Composite Feature Relations (6035)</summary>
+		/// <summary>Context Group Name: Composite Feature Relations (6035)</summary>
 		public readonly static DicomUID CompositeFeatureRelations6035 = new DicomUID("1.2.840.10008.6.1.365", "Composite Feature Relations (6035)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Scope of Feature (6036)</summary>
+		/// <summary>Context Group Name: Scope of Feature (6036)</summary>
 		public readonly static DicomUID ScopeOfFeature6036 = new DicomUID("1.2.840.10008.6.1.366", "Scope of Feature (6036)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Quantitative Temporal Difference Type (6037)</summary>
+		/// <summary>Context Group Name: Mammography Quantitative Temporal Difference Type (6037)</summary>
 		public readonly static DicomUID MammographyQuantitativeTemporalDifferenceType6037 = new DicomUID("1.2.840.10008.6.1.367", "Mammography Quantitative Temporal Difference Type (6037)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Qualitative Temporal Difference Type (6038)</summary>
+		/// <summary>Context Group Name: Mammography Qualitative Temporal Difference Type (6038)</summary>
 		public readonly static DicomUID MammographyQualitativeTemporalDifferenceType6038 = new DicomUID("1.2.840.10008.6.1.368", "Mammography Qualitative Temporal Difference Type (6038)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Nipple Characteristic (6039)</summary>
+		/// <summary>Context Group Name: Nipple Characteristic (6039)</summary>
 		public readonly static DicomUID NippleCharacteristic6039 = new DicomUID("1.2.840.10008.6.1.369", "Nipple Characteristic (6039)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-lesion Object Type (6040)</summary>
+		/// <summary>Context Group Name: Non-lesion Object Type (6040)</summary>
 		public readonly static DicomUID NonLesionObjectType6040 = new DicomUID("1.2.840.10008.6.1.370", "Non-lesion Object Type (6040)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Image Quality Finding (6041)</summary>
+		/// <summary>Context Group Name: Mammography Image Quality Finding (6041)</summary>
 		public readonly static DicomUID MammographyImageQualityFinding6041 = new DicomUID("1.2.840.10008.6.1.371", "Mammography Image Quality Finding (6041)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Status of Results (6042)</summary>
+		/// <summary>Context Group Name: Status of Results (6042)</summary>
 		public readonly static DicomUID StatusOfResults6042 = new DicomUID("1.2.840.10008.6.1.372", "Status of Results (6042)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Types of Mammography CAD Analysis (6043)</summary>
+		/// <summary>Context Group Name: Types of Mammography CAD Analysis (6043)</summary>
 		public readonly static DicomUID TypesOfMammographyCADAnalysis6043 = new DicomUID("1.2.840.10008.6.1.373", "Types of Mammography CAD Analysis (6043)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Types of Image Quality Assessment (6044)</summary>
+		/// <summary>Context Group Name: Types of Image Quality Assessment (6044)</summary>
 		public readonly static DicomUID TypesOfImageQualityAssessment6044 = new DicomUID("1.2.840.10008.6.1.374", "Types of Image Quality Assessment (6044)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammography Types of Quality Control Standard (6045)</summary>
+		/// <summary>Context Group Name: Mammography Types of Quality Control Standard (6045)</summary>
 		public readonly static DicomUID MammographyTypesOfQualityControlStandard6045 = new DicomUID("1.2.840.10008.6.1.375", "Mammography Types of Quality Control Standard (6045)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Follow-up Interval (6046)</summary>
+		/// <summary>Context Group Name: Units of Follow-up Interval (6046)</summary>
 		public readonly static DicomUID UnitsOfFollowUpInterval6046 = new DicomUID("1.2.840.10008.6.1.376", "Units of Follow-up Interval (6046)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CAD Processing and Findings Summary (6047)</summary>
+		/// <summary>Context Group Name: CAD Processing and Findings Summary (6047)</summary>
 		public readonly static DicomUID CADProcessingAndFindingsSummary6047 = new DicomUID("1.2.840.10008.6.1.377", "CAD Processing and Findings Summary (6047)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CAD Operating Point Axis Label (6048)</summary>
+		/// <summary>Context Group Name: CAD Operating Point Axis Label (6048)</summary>
 		public readonly static DicomUID CADOperatingPointAxisLabel6048 = new DicomUID("1.2.840.10008.6.1.378", "CAD Operating Point Axis Label (6048)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Procedure Reported (6050)</summary>
+		/// <summary>Context Group Name: Breast Procedure Reported (6050)</summary>
 		public readonly static DicomUID BreastProcedureReported6050 = new DicomUID("1.2.840.10008.6.1.379", "Breast Procedure Reported (6050)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Procedure Reason (6051)</summary>
+		/// <summary>Context Group Name: Breast Procedure Reason (6051)</summary>
 		public readonly static DicomUID BreastProcedureReason6051 = new DicomUID("1.2.840.10008.6.1.380", "Breast Procedure Reason (6051)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Imaging Report Section Title (6052)</summary>
+		/// <summary>Context Group Name: Breast Imaging Report Section Title (6052)</summary>
 		public readonly static DicomUID BreastImagingReportSectionTitle6052 = new DicomUID("1.2.840.10008.6.1.381", "Breast Imaging Report Section Title (6052)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Imaging Report Elements (6053)</summary>
+		/// <summary>Context Group Name: Breast Imaging Report Elements (6053)</summary>
 		public readonly static DicomUID BreastImagingReportElements6053 = new DicomUID("1.2.840.10008.6.1.382", "Breast Imaging Report Elements (6053)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Imaging Findings (6054)</summary>
+		/// <summary>Context Group Name: Breast Imaging Findings (6054)</summary>
 		public readonly static DicomUID BreastImagingFindings6054 = new DicomUID("1.2.840.10008.6.1.383", "Breast Imaging Findings (6054)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Clinical Finding Or Indicated Problem (6055)</summary>
-		public readonly static DicomUID BreastClinicalFindingOrIndicatedProblem6055 = new DicomUID("1.2.840.10008.6.1.384", "Breast Clinical Finding Or Indicated Problem (6055)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Breast Clinical Finding or Indicated Problem (6055)</summary>
+		public readonly static DicomUID BreastClinicalFindingOrIndicatedProblem6055 = new DicomUID("1.2.840.10008.6.1.384", "Breast Clinical Finding or Indicated Problem (6055)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Associated Findings for Breast (6056)</summary>
+		/// <summary>Context Group Name: Associated Findings for Breast (6056)</summary>
 		public readonly static DicomUID AssociatedFindingsForBreast6056 = new DicomUID("1.2.840.10008.6.1.385", "Associated Findings for Breast (6056)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ductography Findings for Breast (6057)</summary>
+		/// <summary>Context Group Name: Ductography Findings for Breast (6057)</summary>
 		public readonly static DicomUID DuctographyFindingsForBreast6057 = new DicomUID("1.2.840.10008.6.1.386", "Ductography Findings for Breast (6057)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Modifiers for Breast (6058)</summary>
+		/// <summary>Context Group Name: Procedure Modifiers for Breast (6058)</summary>
 		public readonly static DicomUID ProcedureModifiersForBreast6058 = new DicomUID("1.2.840.10008.6.1.387", "Procedure Modifiers for Breast (6058)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Implant Types (6059)</summary>
+		/// <summary>Context Group Name: Breast Implant Types (6059)</summary>
 		public readonly static DicomUID BreastImplantTypes6059 = new DicomUID("1.2.840.10008.6.1.388", "Breast Implant Types (6059)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Biopsy Techniques (6060)</summary>
+		/// <summary>Context Group Name: Breast Biopsy Techniques (6060)</summary>
 		public readonly static DicomUID BreastBiopsyTechniques6060 = new DicomUID("1.2.840.10008.6.1.389", "Breast Biopsy Techniques (6060)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Imaging Procedure Modifiers (6061)</summary>
+		/// <summary>Context Group Name: Breast Imaging Procedure Modifiers (6061)</summary>
 		public readonly static DicomUID BreastImagingProcedureModifiers6061 = new DicomUID("1.2.840.10008.6.1.390", "Breast Imaging Procedure Modifiers (6061)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Interventional Procedure Complications (6062)</summary>
+		/// <summary>Context Group Name: Interventional Procedure Complications (6062)</summary>
 		public readonly static DicomUID InterventionalProcedureComplications6062 = new DicomUID("1.2.840.10008.6.1.391", "Interventional Procedure Complications (6062)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Interventional Procedure Results (6063)</summary>
+		/// <summary>Context Group Name: Interventional Procedure Results (6063)</summary>
 		public readonly static DicomUID InterventionalProcedureResults6063 = new DicomUID("1.2.840.10008.6.1.392", "Interventional Procedure Results (6063)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Findings for Breast (6064)</summary>
+		/// <summary>Context Group Name: Ultrasound Findings for Breast (6064)</summary>
 		public readonly static DicomUID UltrasoundFindingsForBreast6064 = new DicomUID("1.2.840.10008.6.1.393", "Ultrasound Findings for Breast (6064)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Instrument Approach (6065)</summary>
+		/// <summary>Context Group Name: Instrument Approach (6065)</summary>
 		public readonly static DicomUID InstrumentApproach6065 = new DicomUID("1.2.840.10008.6.1.394", "Instrument Approach (6065)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Target Confirmation (6066)</summary>
+		/// <summary>Context Group Name: Target Confirmation (6066)</summary>
 		public readonly static DicomUID TargetConfirmation6066 = new DicomUID("1.2.840.10008.6.1.395", "Target Confirmation (6066)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fluid Color (6067)</summary>
+		/// <summary>Context Group Name: Fluid Color (6067)</summary>
 		public readonly static DicomUID FluidColor6067 = new DicomUID("1.2.840.10008.6.1.396", "Fluid Color (6067)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tumor Stages From AJCC (6068)</summary>
+		/// <summary>Context Group Name: Tumor Stages From AJCC (6068)</summary>
 		public readonly static DicomUID TumorStagesFromAJCC6068 = new DicomUID("1.2.840.10008.6.1.397", "Tumor Stages From AJCC (6068)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Nottingham Combined Histologic Grade (6069)</summary>
+		/// <summary>Context Group Name: Nottingham Combined Histologic Grade (6069)</summary>
 		public readonly static DicomUID NottinghamCombinedHistologicGrade6069 = new DicomUID("1.2.840.10008.6.1.398", "Nottingham Combined Histologic Grade (6069)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Bloom-Richardson Histologic Grade (6070)</summary>
+		/// <summary>Context Group Name: Bloom-Richardson Histologic Grade (6070)</summary>
 		public readonly static DicomUID BloomRichardsonHistologicGrade6070 = new DicomUID("1.2.840.10008.6.1.399", "Bloom-Richardson Histologic Grade (6070)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Histologic Grading Method (6071)</summary>
+		/// <summary>Context Group Name: Histologic Grading Method (6071)</summary>
 		public readonly static DicomUID HistologicGradingMethod6071 = new DicomUID("1.2.840.10008.6.1.400", "Histologic Grading Method (6071)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Implant Findings (6072)</summary>
+		/// <summary>Context Group Name: Breast Implant Findings (6072)</summary>
 		public readonly static DicomUID BreastImplantFindings6072 = new DicomUID("1.2.840.10008.6.1.401", "Breast Implant Findings (6072)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Gynecological Hormones (6080)</summary>
+		/// <summary>Context Group Name: Gynecological Hormones (6080)</summary>
 		public readonly static DicomUID GynecologicalHormones6080 = new DicomUID("1.2.840.10008.6.1.402", "Gynecological Hormones (6080)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Cancer Risk Factors (6081)</summary>
+		/// <summary>Context Group Name: Breast Cancer Risk Factors (6081)</summary>
 		public readonly static DicomUID BreastCancerRiskFactors6081 = new DicomUID("1.2.840.10008.6.1.403", "Breast Cancer Risk Factors (6081)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Gynecological Procedures (6082)</summary>
+		/// <summary>Context Group Name: Gynecological Procedures (6082)</summary>
 		public readonly static DicomUID GynecologicalProcedures6082 = new DicomUID("1.2.840.10008.6.1.404", "Gynecological Procedures (6082)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedures for Breast (6083)</summary>
+		/// <summary>Context Group Name: Procedures for Breast (6083)</summary>
 		public readonly static DicomUID ProceduresForBreast6083 = new DicomUID("1.2.840.10008.6.1.405", "Procedures for Breast (6083)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mammoplasty Procedures (6084)</summary>
+		/// <summary>Context Group Name: Mammoplasty Procedures (6084)</summary>
 		public readonly static DicomUID MammoplastyProcedures6084 = new DicomUID("1.2.840.10008.6.1.406", "Mammoplasty Procedures (6084)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Therapies for Breast (6085)</summary>
+		/// <summary>Context Group Name: Therapies for Breast (6085)</summary>
 		public readonly static DicomUID TherapiesForBreast6085 = new DicomUID("1.2.840.10008.6.1.407", "Therapies for Breast (6085)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Menopausal Phase (6086)</summary>
+		/// <summary>Context Group Name: Menopausal Phase (6086)</summary>
 		public readonly static DicomUID MenopausalPhase6086 = new DicomUID("1.2.840.10008.6.1.408", "Menopausal Phase (6086)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Risk Factors (6087)</summary>
+		/// <summary>Context Group Name: General Risk Factors (6087)</summary>
 		public readonly static DicomUID GeneralRiskFactors6087 = new DicomUID("1.2.840.10008.6.1.409", "General Risk Factors (6087)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB-GYN Maternal Risk Factors (6088)</summary>
+		/// <summary>Context Group Name: OB-GYN Maternal Risk Factors (6088)</summary>
 		public readonly static DicomUID OBGYNMaternalRiskFactors6088 = new DicomUID("1.2.840.10008.6.1.410", "OB-GYN Maternal Risk Factors (6088)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Substances (6089)</summary>
+		/// <summary>Context Group Name: Substances (6089)</summary>
 		public readonly static DicomUID Substances6089 = new DicomUID("1.2.840.10008.6.1.411", "Substances (6089)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Relative Usage, Exposure Amount (6090)</summary>
+		/// <summary>Context Group Name: Relative Usage, Exposure Amount (6090)</summary>
 		public readonly static DicomUID RelativeUsageExposureAmount6090 = new DicomUID("1.2.840.10008.6.1.412", "Relative Usage, Exposure Amount (6090)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Relative Frequency of Event Values (6091)</summary>
+		/// <summary>Context Group Name: Relative Frequency of Event Values (6091)</summary>
 		public readonly static DicomUID RelativeFrequencyOfEventValues6091 = new DicomUID("1.2.840.10008.6.1.413", "Relative Frequency of Event Values (6091)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Quantitative Concepts for Usage, Exposure (6092)</summary>
+		/// <summary>Context Group Name: Quantitative Concepts for Usage, Exposure (6092)</summary>
 		public readonly static DicomUID QuantitativeConceptsForUsageExposure6092 = new DicomUID("1.2.840.10008.6.1.414", "Quantitative Concepts for Usage, Exposure (6092)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Qualitative Concepts for Usage, Exposure Amount (6093)</summary>
+		/// <summary>Context Group Name: Qualitative Concepts for Usage, Exposure Amount (6093)</summary>
 		public readonly static DicomUID QualitativeConceptsForUsageExposureAmount6093 = new DicomUID("1.2.840.10008.6.1.415", "Qualitative Concepts for Usage, Exposure Amount (6093)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Qualitative Concepts for Usage, Exposure Frequency (6094)</summary>
+		/// <summary>Context Group Name: Qualitative Concepts for Usage, Exposure Frequency (6094)</summary>
 		public readonly static DicomUID QualitativeConceptsForUsageExposureFrequency6094 = new DicomUID("1.2.840.10008.6.1.416", "Qualitative Concepts for Usage, Exposure Frequency (6094)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Numeric Properties of Procedures (6095)</summary>
+		/// <summary>Context Group Name: Numeric Properties of Procedures (6095)</summary>
 		public readonly static DicomUID NumericPropertiesOfProcedures6095 = new DicomUID("1.2.840.10008.6.1.417", "Numeric Properties of Procedures (6095)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pregnancy Status (6096)</summary>
+		/// <summary>Context Group Name: Pregnancy Status (6096)</summary>
 		public readonly static DicomUID PregnancyStatus6096 = new DicomUID("1.2.840.10008.6.1.418", "Pregnancy Status (6096)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Side of Family (6097)</summary>
+		/// <summary>Context Group Name: Side of Family (6097)</summary>
 		public readonly static DicomUID SideOfFamily6097 = new DicomUID("1.2.840.10008.6.1.419", "Side of Family (6097)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Component Categories (6100)</summary>
+		/// <summary>Context Group Name: Chest Component Categories (6100)</summary>
 		public readonly static DicomUID ChestComponentCategories6100 = new DicomUID("1.2.840.10008.6.1.420", "Chest Component Categories (6100)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Finding Or Feature (6101)</summary>
-		public readonly static DicomUID ChestFindingOrFeature6101 = new DicomUID("1.2.840.10008.6.1.421", "Chest Finding Or Feature (6101)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Chest Finding or Feature (6101)</summary>
+		public readonly static DicomUID ChestFindingOrFeature6101 = new DicomUID("1.2.840.10008.6.1.421", "Chest Finding or Feature (6101)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Finding Or Feature Modifier (6102)</summary>
-		public readonly static DicomUID ChestFindingOrFeatureModifier6102 = new DicomUID("1.2.840.10008.6.1.422", "Chest Finding Or Feature Modifier (6102)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Chest Finding or Feature Modifier (6102)</summary>
+		public readonly static DicomUID ChestFindingOrFeatureModifier6102 = new DicomUID("1.2.840.10008.6.1.422", "Chest Finding or Feature Modifier (6102)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abnormal Lines Finding Or Feature (6103)</summary>
-		public readonly static DicomUID AbnormalLinesFindingOrFeature6103 = new DicomUID("1.2.840.10008.6.1.423", "Abnormal Lines Finding Or Feature (6103)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abnormal Lines Finding or Feature (6103)</summary>
+		public readonly static DicomUID AbnormalLinesFindingOrFeature6103 = new DicomUID("1.2.840.10008.6.1.423", "Abnormal Lines Finding or Feature (6103)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abnormal Opacity Finding Or Feature (6104)</summary>
-		public readonly static DicomUID AbnormalOpacityFindingOrFeature6104 = new DicomUID("1.2.840.10008.6.1.424", "Abnormal Opacity Finding Or Feature (6104)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abnormal Opacity Finding or Feature (6104)</summary>
+		public readonly static DicomUID AbnormalOpacityFindingOrFeature6104 = new DicomUID("1.2.840.10008.6.1.424", "Abnormal Opacity Finding or Feature (6104)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abnormal Lucency Finding Or Feature (6105)</summary>
-		public readonly static DicomUID AbnormalLucencyFindingOrFeature6105 = new DicomUID("1.2.840.10008.6.1.425", "Abnormal Lucency Finding Or Feature (6105)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abnormal Lucency Finding or Feature (6105)</summary>
+		public readonly static DicomUID AbnormalLucencyFindingOrFeature6105 = new DicomUID("1.2.840.10008.6.1.425", "Abnormal Lucency Finding or Feature (6105)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abnormal Texture Finding Or Feature (6106)</summary>
-		public readonly static DicomUID AbnormalTextureFindingOrFeature6106 = new DicomUID("1.2.840.10008.6.1.426", "Abnormal Texture Finding Or Feature (6106)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abnormal Texture Finding or Feature (6106)</summary>
+		public readonly static DicomUID AbnormalTextureFindingOrFeature6106 = new DicomUID("1.2.840.10008.6.1.426", "Abnormal Texture Finding or Feature (6106)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Width Descriptor (6107)</summary>
+		/// <summary>Context Group Name: Width Descriptor (6107)</summary>
 		public readonly static DicomUID WidthDescriptor6107 = new DicomUID("1.2.840.10008.6.1.427", "Width Descriptor (6107)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Anatomic Structure Abnormal Distribution (6108)</summary>
+		/// <summary>Context Group Name: Chest Anatomic Structure Abnormal Distribution (6108)</summary>
 		public readonly static DicomUID ChestAnatomicStructureAbnormalDistribution6108 = new DicomUID("1.2.840.10008.6.1.428", "Chest Anatomic Structure Abnormal Distribution (6108)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiographic Anatomy Finding Or Feature (6109)</summary>
-		public readonly static DicomUID RadiographicAnatomyFindingOrFeature6109 = new DicomUID("1.2.840.10008.6.1.429", "Radiographic Anatomy Finding Or Feature (6109)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Radiographic Anatomy Finding or Feature (6109)</summary>
+		public readonly static DicomUID RadiographicAnatomyFindingOrFeature6109 = new DicomUID("1.2.840.10008.6.1.429", "Radiographic Anatomy Finding or Feature (6109)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lung Anatomy Finding Or Feature (6110)</summary>
-		public readonly static DicomUID LungAnatomyFindingOrFeature6110 = new DicomUID("1.2.840.10008.6.1.430", "Lung Anatomy Finding Or Feature (6110)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Lung Anatomy Finding or Feature (6110)</summary>
+		public readonly static DicomUID LungAnatomyFindingOrFeature6110 = new DicomUID("1.2.840.10008.6.1.430", "Lung Anatomy Finding or Feature (6110)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Bronchovascular Anatomy Finding Or Feature (6111)</summary>
-		public readonly static DicomUID BronchovascularAnatomyFindingOrFeature6111 = new DicomUID("1.2.840.10008.6.1.431", "Bronchovascular Anatomy Finding Or Feature (6111)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Bronchovascular Anatomy Finding or Feature (6111)</summary>
+		public readonly static DicomUID BronchovascularAnatomyFindingOrFeature6111 = new DicomUID("1.2.840.10008.6.1.431", "Bronchovascular Anatomy Finding or Feature (6111)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pleura Anatomy Finding Or Feature (6112)</summary>
-		public readonly static DicomUID PleuraAnatomyFindingOrFeature6112 = new DicomUID("1.2.840.10008.6.1.432", "Pleura Anatomy Finding Or Feature (6112)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Pleura Anatomy Finding or Feature (6112)</summary>
+		public readonly static DicomUID PleuraAnatomyFindingOrFeature6112 = new DicomUID("1.2.840.10008.6.1.432", "Pleura Anatomy Finding or Feature (6112)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mediastinum Anatomy Finding Or Feature (6113)</summary>
-		public readonly static DicomUID MediastinumAnatomyFindingOrFeature6113 = new DicomUID("1.2.840.10008.6.1.433", "Mediastinum Anatomy Finding Or Feature (6113)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Mediastinum Anatomy Finding or Feature (6113)</summary>
+		public readonly static DicomUID MediastinumAnatomyFindingOrFeature6113 = new DicomUID("1.2.840.10008.6.1.433", "Mediastinum Anatomy Finding or Feature (6113)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Osseous Anatomy Finding Or Feature (6114)</summary>
-		public readonly static DicomUID OsseousAnatomyFindingOrFeature6114 = new DicomUID("1.2.840.10008.6.1.434", "Osseous Anatomy Finding Or Feature (6114)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Osseous Anatomy Finding or Feature (6114)</summary>
+		public readonly static DicomUID OsseousAnatomyFindingOrFeature6114 = new DicomUID("1.2.840.10008.6.1.434", "Osseous Anatomy Finding or Feature (6114)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Osseous Anatomy Modifiers (6115)</summary>
+		/// <summary>Context Group Name: Osseous Anatomy Modifiers (6115)</summary>
 		public readonly static DicomUID OsseousAnatomyModifiers6115 = new DicomUID("1.2.840.10008.6.1.435", "Osseous Anatomy Modifiers (6115)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Muscular Anatomy (6116)</summary>
+		/// <summary>Context Group Name: Muscular Anatomy (6116)</summary>
 		public readonly static DicomUID MuscularAnatomy6116 = new DicomUID("1.2.840.10008.6.1.436", "Muscular Anatomy (6116)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Anatomy (6117)</summary>
+		/// <summary>Context Group Name: Vascular Anatomy (6117)</summary>
 		public readonly static DicomUID VascularAnatomy6117 = new DicomUID("1.2.840.10008.6.1.437", "Vascular Anatomy (6117)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Size Descriptor (6118)</summary>
+		/// <summary>Context Group Name: Size Descriptor (6118)</summary>
 		public readonly static DicomUID SizeDescriptor6118 = new DicomUID("1.2.840.10008.6.1.438", "Size Descriptor (6118)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Border Shape (6119)</summary>
+		/// <summary>Context Group Name: Chest Border Shape (6119)</summary>
 		public readonly static DicomUID ChestBorderShape6119 = new DicomUID("1.2.840.10008.6.1.439", "Chest Border Shape (6119)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Border Definition (6120)</summary>
+		/// <summary>Context Group Name: Chest Border Definition (6120)</summary>
 		public readonly static DicomUID ChestBorderDefinition6120 = new DicomUID("1.2.840.10008.6.1.440", "Chest Border Definition (6120)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Orientation Descriptor (6121)</summary>
+		/// <summary>Context Group Name: Chest Orientation Descriptor (6121)</summary>
 		public readonly static DicomUID ChestOrientationDescriptor6121 = new DicomUID("1.2.840.10008.6.1.441", "Chest Orientation Descriptor (6121)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Content Descriptor (6122)</summary>
+		/// <summary>Context Group Name: Chest Content Descriptor (6122)</summary>
 		public readonly static DicomUID ChestContentDescriptor6122 = new DicomUID("1.2.840.10008.6.1.442", "Chest Content Descriptor (6122)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Opacity Descriptor (6123)</summary>
+		/// <summary>Context Group Name: Chest Opacity Descriptor (6123)</summary>
 		public readonly static DicomUID ChestOpacityDescriptor6123 = new DicomUID("1.2.840.10008.6.1.443", "Chest Opacity Descriptor (6123)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Location in Chest (6124)</summary>
+		/// <summary>Context Group Name: Location in Chest (6124)</summary>
 		public readonly static DicomUID LocationInChest6124 = new DicomUID("1.2.840.10008.6.1.444", "Location in Chest (6124)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Chest Location (6125)</summary>
+		/// <summary>Context Group Name: General Chest Location (6125)</summary>
 		public readonly static DicomUID GeneralChestLocation6125 = new DicomUID("1.2.840.10008.6.1.445", "General Chest Location (6125)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Location in Lung (6126)</summary>
+		/// <summary>Context Group Name: Location in Lung (6126)</summary>
 		public readonly static DicomUID LocationInLung6126 = new DicomUID("1.2.840.10008.6.1.446", "Location in Lung (6126)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Segment Location in Lung (6127)</summary>
+		/// <summary>Context Group Name: Segment Location in Lung (6127)</summary>
 		public readonly static DicomUID SegmentLocationInLung6127 = new DicomUID("1.2.840.10008.6.1.447", "Segment Location in Lung (6127)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Distribution Descriptor (6128)</summary>
+		/// <summary>Context Group Name: Chest Distribution Descriptor (6128)</summary>
 		public readonly static DicomUID ChestDistributionDescriptor6128 = new DicomUID("1.2.840.10008.6.1.448", "Chest Distribution Descriptor (6128)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Site Involvement (6129)</summary>
+		/// <summary>Context Group Name: Chest Site Involvement (6129)</summary>
 		public readonly static DicomUID ChestSiteInvolvement6129 = new DicomUID("1.2.840.10008.6.1.449", "Chest Site Involvement (6129)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Severity Descriptor (6130)</summary>
+		/// <summary>Context Group Name: Severity Descriptor (6130)</summary>
 		public readonly static DicomUID SeverityDescriptor6130 = new DicomUID("1.2.840.10008.6.1.450", "Severity Descriptor (6130)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Texture Descriptor (6131)</summary>
+		/// <summary>Context Group Name: Chest Texture Descriptor (6131)</summary>
 		public readonly static DicomUID ChestTextureDescriptor6131 = new DicomUID("1.2.840.10008.6.1.451", "Chest Texture Descriptor (6131)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Calcification Descriptor (6132)</summary>
+		/// <summary>Context Group Name: Chest Calcification Descriptor (6132)</summary>
 		public readonly static DicomUID ChestCalcificationDescriptor6132 = new DicomUID("1.2.840.10008.6.1.452", "Chest Calcification Descriptor (6132)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Quantitative Temporal Difference Type (6133)</summary>
+		/// <summary>Context Group Name: Chest Quantitative Temporal Difference Type (6133)</summary>
 		public readonly static DicomUID ChestQuantitativeTemporalDifferenceType6133 = new DicomUID("1.2.840.10008.6.1.453", "Chest Quantitative Temporal Difference Type (6133)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Qualitative Temporal Difference Type (6134)</summary>
+		/// <summary>Context Group Name: Chest Qualitative Temporal Difference Type (6134)</summary>
 		public readonly static DicomUID ChestQualitativeTemporalDifferenceType6134 = new DicomUID("1.2.840.10008.6.1.454", "Chest Qualitative Temporal Difference Type (6134)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Image Quality Finding (6135)</summary>
+		/// <summary>Context Group Name: Image Quality Finding (6135)</summary>
 		public readonly static DicomUID ImageQualityFinding6135 = new DicomUID("1.2.840.10008.6.1.455", "Image Quality Finding (6135)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Types of Quality Control Standard (6136)</summary>
+		/// <summary>Context Group Name: Chest Types of Quality Control Standard (6136)</summary>
 		public readonly static DicomUID ChestTypesOfQualityControlStandard6136 = new DicomUID("1.2.840.10008.6.1.456", "Chest Types of Quality Control Standard (6136)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Types of CAD Analysis (6137)</summary>
+		/// <summary>Context Group Name: Types of CAD Analysis (6137)</summary>
 		public readonly static DicomUID TypesOfCADAnalysis6137 = new DicomUID("1.2.840.10008.6.1.457", "Types of CAD Analysis (6137)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Non-lesion Object Type (6138)</summary>
+		/// <summary>Context Group Name: Chest Non-lesion Object Type (6138)</summary>
 		public readonly static DicomUID ChestNonLesionObjectType6138 = new DicomUID("1.2.840.10008.6.1.458", "Chest Non-lesion Object Type (6138)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-lesion Modifiers (6139)</summary>
+		/// <summary>Context Group Name: Non-lesion Modifiers (6139)</summary>
 		public readonly static DicomUID NonLesionModifiers6139 = new DicomUID("1.2.840.10008.6.1.459", "Non-lesion Modifiers (6139)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calculation Methods (6140)</summary>
+		/// <summary>Context Group Name: Calculation Methods (6140)</summary>
 		public readonly static DicomUID CalculationMethods6140 = new DicomUID("1.2.840.10008.6.1.460", "Calculation Methods (6140)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Attenuation Coefficient Measurements (6141)</summary>
+		/// <summary>Context Group Name: Attenuation Coefficient Measurements (6141)</summary>
 		public readonly static DicomUID AttenuationCoefficientMeasurements6141 = new DicomUID("1.2.840.10008.6.1.461", "Attenuation Coefficient Measurements (6141)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calculated Value (6142)</summary>
+		/// <summary>Context Group Name: Calculated Value (6142)</summary>
 		public readonly static DicomUID CalculatedValue6142 = new DicomUID("1.2.840.10008.6.1.462", "Calculated Value (6142)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lesion Response (6143)</summary>
+		/// <summary>Context Group Name: Lesion Response (6143)</summary>
 		public readonly static DicomUID LesionResponse6143 = new DicomUID("1.2.840.10008.6.1.463", "Lesion Response (6143)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: RECIST Defined Lesion Response (6144)</summary>
+		/// <summary>Context Group Name: RECIST Defined Lesion Response (6144)</summary>
 		public readonly static DicomUID RECISTDefinedLesionResponse6144 = new DicomUID("1.2.840.10008.6.1.464", "RECIST Defined Lesion Response (6144)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Baseline Category (6145)</summary>
+		/// <summary>Context Group Name: Baseline Category (6145)</summary>
 		public readonly static DicomUID BaselineCategory6145 = new DicomUID("1.2.840.10008.6.1.465", "Baseline Category (6145)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Background Echotexture (6151)</summary>
+		/// <summary>Context Group Name: Background Echotexture (6151)</summary>
 		public readonly static DicomUID BackgroundEchotexture6151 = new DicomUID("1.2.840.10008.6.1.466", "Background Echotexture (6151)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Orientation (6152)</summary>
+		/// <summary>Context Group Name: Orientation (6152)</summary>
 		public readonly static DicomUID Orientation6152 = new DicomUID("1.2.840.10008.6.1.467", "Orientation (6152)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lesion Boundary (6153)</summary>
+		/// <summary>Context Group Name: Lesion Boundary (6153)</summary>
 		public readonly static DicomUID LesionBoundary6153 = new DicomUID("1.2.840.10008.6.1.468", "Lesion Boundary (6153)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echo Pattern (6154)</summary>
+		/// <summary>Context Group Name: Echo Pattern (6154)</summary>
 		public readonly static DicomUID EchoPattern6154 = new DicomUID("1.2.840.10008.6.1.469", "Echo Pattern (6154)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Posterior Acoustic Features (6155)</summary>
+		/// <summary>Context Group Name: Posterior Acoustic Features (6155)</summary>
 		public readonly static DicomUID PosteriorAcousticFeatures6155 = new DicomUID("1.2.840.10008.6.1.470", "Posterior Acoustic Features (6155)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascularity (6157)</summary>
+		/// <summary>Context Group Name: Vascularity (6157)</summary>
 		public readonly static DicomUID Vascularity6157 = new DicomUID("1.2.840.10008.6.1.471", "Vascularity (6157)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Correlation to Other Findings (6158)</summary>
+		/// <summary>Context Group Name: Correlation to Other Findings (6158)</summary>
 		public readonly static DicomUID CorrelationToOtherFindings6158 = new DicomUID("1.2.840.10008.6.1.472", "Correlation to Other Findings (6158)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Malignancy Type (6159)</summary>
+		/// <summary>Context Group Name: Malignancy Type (6159)</summary>
 		public readonly static DicomUID MalignancyType6159 = new DicomUID("1.2.840.10008.6.1.473", "Malignancy Type (6159)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Primary Tumor Assessment From AJCC (6160)</summary>
+		/// <summary>Context Group Name: Breast Primary Tumor Assessment From AJCC (6160)</summary>
 		public readonly static DicomUID BreastPrimaryTumorAssessmentFromAJCC6160 = new DicomUID("1.2.840.10008.6.1.474", "Breast Primary Tumor Assessment From AJCC (6160)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Clinical Regional Lymph Node Assessment for Breast (6161)</summary>
+		/// <summary>Context Group Name: Clinical Regional Lymph Node Assessment for Breast (6161)</summary>
 		public readonly static DicomUID ClinicalRegionalLymphNodeAssessmentForBreast6161 = new DicomUID("1.2.840.10008.6.1.475", "Clinical Regional Lymph Node Assessment for Breast (6161)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Assessment of Metastasis for Breast (6162)</summary>
+		/// <summary>Context Group Name: Assessment of Metastasis for Breast (6162)</summary>
 		public readonly static DicomUID AssessmentOfMetastasisForBreast6162 = new DicomUID("1.2.840.10008.6.1.476", "Assessment of Metastasis for Breast (6162)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Menstrual Cycle Phase (6163)</summary>
+		/// <summary>Context Group Name: Menstrual Cycle Phase (6163)</summary>
 		public readonly static DicomUID MenstrualCyclePhase6163 = new DicomUID("1.2.840.10008.6.1.477", "Menstrual Cycle Phase (6163)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Time Intervals (6164)</summary>
+		/// <summary>Context Group Name: Time Intervals (6164)</summary>
 		public readonly static DicomUID TimeIntervals6164 = new DicomUID("1.2.840.10008.6.1.478", "Time Intervals (6164)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breast Linear Measurements (6165)</summary>
+		/// <summary>Context Group Name: Breast Linear Measurements (6165)</summary>
 		public readonly static DicomUID BreastLinearMeasurements6165 = new DicomUID("1.2.840.10008.6.1.479", "Breast Linear Measurements (6165)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CAD Geometry Secondary Graphical Representation (6166)</summary>
+		/// <summary>Context Group Name: CAD Geometry Secondary Graphical Representation (6166)</summary>
 		public readonly static DicomUID CADGeometrySecondaryGraphicalRepresentation6166 = new DicomUID("1.2.840.10008.6.1.480", "CAD Geometry Secondary Graphical Representation (6166)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diagnostic Imaging Report Document Titles (7000)</summary>
+		/// <summary>Context Group Name: Diagnostic Imaging Report Document Titles (7000)</summary>
 		public readonly static DicomUID DiagnosticImagingReportDocumentTitles7000 = new DicomUID("1.2.840.10008.6.1.481", "Diagnostic Imaging Report Document Titles (7000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diagnostic Imaging Report Headings (7001)</summary>
+		/// <summary>Context Group Name: Diagnostic Imaging Report Headings (7001)</summary>
 		public readonly static DicomUID DiagnosticImagingReportHeadings7001 = new DicomUID("1.2.840.10008.6.1.482", "Diagnostic Imaging Report Headings (7001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diagnostic Imaging Report Elements (7002)</summary>
+		/// <summary>Context Group Name: Diagnostic Imaging Report Elements (7002)</summary>
 		public readonly static DicomUID DiagnosticImagingReportElements7002 = new DicomUID("1.2.840.10008.6.1.483", "Diagnostic Imaging Report Elements (7002)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Diagnostic Imaging Report Purposes of Reference (7003)</summary>
+		/// <summary>Context Group Name: Diagnostic Imaging Report Purposes of Reference (7003)</summary>
 		public readonly static DicomUID DiagnosticImagingReportPurposesOfReference7003 = new DicomUID("1.2.840.10008.6.1.484", "Diagnostic Imaging Report Purposes of Reference (7003)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Waveform Purposes of Reference (7004)</summary>
+		/// <summary>Context Group Name: Waveform Purposes of Reference (7004)</summary>
 		public readonly static DicomUID WaveformPurposesOfReference7004 = new DicomUID("1.2.840.10008.6.1.485", "Waveform Purposes of Reference (7004)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Contributing Equipment Purposes of Reference (7005)</summary>
+		/// <summary>Context Group Name: Contributing Equipment Purposes of Reference (7005)</summary>
 		public readonly static DicomUID ContributingEquipmentPurposesOfReference7005 = new DicomUID("1.2.840.10008.6.1.486", "Contributing Equipment Purposes of Reference (7005)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: SR Document Purposes of Reference (7006)</summary>
+		/// <summary>Context Group Name: SR Document Purposes of Reference (7006)</summary>
 		public readonly static DicomUID SRDocumentPurposesOfReference7006 = new DicomUID("1.2.840.10008.6.1.487", "SR Document Purposes of Reference (7006)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Signature Purpose (7007)</summary>
+		/// <summary>Context Group Name: Signature Purpose (7007)</summary>
 		public readonly static DicomUID SignaturePurpose7007 = new DicomUID("1.2.840.10008.6.1.488", "Signature Purpose (7007)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Media Import (7008)</summary>
+		/// <summary>Context Group Name: Media Import (7008)</summary>
 		public readonly static DicomUID MediaImport7008 = new DicomUID("1.2.840.10008.6.1.489", "Media Import (7008)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Key Object Selection Document Title (7010)</summary>
+		/// <summary>Context Group Name: Key Object Selection Document Title (7010)</summary>
 		public readonly static DicomUID KeyObjectSelectionDocumentTitle7010 = new DicomUID("1.2.840.10008.6.1.490", "Key Object Selection Document Title (7010)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Rejected for Quality Reasons (7011)</summary>
+		/// <summary>Context Group Name: Rejected for Quality Reasons (7011)</summary>
 		public readonly static DicomUID RejectedForQualityReasons7011 = new DicomUID("1.2.840.10008.6.1.491", "Rejected for Quality Reasons (7011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Best in Set (7012)</summary>
+		/// <summary>Context Group Name: Best in Set (7012)</summary>
 		public readonly static DicomUID BestInSet7012 = new DicomUID("1.2.840.10008.6.1.492", "Best in Set (7012)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Document Titles (7020)</summary>
+		/// <summary>Context Group Name: Document Titles (7020)</summary>
 		public readonly static DicomUID DocumentTitles7020 = new DicomUID("1.2.840.10008.6.1.493", "Document Titles (7020)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: RCS Registration Method Type (7100)</summary>
+		/// <summary>Context Group Name: RCS Registration Method Type (7100)</summary>
 		public readonly static DicomUID RCSRegistrationMethodType7100 = new DicomUID("1.2.840.10008.6.1.494", "RCS Registration Method Type (7100)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Brain Atlas Fiducials (7101)</summary>
+		/// <summary>Context Group Name: Brain Atlas Fiducials (7101)</summary>
 		public readonly static DicomUID BrainAtlasFiducials7101 = new DicomUID("1.2.840.10008.6.1.495", "Brain Atlas Fiducials (7101)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Segmentation Property Categories (7150)</summary>
+		/// <summary>Context Group Name: Segmentation Property Categories (7150)</summary>
 		public readonly static DicomUID SegmentationPropertyCategories7150 = new DicomUID("1.2.840.10008.6.1.496", "Segmentation Property Categories (7150)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Segmentation Property Types (7151)</summary>
+		/// <summary>Context Group Name: Segmentation Property Types (7151)</summary>
 		public readonly static DicomUID SegmentationPropertyTypes7151 = new DicomUID("1.2.840.10008.6.1.497", "Segmentation Property Types (7151)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Structure Segmentation Types (7152)</summary>
+		/// <summary>Context Group Name: Cardiac Structure Segmentation Types (7152)</summary>
 		public readonly static DicomUID CardiacStructureSegmentationTypes7152 = new DicomUID("1.2.840.10008.6.1.498", "Cardiac Structure Segmentation Types (7152)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CNS Tissue Segmentation Types (7153)</summary>
+		/// <summary>Context Group Name: CNS Tissue Segmentation Types (7153)</summary>
 		public readonly static DicomUID CNSTissueSegmentationTypes7153 = new DicomUID("1.2.840.10008.6.1.499", "CNS Tissue Segmentation Types (7153)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abdominal Organ Segmentation Types (7154)</summary>
+		/// <summary>Context Group Name: Abdominal Organ Segmentation Types (7154)</summary>
 		public readonly static DicomUID AbdominalOrganSegmentationTypes7154 = new DicomUID("1.2.840.10008.6.1.500", "Abdominal Organ Segmentation Types (7154)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Thoracic Tissue Segmentation Types (7155)</summary>
+		/// <summary>Context Group Name: Thoracic Tissue Segmentation Types (7155)</summary>
 		public readonly static DicomUID ThoracicTissueSegmentationTypes7155 = new DicomUID("1.2.840.10008.6.1.501", "Thoracic Tissue Segmentation Types (7155)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Tissue Segmentation Types (7156)</summary>
+		/// <summary>Context Group Name: Vascular Tissue Segmentation Types (7156)</summary>
 		public readonly static DicomUID VascularTissueSegmentationTypes7156 = new DicomUID("1.2.840.10008.6.1.502", "Vascular Tissue Segmentation Types (7156)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Device Segmentation Types (7157)</summary>
+		/// <summary>Context Group Name: Device Segmentation Types (7157)</summary>
 		public readonly static DicomUID DeviceSegmentationTypes7157 = new DicomUID("1.2.840.10008.6.1.503", "Device Segmentation Types (7157)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Artifact Segmentation Types (7158)</summary>
+		/// <summary>Context Group Name: Artifact Segmentation Types (7158)</summary>
 		public readonly static DicomUID ArtifactSegmentationTypes7158 = new DicomUID("1.2.840.10008.6.1.504", "Artifact Segmentation Types (7158)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lesion Segmentation Types (7159)</summary>
+		/// <summary>Context Group Name: Lesion Segmentation Types (7159)</summary>
 		public readonly static DicomUID LesionSegmentationTypes7159 = new DicomUID("1.2.840.10008.6.1.505", "Lesion Segmentation Types (7159)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pelvic Organ Segmentation Types (7160)</summary>
+		/// <summary>Context Group Name: Pelvic Organ Segmentation Types (7160)</summary>
 		public readonly static DicomUID PelvicOrganSegmentationTypes7160 = new DicomUID("1.2.840.10008.6.1.506", "Pelvic Organ Segmentation Types (7160)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Physiology Segmentation Types (7161)</summary>
+		/// <summary>Context Group Name: Physiology Segmentation Types (7161)</summary>
 		public readonly static DicomUID PhysiologySegmentationTypes7161 = new DicomUID("1.2.840.10008.6.1.507", "Physiology Segmentation Types (7161)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Referenced Image Purposes of Reference (7201)</summary>
+		/// <summary>Context Group Name: Referenced Image Purposes of Reference (7201)</summary>
 		public readonly static DicomUID ReferencedImagePurposesOfReference7201 = new DicomUID("1.2.840.10008.6.1.508", "Referenced Image Purposes of Reference (7201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Source Image Purposes of Reference (7202)</summary>
+		/// <summary>Context Group Name: Source Image Purposes of Reference (7202)</summary>
 		public readonly static DicomUID SourceImagePurposesOfReference7202 = new DicomUID("1.2.840.10008.6.1.509", "Source Image Purposes of Reference (7202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Image Derivation (7203)</summary>
+		/// <summary>Context Group Name: Image Derivation (7203)</summary>
 		public readonly static DicomUID ImageDerivation7203 = new DicomUID("1.2.840.10008.6.1.510", "Image Derivation (7203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Purpose of Reference to Alternate Representation (7205)</summary>
+		/// <summary>Context Group Name: Purpose of Reference to Alternate Representation (7205)</summary>
 		public readonly static DicomUID PurposeOfReferenceToAlternateRepresentation7205 = new DicomUID("1.2.840.10008.6.1.511", "Purpose of Reference to Alternate Representation (7205)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Related Series Purposes of Reference (7210)</summary>
+		/// <summary>Context Group Name: Related Series Purposes of Reference (7210)</summary>
 		public readonly static DicomUID RelatedSeriesPurposesOfReference7210 = new DicomUID("1.2.840.10008.6.1.512", "Related Series Purposes of Reference (7210)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Multi-Frame Subset Type (7250)</summary>
+		/// <summary>Context Group Name: Multi-Frame Subset Type (7250)</summary>
 		public readonly static DicomUID MultiFrameSubsetType7250 = new DicomUID("1.2.840.10008.6.1.513", "Multi-Frame Subset Type (7250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Person Roles (7450)</summary>
+		/// <summary>Context Group Name: Person Roles (7450)</summary>
 		public readonly static DicomUID PersonRoles7450 = new DicomUID("1.2.840.10008.6.1.514", "Person Roles (7450)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Family Member (7451)</summary>
+		/// <summary>Context Group Name: Family Member (7451)</summary>
 		public readonly static DicomUID FamilyMember7451 = new DicomUID("1.2.840.10008.6.1.515", "Family Member (7451)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Organizational Roles (7452)</summary>
+		/// <summary>Context Group Name: Organizational Roles (7452)</summary>
 		public readonly static DicomUID OrganizationalRoles7452 = new DicomUID("1.2.840.10008.6.1.516", "Organizational Roles (7452)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Performing Roles (7453)</summary>
+		/// <summary>Context Group Name: Performing Roles (7453)</summary>
 		public readonly static DicomUID PerformingRoles7453 = new DicomUID("1.2.840.10008.6.1.517", "Performing Roles (7453)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Species (7454)</summary>
+		/// <summary>Context Group Name: Species (7454)</summary>
 		public readonly static DicomUID Species7454 = new DicomUID("1.2.840.10008.6.1.518", "Species (7454)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Sex (7455)</summary>
+		/// <summary>Context Group Name: Sex (7455)</summary>
 		public readonly static DicomUID Sex7455 = new DicomUID("1.2.840.10008.6.1.519", "Sex (7455)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Measure for Age (7456)</summary>
+		/// <summary>Context Group Name: Units of Measure for Age (7456)</summary>
 		public readonly static DicomUID UnitsOfMeasureForAge7456 = new DicomUID("1.2.840.10008.6.1.520", "Units of Measure for Age (7456)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Linear Measurement (7460)</summary>
+		/// <summary>Context Group Name: Units of Linear Measurement (7460)</summary>
 		public readonly static DicomUID UnitsOfLinearMeasurement7460 = new DicomUID("1.2.840.10008.6.1.521", "Units of Linear Measurement (7460)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Area Measurement (7461)</summary>
+		/// <summary>Context Group Name: Units of Area Measurement (7461)</summary>
 		public readonly static DicomUID UnitsOfAreaMeasurement7461 = new DicomUID("1.2.840.10008.6.1.522", "Units of Area Measurement (7461)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Volume Measurement (7462)</summary>
+		/// <summary>Context Group Name: Units of Volume Measurement (7462)</summary>
 		public readonly static DicomUID UnitsOfVolumeMeasurement7462 = new DicomUID("1.2.840.10008.6.1.523", "Units of Volume Measurement (7462)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Linear Measurements (7470)</summary>
+		/// <summary>Context Group Name: Linear Measurements (7470)</summary>
 		public readonly static DicomUID LinearMeasurements7470 = new DicomUID("1.2.840.10008.6.1.524", "Linear Measurements (7470)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Area Measurements (7471)</summary>
+		/// <summary>Context Group Name: Area Measurements (7471)</summary>
 		public readonly static DicomUID AreaMeasurements7471 = new DicomUID("1.2.840.10008.6.1.525", "Area Measurements (7471)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Volume Measurements (7472)</summary>
+		/// <summary>Context Group Name: Volume Measurements (7472)</summary>
 		public readonly static DicomUID VolumeMeasurements7472 = new DicomUID("1.2.840.10008.6.1.526", "Volume Measurements (7472)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Area Calculation Methods (7473)</summary>
+		/// <summary>Context Group Name: General Area Calculation Methods (7473)</summary>
 		public readonly static DicomUID GeneralAreaCalculationMethods7473 = new DicomUID("1.2.840.10008.6.1.527", "General Area Calculation Methods (7473)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Volume Calculation Methods (7474)</summary>
+		/// <summary>Context Group Name: General Volume Calculation Methods (7474)</summary>
 		public readonly static DicomUID GeneralVolumeCalculationMethods7474 = new DicomUID("1.2.840.10008.6.1.528", "General Volume Calculation Methods (7474)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breed (7480)</summary>
+		/// <summary>Context Group Name: Breed (7480)</summary>
 		public readonly static DicomUID Breed7480 = new DicomUID("1.2.840.10008.6.1.529", "Breed (7480)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Breed Registry (7481)</summary>
+		/// <summary>Context Group Name: Breed Registry (7481)</summary>
 		public readonly static DicomUID BreedRegistry7481 = new DicomUID("1.2.840.10008.6.1.530", "Breed Registry (7481)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Workitem Definition (9231)</summary>
+		/// <summary>Context Group Name: Workitem Definition (9231)</summary>
 		public readonly static DicomUID WorkitemDefinition9231 = new DicomUID("1.2.840.10008.6.1.531", "Workitem Definition (9231)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-DICOM Output Types (Retired) (9232)</summary>
+		/// <summary>Context Group Name: Non-DICOM Output Types (Retired) (9232)</summary>
 		public readonly static DicomUID NonDICOMOutputTypesRETIRED9232 = new DicomUID("1.2.840.10008.6.1.532", "Non-DICOM Output Types (Retired) (9232)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Procedure Discontinuation Reasons (9300)</summary>
+		/// <summary>Context Group Name: Procedure Discontinuation Reasons (9300)</summary>
 		public readonly static DicomUID ProcedureDiscontinuationReasons9300 = new DicomUID("1.2.840.10008.6.1.533", "Procedure Discontinuation Reasons (9300)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Scope of Accumulation (10000)</summary>
+		/// <summary>Context Group Name: Scope of Accumulation (10000)</summary>
 		public readonly static DicomUID ScopeOfAccumulation10000 = new DicomUID("1.2.840.10008.6.1.534", "Scope of Accumulation (10000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: UID Types (10001)</summary>
+		/// <summary>Context Group Name: UID Types (10001)</summary>
 		public readonly static DicomUID UIDTypes10001 = new DicomUID("1.2.840.10008.6.1.535", "UID Types (10001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Irradiation Event Types (10002)</summary>
+		/// <summary>Context Group Name: Irradiation Event Types (10002)</summary>
 		public readonly static DicomUID IrradiationEventTypes10002 = new DicomUID("1.2.840.10008.6.1.536", "Irradiation Event Types (10002)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Equipment Plane Identification (10003)</summary>
+		/// <summary>Context Group Name: Equipment Plane Identification (10003)</summary>
 		public readonly static DicomUID EquipmentPlaneIdentification10003 = new DicomUID("1.2.840.10008.6.1.537", "Equipment Plane Identification (10003)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fluoro Modes (10004)</summary>
+		/// <summary>Context Group Name: Fluoro Modes (10004)</summary>
 		public readonly static DicomUID FluoroModes10004 = new DicomUID("1.2.840.10008.6.1.538", "Fluoro Modes (10004)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: X-Ray Filter Materials (10006)</summary>
+		/// <summary>Context Group Name: X-Ray Filter Materials (10006)</summary>
 		public readonly static DicomUID XRayFilterMaterials10006 = new DicomUID("1.2.840.10008.6.1.539", "X-Ray Filter Materials (10006)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: X-Ray Filter Types (10007)</summary>
+		/// <summary>Context Group Name: X-Ray Filter Types (10007)</summary>
 		public readonly static DicomUID XRayFilterTypes10007 = new DicomUID("1.2.840.10008.6.1.540", "X-Ray Filter Types (10007)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Dose Related Distance Measurements (10008)</summary>
+		/// <summary>Context Group Name: Dose Related Distance Measurements (10008)</summary>
 		public readonly static DicomUID DoseRelatedDistanceMeasurements10008 = new DicomUID("1.2.840.10008.6.1.541", "Dose Related Distance Measurements (10008)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measured/calculated (10009)</summary>
-		public readonly static DicomUID MeasuredCalculated10009 = new DicomUID("1.2.840.10008.6.1.542", "Measured/calculated (10009)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Measured/Calculated (10009)</summary>
+		public readonly static DicomUID MeasuredCalculated10009 = new DicomUID("1.2.840.10008.6.1.542", "Measured/Calculated (10009)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Dose Measurement Devices (10010)</summary>
+		/// <summary>Context Group Name: Dose Measurement Devices (10010)</summary>
 		public readonly static DicomUID DoseMeasurementDevices10010 = new DicomUID("1.2.840.10008.6.1.543", "Dose Measurement Devices (10010)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Effective Dose Evaluation Method (10011)</summary>
+		/// <summary>Context Group Name: Effective Dose Evaluation Method (10011)</summary>
 		public readonly static DicomUID EffectiveDoseEvaluationMethod10011 = new DicomUID("1.2.840.10008.6.1.544", "Effective Dose Evaluation Method (10011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CT Acquisition Type (10013)</summary>
+		/// <summary>Context Group Name: CT Acquisition Type (10013)</summary>
 		public readonly static DicomUID CTAcquisitionType10013 = new DicomUID("1.2.840.10008.6.1.545", "CT Acquisition Type (10013)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Contrast Imaging Technique (10014)</summary>
+		/// <summary>Context Group Name: Contrast Imaging Technique (10014)</summary>
 		public readonly static DicomUID ContrastImagingTechnique10014 = new DicomUID("1.2.840.10008.6.1.546", "Contrast Imaging Technique (10014)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CT Dose Reference Authorities (10015)</summary>
+		/// <summary>Context Group Name: CT Dose Reference Authorities (10015)</summary>
 		public readonly static DicomUID CTDoseReferenceAuthorities10015 = new DicomUID("1.2.840.10008.6.1.547", "CT Dose Reference Authorities (10015)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anode Target Material (10016)</summary>
+		/// <summary>Context Group Name: Anode Target Material (10016)</summary>
 		public readonly static DicomUID AnodeTargetMaterial10016 = new DicomUID("1.2.840.10008.6.1.548", "Anode Target Material (10016)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: X-Ray Grid (10017)</summary>
+		/// <summary>Context Group Name: X-Ray Grid (10017)</summary>
 		public readonly static DicomUID XRayGrid10017 = new DicomUID("1.2.840.10008.6.1.549", "X-Ray Grid (10017)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Protocol Types (12001)</summary>
+		/// <summary>Context Group Name: Ultrasound Protocol Types (12001)</summary>
 		public readonly static DicomUID UltrasoundProtocolTypes12001 = new DicomUID("1.2.840.10008.6.1.550", "Ultrasound Protocol Types (12001)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Protocol Stage Types (12002)</summary>
+		/// <summary>Context Group Name: Ultrasound Protocol Stage Types (12002)</summary>
 		public readonly static DicomUID UltrasoundProtocolStageTypes12002 = new DicomUID("1.2.840.10008.6.1.551", "Ultrasound Protocol Stage Types (12002)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB-GYN Dates (12003)</summary>
+		/// <summary>Context Group Name: OB-GYN Dates (12003)</summary>
 		public readonly static DicomUID OBGYNDates12003 = new DicomUID("1.2.840.10008.6.1.552", "OB-GYN Dates (12003)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Biometry Ratios (12004)</summary>
+		/// <summary>Context Group Name: Fetal Biometry Ratios (12004)</summary>
 		public readonly static DicomUID FetalBiometryRatios12004 = new DicomUID("1.2.840.10008.6.1.553", "Fetal Biometry Ratios (12004)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Biometry Measurements (12005)</summary>
+		/// <summary>Context Group Name: Fetal Biometry Measurements (12005)</summary>
 		public readonly static DicomUID FetalBiometryMeasurements12005 = new DicomUID("1.2.840.10008.6.1.554", "Fetal Biometry Measurements (12005)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Long Bones Biometry Measurements (12006)</summary>
+		/// <summary>Context Group Name: Fetal Long Bones Biometry Measurements (12006)</summary>
 		public readonly static DicomUID FetalLongBonesBiometryMeasurements12006 = new DicomUID("1.2.840.10008.6.1.555", "Fetal Long Bones Biometry Measurements (12006)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Cranium (12007)</summary>
+		/// <summary>Context Group Name: Fetal Cranium (12007)</summary>
 		public readonly static DicomUID FetalCranium12007 = new DicomUID("1.2.840.10008.6.1.556", "Fetal Cranium (12007)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB-GYN Amniotic Sac (12008)</summary>
+		/// <summary>Context Group Name: OB-GYN Amniotic Sac (12008)</summary>
 		public readonly static DicomUID OBGYNAmnioticSac12008 = new DicomUID("1.2.840.10008.6.1.557", "OB-GYN Amniotic Sac (12008)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Early Gestation Biometry Measurements (12009)</summary>
+		/// <summary>Context Group Name: Early Gestation Biometry Measurements (12009)</summary>
 		public readonly static DicomUID EarlyGestationBiometryMeasurements12009 = new DicomUID("1.2.840.10008.6.1.558", "Early Gestation Biometry Measurements (12009)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Pelvis and Uterus (12011)</summary>
+		/// <summary>Context Group Name: Ultrasound Pelvis and Uterus (12011)</summary>
 		public readonly static DicomUID UltrasoundPelvisAndUterus12011 = new DicomUID("1.2.840.10008.6.1.559", "Ultrasound Pelvis and Uterus (12011)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB Equations and Tables (12012)</summary>
+		/// <summary>Context Group Name: OB Equations and Tables (12012)</summary>
 		public readonly static DicomUID OBEquationsAndTables12012 = new DicomUID("1.2.840.10008.6.1.560", "OB Equations and Tables (12012)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Gestational Age Equations and Tables (12013)</summary>
+		/// <summary>Context Group Name: Gestational Age Equations and Tables (12013)</summary>
 		public readonly static DicomUID GestationalAgeEquationsAndTables12013 = new DicomUID("1.2.840.10008.6.1.561", "Gestational Age Equations and Tables (12013)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB Fetal Body Weight Equations and Tables (12014)</summary>
+		/// <summary>Context Group Name: OB Fetal Body Weight Equations and Tables (12014)</summary>
 		public readonly static DicomUID OBFetalBodyWeightEquationsAndTables12014 = new DicomUID("1.2.840.10008.6.1.562", "OB Fetal Body Weight Equations and Tables (12014)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Growth Equations and Tables (12015)</summary>
+		/// <summary>Context Group Name: Fetal Growth Equations and Tables (12015)</summary>
 		public readonly static DicomUID FetalGrowthEquationsAndTables12015 = new DicomUID("1.2.840.10008.6.1.563", "Fetal Growth Equations and Tables (12015)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Estimated Fetal Weight Percentile Equations and Tables (12016)</summary>
+		/// <summary>Context Group Name: Estimated Fetal Weight Percentile Equations and Tables (12016)</summary>
 		public readonly static DicomUID EstimatedFetalWeightPercentileEquationsAndTables12016 = new DicomUID("1.2.840.10008.6.1.564", "Estimated Fetal Weight Percentile Equations and Tables (12016)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Growth Distribution Rank (12017)</summary>
+		/// <summary>Context Group Name: Growth Distribution Rank (12017)</summary>
 		public readonly static DicomUID GrowthDistributionRank12017 = new DicomUID("1.2.840.10008.6.1.565", "Growth Distribution Rank (12017)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB-GYN Summary (12018)</summary>
+		/// <summary>Context Group Name: OB-GYN Summary (12018)</summary>
 		public readonly static DicomUID OBGYNSummary12018 = new DicomUID("1.2.840.10008.6.1.566", "OB-GYN Summary (12018)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: OB-GYN Fetus Summary (12019)</summary>
+		/// <summary>Context Group Name: OB-GYN Fetus Summary (12019)</summary>
 		public readonly static DicomUID OBGYNFetusSummary12019 = new DicomUID("1.2.840.10008.6.1.567", "OB-GYN Fetus Summary (12019)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Summary (12101)</summary>
+		/// <summary>Context Group Name: Vascular Summary (12101)</summary>
 		public readonly static DicomUID VascularSummary12101 = new DicomUID("1.2.840.10008.6.1.568", "Vascular Summary (12101)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Temporal Periods Relating to Procedure or Therapy (12102)</summary>
+		/// <summary>Context Group Name: Temporal Periods Relating to Procedure or Therapy (12102)</summary>
 		public readonly static DicomUID TemporalPeriodsRelatingToProcedureOrTherapy12102 = new DicomUID("1.2.840.10008.6.1.569", "Temporal Periods Relating to Procedure or Therapy (12102)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Ultrasound Anatomic Location (12103)</summary>
+		/// <summary>Context Group Name: Vascular Ultrasound Anatomic Location (12103)</summary>
 		public readonly static DicomUID VascularUltrasoundAnatomicLocation12103 = new DicomUID("1.2.840.10008.6.1.570", "Vascular Ultrasound Anatomic Location (12103)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Extracranial Arteries (12104)</summary>
+		/// <summary>Context Group Name: Extracranial Arteries (12104)</summary>
 		public readonly static DicomUID ExtracranialArteries12104 = new DicomUID("1.2.840.10008.6.1.571", "Extracranial Arteries (12104)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intracranial Cerebral Vessels (12105)</summary>
+		/// <summary>Context Group Name: Intracranial Cerebral Vessels (12105)</summary>
 		public readonly static DicomUID IntracranialCerebralVessels12105 = new DicomUID("1.2.840.10008.6.1.572", "Intracranial Cerebral Vessels (12105)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intracranial Cerebral Vessels (unilateral) (12106)</summary>
-		public readonly static DicomUID IntracranialCerebralVesselsUnilateral12106 = new DicomUID("1.2.840.10008.6.1.573", "Intracranial Cerebral Vessels (unilateral) (12106)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Intracranial Cerebral Vessels (Unilateral) (12106)</summary>
+		public readonly static DicomUID IntracranialCerebralVesselsUnilateral12106 = new DicomUID("1.2.840.10008.6.1.573", "Intracranial Cerebral Vessels (Unilateral) (12106)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Upper Extremity Arteries (12107)</summary>
+		/// <summary>Context Group Name: Upper Extremity Arteries (12107)</summary>
 		public readonly static DicomUID UpperExtremityArteries12107 = new DicomUID("1.2.840.10008.6.1.574", "Upper Extremity Arteries (12107)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Upper Extremity Veins (12108)</summary>
+		/// <summary>Context Group Name: Upper Extremity Veins (12108)</summary>
 		public readonly static DicomUID UpperExtremityVeins12108 = new DicomUID("1.2.840.10008.6.1.575", "Upper Extremity Veins (12108)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lower Extremity Arteries (12109)</summary>
+		/// <summary>Context Group Name: Lower Extremity Arteries (12109)</summary>
 		public readonly static DicomUID LowerExtremityArteries12109 = new DicomUID("1.2.840.10008.6.1.576", "Lower Extremity Arteries (12109)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lower Extremity Veins (12110)</summary>
+		/// <summary>Context Group Name: Lower Extremity Veins (12110)</summary>
 		public readonly static DicomUID LowerExtremityVeins12110 = new DicomUID("1.2.840.10008.6.1.577", "Lower Extremity Veins (12110)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abdominal Arteries (lateral) (12111)</summary>
-		public readonly static DicomUID AbdominalArteriesLateral12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominal Arteries (lateral) (12111)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abdominal Arteries (Lateral) (12111)</summary>
+		public readonly static DicomUID AbdominalArteriesLateral12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominal Arteries (Lateral) (12111)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abdominal Arteries (unilateral) (12112)</summary>
-		public readonly static DicomUID AbdominalArteriesUnilateral12112 = new DicomUID("1.2.840.10008.6.1.579", "Abdominal Arteries (unilateral) (12112)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abdominal Arteries (Unilateral) (12112)</summary>
+		public readonly static DicomUID AbdominalArteriesUnilateral12112 = new DicomUID("1.2.840.10008.6.1.579", "Abdominal Arteries (Unilateral) (12112)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abdominal Veins (lateral) (12113)</summary>
-		public readonly static DicomUID AbdominalVeinsLateral12113 = new DicomUID("1.2.840.10008.6.1.580", "Abdominal Veins (lateral) (12113)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abdominal Veins (Lateral) (12113)</summary>
+		public readonly static DicomUID AbdominalVeinsLateral12113 = new DicomUID("1.2.840.10008.6.1.580", "Abdominal Veins (Lateral) (12113)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abdominal Veins (unilateral) (12114)</summary>
-		public readonly static DicomUID AbdominalVeinsUnilateral12114 = new DicomUID("1.2.840.10008.6.1.581", "Abdominal Veins (unilateral) (12114)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Abdominal Veins (Unilateral) (12114)</summary>
+		public readonly static DicomUID AbdominalVeinsUnilateral12114 = new DicomUID("1.2.840.10008.6.1.581", "Abdominal Veins (Unilateral) (12114)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Renal Vessels (12115)</summary>
+		/// <summary>Context Group Name: Renal Vessels (12115)</summary>
 		public readonly static DicomUID RenalVessels12115 = new DicomUID("1.2.840.10008.6.1.582", "Renal Vessels (12115)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vessel Segment Modifiers (12116)</summary>
+		/// <summary>Context Group Name: Vessel Segment Modifiers (12116)</summary>
 		public readonly static DicomUID VesselSegmentModifiers12116 = new DicomUID("1.2.840.10008.6.1.583", "Vessel Segment Modifiers (12116)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vessel Branch Modifiers (12117)</summary>
+		/// <summary>Context Group Name: Vessel Branch Modifiers (12117)</summary>
 		public readonly static DicomUID VesselBranchModifiers12117 = new DicomUID("1.2.840.10008.6.1.584", "Vessel Branch Modifiers (12117)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Ultrasound Property (12119)</summary>
+		/// <summary>Context Group Name: Vascular Ultrasound Property (12119)</summary>
 		public readonly static DicomUID VascularUltrasoundProperty12119 = new DicomUID("1.2.840.10008.6.1.585", "Vascular Ultrasound Property (12119)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Blood Velocity Measurements by Ultrasound (12120)</summary>
+		/// <summary>Context Group Name: Blood Velocity Measurements by Ultrasound (12120)</summary>
 		public readonly static DicomUID BloodVelocityMeasurementsByUltrasound12120 = new DicomUID("1.2.840.10008.6.1.586", "Blood Velocity Measurements by Ultrasound (12120)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vascular Indices and Ratios (12121)</summary>
+		/// <summary>Context Group Name: Vascular Indices and Ratios (12121)</summary>
 		public readonly static DicomUID VascularIndicesAndRatios12121 = new DicomUID("1.2.840.10008.6.1.587", "Vascular Indices and Ratios (12121)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Other Vascular Properties (12122)</summary>
+		/// <summary>Context Group Name: Other Vascular Properties (12122)</summary>
 		public readonly static DicomUID OtherVascularProperties12122 = new DicomUID("1.2.840.10008.6.1.588", "Other Vascular Properties (12122)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Carotid Ratios (12123)</summary>
+		/// <summary>Context Group Name: Carotid Ratios (12123)</summary>
 		public readonly static DicomUID CarotidRatios12123 = new DicomUID("1.2.840.10008.6.1.589", "Carotid Ratios (12123)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Renal Ratios (12124)</summary>
+		/// <summary>Context Group Name: Renal Ratios (12124)</summary>
 		public readonly static DicomUID RenalRatios12124 = new DicomUID("1.2.840.10008.6.1.590", "Renal Ratios (12124)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pelvic Vasculature Anatomical Location (12140)</summary>
+		/// <summary>Context Group Name: Pelvic Vasculature Anatomical Location (12140)</summary>
 		public readonly static DicomUID PelvicVasculatureAnatomicalLocation12140 = new DicomUID("1.2.840.10008.6.1.591", "Pelvic Vasculature Anatomical Location (12140)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Vasculature Anatomical Location (12141)</summary>
+		/// <summary>Context Group Name: Fetal Vasculature Anatomical Location (12141)</summary>
 		public readonly static DicomUID FetalVasculatureAnatomicalLocation12141 = new DicomUID("1.2.840.10008.6.1.592", "Fetal Vasculature Anatomical Location (12141)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Left Ventricle (12200)</summary>
+		/// <summary>Context Group Name: Echocardiography Left Ventricle (12200)</summary>
 		public readonly static DicomUID EchocardiographyLeftVentricle12200 = new DicomUID("1.2.840.10008.6.1.593", "Echocardiography Left Ventricle (12200)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Left Ventricle Linear (12201)</summary>
+		/// <summary>Context Group Name: Left Ventricle Linear (12201)</summary>
 		public readonly static DicomUID LeftVentricleLinear12201 = new DicomUID("1.2.840.10008.6.1.594", "Left Ventricle Linear (12201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Left Ventricle Volume (12202)</summary>
+		/// <summary>Context Group Name: Left Ventricle Volume (12202)</summary>
 		public readonly static DicomUID LeftVentricleVolume12202 = new DicomUID("1.2.840.10008.6.1.595", "Left Ventricle Volume (12202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Left Ventricle Other (12203)</summary>
+		/// <summary>Context Group Name: Left Ventricle Other (12203)</summary>
 		public readonly static DicomUID LeftVentricleOther12203 = new DicomUID("1.2.840.10008.6.1.596", "Left Ventricle Other (12203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Right Ventricle (12204)</summary>
+		/// <summary>Context Group Name: Echocardiography Right Ventricle (12204)</summary>
 		public readonly static DicomUID EchocardiographyRightVentricle12204 = new DicomUID("1.2.840.10008.6.1.597", "Echocardiography Right Ventricle (12204)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Left Atrium (12205)</summary>
+		/// <summary>Context Group Name: Echocardiography Left Atrium (12205)</summary>
 		public readonly static DicomUID EchocardiographyLeftAtrium12205 = new DicomUID("1.2.840.10008.6.1.598", "Echocardiography Left Atrium (12205)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Right Atrium (12206)</summary>
+		/// <summary>Context Group Name: Echocardiography Right Atrium (12206)</summary>
 		public readonly static DicomUID EchocardiographyRightAtrium12206 = new DicomUID("1.2.840.10008.6.1.599", "Echocardiography Right Atrium (12206)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Mitral Valve (12207)</summary>
+		/// <summary>Context Group Name: Echocardiography Mitral Valve (12207)</summary>
 		public readonly static DicomUID EchocardiographyMitralValve12207 = new DicomUID("1.2.840.10008.6.1.600", "Echocardiography Mitral Valve (12207)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Tricuspid Valve (12208)</summary>
+		/// <summary>Context Group Name: Echocardiography Tricuspid Valve (12208)</summary>
 		public readonly static DicomUID EchocardiographyTricuspidValve12208 = new DicomUID("1.2.840.10008.6.1.601", "Echocardiography Tricuspid Valve (12208)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Pulmonic Valve (12209)</summary>
+		/// <summary>Context Group Name: Echocardiography Pulmonic Valve (12209)</summary>
 		public readonly static DicomUID EchocardiographyPulmonicValve12209 = new DicomUID("1.2.840.10008.6.1.602", "Echocardiography Pulmonic Valve (12209)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Pulmonary Artery (12210)</summary>
+		/// <summary>Context Group Name: Echocardiography Pulmonary Artery (12210)</summary>
 		public readonly static DicomUID EchocardiographyPulmonaryArtery12210 = new DicomUID("1.2.840.10008.6.1.603", "Echocardiography Pulmonary Artery (12210)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Aortic Valve (12211)</summary>
+		/// <summary>Context Group Name: Echocardiography Aortic Valve (12211)</summary>
 		public readonly static DicomUID EchocardiographyAorticValve12211 = new DicomUID("1.2.840.10008.6.1.604", "Echocardiography Aortic Valve (12211)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Aorta (12212)</summary>
+		/// <summary>Context Group Name: Echocardiography Aorta (12212)</summary>
 		public readonly static DicomUID EchocardiographyAorta12212 = new DicomUID("1.2.840.10008.6.1.605", "Echocardiography Aorta (12212)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Pulmonary Veins (12214)</summary>
+		/// <summary>Context Group Name: Echocardiography Pulmonary Veins (12214)</summary>
 		public readonly static DicomUID EchocardiographyPulmonaryVeins12214 = new DicomUID("1.2.840.10008.6.1.606", "Echocardiography Pulmonary Veins (12214)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Vena Cavae (12215)</summary>
+		/// <summary>Context Group Name: Echocardiography Vena Cavae (12215)</summary>
 		public readonly static DicomUID EchocardiographyVenaCavae12215 = new DicomUID("1.2.840.10008.6.1.607", "Echocardiography Vena Cavae (12215)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Hepatic Veins (12216)</summary>
+		/// <summary>Context Group Name: Echocardiography Hepatic Veins (12216)</summary>
 		public readonly static DicomUID EchocardiographyHepaticVeins12216 = new DicomUID("1.2.840.10008.6.1.608", "Echocardiography Hepatic Veins (12216)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Cardiac Shunt (12217)</summary>
+		/// <summary>Context Group Name: Echocardiography Cardiac Shunt (12217)</summary>
 		public readonly static DicomUID EchocardiographyCardiacShunt12217 = new DicomUID("1.2.840.10008.6.1.609", "Echocardiography Cardiac Shunt (12217)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Congenital (12218)</summary>
+		/// <summary>Context Group Name: Echocardiography Congenital (12218)</summary>
 		public readonly static DicomUID EchocardiographyCongenital12218 = new DicomUID("1.2.840.10008.6.1.610", "Echocardiography Congenital (12218)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pulmonary Vein Modifiers (12219)</summary>
+		/// <summary>Context Group Name: Pulmonary Vein Modifiers (12219)</summary>
 		public readonly static DicomUID PulmonaryVeinModifiers12219 = new DicomUID("1.2.840.10008.6.1.611", "Pulmonary Vein Modifiers (12219)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Common Measurements (12220)</summary>
+		/// <summary>Context Group Name: Echocardiography Common Measurements (12220)</summary>
 		public readonly static DicomUID EchocardiographyCommonMeasurements12220 = new DicomUID("1.2.840.10008.6.1.612", "Echocardiography Common Measurements (12220)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Flow Direction (12221)</summary>
+		/// <summary>Context Group Name: Flow Direction (12221)</summary>
 		public readonly static DicomUID FlowDirection12221 = new DicomUID("1.2.840.10008.6.1.613", "Flow Direction (12221)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Orifice Flow Properties (12222)</summary>
+		/// <summary>Context Group Name: Orifice Flow Properties (12222)</summary>
 		public readonly static DicomUID OrificeFlowProperties12222 = new DicomUID("1.2.840.10008.6.1.614", "Orifice Flow Properties (12222)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Stroke Volume Origin (12223)</summary>
+		/// <summary>Context Group Name: Echocardiography Stroke Volume Origin (12223)</summary>
 		public readonly static DicomUID EchocardiographyStrokeVolumeOrigin12223 = new DicomUID("1.2.840.10008.6.1.615", "Echocardiography Stroke Volume Origin (12223)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Image Modes (12224)</summary>
+		/// <summary>Context Group Name: Ultrasound Image Modes (12224)</summary>
 		public readonly static DicomUID UltrasoundImageModes12224 = new DicomUID("1.2.840.10008.6.1.616", "Ultrasound Image Modes (12224)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Image View (12226)</summary>
+		/// <summary>Context Group Name: Echocardiography Image View (12226)</summary>
 		public readonly static DicomUID EchocardiographyImageView12226 = new DicomUID("1.2.840.10008.6.1.617", "Echocardiography Image View (12226)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Measurement Method (12227)</summary>
+		/// <summary>Context Group Name: Echocardiography Measurement Method (12227)</summary>
 		public readonly static DicomUID EchocardiographyMeasurementMethod12227 = new DicomUID("1.2.840.10008.6.1.618", "Echocardiography Measurement Method (12227)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Volume Methods (12228)</summary>
+		/// <summary>Context Group Name: Echocardiography Volume Methods (12228)</summary>
 		public readonly static DicomUID EchocardiographyVolumeMethods12228 = new DicomUID("1.2.840.10008.6.1.619", "Echocardiography Volume Methods (12228)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Area Methods (12229)</summary>
+		/// <summary>Context Group Name: Echocardiography Area Methods (12229)</summary>
 		public readonly static DicomUID EchocardiographyAreaMethods12229 = new DicomUID("1.2.840.10008.6.1.620", "Echocardiography Area Methods (12229)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Gradient Methods (12230)</summary>
+		/// <summary>Context Group Name: Gradient Methods (12230)</summary>
 		public readonly static DicomUID GradientMethods12230 = new DicomUID("1.2.840.10008.6.1.621", "Gradient Methods (12230)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Volume Flow Methods (12231)</summary>
+		/// <summary>Context Group Name: Volume Flow Methods (12231)</summary>
 		public readonly static DicomUID VolumeFlowMethods12231 = new DicomUID("1.2.840.10008.6.1.622", "Volume Flow Methods (12231)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Myocardium Mass Methods (12232)</summary>
+		/// <summary>Context Group Name: Myocardium Mass Methods (12232)</summary>
 		public readonly static DicomUID MyocardiumMassMethods12232 = new DicomUID("1.2.840.10008.6.1.623", "Myocardium Mass Methods (12232)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Phase (12233)</summary>
+		/// <summary>Context Group Name: Cardiac Phase (12233)</summary>
 		public readonly static DicomUID CardiacPhase12233 = new DicomUID("1.2.840.10008.6.1.624", "Cardiac Phase (12233)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Respiration State (12234)</summary>
+		/// <summary>Context Group Name: Respiration State (12234)</summary>
 		public readonly static DicomUID RespirationState12234 = new DicomUID("1.2.840.10008.6.1.625", "Respiration State (12234)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mitral Valve Anatomic Sites (12235)</summary>
+		/// <summary>Context Group Name: Mitral Valve Anatomic Sites (12235)</summary>
 		public readonly static DicomUID MitralValveAnatomicSites12235 = new DicomUID("1.2.840.10008.6.1.626", "Mitral Valve Anatomic Sites (12235)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echo Anatomic Sites (12236)</summary>
+		/// <summary>Context Group Name: Echo Anatomic Sites (12236)</summary>
 		public readonly static DicomUID EchoAnatomicSites12236 = new DicomUID("1.2.840.10008.6.1.627", "Echo Anatomic Sites (12236)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Echocardiography Anatomic Site Modifiers (12237)</summary>
+		/// <summary>Context Group Name: Echocardiography Anatomic Site Modifiers (12237)</summary>
 		public readonly static DicomUID EchocardiographyAnatomicSiteModifiers12237 = new DicomUID("1.2.840.10008.6.1.628", "Echocardiography Anatomic Site Modifiers (12237)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Wall Motion Scoring Schemes (12238)</summary>
+		/// <summary>Context Group Name: Wall Motion Scoring Schemes (12238)</summary>
 		public readonly static DicomUID WallMotionScoringSchemes12238 = new DicomUID("1.2.840.10008.6.1.629", "Wall Motion Scoring Schemes (12238)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Output Properties (12239)</summary>
+		/// <summary>Context Group Name: Cardiac Output Properties (12239)</summary>
 		public readonly static DicomUID CardiacOutputProperties12239 = new DicomUID("1.2.840.10008.6.1.630", "Cardiac Output Properties (12239)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Left Ventricle Area (12240)</summary>
+		/// <summary>Context Group Name: Left Ventricle Area (12240)</summary>
 		public readonly static DicomUID LeftVentricleArea12240 = new DicomUID("1.2.840.10008.6.1.631", "Left Ventricle Area (12240)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tricuspid Valve Finding Sites (12241)</summary>
+		/// <summary>Context Group Name: Tricuspid Valve Finding Sites (12241)</summary>
 		public readonly static DicomUID TricuspidValveFindingSites12241 = new DicomUID("1.2.840.10008.6.1.632", "Tricuspid Valve Finding Sites (12241)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Aortic Valve Finding Sites (12242)</summary>
+		/// <summary>Context Group Name: Aortic Valve Finding Sites (12242)</summary>
 		public readonly static DicomUID AorticValveFindingSites12242 = new DicomUID("1.2.840.10008.6.1.633", "Aortic Valve Finding Sites (12242)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Left Ventricle Finding Sites (12243)</summary>
+		/// <summary>Context Group Name: Left Ventricle Finding Sites (12243)</summary>
 		public readonly static DicomUID LeftVentricleFindingSites12243 = new DicomUID("1.2.840.10008.6.1.634", "Left Ventricle Finding Sites (12243)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Congenital Finding Sites (12244)</summary>
+		/// <summary>Context Group Name: Congenital Finding Sites (12244)</summary>
 		public readonly static DicomUID CongenitalFindingSites12244 = new DicomUID("1.2.840.10008.6.1.635", "Congenital Finding Sites (12244)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Surface Processing Algorithm Families (7162)</summary>
+		/// <summary>Context Group Name: Surface Processing Algorithm Families (7162)</summary>
 		public readonly static DicomUID SurfaceProcessingAlgorithmFamilies7162 = new DicomUID("1.2.840.10008.6.1.636", "Surface Processing Algorithm Families (7162)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Test Procedure Phases (3207)</summary>
+		/// <summary>Context Group Name: Stress Test Procedure Phases (3207)</summary>
 		public readonly static DicomUID StressTestProcedurePhases3207 = new DicomUID("1.2.840.10008.6.1.637", "Stress Test Procedure Phases (3207)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stages (3778)</summary>
+		/// <summary>Context Group Name: Stages (3778)</summary>
 		public readonly static DicomUID Stages3778 = new DicomUID("1.2.840.10008.6.1.638", "Stages (3778)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: S-M-L Size Descriptor (252)</summary>
+		/// <summary>Context Group Name: S-M-L Size Descriptor (252)</summary>
 		public readonly static DicomUID SMLSizeDescriptor252 = new DicomUID("1.2.840.10008.6.1.735", "S-M-L Size Descriptor (252)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Major Coronary Arteries (3016)</summary>
+		/// <summary>Context Group Name: Major Coronary Arteries (3016)</summary>
 		public readonly static DicomUID MajorCoronaryArteries3016 = new DicomUID("1.2.840.10008.6.1.736", "Major Coronary Arteries (3016)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Units of Radioactivity (3083)</summary>
+		/// <summary>Context Group Name: Units of Radioactivity (3083)</summary>
 		public readonly static DicomUID UnitsOfRadioactivity3083 = new DicomUID("1.2.840.10008.6.1.737", "Units of Radioactivity (3083)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Rest-Stress (3102)</summary>
+		/// <summary>Context Group Name: Rest-Stress (3102)</summary>
 		public readonly static DicomUID RestStress3102 = new DicomUID("1.2.840.10008.6.1.738", "Rest-Stress (3102)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PET Cardiology Protocols (3106)</summary>
+		/// <summary>Context Group Name: PET Cardiology Protocols (3106)</summary>
 		public readonly static DicomUID PETCardiologyProtocols3106 = new DicomUID("1.2.840.10008.6.1.739", "PET Cardiology Protocols (3106)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PET Cardiology Radiopharmaceuticals (3107)</summary>
+		/// <summary>Context Group Name: PET Cardiology Radiopharmaceuticals (3107)</summary>
 		public readonly static DicomUID PETCardiologyRadiopharmaceuticals3107 = new DicomUID("1.2.840.10008.6.1.740", "PET Cardiology Radiopharmaceuticals (3107)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: NM/PET Procedures (3108)</summary>
+		/// <summary>Context Group Name: NM/PET Procedures (3108)</summary>
 		public readonly static DicomUID NMPETProcedures3108 = new DicomUID("1.2.840.10008.6.1.741", "NM/PET Procedures (3108)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Nuclear Cardiology Protocols (3110)</summary>
+		/// <summary>Context Group Name: Nuclear Cardiology Protocols (3110)</summary>
 		public readonly static DicomUID NuclearCardiologyProtocols3110 = new DicomUID("1.2.840.10008.6.1.742", "Nuclear Cardiology Protocols (3110)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Nuclear Cardiology Radiopharmaceuticals (3111)</summary>
+		/// <summary>Context Group Name: Nuclear Cardiology Radiopharmaceuticals (3111)</summary>
 		public readonly static DicomUID NuclearCardiologyRadiopharmaceuticals3111 = new DicomUID("1.2.840.10008.6.1.743", "Nuclear Cardiology Radiopharmaceuticals (3111)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Attenuation Correction (3112)</summary>
+		/// <summary>Context Group Name: Attenuation Correction (3112)</summary>
 		public readonly static DicomUID AttenuationCorrection3112 = new DicomUID("1.2.840.10008.6.1.744", "Attenuation Correction (3112)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Types of Perfusion Defects (3113)</summary>
+		/// <summary>Context Group Name: Types of Perfusion Defects (3113)</summary>
 		public readonly static DicomUID TypesOfPerfusionDefects3113 = new DicomUID("1.2.840.10008.6.1.745", "Types of Perfusion Defects (3113)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Study Quality (3114)</summary>
+		/// <summary>Context Group Name: Study Quality (3114)</summary>
 		public readonly static DicomUID StudyQuality3114 = new DicomUID("1.2.840.10008.6.1.746", "Study Quality (3114)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Imaging Quality Issues (3115)</summary>
+		/// <summary>Context Group Name: Stress Imaging Quality Issues (3115)</summary>
 		public readonly static DicomUID StressImagingQualityIssues3115 = new DicomUID("1.2.840.10008.6.1.747", "Stress Imaging Quality Issues (3115)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: NM Extracardiac Findings (3116)</summary>
+		/// <summary>Context Group Name: NM Extracardiac Findings (3116)</summary>
 		public readonly static DicomUID NMExtracardiacFindings3116 = new DicomUID("1.2.840.10008.6.1.748", "NM Extracardiac Findings (3116)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Attenuation Correction Methods (3117)</summary>
+		/// <summary>Context Group Name: Attenuation Correction Methods (3117)</summary>
 		public readonly static DicomUID AttenuationCorrectionMethods3117 = new DicomUID("1.2.840.10008.6.1.749", "Attenuation Correction Methods (3117)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Level of Risk (3118)</summary>
+		/// <summary>Context Group Name: Level of Risk (3118)</summary>
 		public readonly static DicomUID LevelOfRisk3118 = new DicomUID("1.2.840.10008.6.1.750", "Level of Risk (3118)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: LV Function (3119)</summary>
+		/// <summary>Context Group Name: LV Function (3119)</summary>
 		public readonly static DicomUID LVFunction3119 = new DicomUID("1.2.840.10008.6.1.751", "LV Function (3119)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Findings (3120)</summary>
+		/// <summary>Context Group Name: Perfusion Findings (3120)</summary>
 		public readonly static DicomUID PerfusionFindings3120 = new DicomUID("1.2.840.10008.6.1.752", "Perfusion Findings (3120)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Morphology (3121)</summary>
+		/// <summary>Context Group Name: Perfusion Morphology (3121)</summary>
 		public readonly static DicomUID PerfusionMorphology3121 = new DicomUID("1.2.840.10008.6.1.753", "Perfusion Morphology (3121)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ventricular Enlargement (3122)</summary>
+		/// <summary>Context Group Name: Ventricular Enlargement (3122)</summary>
 		public readonly static DicomUID VentricularEnlargement3122 = new DicomUID("1.2.840.10008.6.1.754", "Ventricular Enlargement (3122)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Test Procedure (3200)</summary>
+		/// <summary>Context Group Name: Stress Test Procedure (3200)</summary>
 		public readonly static DicomUID StressTestProcedure3200 = new DicomUID("1.2.840.10008.6.1.755", "Stress Test Procedure (3200)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Indications for Stress Test (3201)</summary>
+		/// <summary>Context Group Name: Indications for Stress Test (3201)</summary>
 		public readonly static DicomUID IndicationsForStressTest3201 = new DicomUID("1.2.840.10008.6.1.756", "Indications for Stress Test (3201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Chest Pain (3202)</summary>
+		/// <summary>Context Group Name: Chest Pain (3202)</summary>
 		public readonly static DicomUID ChestPain3202 = new DicomUID("1.2.840.10008.6.1.757", "Chest Pain (3202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Exerciser Device (3203)</summary>
+		/// <summary>Context Group Name: Exerciser Device (3203)</summary>
 		public readonly static DicomUID ExerciserDevice3203 = new DicomUID("1.2.840.10008.6.1.758", "Exerciser Device (3203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Agents (3204)</summary>
+		/// <summary>Context Group Name: Stress Agents (3204)</summary>
 		public readonly static DicomUID StressAgents3204 = new DicomUID("1.2.840.10008.6.1.759", "Stress Agents (3204)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Indications for Pharmacological Stress Test (3205)</summary>
+		/// <summary>Context Group Name: Indications for Pharmacological Stress Test (3205)</summary>
 		public readonly static DicomUID IndicationsForPharmacologicalStressTest3205 = new DicomUID("1.2.840.10008.6.1.760", "Indications for Pharmacological Stress Test (3205)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Non-invasive Cardiac Imaging Procedures (3206)</summary>
+		/// <summary>Context Group Name: Non-invasive Cardiac Imaging Procedures (3206)</summary>
 		public readonly static DicomUID NonInvasiveCardiacImagingProcedures3206 = new DicomUID("1.2.840.10008.6.1.761", "Non-invasive Cardiac Imaging Procedures (3206)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Summary Codes Exercise ECG (3208)</summary>
+		/// <summary>Context Group Name: Summary Codes Exercise ECG (3208)</summary>
 		public readonly static DicomUID SummaryCodesExerciseECG3208 = new DicomUID("1.2.840.10008.6.1.763", "Summary Codes Exercise ECG (3208)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Summary Codes Stress Imaging (3209)</summary>
+		/// <summary>Context Group Name: Summary Codes Stress Imaging (3209)</summary>
 		public readonly static DicomUID SummaryCodesStressImaging3209 = new DicomUID("1.2.840.10008.6.1.764", "Summary Codes Stress Imaging (3209)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Speed of Response (3210)</summary>
+		/// <summary>Context Group Name: Speed of Response (3210)</summary>
 		public readonly static DicomUID SpeedOfResponse3210 = new DicomUID("1.2.840.10008.6.1.765", "Speed of Response (3210)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: BP Response (3211)</summary>
+		/// <summary>Context Group Name: BP Response (3211)</summary>
 		public readonly static DicomUID BPResponse3211 = new DicomUID("1.2.840.10008.6.1.766", "BP Response (3211)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Treadmill Speed (3212)</summary>
+		/// <summary>Context Group Name: Treadmill Speed (3212)</summary>
 		public readonly static DicomUID TreadmillSpeed3212 = new DicomUID("1.2.840.10008.6.1.767", "Treadmill Speed (3212)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Hemodynamic Findings (3213)</summary>
+		/// <summary>Context Group Name: Stress Hemodynamic Findings (3213)</summary>
 		public readonly static DicomUID StressHemodynamicFindings3213 = new DicomUID("1.2.840.10008.6.1.768", "Stress Hemodynamic Findings (3213)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Finding Method (3215)</summary>
+		/// <summary>Context Group Name: Perfusion Finding Method (3215)</summary>
 		public readonly static DicomUID PerfusionFindingMethod3215 = new DicomUID("1.2.840.10008.6.1.769", "Perfusion Finding Method (3215)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Comparison Finding (3217)</summary>
+		/// <summary>Context Group Name: Comparison Finding (3217)</summary>
 		public readonly static DicomUID ComparisonFinding3217 = new DicomUID("1.2.840.10008.6.1.770", "Comparison Finding (3217)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Symptoms (3220)</summary>
+		/// <summary>Context Group Name: Stress Symptoms (3220)</summary>
 		public readonly static DicomUID StressSymptoms3220 = new DicomUID("1.2.840.10008.6.1.771", "Stress Symptoms (3220)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Test Termination Reasons (3221)</summary>
+		/// <summary>Context Group Name: Stress Test Termination Reasons (3221)</summary>
 		public readonly static DicomUID StressTestTerminationReasons3221 = new DicomUID("1.2.840.10008.6.1.772", "Stress Test Termination Reasons (3221)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: QTc Measurements (3227)</summary>
+		/// <summary>Context Group Name: QTc Measurements (3227)</summary>
 		public readonly static DicomUID QTcMeasurements3227 = new DicomUID("1.2.840.10008.6.1.773", "QTc Measurements (3227)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Timing Measurements (3228)</summary>
+		/// <summary>Context Group Name: ECG Timing Measurements (3228)</summary>
 		public readonly static DicomUID ECGTimingMeasurements3228 = new DicomUID("1.2.840.10008.6.1.774", "ECG Timing Measurements (3228)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Axis Measurements (3229)</summary>
+		/// <summary>Context Group Name: ECG Axis Measurements (3229)</summary>
 		public readonly static DicomUID ECGAxisMeasurements3229 = new DicomUID("1.2.840.10008.6.1.775", "ECG Axis Measurements (3229)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Findings (3230)</summary>
+		/// <summary>Context Group Name: ECG Findings (3230)</summary>
 		public readonly static DicomUID ECGFindings3230 = new DicomUID("1.2.840.10008.6.1.776", "ECG Findings (3230)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ST Segment Findings (3231)</summary>
+		/// <summary>Context Group Name: ST Segment Findings (3231)</summary>
 		public readonly static DicomUID STSegmentFindings3231 = new DicomUID("1.2.840.10008.6.1.777", "ST Segment Findings (3231)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ST Segment Location (3232)</summary>
+		/// <summary>Context Group Name: ST Segment Location (3232)</summary>
 		public readonly static DicomUID STSegmentLocation3232 = new DicomUID("1.2.840.10008.6.1.778", "ST Segment Location (3232)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ST Segment Morphology (3233)</summary>
+		/// <summary>Context Group Name: ST Segment Morphology (3233)</summary>
 		public readonly static DicomUID STSegmentMorphology3233 = new DicomUID("1.2.840.10008.6.1.779", "ST Segment Morphology (3233)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ectopic Beat Morphology (3234)</summary>
+		/// <summary>Context Group Name: Ectopic Beat Morphology (3234)</summary>
 		public readonly static DicomUID EctopicBeatMorphology3234 = new DicomUID("1.2.840.10008.6.1.780", "Ectopic Beat Morphology (3234)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Comparison Findings (3235)</summary>
+		/// <summary>Context Group Name: Perfusion Comparison Findings (3235)</summary>
 		public readonly static DicomUID PerfusionComparisonFindings3235 = new DicomUID("1.2.840.10008.6.1.781", "Perfusion Comparison Findings (3235)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tolerance Comparison Findings (3236)</summary>
+		/// <summary>Context Group Name: Tolerance Comparison Findings (3236)</summary>
 		public readonly static DicomUID ToleranceComparisonFindings3236 = new DicomUID("1.2.840.10008.6.1.782", "Tolerance Comparison Findings (3236)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Wall Motion Comparison Findings (3237)</summary>
+		/// <summary>Context Group Name: Wall Motion Comparison Findings (3237)</summary>
 		public readonly static DicomUID WallMotionComparisonFindings3237 = new DicomUID("1.2.840.10008.6.1.783", "Wall Motion Comparison Findings (3237)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Stress Scoring Scales (3238)</summary>
+		/// <summary>Context Group Name: Stress Scoring Scales (3238)</summary>
 		public readonly static DicomUID StressScoringScales3238 = new DicomUID("1.2.840.10008.6.1.784", "Stress Scoring Scales (3238)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perceived Exertion Scales (3239)</summary>
+		/// <summary>Context Group Name: Perceived Exertion Scales (3239)</summary>
 		public readonly static DicomUID PerceivedExertionScales3239 = new DicomUID("1.2.840.10008.6.1.785", "Perceived Exertion Scales (3239)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ventricle Identification (3463)</summary>
+		/// <summary>Context Group Name: Ventricle Identification (3463)</summary>
 		public readonly static DicomUID VentricleIdentification3463 = new DicomUID("1.2.840.10008.6.1.786", "Ventricle Identification (3463)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Overall Assessment (6200)</summary>
+		/// <summary>Context Group Name: Colon Overall Assessment (6200)</summary>
 		public readonly static DicomUID ColonOverallAssessment6200 = new DicomUID("1.2.840.10008.6.1.787", "Colon Overall Assessment (6200)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Finding Or Feature (6201)</summary>
-		public readonly static DicomUID ColonFindingOrFeature6201 = new DicomUID("1.2.840.10008.6.1.788", "Colon Finding Or Feature (6201)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Colon Finding or Feature (6201)</summary>
+		public readonly static DicomUID ColonFindingOrFeature6201 = new DicomUID("1.2.840.10008.6.1.788", "Colon Finding or Feature (6201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Finding Or Feature Modifier (6202)</summary>
-		public readonly static DicomUID ColonFindingOrFeatureModifier6202 = new DicomUID("1.2.840.10008.6.1.789", "Colon Finding Or Feature Modifier (6202)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Colon Finding or Feature Modifier (6202)</summary>
+		public readonly static DicomUID ColonFindingOrFeatureModifier6202 = new DicomUID("1.2.840.10008.6.1.789", "Colon Finding or Feature Modifier (6202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Non-lesion Object Type (6203)</summary>
+		/// <summary>Context Group Name: Colon Non-lesion Object Type (6203)</summary>
 		public readonly static DicomUID ColonNonLesionObjectType6203 = new DicomUID("1.2.840.10008.6.1.790", "Colon Non-lesion Object Type (6203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anatomic Non-colon Findings (6204)</summary>
+		/// <summary>Context Group Name: Anatomic Non-colon Findings (6204)</summary>
 		public readonly static DicomUID AnatomicNonColonFindings6204 = new DicomUID("1.2.840.10008.6.1.791", "Anatomic Non-colon Findings (6204)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Clockface Location for Colon (6205)</summary>
+		/// <summary>Context Group Name: Clockface Location for Colon (6205)</summary>
 		public readonly static DicomUID ClockfaceLocationForColon6205 = new DicomUID("1.2.840.10008.6.1.792", "Clockface Location for Colon (6205)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Recumbent Patient Orientation for Colon (6206)</summary>
+		/// <summary>Context Group Name: Recumbent Patient Orientation for Colon (6206)</summary>
 		public readonly static DicomUID RecumbentPatientOrientationForColon6206 = new DicomUID("1.2.840.10008.6.1.793", "Recumbent Patient Orientation for Colon (6206)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Quantitative Temporal Difference Type (6207)</summary>
+		/// <summary>Context Group Name: Colon Quantitative Temporal Difference Type (6207)</summary>
 		public readonly static DicomUID ColonQuantitativeTemporalDifferenceType6207 = new DicomUID("1.2.840.10008.6.1.794", "Colon Quantitative Temporal Difference Type (6207)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Types of Quality Control Standard (6208)</summary>
+		/// <summary>Context Group Name: Colon Types of Quality Control Standard (6208)</summary>
 		public readonly static DicomUID ColonTypesOfQualityControlStandard6208 = new DicomUID("1.2.840.10008.6.1.795", "Colon Types of Quality Control Standard (6208)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon Morphology Descriptor (6209)</summary>
+		/// <summary>Context Group Name: Colon Morphology Descriptor (6209)</summary>
 		public readonly static DicomUID ColonMorphologyDescriptor6209 = new DicomUID("1.2.840.10008.6.1.796", "Colon Morphology Descriptor (6209)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Location in Intestinal Tract (6210)</summary>
+		/// <summary>Context Group Name: Location in Intestinal Tract (6210)</summary>
 		public readonly static DicomUID LocationInIntestinalTract6210 = new DicomUID("1.2.840.10008.6.1.797", "Location in Intestinal Tract (6210)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Colon CAD Material Description (6211)</summary>
+		/// <summary>Context Group Name: Colon CAD Material Description (6211)</summary>
 		public readonly static DicomUID ColonCADMaterialDescription6211 = new DicomUID("1.2.840.10008.6.1.798", "Colon CAD Material Description (6211)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calculated Value for Colon Findings (6212)</summary>
+		/// <summary>Context Group Name: Calculated Value for Colon Findings (6212)</summary>
 		public readonly static DicomUID CalculatedValueForColonFindings6212 = new DicomUID("1.2.840.10008.6.1.799", "Calculated Value for Colon Findings (6212)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Horizontal Directions (4214)</summary>
+		/// <summary>Context Group Name: Ophthalmic Horizontal Directions (4214)</summary>
 		public readonly static DicomUID OphthalmicHorizontalDirections4214 = new DicomUID("1.2.840.10008.6.1.800", "Ophthalmic Horizontal Directions (4214)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Vertical Directions (4215)</summary>
+		/// <summary>Context Group Name: Ophthalmic Vertical Directions (4215)</summary>
 		public readonly static DicomUID OphthalmicVerticalDirections4215 = new DicomUID("1.2.840.10008.6.1.801", "Ophthalmic Vertical Directions (4215)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Visual Acuity Type (4216)</summary>
+		/// <summary>Context Group Name: Ophthalmic Visual Acuity Type (4216)</summary>
 		public readonly static DicomUID OphthalmicVisualAcuityType4216 = new DicomUID("1.2.840.10008.6.1.802", "Ophthalmic Visual Acuity Type (4216)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Arterial Pulse Waveform (3004)</summary>
+		/// <summary>Context Group Name: Arterial Pulse Waveform (3004)</summary>
 		public readonly static DicomUID ArterialPulseWaveform3004 = new DicomUID("1.2.840.10008.6.1.803", "Arterial Pulse Waveform (3004)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Respiration Waveform (3005)</summary>
+		/// <summary>Context Group Name: Respiration Waveform (3005)</summary>
 		public readonly static DicomUID RespirationWaveform3005 = new DicomUID("1.2.840.10008.6.1.804", "Respiration Waveform (3005)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Contrast/Bolus Agents (12030)</summary>
+		/// <summary>Context Group Name: Ultrasound Contrast/Bolus Agents (12030)</summary>
 		public readonly static DicomUID UltrasoundContrastBolusAgents12030 = new DicomUID("1.2.840.10008.6.1.805", "Ultrasound Contrast/Bolus Agents (12030)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Protocol Interval Events (12031)</summary>
+		/// <summary>Context Group Name: Protocol Interval Events (12031)</summary>
 		public readonly static DicomUID ProtocolIntervalEvents12031 = new DicomUID("1.2.840.10008.6.1.806", "Protocol Interval Events (12031)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Transducer Scan Pattern (12032)</summary>
+		/// <summary>Context Group Name: Transducer Scan Pattern (12032)</summary>
 		public readonly static DicomUID TransducerScanPattern12032 = new DicomUID("1.2.840.10008.6.1.807", "Transducer Scan Pattern (12032)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Transducer Geometry (12033)</summary>
+		/// <summary>Context Group Name: Ultrasound Transducer Geometry (12033)</summary>
 		public readonly static DicomUID UltrasoundTransducerGeometry12033 = new DicomUID("1.2.840.10008.6.1.808", "Ultrasound Transducer Geometry (12033)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Transducer Beam Steering (12034)</summary>
+		/// <summary>Context Group Name: Ultrasound Transducer Beam Steering (12034)</summary>
 		public readonly static DicomUID UltrasoundTransducerBeamSteering12034 = new DicomUID("1.2.840.10008.6.1.809", "Ultrasound Transducer Beam Steering (12034)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ultrasound Transducer Application (12035)</summary>
+		/// <summary>Context Group Name: Ultrasound Transducer Application (12035)</summary>
 		public readonly static DicomUID UltrasoundTransducerApplication12035 = new DicomUID("1.2.840.10008.6.1.810", "Ultrasound Transducer Application (12035)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Instance Availability Status (50)</summary>
+		/// <summary>Context Group Name: Instance Availability Status (50)</summary>
 		public readonly static DicomUID InstanceAvailabilityStatus50 = new DicomUID("1.2.840.10008.6.1.811", "Instance Availability Status (50)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Modality PPS Discontinuation Reasons (9301)</summary>
+		/// <summary>Context Group Name: Modality PPS Discontinuation Reasons (9301)</summary>
 		public readonly static DicomUID ModalityPPSDiscontinuationReasons9301 = new DicomUID("1.2.840.10008.6.1.812", "Modality PPS Discontinuation Reasons (9301)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Media Import PPS Discontinuation Reasons (9302)</summary>
+		/// <summary>Context Group Name: Media Import PPS Discontinuation Reasons (9302)</summary>
 		public readonly static DicomUID MediaImportPPSDiscontinuationReasons9302 = new DicomUID("1.2.840.10008.6.1.813", "Media Import PPS Discontinuation Reasons (9302)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DX Anatomy Imaged for Animals (7482)</summary>
+		/// <summary>Context Group Name: DX Anatomy Imaged for Animals (7482)</summary>
 		public readonly static DicomUID DXAnatomyImagedForAnimals7482 = new DicomUID("1.2.840.10008.6.1.814", "DX Anatomy Imaged for Animals (7482)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Common Anatomic Regions for Animals (7483)</summary>
+		/// <summary>Context Group Name: Common Anatomic Regions for Animals (7483)</summary>
 		public readonly static DicomUID CommonAnatomicRegionsForAnimals7483 = new DicomUID("1.2.840.10008.6.1.815", "Common Anatomic Regions for Animals (7483)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: DX View for Animals (7484)</summary>
+		/// <summary>Context Group Name: DX View for Animals (7484)</summary>
 		public readonly static DicomUID DXViewForAnimals7484 = new DicomUID("1.2.840.10008.6.1.816", "DX View for Animals (7484)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Institutional Departments, Units and Services (7030)</summary>
+		/// <summary>Context Group Name: Institutional Departments, Units and Services (7030)</summary>
 		public readonly static DicomUID InstitutionalDepartmentsUnitsAndServices7030 = new DicomUID("1.2.840.10008.6.1.817", "Institutional Departments, Units and Services (7030)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Purpose of Reference to Predecessor Report (7009)</summary>
+		/// <summary>Context Group Name: Purpose of Reference to Predecessor Report (7009)</summary>
 		public readonly static DicomUID PurposeOfReferenceToPredecessorReport7009 = new DicomUID("1.2.840.10008.6.1.818", "Purpose of Reference to Predecessor Report (7009)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Fixation Quality During Acquisition (4220)</summary>
+		/// <summary>Context Group Name: Visual Fixation Quality During Acquisition (4220)</summary>
 		public readonly static DicomUID VisualFixationQualityDuringAcquisition4220 = new DicomUID("1.2.840.10008.6.1.819", "Visual Fixation Quality During Acquisition (4220)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Fixation Quality Problem (4221)</summary>
+		/// <summary>Context Group Name: Visual Fixation Quality Problem (4221)</summary>
 		public readonly static DicomUID VisualFixationQualityProblem4221 = new DicomUID("1.2.840.10008.6.1.820", "Visual Fixation Quality Problem (4221)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Macular Grid Problem (4222)</summary>
+		/// <summary>Context Group Name: Ophthalmic Macular Grid Problem (4222)</summary>
 		public readonly static DicomUID OphthalmicMacularGridProblem4222 = new DicomUID("1.2.840.10008.6.1.821", "Ophthalmic Macular Grid Problem (4222)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Organizations (5002)</summary>
+		/// <summary>Context Group Name: Organizations (5002)</summary>
 		public readonly static DicomUID Organizations5002 = new DicomUID("1.2.840.10008.6.1.822", "Organizations (5002)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Mixed Breeds (7486)</summary>
+		/// <summary>Context Group Name: Mixed Breeds (7486)</summary>
 		public readonly static DicomUID MixedBreeds7486 = new DicomUID("1.2.840.10008.6.1.823", "Mixed Breeds (7486)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Broselow-Luten Pediatric Size Categories (7040)</summary>
+		/// <summary>Context Group Name: Broselow-Luten Pediatric Size Categories (7040)</summary>
 		public readonly static DicomUID BroselowLutenPediatricSizeCategories7040 = new DicomUID("1.2.840.10008.6.1.824", "Broselow-Luten Pediatric Size Categories (7040)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Calcium Scoring Patient Size Categories (7042)</summary>
+		/// <summary>Context Group Name: Calcium Scoring Patient Size Categories (7042)</summary>
 		public readonly static DicomUID CalciumScoringPatientSizeCategories7042 = new DicomUID("1.2.840.10008.6.1.825", "Calcium Scoring Patient Size Categories (7042)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Report Titles (12245)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Report Titles (12245)</summary>
 		public readonly static DicomUID CardiacUltrasoundReportTitles12245 = new DicomUID("1.2.840.10008.6.1.826", "Cardiac Ultrasound Report Titles (12245)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Indication for Study (12246)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Indication for Study (12246)</summary>
 		public readonly static DicomUID CardiacUltrasoundIndicationForStudy12246 = new DicomUID("1.2.840.10008.6.1.827", "Cardiac Ultrasound Indication for Study (12246)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pediatric, Fetal and Congenital Cardiac Surgical Interventions (12247)</summary>
+		/// <summary>Context Group Name: Pediatric, Fetal and Congenital Cardiac Surgical Interventions (12247)</summary>
 		public readonly static DicomUID PediatricFetalAndCongenitalCardiacSurgicalInterventions12247 = new DicomUID("1.2.840.10008.6.1.828", "Pediatric, Fetal and Congenital Cardiac Surgical Interventions (12247)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Summary Codes (12248)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Summary Codes (12248)</summary>
 		public readonly static DicomUID CardiacUltrasoundSummaryCodes12248 = new DicomUID("1.2.840.10008.6.1.829", "Cardiac Ultrasound Summary Codes (12248)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Fetal Summary Codes (12249)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Fetal Summary Codes (12249)</summary>
 		public readonly static DicomUID CardiacUltrasoundFetalSummaryCodes12249 = new DicomUID("1.2.840.10008.6.1.830", "Cardiac Ultrasound Fetal Summary Codes (12249)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Common Linear Measurements (12250)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Common Linear Measurements (12250)</summary>
 		public readonly static DicomUID CardiacUltrasoundCommonLinearMeasurements12250 = new DicomUID("1.2.840.10008.6.1.831", "Cardiac Ultrasound Common Linear Measurements (12250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Linear Valve Measurements (12251)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Linear Valve Measurements (12251)</summary>
 		public readonly static DicomUID CardiacUltrasoundLinearValveMeasurements12251 = new DicomUID("1.2.840.10008.6.1.832", "Cardiac Ultrasound Linear Valve Measurements (12251)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Cardiac Function (12252)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Cardiac Function (12252)</summary>
 		public readonly static DicomUID CardiacUltrasoundCardiacFunction12252 = new DicomUID("1.2.840.10008.6.1.833", "Cardiac Ultrasound Cardiac Function (12252)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Area Measurements (12253)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Area Measurements (12253)</summary>
 		public readonly static DicomUID CardiacUltrasoundAreaMeasurements12253 = new DicomUID("1.2.840.10008.6.1.834", "Cardiac Ultrasound Area Measurements (12253)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Hemodynamic Measurements (12254)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Hemodynamic Measurements (12254)</summary>
 		public readonly static DicomUID CardiacUltrasoundHemodynamicMeasurements12254 = new DicomUID("1.2.840.10008.6.1.835", "Cardiac Ultrasound Hemodynamic Measurements (12254)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Myocardium Measurements (12255)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Myocardium Measurements (12255)</summary>
 		public readonly static DicomUID CardiacUltrasoundMyocardiumMeasurements12255 = new DicomUID("1.2.840.10008.6.1.836", "Cardiac Ultrasound Myocardium Measurements (12255)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Left Ventricle (12257)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Left Ventricle (12257)</summary>
 		public readonly static DicomUID CardiacUltrasoundLeftVentricle12257 = new DicomUID("1.2.840.10008.6.1.838", "Cardiac Ultrasound Left Ventricle (12257)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Right Ventricle (12258)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Right Ventricle (12258)</summary>
 		public readonly static DicomUID CardiacUltrasoundRightVentricle12258 = new DicomUID("1.2.840.10008.6.1.839", "Cardiac Ultrasound Right Ventricle (12258)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Ventricles Measurements (12259)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Ventricles Measurements (12259)</summary>
 		public readonly static DicomUID CardiacUltrasoundVentriclesMeasurements12259 = new DicomUID("1.2.840.10008.6.1.840", "Cardiac Ultrasound Ventricles Measurements (12259)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pulmonary Artery (12260)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pulmonary Artery (12260)</summary>
 		public readonly static DicomUID CardiacUltrasoundPulmonaryArtery12260 = new DicomUID("1.2.840.10008.6.1.841", "Cardiac Ultrasound Pulmonary Artery (12260)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pulmonary Vein (12261)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pulmonary Vein (12261)</summary>
 		public readonly static DicomUID CardiacUltrasoundPulmonaryVein12261 = new DicomUID("1.2.840.10008.6.1.842", "Cardiac Ultrasound Pulmonary Vein (12261)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pulmonary Valve (12262)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pulmonary Valve (12262)</summary>
 		public readonly static DicomUID CardiacUltrasoundPulmonaryValve12262 = new DicomUID("1.2.840.10008.6.1.843", "Cardiac Ultrasound Pulmonary Valve (12262)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Venous Return Pulmonary Measurements (12263)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Venous Return Pulmonary Measurements (12263)</summary>
 		public readonly static DicomUID CardiacUltrasoundVenousReturnPulmonaryMeasurements12263 = new DicomUID("1.2.840.10008.6.1.844", "Cardiac Ultrasound Venous Return Pulmonary Measurements (12263)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Venous Return Systemic Measurements (12264)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Venous Return Systemic Measurements (12264)</summary>
 		public readonly static DicomUID CardiacUltrasoundVenousReturnSystemicMeasurements12264 = new DicomUID("1.2.840.10008.6.1.845", "Cardiac Ultrasound Venous Return Systemic Measurements (12264)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Atria and Atrial Septum Measurements (12265)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Atria and Atrial Septum Measurements (12265)</summary>
 		public readonly static DicomUID CardiacUltrasoundAtriaAndAtrialSeptumMeasurements12265 = new DicomUID("1.2.840.10008.6.1.846", "Cardiac Ultrasound Atria and Atrial Septum Measurements (12265)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Mitral Valve (12266)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Mitral Valve (12266)</summary>
 		public readonly static DicomUID CardiacUltrasoundMitralValve12266 = new DicomUID("1.2.840.10008.6.1.847", "Cardiac Ultrasound Mitral Valve (12266)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Tricuspid Valve (12267)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Tricuspid Valve (12267)</summary>
 		public readonly static DicomUID CardiacUltrasoundTricuspidValve12267 = new DicomUID("1.2.840.10008.6.1.848", "Cardiac Ultrasound Tricuspid Valve (12267)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Atrioventricular Valves Measurements (12268)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Atrioventricular Valves Measurements (12268)</summary>
 		public readonly static DicomUID CardiacUltrasoundAtrioventricularValvesMeasurements12268 = new DicomUID("1.2.840.10008.6.1.849", "Cardiac Ultrasound Atrioventricular Valves Measurements (12268)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Interventricular Septum Measurements (12269)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Interventricular Septum Measurements (12269)</summary>
 		public readonly static DicomUID CardiacUltrasoundInterventricularSeptumMeasurements12269 = new DicomUID("1.2.840.10008.6.1.850", "Cardiac Ultrasound Interventricular Septum Measurements (12269)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aortic Valve (12270)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aortic Valve (12270)</summary>
 		public readonly static DicomUID CardiacUltrasoundAorticValve12270 = new DicomUID("1.2.840.10008.6.1.851", "Cardiac Ultrasound Aortic Valve (12270)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Outflow Tracts Measurements (12271)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Outflow Tracts Measurements (12271)</summary>
 		public readonly static DicomUID CardiacUltrasoundOutflowTractsMeasurements12271 = new DicomUID("1.2.840.10008.6.1.852", "Cardiac Ultrasound Outflow Tracts Measurements (12271)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Semilunar Valves, Annulate and Sinuses Measurements (12272)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Semilunar Valves, Annulate and Sinuses Measurements (12272)</summary>
 		public readonly static DicomUID CardiacUltrasoundSemilunarValvesAnnulateAndSinusesMeasurements12272 = new DicomUID("1.2.840.10008.6.1.853", "Cardiac Ultrasound Semilunar Valves, Annulate and Sinuses Measurements (12272)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aortic Sinotubular Junction (12273)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aortic Sinotubular Junction (12273)</summary>
 		public readonly static DicomUID CardiacUltrasoundAorticSinotubularJunction12273 = new DicomUID("1.2.840.10008.6.1.854", "Cardiac Ultrasound Aortic Sinotubular Junction (12273)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aorta Measurements (12274)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aorta Measurements (12274)</summary>
 		public readonly static DicomUID CardiacUltrasoundAortaMeasurements12274 = new DicomUID("1.2.840.10008.6.1.855", "Cardiac Ultrasound Aorta Measurements (12274)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Coronary Arteries Measurements (12275)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Coronary Arteries Measurements (12275)</summary>
 		public readonly static DicomUID CardiacUltrasoundCoronaryArteriesMeasurements12275 = new DicomUID("1.2.840.10008.6.1.856", "Cardiac Ultrasound Coronary Arteries Measurements (12275)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aorto Pulmonary Connections Measurements (12276)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aorto Pulmonary Connections Measurements (12276)</summary>
 		public readonly static DicomUID CardiacUltrasoundAortoPulmonaryConnectionsMeasurements12276 = new DicomUID("1.2.840.10008.6.1.857", "Cardiac Ultrasound Aorto Pulmonary Connections Measurements (12276)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pericardium and Pleura Measurements (12277)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pericardium and Pleura Measurements (12277)</summary>
 		public readonly static DicomUID CardiacUltrasoundPericardiumAndPleuraMeasurements12277 = new DicomUID("1.2.840.10008.6.1.858", "Cardiac Ultrasound Pericardium and Pleura Measurements (12277)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Fetal General Measurements (12279)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Fetal General Measurements (12279)</summary>
 		public readonly static DicomUID CardiacUltrasoundFetalGeneralMeasurements12279 = new DicomUID("1.2.840.10008.6.1.859", "Cardiac Ultrasound Fetal General Measurements (12279)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Target Sites (12280)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Target Sites (12280)</summary>
 		public readonly static DicomUID CardiacUltrasoundTargetSites12280 = new DicomUID("1.2.840.10008.6.1.860", "Cardiac Ultrasound Target Sites (12280)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Target Site Modifiers (12281)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Target Site Modifiers (12281)</summary>
 		public readonly static DicomUID CardiacUltrasoundTargetSiteModifiers12281 = new DicomUID("1.2.840.10008.6.1.861", "Cardiac Ultrasound Target Site Modifiers (12281)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Venous Return Systemic Finding Sites (12282)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Venous Return Systemic Finding Sites (12282)</summary>
 		public readonly static DicomUID CardiacUltrasoundVenousReturnSystemicFindingSites12282 = new DicomUID("1.2.840.10008.6.1.862", "Cardiac Ultrasound Venous Return Systemic Finding Sites (12282)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Venous Return Pulmonary Finding Sites (12283)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Venous Return Pulmonary Finding Sites (12283)</summary>
 		public readonly static DicomUID CardiacUltrasoundVenousReturnPulmonaryFindingSites12283 = new DicomUID("1.2.840.10008.6.1.863", "Cardiac Ultrasound Venous Return Pulmonary Finding Sites (12283)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Atria and Atrial Septum Finding Sites (12284)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Atria and Atrial Septum Finding Sites (12284)</summary>
 		public readonly static DicomUID CardiacUltrasoundAtriaAndAtrialSeptumFindingSites12284 = new DicomUID("1.2.840.10008.6.1.864", "Cardiac Ultrasound Atria and Atrial Septum Finding Sites (12284)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Atrioventricular Valves Finding Sites (12285)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Atrioventricular Valves Finding Sites (12285)</summary>
 		public readonly static DicomUID CardiacUltrasoundAtrioventricularValvesFindingSites12285 = new DicomUID("1.2.840.10008.6.1.865", "Cardiac Ultrasound Atrioventricular Valves Finding Sites (12285)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Interventricular Septum Finding Sites (12286)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Interventricular Septum Finding Sites (12286)</summary>
 		public readonly static DicomUID CardiacUltrasoundInterventricularSeptumFindingSites12286 = new DicomUID("1.2.840.10008.6.1.866", "Cardiac Ultrasound Interventricular Septum Finding Sites (12286)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Ventricles Finding Sites (12287)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Ventricles Finding Sites (12287)</summary>
 		public readonly static DicomUID CardiacUltrasoundVentriclesFindingSites12287 = new DicomUID("1.2.840.10008.6.1.867", "Cardiac Ultrasound Ventricles Finding Sites (12287)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Outflow Tracts Finding Sites (12288)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Outflow Tracts Finding Sites (12288)</summary>
 		public readonly static DicomUID CardiacUltrasoundOutflowTractsFindingSites12288 = new DicomUID("1.2.840.10008.6.1.868", "Cardiac Ultrasound Outflow Tracts Finding Sites (12288)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Semilunar Valves, Annulate and Sinuses Finding Sites (12289)</summary>
-		public readonly static DicomUID CardiacUltrasoundSemilunarValvesAnnulateAndSinusesFindingSites12289 = new DicomUID("1.2.840.10008.6.1.869", "Cardiac Ultrasound Semilunar Valves, Annulate and Sinuses Finding Sites (12289)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Cardiac Ultrasound Semilunar Valves, Annulus and Sinuses Finding Sites (12289)</summary>
+		public readonly static DicomUID CardiacUltrasoundSemilunarValvesAnnulusAndSinusesFindingSites12289 = new DicomUID("1.2.840.10008.6.1.869", "Cardiac Ultrasound Semilunar Valves, Annulus and Sinuses Finding Sites (12289)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pulmonary Arteries Finding Sites (12290)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pulmonary Arteries Finding Sites (12290)</summary>
 		public readonly static DicomUID CardiacUltrasoundPulmonaryArteriesFindingSites12290 = new DicomUID("1.2.840.10008.6.1.870", "Cardiac Ultrasound Pulmonary Arteries Finding Sites (12290)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aorta Finding Sites (12291)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aorta Finding Sites (12291)</summary>
 		public readonly static DicomUID CardiacUltrasoundAortaFindingSites12291 = new DicomUID("1.2.840.10008.6.1.871", "Cardiac Ultrasound Aorta Finding Sites (12291)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Coronary Arteries Finding Sites (12292)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Coronary Arteries Finding Sites (12292)</summary>
 		public readonly static DicomUID CardiacUltrasoundCoronaryArteriesFindingSites12292 = new DicomUID("1.2.840.10008.6.1.872", "Cardiac Ultrasound Coronary Arteries Finding Sites (12292)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Aortopulmonary Connections Finding Sites (12293)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Aortopulmonary Connections Finding Sites (12293)</summary>
 		public readonly static DicomUID CardiacUltrasoundAortopulmonaryConnectionsFindingSites12293 = new DicomUID("1.2.840.10008.6.1.873", "Cardiac Ultrasound Aortopulmonary Connections Finding Sites (12293)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Ultrasound Pericardium and Pleura Finding Sites (12294)</summary>
+		/// <summary>Context Group Name: Cardiac Ultrasound Pericardium and Pleura Finding Sites (12294)</summary>
 		public readonly static DicomUID CardiacUltrasoundPericardiumAndPleuraFindingSites12294 = new DicomUID("1.2.840.10008.6.1.874", "Cardiac Ultrasound Pericardium and Pleura Finding Sites (12294)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Ultrasound Axial Measurements Type (4230)</summary>
+		/// <summary>Context Group Name: Ophthalmic Ultrasound Axial Measurements Type (4230)</summary>
 		public readonly static DicomUID OphthalmicUltrasoundAxialMeasurementsType4230 = new DicomUID("1.2.840.10008.6.1.876", "Ophthalmic Ultrasound Axial Measurements Type (4230)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lens Status (4231)</summary>
+		/// <summary>Context Group Name: Lens Status (4231)</summary>
 		public readonly static DicomUID LensStatus4231 = new DicomUID("1.2.840.10008.6.1.877", "Lens Status (4231)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Vitreous Status (4232)</summary>
+		/// <summary>Context Group Name: Vitreous Status (4232)</summary>
 		public readonly static DicomUID VitreousStatus4232 = new DicomUID("1.2.840.10008.6.1.878", "Vitreous Status (4232)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Axial Length Measurements Segment Names (4233)</summary>
+		/// <summary>Context Group Name: Ophthalmic Axial Length Measurements Segment Names (4233)</summary>
 		public readonly static DicomUID OphthalmicAxialLengthMeasurementsSegmentNames4233 = new DicomUID("1.2.840.10008.6.1.879", "Ophthalmic Axial Length Measurements Segment Names (4233)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Refractive Surgery Types (4234)</summary>
+		/// <summary>Context Group Name: Refractive Surgery Types (4234)</summary>
 		public readonly static DicomUID RefractiveSurgeryTypes4234 = new DicomUID("1.2.840.10008.6.1.880", "Refractive Surgery Types (4234)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Keratometry Descriptors (4235)</summary>
+		/// <summary>Context Group Name: Keratometry Descriptors (4235)</summary>
 		public readonly static DicomUID KeratometryDescriptors4235 = new DicomUID("1.2.840.10008.6.1.881", "Keratometry Descriptors (4235)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: IOL Calculation Formula (4236)</summary>
+		/// <summary>Context Group Name: IOL Calculation Formula (4236)</summary>
 		public readonly static DicomUID IOLCalculationFormula4236 = new DicomUID("1.2.840.10008.6.1.882", "IOL Calculation Formula (4236)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lens Constant Type (4237)</summary>
+		/// <summary>Context Group Name: Lens Constant Type (4237)</summary>
 		public readonly static DicomUID LensConstantType4237 = new DicomUID("1.2.840.10008.6.1.883", "Lens Constant Type (4237)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Refractive Error Types (4238)</summary>
+		/// <summary>Context Group Name: Refractive Error Types (4238)</summary>
 		public readonly static DicomUID RefractiveErrorTypes4238 = new DicomUID("1.2.840.10008.6.1.884", "Refractive Error Types (4238)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Anterior Chamber Depth Definition (4239)</summary>
+		/// <summary>Context Group Name: Anterior Chamber Depth Definition (4239)</summary>
 		public readonly static DicomUID AnteriorChamberDepthDefinition4239 = new DicomUID("1.2.840.10008.6.1.885", "Anterior Chamber Depth Definition (4239)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Measurement Or Calculation Data Source (4240)</summary>
-		public readonly static DicomUID OphthalmicMeasurementOrCalculationDataSource4240 = new DicomUID("1.2.840.10008.6.1.886", "Ophthalmic Measurement Or Calculation Data Source (4240)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Ophthalmic Measurement or Calculation Data Source (4240)</summary>
+		public readonly static DicomUID OphthalmicMeasurementOrCalculationDataSource4240 = new DicomUID("1.2.840.10008.6.1.886", "Ophthalmic Measurement or Calculation Data Source (4240)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Axial Length Selection Method (4241)</summary>
+		/// <summary>Context Group Name: Ophthalmic Axial Length Selection Method (4241)</summary>
 		public readonly static DicomUID OphthalmicAxialLengthSelectionMethod4241 = new DicomUID("1.2.840.10008.6.1.887", "Ophthalmic Axial Length Selection Method (4241)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Axial Length Quality Metric Type (4243)</summary>
-		public readonly static DicomUID OphthalmicAxialLengthQualityMetricType4243 = new DicomUID("1.2.840.10008.6.1.889", "Ophthalmic Axial Length Quality Metric Type (4243)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Ophthalmic Quality Metric Type (4243)</summary>
+		public readonly static DicomUID OphthalmicQualityMetricType4243 = new DicomUID("1.2.840.10008.6.1.889", "Ophthalmic Quality Metric Type (4243)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Agent Concentration Units (4244)</summary>
+		/// <summary>Context Group Name: Ophthalmic Agent Concentration Units (4244)</summary>
 		public readonly static DicomUID OphthalmicAgentConcentrationUnits4244 = new DicomUID("1.2.840.10008.6.1.890", "Ophthalmic Agent Concentration Units (4244)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Functional Condition Present During Acquisition (91)</summary>
+		/// <summary>Context Group Name: Functional Condition Present During Acquisition (91)</summary>
 		public readonly static DicomUID FunctionalConditionPresentDuringAcquisition91 = new DicomUID("1.2.840.10008.6.1.891", "Functional Condition Present During Acquisition (91)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Joint Position During Acquisition (92)</summary>
+		/// <summary>Context Group Name: Joint Position During Acquisition (92)</summary>
 		public readonly static DicomUID JointPositionDuringAcquisition92 = new DicomUID("1.2.840.10008.6.1.892", "Joint Position During Acquisition (92)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Joint Positioning Method (93)</summary>
+		/// <summary>Context Group Name: Joint Positioning Method (93)</summary>
 		public readonly static DicomUID JointPositioningMethod93 = new DicomUID("1.2.840.10008.6.1.893", "Joint Positioning Method (93)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Physical Force Applied During Acquisition (94)</summary>
+		/// <summary>Context Group Name: Physical Force Applied During Acquisition (94)</summary>
 		public readonly static DicomUID PhysicalForceAppliedDuringAcquisition94 = new DicomUID("1.2.840.10008.6.1.894", "Physical Force Applied During Acquisition (94)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Control Variables Numeric (3690)</summary>
+		/// <summary>Context Group Name: ECG Control Variables Numeric (3690)</summary>
 		public readonly static DicomUID ECGControlVariablesNumeric3690 = new DicomUID("1.2.840.10008.6.1.895", "ECG Control Variables Numeric (3690)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Control Variables Text (3691)</summary>
+		/// <summary>Context Group Name: ECG Control Variables Text (3691)</summary>
 		public readonly static DicomUID ECGControlVariablesText3691 = new DicomUID("1.2.840.10008.6.1.896", "ECG Control Variables Text (3691)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: WSI Referenced Image Purposes of Reference (8120)</summary>
+		/// <summary>Context Group Name: WSI Referenced Image Purposes of Reference (8120)</summary>
 		public readonly static DicomUID WSIReferencedImagePurposesOfReference8120 = new DicomUID("1.2.840.10008.6.1.897", "WSI Referenced Image Purposes of Reference (8120)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Microscopy Lens Type (8121)</summary>
+		/// <summary>Context Group Name: Microscopy Lens Type (8121)</summary>
 		public readonly static DicomUID MicroscopyLensType8121 = new DicomUID("1.2.840.10008.6.1.898", "Microscopy Lens Type (8121)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Microscopy Illuminator and Sensor Color (8122)</summary>
+		/// <summary>Context Group Name: Microscopy Illuminator and Sensor Color (8122)</summary>
 		public readonly static DicomUID MicroscopyIlluminatorAndSensorColor8122 = new DicomUID("1.2.840.10008.6.1.899", "Microscopy Illuminator and Sensor Color (8122)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Microscopy Illumination Method (8123)</summary>
+		/// <summary>Context Group Name: Microscopy Illumination Method (8123)</summary>
 		public readonly static DicomUID MicroscopyIlluminationMethod8123 = new DicomUID("1.2.840.10008.6.1.900", "Microscopy Illumination Method (8123)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Microscopy Filter (8124)</summary>
+		/// <summary>Context Group Name: Microscopy Filter (8124)</summary>
 		public readonly static DicomUID MicroscopyFilter8124 = new DicomUID("1.2.840.10008.6.1.901", "Microscopy Filter (8124)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Microscopy Illuminator Type (8125)</summary>
+		/// <summary>Context Group Name: Microscopy Illuminator Type (8125)</summary>
 		public readonly static DicomUID MicroscopyIlluminatorType8125 = new DicomUID("1.2.840.10008.6.1.902", "Microscopy Illuminator Type (8125)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Audit Event ID (400)</summary>
+		/// <summary>Context Group Name: Audit Event ID (400)</summary>
 		public readonly static DicomUID AuditEventID400 = new DicomUID("1.2.840.10008.6.1.903", "Audit Event ID (400)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Audit Event Type Code (401)</summary>
+		/// <summary>Context Group Name: Audit Event Type Code (401)</summary>
 		public readonly static DicomUID AuditEventTypeCode401 = new DicomUID("1.2.840.10008.6.1.904", "Audit Event Type Code (401)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Audit Active Participant Role ID Code (402)</summary>
+		/// <summary>Context Group Name: Audit Active Participant Role ID Code (402)</summary>
 		public readonly static DicomUID AuditActiveParticipantRoleIDCode402 = new DicomUID("1.2.840.10008.6.1.905", "Audit Active Participant Role ID Code (402)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Security Alert Type Code (403)</summary>
+		/// <summary>Context Group Name: Security Alert Type Code (403)</summary>
 		public readonly static DicomUID SecurityAlertTypeCode403 = new DicomUID("1.2.840.10008.6.1.906", "Security Alert Type Code (403)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Audit Participant Object ID Type Code (404)</summary>
+		/// <summary>Context Group Name: Audit Participant Object ID Type Code (404)</summary>
 		public readonly static DicomUID AuditParticipantObjectIDTypeCode404 = new DicomUID("1.2.840.10008.6.1.907", "Audit Participant Object ID Type Code (404)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Media Type Code (405)</summary>
+		/// <summary>Context Group Name: Media Type Code (405)</summary>
 		public readonly static DicomUID MediaTypeCode405 = new DicomUID("1.2.840.10008.6.1.908", "Media Type Code (405)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Static Perimetry Test Patterns (4250)</summary>
+		/// <summary>Context Group Name: Visual Field Static Perimetry Test Patterns (4250)</summary>
 		public readonly static DicomUID VisualFieldStaticPerimetryTestPatterns4250 = new DicomUID("1.2.840.10008.6.1.909", "Visual Field Static Perimetry Test Patterns (4250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Static Perimetry Test Strategies (4251)</summary>
+		/// <summary>Context Group Name: Visual Field Static Perimetry Test Strategies (4251)</summary>
 		public readonly static DicomUID VisualFieldStaticPerimetryTestStrategies4251 = new DicomUID("1.2.840.10008.6.1.910", "Visual Field Static Perimetry Test Strategies (4251)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Static Perimetry Screening Test Modes (4252)</summary>
+		/// <summary>Context Group Name: Visual Field Static Perimetry Screening Test Modes (4252)</summary>
 		public readonly static DicomUID VisualFieldStaticPerimetryScreeningTestModes4252 = new DicomUID("1.2.840.10008.6.1.911", "Visual Field Static Perimetry Screening Test Modes (4252)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Static Perimetry Fixation Strategy (4253)</summary>
+		/// <summary>Context Group Name: Visual Field Static Perimetry Fixation Strategy (4253)</summary>
 		public readonly static DicomUID VisualFieldStaticPerimetryFixationStrategy4253 = new DicomUID("1.2.840.10008.6.1.912", "Visual Field Static Perimetry Fixation Strategy (4253)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Static Perimetry Test Analysis Results (4254)</summary>
+		/// <summary>Context Group Name: Visual Field Static Perimetry Test Analysis Results (4254)</summary>
 		public readonly static DicomUID VisualFieldStaticPerimetryTestAnalysisResults4254 = new DicomUID("1.2.840.10008.6.1.913", "Visual Field Static Perimetry Test Analysis Results (4254)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Illumination Color (4255)</summary>
+		/// <summary>Context Group Name: Visual Field Illumination Color (4255)</summary>
 		public readonly static DicomUID VisualFieldIlluminationColor4255 = new DicomUID("1.2.840.10008.6.1.914", "Visual Field Illumination Color (4255)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Procedure Modifier (4256)</summary>
+		/// <summary>Context Group Name: Visual Field Procedure Modifier (4256)</summary>
 		public readonly static DicomUID VisualFieldProcedureModifier4256 = new DicomUID("1.2.840.10008.6.1.915", "Visual Field Procedure Modifier (4256)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Field Global Index Name (4257)</summary>
+		/// <summary>Context Group Name: Visual Field Global Index Name (4257)</summary>
 		public readonly static DicomUID VisualFieldGlobalIndexName4257 = new DicomUID("1.2.840.10008.6.1.916", "Visual Field Global Index Name (4257)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Component Semantics (7180)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Component Semantics (7180)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelComponentSemantics7180 = new DicomUID("1.2.840.10008.6.1.917", "Abstract Multi-dimensional Image Model Component Semantics (7180)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Component Units (7181)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Component Units (7181)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelComponentUnits7181 = new DicomUID("1.2.840.10008.6.1.918", "Abstract Multi-dimensional Image Model Component Units (7181)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Dimension Semantics (7182)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Dimension Semantics (7182)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelDimensionSemantics7182 = new DicomUID("1.2.840.10008.6.1.919", "Abstract Multi-dimensional Image Model Dimension Semantics (7182)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Dimension Units (7183)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Dimension Units (7183)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelDimensionUnits7183 = new DicomUID("1.2.840.10008.6.1.920", "Abstract Multi-dimensional Image Model Dimension Units (7183)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Axis Direction (7184)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Axis Direction (7184)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelAxisDirection7184 = new DicomUID("1.2.840.10008.6.1.921", "Abstract Multi-dimensional Image Model Axis Direction (7184)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Axis Orientation (7185)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Axis Orientation (7185)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelAxisOrientation7185 = new DicomUID("1.2.840.10008.6.1.922", "Abstract Multi-dimensional Image Model Axis Orientation (7185)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Multi-dimensional Image Model Qualitative Dimension Sample Semantics (7186)</summary>
+		/// <summary>Context Group Name: Abstract Multi-dimensional Image Model Qualitative Dimension Sample Semantics (7186)</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModelQualitativeDimensionSampleSemantics7186 = new DicomUID("1.2.840.10008.6.1.923", "Abstract Multi-dimensional Image Model Qualitative Dimension Sample Semantics (7186)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Planning Methods (7320)</summary>
+		/// <summary>Context Group Name: Planning Methods (7320)</summary>
 		public readonly static DicomUID PlanningMethods7320 = new DicomUID("1.2.840.10008.6.1.924", "Planning Methods (7320)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: De-identification Method (7050)</summary>
+		/// <summary>Context Group Name: De-identification Method (7050)</summary>
 		public readonly static DicomUID DeIdentificationMethod7050 = new DicomUID("1.2.840.10008.6.1.925", "De-identification Method (7050)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Orientation (12118)</summary>
+		/// <summary>Context Group Name: Measurement Orientation (12118)</summary>
 		public readonly static DicomUID MeasurementOrientation12118 = new DicomUID("1.2.840.10008.6.1.926", "Measurement Orientation (12118)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ECG Global Waveform Durations (3689)</summary>
+		/// <summary>Context Group Name: ECG Global Waveform Durations (3689)</summary>
 		public readonly static DicomUID ECGGlobalWaveformDurations3689 = new DicomUID("1.2.840.10008.6.1.927", "ECG Global Waveform Durations (3689)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: ICDs (3692)</summary>
+		/// <summary>Context Group Name: ICDs (3692)</summary>
 		public readonly static DicomUID ICDs3692 = new DicomUID("1.2.840.10008.6.1.930", "ICDs (3692)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiotherapy General Workitem Definition (9241)</summary>
+		/// <summary>Context Group Name: Radiotherapy General Workitem Definition (9241)</summary>
 		public readonly static DicomUID RadiotherapyGeneralWorkitemDefinition9241 = new DicomUID("1.2.840.10008.6.1.931", "Radiotherapy General Workitem Definition (9241)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiotherapy Acquisition Workitem Definition (9242)</summary>
+		/// <summary>Context Group Name: Radiotherapy Acquisition Workitem Definition (9242)</summary>
 		public readonly static DicomUID RadiotherapyAcquisitionWorkitemDefinition9242 = new DicomUID("1.2.840.10008.6.1.932", "Radiotherapy Acquisition Workitem Definition (9242)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiotherapy Registration Workitem Definition (9243)</summary>
+		/// <summary>Context Group Name: Radiotherapy Registration Workitem Definition (9243)</summary>
 		public readonly static DicomUID RadiotherapyRegistrationWorkitemDefinition9243 = new DicomUID("1.2.840.10008.6.1.933", "Radiotherapy Registration Workitem Definition (9243)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intravascular OCT Flush Agent (3850)</summary>
+		/// <summary>Context Group Name: Intravascular OCT Flush Agent (3850)</summary>
 		public readonly static DicomUID IntravascularOCTFlushAgent3850 = new DicomUID("1.2.840.10008.6.1.934", "Intravascular OCT Flush Agent (3850)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Label Types (10022)</summary>
+		/// <summary>Context Group Name: Label Types (10022)</summary>
 		public readonly static DicomUID LabelTypes10022 = new DicomUID("1.2.840.10008.6.1.935", "Label Types (10022)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Mapping Units for Real World Value Mapping (4260)</summary>
+		/// <summary>Context Group Name: Ophthalmic Mapping Units for Real World Value Mapping (4260)</summary>
 		public readonly static DicomUID OphthalmicMappingUnitsForRealWorldValueMapping4260 = new DicomUID("1.2.840.10008.6.1.936", "Ophthalmic Mapping Units for Real World Value Mapping (4260)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Mapping Acquisition Method (4261)</summary>
+		/// <summary>Context Group Name: Ophthalmic Mapping Acquisition Method (4261)</summary>
 		public readonly static DicomUID OphthalmicMappingAcquisitionMethod4261 = new DicomUID("1.2.840.10008.6.1.937", "Ophthalmic Mapping Acquisition Method (4261)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Retinal Thickness Definition (4262)</summary>
+		/// <summary>Context Group Name: Retinal Thickness Definition (4262)</summary>
 		public readonly static DicomUID RetinalThicknessDefinition4262 = new DicomUID("1.2.840.10008.6.1.938", "Retinal Thickness Definition (4262)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Thickness Map Value Type (4263)</summary>
+		/// <summary>Context Group Name: Ophthalmic Thickness Map Value Type (4263)</summary>
 		public readonly static DicomUID OphthalmicThicknessMapValueType4263 = new DicomUID("1.2.840.10008.6.1.939", "Ophthalmic Thickness Map Value Type (4263)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Map Purposes of Reference (4264)</summary>
+		/// <summary>Context Group Name: Ophthalmic Map Purposes of Reference (4264)</summary>
 		public readonly static DicomUID OphthalmicMapPurposesOfReference4264 = new DicomUID("1.2.840.10008.6.1.940", "Ophthalmic Map Purposes of Reference (4264)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Thickness Deviation Categories (4265)</summary>
+		/// <summary>Context Group Name: Ophthalmic Thickness Deviation Categories (4265)</summary>
 		public readonly static DicomUID OphthalmicThicknessDeviationCategories4265 = new DicomUID("1.2.840.10008.6.1.941", "Ophthalmic Thickness Deviation Categories (4265)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Ophthalmic Anatomic Structure Reference Point (4266)</summary>
+		/// <summary>Context Group Name: Ophthalmic Anatomic Structure Reference Point (4266)</summary>
 		public readonly static DicomUID OphthalmicAnatomicStructureReferencePoint4266 = new DicomUID("1.2.840.10008.6.1.942", "Ophthalmic Anatomic Structure Reference Point (4266)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cardiac Synchronization Technique (3104)</summary>
+		/// <summary>Context Group Name: Cardiac Synchronization Technique (3104)</summary>
 		public readonly static DicomUID CardiacSynchronizationTechnique3104 = new DicomUID("1.2.840.10008.6.1.943", "Cardiac Synchronization Technique (3104)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Staining Protocols (8130)</summary>
+		/// <summary>Context Group Name: Staining Protocols (8130)</summary>
 		public readonly static DicomUID StainingProtocols8130 = new DicomUID("1.2.840.10008.6.1.944", "Staining Protocols (8130)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Size Specific Dose Estimation Method for CT (10023)</summary>
+		/// <summary>Context Group Name: Size Specific Dose Estimation Method for CT (10023)</summary>
 		public readonly static DicomUID SizeSpecificDoseEstimationMethodForCT10023 = new DicomUID("1.2.840.10008.6.1.947", "Size Specific Dose Estimation Method for CT (10023)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pathology Imaging Protocols (8131)</summary>
+		/// <summary>Context Group Name: Pathology Imaging Protocols (8131)</summary>
 		public readonly static DicomUID PathologyImagingProtocols8131 = new DicomUID("1.2.840.10008.6.1.948", "Pathology Imaging Protocols (8131)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Magnification Selection (8132)</summary>
+		/// <summary>Context Group Name: Magnification Selection (8132)</summary>
 		public readonly static DicomUID MagnificationSelection8132 = new DicomUID("1.2.840.10008.6.1.949", "Magnification Selection (8132)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tissue Selection (8133)</summary>
+		/// <summary>Context Group Name: Tissue Selection (8133)</summary>
 		public readonly static DicomUID TissueSelection8133 = new DicomUID("1.2.840.10008.6.1.950", "Tissue Selection (8133)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: General Region of Interest Measurement Modifiers (7464)</summary>
+		/// <summary>Context Group Name: General Region of Interest Measurement Modifiers (7464)</summary>
 		public readonly static DicomUID GeneralRegionOfInterestMeasurementModifiers7464 = new DicomUID("1.2.840.10008.6.1.951", "General Region of Interest Measurement Modifiers (7464)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurements Derived From Multiple ROI Measurements (7465)</summary>
+		/// <summary>Context Group Name: Measurements Derived From Multiple ROI Measurements (7465)</summary>
 		public readonly static DicomUID MeasurementsDerivedFromMultipleROIMeasurements7465 = new DicomUID("1.2.840.10008.6.1.952", "Measurements Derived From Multiple ROI Measurements (7465)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Surface Scan Acquisition Types (8201)</summary>
+		/// <summary>Context Group Name: Surface Scan Acquisition Types (8201)</summary>
 		public readonly static DicomUID SurfaceScanAcquisitionTypes8201 = new DicomUID("1.2.840.10008.6.1.953", "Surface Scan Acquisition Types (8201)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Surface Scan Mode Types (8202)</summary>
+		/// <summary>Context Group Name: Surface Scan Mode Types (8202)</summary>
 		public readonly static DicomUID SurfaceScanModeTypes8202 = new DicomUID("1.2.840.10008.6.1.954", "Surface Scan Mode Types (8202)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Surface Scan Registration Method Types (8203)</summary>
+		/// <summary>Context Group Name: Surface Scan Registration Method Types (8203)</summary>
 		public readonly static DicomUID SurfaceScanRegistrationMethodTypes8203 = new DicomUID("1.2.840.10008.6.1.956", "Surface Scan Registration Method Types (8203)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Basic Cardiac Views (27)</summary>
+		/// <summary>Context Group Name: Basic Cardiac Views (27)</summary>
 		public readonly static DicomUID BasicCardiacViews27 = new DicomUID("1.2.840.10008.6.1.957", "Basic Cardiac Views (27)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CT Reconstruction Algorithm (10033)</summary>
+		/// <summary>Context Group Name: CT Reconstruction Algorithm (10033)</summary>
 		public readonly static DicomUID CTReconstructionAlgorithm10033 = new DicomUID("1.2.840.10008.6.1.958", "CT Reconstruction Algorithm (10033)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Detector Types (10030)</summary>
+		/// <summary>Context Group Name: Detector Types (10030)</summary>
 		public readonly static DicomUID DetectorTypes10030 = new DicomUID("1.2.840.10008.6.1.959", "Detector Types (10030)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: CR/DR Mechanical Configuration (10031)</summary>
+		/// <summary>Context Group Name: CR/DR Mechanical Configuration (10031)</summary>
 		public readonly static DicomUID CRDRMechanicalConfiguration10031 = new DicomUID("1.2.840.10008.6.1.960", "CR/DR Mechanical Configuration (10031)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Projection X-Ray Acquisition Device Types (10032)</summary>
+		/// <summary>Context Group Name: Projection X-Ray Acquisition Device Types (10032)</summary>
 		public readonly static DicomUID ProjectionXRayAcquisitionDeviceTypes10032 = new DicomUID("1.2.840.10008.6.1.961", "Projection X-Ray Acquisition Device Types (10032)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Abstract Segmentation Types (7165)</summary>
+		/// <summary>Context Group Name: Abstract Segmentation Types (7165)</summary>
 		public readonly static DicomUID AbstractSegmentationTypes7165 = new DicomUID("1.2.840.10008.6.1.962", "Abstract Segmentation Types (7165)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Common Tissue Segmentation Types (7166)</summary>
+		/// <summary>Context Group Name: Common Tissue Segmentation Types (7166)</summary>
 		public readonly static DicomUID CommonTissueSegmentationTypes7166 = new DicomUID("1.2.840.10008.6.1.963", "Common Tissue Segmentation Types (7166)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Peripheral Nervous System Segmentation Types (7167)</summary>
+		/// <summary>Context Group Name: Peripheral Nervous System Segmentation Types (7167)</summary>
 		public readonly static DicomUID PeripheralNervousSystemSegmentationTypes7167 = new DicomUID("1.2.840.10008.6.1.964", "Peripheral Nervous System Segmentation Types (7167)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Corneal Topography Mapping Units for Real World Value Mapping (4267)</summary>
+		/// <summary>Context Group Name: Corneal Topography Mapping Units for Real World Value Mapping (4267)</summary>
 		public readonly static DicomUID CornealTopographyMappingUnitsForRealWorldValueMapping4267 = new DicomUID("1.2.840.10008.6.1.965", "Corneal Topography Mapping Units for Real World Value Mapping (4267)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Corneal Topography Map Value Type (4268)</summary>
+		/// <summary>Context Group Name: Corneal Topography Map Value Type (4268)</summary>
 		public readonly static DicomUID CornealTopographyMapValueType4268 = new DicomUID("1.2.840.10008.6.1.966", "Corneal Topography Map Value Type (4268)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Brain Structures for Volumetric Measurements (7140)</summary>
+		/// <summary>Context Group Name: Brain Structures for Volumetric Measurements (7140)</summary>
 		public readonly static DicomUID BrainStructuresForVolumetricMeasurements7140 = new DicomUID("1.2.840.10008.6.1.967", "Brain Structures for Volumetric Measurements (7140)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: RT Dose Derivation (7220)</summary>
+		/// <summary>Context Group Name: RT Dose Derivation (7220)</summary>
 		public readonly static DicomUID RTDoseDerivation7220 = new DicomUID("1.2.840.10008.6.1.968", "RT Dose Derivation (7220)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: RT Dose Purpose of Reference (7221)</summary>
+		/// <summary>Context Group Name: RT Dose Purpose of Reference (7221)</summary>
 		public readonly static DicomUID RTDosePurposeOfReference7221 = new DicomUID("1.2.840.10008.6.1.969", "RT Dose Purpose of Reference (7221)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Spectroscopy Purpose of Reference (7215)</summary>
+		/// <summary>Context Group Name: Spectroscopy Purpose of Reference (7215)</summary>
 		public readonly static DicomUID SpectroscopyPurposeOfReference7215 = new DicomUID("1.2.840.10008.6.1.970", "Spectroscopy Purpose of Reference (7215)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Scheduled Processing Parameter Concept Codes for RT Treatment (9250)</summary>
+		/// <summary>Context Group Name: Scheduled Processing Parameter Concept Codes for RT Treatment (9250)</summary>
 		public readonly static DicomUID ScheduledProcessingParameterConceptCodesForRTTreatment9250 = new DicomUID("1.2.840.10008.6.1.971", "Scheduled Processing Parameter Concept Codes for RT Treatment (9250)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiopharmaceutical Organ Dose Reference Authority (10040)</summary>
+		/// <summary>Context Group Name: Radiopharmaceutical Organ Dose Reference Authority (10040)</summary>
 		public readonly static DicomUID RadiopharmaceuticalOrganDoseReferenceAuthority10040 = new DicomUID("1.2.840.10008.6.1.972", "Radiopharmaceutical Organ Dose Reference Authority (10040)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Source of Radioisotope Activity Information (10041)</summary>
+		/// <summary>Context Group Name: Source of Radioisotope Activity Information (10041)</summary>
 		public readonly static DicomUID SourceOfRadioisotopeActivityInformation10041 = new DicomUID("1.2.840.10008.6.1.973", "Source of Radioisotope Activity Information (10041)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Intravenous Extravasation Symptoms (10043)</summary>
+		/// <summary>Context Group Name: Intravenous Extravasation Symptoms (10043)</summary>
 		public readonly static DicomUID IntravenousExtravasationSymptoms10043 = new DicomUID("1.2.840.10008.6.1.975", "Intravenous Extravasation Symptoms (10043)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiosensitive Organs (10044)</summary>
+		/// <summary>Context Group Name: Radiosensitive Organs (10044)</summary>
 		public readonly static DicomUID RadiosensitiveOrgans10044 = new DicomUID("1.2.840.10008.6.1.976", "Radiosensitive Organs (10044)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Radiopharmaceutical Patient State (10045)</summary>
+		/// <summary>Context Group Name: Radiopharmaceutical Patient State (10045)</summary>
 		public readonly static DicomUID RadiopharmaceuticalPatientState10045 = new DicomUID("1.2.840.10008.6.1.977", "Radiopharmaceutical Patient State (10045)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: GFR Measurements (10046)</summary>
+		/// <summary>Context Group Name: GFR Measurements (10046)</summary>
 		public readonly static DicomUID GFRMeasurements10046 = new DicomUID("1.2.840.10008.6.1.978", "GFR Measurements (10046)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: GFR Measurement Methods (10047)</summary>
+		/// <summary>Context Group Name: GFR Measurement Methods (10047)</summary>
 		public readonly static DicomUID GFRMeasurementMethods10047 = new DicomUID("1.2.840.10008.6.1.979", "GFR Measurement Methods (10047)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Visual Evaluation Methods (8300)</summary>
+		/// <summary>Context Group Name: Visual Evaluation Methods (8300)</summary>
 		public readonly static DicomUID VisualEvaluationMethods8300 = new DicomUID("1.2.840.10008.6.1.980", "Visual Evaluation Methods (8300)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Test Pattern Codes (8301)</summary>
+		/// <summary>Context Group Name: Test Pattern Codes (8301)</summary>
 		public readonly static DicomUID TestPatternCodes8301 = new DicomUID("1.2.840.10008.6.1.981", "Test Pattern Codes (8301)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Pattern Codes (8302)</summary>
+		/// <summary>Context Group Name: Measurement Pattern Codes (8302)</summary>
 		public readonly static DicomUID MeasurementPatternCodes8302 = new DicomUID("1.2.840.10008.6.1.982", "Measurement Pattern Codes (8302)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Display Device Type (8303)</summary>
+		/// <summary>Context Group Name: Display Device Type (8303)</summary>
 		public readonly static DicomUID DisplayDeviceType8303 = new DicomUID("1.2.840.10008.6.1.983", "Display Device Type (8303)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: SUV Units (85)</summary>
+		/// <summary>Context Group Name: SUV Units (85)</summary>
 		public readonly static DicomUID SUVUnits85 = new DicomUID("1.2.840.10008.6.1.984", "SUV Units (85)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: T1 Measurement Methods (4100)</summary>
+		/// <summary>Context Group Name: T1 Measurement Methods (4100)</summary>
 		public readonly static DicomUID T1MeasurementMethods4100 = new DicomUID("1.2.840.10008.6.1.985", "T1 Measurement Methods (4100)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tracer Kinetic Models (4101)</summary>
+		/// <summary>Context Group Name: Tracer Kinetic Models (4101)</summary>
 		public readonly static DicomUID TracerKineticModels4101 = new DicomUID("1.2.840.10008.6.1.986", "Tracer Kinetic Models (4101)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Measurement Methods (4102)</summary>
+		/// <summary>Context Group Name: Perfusion Measurement Methods (4102)</summary>
 		public readonly static DicomUID PerfusionMeasurementMethods4102 = new DicomUID("1.2.840.10008.6.1.987", "Perfusion Measurement Methods (4102)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Arterial Input Function Measurement Methods (4103)</summary>
+		/// <summary>Context Group Name: Arterial Input Function Measurement Methods (4103)</summary>
 		public readonly static DicomUID ArterialInputFunctionMeasurementMethods4103 = new DicomUID("1.2.840.10008.6.1.988", "Arterial Input Function Measurement Methods (4103)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Bolus Arrival Time Derivation Methods (4104)</summary>
+		/// <summary>Context Group Name: Bolus Arrival Time Derivation Methods (4104)</summary>
 		public readonly static DicomUID BolusArrivalTimeDerivationMethods4104 = new DicomUID("1.2.840.10008.6.1.989", "Bolus Arrival Time Derivation Methods (4104)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Analysis Methods (4105)</summary>
+		/// <summary>Context Group Name: Perfusion Analysis Methods (4105)</summary>
 		public readonly static DicomUID PerfusionAnalysisMethods4105 = new DicomUID("1.2.840.10008.6.1.990", "Perfusion Analysis Methods (4105)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Quantitative Methods used for Perfusion And Tracer Kinetic Models (4106)</summary>
+		/// <summary>Context Group Name: Quantitative Methods used for Perfusion And Tracer Kinetic Models (4106)</summary>
 		public readonly static DicomUID QuantitativeMethodsUsedForPerfusionAndTracerKineticModels4106 = new DicomUID("1.2.840.10008.6.1.991", "Quantitative Methods used for Perfusion And Tracer Kinetic Models (4106)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tracer Kinetic Model Parameters (4107)</summary>
+		/// <summary>Context Group Name: Tracer Kinetic Model Parameters (4107)</summary>
 		public readonly static DicomUID TracerKineticModelParameters4107 = new DicomUID("1.2.840.10008.6.1.992", "Tracer Kinetic Model Parameters (4107)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Perfusion Model Parameters (4108)</summary>
+		/// <summary>Context Group Name: Perfusion Model Parameters (4108)</summary>
 		public readonly static DicomUID PerfusionModelParameters4108 = new DicomUID("1.2.840.10008.6.1.993", "Perfusion Model Parameters (4108)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Model-Independent Dynamic Contrast Analysis Parameters (4109)</summary>
+		/// <summary>Context Group Name: Model-Independent Dynamic Contrast Analysis Parameters (4109)</summary>
 		public readonly static DicomUID ModelIndependentDynamicContrastAnalysisParameters4109 = new DicomUID("1.2.840.10008.6.1.994", "Model-Independent Dynamic Contrast Analysis Parameters (4109)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tracer Kinetic Modeling Covariates (4110)</summary>
+		/// <summary>Context Group Name: Tracer Kinetic Modeling Covariates (4110)</summary>
 		public readonly static DicomUID TracerKineticModelingCovariates4110 = new DicomUID("1.2.840.10008.6.1.995", "Tracer Kinetic Modeling Covariates (4110)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Contrast Characteristics (4111)</summary>
+		/// <summary>Context Group Name: Contrast Characteristics (4111)</summary>
 		public readonly static DicomUID ContrastCharacteristics4111 = new DicomUID("1.2.840.10008.6.1.996", "Contrast Characteristics (4111)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Measurement Report Document Titles (7021)</summary>
+		/// <summary>Context Group Name: Measurement Report Document Titles (7021)</summary>
 		public readonly static DicomUID MeasurementReportDocumentTitles7021 = new DicomUID("1.2.840.10008.6.1.997", "Measurement Report Document Titles (7021)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Quantitative Diagnostic Imaging Procedures (100)</summary>
+		/// <summary>Context Group Name: Quantitative Diagnostic Imaging Procedures (100)</summary>
 		public readonly static DicomUID QuantitativeDiagnosticImagingProcedures100 = new DicomUID("1.2.840.10008.6.1.998", "Quantitative Diagnostic Imaging Procedures (100)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: PET Region of Interest Measurements (7466)</summary>
+		/// <summary>Context Group Name: PET Region of Interest Measurements (7466)</summary>
 		public readonly static DicomUID PETRegionOfInterestMeasurements7466 = new DicomUID("1.2.840.10008.6.1.999", "PET Region of Interest Measurements (7466)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Grey Level Co-occurrence Matrix Measurements (7467)</summary>
+		/// <summary>Context Group Name: Grey Level Co-occurrence Matrix Measurements (7467)</summary>
 		public readonly static DicomUID GreyLevelCoOccurrenceMatrixMeasurements7467 = new DicomUID("1.2.840.10008.6.1.1000", "Grey Level Co-occurrence Matrix Measurements (7467)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Texture Measurements (7468)</summary>
+		/// <summary>Context Group Name: Texture Measurements (7468)</summary>
 		public readonly static DicomUID TextureMeasurements7468 = new DicomUID("1.2.840.10008.6.1.1001", "Texture Measurements (7468)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Time Point Types (6146)</summary>
+		/// <summary>Context Group Name: Time Point Types (6146)</summary>
 		public readonly static DicomUID TimePointTypes6146 = new DicomUID("1.2.840.10008.6.1.1002", "Time Point Types (6146)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Generic Intensity and Size Measurements (7469)</summary>
+		/// <summary>Context Group Name: Generic Intensity and Size Measurements (7469)</summary>
 		public readonly static DicomUID GenericIntensityAndSizeMeasurements7469 = new DicomUID("1.2.840.10008.6.1.1003", "Generic Intensity and Size Measurements (7469)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Response Criteria (6147)</summary>
+		/// <summary>Context Group Name: Response Criteria (6147)</summary>
 		public readonly static DicomUID ResponseCriteria6147 = new DicomUID("1.2.840.10008.6.1.1004", "Response Criteria (6147)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Biometry Anatomic Sites (12020)</summary>
+		/// <summary>Context Group Name: Fetal Biometry Anatomic Sites (12020)</summary>
 		public readonly static DicomUID FetalBiometryAnatomicSites12020 = new DicomUID("1.2.840.10008.6.1.1005", "Fetal Biometry Anatomic Sites (12020)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Long Bone Anatomic Sites (12021)</summary>
+		/// <summary>Context Group Name: Fetal Long Bone Anatomic Sites (12021)</summary>
 		public readonly static DicomUID FetalLongBoneAnatomicSites12021 = new DicomUID("1.2.840.10008.6.1.1006", "Fetal Long Bone Anatomic Sites (12021)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fetal Cranium Bone Anatomic Sites (12022)</summary>
-		public readonly static DicomUID FetalCraniumBoneAnatomicSites12022 = new DicomUID("1.2.840.10008.6.1.1007", "Fetal Cranium Bone Anatomic Sites (12022)", DicomUidType.ContextGroupName, false);
+		/// <summary>Context Group Name: Fetal Cranium Anatomic Sites (12022)</summary>
+		public readonly static DicomUID FetalCraniumAnatomicSites12022 = new DicomUID("1.2.840.10008.6.1.1007", "Fetal Cranium Anatomic Sites (12022)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Pelvis and Uterus Anatomic Sites (12023)</summary>
+		/// <summary>Context Group Name: Pelvis and Uterus Anatomic Sites (12023)</summary>
 		public readonly static DicomUID PelvisAndUterusAnatomicSites12023 = new DicomUID("1.2.840.10008.6.1.1008", "Pelvis and Uterus Anatomic Sites (12023)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Parametric Map Derivation Image Purpose of Reference (7222)</summary>
+		/// <summary>Context Group Name: Parametric Map Derivation Image Purpose of Reference (7222)</summary>
 		public readonly static DicomUID ParametricMapDerivationImagePurposeOfReference7222 = new DicomUID("1.2.840.10008.6.1.1009", "Parametric Map Derivation Image Purpose of Reference (7222)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Physical Quantity Descriptors (9000)</summary>
+		/// <summary>Context Group Name: Physical Quantity Descriptors (9000)</summary>
 		public readonly static DicomUID PhysicalQuantityDescriptors9000 = new DicomUID("1.2.840.10008.6.1.1010", "Physical Quantity Descriptors (9000)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Lymph Node Anatomic Sites (7600)</summary>
+		/// <summary>Context Group Name: Lymph Node Anatomic Sites (7600)</summary>
 		public readonly static DicomUID LymphNodeAnatomicSites7600 = new DicomUID("1.2.840.10008.6.1.1011", "Lymph Node Anatomic Sites (7600)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Head and Neck Cancer Anatomic Sites (7601)</summary>
+		/// <summary>Context Group Name: Head and Neck Cancer Anatomic Sites (7601)</summary>
 		public readonly static DicomUID HeadAndNeckCancerAnatomicSites7601 = new DicomUID("1.2.840.10008.6.1.1012", "Head and Neck Cancer Anatomic Sites (7601)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Fiber Tracts In Brainstem (7701)</summary>
+		/// <summary>Context Group Name: Fiber Tracts In Brainstem (7701)</summary>
 		public readonly static DicomUID FiberTractsInBrainstem7701 = new DicomUID("1.2.840.10008.6.1.1013", "Fiber Tracts In Brainstem (7701)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Projection and Thalamic Fibers (7702)</summary>
+		/// <summary>Context Group Name: Projection and Thalamic Fibers (7702)</summary>
 		public readonly static DicomUID ProjectionAndThalamicFibers7702 = new DicomUID("1.2.840.10008.6.1.1014", "Projection and Thalamic Fibers (7702)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Association Fibers (7703)</summary>
+		/// <summary>Context Group Name: Association Fibers (7703)</summary>
 		public readonly static DicomUID AssociationFibers7703 = new DicomUID("1.2.840.10008.6.1.1015", "Association Fibers (7703)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Limbic System Tracts (7704)</summary>
+		/// <summary>Context Group Name: Limbic System Tracts (7704)</summary>
 		public readonly static DicomUID LimbicSystemTracts7704 = new DicomUID("1.2.840.10008.6.1.1016", "Limbic System Tracts (7704)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Commissural Fibers (7705)</summary>
+		/// <summary>Context Group Name: Commissural Fibers (7705)</summary>
 		public readonly static DicomUID CommissuralFibers7705 = new DicomUID("1.2.840.10008.6.1.1017", "Commissural Fibers (7705)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Cranial Nerves (7706)</summary>
+		/// <summary>Context Group Name: Cranial Nerves (7706)</summary>
 		public readonly static DicomUID CranialNerves7706 = new DicomUID("1.2.840.10008.6.1.1018", "Cranial Nerves (7706)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Spinal Cord Fibers (7707)</summary>
+		/// <summary>Context Group Name: Spinal Cord Fibers (7707)</summary>
 		public readonly static DicomUID SpinalCordFibers7707 = new DicomUID("1.2.840.10008.6.1.1019", "Spinal Cord Fibers (7707)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ContextGroupName: Tractography Anatomic Sites (7710)</summary>
+		/// <summary>Context Group Name: Tractography Anatomic Sites (7710)</summary>
 		public readonly static DicomUID TractographyAnatomicSites7710 = new DicomUID("1.2.840.10008.6.1.1020", "Tractography Anatomic Sites (7710)", DicomUidType.ContextGroupName, false);
 
-		/// <summary>ApplicationHostingModel: Native DICOM Model</summary>
+		/// <summary>Context Group Name: Primary Anatomic Structure for Intra-oral Radiography (Supernumerary Dentition - Designation of Teeth) (4025)</summary>
+		public readonly static DicomUID PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025 = new DicomUID("1.2.840.10008.6.1.1021", "Primary Anatomic Structure for Intra-oral Radiography (Supernumerary Dentition - Designation of Teeth) (4025)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: Primary Anatomic Structure for Intra-oral and Craniofacial Radiography - Teeth (4026)</summary>
+		public readonly static DicomUID PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026 = new DicomUID("1.2.840.10008.6.1.1022", "Primary Anatomic Structure for Intra-oral and Craniofacial Radiography - Teeth (4026)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: IEC6127 Device Position Parameters (9401)</summary>
+		public readonly static DicomUID IEC6127DevicePositionParameters9401 = new DicomUID("1.2.840.10008.6.1.1023", "IEC6127 Device Position Parameters (9401)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: IEC6127 Gantry Position Parameters (9402)</summary>
+		public readonly static DicomUID IEC6127GantryPositionParameters9402 = new DicomUID("1.2.840.10008.6.1.1024", "IEC6127 Gantry Position Parameters (9402)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: IEC6127 Patient Support Position Parameters (9403)</summary>
+		public readonly static DicomUID IEC6127PatientSupportPositionParameters9403 = new DicomUID("1.2.840.10008.6.1.1025", "IEC6127 Patient Support Position Parameters (9403)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: Actionable Finding Classification (7035)</summary>
+		public readonly static DicomUID ActionableFindingClassification7035 = new DicomUID("1.2.840.10008.6.1.1026", "Actionable Finding Classification (7035)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: Image Quality Assessment (7036)</summary>
+		public readonly static DicomUID ImageQualityAssessment7036 = new DicomUID("1.2.840.10008.6.1.1027", "Image Quality Assessment (7036)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: Summary Radiation Exposure Quantities (10050)</summary>
+		public readonly static DicomUID SummaryRadiationExposureQuantities10050 = new DicomUID("1.2.840.10008.6.1.1028", "Summary Radiation Exposure Quantities (10050)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Context Group Name: Wide Field Ophthalmic Photography Transformation Method (4245)</summary>
+		public readonly static DicomUID WideFieldOphthalmicPhotographyTransformationMethod4245 = new DicomUID("1.2.840.10008.6.1.1029", "Wide Field Ophthalmic Photography Transformation Method (4245)", DicomUidType.ContextGroupName, false);
+
+		/// <summary>Application Hosting Model: Native DICOM Model</summary>
 		public readonly static DicomUID NativeDICOMModel = new DicomUID("1.2.840.10008.7.1.1", "Native DICOM Model", DicomUidType.ApplicationHostingModel, false);
 
-		/// <summary>ApplicationHostingModel: Abstract Multi-Dimensional Image Model</summary>
+		/// <summary>Application Hosting Model: Abstract Multi-Dimensional Image Model</summary>
 		public readonly static DicomUID AbstractMultiDimensionalImageModel = new DicomUID("1.2.840.10008.7.1.2", "Abstract Multi-Dimensional Image Model", DicomUidType.ApplicationHostingModel, false);
 
 		/// <summary>Unknown: DICOM Content Mapping Resource</summary>
@@ -5084,7 +5128,7 @@ namespace Dicom {
 		/// <summary>LDAP: dicomTransferCapability</summary>
 		public readonly static DicomUID DicomTransferCapability = new DicomUID("1.2.840.10008.15.0.4.8", "dicomTransferCapability", DicomUidType.LDAP, false);
 
-		/// <summary>FrameOfReference: Universal Coordinated Time</summary>
+		/// <summary>Frame Of Reference: Universal Coordinated Time</summary>
 		public readonly static DicomUID UniversalCoordinatedTime = new DicomUID("1.2.840.10008.15.1.1", "Universal Coordinated Time", DicomUidType.FrameOfReference, false);
 	}
 }

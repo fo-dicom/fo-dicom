@@ -4509,6 +4509,42 @@
 		///<summary>(0022,1472) VR=SQ VM=1 Relevant OPT Attributes Sequence</summary>
 		public readonly static DicomTag RelevantOPTAttributesSequence = new DicomTag(0x0022, 0x1472);
 
+		///<summary>(0022,1512) VR=SQ VM=1 Transformation Method Code Sequence</summary>
+		public readonly static DicomTag TransformationMethodCodeSequence = new DicomTag(0x0022, 0x1512);
+
+		///<summary>(0022,1513) VR=SQ VM=1 Transformation Algorithm Sequence</summary>
+		public readonly static DicomTag TransformationAlgorithmSequence = new DicomTag(0x0022, 0x1513);
+
+		///<summary>(0022,1515) VR=CS VM=1 Ophthalmic Axial Length Method</summary>
+		public readonly static DicomTag OphthalmicAxialLengthMethod = new DicomTag(0x0022, 0x1515);
+
+		///<summary>(0022,1517) VR=FL VM=1 Ophthalmic FOV</summary>
+		public readonly static DicomTag OphthalmicFOV = new DicomTag(0x0022, 0x1517);
+
+		///<summary>(0022,1518) VR=SQ VM=1 Two Dimensional to Three Dimensional Map Sequence</summary>
+		public readonly static DicomTag TwoDimensionalToThreeDimensionalMapSequence = new DicomTag(0x0022, 0x1518);
+
+		///<summary>(0022,1525) VR=SQ VM=1 Wide Field Ophthalmic Photography Quality Rating Sequence</summary>
+		public readonly static DicomTag WideFieldOphthalmicPhotographyQualityRatingSequence = new DicomTag(0x0022, 0x1525);
+
+		///<summary>(0022,1526) VR=SQ VM=1 Wide Field Ophthalmic Photography Quality Threshold Sequence</summary>
+		public readonly static DicomTag WideFieldOphthalmicPhotographyQualityThresholdSequence = new DicomTag(0x0022, 0x1526);
+
+		///<summary>(0022,1527) VR=FL VM=1 Wide Field Ophthalmic Photography  Threshold Quality Rating</summary>
+		public readonly static DicomTag WideFieldOphthalmicPhotographyThresholdQualityRating = new DicomTag(0x0022, 0x1527);
+
+		///<summary>(0022,1528) VR=FL VM=1 X Coordinates Center Pixel View Angle</summary>
+		public readonly static DicomTag XCoordinatesCenterPixelViewAngle = new DicomTag(0x0022, 0x1528);
+
+		///<summary>(0022,1529) VR=FL VM=1 Y Coordinates Center Pixel View Angle</summary>
+		public readonly static DicomTag YCoordinatesCenterPixelViewAngle = new DicomTag(0x0022, 0x1529);
+
+		///<summary>(0022,1530) VR=UL VM=1 Number of Map Points</summary>
+		public readonly static DicomTag NumberOfMapPoints = new DicomTag(0x0022, 0x1530);
+
+		///<summary>(0022,1531) VR=OF VM=1 Two Dimensional to Three Dimensional Map Data</summary>
+		public readonly static DicomTag TwoDimensionalToThreeDimensionalMapData = new DicomTag(0x0022, 0x1531);
+
 		///<summary>(0024,0010) VR=FL VM=1 Visual Field Horizontal Extent</summary>
 		public readonly static DicomTag VisualFieldHorizontalExtent = new DicomTag(0x0024, 0x0010);
 
@@ -10482,6 +10518,15 @@
 		///<summary>(300a,0130) VR=DS VM=1 Source to Surface Distance</summary>
 		public readonly static DicomTag SourceToSurfaceDistance = new DicomTag(0x300a, 0x0130);
 
+		///<summary>(300a,0131) VR=FL VM=1 Average Beam Dose Point Source to External Contour Surface Distance</summary>
+		public readonly static DicomTag AverageBeamDosePointSourceToExternalContourSurfaceDistance = new DicomTag(0x300a, 0x0131);
+
+		///<summary>(300a,0132) VR=FL VM=1 Source to External Contour Distance</summary>
+		public readonly static DicomTag SourceToExternalContourDistance = new DicomTag(0x300a, 0x0132);
+
+		///<summary>(300a,0133) VR=FL VM=3 External Contour Entry Point</summary>
+		public readonly static DicomTag ExternalContourEntryPoint = new DicomTag(0x300a, 0x0133);
+
 		///<summary>(300a,0134) VR=DS VM=1 Cumulative Meterset Weight</summary>
 		public readonly static DicomTag CumulativeMetersetWeight = new DicomTag(0x300a, 0x0134);
 
@@ -11045,6 +11090,30 @@
 
 		///<summary>(300a,0436) VR=FL VM=1 Source to Applicator Mounting Position Distance</summary>
 		public readonly static DicomTag SourceToApplicatorMountingPositionDistance = new DicomTag(0x300a, 0x0436);
+
+		///<summary>(300a,0440) VR=IS VM=1 Number of Block Slab Items</summary>
+		public readonly static DicomTag NumberOfBlockSlabItems = new DicomTag(0x300a, 0x0440);
+
+		///<summary>(300a,0441) VR=SQ VM=1 Block Slab Sequence</summary>
+		public readonly static DicomTag BlockSlabSequence = new DicomTag(0x300a, 0x0441);
+
+		///<summary>(300a,0442) VR=DS VM=1 Block Slab Thickness</summary>
+		public readonly static DicomTag BlockSlabThickness = new DicomTag(0x300a, 0x0442);
+
+		///<summary>(300a,0443) VR=US VM=1 Block Slab Number</summary>
+		public readonly static DicomTag BlockSlabNumber = new DicomTag(0x300a, 0x0443);
+
+		///<summary>(300a,0450) VR=SQ VM=1 Device Motion Control Sequence</summary>
+		public readonly static DicomTag DeviceMotionControlSequence = new DicomTag(0x300a, 0x0450);
+
+		///<summary>(300a,0451) VR=CS VM=1 Device Motion Execution Mode</summary>
+		public readonly static DicomTag DeviceMotionExecutionMode = new DicomTag(0x300a, 0x0451);
+
+		///<summary>(300a,0452) VR=CS VM=1 Device Motion Observation Mode</summary>
+		public readonly static DicomTag DeviceMotionObservationMode = new DicomTag(0x300a, 0x0452);
+
+		///<summary>(300a,0453) VR=SQ VM=1 Device Motion Parameter Code Sequence</summary>
+		public readonly static DicomTag DeviceMotionParameterCodeSequence = new DicomTag(0x300a, 0x0453);
 
 		///<summary>(300c,0002) VR=SQ VM=1 Referenced RT Plan Sequence</summary>
 		public readonly static DicomTag ReferencedRTPlanSequence = new DicomTag(0x300c, 0x0002);
