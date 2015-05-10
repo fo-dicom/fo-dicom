@@ -459,9 +459,9 @@ namespace Dicom.Network {
 							}
 
 							if (DicomMessage.IsRequest(_dimse.Type))
-								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+								ThreadPool.QueueUserWorkItem(PerformDimseCallback, new ContextualMessage { Message = _dimse, PresentationContext = pc });
 							else
-								_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, _dimse);
+								_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, new ContextualMessage { Message = _dimse, PresentationContext = pc });
 							_dimse = null;
 						}
 					}
@@ -528,7 +528,7 @@ namespace Dicom.Network {
 
 	    private void PerformDimseCallback(object state)
 	    {
-		    var msg = state as ContextualMessage;
+		    var msg = (ContextualMessage)state;
 		    var dimse = msg.Message;
 		    var presentationContext = msg.PresentationContext;
 
