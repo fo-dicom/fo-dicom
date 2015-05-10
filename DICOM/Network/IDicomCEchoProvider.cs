@@ -5,6 +5,6 @@ using System.Text;
 
 namespace Dicom.Network {
 	public interface IDicomCEchoProvider {
-		DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request);
+		DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request, DicomPresentationContext presentationContext);
 	}
 }

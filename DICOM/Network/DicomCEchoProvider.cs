@@ -30,7 +30,8 @@ namespace Dicom.Network {
 		public void OnConnectionClosed(Exception exception) {
 		}
 
-		public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request) {
+		public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request, DicomPresentationContext presentationContext)
+		{
 			return new DicomCEchoResponse(request, DicomStatus.Success);
 		}
 	}

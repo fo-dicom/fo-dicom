@@ -9,11 +9,11 @@ namespace Dicom.Network {
         /// Callback for each Sop Instance received.  The default implementation of
         /// DicomService is to write a temporary file that is automatically deleted
         /// for each SopInstance received.  See the documentation for DicomService.CreateCStoreReceiveStream()
-        /// and DicomService.GetCStoreDicomFile() for information about changing this 
+        /// and DicomService.GetCStoreDicomFile() for information about changing this
         /// behavior (e.g. writing to your own custom stream and avoiding the temporary file)
         /// <returns></returns>
-		DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request);
-		
+		DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request, DicomPresentationContext presentationContext);
+
         /// <summary>
 		/// Callback for exceptions raised during the parsing of the received SopInstance.  Note that
         /// it is possible to avoid parsing the file by overriding DicomService.GetCStoreDicomFile() if
@@ -21,6 +21,6 @@ namespace Dicom.Network {
 		/// </summary>
 		/// <param name="tempFileName"></param>
 		/// <param name="e"></param>
-        void OnCStoreRequestException(string tempFileName, Exception e);
+		void OnCStoreRequestException(string tempFileName, Exception e, DicomPresentationContext presentationContext);
 	}
 }

@@ -86,7 +86,7 @@ namespace Dicom.CStoreSCP {
 		    {
 		    }
 
-			public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request) {
+			public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request, DicomPresentationContext presentationContext) {
 				var studyUid = request.Dataset.Get<string>(DicomTag.StudyInstanceUID);
 				var instUid = request.SOPInstanceUID.UID;
 
@@ -103,11 +103,11 @@ namespace Dicom.CStoreSCP {
 				return new DicomCStoreResponse(request, DicomStatus.Success);
 			}
 
-			public void OnCStoreRequestException(string tempFileName, Exception e) {
+			public void OnCStoreRequestException(string tempFileName, Exception e, DicomPresentationContext presentationContext) {
 				// let library handle logging and error response
 			}
 
-			public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request) {
+			public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request, DicomPresentationContext presentationContext) {
 				return new DicomCEchoResponse(request, DicomStatus.Success);
 			}
 		}
