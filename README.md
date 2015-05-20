@@ -1,5 +1,7 @@
 # Fellow Oak DICOM for .NET
 
+[![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Please join the [Google group](http://groups.google.com/group/fo-dicom) for updates and support. Binaries are available from [GitHub](https://github.com/rcd/fo-dicom/releases) and [NuGet](http://www.nuget.org/packages/fo-dicom).
 
 ### Features
