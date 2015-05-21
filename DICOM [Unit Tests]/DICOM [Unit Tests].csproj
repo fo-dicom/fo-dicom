@@ -59,6 +59,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomPersonNameTest.cs" />
     <Compile Include="DicomTagTest.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
