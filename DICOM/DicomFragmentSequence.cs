@@ -28,8 +28,9 @@ namespace Dicom {
 		}
 
 		internal void Add(IByteBuffer fragment) {
-			if (_offsetTable == null) {
-				var en = ByteBufferEnumerator<uint>.Create(fragment);
+			if (_offsetTable == null)
+			{
+			    var en = IO.ByteConverter.ToArray<uint>(fragment);
 				_offsetTable = new List<uint>(en);
 				return;
 			}

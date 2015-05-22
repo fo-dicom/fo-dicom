@@ -302,7 +302,7 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<short>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<short>(data);
 
 			if (bitDepth.BitsStored != 16) {
 				int sign = 1 << bitDepth.HighBit;
@@ -419,7 +419,8 @@ namespace Dicom.Imaging.Render {
 			_bits = bitDepth;
 			_width = width;
 			_height = height;
-			_data = ByteBufferEnumerator<ushort>.Create(data).ToArray();
+		    _data = IO.ByteConverter.ToArray<ushort>(data);
+
 
 			if (bitDepth.BitsStored != 16) {
 				int mask = (1 << (bitDepth.HighBit + 1)) - 1;
@@ -529,7 +530,7 @@ namespace Dicom.Imaging.Render {
         public GrayscalePixelDataS32(int width, int height, BitDepth bitDepth, IByteBuffer data) {
             _width = width;
             _height = height;
-            _data = ByteBufferEnumerator<int>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<int>(data);
 
             int sign = 1 << bitDepth.HighBit;
 			uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
@@ -647,7 +648,7 @@ namespace Dicom.Imaging.Render {
         {
             _width = width;
             _height = height;
-            _data = ByteBufferEnumerator<uint>.Create(data).ToArray();
+            _data = IO.ByteConverter.ToArray<uint>(data);
 
             if (bitDepth.BitsStored != 32)
             {
