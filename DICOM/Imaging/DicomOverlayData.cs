@@ -292,8 +292,9 @@ namespace Dicom.Imaging {
 				bits.Capacity = Rows * Columns;
 				int mask = 1 << BitPosition;
 
-				if (pixels.BitsAllocated == 8) {
-					var data = ByteBufferEnumerator<byte>.Create(frame).ToArray();
+				if (pixels.BitsAllocated == 8)
+				{
+				    var data = IO.ByteConverter.ToArray<byte>(frame);
 
 					for (int y = oy; y < oh; y++) {
 						int n = (y * pixels.Width) + ox;
@@ -307,7 +308,7 @@ namespace Dicom.Imaging {
 					}
 				} else if (pixels.BitsAllocated == 16) {
 					// we don't really care if the pixel data is signed or not
-					var data = ByteBufferEnumerator<ushort>.Create(frame).ToArray();
+				    var data = IO.ByteConverter.ToArray<ushort>(frame);
 
 					for (int y = oy; y < oh; y++) {
 						int n = (y * pixels.Width) + ox;
