@@ -132,10 +132,10 @@ namespace Dicom.Imaging.LUT {
 		#region Public Properties
 		public override int this[int value] {
 			get {
-				if (value <= WindowStart)
-					return MinimumOutputValue;
-				if (value > WindowEnd)
-					return MaximumOutputValue;
+                //if (value <= WindowStart)
+                //    return MinimumOutputValue;
+                //if (value > WindowEnd)
+                //    return MaximumOutputValue;
 				unchecked {
 					return (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * 255.0);
 				}

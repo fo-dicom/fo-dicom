@@ -65,7 +65,6 @@ namespace Dicom.Printing
             }
             set
             {
-                DicomSequence seq = null;
                 if (SOPClassUID == ColorSOPClassUID)
                 {
                     this.Add(DicomTag.BasicColorImageSequence, value);
