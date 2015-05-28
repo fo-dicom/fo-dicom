@@ -421,6 +421,7 @@ namespace IJGVERS {
 
 void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomJpegParams^ params, int frame) {
 	PinnedByteArray^ jpegArray = gcnew PinnedByteArray(oldPixelData->GetFrame(frame)->Data);
+	PinnedByteArray^ frameArray = nullptr;
 	try{
 		jpeg_decompress_struct dinfo;
 		memset(&dinfo, 0, sizeof(dinfo));
@@ -479,7 +480,7 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 		if ((frameSize % 2) != 0)
 			frameSize++;
 
-		PinnedByteArray^ frameArray = gcnew PinnedByteArray(frameSize);
+		frameArray = gcnew PinnedByteArray(frameSize);
 		unsigned char* framePtr = (unsigned char*)(void*)frameArray->Pointer;
 
 		while (dinfo.output_scanline < dinfo.output_height) {
@@ -504,10 +505,12 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
 		}
 
 		newPixelData->AddFrame(buffer);
-		
-		delete frameArray;
 	}
 	finally{
+		if(frameArray != nullptr){
+			delete frameArray;
+			frameArray = nullptr;
+		}
 		if(jpegArray != nullptr){
 			delete jpegArray;
 			jpegArray = nullptr;

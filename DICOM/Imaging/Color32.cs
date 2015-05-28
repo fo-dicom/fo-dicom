@@ -33,7 +33,7 @@ namespace Dicom.Imaging {
 
 		/// <summary>Blue</summary>
 		public byte B {
-			get { return (byte)unchecked((Value & 0x000000ff) >> 24); }
+			get { return (byte)unchecked(Value & 0x000000ff); }
 			set { Value = (int)unchecked((Value & 0xffffff00) | value); }
 		}
 
