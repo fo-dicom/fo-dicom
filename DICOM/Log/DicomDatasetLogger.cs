@@ -63,7 +63,7 @@ namespace Dicom.Log {
 		}
 
 		public bool OnBeginSequence(DicomSequence sequence) {
-			_log.Log(_level, "{0}{1} SQ {2}", (_depth > 0) ? _pad + "> " : "", sequence.Tag, sequence.Tag.DictionaryEntry.Name);
+			_log.Log(_level, "{padding}{tag} SQ {tagDictionaryEntryName}", (_depth > 0) ? _pad + "> " : "", sequence.Tag, sequence.Tag.DictionaryEntry.Name);
 			IncreaseDepth();
 			return true;
 		}
@@ -85,7 +85,7 @@ namespace Dicom.Log {
 		}
 
 		public bool OnBeginFragment(DicomFragmentSequence fragment) {
-			_log.Log(_level, "{0}{1} {2} {3} [{4} offsets, {5} fragments]", (_depth > 0) ? _pad + "> " : "", 
+			_log.Log(_level, "{padding}{tag} {vrCode} {tagDictionaryEntryName} [{offsets} offsets, {fragments} fragments]", (_depth > 0) ? _pad + "> " : "", 
 				fragment.Tag, fragment.ValueRepresentation.Code, fragment.Tag.DictionaryEntry.Name, 
 				fragment.OffsetTable.Count, fragment.Fragments.Count);
 			return true;
