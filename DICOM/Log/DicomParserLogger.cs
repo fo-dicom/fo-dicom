@@ -23,16 +23,16 @@ namespace Dicom.Log {
 		}
 
 		public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data) {
-			_log.Log(_level, "{0:x8}: {1}{2} {3} {4} [{5}]", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name, data.Size);
+			_log.Log(_level, "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName} [{size}]", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name, data.Size);
 		}
 
 		public void OnBeginSequence(IByteSource source, DicomTag tag, uint length) {
-			_log.Log(_level, "{0:x8}: {1}{2} SQ {3}", source.Marker, _pad, tag, tag.DictionaryEntry.Name, length);
+			_log.Log(_level, "{marker:x8}: {padding}{tag} SQ {length}", source.Marker, _pad, tag, tag.DictionaryEntry.Name, length);
 			IncreaseDepth();
 		}
 
 		public void OnBeginSequenceItem(IByteSource source, uint length) {
-			_log.Log(_level, "{0:x8}: {1}Item:", source.Marker, _pad);
+			_log.Log(_level, "{marker:x8}: {padding}Item:", source.Marker, _pad);
 			IncreaseDepth();
 		}
 
@@ -45,12 +45,12 @@ namespace Dicom.Log {
 		}
 
 		public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr) {
-			_log.Log(_level, "{0:x8}: {1}{2} {3} {4}", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name);
+			_log.Log(_level, "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName}", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name);
 			IncreaseDepth();
 		}
 
 		public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data) {
-			_log.Log(_level, "{0:x8}: {1}Fragment [{2}]", source.Marker, _pad, data.Size);
+			_log.Log(_level, "{marker:x8}: {padding}Fragment [{size}]", source.Marker, _pad, data.Size);
 		}
 
 		public void OnEndFragmentSequence() {

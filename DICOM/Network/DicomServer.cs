@@ -104,7 +104,7 @@ namespace Dicom.Network
             {
                 if (Logger == null)
                     Logger = LogManager.Default.GetLogger("Dicom.Network");
-                Logger.Error("Exception accepting client: " + e.ToString());
+                Logger.Error("Exception accepting client {@error}", e);
             }
             finally
             {
