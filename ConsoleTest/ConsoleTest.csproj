@@ -71,6 +71,10 @@
       <Project>{D6E309B0-4837-459E-8C85-ABC268440D62}</Project>
       <Name>DICOM</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Logging\DICOM.NLog\DICOM.NLog.csproj">
+      <Project>{15cfb565-e859-4b21-98da-9ef3e129857f}</Project>
+      <Name>DICOM.NLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

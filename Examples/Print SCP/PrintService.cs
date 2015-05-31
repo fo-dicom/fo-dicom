@@ -105,12 +105,12 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    this.Logger.Warn("Requested abstract syntax {0} from {1} not supported", pc.AbstractSyntax, association.CallingAE);
+                    this.Logger.Warn("Requested abstract syntax {abstractSyntax} from {callingAE} not supported", pc.AbstractSyntax, association.CallingAE);
                     pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
                 }
             }
 
-            this.Logger.Info("Accepted association request from {0}", association.CallingAE);
+            this.Logger.Info("Accepted association request from {callingAE}", association.CallingAE);
             SendAssociationAccept(association);
         }
 
