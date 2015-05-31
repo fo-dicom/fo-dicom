@@ -13,7 +13,7 @@ namespace Dicom.Log {
 		}
 
 		private class NLogger : Logger {
-			private NLog.Logger _logger;
+			private readonly NLog.Logger _logger;
 
 			public NLogger(NLog.Logger logger) {
 				_logger = logger;
