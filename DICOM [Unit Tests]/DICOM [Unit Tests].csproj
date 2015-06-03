@@ -68,6 +68,7 @@
     <Compile Include="DicomTagTest.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
+    <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
