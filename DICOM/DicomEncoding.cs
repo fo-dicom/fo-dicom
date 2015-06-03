@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dicom {
 	public static class DicomEncoding {
-		public readonly static Encoding Default = Encoding.UTF8;
+		public readonly static Encoding Default = Encoding.ASCII;
 
 		public static Encoding GetEncoding(string charset) {
 			if (String.IsNullOrWhiteSpace(charset))
@@ -42,7 +42,7 @@ namespace Dicom {
             case "GB18030": return Encoding.GetEncoding("GB18030"); // Chinese (Simplified) Extended
 			default: // unknown encoding... return ASCII instead of throwing exception
 				//throw new ArgumentException("No codepage found for requested DICOM charset.", "charset");
-				return Encoding.UTF8;
+				return Default;
 			}
 		}
 
