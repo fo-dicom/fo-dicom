@@ -16,7 +16,6 @@ namespace Dicom.Network {
 		private BinaryWriter _bw;
 		private Stack<long> _m16;
 		private Stack<long> _m32;
-		private Encoding _encoding;
 		#endregion
 
 		#region Public Constructors
@@ -28,10 +27,9 @@ namespace Dicom.Network {
 			_type = type;
 			_ms = new MemoryStream();
 			_ms.Seek(0, SeekOrigin.Begin);
-			_bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
+			_bw = EndianBinaryWriter.Create(_ms, Encoding.ASCII, Endian.Big);
 			_m16 = new Stack<long>();
 			_m32 = new Stack<long>();
-			_encoding = Encoding.UTF8;
 		}
 
 		/// <summary>
@@ -40,7 +38,7 @@ namespace Dicom.Network {
 		/// <param name="buffer">Buffer</param>
 		public RawPDU(byte[] buffer) {
 			_ms = new MemoryStream(buffer);
-			_br = EndianBinaryReader.Create(_ms, _encoding, Endian.Big);
+			_br = EndianBinaryReader.Create(_ms, Endian.Big);
 			_type = _br.ReadByte();
 			_ms.Seek(6, SeekOrigin.Begin);
 		}
