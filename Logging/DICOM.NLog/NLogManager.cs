@@ -13,31 +13,33 @@ namespace Dicom.Log {
 		}
 
 		private class NLogger : Logger {
-			private NLog.Logger _logger;
+			private readonly NLog.Logger _logger;
 
 			public NLogger(NLog.Logger logger) {
 				_logger = logger;
 			}
 
 			public override void Log(LogLevel level, string msg, params object[] args) {
-				switch (level) {
+			    var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
+                
+                switch (level) {
 				case LogLevel.Debug:
-					_logger.Debug(msg, args);
+                        _logger.Debug(ordinalFormattedMessage, args);
 					break;
 				case LogLevel.Info:
-					_logger.Info(msg, args);
+                    _logger.Info(ordinalFormattedMessage, args);
 					break;
 				case LogLevel.Warning:
-					_logger.Warn(msg, args);
+                    _logger.Warn(ordinalFormattedMessage, args);
 					break;
 				case LogLevel.Error:
-					_logger.Error(msg, args);
+                    _logger.Error(ordinalFormattedMessage, args);
 					break;
 				case LogLevel.Fatal:
-					_logger.Fatal(msg, args);
+                    _logger.Fatal(ordinalFormattedMessage, args);
 					break;
 				default:
-					_logger.Info(msg, args);
+                    _logger.Info(ordinalFormattedMessage, args);
 					break;
 				}
 			}

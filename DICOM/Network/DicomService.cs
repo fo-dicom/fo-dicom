@@ -101,7 +101,7 @@ namespace Dicom.Network {
 			try { _network.Close(); } catch { }
 
 			if (errorCode > 0)
-				Logger.Error("Connection closed with error: {0}", errorCode);
+				Logger.Error("Connection closed with error: {errorCode}", errorCode);
 			else
 				Logger.Info("Connection closed");
 
@@ -127,9 +127,9 @@ namespace Dicom.Network {
 				int error = 0;
 				if (e.InnerException is SocketException) {
 					error = (e.InnerException as SocketException).ErrorCode;
-					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+					Logger.Error("Socket error while reading PDU: {socketErrorCode} [{errorCode}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
 				} else if (!(e.InnerException is ObjectDisposedException))
-					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+					Logger.Error("IO exception while reading PDU: {@error}", e);
 
 				CloseConnection(error);
 			}
@@ -171,13 +171,13 @@ namespace Dicom.Network {
 				int error = 0;
 				if (e.InnerException is SocketException) {
 					error = (e.InnerException as SocketException).ErrorCode;
-					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+					Logger.Error("Socket error while reading PDU: {socketErrorCode} [{errorCode}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
 				} else if (!(e.InnerException is ObjectDisposedException))
-					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+					Logger.Error("IO exception while reading PDU: {@error}", e);
 
 				CloseConnection(error);
 			} catch (Exception e) {
-				Logger.Error("Exception processing PDU header: {0}", e.ToString());
+				Logger.Error("Exception processing PDU header: {@error}", e);
 			}
 		}
 
@@ -209,7 +209,7 @@ namespace Dicom.Network {
 						LogID = Association.CallingAE;
 						if (Options.UseRemoteAEForLogName)
 							Logger = LogManager.Default.GetLogger(LogID);
-						Logger.Info("{0} <- Association request:\n{1}", LogID, Association.ToString());
+						Logger.Info("{callingAE} <- Association request:\n{association}", LogID, Association.ToString());
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAssociationRequest(Association);
 						break;
@@ -218,7 +218,7 @@ namespace Dicom.Network {
 						var pdu = new AAssociateAC(Association);
 						pdu.Read(raw);
 						LogID = Association.CalledAE;
-						Logger.Info("{0} <- Association accept:\n{1}", LogID, Association.ToString());
+						Logger.Info("{calledAE} <- Association accept:\n{assocation}", LogID, Association.ToString());
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationAccept(Association);
 						break;
@@ -226,7 +226,7 @@ namespace Dicom.Network {
 				case 0x03: {
 						var pdu = new AAssociateRJ();
 						pdu.Read(raw);
-						Logger.Info("{0} <- Association reject [result: {1}; source: {2}; reason: {3}]", LogID, pdu.Result, pdu.Source, pdu.Reason);
+						Logger.Info("{logId} <- Association reject [result: {pduResult}; source: {pduSource}; reason: {pduReason}]", LogID, pdu.Result, pdu.Source, pdu.Reason);
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
 						break;
@@ -235,14 +235,14 @@ namespace Dicom.Network {
 						var pdu = new PDataTF();
 						pdu.Read(raw);
 						if (Options.LogDataPDUs)
-							Logger.Info("{0} <- {1}", LogID, pdu);
+							Logger.Info("{logId} <- {@pdu}", LogID, pdu);
 						_processQueue.Queue(ProcessPDataTF, pdu);
 						break;
 					}
 				case 0x05: {
 						var pdu = new AReleaseRQ();
 						pdu.Read(raw);
-						Logger.Info("{0} <- Association release request", LogID);
+						Logger.Info("{logId} <- Association release request", LogID);
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAssociationReleaseRequest();
 						break;
@@ -250,7 +250,7 @@ namespace Dicom.Network {
 				case 0x06: {
 						var pdu = new AReleaseRP();
 						pdu.Read(raw);
-						Logger.Info("{0} <- Association release response", LogID);
+						Logger.Info("{logId} <- Association release response", LogID);
 						if (this is IDicomServiceUser)
 							(this as IDicomServiceUser).OnReceiveAssociationReleaseResponse();
 						CloseConnection(0);
@@ -259,7 +259,7 @@ namespace Dicom.Network {
 				case 0x07: {
 						var pdu = new AAbort();
 						pdu.Read(raw);
-						Logger.Info("{0} <- Abort: {1} - {2}", LogID, pdu.Source, pdu.Reason);
+						Logger.Info("{logId} <- Abort: {pduSource} - {pduReason}", LogID, pdu.Source, pdu.Reason);
 						if (this is IDicomServiceProvider)
 							(this as IDicomServiceProvider).OnReceiveAbort(pdu.Source, pdu.Reason);
 						else if (this is IDicomServiceUser)
@@ -279,16 +279,16 @@ namespace Dicom.Network {
 				int error = 0;
 				if (e.InnerException is SocketException) {
 					error = (e.InnerException as SocketException).ErrorCode;
-					Logger.Error("Socket error while reading PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+					Logger.Error("Socket error while reading PDU: {socketErrorCode} [{errorCode}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
 				} else if (!(e.InnerException is ObjectDisposedException))
-					Logger.Error("IO exception while reading PDU: {0}", e.ToString());
+					Logger.Error("IO exception while reading PDU: {@error}", e);
 
 				CloseConnection(error);
 			} catch (NullReferenceException) {
 				// connection already closed; silently ignore
 				CloseConnection(0);
 			} catch (Exception e) {
-				Logger.Error("Exception processing PDU: {0}", e.ToString());
+				Logger.Error("Exception processing PDU: {@error}", e);
 				CloseConnection(0);
 			}
 		}
@@ -456,7 +456,7 @@ namespace Dicom.Network {
                                     }
                                     // failed to parse received DICOM file; send error response instead of aborting connection
                                     SendResponse(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
-                                    Logger.Error("Error parsing C-Store dataset: " + e.ToString());
+                                    Logger.Error("Error parsing C-Store dataset: {@error}", e);
                                     (this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
                                     return;
                                 }
@@ -472,7 +472,7 @@ namespace Dicom.Network {
 				}
 			} catch (Exception e) {
 				SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
-				Logger.Error("Exception processing P-Data-TF PDU: " + e.ToString());
+				Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
 			} finally {
 				SendNextMessage();
 			}
@@ -534,7 +534,7 @@ namespace Dicom.Network {
 			var dimse = state as DicomMessage;
 
 			try {
-				Logger.Info("{0} <- {1}", LogID, dimse.ToString(Options.LogDimseDatasets));
+				Logger.Info("{logId} <- {dicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
 
 				if (!DicomMessage.IsRequest(dimse.Type)) {
 					var rsp = dimse as DicomResponse;
@@ -654,7 +654,7 @@ namespace Dicom.Network {
 			}
 
 			if (Options.LogDataPDUs && pdu is PDataTF)
-				Logger.Info("{0} -> {1}", LogID, pdu);
+				Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
 			MemoryStream ms = new MemoryStream();
 			pdu.Write().WritePDU(ms);
@@ -667,9 +667,9 @@ namespace Dicom.Network {
 				int error = 0;
 				if (e.InnerException is SocketException) {
 					error = (e.InnerException as SocketException).ErrorCode;
-					Logger.Error("Socket error while writing PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+					Logger.Error("Socket error while writing PDU: {socketErrorCode} [{errorCode}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
 				} else if (!(e.InnerException is ObjectDisposedException))
-					Logger.Error("IO exception while writing PDU: {0}", e.ToString());
+					Logger.Error("IO exception while writing PDU: {@error}", e);
 
 				CloseConnection(error);
 			}
@@ -684,9 +684,9 @@ namespace Dicom.Network {
 				int error = 0;
 				if (e.InnerException is SocketException) {
 					error = (e.InnerException as SocketException).ErrorCode;
-					Logger.Error("Socket error while writing PDU: {0} [{1}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
+					Logger.Error("Socket error while writing PDU: {socketErrorCode} [{errorCode}]", (e.InnerException as SocketException).SocketErrorCode, (e.InnerException as SocketException).ErrorCode);
 				} else if (!(e.InnerException is ObjectDisposedException))
-					Logger.Error("IO exception while writing PDU: {0}", e.ToString());
+					Logger.Error("IO exception while writing PDU: {@error}", e);
 
 				CloseConnection(error);
 			} catch {
@@ -764,7 +764,7 @@ namespace Dicom.Network {
 				} catch {
 				}
 
-				Logger.Error("No accepted presentation context found for abstract syntax: {0}", msg.SOPClassUID);
+				Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
 				lock (_lock)
 					_sending = false;
 				SendNextMessage();
@@ -790,7 +790,7 @@ namespace Dicom.Network {
 					msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
 			}
 
-			Logger.Info("{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
+			Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
 			dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
@@ -816,7 +816,7 @@ namespace Dicom.Network {
 				dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
 				dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
 			} catch (Exception e) {
-				Logger.Error("Exception sending DIMSE: {0}", e.ToString());
+				Logger.Error("Exception sending DIMSE: {@error}", e);
 			} finally {
 				if (!dimse.Message.HasDataset) {
 					lock (_lock)
@@ -831,7 +831,7 @@ namespace Dicom.Network {
 			try {
 				dimse.Walker.EndWalk(result);
 			} catch (Exception e) {
-				Logger.Error("Exception sending DIMSE: {0}", e.ToString());
+				Logger.Error("Exception sending DIMSE: {@error}", e);
 			} finally {
 				dimse.Stream.Flush(true);
 				dimse.Stream.Close();
@@ -931,7 +931,7 @@ namespace Dicom.Network {
 					uint max = _max - CurrentPduSize() - 6;
 				  _bytes = last ? null : new byte[max];
 				} catch (Exception e) {
-					_service.Logger.Error("Exception creating PDV: " + e.ToString());
+					_service.Logger.Error("Exception creating PDV: {@error}", e);
 					throw;
 				}
 			}
@@ -1020,7 +1020,7 @@ namespace Dicom.Network {
 							CreatePDV(false);
 					}
 				} catch (Exception e) {
-					_service.Logger.Error("Exception writing data to PDV: " + e.ToString());
+					_service.Logger.Error("Exception writing data to PDV: {@error}", e);
 					throw;
 				}
 			}
@@ -1032,7 +1032,7 @@ namespace Dicom.Network {
 			LogID = association.CalledAE;
 			if (Options.UseRemoteAEForLogName)
 				Logger = LogManager.Default.GetLogger(LogID);
-			Logger.Info("{0} -> Association request:\n{1}", LogID, association.ToString());
+			Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
 			Association = association;
 			SendPDU(new AAssociateRQ(Association));
 		}
@@ -1046,27 +1046,27 @@ namespace Dicom.Network {
 					pc.SetResult(DicomPresentationContextResult.RejectNoReason);
 			}
 
-			Logger.Info("{0} -> Association accept:\n{1}", LogID, association.ToString());
+			Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
 			SendPDU(new AAssociateAC(Association));
 		}
 
 		protected void SendAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) {
-			Logger.Info("{0} -> Association reject [result: {1}; source: {2}; reason: {3}]", LogID, result, source, reason);
+			Logger.Info("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID, result, source, reason);
 			SendPDU(new AAssociateRJ(result, source, reason));
 		}
 
 		protected void SendAssociationReleaseRequest() {
-			Logger.Info("{0} -> Association release request", LogID);
+			Logger.Info("{logId} -> Association release request", LogID);
 			SendPDU(new AReleaseRQ());
 		}
 
 		protected void SendAssociationReleaseResponse() {
-			Logger.Info("{0} -> Association release response", LogID);
+			Logger.Info("{logId} -> Association release response", LogID);
 			SendPDU(new AReleaseRP());
 		}
 
 		protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) {
-			Logger.Info("{0} -> Abort [source: {1}; reason: {2}]", LogID, source, reason);
+			Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
 			SendPDU(new AAbort(source, reason));
 		}
 		#endregion
