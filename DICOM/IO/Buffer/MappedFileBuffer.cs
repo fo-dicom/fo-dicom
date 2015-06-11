@@ -59,7 +59,6 @@ namespace Dicom.IO.Buffer
         {
             if (!_disposed)
             {
-                _stream.Close();
                 _stream.Dispose();
                 _file.Dispose();
                 _disposed = true;
