@@ -20,7 +20,6 @@ namespace Dicom.Imaging {
 	/// </summary>
 	public class DicomImage {
 		#region Private Members
-		private int _currentFrame;
 		private IPixelData _pixelData;
 		private IPipeline _pipeline;
 
@@ -94,26 +93,48 @@ namespace Dicom.Imaging {
 		}
 
 		/// <summary>Window width of rendered gray scale image </summary>
-		public double WindowWidth {
+        public virtual double WindowWidth {
 			get {
-				return _renderOptions != null ? _renderOptions.WindowWidth : 0;
+                if (_pipeline == null) {
+                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                }
+                if (_pipeline is GenericGrayscalePipeline) {
+                    return _renderOptions.WindowWidth;
+                } else {
+                    return 255;
+                }
 			}
 			set {
-				if (_renderOptions != null)
+                if (_pipeline == null) {
+                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                }
+                if (_pipeline is GenericGrayscalePipeline) {
 					_renderOptions.WindowWidth = value;
 			}
 		}
+        }
 
 		/// <summary>Window center of rendered gray scale image </summary>
-		public double WindowCenter {
+        public virtual double WindowCenter {
 			get {
-				return _renderOptions != null ? _renderOptions.WindowCenter : 0;
+                if (_pipeline == null) {
+                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                }
+                if (_pipeline is GenericGrayscalePipeline) {
+                    return _renderOptions.WindowCenter;
+                } else {
+                    return 127;
+                }
 			}
 			set {
-				if (_renderOptions != null)
+                if (_pipeline == null) {
+                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                }
+                if (_pipeline is GenericGrayscalePipeline) {
 					_renderOptions.WindowCenter = value;
 			}
 		}
+        }
 
 		/// <summary>Show or hide DICOM overlays</summary>
 		public bool ShowOverlays {
@@ -127,22 +148,22 @@ namespace Dicom.Imaging {
 			set { _overlayColor = value; }
 		}
 
+
+        public int CurrentFrame { get; private set; }
+
 #if !SILVERLIGHT
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <param name="frame">Zero indexed frame number</param>
 		/// <returns>Rendered image</returns>
-		public Image RenderImage(int frame = 0) {
-			if (frame != _currentFrame || _pixelData == null)
+        public virtual Image RenderImage(int frame = 0) {
+            if (frame != CurrentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
 			var graphic = new ImageGraphic(_pixelData);
 
-            try
-            {
-                if (ShowOverlays)
-                {
-                    foreach (var overlay in _overlays)
-                    {
+            try {
+                if (ShowOverlays) {
+                    foreach (var overlay in _overlays) {
 					if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
 						continue;
 
@@ -155,11 +176,8 @@ namespace Dicom.Imaging {
                 var image = graphic.RenderImage(_pipeline.LUT);
 
                 return new Bitmap(image);
-            }
-            finally
-            {
-                if (graphic != null)
-                {
+            } finally {
+                if (graphic != null) {
                     graphic.Dispose();
                 }
             }
@@ -172,7 +190,7 @@ namespace Dicom.Imaging {
 		/// <param name="frame">Zero indexed frame nu,ber</param>
 		/// <returns>Rendered image</returns>
 		public ImageSource RenderImageSource(int frame = 0) {
-			if (frame != _currentFrame || _pixelData == null)
+            if (frame != CurrentFrame || _pixelData == null)
 				Load(Dataset, frame);
 
 			var graphic = new ImageGraphic(_pixelData);
@@ -204,6 +222,11 @@ namespace Dicom.Imaging {
 				PixelData = DicomPixelData.Create(Dataset);
 				PhotometricInterpretation = PixelData.PhotometricInterpretation;
 			}
+            if (frame < 0) {
+                CurrentFrame = frame;
+                return;
+            }
+
 
 			if (Dataset.InternalTransferSyntax.IsEncapsulated) {
 				// decompress single frame from source dataset
@@ -244,7 +267,7 @@ namespace Dicom.Imaging {
 
 			_overlays = DicomOverlayData.FromDataset(Dataset).Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null).ToArray();
 
-			_currentFrame = frame;
+            CurrentFrame = frame;
 
 			CreatePipeline();
 		}
@@ -285,7 +308,7 @@ namespace Dicom.Imaging {
 				if (_renderOptions == null)
 					_renderOptions = GrayscaleRenderOptions.FromDataset(Dataset);
 				_pipeline = new GenericGrayscalePipeline(_renderOptions);
-			} else if (pi == PhotometricInterpretation.Rgb) {
+            } else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422) {
 				//RGB for color image
 				_pipeline = new RgbColorPipeline();
 			} else if (pi == PhotometricInterpretation.PaletteColor) {
