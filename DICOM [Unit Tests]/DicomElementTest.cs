@@ -18,5 +18,14 @@
             DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.AreEqual((short)5, element.Get<short>());
         }
+
+        [TestMethod]
+        public void AttributeTagAsDicomElement_Array_GetDefaultValue()
+        {
+            var expected = DicomTag.ALinePixelSpacing;
+            DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, DicomTag.ALinePixelSpacing);
+            var actual = element.Get<DicomTag>();
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
