@@ -96,13 +96,13 @@ namespace Dicom.Imaging {
         public virtual double WindowWidth {
 			get {
                 if (_pipeline == null) {
-                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                    CreatePipeline();
                 }
                 return _pipeline is GenericGrayscalePipeline ?_renderOptions.WindowWidth: 255;
 			}
 			set {
                 if (_pipeline == null) {
-                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                    CreatePipeline();
                 }
                 if (_pipeline is GenericGrayscalePipeline) {
 					_renderOptions.WindowWidth = value;
@@ -114,13 +114,13 @@ namespace Dicom.Imaging {
         public virtual double WindowCenter {
 			get {
                 if (_pipeline == null) {
-                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                    CreatePipeline();
                 }
                 return _pipeline is GenericGrayscalePipeline ? _renderOptions.WindowCenter: 127;
 			}
 			set {
                 if (_pipeline == null) {
-                    Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
+                    CreatePipeline();
                 }
                 if (_pipeline is GenericGrayscalePipeline) {
 					_renderOptions.WindowCenter = value;
