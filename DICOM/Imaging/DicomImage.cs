@@ -98,11 +98,7 @@ namespace Dicom.Imaging {
                 if (_pipeline == null) {
                     Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
                 }
-                if (_pipeline is GenericGrayscalePipeline) {
-                    return _renderOptions.WindowWidth;
-                } else {
-                    return 255;
-                }
+                return _pipeline is GenericGrayscalePipeline ?_renderOptions.WindowWidth: 255;
 			}
 			set {
                 if (_pipeline == null) {
@@ -120,11 +116,7 @@ namespace Dicom.Imaging {
                 if (_pipeline == null) {
                     Load(Dataset, CurrentFrame >= 0 ? CurrentFrame : 0);
                 }
-                if (_pipeline is GenericGrayscalePipeline) {
-                    return _renderOptions.WindowCenter;
-                } else {
-                    return 127;
-                }
+                return _pipeline is GenericGrayscalePipeline ? _renderOptions.WindowCenter: 127;
 			}
 			set {
                 if (_pipeline == null) {
