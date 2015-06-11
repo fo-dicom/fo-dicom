@@ -30,7 +30,7 @@ namespace Dicom.Log {
 				default:
 					break;
 				}
-				Console.WriteLine(msg, args);
+                Console.WriteLine(NameFormatToPositionalFormat(msg), args);
 				Console.ForegroundColor = previous;
 			}
 		}
