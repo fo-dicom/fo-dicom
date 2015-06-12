@@ -232,7 +232,9 @@ namespace Dicom {
 		}
 
 		#region Public Members
-		public override T Get<T>(int item = 0) {
+		public override T Get<T>(int item = -1) {
+            if (item == -1) item = 0;
+
 			if (typeof(T) == typeof(Tv)) {
 				if (item < 0 || item >= Count)
 					throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
@@ -361,7 +363,8 @@ namespace Dicom {
 		#endregion
 
 		#region Public Members
-		public override T Get<T>(int item = 0) {
+		public override T Get<T>(int item = -1) {
+            if (item == -1) item = 0;
 			var tags = Values.ToArray();
 
 			if (typeof(T) == typeof(DicomTag))
@@ -915,7 +918,7 @@ namespace Dicom {
 		#endregion
 
 		#region Public Members
-		public override T Get<T>(int item = 0) {
+		public override T Get<T>(int item = -1) {
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
 				return (T)(object)base.Get<T>(item);
 
@@ -1115,7 +1118,7 @@ namespace Dicom {
 		#endregion
 
 		#region Public Members
-		public override T Get<T>(int item = 0) {
+		public override T Get<T>(int item = -1) {
 			if (typeof(T) == typeof(int) || typeof(T) == typeof(int[]))
 				return (T)(object)base.Get<T>(item);
 
