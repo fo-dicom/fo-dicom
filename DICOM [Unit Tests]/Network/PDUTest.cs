@@ -1,17 +1,15 @@
-﻿// Copyright (c) 2010-2015 Anders Gustafsson, Cureos AB.
-// All rights reserved. Any unauthorised reproduction of this 
-// material will constitute an infringement of copyright.
+﻿// Copyright (c) 2011-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
     using System.IO;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class PDUTest
     {
-        [TestMethod]
+        [Fact]
         public void Write_AeWithNonAsciiCharacters_ShouldBeAsciified()
         {
             var notExpected = "GÖTEBORG";
@@ -35,7 +33,7 @@ namespace Dicom.Network
             readPdu.SkipBytes("Unknown", 10);
             var actual = readPdu.ReadString("Called AE", 16);
 
-            Assert.AreNotEqual(notExpected, actual);
+            Assert.NotEqual(notExpected, actual);
         }
     }
 }
