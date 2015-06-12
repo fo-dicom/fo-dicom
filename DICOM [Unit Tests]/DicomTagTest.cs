@@ -1,9 +1,9 @@
-﻿using System;
-using Dicom;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace DICOM__Unit_Tests_
+﻿namespace Dicom
 {
+    using System;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     /// <summary>
     ///     This is a test class for DicomTagTest and is intended
     ///     to contain all DicomTagTest Unit Tests

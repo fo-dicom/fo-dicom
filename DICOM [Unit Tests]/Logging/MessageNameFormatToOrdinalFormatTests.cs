@@ -1,9 +1,11 @@
-﻿using System;
-using Dicom.Log;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace DICOM__Unit_Tests_.Logging
+﻿namespace Dicom.Logging
 {
+    using System;
+
+    using Dicom.Log;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class MesageNameFormatToOrdinalFormatTests
     {
