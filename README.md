@@ -1,10 +1,9 @@
 # Fellow Oak DICOM for .NET
 
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  
-[![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)  
-[![Build status](https://ci.appveyor.com/api/projects/status/lhi29h08v4c2519a?svg=true)](https://ci.appveyor.com/project/fo-dicom/fo-dicom)
-
-Binaries are available from [NuGet](http://www.nuget.org/packages/fo-dicom).
+[![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)  
+[![Build status](https://ci.appveyor.com/api/projects/status/lhi29h08v4c2519a?svg=true)](https://ci.appveyor.com/project/fo-dicom/fo-dicom)  
+[![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 
 ### Features
 * High-performance, fully asynchronous, .NET 4.0 API
