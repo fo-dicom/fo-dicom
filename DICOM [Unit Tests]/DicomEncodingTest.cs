@@ -1,26 +1,28 @@
-﻿namespace Dicom
+﻿// Copyright (c) 2011-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace Dicom
 {
     using System.Text;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
-    [TestClass]
     public class DicomEncodingTest
     {
-        [TestMethod]
+        [Fact]
         public void Default_Getter_ReturnsUSASCII()
         {
             var expected = Encoding.ASCII.CodePage;
             var actual = DicomEncoding.Default.CodePage;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetEncoding_NonMatchingCharset_ReturnsUSASCII()
         {
             var expected = Encoding.ASCII.CodePage;
             var actual = DicomEncoding.GetEncoding("GBK").CodePage;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

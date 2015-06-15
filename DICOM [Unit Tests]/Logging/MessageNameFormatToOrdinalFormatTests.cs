@@ -1,14 +1,18 @@
-﻿using System;
-using Dicom.Log;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) 2011-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace DICOM__Unit_Tests_.Logging
+namespace Dicom.Logging
 {
-    [TestClass]
-    public class MesageNameFormatToOrdinalFormatTests
+    using System;
+
+    using Dicom.Log;
+
+    using Xunit;
+
+    public class MessageNameFormatToOrdinalFormatTests
     {
 
-        [TestMethod]
+        [Fact]
         public void ComplexMessageIsCorrectlyReformatted()
         {
             var complexMessage =
@@ -21,21 +25,21 @@ namespace DICOM__Unit_Tests_.Logging
             var dummyLogger = new ExposesProtectedLogMessageReformatter();
             var actualReformattedMessage = dummyLogger.NameFormatToPositionalFormat(complexMessage);
 
-            Assert.AreEqual(expectedReformattedMessage, actualReformattedMessage);
+            Assert.Equal(expectedReformattedMessage, actualReformattedMessage);
         }
 
-        [TestMethod]
+        [Fact]
         public void MessageUsingClassicOrdinalPositionsFormatsToItself()
         {
             var message =
                 "The element at {0} using {1} and {2} was causing grief because {2} and {1} dislike {0} except {1} secretly likes {2}";
 
             var dummyLogger = new ExposesProtectedLogMessageReformatter();
-            Assert.AreEqual(message, dummyLogger.NameFormatToPositionalFormat(message));
+            Assert.Equal(message, dummyLogger.NameFormatToPositionalFormat(message));
 
         }
 
-        [TestMethod]
+        [Fact]
         public void MessageUsingOrdinalPositionsOutOfOrderDoesNotRearrangeTheOrder()
         {
             var message = "The elements in reverse {2}, {1}, {0} are out of order";
@@ -43,10 +47,10 @@ namespace DICOM__Unit_Tests_.Logging
             var dummyLogger = new ExposesProtectedLogMessageReformatter();
             var actualReformattedMessage = dummyLogger.NameFormatToPositionalFormat(message);
 
-            Assert.AreEqual(message, actualReformattedMessage);
+            Assert.Equal(message, actualReformattedMessage);
         }
 
-        [TestMethod]
+        [Fact]
         public void MessageUsingMixedOrdinalThenNamedPositionsIsHandled()
         {
             var message =
@@ -57,10 +61,10 @@ namespace DICOM__Unit_Tests_.Logging
             var dummyLogger = new ExposesProtectedLogMessageReformatter();
             var actualReformattedMessage = dummyLogger.NameFormatToPositionalFormat(message);
 
-            Assert.AreEqual(expectedMessage, actualReformattedMessage);
+            Assert.Equal(expectedMessage, actualReformattedMessage);
         }
 
-        [TestMethod]
+        [Fact]
         public void MessageUsingMixedOrdinalAndNamedPositionsIsHandled()
         {
             var message =
@@ -71,7 +75,7 @@ namespace DICOM__Unit_Tests_.Logging
             var dummyLogger = new ExposesProtectedLogMessageReformatter();
             var actualReformattedMessage = dummyLogger.NameFormatToPositionalFormat(message);
 
-            Assert.AreEqual(expected, actualReformattedMessage);
+            Assert.Equal(expected, actualReformattedMessage);
         }
 
         /// <summary>

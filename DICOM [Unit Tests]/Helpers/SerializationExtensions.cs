@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012 Anders Gustafsson, Cureos AB.
+﻿// Copyright (c) 2011-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
