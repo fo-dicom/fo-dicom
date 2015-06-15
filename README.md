@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)  
-[![Build status](https://ci.appveyor.com/api/projects/status/lhi29h08v4c2519a?svg=true)](https://ci.appveyor.com/project/fo-dicom/fo-dicom)  
+[![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)  
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 
 ### Features
@@ -12,7 +12,7 @@
 * Image rendering
 
 ### Notes
-* Support for compressed images requires the Visual Studio 2010 SP1 Redistributable Package to be installed. ([x86](http://www.microsoft.com/en-us/download/details.aspx?id=8328) or [x64](http://www.microsoft.com/en-us/download/details.aspx?id=14632)) 
+* *Development* branch targets .NET 4.5; Visual Studio 2013 required
 
 ### Examples
 
@@ -76,11 +76,13 @@ client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
 ```
 
 ### Contributors
+* [Colby Dillion](https://github.com/rcd)
 * [Hesham Desouky](https://github.com/hdesouky) (Nebras Technology)
-* [Mahesh Dubey](https://github.com/mdubey82)
-* [Anders Gustafsson](https://github.com/cureos) (Cureos AB)
-* [Justin Wake](https://github.com/jwake)
+* [Anders Gustafsson](https://github.com/anders9ustafsson) (Cureos AB)
+* [Ian Yates](http://github.com/IanYates)
 * [Chris Horn](https://github.com/GMZ)
+* [Mahesh Dubey](https://github.com/mdubey82)
+* [Justin Wake](https://github.com/jwake)
 * [captainstark](https://github.com/captainstark)
 
 ### License
