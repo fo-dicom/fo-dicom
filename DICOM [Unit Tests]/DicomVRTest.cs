@@ -23,6 +23,20 @@ namespace Dicom
             Assert.IsType<DicomVR>(actual);
         }
 
+        [Fact]
+        public void Parse_OD_ReturnsVRObject()
+        {
+            var actual = DicomVR.Parse("OD");
+            Assert.IsType<DicomVR>(actual);
+        }
+
+        [Fact]
+        public void Parse_OF_ReturnsVRObject()
+        {
+            var actual = DicomVR.Parse("OF");
+            Assert.IsType<DicomVR>(actual);
+        }
+
         #endregion
     }
 }
