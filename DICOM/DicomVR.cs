@@ -129,6 +129,7 @@ namespace Dicom {
             case "LO": return DicomVR.LO;
             case "LT": return DicomVR.LT;
             case "OB": return DicomVR.OB;
+            case "OD": return DicomVR.OD;
             case "OF": return DicomVR.OF;
             case "OW": return DicomVR.OW;
             case "PN": return DicomVR.PN;
@@ -360,6 +361,22 @@ namespace Dicom {
             UnitSize = 1,
             ByteSwap = 1,
             ValueType = typeof(byte[])
+        };
+
+        /// <summary>Other Double</summary>
+        public readonly static DicomVR OD = new DicomVR
+        {
+            Code = "OD",
+            Name = "Other Double",
+            IsString = false,
+            IsStringEncoded = false,
+            Is16bitLength = false,
+            IsMultiValue = true,
+            PaddingValue = PadZero,
+            MaximumLength = 0,
+            UnitSize = 8,
+            ByteSwap = 8,
+            ValueType = typeof(double[])
         };
 
         /// <summary>Other Float</summary>
