@@ -13,7 +13,9 @@ namespace Dicom
         public void Parse_OneToNOrOne_InterpretedAsOneToN()
         {
             var actual = DicomVM.Parse("1-n or 1");
-            Assert.Equal(DicomVM.VM_1_n, actual);
+            Assert.Equal(1, actual.Minimum);
+            Assert.Equal(int.MaxValue, actual.Maximum);
+            Assert.Equal(1, actual.Multiplicity);
         }
 
         #endregion
