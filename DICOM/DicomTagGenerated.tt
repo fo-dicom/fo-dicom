@@ -1,0 +1,33 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml"#>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Xml" #>
+<#@ output extension=".cs" #>
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace Dicom
+{
+    public partial class DicomTag
+    {
+<#
+    var tags = GetTags();
+
+    foreach (var kv in tags)
+    {
+        var tag = kv.Value;
+        var group = tag.Item1.Replace("x", "0");
+        var elem = tag.Item2.Replace("x", "0");
+#>
+        ///<summary>(<#= tag.Item1 #>,<#= tag.Item2 #>) VR=<#= tag.Item5 #> VM=<#= tag.Item6 #> <#= tag.Item4 #><#= tag.Item7 ? " (RETIRED)" : "" #></summary>
+        public readonly static DicomTag <#= tag.Item3 #><#= tag.Item7 ? "RETIRED" : "" #> = new DicomTag(0x<#= group #>, 0x<#= elem #>);
+
+<#
+    }
+#>
+    }
+}
+<#@ include file="T4/dictionarymethods.t4" #>

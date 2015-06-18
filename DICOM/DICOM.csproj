@@ -71,6 +71,16 @@
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
     <Compile Include="DicomFileExtensions.cs" />
+    <Compile Include="DicomTagGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DicomTagGenerated.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DicomUIDGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DicomUIDGenerated.tt</DependentUpon>
+    </Compile>
     <Compile Include="Imaging\Mathematics\BitList.cs" />
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
@@ -105,10 +115,8 @@
     <Compile Include="DicomRange.cs" />
     <Compile Include="DicomSequence.cs" />
     <Compile Include="DicomTag.cs" />
-    <Compile Include="DicomTagGenerated.cs" />
     <Compile Include="DicomTransferSyntax.cs" />
     <Compile Include="DicomUID.cs" />
-    <Compile Include="DicomUIDGenerated.cs" />
     <Compile Include="DicomUIDPrivate.cs" />
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
@@ -276,19 +284,38 @@
     <Compile Include="Threading\WorkQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
     <EmbeddedResource Include="Dictionaries\Private Dictionary.xml.gz" />
+    <EmbeddedResource Include="Dictionaries\DICOM Dictionary.xml.gz" />
     <None Include="fo-dicom.snk" />
+    <None Include="T4\dictionarymethods.t4" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dictionaries\DICOM Dictionary.xml" />
+    <Content Include="DicomTagGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomTagGenerated.cs</LastGenOutput>
+    </Content>
+    <Content Include="DicomUIDGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomUIDGenerated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Dictionaries\DICOM Dictionary.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DICOM Dictionary.xml</LastGenOutput>
+    </Content>
+    <Content Include="Dictionaries\DICOM Dictionary.xml">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+    </Content>
     <Content Include="Dictionaries\Private Dictionary.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

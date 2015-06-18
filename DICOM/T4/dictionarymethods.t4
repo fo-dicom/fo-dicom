@@ -1,0 +1,263 @@
+﻿<#+
+private static readonly XmlDocument Part6Document = 
+                LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part06/part06.xml");
+
+private static readonly XmlDocument Part7Document = 
+                LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml");
+
+private static readonly XmlNamespaceManager NsManager = GetDocbookNamespaceManager(Part6Document);
+
+private static readonly Dictionary<string, Tuple<string, string>> ContextGroupDictionary = GetContextGroupDictionary();
+
+private static XmlDocument LoadDocument(string path)
+{
+    var document = new XmlDocument();
+    document.Load(path);
+    return document;
+}
+
+private static XmlNamespaceManager GetDocbookNamespaceManager(XmlDocument document)
+{
+    var manager = new XmlNamespaceManager(document.NameTable);
+    manager.AddNamespace("d", "http://docbook.org/ns/docbook");
+    return manager;
+}
+
+private static Dictionary<string, Tuple<string, string>> GetContextGroupDictionary()
+{
+    var ns = "http://docbook.org/ns/docbook";
+
+    var document = new XmlDocument();
+    document.Load(@"http://medical.nema.org/medical/dicom/current/source/docbook/part16/part16.xml");
+    var manager = new XmlNamespaceManager(document.NameTable);
+    manager.AddNamespace("d", ns);
+
+    var dict = new Dictionary<string, Tuple<string, string>>();
+
+    var sections =
+        document.DocumentElement.SelectNodes(
+            "//d:section[contains(@label, 'CID') and @xml:id]",
+            manager).OfType<XmlNode>();
+
+    foreach (var section in sections)
+    {
+        var id = section.Attributes["xml:id"].InnerText;
+        var cid = section.Attributes["label"].InnerText.Replace("CID", string.Empty).Trim();
+
+        var titleNode = section.SelectSingleNode("./d:title", manager);
+        if (titleNode == null) continue;
+        dict.Add(id, Tuple.Create(cid, titleNode.InnerText));
+    }
+
+    var tables =
+        document.DocumentElement.SelectNodes(
+            "//d:table[contains(@label, 'CID') and @xml:id]",
+            manager).OfType<XmlNode>();
+
+    foreach (var table in tables)
+    {
+        var id = table.Attributes["xml:id"].InnerText;
+        var cid = table.Attributes["label"].InnerText.Replace("CID", string.Empty).Trim();
+
+        var titleNode = table.SelectSingleNode("./d:caption", manager);
+        if (titleNode == null) continue;
+        dict.Add(id, Tuple.Create(cid, titleNode.InnerText));
+    }
+
+    return dict;
+}
+
+private static string GetVersion()
+{
+    var subtitle = Part6Document.DocumentElement.SelectSingleNode("//d:subtitle", NsManager).InnerText;
+    return subtitle.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2];
+}
+
+private static Dictionary<string, Tuple<string, string, string, string, string, string, bool>> GetTags()
+{
+    var tags = new Dictionary<string, Tuple<string, string, string, string, string, string, bool>>();
+
+    var tableE11Items = Part7Document.DocumentElement.SelectNodes(
+        "//d:table[@label='E.1-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+    var tableE21Items = Part7Document.DocumentElement.SelectNodes(
+        "//d:table[@label='E.2-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+
+    var table61Items = Part6Document.DocumentElement.SelectNodes(
+        "//d:table[@label='6-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+    var table71Items = Part6Document.DocumentElement.SelectNodes(
+        "//d:table[@label='7-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+    var table81Items = Part6Document.DocumentElement.SelectNodes(
+        "//d:table[@label='8-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+
+    foreach (var item in tableE11Items.Concat(tableE21Items).Concat(table71Items).Concat(table81Items).Concat(table61Items))
+    {
+        var tagData = GetTagData(item, NsManager);
+        if (tagData == null) continue;
+
+        var key = tagData.Item1 + tagData.Item2;
+        if (!tags.ContainsKey(key))
+        {
+            tags.Add(key, tagData);
+        }
+    }
+
+    return tags;
+}
+
+private static Tuple<string, string, string, string, string, string, bool> GetTagData(XmlNode item, XmlNamespaceManager manager)
+{
+    var list = item.SelectNodes("./d:td/d:para", manager)
+                    .OfType<XmlNode>()
+                    .Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u007F]", string.Empty))
+                    .ToList();
+    if (list.Count < 5 || string.IsNullOrWhiteSpace(list[2])) return null;
+
+    var parts = list[0].Split(new[] { ' ', '(', ')', ',' }, StringSplitOptions.RemoveEmptyEntries);
+    var vr = list[3].StartsWith("See note", StringComparison.OrdinalIgnoreCase) ? "NONE" : list[3].Replace(" or ", "/");
+    var isRetired = list.Count < 6 || list[5].StartsWith("RET", StringComparison.OrdinalIgnoreCase);
+
+    return Tuple.Create(parts[0], parts[1], list[2], list[1], vr, list[4], isRetired);
+}
+
+private static Dictionary<string, Tuple<string, string, string, bool>> GetUids()
+{
+    var uids = new Dictionary<string, Tuple<string, string, string, bool>>();
+
+    var tableA1Items = Part6Document.DocumentElement.SelectNodes(
+        "//d:table[@label='A-1']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+
+    foreach (var item in tableA1Items)
+    {
+        var uidData = GetUidData(item, NsManager);
+        if (uidData == null) continue;
+
+        if (!uids.ContainsKey(uidData.Item1))
+        {
+            uids.Add(uidData.Item1, uidData);
+        }
+    }
+
+    var tableA3Items = Part6Document.DocumentElement.SelectNodes(
+        "//d:table[@label='A-3']/d:tbody/d:tr",
+        NsManager).OfType<XmlNode>();
+
+    foreach (var item in tableA3Items)
+    {
+        var uidData = GetContextGroupNameData(item, NsManager);
+        if (uidData == null) continue;
+
+        if (!uids.ContainsKey(uidData.Item1))
+        {
+            uids.Add(uidData.Item1, uidData);
+        }
+    }
+
+    return uids;
+}
+
+private static Tuple<string, string, string, bool> GetUidData(XmlNode item, XmlNamespaceManager manager)
+{
+    var list = item.SelectNodes("./d:td/d:para", manager)
+                    .OfType<XmlNode>()
+                    .Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u007F]", string.Empty))
+                    .ToList();
+    if (list.Count < 4 || string.IsNullOrWhiteSpace(list[2])) return null;
+
+    var isRetired = list[1].IndexOf("(Retired)", StringComparison.OrdinalIgnoreCase) >= 0;
+
+    return Tuple.Create(list[0], list[1], list[2], isRetired);
+}
+
+private static Tuple<string, string, string, bool> GetContextGroupNameData(XmlNode item, XmlNamespaceManager manager)
+{
+    var list = item.SelectNodes("./d:td/d:para", manager).OfType<XmlNode>().ToList();
+    if (list.Count < 3 || !list[1].HasChildNodes) return null;
+
+    var uid = Regex.Replace(list[0].InnerText, @"[^0-9.]", string.Empty);
+    var olinkXml = Regex.Replace(list[1].InnerXml, @"[^\u0020-\u007F]", string.Empty);
+    var startIdx = olinkXml.IndexOf("targetptr=") + 11;
+    var length = olinkXml.IndexOf('"', startIdx) - startIdx;
+    var reference = olinkXml.Substring(startIdx, length);
+
+    var cid = ContextGroupDictionary[reference].Item1.Replace("CID", string.Empty).Trim();
+    var title = ContextGroupDictionary[reference].Item2;
+
+    var isRetired = title.IndexOf("(Retired)", StringComparison.OrdinalIgnoreCase) >= 0;
+
+    return Tuple.Create(uid, string.Format("{0} ({1})", title, cid), "Context Group Name", isRetired);
+}
+
+private static string ToUidKeyword(string description)
+{
+    var raw = description.Replace("(Retired)", string.Empty).Replace(" (Process ", string.Empty)
+                .Replace("Image Compression", string.Empty).Replace("12-", "Twelve-");
+    if (raw.Contains(':')) raw = raw.Substring(0, raw.IndexOf(':'));
+
+    var ret = char.IsLetterOrDigit(raw[0]) ? raw.Substring(0, 1) : "";
+    for (var i = 1; i < raw.Length - 1; ++i)
+    {
+        if ((raw[i] == '-' || char.IsWhiteSpace(raw[i])) && char.IsLower(raw[i + 1]))
+        {
+            ret += char.ToUpper(raw[++i]);
+        }
+        else if (char.IsLetterOrDigit(raw[i]))
+        {
+            ret += raw[i];
+        }
+    }
+    if (char.IsLetterOrDigit(raw[raw.Length - 1])) ret += raw[raw.Length - 1];
+
+    if (ret == "VerificationSOPClass")
+    {
+        return "Verification";
+    }
+    if (ret == "JPEGLosslessNonHierarchicalFirstOrderPrediction14SelectionValue1")
+    {
+        return "JPEGLossless";
+    }
+    if (ret == "MPEG2MainProfileMainLevel")
+    {
+        return "MPEG2";
+    }
+    return ret;
+}
+
+private static string ToUidDescription(string description)
+{
+    return description.Replace("&", "&amp;");
+}
+
+private static string ToDicomUidTypeString(string uidType)
+{
+    var raw = Regex.Replace(uidType.Replace(" OID", string.Empty), @"[^A-Za-z0-9]", string.Empty);
+
+    if (raw.IndexOf("frameofreference", StringComparison.OrdinalIgnoreCase) >= 0)
+    {
+        return "FrameOfReference";
+    }
+    if (raw.IndexOf("sopinstance", StringComparison.OrdinalIgnoreCase) >= 0)
+    {
+        return "SOPInstance";
+    }
+    if (raw.IndexOf("codingscheme", StringComparison.OrdinalIgnoreCase) >= 0)
+    {
+        return "CodingScheme";
+    }
+    if (raw.IndexOf("queryretrieve", StringComparison.OrdinalIgnoreCase) >= 0)
+    {
+        return "SOPClass";
+    }
+    if (raw.Equals("transfer", StringComparison.OrdinalIgnoreCase))
+    {
+        return "TransferSyntax";
+    }
+
+    return raw;
+}
+#>

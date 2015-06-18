@@ -1,0 +1,41 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml"#>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Xml" #>
+<#@ output extension=".xml" #>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright (c) 2012-2015 fo-dicom contributors.        -->
+<!-- Licensed under the Microsoft Public License (MS-PL).  -->
+
+<dictionary version="<#= GetVersion() #>">
+<#
+    var tags = GetTags();
+
+    foreach (var kv in tags)
+    {
+        var tag = kv.Value;
+        var description = tag.Item4.Replace("&", "&amp;");
+        var vr = tag.Item5 == "NONE" ? " " : string.Format(" vr=\"{0}\" ", tag.Item5);
+#>
+    <tag group="<#= tag.Item1 #>" element="<#= tag.Item2 #>" keyword="<#= tag.Item3 #>"<#= vr #>vm="<#= tag.Item6 #>"<#= tag.Item7 ? " retired=\"true\"" : "" #>><#= description #></tag>
+<#
+    }
+#>
+
+<#
+    var uids = GetUids();
+
+    foreach (var kv in uids)
+    {
+        var uid = kv.Value;
+#>
+    <uid uid="<#= uid.Item1 #>" keyword="<#= ToUidKeyword(uid.Item2) #>" type="<#= uid.Item3 #>"<#= uid.Item4 ? " retired=\"true\"" : "" #>><#= ToUidDescription(uid.Item2) #></uid>
+<#
+    }
+#>
+</dictionary>
+<#@ include file="../T4/dictionarymethods.t4" #>
