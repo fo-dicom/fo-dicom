@@ -1,26 +1,40 @@
-﻿<#+
+﻿<# #if DEBUG #>
+<#@ assembly name="EnvDTE" #>
+<# #endif #><#+
 private const string DocbookNamespace = "http://docbook.org/ns/docbook";
 
 #if DEBUG
-private const string Part6Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part06/part06.xml";
-private const string Part7Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml";
-private const string Part16Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part16/part16.xml";
+private static XmlDocument Part6Document;
+private static XmlDocument Part7Document;
+private static XmlNamespaceManager NsManager;
+private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary;
+
+private void Init()
+{
+	if (NsManager != null) return;
+
+	var directory = this.Host.ResolvePath(@"T4");
+	var part6Path = System.IO.Path.Combine(directory, "part06.xml");
+	var part7Path = System.IO.Path.Combine(directory, "part07.xml");
+	var part16Path = System.IO.Path.Combine(directory, "part16.xml");
+
+	Part6Document = LoadDocument(part6Path);
+	Part7Document = LoadDocument(part7Path);
+	NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
+	ContextGroupDictionary = GetContextGroupDictionary(part16Path);
+}
 #else
-private const string Part6Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part06/part06.xml";
-private const string Part7Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml";
-private const string Part16Path = @"http://medical.nema.org/medical/dicom/current/source/docbook/part16/part16.xml";
-#endif
+private static readonly XmlDocument Part6Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part06/part06.xml");
 
-private static readonly XmlDocument Part6Document = LoadDocument(Part6Path);
+private static readonly XmlDocument Part7Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml");
 
-private static readonly XmlDocument Part7Document = LoadDocument(Part7Path);
-
-// Common XML namespace manager for all DICOM documents
 private static readonly XmlNamespaceManager NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
 
-// Contains a mapping from link references in the Part 6 document to context group descriptions from Part 16
-// including the context group identifiers (CIDs)
-private static readonly Dictionary<string, Tuple<string, string>> ContextGroupDictionary = GetContextGroupDictionary();
+private static readonly Dictionary<string, Tuple<string, string>> ContextGroupDictionary = 
+	GetContextGroupDictionary(@"http://medical.nema.org/medical/dicom/current/source/docbook/part16/part16.xml");
+#endif
 
 private static XmlDocument LoadDocument(string path)
 {
@@ -36,13 +50,14 @@ private static XmlNamespaceManager GetNamespaceManager(XmlDocument document, str
 	return manager;
 }
 
-// Creates a mapping of link references and context group descriptions from the Part 16 document
+// Creates a mapping from link references made in the Part 6 document to context group descriptions 
+// from Part 16, including the context group identifiers (CIDs).
 // Dictionary is organized with a key equal to the xml:id of the referenced section/table, and a tuple
 // value containing the decription and CID of the corresponding context group
-private static Dictionary<string, Tuple<string, string>> GetContextGroupDictionary()
+private static Dictionary<string, Tuple<string, string>> GetContextGroupDictionary(string path)
 {
 	var document = new XmlDocument();
-	document.Load(Part16Path);
+	document.Load(path);
 
 	var dict = new Dictionary<string, Tuple<string, string>>();
 
@@ -88,8 +103,11 @@ private static Dictionary<string, Tuple<string, string>> GetContextGroupDictiona
 
 // DICOM version is obtained by selecting the relevant part from the inner text of the subtitle node.
 // The subtitle is assumed to be on the format "DICOM PS3.X VERSION - XXX"
-private static string GetVersion()
+private string GetVersion()
 {
+#if DEBUG
+	Init();
+#endif
 	var subtitle = Part6Document.DocumentElement.SelectSingleNode("//d:subtitle", NsManager).InnerText;
 	return subtitle.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2];
 }
@@ -98,8 +116,11 @@ private static string GetVersion()
 // Tags are stored in a dictionary with a key formed by the group and element number of the tag, and a
 // tuple value containing (1) tag group, (2) tag element, (3) keyword, (4) description, (5) value representation,
 // (6) value multiplicity, and (7) "is retired" flag
-private static Dictionary<string, Tuple<string, string, string, string, string, string, bool>> GetTags()
+private Dictionary<string, Tuple<string, string, string, string, string, string, bool>> GetTags()
 {
+#if DEBUG
+	Init();
+#endif
 	var tags = new Dictionary<string, Tuple<string, string, string, string, string, string, bool>>();
 
 	// Part 7, Table E.1-1 contains active command fields (group 0000 tags)
@@ -174,8 +195,11 @@ private static Tuple<string, string, string, string, string, string, bool> GetTa
 // Get UIDs from the Part 6 document
 // Dictionary is organized with a UID number key and a tuple containing (1) the UID number, (2) UID description,
 // (3) UID type, and (4) "is retired" flag.
-private static Dictionary<string, Tuple<string, string, string, bool>> GetUids()
+private Dictionary<string, Tuple<string, string, string, bool>> GetUids()
 {
+#if DEBUG
+	Init();
+#endif
 	var uids = new Dictionary<string, Tuple<string, string, string, bool>>();
 
 	// Part 6, Table A-1 contains the main list of DICOM Unique Identifiers
