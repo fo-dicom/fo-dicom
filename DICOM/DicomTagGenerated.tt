@@ -1,12 +1,5 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ assembly name="System.Xml"#>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text.RegularExpressions" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="System.Xml" #>
+﻿<#@ include file="T4/dictionarymethods.t4" #>
 <#@ output extension=".cs" #>
-<#@ include file="T4/dictionarymethods.t4" #>
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
