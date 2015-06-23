@@ -66,10 +66,14 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
     <Compile Include="DicomPersonNameTest.cs" />
     <Compile Include="DicomTagTest.cs" />
+    <Compile Include="DicomUIDTest.cs" />
+    <Compile Include="DicomVMTest.cs" />
+    <Compile Include="DicomVRTest.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="Network\PDUTest.cs" />

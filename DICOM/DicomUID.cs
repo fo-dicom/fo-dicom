@@ -19,6 +19,7 @@ namespace Dicom {
 		CodingScheme,
 		FrameOfReference,
 		LDAP,
+        MappingResource,
 		ContextGroupName,
 		Unknown
 	}
