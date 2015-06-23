@@ -27,7 +27,7 @@ namespace Dicom
     foreach (var kv in uids)
     {
         var uid = kv.Value;
-		var keyword = ToUidKeyword(uid.Item2, uid.Item4);
+        var keyword = ToUidKeyword(uid.Item2, uid.Item4);
 #>
             _uids.Add(DicomUID.<#= keyword #>.UID, DicomUID.<#= keyword #>);
 <#

@@ -1,19 +1,23 @@
 ﻿<# #if DEBUG #>
 <#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
 <# #endif #><#+
 private const string DocbookNamespace = "http://docbook.org/ns/docbook";
 
 #if DEBUG
-private static XmlDocument Part6Document;
-private static XmlDocument Part7Document;
-private static XmlNamespaceManager NsManager;
-private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary;
+private static XmlDocument Part6Document = null;
+private static XmlDocument Part7Document = null;
+private static XmlNamespaceManager NsManager = null;
+private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary = null;
 
 private void Init()
 {
 	if (NsManager != null) return;
 
-	var directory = this.Host.ResolvePath(@"T4");
+	var provider = this.Host as IServiceProvider;
+	var env = provider.GetService(typeof(DTE)) as DTE;
+	var directory = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(env.Solution.FullName), "DICOM", "T4");
+
 	var part6Path = System.IO.Path.Combine(directory, "part06.xml");
 	var part7Path = System.IO.Path.Combine(directory, "part07.xml");
 	var part16Path = System.IO.Path.Combine(directory, "part16.xml");
