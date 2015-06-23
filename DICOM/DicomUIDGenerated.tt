@@ -36,7 +36,7 @@ namespace Dicom
         var type = ToDicomUidTypeString(uid.Item3);
 #>
         ///<summary><#= uid.Item3 #>: <#= description #></summary>
-        public readonly static DicomUID <#= ToUidKeyword(uid.Item2, uid.Item4) #> = new DicomUID("<#= uid.Item1 #>", "<#= description #>", DicomUidType.<#= type #>, <#= uid.Item4.ToString().ToLower() #>);
+        public readonly static DicomUID <#= ToUidKeyword(uid.Item2, uid.Item4) #> = new DicomUID("<#= uid.Item1 #>", "<#= uid.Item2 #>", DicomUidType.<#= type #>, <#= uid.Item4.ToString().ToLower() #>);
 
 <#
     }

@@ -1314,22 +1314,22 @@ namespace Dicom
         public readonly static DicomUID JPEGBaseline1 = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG Extended (Process 2 &amp; 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)</summary>
-        public readonly static DicomUID JPEGExtended24 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 &amp; 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax, false);
+        public readonly static DicomUID JPEGExtended24 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG Extended (Process 3 &amp; 5) (Retired)</summary>
-        public readonly static DicomUID JPEGExtended35RETIRED = new DicomUID("1.2.840.10008.1.2.4.52", "JPEG Extended (Process 3 &amp; 5) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGExtended35RETIRED = new DicomUID("1.2.840.10008.1.2.4.52", "JPEG Extended (Process 3 & 5) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Spectral Selection, Non-Hierarchical (Process 6 &amp; 8) (Retired)</summary>
-        public readonly static DicomUID JPEGSpectralSelectionNonHierarchical68RETIRED = new DicomUID("1.2.840.10008.1.2.4.53", "JPEG Spectral Selection, Non-Hierarchical (Process 6 &amp; 8) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGSpectralSelectionNonHierarchical68RETIRED = new DicomUID("1.2.840.10008.1.2.4.53", "JPEG Spectral Selection, Non-Hierarchical (Process 6 & 8) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Spectral Selection, Non-Hierarchical (Process 7 &amp; 9) (Retired)</summary>
-        public readonly static DicomUID JPEGSpectralSelectionNonHierarchical79RETIRED = new DicomUID("1.2.840.10008.1.2.4.54", "JPEG Spectral Selection, Non-Hierarchical (Process 7 &amp; 9) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGSpectralSelectionNonHierarchical79RETIRED = new DicomUID("1.2.840.10008.1.2.4.54", "JPEG Spectral Selection, Non-Hierarchical (Process 7 & 9) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Full Progression, Non-Hierarchical (Process 10 &amp; 12) (Retired)</summary>
-        public readonly static DicomUID JPEGFullProgressionNonHierarchical1012RETIRED = new DicomUID("1.2.840.10008.1.2.4.55", "JPEG Full Progression, Non-Hierarchical (Process 10 &amp; 12) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGFullProgressionNonHierarchical1012RETIRED = new DicomUID("1.2.840.10008.1.2.4.55", "JPEG Full Progression, Non-Hierarchical (Process 10 & 12) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Full Progression, Non-Hierarchical (Process 11 &amp; 13) (Retired)</summary>
-        public readonly static DicomUID JPEGFullProgressionNonHierarchical1113RETIRED = new DicomUID("1.2.840.10008.1.2.4.56", "JPEG Full Progression, Non-Hierarchical (Process 11 &amp; 13) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGFullProgressionNonHierarchical1113RETIRED = new DicomUID("1.2.840.10008.1.2.4.56", "JPEG Full Progression, Non-Hierarchical (Process 11 & 13) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical (Process 14)</summary>
         public readonly static DicomUID JPEGLosslessNonHierarchical14 = new DicomUID("1.2.840.10008.1.2.4.57", "JPEG Lossless, Non-Hierarchical (Process 14)", DicomUidType.TransferSyntax, false);
@@ -1338,22 +1338,22 @@ namespace Dicom
         public readonly static DicomUID JPEGLosslessNonHierarchical15RETIRED = new DicomUID("1.2.840.10008.1.2.4.58", "JPEG Lossless, Non-Hierarchical (Process 15) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Extended, Hierarchical (Process 16 &amp; 18) (Retired)</summary>
-        public readonly static DicomUID JPEGExtendedHierarchical1618RETIRED = new DicomUID("1.2.840.10008.1.2.4.59", "JPEG Extended, Hierarchical (Process 16 &amp; 18) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGExtendedHierarchical1618RETIRED = new DicomUID("1.2.840.10008.1.2.4.59", "JPEG Extended, Hierarchical (Process 16 & 18) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Extended, Hierarchical (Process 17 &amp; 19) (Retired)</summary>
-        public readonly static DicomUID JPEGExtendedHierarchical1719RETIRED = new DicomUID("1.2.840.10008.1.2.4.60", "JPEG Extended, Hierarchical (Process 17 &amp; 19) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGExtendedHierarchical1719RETIRED = new DicomUID("1.2.840.10008.1.2.4.60", "JPEG Extended, Hierarchical (Process 17 & 19) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Spectral Selection, Hierarchical (Process 20 &amp; 22) (Retired)</summary>
-        public readonly static DicomUID JPEGSpectralSelectionHierarchical2022RETIRED = new DicomUID("1.2.840.10008.1.2.4.61", "JPEG Spectral Selection, Hierarchical (Process 20 &amp; 22) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGSpectralSelectionHierarchical2022RETIRED = new DicomUID("1.2.840.10008.1.2.4.61", "JPEG Spectral Selection, Hierarchical (Process 20 & 22) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Spectral Selection, Hierarchical (Process 21 &amp; 23) (Retired)</summary>
-        public readonly static DicomUID JPEGSpectralSelectionHierarchical2123RETIRED = new DicomUID("1.2.840.10008.1.2.4.62", "JPEG Spectral Selection, Hierarchical (Process 21 &amp; 23) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGSpectralSelectionHierarchical2123RETIRED = new DicomUID("1.2.840.10008.1.2.4.62", "JPEG Spectral Selection, Hierarchical (Process 21 & 23) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Full Progression, Hierarchical (Process 24 &amp; 26) (Retired)</summary>
-        public readonly static DicomUID JPEGFullProgressionHierarchical2426RETIRED = new DicomUID("1.2.840.10008.1.2.4.63", "JPEG Full Progression, Hierarchical (Process 24 &amp; 26) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGFullProgressionHierarchical2426RETIRED = new DicomUID("1.2.840.10008.1.2.4.63", "JPEG Full Progression, Hierarchical (Process 24 & 26) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Full Progression, Hierarchical (Process 25 &amp; 27) (Retired)</summary>
-        public readonly static DicomUID JPEGFullProgressionHierarchical2527RETIRED = new DicomUID("1.2.840.10008.1.2.4.64", "JPEG Full Progression, Hierarchical (Process 25 &amp; 27) (Retired)", DicomUidType.TransferSyntax, true);
+        public readonly static DicomUID JPEGFullProgressionHierarchical2527RETIRED = new DicomUID("1.2.840.10008.1.2.4.64", "JPEG Full Progression, Hierarchical (Process 25 & 27) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Lossless, Hierarchical (Process 28) (Retired)</summary>
         public readonly static DicomUID JPEGLosslessHierarchical28RETIRED = new DicomUID("1.2.840.10008.1.2.4.65", "JPEG Lossless, Hierarchical (Process 28) (Retired)", DicomUidType.TransferSyntax, true);
