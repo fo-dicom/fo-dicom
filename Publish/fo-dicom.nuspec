@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom</id>
+        <version>1.1.0-rc1</version>
+        <title>Fellow Oak DICOM for .NET</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A DICOM library for .NET</description>
+        <language>en-US</language>
+    </metadata>
+    <files>
+        <file src="..\DICOM [Native]\Release\Dicom.Native.dll" target="build\net45\Dicom.Native.dll" />
+        <file src="..\DICOM [Native]\Release\Dicom.Native64.dll" target="build\net45\Dicom.Native64.dll" />
+        <file src="..\fo-dicom.targets" target="build\fo-dicom.targets" />
+        <file src="..\ChangeLog.md" target="content\ChangeLog.md" />
+        <file src="..\License.txt" target="content\License.txt" />
+        <file src="..\README.md" target="content\README.md" />
+        <file src="..\DICOM\bin\Release\Dicom.dll" target="lib\net45\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.pdb" target="lib\net45\Dicom.pdb" />
+        <file src="..\DICOM\bin\Release\Dicom.xml" target="lib\net45\Dicom.xml" />
+    </files>
+</package>

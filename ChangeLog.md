@@ -1,7 +1,16 @@
-#### v1.0.39 (2/25/2015)
-* Fixed JPEG Codec memory corruption when encoding decoding on the same process for long period
+#### v1.1.0 (TBD)
+* Use memory mapped file buffer to improve large image reading (#17)
+* Improved reliability in search for native codec assemblies (#14)
+* Consistent handling of Get&lt;T&gt; default values (#10)
+* DICOM dictionary (tags and UIDs) updated to version 2015b (#9)
+* UC, UR and OD value representations added (#9)
+* Serilog support added; NLog and Serilog loggers moved to separate assemblies (#8)
+* Corrected Color32.B getter (#7)
+* Upgraded to .NET 4.5 and C/C++ toolset v120 (#4)
+* Use UTF-8 encoding where appropriate (#2, #20, #21)
+* Fixed JPEG Codec memory corruption when encoding decoding on the same process for long period (#1)
 
-#### v1.0.38 (6/20/2014)
+#### v1.0.38 (withdrawn)
 * Fix OW swap for single byte images
 * Better handling of long duration and aborted connections
 * Many imported extensions and bug fixes!

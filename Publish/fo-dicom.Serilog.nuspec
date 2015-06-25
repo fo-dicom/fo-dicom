@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.Serilog</id>
+        <version>1.1.0-rc1</version>
+        <title>fo-dicom Serilog support</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/rcd/fo-dicom</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Support library for using Serilog log handler with fo-dicom.</description>
+        <language>en-US</language>
+        <dependencies>
+            <dependency id="fo-dicom" version="1.1.0-rc1" />
+            <dependency id="Serilog" version="1.5.6" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\Logging\DICOM.Serilog\bin\Release\Dicom.Serilog.dll" target="lib\net45\Dicom.Serilog.dll" />
+        <file src="..\Logging\DICOM.Serilog\bin\Release\Dicom.Serilog.pdb" target="lib\net45\Dicom.Serilog.pdb" />
+    </files>
+</package>
