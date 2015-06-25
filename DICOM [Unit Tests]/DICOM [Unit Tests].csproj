@@ -75,12 +75,21 @@
     <Compile Include="DicomVMTest.cs" />
     <Compile Include="DicomVRTest.cs" />
     <Compile Include="Helpers\SerializationExtensions.cs" />
+    <Compile Include="Imaging\Codec\DicomTranscoderTest.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DICOM [Native]\x64\DICOM [Native64].vcxproj">
+      <Project>{fa9c7678-b9d9-46bc-8921-8152fd6787ca}</Project>
+      <Name>DICOM [Native64]</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DICOM [Native]\x86\DICOM [Native].vcxproj">
+      <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
+      <Name>DICOM [Native]</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DICOM\DICOM.csproj">
       <Project>{D6E309B0-4837-459E-8C85-ABC268440D62}</Project>
       <Name>DICOM</Name>
