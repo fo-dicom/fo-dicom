@@ -47,7 +47,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Init.cs" />
     <Compile Include="LogLevelConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerilogLogger.cs" />
