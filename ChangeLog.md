@@ -3,6 +3,7 @@
 * Improved reliability in search for native codec assemblies (#14)
 * Consistent handling of Get&lt;T&gt; default values (#10)
 * DICOM dictionary (tags and UIDs) updated to version 2015b (#9)
+* UC, UR and OD value representations added (#9)
 * Serilog support added; NLog and Serilog loggers moved to separate assemblies (#8)
 * Corrected Color32.B getter (#7)
 * Upgraded to .NET 4.5 and C/C++ toolset v120 (#4)
