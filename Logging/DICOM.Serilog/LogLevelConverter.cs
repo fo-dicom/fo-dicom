@@ -1,7 +1,6 @@
-﻿using Dicom.Log;
-using Serilog.Events;
+﻿using Serilog.Events;
 
-namespace DICOM.Log
+namespace Dicom.Log
 {
     internal static class LogLevelConverter
     {
