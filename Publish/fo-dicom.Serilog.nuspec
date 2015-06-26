@@ -3,10 +3,10 @@
     <metadata>
         <id>fo-dicom.Serilog</id>
         <version>1.1.0-rc1</version>
-        <title>fo-dicom Serilog support</title>
+        <title>Fellow Oak DICOM Serilog support</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
-        <projectUrl>https://github.com/rcd/fo-dicom</projectUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Support library for using Serilog log handler with fo-dicom.</description>
         <language>en-US</language>
