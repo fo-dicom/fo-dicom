@@ -1,13 +1,12 @@
-﻿using Dicom.Log;
-using Serilog;
+﻿using Serilog;
 
-namespace DICOM.Log
+namespace Dicom.Log
 {
-    internal class SerilogLogger :Logger
+    internal class SerilogLoggerAdapter :Logger
     {
         private readonly ILogger _serilog;
 
-        public SerilogLogger(ILogger serilog) {
+        public SerilogLoggerAdapter(ILogger serilog) {
             _serilog = serilog;
         }
 
