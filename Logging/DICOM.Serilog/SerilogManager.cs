@@ -31,7 +31,7 @@ namespace Dicom.Log
         /// <param name="name"></param>
         /// <returns></returns>
         public override Logger GetLogger(string name) {
-            var serilogLogger = Serilog.Log.ForContext("fo-DICOM", name);
+            var serilogLogger = (_serilogLogger ?? Serilog.Log.Logger).ForContext("fo-DICOM", name;)
             return new SerilogLoggerAdapter(serilogLogger);
         }
     }
