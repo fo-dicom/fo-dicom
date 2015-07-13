@@ -32,6 +32,7 @@ namespace Dicom
                 yield return new object[] { DicomTag.dBdt };
                 yield return new object[] { DicomTag.TherapyDescriptionRETIRED };
                 yield return new object[] { DicomTag.DICOMMediaRetrievalSequence };
+                yield return new object[] { DicomTag.ConsultingPhysicianIdentificationSequence }; // 2015c
             }
         }
 
