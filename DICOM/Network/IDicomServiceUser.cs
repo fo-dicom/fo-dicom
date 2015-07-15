@@ -9,6 +9,6 @@ namespace Dicom.Network {
 		void OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
 		void OnReceiveAssociationReleaseResponse();
 		void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason);
-		void OnConnectionClosed(int errorCode);
+		void OnConnectionClosed(Exception exception);
 	}
 }

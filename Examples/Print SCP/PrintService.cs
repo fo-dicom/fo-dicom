@@ -127,7 +127,7 @@ namespace Dicom.Printing
             this.Logger.Error("Received abort from {0}, reason is {1}", source, reason);
         }
 
-        public void OnConnectionClosed(int errorCode)
+        public void OnConnectionClosed(Exception exception)
         {
             Clean();
         }

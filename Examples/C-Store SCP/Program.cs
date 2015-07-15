@@ -79,7 +79,7 @@ namespace Dicom.CStoreSCP {
 			public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
 			}
 
-			public void OnConnectionClosed(int errorCode) {
+			public void OnConnectionClosed(Exception exception) {
 			}
 
 			public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request) {
