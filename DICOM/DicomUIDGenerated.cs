@@ -47,6 +47,9 @@ namespace Dicom
             _uids.Add(DicomUID.MPEG2MainProfileHighLevel.UID, DicomUID.MPEG2MainProfileHighLevel);
             _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel41.UID, DicomUID.MPEG4AVCH264HighProfileLevel41);
             _uids.Add(DicomUID.MPEG4AVCH264BDCompatibleHighProfileLevel41.UID, DicomUID.MPEG4AVCH264BDCompatibleHighProfileLevel41);
+            _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo);
+            _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo);
+            _uids.Add(DicomUID.MPEG4AVCH264StereoHighProfileLevel42.UID, DicomUID.MPEG4AVCH264StereoHighProfileLevel42);
             _uids.Add(DicomUID.RLELossless.UID, DicomUID.RLELossless);
             _uids.Add(DicomUID.RFC2557MIMEEncapsulation.UID, DicomUID.RFC2557MIMEEncapsulation);
             _uids.Add(DicomUID.XMLEncoding.UID, DicomUID.XMLEncoding);
@@ -233,6 +236,7 @@ namespace Dicom
             _uids.Add(DicomUID.EnhancedSRStorage.UID, DicomUID.EnhancedSRStorage);
             _uids.Add(DicomUID.ComprehensiveSRStorage.UID, DicomUID.ComprehensiveSRStorage);
             _uids.Add(DicomUID.Comprehensive3DSRStorage.UID, DicomUID.Comprehensive3DSRStorage);
+            _uids.Add(DicomUID.ExtensibleSRStorage.UID, DicomUID.ExtensibleSRStorage);
             _uids.Add(DicomUID.ProcedureLogStorage.UID, DicomUID.ProcedureLogStorage);
             _uids.Add(DicomUID.MammographyCADSRStorage.UID, DicomUID.MammographyCADSRStorage);
             _uids.Add(DicomUID.KeyObjectSelectionDocumentStorage.UID, DicomUID.KeyObjectSelectionDocumentStorage);
@@ -1286,13 +1290,40 @@ namespace Dicom
             _uids.Add(DicomUID.TractographyAnatomicSites7710.UID, DicomUID.TractographyAnatomicSites7710);
             _uids.Add(DicomUID.PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025.UID, DicomUID.PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025);
             _uids.Add(DicomUID.PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026.UID, DicomUID.PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026);
-            _uids.Add(DicomUID.IEC6127DevicePositionParameters9401.UID, DicomUID.IEC6127DevicePositionParameters9401);
-            _uids.Add(DicomUID.IEC6127GantryPositionParameters9402.UID, DicomUID.IEC6127GantryPositionParameters9402);
-            _uids.Add(DicomUID.IEC6127PatientSupportPositionParameters9403.UID, DicomUID.IEC6127PatientSupportPositionParameters9403);
+            _uids.Add(DicomUID.IEC61217DevicePositionParameters9401.UID, DicomUID.IEC61217DevicePositionParameters9401);
+            _uids.Add(DicomUID.IEC61217GantryPositionParameters9402.UID, DicomUID.IEC61217GantryPositionParameters9402);
+            _uids.Add(DicomUID.IEC61217PatientSupportPositionParameters9403.UID, DicomUID.IEC61217PatientSupportPositionParameters9403);
             _uids.Add(DicomUID.ActionableFindingClassification7035.UID, DicomUID.ActionableFindingClassification7035);
             _uids.Add(DicomUID.ImageQualityAssessment7036.UID, DicomUID.ImageQualityAssessment7036);
             _uids.Add(DicomUID.SummaryRadiationExposureQuantities10050.UID, DicomUID.SummaryRadiationExposureQuantities10050);
             _uids.Add(DicomUID.WideFieldOphthalmicPhotographyTransformationMethod4245.UID, DicomUID.WideFieldOphthalmicPhotographyTransformationMethod4245);
+            _uids.Add(DicomUID.PETUnits84.UID, DicomUID.PETUnits84);
+            _uids.Add(DicomUID.ImplantMaterials7300.UID, DicomUID.ImplantMaterials7300);
+            _uids.Add(DicomUID.InterventionTypes7301.UID, DicomUID.InterventionTypes7301);
+            _uids.Add(DicomUID.ImplantTemplatesViewOrientations7302.UID, DicomUID.ImplantTemplatesViewOrientations7302);
+            _uids.Add(DicomUID.ImplantTemplatesModifiedViewOrientations7303.UID, DicomUID.ImplantTemplatesModifiedViewOrientations7303);
+            _uids.Add(DicomUID.ImplantTargetAnatomy7304.UID, DicomUID.ImplantTargetAnatomy7304);
+            _uids.Add(DicomUID.ImplantPlanningLandmarks7305.UID, DicomUID.ImplantPlanningLandmarks7305);
+            _uids.Add(DicomUID.HumanHipImplantPlanningLandmarks7306.UID, DicomUID.HumanHipImplantPlanningLandmarks7306);
+            _uids.Add(DicomUID.ImplantComponentTypes7307.UID, DicomUID.ImplantComponentTypes7307);
+            _uids.Add(DicomUID.HumanHipImplantComponentTypes7308.UID, DicomUID.HumanHipImplantComponentTypes7308);
+            _uids.Add(DicomUID.HumanTraumaImplantComponentTypes7309.UID, DicomUID.HumanTraumaImplantComponentTypes7309);
+            _uids.Add(DicomUID.ImplantFixationMethod7310.UID, DicomUID.ImplantFixationMethod7310);
+            _uids.Add(DicomUID.DeviceParticipatingRoles7445.UID, DicomUID.DeviceParticipatingRoles7445);
+            _uids.Add(DicomUID.ContainerTypes8101.UID, DicomUID.ContainerTypes8101);
+            _uids.Add(DicomUID.ContainerComponentTypes8102.UID, DicomUID.ContainerComponentTypes8102);
+            _uids.Add(DicomUID.AnatomicPathologySpecimenTypes8103.UID, DicomUID.AnatomicPathologySpecimenTypes8103);
+            _uids.Add(DicomUID.BreastTissueSpecimenTypes8104.UID, DicomUID.BreastTissueSpecimenTypes8104);
+            _uids.Add(DicomUID.SpecimenCollectionProcedure8109.UID, DicomUID.SpecimenCollectionProcedure8109);
+            _uids.Add(DicomUID.SpecimenSamplingProcedure8110.UID, DicomUID.SpecimenSamplingProcedure8110);
+            _uids.Add(DicomUID.SpecimenPreparationProcedure8111.UID, DicomUID.SpecimenPreparationProcedure8111);
+            _uids.Add(DicomUID.SpecimenStains8112.UID, DicomUID.SpecimenStains8112);
+            _uids.Add(DicomUID.SpecimenPreparationSteps8113.UID, DicomUID.SpecimenPreparationSteps8113);
+            _uids.Add(DicomUID.SpecimenFixatives8114.UID, DicomUID.SpecimenFixatives8114);
+            _uids.Add(DicomUID.SpecimenEmbeddingMedia8115.UID, DicomUID.SpecimenEmbeddingMedia8115);
+            _uids.Add(DicomUID.SourceOfProjectionXRayDoseInformation10020.UID, DicomUID.SourceOfProjectionXRayDoseInformation10020);
+            _uids.Add(DicomUID.SourceOfCTDoseInformation10021.UID, DicomUID.SourceOfCTDoseInformation10021);
+            _uids.Add(DicomUID.RadiationDoseReferencePoints10025.UID, DicomUID.RadiationDoseReferencePoints10025);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1399,6 +1430,15 @@ namespace Dicom
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
         public readonly static DicomUID MPEG4AVCH264BDCompatibleHighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.103", "MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</summary>
+        public readonly static DicomUID MPEG4AVCH264HighProfileLevel42For2DVideo = new DicomUID("1.2.840.10008.1.2.4.104", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</summary>
+        public readonly static DicomUID MPEG4AVCH264HighProfileLevel42For3DVideo = new DicomUID("1.2.840.10008.1.2.4.105", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</summary>
+        public readonly static DicomUID MPEG4AVCH264StereoHighProfileLevel42 = new DicomUID("1.2.840.10008.1.2.4.106", "MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: RLE Lossless</summary>
         public readonly static DicomUID RLELossless = new DicomUID("1.2.840.10008.1.2.5", "RLE Lossless", DicomUidType.TransferSyntax, false);
@@ -1957,6 +1997,9 @@ namespace Dicom
 
         ///<summary>SOP Class: Comprehensive 3D SR Storage</summary>
         public readonly static DicomUID Comprehensive3DSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.34", "Comprehensive 3D SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Extensible SR Storage</summary>
+        public readonly static DicomUID ExtensibleSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.35", "Extensible SR Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Procedure Log Storage</summary>
         public readonly static DicomUID ProcedureLogStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.40", "Procedure Log Storage", DicomUidType.SOPClass, false);
@@ -5117,14 +5160,14 @@ namespace Dicom
         ///<summary>Context Group Name: Primary Anatomic Structure for Intra-oral and Craniofacial Radiography - Teeth (4026)</summary>
         public readonly static DicomUID PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026 = new DicomUID("1.2.840.10008.6.1.1022", "Primary Anatomic Structure for Intra-oral and Craniofacial Radiography - Teeth (4026)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: IEC6127 Device Position Parameters (9401)</summary>
-        public readonly static DicomUID IEC6127DevicePositionParameters9401 = new DicomUID("1.2.840.10008.6.1.1023", "IEC6127 Device Position Parameters (9401)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: IEC61217 Device Position Parameters (9401)</summary>
+        public readonly static DicomUID IEC61217DevicePositionParameters9401 = new DicomUID("1.2.840.10008.6.1.1023", "IEC61217 Device Position Parameters (9401)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: IEC6127 Gantry Position Parameters (9402)</summary>
-        public readonly static DicomUID IEC6127GantryPositionParameters9402 = new DicomUID("1.2.840.10008.6.1.1024", "IEC6127 Gantry Position Parameters (9402)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: IEC61217 Gantry Position Parameters (9402)</summary>
+        public readonly static DicomUID IEC61217GantryPositionParameters9402 = new DicomUID("1.2.840.10008.6.1.1024", "IEC61217 Gantry Position Parameters (9402)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: IEC6127 Patient Support Position Parameters (9403)</summary>
-        public readonly static DicomUID IEC6127PatientSupportPositionParameters9403 = new DicomUID("1.2.840.10008.6.1.1025", "IEC6127 Patient Support Position Parameters (9403)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: IEC61217 Patient Support Position Parameters (9403)</summary>
+        public readonly static DicomUID IEC61217PatientSupportPositionParameters9403 = new DicomUID("1.2.840.10008.6.1.1025", "IEC61217 Patient Support Position Parameters (9403)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Actionable Finding Classification (7035)</summary>
         public readonly static DicomUID ActionableFindingClassification7035 = new DicomUID("1.2.840.10008.6.1.1026", "Actionable Finding Classification (7035)", DicomUidType.ContextGroupName, false);
@@ -5137,6 +5180,87 @@ namespace Dicom
 
         ///<summary>Context Group Name: Wide Field Ophthalmic Photography Transformation Method (4245)</summary>
         public readonly static DicomUID WideFieldOphthalmicPhotographyTransformationMethod4245 = new DicomUID("1.2.840.10008.6.1.1029", "Wide Field Ophthalmic Photography Transformation Method (4245)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PET Units (84)</summary>
+        public readonly static DicomUID PETUnits84 = new DicomUID("1.2.840.10008.6.1.1030", "PET Units (84)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Materials (7300)</summary>
+        public readonly static DicomUID ImplantMaterials7300 = new DicomUID("1.2.840.10008.6.1.1031", "Implant Materials (7300)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Intervention Types (7301)</summary>
+        public readonly static DicomUID InterventionTypes7301 = new DicomUID("1.2.840.10008.6.1.1032", "Intervention Types (7301)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Templates View Orientations (7302)</summary>
+        public readonly static DicomUID ImplantTemplatesViewOrientations7302 = new DicomUID("1.2.840.10008.6.1.1033", "Implant Templates View Orientations (7302)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Templates Modified View Orientations (7303)</summary>
+        public readonly static DicomUID ImplantTemplatesModifiedViewOrientations7303 = new DicomUID("1.2.840.10008.6.1.1034", "Implant Templates Modified View Orientations (7303)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Target Anatomy (7304)</summary>
+        public readonly static DicomUID ImplantTargetAnatomy7304 = new DicomUID("1.2.840.10008.6.1.1035", "Implant Target Anatomy (7304)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Planning Landmarks (7305)</summary>
+        public readonly static DicomUID ImplantPlanningLandmarks7305 = new DicomUID("1.2.840.10008.6.1.1036", "Implant Planning Landmarks (7305)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Human Hip Implant Planning Landmarks (7306)</summary>
+        public readonly static DicomUID HumanHipImplantPlanningLandmarks7306 = new DicomUID("1.2.840.10008.6.1.1037", "Human Hip Implant Planning Landmarks (7306)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Component Types (7307)</summary>
+        public readonly static DicomUID ImplantComponentTypes7307 = new DicomUID("1.2.840.10008.6.1.1038", "Implant Component Types (7307)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Human Hip Implant Component Types (7308)</summary>
+        public readonly static DicomUID HumanHipImplantComponentTypes7308 = new DicomUID("1.2.840.10008.6.1.1039", "Human Hip Implant Component Types (7308)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Human Trauma Implant Component Types (7309)</summary>
+        public readonly static DicomUID HumanTraumaImplantComponentTypes7309 = new DicomUID("1.2.840.10008.6.1.1040", "Human Trauma Implant Component Types (7309)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Implant Fixation Method (7310)</summary>
+        public readonly static DicomUID ImplantFixationMethod7310 = new DicomUID("1.2.840.10008.6.1.1041", "Implant Fixation Method (7310)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Device Participating Roles (7445)</summary>
+        public readonly static DicomUID DeviceParticipatingRoles7445 = new DicomUID("1.2.840.10008.6.1.1042", "Device Participating Roles (7445)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Container Types (8101)</summary>
+        public readonly static DicomUID ContainerTypes8101 = new DicomUID("1.2.840.10008.6.1.1043", "Container Types (8101)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Container Component Types (8102)</summary>
+        public readonly static DicomUID ContainerComponentTypes8102 = new DicomUID("1.2.840.10008.6.1.1044", "Container Component Types (8102)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Anatomic Pathology Specimen Types (8103)</summary>
+        public readonly static DicomUID AnatomicPathologySpecimenTypes8103 = new DicomUID("1.2.840.10008.6.1.1045", "Anatomic Pathology Specimen Types (8103)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Breast Tissue Specimen Types (8104)</summary>
+        public readonly static DicomUID BreastTissueSpecimenTypes8104 = new DicomUID("1.2.840.10008.6.1.1046", "Breast Tissue Specimen Types (8104)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Collection Procedure (8109)</summary>
+        public readonly static DicomUID SpecimenCollectionProcedure8109 = new DicomUID("1.2.840.10008.6.1.1047", "Specimen Collection Procedure (8109)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Sampling Procedure (8110)</summary>
+        public readonly static DicomUID SpecimenSamplingProcedure8110 = new DicomUID("1.2.840.10008.6.1.1048", "Specimen Sampling Procedure (8110)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Preparation Procedure (8111)</summary>
+        public readonly static DicomUID SpecimenPreparationProcedure8111 = new DicomUID("1.2.840.10008.6.1.1049", "Specimen Preparation Procedure (8111)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Stains (8112)</summary>
+        public readonly static DicomUID SpecimenStains8112 = new DicomUID("1.2.840.10008.6.1.1050", "Specimen Stains (8112)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Preparation Steps (8113)</summary>
+        public readonly static DicomUID SpecimenPreparationSteps8113 = new DicomUID("1.2.840.10008.6.1.1051", "Specimen Preparation Steps (8113)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Fixatives (8114)</summary>
+        public readonly static DicomUID SpecimenFixatives8114 = new DicomUID("1.2.840.10008.6.1.1052", "Specimen Fixatives (8114)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specimen Embedding Media (8115)</summary>
+        public readonly static DicomUID SpecimenEmbeddingMedia8115 = new DicomUID("1.2.840.10008.6.1.1053", "Specimen Embedding Media (8115)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Source of Projection X-Ray Dose Information (10020)</summary>
+        public readonly static DicomUID SourceOfProjectionXRayDoseInformation10020 = new DicomUID("1.2.840.10008.6.1.1054", "Source of Projection X-Ray Dose Information (10020)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Source of CT Dose Information (10021)</summary>
+        public readonly static DicomUID SourceOfCTDoseInformation10021 = new DicomUID("1.2.840.10008.6.1.1055", "Source of CT Dose Information (10021)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Dose Reference Points (10025)</summary>
+        public readonly static DicomUID RadiationDoseReferencePoints10025 = new DicomUID("1.2.840.10008.6.1.1056", "Radiation Dose Reference Points (10025)", DicomUidType.ContextGroupName, false);
 
     }
 }

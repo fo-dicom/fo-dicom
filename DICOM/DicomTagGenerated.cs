@@ -383,6 +383,12 @@ namespace Dicom
         ///<summary>(0008,0096) VR=SQ VM=1 Referring Physician Identification Sequence</summary>
         public readonly static DicomTag ReferringPhysicianIdentificationSequence = new DicomTag(0x0008, 0x0096);
 
+        ///<summary>(0008,009C) VR=PN VM=1-n Consulting Physician's Name</summary>
+        public readonly static DicomTag ConsultingPhysicianName = new DicomTag(0x0008, 0x009C);
+
+        ///<summary>(0008,009D) VR=SQ VM=1 Consulting Physician Identification Sequence</summary>
+        public readonly static DicomTag ConsultingPhysicianIdentificationSequence = new DicomTag(0x0008, 0x009D);
+
         ///<summary>(0008,0100) VR=SH VM=1 Code Value</summary>
         public readonly static DicomTag CodeValue = new DicomTag(0x0008, 0x0100);
 
@@ -454,6 +460,30 @@ namespace Dicom
 
         ///<summary>(0008,0201) VR=SH VM=1 Timezone Offset From UTC</summary>
         public readonly static DicomTag TimezoneOffsetFromUTC = new DicomTag(0x0008, 0x0201);
+
+        ///<summary>(0008,0300) VR=SQ VM=1 Private Data Element Characteristics Sequence</summary>
+        public readonly static DicomTag PrivateDataElementCharacteristicsSequence = new DicomTag(0x0008, 0x0300);
+
+        ///<summary>(0008,0301) VR=US VM=1 Private Group Reference</summary>
+        public readonly static DicomTag PrivateGroupReference = new DicomTag(0x0008, 0x0301);
+
+        ///<summary>(0008,0302) VR=LO VM=1 Private Creator Reference</summary>
+        public readonly static DicomTag PrivateCreatorReference = new DicomTag(0x0008, 0x0302);
+
+        ///<summary>(0008,0303) VR=CS VM=1 Block Identifying Information Status</summary>
+        public readonly static DicomTag BlockIdentifyingInformationStatus = new DicomTag(0x0008, 0x0303);
+
+        ///<summary>(0008,0304) VR=US VM=1-n Nonidentifying Private Elements</summary>
+        public readonly static DicomTag NonidentifyingPrivateElements = new DicomTag(0x0008, 0x0304);
+
+        ///<summary>(0008,0306) VR=US VM=1-n Identifying Private Elements</summary>
+        public readonly static DicomTag IdentifyingPrivateElements = new DicomTag(0x0008, 0x0306);
+
+        ///<summary>(0008,0305) VR=SQ VM=1 Deidentification Action Sequence</summary>
+        public readonly static DicomTag DeidentificationActionSequence = new DicomTag(0x0008, 0x0305);
+
+        ///<summary>(0008,0307) VR=CS VM=1 Deidentification Action</summary>
+        public readonly static DicomTag DeidentificationAction = new DicomTag(0x0008, 0x0307);
 
         ///<summary>(0008,1000) VR=AE VM=1 Network ID (RETIRED)</summary>
         public readonly static DicomTag NetworkIDRETIRED = new DicomTag(0x0008, 0x1000);
@@ -880,6 +910,9 @@ namespace Dicom
 
         ///<summary>(0010,2154) VR=SH VM=1-n Patient's Telephone Numbers</summary>
         public readonly static DicomTag PatientTelephoneNumbers = new DicomTag(0x0010, 0x2154);
+
+        ///<summary>(0010,2155) VR=LT VM=1 Patient's Telecom Information</summary>
+        public readonly static DicomTag PatientTelecomInformation = new DicomTag(0x0010, 0x2155);
 
         ///<summary>(0010,2160) VR=SH VM=1 Ethnic Group</summary>
         public readonly static DicomTag EthnicGroup = new DicomTag(0x0010, 0x2160);
@@ -4217,6 +4250,9 @@ namespace Dicom
         ///<summary>(0022,0022) VR=SQ VM=1 Right Image Sequence</summary>
         public readonly static DicomTag RightImageSequence = new DicomTag(0x0022, 0x0022);
 
+        ///<summary>(0022,0028) VR=CS VM=1 Stereo Pairs Present</summary>
+        public readonly static DicomTag StereoPairsPresent = new DicomTag(0x0022, 0x0028);
+
         ///<summary>(0022,0030) VR=FL VM=1 Axial Length of the Eye</summary>
         public readonly static DicomTag AxialLengthOfTheEye = new DicomTag(0x0022, 0x0030);
 
@@ -6209,6 +6245,9 @@ namespace Dicom
         ///<summary>(0040,1103) VR=LO VM=1-n Person's Telephone Numbers</summary>
         public readonly static DicomTag PersonTelephoneNumbers = new DicomTag(0x0040, 0x1103);
 
+        ///<summary>(0040,1104) VR=LT VM=1 Person's Telecom Information</summary>
+        public readonly static DicomTag PersonTelecomInformation = new DicomTag(0x0040, 0x1104);
+
         ///<summary>(0040,1400) VR=LT VM=1 Requested Procedure Comments</summary>
         public readonly static DicomTag RequestedProcedureComments = new DicomTag(0x0040, 0x1400);
 
@@ -6235,6 +6274,9 @@ namespace Dicom
 
         ///<summary>(0040,2010) VR=SH VM=1 Order Callback Phone Number</summary>
         public readonly static DicomTag OrderCallbackPhoneNumber = new DicomTag(0x0040, 0x2010);
+
+        ///<summary>(0040,2011) VR=LT VM=1 Order Callback Telecom Information</summary>
+        public readonly static DicomTag OrderCallbackTelecomInformation = new DicomTag(0x0040, 0x2011);
 
         ///<summary>(0040,2016) VR=LO VM=1 Placer Order Number / Imaging Service Request</summary>
         public readonly static DicomTag PlacerOrderNumberImagingServiceRequest = new DicomTag(0x0040, 0x2016);
@@ -8443,6 +8485,9 @@ namespace Dicom
 
         ///<summary>(0072,007E) VR=SS VM=1-n Selector SS Value</summary>
         public readonly static DicomTag SelectorSSValue = new DicomTag(0x0072, 0x007E);
+
+        ///<summary>(0072,007F) VR=UI VM=1-n Selector UI Value</summary>
+        public readonly static DicomTag SelectorUIValue = new DicomTag(0x0072, 0x007F);
 
         ///<summary>(0072,0080) VR=SQ VM=1 Selector Code Sequence Value</summary>
         public readonly static DicomTag SelectorCodeSequenceValue = new DicomTag(0x0072, 0x0080);
@@ -11224,6 +11269,15 @@ namespace Dicom
 
         ///<summary>(300C,0104) VR=IS VM=1 Referenced Range Modulator Number</summary>
         public readonly static DicomTag ReferencedRangeModulatorNumber = new DicomTag(0x300C, 0x0104);
+
+        ///<summary>(300C,0111) VR=SQ VM=1 Omitted Beam Task Sequence</summary>
+        public readonly static DicomTag OmittedBeamTaskSequence = new DicomTag(0x300C, 0x0111);
+
+        ///<summary>(300C,0112) VR=CS VM=1 Reason for Omission</summary>
+        public readonly static DicomTag ReasonForOmission = new DicomTag(0x300C, 0x0112);
+
+        ///<summary>(300C,0113) VR=LO VM=1 Reason for Omission Description</summary>
+        public readonly static DicomTag ReasonForOmissionDescription = new DicomTag(0x300C, 0x0113);
 
         ///<summary>(300E,0002) VR=CS VM=1 Approval Status</summary>
         public readonly static DicomTag ApprovalStatus = new DicomTag(0x300E, 0x0002);
