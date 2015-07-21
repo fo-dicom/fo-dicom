@@ -30,17 +30,34 @@ namespace Dicom.Imaging.Codec {
 			if (path == null)
 				path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
 
-			var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
+		    if (search == null)
+		        search = "Dicom.Native*.dll";
 
-			var catalog = (search == null) ?
-				new DirectoryCatalog(path) :
-				new DirectoryCatalog(path, search);
+			var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
+		    log.Debug("Searching {path}\\{wildcard} for Dicom codecs", path, search);
+
+		    var foundAnyCodecs = false;
+
+		    DirectoryCatalog catalog;
+		    try {
+		        catalog = new DirectoryCatalog(path, search);
+		    }
+		    catch (Exception ex) {
+		        log.Error("Error encountered creating new DirectCatalog({path}, {search}) - {@exception}", path, search, ex);
+		        throw;
+		    }
+
 			var container = new CompositionContainer(catalog);
 			foreach (var lazy in container.GetExports<IDicomCodec>()) {
+			    foundAnyCodecs = true;
 				var codec = lazy.Value;
 				log.Debug("Codec: {codecName}", codec.TransferSyntax.UID.Name);
 				_codecs[codec.TransferSyntax] = codec;
 			}
+
+		    if (!foundAnyCodecs) {
+		        log.Warn("No Dicom codecs were found after searching {path}\\{wildcard}", path, search);
+		    }
 		}
 		#endregion
 
