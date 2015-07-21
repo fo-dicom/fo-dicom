@@ -200,6 +200,10 @@ namespace Dicom.IO.Reader {
 								}
 
 								_length = source.GetUInt32();
+
+								// assume that undefined length in implicit dataset is SQ
+								if (_length == UndefinedLength)
+									_vr = DicomVR.SQ;
 							} else if (_vr.Is16bitLength) {
 								if (!source.Require(2, ParseDataset, state)) {
 									_result = DicomReaderResult.Suspended;
