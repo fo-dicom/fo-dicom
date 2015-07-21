@@ -17,7 +17,7 @@ namespace Dicom.IO.Reader
 
         [Theory]
         [MemberData("ValidExplicitVRData")]
-        public void Read_ValidExplicitVR_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
+        public void Read_ValidExplicitVRData_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
             var source = new StreamByteSource(stream);
@@ -30,6 +30,20 @@ namespace Dicom.IO.Reader
             Assert.Equal(tag, observer.Tag);
             Assert.Equal(vr, observer.VR);
             Assert.Equal(data, observer.Data);
+        }
+
+        [Theory]
+        [MemberData("ValidExplicitVRSequences")]
+        public void Read_ValidExplicitVRSequence_YieldsSuccess(byte[] bytes)
+        {
+            var stream = new MemoryStream(bytes);
+            var source = new StreamByteSource(stream);
+            var reader = new DicomReader { IsExplicitVR = true };
+
+            var observer = new MockObserver();
+            var result = reader.Read(source, observer);
+
+            Assert.Equal(DicomReaderResult.Success, result);
         }
 
         #endregion
@@ -61,6 +75,36 @@ namespace Dicom.IO.Reader
                         {
                             DicomTag.BeamDose, DicomVR.DS, "2.015 ",
                             new byte[] { 0x0a, 0x30, 0x84, 0x00, 0x06, 0x00, 0x00, 0x00, 0x32, 0x2e, 0x30, 0x31, 0x35, 0x20 }
+                        };
+            }
+        }
+
+        public static IEnumerable<object[]> ValidExplicitVRSequences
+        {
+            get
+            {
+                yield return
+                    new object[]
+                        {
+                            new byte[]
+                                {
+                                    0x54, 0x00, 0x63, 0x00, 0x53, 0x51, 0x00, 0x00, 0x24, 0x00, 0x00, 0x00, 0xfe, 0xff,
+                                    0x00, 0xe0, 0x1c, 0x00, 0x00, 0x00, 0x08, 0x00, 0x16, 0x00, 0x55, 0x49, 0x06, 0x00,
+                                    0x31, 0x2e, 0x32, 0x2e, 0x38, 0x34, 0x08, 0x00, 0x18, 0x00, 0x55, 0x49, 0x06, 0x00,
+                                    0x31, 0x2e, 0x33, 0x2e, 0x34, 0x00
+                                }
+                        };
+                yield return
+                    new object[]
+                        {
+                            new byte[]
+                                {
+                                    0x0b, 0x20, 0x9f, 0x70, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xff, 0x00, 0xe0, 0xff, 0xff,
+                                    0xff, 0xff, 0x08, 0x00, 0x16, 0x00, 0x06, 0x00, 0x00, 0x00, 0x31, 0x2e, 0x32, 0x2e,
+                                    0x38, 0x34, 0x08, 0x00, 0x18, 0x00, 0x06, 0x00, 0x00, 0x00, 0x31, 0x2e, 0x33, 0x2e,
+                                    0x34, 0x00, 0xfe, 0xff, 0x0d, 0xe0, 0x00, 0x00, 0x00, 0x00, 0xfe, 0xff, 0xdd, 0xe0,
+                                    0x00, 0x00, 0x00, 0x00
+                                }
                         };
             }
         }
