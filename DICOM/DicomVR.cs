@@ -152,6 +152,21 @@ namespace Dicom {
             }
         }
 
+        /// <summary>Implicit VR in Explicit VR context</summary>
+        internal readonly static DicomVR Implicit = new DicomVR {
+            Code = "IMPLICIT",
+            Name = "Implicit Value Representation in Explicit VR context",
+            IsString = false,
+            IsStringEncoded = false,
+            Is16bitLength = false,
+            IsMultiValue = false,
+            PaddingValue = PadZero,
+            MaximumLength = 0,
+            UnitSize = 0,
+            ByteSwap = 0,
+            ValueType = typeof(object)
+        };
+
         /// <summary>No VR</summary>
         public readonly static DicomVR NONE = new DicomVR {
             Code = "NONE",

@@ -56,11 +56,11 @@ namespace Dicom.IO.Reader
                             DicomTag.BeamDose, DicomVR.DS, "2.015 ",
                             new byte[] { 0x0a, 0x30, 0x84, 0x00, 0x44, 0x53, 0x06, 0x00, 0x32, 0x2e, 0x30, 0x31, 0x35, 0x20 }
                         };
-                yield return    // Same as previous, but VR data omitted
+                yield return    // Same as previous, but VR data omitted and length spans 4 bytes
                     new object[]
                         {
                             DicomTag.BeamDose, DicomVR.DS, "2.015 ",
-                            new byte[] { 0x0a, 0x30, 0x84, 0x00, 0x06, 0x00, 0x32, 0x2e, 0x30, 0x31, 0x35, 0x20 }
+                            new byte[] { 0x0a, 0x30, 0x84, 0x00, 0x06, 0x00, 0x00, 0x00, 0x32, 0x2e, 0x30, 0x31, 0x35, 0x20 }
                         };
             }
         }
