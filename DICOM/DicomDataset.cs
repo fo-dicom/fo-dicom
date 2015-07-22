@@ -356,6 +356,13 @@ namespace Dicom {
 					return Add(new DicomTime(tag, values.Cast<string>().ToArray()));
 			}
 
+			if (vr == DicomVR.UC) {
+				if (values == null)
+					return Add(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value));
+				if (typeof(T) == typeof(string))
+					return Add(new DicomUnlimitedCharacters(tag, values.Cast<string>().First()));
+			}
+
 			if (vr == DicomVR.UI) {
 				if (values == null)
 					return Add(new DicomUniqueIdentifier(tag, EmptyBuffer.Value));

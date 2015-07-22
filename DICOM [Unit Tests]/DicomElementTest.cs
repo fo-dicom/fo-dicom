@@ -55,5 +55,13 @@ namespace Dicom
             var actual = element.Get<double>();
             Assert.InRange(actual, double.MinValue, double.MaxValue);
         }
+
+        [Fact]
+        public void DicomUnlimitedCharacters_MultipleStrings_ReturnsDelimitedString()
+        {
+            var element = new DicomUnlimitedCharacters(DicomTag.DoubleFloatPixelData, "a", "b", "c");
+            var actual = element.Get<string>();
+            Assert.Equal(@"a\b\c", actual);
+        }
     }
 }

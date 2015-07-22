@@ -48,6 +48,7 @@ namespace Dicom.IO.Reader {
 				case "SS": element = new DicomSignedShort(tag, data); break;
 				case "ST": element = new DicomShortText(tag, _encodings.Peek(), data); break;
 				case "TM": element = new DicomTime(tag, data); break;
+				case "UC": element = new DicomUnlimitedCharacters(tag, _encodings.Peek(), data); break;
 				case "UI": element = new DicomUniqueIdentifier(tag, data); break;
 				case "UL": element = new DicomUnsignedLong(tag, data); break;
 				case "UN": element = new DicomUnknown(tag, data); break;

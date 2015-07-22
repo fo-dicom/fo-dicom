@@ -1034,6 +1034,26 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Unlimited Characters (UC)</summary>
+	public class DicomUnlimitedCharacters : DicomMultiStringElement {
+		#region Public Constructors
+        public DicomUnlimitedCharacters(DicomTag tag, params string[] values) : base(tag, values) {
+		}
+
+        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+        }
+
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.UC; }
+		}
+		#endregion
+	}
+
 	/// <summary>Unique Identifier (UI)</summary>
 	public class DicomUniqueIdentifier : DicomMultiStringElement {
 		#region Public Constructors

@@ -28,6 +28,14 @@ namespace Dicom
             Assert.IsType(typeof(DicomOtherDouble), dataset.First());
         }
 
+        [Fact]
+        public void Add_UnlimitedCharactersElementWithMultipleStrings_Succeeds()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.LongCodeValue, "a", "b", "c");
+            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First());
+        }
+
         #endregion
     }
 }
