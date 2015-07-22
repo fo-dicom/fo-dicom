@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dicom {
 	public static class DicomEncoding {
-		public readonly static Encoding Default = Encoding.ASCII;
+		public static Encoding Default = Encoding.ASCII;
 
 		public static Encoding GetEncoding(string charset) {
 			if (String.IsNullOrWhiteSpace(charset))
