@@ -201,7 +201,7 @@ namespace Dicom.IO.Reader {
 
 								_length = source.GetUInt32();
 
-								// assume that undefined length in implicit dataset is SQ
+								// assume that undefined length in implicit VR element is SQ
 								if (_length == UndefinedLength)
 									_vr = DicomVR.SQ;
 							} else if (_vr.Is16bitLength) {
@@ -243,7 +243,7 @@ namespace Dicom.IO.Reader {
 
 						// check dictionary for VR after reading length to handle 16-bit lengths
 						// check before reading value to handle SQ elements
-						if ((_vr == DicomVR.Implicit || _vr == DicomVR.UN) && IsExplicitVR) {
+						if (_vr == DicomVR.Implicit || (_vr == DicomVR.UN && IsExplicitVR)) {
 							var entry = Dictionary[_tag];
 							if (entry != null)
 								_vr = entry.ValueRepresentations.FirstOrDefault();
