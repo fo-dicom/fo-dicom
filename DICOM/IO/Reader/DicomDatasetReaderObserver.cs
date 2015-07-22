@@ -52,6 +52,7 @@ namespace Dicom.IO.Reader {
 				case "UI": element = new DicomUniqueIdentifier(tag, data); break;
 				case "UL": element = new DicomUnsignedLong(tag, data); break;
 				case "UN": element = new DicomUnknown(tag, data); break;
+				case "UR": element = new DicomUniversalResource(tag, _encodings.Peek(), data); break;
 				case "US": element = new DicomUnsignedShort(tag, data); break;
 				case "UT": element = new DicomUnlimitedText(tag, _encodings.Peek(), data); break;
 				default:

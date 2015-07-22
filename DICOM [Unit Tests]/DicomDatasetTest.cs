@@ -26,6 +26,16 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(DicomTag.DoubleFloatPixelData, 3.45, 6.78, 9.01);
             Assert.IsType(typeof(DicomOtherDouble), dataset.First());
+            Assert.Equal(3, dataset.Get<double[]>(DicomTag.DoubleFloatPixelData).Length);
+        }
+
+        [Fact]
+        public void Add_UnlimitedCharactersElement_Succeeds()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.LongCodeValue, "abc");
+            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First());
+            Assert.Equal("abc", dataset.Get<string>(DicomTag.LongCodeValue));
         }
 
         [Fact]
@@ -34,6 +44,28 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(DicomTag.LongCodeValue, "a", "b", "c");
             Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First());
+            Assert.Equal("c", dataset.Get<string>(DicomTag.LongCodeValue, 2));
+        }
+
+        [Fact]
+        public void Add_UniversalResourceElement_Succeeds()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.URNCodeValue, "abc");
+            Assert.IsType(typeof(DicomUniversalResource), dataset.First());
+            Assert.Equal("abc", dataset.Get<string>(DicomTag.URNCodeValue));
+        }
+
+        [Fact]
+        public void Add_UniversalResourceElementWithMultipleStrings_OnlyFirstValueIsUsed()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.URNCodeValue, "a", "b", "c");
+            Assert.IsType(typeof(DicomUniversalResource), dataset.First());
+
+            var data = dataset.Get<string[]>(DicomTag.URNCodeValue);
+            Assert.Equal(1, data.Length);
+            Assert.Equal("a", data.First());
         }
 
         #endregion

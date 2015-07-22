@@ -1138,6 +1138,26 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Universal Resource Identifier or Universal Resource Locator (UR)</summary>
+	public class DicomUniversalResource : DicomStringElement {
+		#region Public Constructors
+		public DicomUniversalResource(DicomTag tag, string value) : base(tag, value) {
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.UR; }
+		}
+		#endregion
+	}
+
 	/// <summary>Unsigned Short (US)</summary>
 	public class DicomUnsignedShort : DicomValueElement<ushort> {
 		#region Public Constructors

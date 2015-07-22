@@ -360,7 +360,7 @@ namespace Dicom {
 				if (values == null)
 					return Add(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
-					return Add(new DicomUnlimitedCharacters(tag, values.Cast<string>().First()));
+					return Add(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.UI) {
@@ -386,6 +386,13 @@ namespace Dicom {
 					return Add(new DicomUnknown(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(byte))
 					return Add(new DicomUnknown(tag, values.Cast<byte>().ToArray()));
+			}
+
+			if (vr == DicomVR.UR) {
+				if (values == null)
+					return Add(new DicomUniversalResource(tag, DicomEncoding.Default, EmptyBuffer.Value));
+				if (typeof(T) == typeof(string))
+					return Add(new DicomUniversalResource(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.US) {
