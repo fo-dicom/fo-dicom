@@ -280,6 +280,13 @@ namespace Dicom {
 					return Add(new DicomOtherByte(tag, values.Cast<byte>().ToArray()));
 			}
 
+			if (vr == DicomVR.OD) {
+				if (values == null)
+					return Add(new DicomOtherDouble(tag, EmptyBuffer.Value));
+				if (typeof(T) == typeof(double))
+					return Add(new DicomOtherDouble(tag, values.Cast<double>().ToArray()));
+			}
+
 			if (vr == DicomVR.OF) {
 				if (values == null)
 					return Add(new DicomOtherFloat(tag, EmptyBuffer.Value));

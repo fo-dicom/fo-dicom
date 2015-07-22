@@ -743,6 +743,23 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Other Double (OD)</summary>
+	public class DicomOtherDouble : DicomValueElement<double> {
+		#region Public Constructors
+		public DicomOtherDouble(DicomTag tag, params double[] values) : base(tag, values) {
+		}
+
+		public DicomOtherDouble(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.OD; }
+		}
+		#endregion
+	}
+
 	/// <summary>Other Float (OF)</summary>
 	public class DicomOtherFloat : DicomValueElement<float> {
 		#region Public Constructors

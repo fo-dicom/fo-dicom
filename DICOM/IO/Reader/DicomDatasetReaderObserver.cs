@@ -39,6 +39,7 @@ namespace Dicom.IO.Reader {
 				case "LO": element = new DicomLongString(tag, _encodings.Peek(), data); break;
 				case "LT": element = new DicomLongText(tag, _encodings.Peek(), data); break;
 				case "OB": element = new DicomOtherByte(tag, data); break;
+				case "OD": element = new DicomOtherDouble(tag, data); break;
 				case "OF": element = new DicomOtherFloat(tag, data); break;
 				case "OW": element = new DicomOtherWord(tag, data); break;
 				case "PN": element = new DicomPersonName(tag, _encodings.Peek(), data); break;

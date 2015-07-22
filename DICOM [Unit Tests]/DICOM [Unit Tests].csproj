@@ -66,6 +66,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
