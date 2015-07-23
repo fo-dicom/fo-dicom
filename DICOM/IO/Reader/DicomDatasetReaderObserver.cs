@@ -39,6 +39,7 @@ namespace Dicom.IO.Reader {
 				case "LO": element = new DicomLongString(tag, _encodings.Peek(), data); break;
 				case "LT": element = new DicomLongText(tag, _encodings.Peek(), data); break;
 				case "OB": element = new DicomOtherByte(tag, data); break;
+				case "OD": element = new DicomOtherDouble(tag, data); break;
 				case "OF": element = new DicomOtherFloat(tag, data); break;
 				case "OW": element = new DicomOtherWord(tag, data); break;
 				case "PN": element = new DicomPersonName(tag, _encodings.Peek(), data); break;
@@ -47,9 +48,11 @@ namespace Dicom.IO.Reader {
 				case "SS": element = new DicomSignedShort(tag, data); break;
 				case "ST": element = new DicomShortText(tag, _encodings.Peek(), data); break;
 				case "TM": element = new DicomTime(tag, data); break;
+				case "UC": element = new DicomUnlimitedCharacters(tag, _encodings.Peek(), data); break;
 				case "UI": element = new DicomUniqueIdentifier(tag, data); break;
 				case "UL": element = new DicomUnsignedLong(tag, data); break;
 				case "UN": element = new DicomUnknown(tag, data); break;
+				case "UR": element = new DicomUniversalResource(tag, _encodings.Peek(), data); break;
 				case "US": element = new DicomUnsignedShort(tag, data); break;
 				case "UT": element = new DicomUnlimitedText(tag, _encodings.Peek(), data); break;
 				default:

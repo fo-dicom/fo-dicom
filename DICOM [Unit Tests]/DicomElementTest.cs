@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2011-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
 {
     using System;
+
+    using Dicom.IO.Buffer;
 
     using Xunit;
 
@@ -44,6 +46,22 @@ namespace Dicom
         {
             var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbers, 1, 2, 3, 4, 5);
             Assert.Throws<ArgumentOutOfRangeException>(() => element.Get<ushort>(-2));
+        }
+
+        [Fact]
+        public void DicomOtherDouble_ByteBuffer_ReturnsValidNumber()
+        {
+            var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, new MemoryByteBuffer(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 }));
+            var actual = element.Get<double>();
+            Assert.InRange(actual, double.MinValue, double.MaxValue);
+        }
+
+        [Fact]
+        public void DicomUnlimitedCharacters_MultipleStrings_ReturnsDelimitedString()
+        {
+            var element = new DicomUnlimitedCharacters(DicomTag.DoubleFloatPixelData, "a", "b", "c");
+            var actual = element.Get<string>();
+            Assert.Equal(@"a\b\c", actual);
         }
     }
 }
