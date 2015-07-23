@@ -743,6 +743,23 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Other Double (OD)</summary>
+	public class DicomOtherDouble : DicomValueElement<double> {
+		#region Public Constructors
+		public DicomOtherDouble(DicomTag tag, params double[] values) : base(tag, values) {
+		}
+
+		public DicomOtherDouble(DicomTag tag, IByteBuffer data) : base (tag, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.OD; }
+		}
+		#endregion
+	}
+
 	/// <summary>Other Float (OF)</summary>
 	public class DicomOtherFloat : DicomValueElement<float> {
 		#region Public Constructors
@@ -1017,6 +1034,26 @@ namespace Dicom {
 		#endregion
 	}
 
+	/// <summary>Unlimited Characters (UC)</summary>
+	public class DicomUnlimitedCharacters : DicomMultiStringElement {
+		#region Public Constructors
+        public DicomUnlimitedCharacters(DicomTag tag, params string[] values) : base(tag, values) {
+		}
+
+        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, params string[] values) : base(tag, encoding, values) {
+        }
+
+		public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data) : base (tag, encoding, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.UC; }
+		}
+		#endregion
+	}
+
 	/// <summary>Unique Identifier (UI)</summary>
 	public class DicomUniqueIdentifier : DicomMultiStringElement {
 		#region Public Constructors
@@ -1097,6 +1134,26 @@ namespace Dicom {
 		#region Public Properties
 		public override DicomVR ValueRepresentation {
 			get { return DicomVR.UN; }
+		}
+		#endregion
+	}
+
+	/// <summary>Universal Resource Identifier or Universal Resource Locator (UR)</summary>
+	public class DicomUniversalResource : DicomStringElement {
+		#region Public Constructors
+		public DicomUniversalResource(DicomTag tag, string value) : base(tag, value) {
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, string value) : base(tag, encoding, value) {
+		}
+
+		public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data) : base(tag, encoding, data) {
+		}
+		#endregion
+
+		#region Public Properties
+		public override DicomVR ValueRepresentation {
+			get { return DicomVR.UR; }
 		}
 		#endregion
 	}

@@ -280,6 +280,13 @@ namespace Dicom {
 					return Add(new DicomOtherByte(tag, values.Cast<byte>().ToArray()));
 			}
 
+			if (vr == DicomVR.OD) {
+				if (values == null)
+					return Add(new DicomOtherDouble(tag, EmptyBuffer.Value));
+				if (typeof(T) == typeof(double))
+					return Add(new DicomOtherDouble(tag, values.Cast<double>().ToArray()));
+			}
+
 			if (vr == DicomVR.OF) {
 				if (values == null)
 					return Add(new DicomOtherFloat(tag, EmptyBuffer.Value));
@@ -349,6 +356,13 @@ namespace Dicom {
 					return Add(new DicomTime(tag, values.Cast<string>().ToArray()));
 			}
 
+			if (vr == DicomVR.UC) {
+				if (values == null)
+					return Add(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value));
+				if (typeof(T) == typeof(string))
+					return Add(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()));
+			}
+
 			if (vr == DicomVR.UI) {
 				if (values == null)
 					return Add(new DicomUniqueIdentifier(tag, EmptyBuffer.Value));
@@ -372,6 +386,13 @@ namespace Dicom {
 					return Add(new DicomUnknown(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(byte))
 					return Add(new DicomUnknown(tag, values.Cast<byte>().ToArray()));
+			}
+
+			if (vr == DicomVR.UR) {
+				if (values == null)
+					return Add(new DicomUniversalResource(tag, DicomEncoding.Default, EmptyBuffer.Value));
+				if (typeof(T) == typeof(string))
+					return Add(new DicomUniversalResource(tag, values.Cast<string>().First()));
 			}
 
 			if (vr == DicomVR.US) {
