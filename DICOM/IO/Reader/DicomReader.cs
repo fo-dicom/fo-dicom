@@ -139,11 +139,13 @@ namespace Dicom.IO.Reader {
 								return;
 							}
 
+							source.Mark();
 							byte[] bytes = source.GetBytes(2);
 							string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 							if (!DicomVR.TryParse(vr, out _vr)) {
-								// unable to parse VR
-								_vr = DicomVR.UN;
+								// unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
+								_vr = DicomVR.Implicit;
+							    source.Rewind();
 							}
 						} else {
 							if (_entry != null) {
@@ -191,7 +193,18 @@ namespace Dicom.IO.Reader {
 						}
 
 						if (IsExplicitVR) {
-							if (_vr.Is16bitLength) {
+							if (_vr == DicomVR.Implicit) {
+								if (!source.Require(4, ParseDataset, state)) {
+									_result = DicomReaderResult.Suspended;
+									return;
+								}
+
+								_length = source.GetUInt32();
+
+								// assume that undefined length in implicit VR element is SQ
+								if (_length == UndefinedLength)
+									_vr = DicomVR.SQ;
+							} else if (_vr.Is16bitLength) {
 								if (!source.Require(2, ParseDataset, state)) {
 									_result = DicomReaderResult.Suspended;
 									return;
@@ -230,7 +243,7 @@ namespace Dicom.IO.Reader {
 
 						// check dictionary for VR after reading length to handle 16-bit lengths
 						// check before reading value to handle SQ elements
-						if (_vr == DicomVR.UN && IsExplicitVR) {
+						if (_vr == DicomVR.Implicit || (_vr == DicomVR.UN && IsExplicitVR)) {
 							var entry = Dictionary[_tag];
 							if (entry != null)
 								_vr = entry.ValueRepresentations.FirstOrDefault();

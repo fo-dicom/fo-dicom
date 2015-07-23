@@ -152,6 +152,9 @@ namespace Dicom {
             }
         }
 
+        /// <summary>Implicit VR in Explicit VR context</summary>
+        internal readonly static DicomVR Implicit = new DicomVR();
+
         /// <summary>No VR</summary>
         public readonly static DicomVR NONE = new DicomVR {
             Code = "NONE",

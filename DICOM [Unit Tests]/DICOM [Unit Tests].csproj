@@ -77,6 +77,7 @@
     <Compile Include="Helpers\SerializationExtensions.cs" />
     <Compile Include="Imaging\Codec\DicomTranscoderTest.cs" />
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
+    <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
