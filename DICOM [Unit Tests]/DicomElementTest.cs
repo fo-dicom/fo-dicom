@@ -77,7 +77,7 @@ namespace Dicom
         [Fact]
         public void DicomPersonName_TwoNames_YieldsTwoValues()
         {
-            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, "Doe^John", "Bar^Foo");
+            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, new [] { "Doe^John", "Bar^Foo"});
             var actual = element.Get<string[]>();
             Assert.Equal(2, actual.Length);
             Assert.Equal("Bar^Foo", actual[1]);
