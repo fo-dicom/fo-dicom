@@ -11,6 +11,8 @@ namespace Dicom
 
     public class DicomElementTest
     {
+        #region Unit tests
+
         [Fact]
         public void DicomSignedShort_Array_GetDefaultValue()
         {
@@ -63,5 +65,24 @@ namespace Dicom
             var actual = element.Get<string>();
             Assert.Equal(@"a\b\c", actual);
         }
+
+        [Fact]
+        public void DicomPersonName_FamilyAndSurname_YieldsCompositeName()
+        {
+            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, "Doe", "John");
+            var actual = element.Get<string>(0);
+            Assert.Equal("Doe^John", actual);
+        }
+
+        [Fact]
+        public void DicomPersonName_TwoNames_YieldsTwoValues()
+        {
+            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, new [] { "Doe^John", "Bar^Foo"});
+            var actual = element.Get<string[]>();
+            Assert.Equal(2, actual.Length);
+            Assert.Equal("Bar^Foo", actual[1]);
+        }
+
+        #endregion
     }
 }

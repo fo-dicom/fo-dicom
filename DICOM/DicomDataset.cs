@@ -263,7 +263,7 @@ namespace Dicom {
 				if (values == null)
 					return Add(new DicomLongString(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
-					return Add(new DicomLongString(tag, values.Cast<string>().First()));
+					return Add(new DicomLongString(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.LT) {
@@ -305,14 +305,14 @@ namespace Dicom {
 				if (values == null)
 					return Add(new DicomPersonName(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
-					return Add(new DicomPersonName(tag, values.Cast<string>().First()));
+					return Add(new DicomPersonName(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.SH) {
 				if (values == null)
 					return Add(new DicomShortString(tag, DicomEncoding.Default, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
-					return Add(new DicomShortString(tag, values.Cast<string>().First()));
+					return Add(new DicomShortString(tag, values.Cast<string>().ToArray()));
 			}
 
 			if (vr == DicomVR.SL) {
@@ -367,7 +367,7 @@ namespace Dicom {
 				if (values == null)
 					return Add(new DicomUniqueIdentifier(tag, EmptyBuffer.Value));
 				if (typeof(T) == typeof(string))
-					return Add(new DicomUniqueIdentifier(tag, values.Cast<string>().First()));
+					return Add(new DicomUniqueIdentifier(tag, values.Cast<string>().ToArray()));
 				if (typeof(T) == typeof(DicomUID))
 					return Add(new DicomUniqueIdentifier(tag, values.Cast<DicomUID>().ToArray()));
 				if (typeof(T) == typeof(DicomTransferSyntax))
