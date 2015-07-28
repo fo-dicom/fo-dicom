@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Dicom.IO;
 
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 
 namespace Dicom {
-	public class DicomFile {
+    public class DicomFile {
 		public DicomFile() {
 			FileMetaInfo = new DicomFileMetaInformation();
 			Dataset = new DicomDataset();
@@ -125,15 +126,31 @@ namespace Dicom {
 				throw eventResult.InternalState as Exception;
 		}
 
+	    /// <summary>
+	    /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
+	    /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
+	    /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
+	    /// </summary>
+	    /// <param name="fileName">The filename of the DICOM file</param>
+	    /// <returns>DicomFile instance</returns>
+	    public static DicomFile Open(string fileName) {
+	        return Open(fileName, DicomEncoding.Default);
+	    }
+
         /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
         /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
         /// </summary>
         /// <param name="fileName">The filename of the DICOM file</param>
+        /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <returns>DicomFile instance</returns>
-		public static DicomFile Open(string fileName) {
-			DicomFile df = new DicomFile();
+        public static DicomFile Open(string fileName, Encoding fallbackEncoding) {
+	        if (fallbackEncoding == null)
+	        {
+	            throw new ArgumentNullException("fallbackEncoding");
+	        }
+	        DicomFile df = new DicomFile();
 
 			try {
 				df.File = new FileReference(fileName);
@@ -142,7 +159,7 @@ namespace Dicom {
 					DicomFileReader reader = new DicomFileReader();
 					reader.Read(source,
 						new DicomDatasetReaderObserver(df.FileMetaInfo),
-						new DicomDatasetReaderObserver(df.Dataset));
+						new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
 
 					df.Format = reader.FileFormat;
 
@@ -157,6 +174,15 @@ namespace Dicom {
 
         public static DicomFile Open(Stream stream)
         {
+            return Open(stream, DicomEncoding.Default);
+        }
+
+        public static DicomFile Open(Stream stream, Encoding fallbackEncoding)
+        {
+            if (fallbackEncoding == null)
+            {
+                throw new ArgumentNullException("fallbackEncoding");
+            }
             var df = new DicomFile();
 
 			try {
@@ -165,7 +191,7 @@ namespace Dicom {
 				var reader = new DicomFileReader();
 				reader.Read(source,
 					new DicomDatasetReaderObserver(df.FileMetaInfo),
-					new DicomDatasetReaderObserver(df.Dataset));
+					new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
 
 				df.Format = reader.FileFormat;
 
@@ -179,6 +205,11 @@ namespace Dicom {
 
         public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
+            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
+        }
+
+        public static IAsyncResult BeginOpen(string fileName, Encoding fallbackEncoding, AsyncCallback callback, object state)
+        {
 			DicomFile df = new DicomFile();
 			df.File = new FileReference(fileName);
 
@@ -189,7 +220,7 @@ namespace Dicom {
 			DicomFileReader reader = new DicomFileReader();
 			reader.BeginRead(source,
 				new DicomDatasetReaderObserver(df.FileMetaInfo),
-				new DicomDatasetReaderObserver(df.Dataset),
+				new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
 				OnReadComplete, new Tuple<DicomFileReader, DicomFile, EventAsyncResult>(reader, df, result));
 
 			return result;

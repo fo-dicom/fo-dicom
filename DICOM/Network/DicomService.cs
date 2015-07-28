@@ -31,9 +31,17 @@ namespace Dicom.Network {
 		private bool _isConnected;
 		private ThreadPoolQueue<int> _processQueue;
 		private DicomServiceOptions _options;
+        private readonly Encoding _fallbackEncoding;
 
-		protected DicomService(Stream stream, Logger log) {
-			_network = stream;
+	    protected DicomService(Stream stream, Logger log) : this(stream, DicomEncoding.Default, log) {
+	    }
+
+	    protected DicomService(Stream stream, Encoding fallbackEncoding, Logger log) {
+	        if (fallbackEncoding == null)
+	        {
+	            throw new ArgumentNullException("fallbackEncoding");
+	        }
+	        _network = stream;
 			_lock = new object();
 			_pduQueue = new Queue<PDU>();
 			MaximumPDUsInQueue = 16;
@@ -42,6 +50,7 @@ namespace Dicom.Network {
 			_processQueue = new ThreadPoolQueue<int>();
 			_processQueue.DefaultGroup = Int32.MinValue;
 			_isConnected = true;
+	        _fallbackEncoding = fallbackEncoding;
 			Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
 			BeginReadPDUHeader();
 			Options = DicomServiceOptions.Default;
@@ -510,12 +519,12 @@ namespace Dicom.Network {
 				_dimseStream.Close();
 				_dimseStream = null;
 
-				var file = DicomFile.Open(name);
+				var file = DicomFile.Open(name, _fallbackEncoding);
 				file.File.IsTempFile = _isTempFile;
 				return file;
 			} else if (_dimseStream.CanSeek) {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
-                var file = DicomFile.Open(_dimseStream);
+                var file = DicomFile.Open(_dimseStream, _fallbackEncoding);
                 return file;
             }
             else
