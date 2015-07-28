@@ -156,14 +156,14 @@ namespace Dicom.Imaging {
             try {
                 if (ShowOverlays) {
                     foreach (var overlay in _overlays) {
-					if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
-						continue;
+						if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+							continue;
 
-					var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
-					graphic.AddOverlay(og);
-                        og.Scale(this._scale);
+						var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
+						graphic.AddOverlay(og);
+						og.Scale(this._scale);
+					}
 				}
-			}
 
                 var image = graphic.RenderImage(_pipeline.LUT);
 
@@ -187,17 +187,24 @@ namespace Dicom.Imaging {
 
 			var graphic = new ImageGraphic(_pixelData);
 
-			if (ShowOverlays) {
-				foreach (var overlay in _overlays) {
-					if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
-						continue;
+            try {
+				if (ShowOverlays) {
+					foreach (var overlay in _overlays) {
+						if ((frame + 1) < overlay.OriginFrame || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1))
+							continue;
 
-					var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
-					graphic.AddOverlay(og);
+						var og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX - 1, overlay.OriginY - 1, OverlayColor);
+						graphic.AddOverlay(og);
+						og.Scale(this._scale);
+					}
 				}
-			}
 
-			return graphic.RenderImageSource(_pipeline.LUT);
+				return graphic.RenderImageSource(_pipeline.LUT);
+            } finally {
+                if (graphic != null) {
+                    graphic.Dispose();
+                }
+            }
 		}
 
 
