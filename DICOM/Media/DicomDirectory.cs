@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 
 namespace Dicom.Media {
-	public class DicomDirectory : DicomFile {
+    public class DicomDirectory : DicomFile {
 		#region Properties and Attributes
 
 		private DicomSequence _directoryRecordSequence;
@@ -120,8 +121,17 @@ namespace Dicom.Media {
 			}
 		}
 
-		public new static DicomDirectory Open(string fileName) {
-			var df = new DicomDirectory();
+	    public static new DicomDirectory Open(string fileName)
+	    {
+	        return Open(fileName, DicomEncoding.Default);
+	    }
+
+	    public new static DicomDirectory Open(string fileName, Encoding fallbackEncoding) {
+	        if (fallbackEncoding == null)
+	        {
+	            throw new ArgumentNullException("fallbackEncoding");
+	        }
+	        var df = new DicomDirectory();
 
 			// reset datasets
 			df.FileMetaInfo.Clear();
@@ -133,7 +143,7 @@ namespace Dicom.Media {
 				using (var source = new FileByteSource(df.File)) {
 					DicomFileReader reader = new DicomFileReader();
 
-					var datasetObserver = new DicomDatasetReaderObserver(df.Dataset);
+					var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
 					var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
 					reader.Read(source,
@@ -154,7 +164,11 @@ namespace Dicom.Media {
 			}
 		}
 
-		public new static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
+        public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state) {
+            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
+        }
+
+        public new static IAsyncResult BeginOpen(string fileName, Encoding fallbackEncoding, AsyncCallback callback, object state) {
 			var df = new DicomDirectory();
 
 			// reset datasets
@@ -169,7 +183,7 @@ namespace Dicom.Media {
 
 			DicomFileReader reader = new DicomFileReader();
 
-			var datasetObserver = new DicomDatasetReaderObserver(df.Dataset);
+			var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
 			var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
 			reader.BeginRead(source,
