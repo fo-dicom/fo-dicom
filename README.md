@@ -2,18 +2,17 @@
 
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
-[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[//]: # ( [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/) )
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 
 ### Features
-* High-performance, fully asynchronous, .NET 4.0 API
+* Targets .NET 4.5 and higher
+* DICOM dictionary version 2015c
+* High-performance, fully asynchronous API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
 * Supports very large datasets with content loading on demand
 * Image rendering
-
-### Notes
-* *Development* branch targets .NET 4.5; Visual Studio 2013 required
 
 ### Examples
 
@@ -78,8 +77,8 @@ client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
 
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
-* [Hesham Desouky](https://github.com/hdesouky) (Nebras Technology)
 * [Anders Gustafsson](https://github.com/anders9ustafsson) (Cureos AB)
+* [Hesham Desouky](https://github.com/hdesouky) (Nebras Technology)
 * [Ian Yates](http://github.com/IanYates)
 * [Chris Horn](https://github.com/GMZ)
 * [Mahesh Dubey](https://github.com/mdubey82)
