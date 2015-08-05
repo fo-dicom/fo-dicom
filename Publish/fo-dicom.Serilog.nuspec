@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>fo-dicom.Serilog</id>
-        <version>1.1.0-rc2</version>
+        <version>1.1.0</version>
         <title>Fellow Oak DICOM Serilog support</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
@@ -11,7 +11,7 @@
         <description>Support library for using Serilog log handler with fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom" version="1.1.0-rc2" />
+            <dependency id="fo-dicom" version="1.1.0" />
             <dependency id="Serilog" version="1.5.6" />
         </dependencies>
     </metadata>
