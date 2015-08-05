@@ -1,16 +1,23 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+
 using Dicom.Log;
+
 using Serilog;
 using Serilog.Enrichers;
 
 namespace Dicom.Demo.SerilogDemo
 {
-    class Program {
-        
+    internal class Program
+    {
+
         //Set this to false if Seq (http://getseq.net) is not present
         private static bool useSeq = true;
 
-        static void Main(string[] args) {
+        private static void Main(string[] args)
+        {
 
             //SPECIFIC LOGGER VERSUS GLOBAL LOGGER
             //UseSpecificSerilogLogger();
@@ -35,20 +42,21 @@ namespace Dicom.Demo.SerilogDemo
         }
 
 
-        static void UseSpecificSerilogLogger() {
+        private static void UseSpecificSerilogLogger()
+        {
             //Get a Serilog logger instance
             var logger = ConfigureLogging();
 
             //Wrap it in some extra context as an example
-            logger = logger
-                .ForContext("Purpose", "Demonstration");
-            
+            logger = logger.ForContext("Purpose", "Demonstration");
+
             //Configure fo-dicom & Serilog
             LogManager.Default = new SerilogManager(logger);
 
         }
 
-        static void UseGlobalSerilogLogger() {
+        private static void UseGlobalSerilogLogger()
+        {
             //Configure logging
             ConfigureLogging();
 
@@ -57,13 +65,14 @@ namespace Dicom.Demo.SerilogDemo
 
         }
 
-        
+
         /// <summary>
         /// Create and return a serilog ILogger instance.  
         /// For convenience this also sets the global Serilog.Log instance
         /// </summary>
         /// <returns></returns>
-        public static ILogger ConfigureLogging() {
+        public static ILogger ConfigureLogging()
+        {
             var loggerConfig = new LoggerConfiguration()
                 //Enrich each log message with the machine name
                 .Enrich.With<MachineNameEnricher>()
@@ -72,13 +81,12 @@ namespace Dicom.Demo.SerilogDemo
                 //Write out to the console using the "Literate" console sink (colours the text based on the logged type)
                 .WriteTo.LiterateConsole()
                 //Also write out to a file based on the date and restrict these writes to warnings or worse (warning, error, fatal)
-                .WriteTo.RollingFile(@"Warnings_{Date}.txt", global::Serilog.Events.LogEventLevel.Warning)
-                ;
+                .WriteTo.RollingFile(@"Warnings_{Date}.txt", global::Serilog.Events.LogEventLevel.Warning);
 
-            if (useSeq) {
+            if (useSeq)
+            {
                 //Send events to a default installation of Seq on the local computer
-                loggerConfig = loggerConfig
-                    .WriteTo.Seq("http://localhost:5341");
+                loggerConfig = loggerConfig.WriteTo.Seq("http://localhost:5341");
             }
 
             var logger = loggerConfig

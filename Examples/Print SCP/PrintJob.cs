@@ -1,14 +1,12 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 //using System.Drawing.Printing;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using Dicom;
-using Dicom.Imaging;
-using Dicom.Printing;
-
 
 namespace Dicom.Printing
 {
@@ -19,7 +17,11 @@ namespace Dicom.Printing
         public string FilmSessionLabel { get; private set; }
         public string PrinterName { get; private set; }
 
-        public StatusUpdateEventArgs(ushort eventTypeId, string executionStatusInfo, string filmSessionLabel, string printerName)
+        public StatusUpdateEventArgs(
+            ushort eventTypeId,
+            string executionStatusInfo,
+            string filmSessionLabel,
+            string printerName)
         {
             EventTypeId = eventTypeId;
             ExecutionStatusInfo = executionStatusInfo;
@@ -27,11 +29,15 @@ namespace Dicom.Printing
             PrinterName = printerName;
         }
     }
+
     public enum PrintJobStatus : ushort
     {
         Pending = 1,
+
         Printing = 2,
+
         Done = 3,
+
         Failure = 4
     }
 
@@ -60,7 +66,9 @@ namespace Dicom.Printing
         public string FilmSessionLabel { get; private set; }
 
         private int _currentPage;
+
         private FilmBox _currentFilmBox;
+
         /// <summary>
         /// Print job SOP class UID
         /// </summary>
@@ -85,8 +93,14 @@ namespace Dicom.Printing
         /// </remarks> 
         public string ExecutionStatus
         {
-            get { return Get(DicomTag.ExecutionStatus, string.Empty); }
-            set { Add(DicomTag.ExecutionStatus, value); }
+            get
+            {
+                return Get(DicomTag.ExecutionStatus, string.Empty);
+            }
+            set
+            {
+                Add(DicomTag.ExecutionStatus, value);
+            }
         }
 
         /// <summary>
@@ -94,8 +108,14 @@ namespace Dicom.Printing
         /// </summary>
         public string ExecutionStatusInfo
         {
-            get { return Get(DicomTag.ExecutionStatusInfo, string.Empty); }
-            set { Add(DicomTag.ExecutionStatusInfo, value); }
+            get
+            {
+                return Get(DicomTag.ExecutionStatusInfo, string.Empty);
+            }
+            set
+            {
+                Add(DicomTag.ExecutionStatusInfo, value);
+            }
         }
 
         /// <summary>
@@ -111,8 +131,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string PrintPriority
         {
-            get { return Get(DicomTag.PrintPriority, "MED"); }
-            set { Add(DicomTag.PrintPriority, value); }
+            get
+            {
+                return Get(DicomTag.PrintPriority, "MED");
+            }
+            set
+            {
+                Add(DicomTag.PrintPriority, value);
+            }
         }
 
         /// <summary>
@@ -120,7 +146,10 @@ namespace Dicom.Printing
         /// </summary>
         public DateTime CreationDateTime
         {
-            get { return this.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime); }
+            get
+            {
+                return this.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
+            }
             set
             {
                 Add(DicomTag.CreationDate, value);
@@ -133,8 +162,14 @@ namespace Dicom.Printing
         /// </summary>
         public string PrinterName
         {
-            get { return Get(DicomTag.PrinterName, string.Empty); }
-            set { Add(DicomTag.PrinterName, value); }
+            get
+            {
+                return Get(DicomTag.PrinterName, string.Empty);
+            }
+            set
+            {
+                Add(DicomTag.PrinterName, value);
+            }
         }
 
         /// <summary>
@@ -142,14 +177,21 @@ namespace Dicom.Printing
         /// </summary>
         public string Originator
         {
-            get { return Get(DicomTag.Originator, string.Empty); }
-            set { Add(DicomTag.Originator, value); }
+            get
+            {
+                return Get(DicomTag.Originator, string.Empty);
+            }
+            set
+            {
+                Add(DicomTag.Originator, value);
+            }
         }
 
         public Dicom.Log.Logger Log { get; private set; }
 
 
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
+
         #endregion
 
         #region Constructors
@@ -260,18 +302,22 @@ namespace Dicom.Printing
                 OnStatusUpdate("Printing Started");
 
                 var printerSettings = new PrinterSettings
-                {
-                    PrinterName = "Microsoft XPS Document Writer",
-                    PrintToFile = true,
-                    PrintFileName = string.Format("{0}\\{1}.xps", FullPrintJobFolder, SOPInstanceUID.UID)
-                };
+                                          {
+                                              PrinterName = "Microsoft XPS Document Writer",
+                                              PrintToFile = true,
+                                              PrintFileName =
+                                                  string.Format(
+                                                      "{0}\\{1}.xps",
+                                                      FullPrintJobFolder,
+                                                      SOPInstanceUID.UID)
+                                          };
 
                 printDocument = new PrintDocument
-                {
-                    PrinterSettings = printerSettings,
-                    DocumentName = Thread.CurrentThread.Name,
-                    PrintController = new StandardPrintController()
-                };
+                                    {
+                                        PrinterSettings = printerSettings,
+                                        DocumentName = Thread.CurrentThread.Name,
+                                        PrintController = new StandardPrintController()
+                                    };
 
                 printDocument.QueryPageSettings += OnQueryPageSettings;
                 printDocument.PrintPage += OnPrintPage;
@@ -299,7 +345,7 @@ namespace Dicom.Printing
             }
         }
 
-        void OnPrintPage(object sender, PrintPageEventArgs e)
+        private void OnPrintPage(object sender, PrintPageEventArgs e)
         {
             _currentFilmBox.Print(e.Graphics, e.MarginBounds, 100);
 
@@ -309,7 +355,7 @@ namespace Dicom.Printing
             e.HasMorePages = _currentPage < FilmBoxFolderList.Count;
         }
 
-        void OnQueryPageSettings(object sender, QueryPageSettingsEventArgs e)
+        private void OnQueryPageSettings(object sender, QueryPageSettingsEventArgs e)
         {
             OnStatusUpdate(string.Format("Printing film {0} of {1}", _currentPage + 1, FilmBoxFolderList.Count));
             var filmBoxFolder = string.Format("{0}\\{1}", FullPrintJobFolder, FilmBoxFolderList[_currentPage]);
