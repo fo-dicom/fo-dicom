@@ -1,94 +1,155 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Runtime.InteropServices;
 
-namespace Dicom.IO {
-	public class PinnedArray<T> : IDisposable {
-		#region Private Members
-		private T[] _data;
-		private int _size;
-		private int _count;
-		private GCHandle _handle;
-		private IntPtr _pointer;
-		#endregion
+namespace Dicom.IO
+{
+    public class PinnedArray<T> : IDisposable
+    {
+        #region Private Members
 
-		#region Public Properties
-		public T[] Data {
-			get { return _data; }
-		}
+        private T[] _data;
 
-		public int Count {
-			get { return _count; }
-		}
+        private int _size;
 
-		public int ByteSize {
-			get { return _size; }
-		}
+        private int _count;
 
-		public IntPtr Pointer {
-			get { return _pointer; }
-		}
+        private GCHandle _handle;
 
-		public T this[int index] {
-			get { return _data[index]; }
-			set { _data[index] = value; }
-		}
-		#endregion
+        private IntPtr _pointer;
 
-		#region Public Constructor
-		public PinnedArray(int count) {
-			_count = count;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
-			_data = new T[_count];
-			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
-			_pointer = _handle.AddrOfPinnedObject();
-		}
+        #endregion
 
-		public PinnedArray(T[] data) {
-			_count = data.Length;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
-			_data = data;
-			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
-			_pointer = _handle.AddrOfPinnedObject();
-		}
+        #region Public Properties
 
-		~PinnedArray() {
-			Dispose(false);
-		}
-		#endregion
+        public T[] Data
+        {
+            get
+            {
+                return _data;
+            }
+        }
 
-		#region Public Members
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public int Count
+        {
+            get
+            {
+                return _count;
+            }
+        }
 
-		public static implicit operator IntPtr(PinnedArray<T> array) {
-			return array._pointer;
-		}
-		#endregion
+        public int ByteSize
+        {
+            get
+            {
+                return _size;
+            }
+        }
 
-		#region Private Members
-		private void Dispose(bool disposing) {
-			if (_data != null) {
-				_handle.Free();
-				_pointer = IntPtr.Zero;
-				_data = null;
-			}
-		}
-		#endregion
-	}
+        public IntPtr Pointer
+        {
+            get
+            {
+                return _pointer;
+            }
+        }
 
-	public class PinnedByteArray : PinnedArray<byte> {
-		public PinnedByteArray(int count) : base(count) {
-		}
-		public PinnedByteArray(byte[] data) : base(data) {
-		}
-	}
+        public T this[int index]
+        {
+            get
+            {
+                return _data[index];
+            }
+            set
+            {
+                _data[index] = value;
+            }
+        }
 
-	public class PinnedIntArray : PinnedArray<int> {
-		public PinnedIntArray(int count) : base(count) {
-		}
-		public PinnedIntArray(int[] data) : base(data) {
-		}
-	}
+        #endregion
+
+        #region Public Constructor
+
+        public PinnedArray(int count)
+        {
+            _count = count;
+            _size = Marshal.SizeOf(typeof(T)) * _count;
+            _data = new T[_count];
+            _handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
+            _pointer = _handle.AddrOfPinnedObject();
+        }
+
+        public PinnedArray(T[] data)
+        {
+            _count = data.Length;
+            _size = Marshal.SizeOf(typeof(T)) * _count;
+            _data = data;
+            _handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
+            _pointer = _handle.AddrOfPinnedObject();
+        }
+
+        ~PinnedArray()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+
+        #region Public Members
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public static implicit operator IntPtr(PinnedArray<T> array)
+        {
+            return array._pointer;
+        }
+
+        #endregion
+
+        #region Private Members
+
+        private void Dispose(bool disposing)
+        {
+            if (_data != null)
+            {
+                _handle.Free();
+                _pointer = IntPtr.Zero;
+                _data = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public class PinnedByteArray : PinnedArray<byte>
+    {
+        public PinnedByteArray(int count)
+            : base(count)
+        {
+        }
+
+        public PinnedByteArray(byte[] data)
+            : base(data)
+        {
+        }
+    }
+
+    public class PinnedIntArray : PinnedArray<int>
+    {
+        public PinnedIntArray(int count)
+            : base(count)
+        {
+        }
+
+        public PinnedIntArray(int[] data)
+            : base(data)
+        {
+        }
+    }
 }

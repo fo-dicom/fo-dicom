@@ -1,164 +1,205 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.Collections.Generic;
 
-using Dicom.IO;
 using Dicom.IO.Buffer;
 
-namespace Dicom.IO.Writer {
-	public class DicomWriter : IDicomDatasetWalker {
-		private const uint UndefinedLength = 0xffffffff;
+namespace Dicom.IO.Writer
+{
+    public class DicomWriter : IDicomDatasetWalker
+    {
+        private const uint UndefinedLength = 0xffffffff;
 
-		private DicomTransferSyntax _syntax;
-		private DicomWriteOptions _options;
+        private DicomTransferSyntax _syntax;
 
-		private IByteTarget _target;
+        private DicomWriteOptions _options;
 
-		private Stack<DicomSequence> _sequences;
-		private DicomDatasetWalkerCallback _callback;
+        private IByteTarget _target;
 
-		public DicomWriter(DicomTransferSyntax syntax, DicomWriteOptions options, IByteTarget target) {
-			_syntax = syntax;
-			_options = options ?? DicomWriteOptions.Default;
-			_target = target;
-		}
+        private Stack<DicomSequence> _sequences;
 
-		public DicomTransferSyntax Syntax {
-			get { return _syntax; }
-			set { _syntax = value; }
-		}
+        private DicomDatasetWalkerCallback _callback;
 
-		public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback) {
-			_target.Endian = _syntax.Endian;
-			_callback = callback;
-			_sequences = new Stack<DicomSequence>();
-		}
+        public DicomWriter(DicomTransferSyntax syntax, DicomWriteOptions options, IByteTarget target)
+        {
+            _syntax = syntax;
+            _options = options ?? DicomWriteOptions.Default;
+            _target = target;
+        }
 
-		public bool OnElement(DicomElement element) {
-			WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
+        public DicomTransferSyntax Syntax
+        {
+            get
+            {
+                return _syntax;
+            }
+            set
+            {
+                _syntax = value;
+            }
+        }
 
-			IByteBuffer buffer = element.Buffer;
-			if (buffer is EndianByteBuffer) {
-				EndianByteBuffer ebb = buffer as EndianByteBuffer;
-				if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
-				    buffer = ebb.Internal;
-			} else if (_target.Endian != Endian.LocalMachine) {
-				if (element.ValueRepresentation.UnitSize > 1)
-					buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
-			}
+        public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+        {
+            _target.Endian = _syntax.Endian;
+            _callback = callback;
+            _sequences = new Stack<DicomSequence>();
+        }
 
-			if (element.Length >= _options.LargeObjectSize) {
-				_target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
-				return false;
-			} else {
-				_target.Write(buffer.Data);
-				return true;
-			}
-		}
+        public bool OnElement(DicomElement element)
+        {
+            WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
 
-		public bool OnBeginSequence(DicomSequence sequence) {
-			uint length = UndefinedLength;
+            IByteBuffer buffer = element.Buffer;
+            if (buffer is EndianByteBuffer)
+            {
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
+            else if (_target.Endian != Endian.LocalMachine)
+            {
+                if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+            }
 
-			if (_options.ExplicitLengthSequences || sequence.Tag.IsPrivate) {
-				DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
-				length = calc.Calculate(sequence);
-			}
+            if (element.Length >= _options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
+                return false;
+            }
+            else
+            {
+                _target.Write(buffer.Data);
+                return true;
+            }
+        }
 
-			_sequences.Push(sequence);
+        public bool OnBeginSequence(DicomSequence sequence)
+        {
+            uint length = UndefinedLength;
 
-			WriteTagHeader(sequence.Tag, DicomVR.SQ, length);
-			return true;
-		}
+            if (_options.ExplicitLengthSequences || sequence.Tag.IsPrivate)
+            {
+                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
+                length = calc.Calculate(sequence);
+            }
 
-		public bool OnBeginSequenceItem(DicomDataset dataset) {
-			uint length = UndefinedLength;
+            _sequences.Push(sequence);
 
-			if (_options.ExplicitLengthSequenceItems) {
-				DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
-				length = calc.Calculate(dataset);
-			}
+            WriteTagHeader(sequence.Tag, DicomVR.SQ, length);
+            return true;
+        }
 
-			WriteTagHeader(DicomTag.Item, DicomVR.NONE, length);
-			return true;
-		}
+        public bool OnBeginSequenceItem(DicomDataset dataset)
+        {
+            uint length = UndefinedLength;
 
-		public bool OnEndSequenceItem() {
-			DicomSequence sequence = _sequences.Peek();
+            if (_options.ExplicitLengthSequenceItems)
+            {
+                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
+                length = calc.Calculate(dataset);
+            }
 
-			if (!_options.ExplicitLengthSequenceItems) {
-				WriteTagHeader(DicomTag.ItemDelimitationItem, DicomVR.NONE, 0);
-			}
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, length);
+            return true;
+        }
 
-			return true;
-		}
+        public bool OnEndSequenceItem()
+        {
+            DicomSequence sequence = _sequences.Peek();
 
-		public bool OnEndSequence() {
-			DicomSequence sequence = _sequences.Pop();
+            if (!_options.ExplicitLengthSequenceItems)
+            {
+                WriteTagHeader(DicomTag.ItemDelimitationItem, DicomVR.NONE, 0);
+            }
 
-			if (!_options.ExplicitLengthSequences && !sequence.Tag.IsPrivate) {
-				WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
-			}
+            return true;
+        }
 
-			return true;
-		}
+        public bool OnEndSequence()
+        {
+            DicomSequence sequence = _sequences.Pop();
 
-		public bool OnBeginFragment(DicomFragmentSequence fragment) {
-			WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, UndefinedLength);
-			WriteTagHeader(DicomTag.Item, DicomVR.NONE, (uint)(fragment.OffsetTable.Count * 4));
-			foreach (uint offset in fragment.OffsetTable)
-				_target.Write(offset);
-			return true;
-		}
+            if (!_options.ExplicitLengthSequences && !sequence.Tag.IsPrivate)
+            {
+                WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
+            }
 
-		public bool OnFragmentItem(IByteBuffer item) {
-			WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
+            return true;
+        }
 
-			IByteBuffer buffer = item;
-			if (buffer is EndianByteBuffer) {
-				EndianByteBuffer ebb = buffer as EndianByteBuffer;
-				if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
-					buffer = ebb.Internal;
-			}
+        public bool OnBeginFragment(DicomFragmentSequence fragment)
+        {
+            WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, UndefinedLength);
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, (uint)(fragment.OffsetTable.Count * 4));
+            foreach (uint offset in fragment.OffsetTable) _target.Write(offset);
+            return true;
+        }
 
-			if (item.Size >= _options.LargeObjectSize) {
-				_target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
-				return false;
-			} else {
-				_target.Write(buffer.Data);
-				return true;
-			}
-		}
+        public bool OnFragmentItem(IByteBuffer item)
+        {
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
 
-		public bool OnEndFragment() {
-			WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
-			return true;
-		}
+            IByteBuffer buffer = item;
+            if (buffer is EndianByteBuffer)
+            {
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
 
-		public void OnEndWalk() {
-			_sequences = null;
-			_callback = null;
-		}
+            if (item.Size >= _options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
+                return false;
+            }
+            else
+            {
+                _target.Write(buffer.Data);
+                return true;
+            }
+        }
 
-		private void WriteTagHeader(DicomTag tag, DicomVR vr, uint length) {
-			_target.Write(tag.Group);
-			_target.Write(tag.Element);
+        public bool OnEndFragment()
+        {
+            WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
+            return true;
+        }
 
-			if (_syntax.IsExplicitVR && vr != DicomVR.NONE) {
-				_target.Write((byte)vr.Code[0]);
-				_target.Write((byte)vr.Code[1]);
+        public void OnEndWalk()
+        {
+            _sequences = null;
+            _callback = null;
+        }
 
-				if (vr.Is16bitLength) {
-					_target.Write((ushort)length);
-				} else {
-					_target.Write((ushort)0);
-					_target.Write(length);
-				}
-			} else {
-				_target.Write(length);
-			}
-		}
+        private void WriteTagHeader(DicomTag tag, DicomVR vr, uint length)
+        {
+            _target.Write(tag.Group);
+            _target.Write(tag.Element);
 
-		private void OnEndWriteBuffer(IByteTarget target, object state) {
-			_callback();
-		}
-	}
+            if (_syntax.IsExplicitVR && vr != DicomVR.NONE)
+            {
+                _target.Write((byte)vr.Code[0]);
+                _target.Write((byte)vr.Code[1]);
+
+                if (vr.Is16bitLength)
+                {
+                    _target.Write((ushort)length);
+                }
+                else
+                {
+                    _target.Write((ushort)0);
+                    _target.Write(length);
+                }
+            }
+            else
+            {
+                _target.Write(length);
+            }
+        }
+
+        private void OnEndWriteBuffer(IByteTarget target, object state)
+        {
+            _callback();
+        }
+    }
 }

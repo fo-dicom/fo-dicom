@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network {
-	public interface IDicomNServiceProvider {
-		DicomNActionResponse OnNActionRequest(DicomNActionRequest request);
-		DicomNCreateResponse OnNCreateRequest(DicomNCreateRequest request);
-		DicomNDeleteResponse OnNDeleteRequest(DicomNDeleteRequest request);
-		DicomNEventReportResponse OnNEventReportRequest(DicomNEventReportRequest request);
-		DicomNGetResponse OnNGetRequest(DicomNGetRequest request);
-		DicomNSetResponse OnNSetRequest(DicomNSetRequest request);
-	}
+namespace Dicom.Network
+{
+    public interface IDicomNServiceProvider
+    {
+        DicomNActionResponse OnNActionRequest(DicomNActionRequest request);
+
+        DicomNCreateResponse OnNCreateRequest(DicomNCreateRequest request);
+
+        DicomNDeleteResponse OnNDeleteRequest(DicomNDeleteRequest request);
+
+        DicomNEventReportResponse OnNEventReportRequest(DicomNEventReportRequest request);
+
+        DicomNGetResponse OnNGetRequest(DicomNGetRequest request);
+
+        DicomNSetResponse OnNSetRequest(DicomNSetRequest request);
+    }
 }

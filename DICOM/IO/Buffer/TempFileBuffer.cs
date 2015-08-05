@@ -1,39 +1,59 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.IO;
 
-namespace Dicom.IO.Buffer {
-	public sealed class TempFileBuffer : IByteBuffer {
-		private TemporaryFile _file;
-		private uint _size;
+namespace Dicom.IO.Buffer
+{
+    public sealed class TempFileBuffer : IByteBuffer
+    {
+        private TemporaryFile _file;
 
-		public TempFileBuffer(byte[] data) {
-			_file = new TemporaryFile();
+        private uint _size;
 
-			File.WriteAllBytes(_file.Name, data);
-			_size = (uint)data.Length;
-		}
+        public TempFileBuffer(byte[] data)
+        {
+            _file = new TemporaryFile();
 
-		public bool IsMemory {
-			get { return false; }
-		}
+            File.WriteAllBytes(_file.Name, data);
+            _size = (uint)data.Length;
+        }
 
-		public uint Size {
-			get { return _size; }
-		}
+        public bool IsMemory
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public byte[] Data {
-			get { return File.ReadAllBytes(_file.Name); }
-		}
+        public uint Size
+        {
+            get
+            {
+                return _size;
+            }
+        }
 
-		public byte[] GetByteRange(int offset, int count) {
-			byte[] buffer = new byte[count];
+        public byte[] Data
+        {
+            get
+            {
+                return File.ReadAllBytes(_file.Name);
+            }
+        }
 
-			using (Stream fs = File.OpenRead(_file.Name)) {
-				fs.Seek(offset, SeekOrigin.Begin);
-				fs.Read(buffer, 0, count);
-			}
+        public byte[] GetByteRange(int offset, int count)
+        {
+            byte[] buffer = new byte[count];
 
-			return buffer;
-		}
-	}
+            using (Stream fs = File.OpenRead(_file.Name))
+            {
+                fs.Seek(offset, SeekOrigin.Begin);
+                fs.Read(buffer, 0, count);
+            }
+
+            return buffer;
+        }
+    }
 }

@@ -1,32 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO;
+using System;
 
-namespace Dicom.IO.Reader {
-	public enum DicomReaderResult {
-		Processing,
-		Success,
-		Error,
-		Stopped,
-		Suspended
-	}
+namespace Dicom.IO.Reader
+{
+    public enum DicomReaderResult
+    {
+        Processing,
 
-	public interface IDicomReader {
-		bool IsExplicitVR {
-			get;
-			set;
-		}
+        Success,
 
-		DicomReaderResult Status {
-			get;
-		}
+        Error,
 
-		DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop=null);
+        Stopped,
 
-		IAsyncResult BeginRead(IByteSource source, IDicomReaderObserver observer, DicomTag stop, AsyncCallback callback, object state);
-		DicomReaderResult EndRead(IAsyncResult result);
-	}
+        Suspended
+    }
+
+    public interface IDicomReader
+    {
+        bool IsExplicitVR { get; set; }
+
+        DicomReaderResult Status { get; }
+
+        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null);
+
+        IAsyncResult BeginRead(
+            IByteSource source,
+            IDicomReaderObserver observer,
+            DicomTag stop,
+            AsyncCallback callback,
+            object state);
+
+        DicomReaderResult EndRead(IAsyncResult result);
+    }
 }

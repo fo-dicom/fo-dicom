@@ -1,203 +1,232 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Globalization;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading;
 
-namespace Dicom {
-	public enum DicomUidType {
-		TransferSyntax,
-		SOPClass,
-		MetaSOPClass,
-		ServiceClass,
-		SOPInstance,
-		ApplicationContextName,
-		ApplicationHostingModel,
-		CodingScheme,
-		FrameOfReference,
-		LDAP,
+namespace Dicom
+{
+    public enum DicomUidType
+    {
+        TransferSyntax,
+
+        SOPClass,
+
+        MetaSOPClass,
+
+        ServiceClass,
+
+        SOPInstance,
+
+        ApplicationContextName,
+
+        ApplicationHostingModel,
+
+        CodingScheme,
+
+        FrameOfReference,
+
+        LDAP,
+
         MappingResource,
-		ContextGroupName,
-		Unknown
-	}
 
-	public enum DicomStorageCategory {
-		None,
-		Image,
-		PresentationState,
-		StructuredReport,
-		Waveform,
-		Document,
-		Raw,
-		Other
-	}
+        ContextGroupName,
 
-	public sealed partial class DicomUID : DicomParseable {
-		private string _uid;
-		private string _name;
-		private DicomUidType _type;
-		private bool _retired;
+        Unknown
+    }
 
-		public DicomUID(string uid, string name, DicomUidType type, bool retired=false) {
-			_uid = uid;
-			_name = name;
-			_type = type;
-			_retired = retired;
-		}
+    public enum DicomStorageCategory
+    {
+        None,
 
-		public string UID {
-			get {
-				return _uid;
-			}
-		}
+        Image,
 
-		public string Name {
-			get {
-				return _name;
-			}
-		}
+        PresentationState,
 
-		public DicomUidType Type {
-			get {
-				return _type;
-			}
-		}
+        StructuredReport,
 
-		public bool IsRetired {
-			get {
-				return _retired;
-			}
-		}
+        Waveform,
 
-		public static DicomUID Generate() {
-			var generator = new DicomUIDGenerator();
-			return generator.Generate();
-		}
+        Document,
 
-		public static DicomUID Append(DicomUID baseUid, long nextSeq) {
-			StringBuilder uid = new StringBuilder();
-			uid.Append(baseUid.UID).Append('.').Append(nextSeq);
-			return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
-		}
+        Raw,
 
-		public static bool IsValid(string uid) {
-			if (String.IsNullOrEmpty(uid))
-				return false;
+        Other
+    }
 
-			// only checks that the UID contains valid characters
-			foreach (char c in uid) {
-				if (c != '.' && !Char.IsDigit(c))
-					return false;
-			}
+    public sealed partial class DicomUID : DicomParseable
+    {
+        private string _uid;
 
-			return true;
-		}
+        private string _name;
 
-		public static DicomUID Parse(string s) {
-			string u = s.TrimEnd(' ', '\0');
+        private DicomUidType _type;
 
-			DicomUID uid = null;
-			if (_uids.TryGetValue(u, out uid))
-				return uid;
+        private bool _retired;
 
-			//if (!IsValid(u))
-			//	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
+        public DicomUID(string uid, string name, DicomUidType type, bool retired = false)
+        {
+            _uid = uid;
+            _name = name;
+            _type = type;
+            _retired = retired;
+        }
 
-			return new DicomUID(u, "Unknown", DicomUidType.Unknown);
-		}
+        public string UID
+        {
+            get
+            {
+                return _uid;
+            }
+        }
 
-		private static IDictionary<string, DicomUID> _uids;
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+        }
 
-		static DicomUID() {
-			_uids = new ConcurrentDictionary<string, DicomUID>();
-			LoadInternalUIDs();
-			LoadPrivateUIDs();
-		}
+        public DicomUidType Type
+        {
+            get
+            {
+                return _type;
+            }
+        }
 
-		public static IEnumerable<DicomUID> Enumerate() {
-			return _uids.Values;
-		}
+        public bool IsRetired
+        {
+            get
+            {
+                return _retired;
+            }
+        }
 
-		public bool IsImageStorage {
-			get {
-				return StorageCategory == DicomStorageCategory.Image;
-			}
-		}
+        public static DicomUID Generate()
+        {
+            var generator = new DicomUIDGenerator();
+            return generator.Generate();
+        }
 
-		public DicomStorageCategory StorageCategory {
-			get {
-				if (Type != DicomUidType.SOPClass || !Name.Contains("Storage"))
-					return DicomStorageCategory.None;
+        public static DicomUID Append(DicomUID baseUid, long nextSeq)
+        {
+            StringBuilder uid = new StringBuilder();
+            uid.Append(baseUid.UID).Append('.').Append(nextSeq);
+            return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
+        }
 
-				if (Name.Contains("Image Storage"))
-					return DicomStorageCategory.Image;
+        public static bool IsValid(string uid)
+        {
+            if (String.IsNullOrEmpty(uid)) return false;
 
-				if (this == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass ||
-					this == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass ||
-					this == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass ||
-					this == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass)
-					return DicomStorageCategory.PresentationState;
+            // only checks that the UID contains valid characters
+            foreach (char c in uid)
+            {
+                if (c != '.' && !Char.IsDigit(c)) return false;
+            }
 
-				if (this == DicomUID.AudioSRStorageTrialRETIRED ||
-					this == DicomUID.BasicTextSRStorage ||
-					this == DicomUID.ChestCADSRStorage ||
-					this == DicomUID.ComprehensiveSRStorage ||
-					this == DicomUID.ComprehensiveSRStorageTrialRETIRED ||
-					this == DicomUID.DetailSRStorageTrialRETIRED ||
-					this == DicomUID.EnhancedSRStorage ||
-					this == DicomUID.MammographyCADSRStorage ||
-					this == DicomUID.TextSRStorageTrialRETIRED ||
-					this == DicomUID.XRayRadiationDoseSRStorage)
-					return DicomStorageCategory.StructuredReport;
+            return true;
+        }
 
-				if (this == DicomUID.AmbulatoryECGWaveformStorage ||
-					this == DicomUID.BasicVoiceAudioWaveformStorage ||
-					this == DicomUID.CardiacElectrophysiologyWaveformStorage ||
-					this == DicomUID.GeneralECGWaveformStorage ||
-					this == DicomUID.HemodynamicWaveformStorage ||
-					this == DicomUID.TwelveLeadECGWaveformStorage ||
-					this == DicomUID.WaveformStorageTrialRETIRED)
-					return DicomStorageCategory.Waveform;
+        public static DicomUID Parse(string s)
+        {
+            string u = s.TrimEnd(' ', '\0');
 
-				if (this == DicomUID.EncapsulatedCDAStorage ||
-					this == DicomUID.EncapsulatedPDFStorage)
-					return DicomStorageCategory.Document;
+            DicomUID uid = null;
+            if (_uids.TryGetValue(u, out uid)) return uid;
 
-				if (this == DicomUID.RawDataStorage)
-					return DicomStorageCategory.Raw;
+            //if (!IsValid(u))
+            //	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
 
-				return DicomStorageCategory.Other;
-			}
-		}
+            return new DicomUID(u, "Unknown", DicomUidType.Unknown);
+        }
 
-		public static bool operator ==(DicomUID a, DicomUID b) {
-			if (((object)a == null) && ((object)b == null))
-				return true;
-			if (((object)a == null) || ((object)b == null))
-				return false;
-			return a.UID == b.UID;
-		}
-		public static bool operator !=(DicomUID a, DicomUID b) {
-			return !(a == b);
-		}
+        private static IDictionary<string, DicomUID> _uids;
 
-		public override bool Equals(object obj) {
-			if (ReferenceEquals(this, obj))
-				return true;
-			if (!(obj is DicomUID))
-				return false;
-			return (obj as DicomUID).UID == UID;
-		}
+        static DicomUID()
+        {
+            _uids = new ConcurrentDictionary<string, DicomUID>();
+            LoadInternalUIDs();
+            LoadPrivateUIDs();
+        }
 
-		public override int GetHashCode() {
-			return UID.GetHashCode();
-		}
+        public static IEnumerable<DicomUID> Enumerate()
+        {
+            return _uids.Values;
+        }
 
-		public override string ToString() {
-			return String.Format("{0} [{1}]", Name, UID);
-		}
-	}
+        public bool IsImageStorage
+        {
+            get
+            {
+                return StorageCategory == DicomStorageCategory.Image;
+            }
+        }
+
+        public DicomStorageCategory StorageCategory
+        {
+            get
+            {
+                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
+
+                if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
+
+                if (this == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass
+                    || this == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass
+                    || this == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass
+                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass) return DicomStorageCategory.PresentationState;
+
+                if (this == DicomUID.AudioSRStorageTrialRETIRED || this == DicomUID.BasicTextSRStorage
+                    || this == DicomUID.ChestCADSRStorage || this == DicomUID.ComprehensiveSRStorage
+                    || this == DicomUID.ComprehensiveSRStorageTrialRETIRED
+                    || this == DicomUID.DetailSRStorageTrialRETIRED || this == DicomUID.EnhancedSRStorage
+                    || this == DicomUID.MammographyCADSRStorage || this == DicomUID.TextSRStorageTrialRETIRED
+                    || this == DicomUID.XRayRadiationDoseSRStorage) return DicomStorageCategory.StructuredReport;
+
+                if (this == DicomUID.AmbulatoryECGWaveformStorage || this == DicomUID.BasicVoiceAudioWaveformStorage
+                    || this == DicomUID.CardiacElectrophysiologyWaveformStorage
+                    || this == DicomUID.GeneralECGWaveformStorage || this == DicomUID.HemodynamicWaveformStorage
+                    || this == DicomUID.TwelveLeadECGWaveformStorage || this == DicomUID.WaveformStorageTrialRETIRED) return DicomStorageCategory.Waveform;
+
+                if (this == DicomUID.EncapsulatedCDAStorage || this == DicomUID.EncapsulatedPDFStorage) return DicomStorageCategory.Document;
+
+                if (this == DicomUID.RawDataStorage) return DicomStorageCategory.Raw;
+
+                return DicomStorageCategory.Other;
+            }
+        }
+
+        public static bool operator ==(DicomUID a, DicomUID b)
+        {
+            if (((object)a == null) && ((object)b == null)) return true;
+            if (((object)a == null) || ((object)b == null)) return false;
+            return a.UID == b.UID;
+        }
+
+        public static bool operator !=(DicomUID a, DicomUID b)
+        {
+            return !(a == b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj)) return true;
+            if (!(obj is DicomUID)) return false;
+            return (obj as DicomUID).UID == UID;
+        }
+
+        public override int GetHashCode()
+        {
+            return UID.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} [{1}]", Name, UID);
+        }
+    }
 }

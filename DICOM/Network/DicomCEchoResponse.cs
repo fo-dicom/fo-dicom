@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network {
-	public class DicomCEchoResponse : DicomResponse {
-		public DicomCEchoResponse(DicomDataset command) : base(command) {
-		}
+namespace Dicom.Network
+{
+    public class DicomCEchoResponse : DicomResponse
+    {
+        public DicomCEchoResponse(DicomDataset command)
+            : base(command)
+        {
+        }
 
-		public DicomCEchoResponse(DicomCEchoRequest request, DicomStatus status) : base(request, status) {
-		}
-	}
+        public DicomCEchoResponse(DicomCEchoRequest request, DicomStatus status)
+            : base(request, status)
+        {
+        }
+    }
 }

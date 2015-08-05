@@ -1,25 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom {
-	public class DicomDateRange : DicomRange<DateTime> {
-		public DicomDateRange() : base(DateTime.MinValue, DateTime.MaxValue) {
-		}
+using System;
 
-		public DicomDateRange(DateTime min, DateTime max) : base(min, max) {
-		}
+namespace Dicom
+{
+    public class DicomDateRange : DicomRange<DateTime>
+    {
+        public DicomDateRange()
+            : base(DateTime.MinValue, DateTime.MaxValue)
+        {
+        }
 
-		public override string ToString() {
-			return ToString("yyyyMMddHHmmss");
-		}
+        public DicomDateRange(DateTime min, DateTime max)
+            : base(min, max)
+        {
+        }
 
-		public string ToString(string format) {
-			var value = (Minimum == DateTime.MinValue ? String.Empty : Minimum.ToString(format)) + "-" + (Maximum == DateTime.MaxValue ? String.Empty : Maximum.ToString(format));
-			if (value == "-")
-				return String.Empty;
-			return value;
-		}
-	}
+        public override string ToString()
+        {
+            return ToString("yyyyMMddHHmmss");
+        }
+
+        public string ToString(string format)
+        {
+            var value = (Minimum == DateTime.MinValue ? String.Empty : Minimum.ToString(format)) + "-"
+                        + (Maximum == DateTime.MaxValue ? String.Empty : Maximum.ToString(format));
+            if (value == "-") return String.Empty;
+            return value;
+        }
+    }
 }
