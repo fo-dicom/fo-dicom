@@ -1,11 +1,16 @@
-﻿using Serilog.Events;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Serilog.Events;
 
 namespace Dicom.Log
 {
     internal static class LogLevelConverter
     {
-        public static LogEventLevel ToSerilog(this LogLevel dicomLogLevel) {
-            switch (dicomLogLevel) {
+        public static LogEventLevel ToSerilog(this LogLevel dicomLogLevel)
+        {
+            switch (dicomLogLevel)
+            {
                 case LogLevel.Debug:
                     return LogEventLevel.Debug;
                 case LogLevel.Info:
@@ -20,7 +25,7 @@ namespace Dicom.Log
                     //pathological case - shouldn't occur
                     return LogEventLevel.Verbose;
             }
-            
+
         }
     }
 }

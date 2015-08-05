@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Serilog;
 
 namespace Dicom.Log
 {
@@ -6,13 +9,15 @@ namespace Dicom.Log
     /// <summary>
     /// Directs fo-dicom's logging through Serilog
     /// </summary>
-    public class SerilogManager :LogManager{
+    public class SerilogManager : LogManager
+    {
         private readonly ILogger _serilogLogger;
 
         /// <summary>
         /// Instantiates fo-dicom Serilog logging relying on Serilog's Serilog.Log global static logger
         /// </summary>
-        public SerilogManager() {
+        public SerilogManager()
+        {
             _serilogLogger = null;
         }
 
@@ -20,7 +25,8 @@ namespace Dicom.Log
         /// Instantiates fo-dicom Serilog logging facility, sending logs through the provided ILogger instance
         /// </summary>
         /// <param name="serilogLogger"></param>
-        public SerilogManager(ILogger serilogLogger) {
+        public SerilogManager(ILogger serilogLogger)
+        {
             _serilogLogger = serilogLogger;
         }
 
@@ -30,7 +36,8 @@ namespace Dicom.Log
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public override Logger GetLogger(string name) {
+        public override Logger GetLogger(string name)
+        {
             var serilogLogger = (_serilogLogger ?? Serilog.Log.Logger).ForContext("fo-DICOM", name);
             return new SerilogLoggerAdapter(serilogLogger);
         }
