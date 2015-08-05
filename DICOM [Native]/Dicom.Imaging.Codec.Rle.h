@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #ifndef __DICOM_IMAGING_CODEC_RLE_H__
 #define __DICOM_IMAGING_CODEC_RLE_H__
 
@@ -10,17 +13,17 @@ using namespace Dicom;
 using namespace Dicom::Imaging;
 
 namespace Dicom {
-namespace Imaging {
-namespace Codec {
-	[Export(IDicomCodec::typeid)]
-	public ref class DicomRleNativeCodec : DicomRleCodec
-	{
-	public:
-		virtual void Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomCodecParams^ parameters) override;
-		virtual void Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomCodecParams^ parameters) override;
-	};
-} // Codec
-} // Imaging
+	namespace Imaging {
+		namespace Codec {
+			[Export(IDicomCodec::typeid)]
+			public ref class DicomRleNativeCodec : DicomRleCodec
+			{
+			public:
+				virtual void Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomCodecParams^ parameters) override;
+				virtual void Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelData, DicomCodecParams^ parameters) override;
+			};
+		} // Codec
+	} // Imaging
 } // Dicom
 
 #endif
