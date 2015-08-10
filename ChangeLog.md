@@ -1,4 +1,4 @@
-#### v1.1.0 (8/17/2015)
+#### v1.1.0 (8/10/2015)
 * Enable configuration of default encoding in the DicomDatasetReaderObserver (#54)
 * DicomDataset.Add(DicomTag, ...) method does not support multi-valued LO, PN, SH and UI tags (#51)
 * Explicit VR file parsing failures due to strictness (#47)
