@@ -124,9 +124,6 @@
     <Compile Include="EventAsyncResult.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Extensions\DicomUID.cs" />
-    <Compile Include="Generators\DicomDictionaryGenerator.cs" />
-    <Compile Include="Generators\DicomTagGenerator.cs" />
-    <Compile Include="Generators\DicomUIDGenerator.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />
@@ -315,7 +312,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
