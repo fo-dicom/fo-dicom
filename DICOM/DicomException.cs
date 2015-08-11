@@ -1,36 +1,54 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom {
-	public class DicomExceptionEventArgs : EventArgs {
-		public readonly DicomException Exception;
+using System;
 
-		public DicomExceptionEventArgs(DicomException ex) {
-			Exception = ex;
-		}
-	}
+namespace Dicom
+{
+    public class DicomExceptionEventArgs : EventArgs
+    {
+        public readonly DicomException Exception;
 
-	/// <summary>Base type for all DICOM library exceptions.</summary>
-	public abstract class DicomException : Exception {
-		protected DicomException(string message) : base(message) {
-			DicomExceptionConstructed(this);
-		}
+        public DicomExceptionEventArgs(DicomException ex)
+        {
+            Exception = ex;
+        }
+    }
 
-		protected DicomException(string format, params object[] args) : this(String.Format(format, args)) {
-		}
+    /// <summary>Base type for all DICOM library exceptions.</summary>
+    public abstract class DicomException : Exception
+    {
+        protected DicomException(string message)
+            : base(message)
+        {
+            DicomExceptionConstructed(this);
+        }
 
-		protected DicomException(string message, Exception innerException) : base(message, innerException) {
-			DicomExceptionConstructed(this);
-		}
+        protected DicomException(string format, params object[] args)
+            : this(String.Format(format, args))
+        {
+        }
 
-		internal static void DicomExceptionConstructed(DicomException ex) {
-			if (OnException != null) {
-				try {
-					OnException(ex, new DicomExceptionEventArgs(ex));
-				} catch {
-				}
-			}
-		}
+        protected DicomException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            DicomExceptionConstructed(this);
+        }
 
-		public static EventHandler<DicomExceptionEventArgs> OnException;
-	}
+        internal static void DicomExceptionConstructed(DicomException ex)
+        {
+            if (OnException != null)
+            {
+                try
+                {
+                    OnException(ex, new DicomExceptionEventArgs(ex));
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        public static EventHandler<DicomExceptionEventArgs> OnException;
+    }
 }

@@ -1,78 +1,100 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Buffer;
 
-namespace Dicom.Media {
-	public class DicomDirectoryReaderObserver : IDicomReaderObserver {
-		private DicomSequence _directoryRecordSequence = null;
-		private Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
-		private Dictionary<uint, DicomDataset> _lookup = new Dictionary<uint, DicomDataset>();
-		private DicomDataset _dataset;
+namespace Dicom.Media
+{
+    public class DicomDirectoryReaderObserver : IDicomReaderObserver
+    {
+        private DicomSequence _directoryRecordSequence = null;
 
-		public DicomDirectoryReaderObserver(DicomDataset dataset) {
-			_dataset = dataset;
-		}
+        private Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
 
-		public DicomDirectoryRecord BuildDirectoryRecords() {
-			uint offset = 0;
-			offset = _dataset.Get<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
+        private Dictionary<uint, DicomDataset> _lookup = new Dictionary<uint, DicomDataset>();
 
-			return ParseDirectoryRecord(offset);
-		}
+        private DicomDataset _dataset;
 
-		private DicomDirectoryRecord ParseDirectoryRecord(uint offset) {
-			DicomDirectoryRecord record = null;
-			if (_lookup.ContainsKey(offset)) {
-				record = new DicomDirectoryRecord(_lookup[offset]);
-				record.Offset = offset;
+        public DicomDirectoryReaderObserver(DicomDataset dataset)
+        {
+            _dataset = dataset;
+        }
 
-				record.NextDirectoryRecord = ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
+        public DicomDirectoryRecord BuildDirectoryRecords()
+        {
+            uint offset = 0;
+            offset = _dataset.Get<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
 
-				record.LowerLevelDirectoryRecord = ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity));
-			}
+            return ParseDirectoryRecord(offset);
+        }
 
-			return record;
-		}
+        private DicomDirectoryRecord ParseDirectoryRecord(uint offset)
+        {
+            DicomDirectoryRecord record = null;
+            if (_lookup.ContainsKey(offset))
+            {
+                record = new DicomDirectoryRecord(_lookup[offset]);
+                record.Offset = offset;
 
-		#region IDicomReaderObserver Implementation
+                record.NextDirectoryRecord =
+                    ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
 
-		public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data) {
-		}
+                record.LowerLevelDirectoryRecord =
+                    ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity));
+            }
 
-		public void OnBeginSequence(IByteSource source, DicomTag tag, uint length) {
-			_currentSequenceTag.Push(tag);
-			if (tag == DicomTag.DirectoryRecordSequence) {
-				_directoryRecordSequence = _dataset.Get<DicomSequence>(tag);
-			}
-		}
+            return record;
+        }
 
-		public void OnBeginSequenceItem(IByteSource source, uint length) {
-			if (_currentSequenceTag.Peek() == DicomTag.DirectoryRecordSequence && _directoryRecordSequence != null) {
-				_lookup.Add((uint)source.Position - 8, _directoryRecordSequence.LastOrDefault());
-			}
-		}
+        #region IDicomReaderObserver Implementation
 
-		public void OnEndSequenceItem() {
-		}
+        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        {
+        }
 
-		public void OnEndSequence() {
-			_currentSequenceTag.Pop();
-		}
+        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        {
+            _currentSequenceTag.Push(tag);
+            if (tag == DicomTag.DirectoryRecordSequence)
+            {
+                _directoryRecordSequence = _dataset.Get<DicomSequence>(tag);
+            }
+        }
 
-		public void OnBeginFragmentSequence(IO.IByteSource source, DicomTag tag, DicomVR vr) {
-		}
+        public void OnBeginSequenceItem(IByteSource source, uint length)
+        {
+            if (_currentSequenceTag.Peek() == DicomTag.DirectoryRecordSequence && _directoryRecordSequence != null)
+            {
+                _lookup.Add((uint)source.Position - 8, _directoryRecordSequence.LastOrDefault());
+            }
+        }
 
-		public void OnFragmentSequenceItem(IO.IByteSource source, IO.Buffer.IByteBuffer data) {
-		}
+        public void OnEndSequenceItem()
+        {
+        }
 
-		public void OnEndFragmentSequence() {
-		}
+        public void OnEndSequence()
+        {
+            _currentSequenceTag.Pop();
+        }
 
-		#endregion
-	}
+        public void OnBeginFragmentSequence(IO.IByteSource source, DicomTag tag, DicomVR vr)
+        {
+        }
+
+        public void OnFragmentSequenceItem(IO.IByteSource source, IO.Buffer.IByteBuffer data)
+        {
+        }
+
+        public void OnEndFragmentSequence()
+        {
+        }
+
+        #endregion
+    }
 }

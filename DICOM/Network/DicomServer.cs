@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -12,12 +15,17 @@ using Dicom.Log;
 
 namespace Dicom.Network
 {
-    public class DicomServer<T> : IDisposable where T : DicomService, IDicomServiceProvider
+    public class DicomServer<T> : IDisposable
+        where T : DicomService, IDicomServiceProvider
     {
         private X509Certificate _cert;
+
         private TcpListener _listener;
+
         private List<T> _clients;
+
         private Timer _timer;
+
         private object _synchRoot = new object();
 
         public DicomServer(int port, string certificateName = null)
@@ -31,8 +39,7 @@ namespace Dicom.Network
 
                 var certs = store.Certificates.Find(X509FindType.FindBySubjectName, certificateName, false);
 
-                if (certs.Count == 0)
-                    throw new DicomNetworkException("Unable to find certificate for " + certificateName);
+                if (certs.Count == 0) throw new DicomNetworkException("Unable to find certificate for " + certificateName);
 
                 _cert = certs[0];
 
@@ -46,20 +53,12 @@ namespace Dicom.Network
             _timer = new Timer(OnTimerTick, false, 1000, 1000);
         }
 
-        public Logger Logger
-        {
-            get;
-            set;
-        }
+        public Logger Logger { get; set; }
 
         /// <summary>
         /// Options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
-        public DicomServiceOptions Options
-        {
-            get;
-            set;
-        }
+        public DicomServiceOptions Options { get; set; }
 
         private void OnAcceptTcpClient(IAsyncResult result)
         {
@@ -71,17 +70,15 @@ namespace Dicom.Network
                 {
                     if (_listener == null)
                     {
-                    return;
+                        return;
                     }
                     client = _listener.EndAcceptTcpClient(result);
                 }
 
 
 
-                if (Options != null)
-                    client.NoDelay = Options.TcpNoDelay;
-                else
-                    client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
+                if (Options != null) client.NoDelay = Options.TcpNoDelay;
+                else client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
 
                 Stream stream = client.GetStream();
 
@@ -95,23 +92,20 @@ namespace Dicom.Network
 
                 T scp = CreateScp(stream);
 
-                if (Options != null)
-                    scp.Options = Options;
+                if (Options != null) scp.Options = Options;
 
                 _clients.Add(scp);
             }
             catch (Exception e)
             {
-                if (Logger == null)
-                    Logger = LogManager.Default.GetLogger("Dicom.Network");
+                if (Logger == null) Logger = LogManager.Default.GetLogger("Dicom.Network");
                 Logger.Error("Exception accepting client {@error}", e);
             }
             finally
             {
                 lock (_synchRoot)
                 {
-                    if (_listener != null)
-                    _listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
+                    if (_listener != null) _listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
 
                 }
             }
@@ -121,9 +115,7 @@ namespace Dicom.Network
         {
             try
             {
-                for (int i = 0; i < _clients.Count; i++)
-                    if (!_clients[i].IsConnected)
-                        _clients.RemoveAt(i--);
+                for (int i = 0; i < _clients.Count; i++) if (!_clients[i].IsConnected) _clients.RemoveAt(i--);
             }
             catch
             {
@@ -134,8 +126,8 @@ namespace Dicom.Network
         {
             lock (_synchRoot)
             {
-            _listener.Stop();
-            _listener = null;
+                _listener.Stop();
+                _listener = null;
             }
         }
 

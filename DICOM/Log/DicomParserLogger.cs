@@ -1,68 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 
 using Dicom.IO;
 using Dicom.IO.Buffer;
 using Dicom.IO.Reader;
-using Dicom.Log;
 
-namespace Dicom.Log {
-	public class DicomParserLogger : IDicomReaderObserver {
-		private Logger _log;
-		private LogLevel _level;
-		private int _depth;
-		private string _pad;
+namespace Dicom.Log
+{
+    public class DicomParserLogger : IDicomReaderObserver
+    {
+        private Logger _log;
 
-		public DicomParserLogger(Logger log, LogLevel level) {
-			_log = log;
-			_level = level;
-			_depth = 0;
-			_pad = String.Empty;
-		}
+        private LogLevel _level;
 
-		public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data) {
-			_log.Log(_level, "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName} [{size}]", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name, data.Size);
-		}
+        private int _depth;
 
-		public void OnBeginSequence(IByteSource source, DicomTag tag, uint length) {
-			_log.Log(_level, "{marker:x8}: {padding}{tag} SQ {length}", source.Marker, _pad, tag, tag.DictionaryEntry.Name, length);
-			IncreaseDepth();
-		}
+        private string _pad;
 
-		public void OnBeginSequenceItem(IByteSource source, uint length) {
-			_log.Log(_level, "{marker:x8}: {padding}Item:", source.Marker, _pad);
-			IncreaseDepth();
-		}
+        public DicomParserLogger(Logger log, LogLevel level)
+        {
+            _log = log;
+            _level = level;
+            _depth = 0;
+            _pad = String.Empty;
+        }
 
-		public void OnEndSequenceItem() {
-			DecreaseDepth();
-		}
+        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        {
+            _log.Log(
+                _level,
+                "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName} [{size}]",
+                source.Marker,
+                _pad,
+                tag,
+                vr.Code,
+                tag.DictionaryEntry.Name,
+                data.Size);
+        }
 
-		public void OnEndSequence() {
-			DecreaseDepth();
-		}
+        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        {
+            _log.Log(
+                _level,
+                "{marker:x8}: {padding}{tag} SQ {length}",
+                source.Marker,
+                _pad,
+                tag,
+                tag.DictionaryEntry.Name,
+                length);
+            IncreaseDepth();
+        }
 
-		public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr) {
-			_log.Log(_level, "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName}", source.Marker, _pad, tag, vr.Code, tag.DictionaryEntry.Name);
-			IncreaseDepth();
-		}
+        public void OnBeginSequenceItem(IByteSource source, uint length)
+        {
+            _log.Log(_level, "{marker:x8}: {padding}Item:", source.Marker, _pad);
+            IncreaseDepth();
+        }
 
-		public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data) {
-			_log.Log(_level, "{marker:x8}: {padding}Fragment [{size}]", source.Marker, _pad, data.Size);
-		}
+        public void OnEndSequenceItem()
+        {
+            DecreaseDepth();
+        }
 
-		public void OnEndFragmentSequence() {
-			DecreaseDepth();
-		}
+        public void OnEndSequence()
+        {
+            DecreaseDepth();
+        }
 
-		private void IncreaseDepth() {
-			_depth++;
-		}
+        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        {
+            _log.Log(
+                _level,
+                "{marker:x8}: {padding}{tag} {vrCode} {tagDictionaryEntryName}",
+                source.Marker,
+                _pad,
+                tag,
+                vr.Code,
+                tag.DictionaryEntry.Name);
+            IncreaseDepth();
+        }
 
-		private void DecreaseDepth() {
-			_depth--;
-		}
-	}
+        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
+        {
+            _log.Log(_level, "{marker:x8}: {padding}Fragment [{size}]", source.Marker, _pad, data.Size);
+        }
+
+        public void OnEndFragmentSequence()
+        {
+            DecreaseDepth();
+        }
+
+        private void IncreaseDepth()
+        {
+            _depth++;
+        }
+
+        private void DecreaseDepth()
+        {
+            _depth--;
+        }
+    }
 }

@@ -1,70 +1,100 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO;
+using System.Collections.Generic;
+
 using Dicom.IO.Buffer;
 
-namespace Dicom {
-	public abstract class DicomFragmentSequence : DicomItem, IEnumerable<IByteBuffer> {
-		private IList<uint> _offsetTable;
-		private IList<IByteBuffer> _fragments;
+namespace Dicom
+{
+    public abstract class DicomFragmentSequence : DicomItem, IEnumerable<IByteBuffer>
+    {
+        private IList<uint> _offsetTable;
 
-		protected DicomFragmentSequence(DicomTag tag) : base(tag) {
-			_fragments = new List<IByteBuffer>();
-		}
+        private IList<IByteBuffer> _fragments;
 
-		public IList<uint> OffsetTable {
-			get {
-				if (_offsetTable == null)
-					_offsetTable = new List<uint>();
-				return _offsetTable;
-			}
-		}
+        protected DicomFragmentSequence(DicomTag tag)
+            : base(tag)
+        {
+            _fragments = new List<IByteBuffer>();
+        }
 
-		public IList<IByteBuffer> Fragments {
-			get { return _fragments; }
-		}
+        public IList<uint> OffsetTable
+        {
+            get
+            {
+                if (_offsetTable == null) _offsetTable = new List<uint>();
+                return _offsetTable;
+            }
+        }
 
-		internal void Add(IByteBuffer fragment) {
-			if (_offsetTable == null) {
-				var en = ByteBufferEnumerator<uint>.Create(fragment);
-				_offsetTable = new List<uint>(en);
-				return;
-			}
-			_fragments.Add(fragment);
-		}
+        public IList<IByteBuffer> Fragments
+        {
+            get
+            {
+                return _fragments;
+            }
+        }
 
-		public IEnumerator<IByteBuffer> GetEnumerator() {
-			return _fragments.GetEnumerator();
-		}
+        internal void Add(IByteBuffer fragment)
+        {
+            if (_offsetTable == null)
+            {
+                var en = ByteBufferEnumerator<uint>.Create(fragment);
+                _offsetTable = new List<uint>(en);
+                return;
+            }
+            _fragments.Add(fragment);
+        }
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			return _fragments.GetEnumerator();
-		}
-	}
+        public IEnumerator<IByteBuffer> GetEnumerator()
+        {
+            return _fragments.GetEnumerator();
+        }
 
-	public abstract class DicomFragmentSequenceT<T> : DicomFragmentSequence {
-		protected DicomFragmentSequenceT(DicomTag tag) : base(tag) {
-		}
-	}
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return _fragments.GetEnumerator();
+        }
+    }
 
-	public class DicomOtherByteFragment : DicomFragmentSequenceT<byte> {
-		public DicomOtherByteFragment(DicomTag tag) : base(tag) {
-		}
+    public abstract class DicomFragmentSequenceT<T> : DicomFragmentSequence
+    {
+        protected DicomFragmentSequenceT(DicomTag tag)
+            : base(tag)
+        {
+        }
+    }
 
-		public override DicomVR ValueRepresentation {
-			get { return DicomVR.OB; }
-		}
-	}
+    public class DicomOtherByteFragment : DicomFragmentSequenceT<byte>
+    {
+        public DicomOtherByteFragment(DicomTag tag)
+            : base(tag)
+        {
+        }
 
-	public class DicomOtherWordFragment : DicomFragmentSequenceT<ushort> {
-		public DicomOtherWordFragment(DicomTag tag) : base(tag) {
-		}
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.OB;
+            }
+        }
+    }
 
-		public override DicomVR ValueRepresentation {
-			get { return DicomVR.OW; }
-		}
-	}
+    public class DicomOtherWordFragment : DicomFragmentSequenceT<ushort>
+    {
+        public DicomOtherWordFragment(DicomTag tag)
+            : base(tag)
+        {
+        }
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.OW;
+            }
+        }
+    }
 }

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+
 using Dicom.Printing;
 
 namespace Print_SCP
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             //This is a simple DICOM Print SCP implementation with Print Job and Send Event Report Support
             //This sample depends on the Microsoft XPS Document Writer Printer to be installed on the system
@@ -19,8 +19,8 @@ namespace Print_SCP
             //All print jobs willbe created to the exe folder under a folder named PrintJobs
 
             Console.WriteLine("Starting print SCP server with AET: PRINTSCP on port 8000");
-            
-            PrintService.Start(8000,"PRINTSCP");
+
+            PrintService.Start(8000, "PRINTSCP");
 
             Console.WriteLine("Press any key to stop the service");
 

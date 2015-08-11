@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec {
-	public interface IDicomCodec {
-		string Name { get; }
-		DicomTransferSyntax TransferSyntax { get; }
+namespace Dicom.Imaging.Codec
+{
+    public interface IDicomCodec
+    {
+        string Name { get; }
 
-		DicomCodecParams GetDefaultParameters();
+        DicomTransferSyntax TransferSyntax { get; }
 
-		void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
-		void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
-	}
+        DicomCodecParams GetDefaultParameters();
+
+        void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
+
+        void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
+    }
 }

@@ -1,333 +1,388 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Dicom.IO.Buffer {
-	public class ByteBufferByteSource : IByteSource {
-		private List<IByteBuffer> _buffers;
-		private Stack<long> _milestones;
+namespace Dicom.IO.Buffer
+{
+    public class ByteBufferByteSource : IByteSource
+    {
+        private List<IByteBuffer> _buffers;
 
-		private long _expired;
-		private long _marker;
-		private long _position;
-		private long _length;
+        private Stack<long> _milestones;
 
-		private int _current;
-		private long _currentPos;
-		private byte[] _currentData;
+        private long _expired;
 
-		private bool _fixed;
-		private uint _required;
-		private ByteSourceCallback _callback;
-		private object _callbackState;
+        private long _marker;
 
-		private object _lock;
+        private long _position;
 
-		private Endian _endian;
+        private long _length;
 
-		public ByteBufferByteSource() {
-			_expired = 0;
-			_marker = 0;
-			_position = 0;
-			_length = 0;
-			_endian = Endian.LocalMachine;
+        private int _current;
 
-			_milestones = new Stack<long>();
-			_buffers = new List<IByteBuffer>();
-			_fixed = false;
+        private long _currentPos;
 
-			_current = -1;
-			_lock = new object();
-		}
+        private byte[] _currentData;
 
-		public ByteBufferByteSource(params IByteBuffer[] buffers) {
-			_expired = 0;
-			_marker = 0;
-			_position = 0;
-			_length = 0;
-			_endian = Endian.LocalMachine;
+        private bool _fixed;
 
-			_milestones = new Stack<long>();
-			_buffers = new List<IByteBuffer>(buffers);
-			foreach (var x in _buffers) _length += x.Size;
-			_fixed = true;
+        private uint _required;
 
-			_current = -1;
-			_lock = new object();
-		}
+        private ByteSourceCallback _callback;
 
-		public Endian Endian {
-			get { return _endian; }
-			set {
-				_endian = value;
-				SwapBuffers();
-			}
-		}
+        private object _callbackState;
 
-		public long Position {
-			get { return _position; }
-		}
+        private object _lock;
 
-		public long Marker {
-			get { return _marker; }
-		}
+        private Endian _endian;
 
-		public bool IsEOF {
-			get { lock (_lock) { return _fixed && (_position >= _length); } }
-		}
+        public ByteBufferByteSource()
+        {
+            _expired = 0;
+            _marker = 0;
+            _position = 0;
+            _length = 0;
+            _endian = Endian.LocalMachine;
 
-		public bool CanRewind {
-			get { return true; }
-		}
+            _milestones = new Stack<long>();
+            _buffers = new List<IByteBuffer>();
+            _fixed = false;
 
-		public byte GetUInt8() {
-			return NextByte();
-		}
+            _current = -1;
+            _lock = new object();
+        }
 
-		public short GetInt16() {
-			if (Endian == Endian.LocalMachine) {
-				return unchecked((short)(
-						(NextByte() << 0) |
-						(NextByte() << 8)
-					));
-			} else {
-				return unchecked((short)(
-						(NextByte() << 8) |
-						(NextByte() << 0)
-					));
-			}
-		}
+        public ByteBufferByteSource(params IByteBuffer[] buffers)
+        {
+            _expired = 0;
+            _marker = 0;
+            _position = 0;
+            _length = 0;
+            _endian = Endian.LocalMachine;
 
-		public ushort GetUInt16() {
-			if (Endian == Endian.LocalMachine) {
-				return unchecked((ushort)(
-						(NextByte() << 0) |
-						(NextByte() << 8)
-					));
-			} else {
-				return unchecked((ushort)(
-						(NextByte() << 8) |
-						(NextByte() << 0)
-					));
-			}
-		}
+            _milestones = new Stack<long>();
+            _buffers = new List<IByteBuffer>(buffers);
+            foreach (var x in _buffers) _length += x.Size;
+            _fixed = true;
 
-		public int GetInt32() {
-			if (Endian == Endian.LocalMachine) {
-				return unchecked((int)(
-						(NextByte() <<  0) |
-						(NextByte() <<  8) |
-						(NextByte() << 16) |
-						(NextByte() << 24)
-					));
-			} else {
-				return unchecked((int)(
-						(NextByte() << 24) |
-						(NextByte() << 16) |
-						(NextByte() <<  8) |
-						(NextByte() <<  0)
-					));
-			}
-		}
+            _current = -1;
+            _lock = new object();
+        }
 
-		public uint GetUInt32() {
-			if (Endian == Endian.LocalMachine) {
-				return unchecked((uint)(
-						(NextByte() <<  0) |
-						(NextByte() <<  8) |
-						(NextByte() << 16) |
-						(NextByte() << 24)
-					));
-			} else {
-				return unchecked((uint)(
-						(NextByte() << 24) |
-						(NextByte() << 16) |
-						(NextByte() <<  8) |
-						(NextByte() <<  0)
-					));
-			}
-		}
+        public Endian Endian
+        {
+            get
+            {
+                return _endian;
+            }
+            set
+            {
+                _endian = value;
+                SwapBuffers();
+            }
+        }
 
-		public long GetInt64() {
-			byte[] b = GetBytes(8);
-			if (Endian != Endian.LocalMachine)
-				Array.Reverse(b);
-			return BitConverter.ToInt64(b, 0);
-		}
+        public long Position
+        {
+            get
+            {
+                return _position;
+            }
+        }
 
-		public ulong GetUInt64() {
-			byte[] b = GetBytes(8);
-			if (Endian != Endian.LocalMachine)
-				Array.Reverse(b);
-			return BitConverter.ToUInt64(b, 0);
-		}
+        public long Marker
+        {
+            get
+            {
+                return _marker;
+            }
+        }
 
-		public float GetSingle() {
-			byte[] b = GetBytes(4);
-			if (Endian != Endian.LocalMachine)
-				Array.Reverse(b);
-			return BitConverter.ToSingle(b, 0);
-		}
+        public bool IsEOF
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _fixed && (_position >= _length);
+                }
+            }
+        }
 
-		public double GetDouble() {
-			byte[] b = GetBytes(8);
-			if (Endian != Endian.LocalMachine)
-				Array.Reverse(b);
-			return BitConverter.ToDouble(b, 0);
-		}
+        public bool CanRewind
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-		public byte[] GetBytes(int count) {
-			lock (_lock) {
-				int p = 0;
-				byte[] bytes = new byte[count];
-				while (count > 0) {
-					if (_current == -1 || _currentPos >= _currentData.Length) {
-						if (!SwapBuffers())
-							throw new DicomIoException("Tried to retrieve {0} bytes past end of source.", count);
-					}
+        public byte GetUInt8()
+        {
+            return NextByte();
+        }
 
-					int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
-					Array.Copy(_currentData, (int)_currentPos, bytes, p, n);
+        public short GetInt16()
+        {
+            if (Endian == Endian.LocalMachine)
+            {
+                return unchecked((short)((NextByte() << 0) | (NextByte() << 8)));
+            }
+            else
+            {
+                return unchecked((short)((NextByte() << 8) | (NextByte() << 0)));
+            }
+        }
 
-					count -= n;
-					p += n;
-					_position += n;
-					_currentPos += n;
-				}
-				return bytes;
-			}
-		}
+        public ushort GetUInt16()
+        {
+            if (Endian == Endian.LocalMachine)
+            {
+                return unchecked((ushort)((NextByte() << 0) | (NextByte() << 8)));
+            }
+            else
+            {
+                return unchecked((ushort)((NextByte() << 8) | (NextByte() << 0)));
+            }
+        }
 
-		public IByteBuffer GetBuffer(uint count) {
-			return new MemoryByteBuffer(GetBytes((int)count));
-		}
+        public int GetInt32()
+        {
+            if (Endian == Endian.LocalMachine)
+            {
+                return unchecked((int)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)));
+            }
+            else
+            {
+                return unchecked((int)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0)));
+            }
+        }
 
-		public void Skip(int count) {
-			lock (_lock) {
-				_position += count;
-				_currentPos += count;
-				SwapBuffers();
-			}
-		}
+        public uint GetUInt32()
+        {
+            if (Endian == Endian.LocalMachine)
+            {
+                return
+                    unchecked((uint)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)));
+            }
+            else
+            {
+                return
+                    unchecked((uint)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0)));
+            }
+        }
 
-		public void Mark() {
-			lock (_lock) {
-				_marker = _position;
+        public long GetInt64()
+        {
+            byte[] b = GetBytes(8);
+            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            return BitConverter.ToInt64(b, 0);
+        }
 
-				while (_buffers.Count > 0 && (_expired + _buffers[0].Size) < _marker) {
-					_expired += _buffers[0].Size;
-					_buffers.RemoveAt(0);
-				}
-			}
-		}
+        public ulong GetUInt64()
+        {
+            byte[] b = GetBytes(8);
+            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            return BitConverter.ToUInt64(b, 0);
+        }
 
-		public void Rewind() {
-			lock (_lock) {
-				_position = _marker;
-				SwapBuffers();
-			}
-		}
+        public float GetSingle()
+        {
+            byte[] b = GetBytes(4);
+            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            return BitConverter.ToSingle(b, 0);
+        }
 
-		public void PushMilestone(uint count) {
-			lock (_lock)
-				_milestones.Push(_position + count);
-		}
+        public double GetDouble()
+        {
+            byte[] b = GetBytes(8);
+            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            return BitConverter.ToDouble(b, 0);
+        }
 
-		public void PopMilestone() {
-			lock (_lock)
-				_milestones.Pop();
-		}
+        public byte[] GetBytes(int count)
+        {
+            lock (_lock)
+            {
+                int p = 0;
+                byte[] bytes = new byte[count];
+                while (count > 0)
+                {
+                    if (_current == -1 || _currentPos >= _currentData.Length)
+                    {
+                        if (!SwapBuffers()) throw new DicomIoException("Tried to retrieve {0} bytes past end of source.", count);
+                    }
 
-		public bool HasReachedMilestone() {
-			lock (_lock) {
-				if (_milestones.Count > 0 && _position >= _milestones.Peek())
-					return true;
-				return false;
-			}
-		}
+                    int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
+                    Array.Copy(_currentData, (int)_currentPos, bytes, p, n);
 
-		public bool Require(uint count) {
-			return Require(count, null, null);
-		}
+                    count -= n;
+                    p += n;
+                    _position += n;
+                    _currentPos += n;
+                }
+                return bytes;
+            }
+        }
 
-		public bool Require(uint count, ByteSourceCallback callback, object state) {
-			lock (_lock) {
-				if ((_position + count) <= _length)
-					return true;
+        public IByteBuffer GetBuffer(uint count)
+        {
+            return new MemoryByteBuffer(GetBytes((int)count));
+        }
 
-				if (_fixed)
-					throw new DicomIoException("Requested {0} bytes past end of byte source.", count);
+        public void Skip(int count)
+        {
+            lock (_lock)
+            {
+                _position += count;
+                _currentPos += count;
+                SwapBuffers();
+            }
+        }
 
-				if (callback == null)
-					throw new DicomIoException("Requested {0} bytes past end of byte source without providing a callback.", count);
+        public void Mark()
+        {
+            lock (_lock)
+            {
+                _marker = _position;
 
-				_required = count;
-				_callback = callback;
-				_callbackState = state;
+                while (_buffers.Count > 0 && (_expired + _buffers[0].Size) < _marker)
+                {
+                    _expired += _buffers[0].Size;
+                    _buffers.RemoveAt(0);
+                }
+            }
+        }
 
-				return false;
-			}
-		}
+        public void Rewind()
+        {
+            lock (_lock)
+            {
+                _position = _marker;
+                SwapBuffers();
+            }
+        }
 
-		public void Add(IByteBuffer buffer, bool last) {
-			lock (_lock) {
-				if (_fixed)
-					throw new DicomIoException("Tried to extend fixed length byte source.");
+        public void PushMilestone(uint count)
+        {
+            lock (_lock) _milestones.Push(_position + count);
+        }
 
-				if (buffer != null && buffer.Size > 0) {
-					_buffers.Add(buffer);
-					_length += buffer.Size;
+        public void PopMilestone()
+        {
+            lock (_lock) _milestones.Pop();
+        }
 
-					if (_callback != null) {
-						if ((_length - _position) >= _required) {
-							_callback.BeginInvoke(this, _callbackState, Callback, _callback);
-							_callback = null;
-							_callbackState = null;
-							_required = 0;
-						}
-					}
-				}
+        public bool HasReachedMilestone()
+        {
+            lock (_lock)
+            {
+                if (_milestones.Count > 0 && _position >= _milestones.Peek()) return true;
+                return false;
+            }
+        }
 
-				_fixed = last;
-			}
-		}
+        public bool Require(uint count)
+        {
+            return Require(count, null, null);
+        }
 
-		private void Callback(IAsyncResult result) {
-			try {
-				ByteSourceCallback cb = (ByteSourceCallback)result.AsyncState;
-				cb.EndInvoke(result);
-			} catch {
-			}
-		}
+        public bool Require(uint count, ByteSourceCallback callback, object state)
+        {
+            lock (_lock)
+            {
+                if ((_position + count) <= _length) return true;
 
-		private bool SwapBuffers() {
-			lock (_lock) {
-				long pos = _position - _expired;
+                if (_fixed) throw new DicomIoException("Requested {0} bytes past end of byte source.", count);
 
-				for (int i = 0; i < _buffers.Count; i++) {
-					if (pos < _buffers[i].Size) {
-						_current = i;
-						_currentPos = pos;
-						_currentData = _buffers[i].Data;
-						return true;
-					}
-					pos -= _buffers[i].Size;
-				}
+                if (callback == null)
+                    throw new DicomIoException(
+                        "Requested {0} bytes past end of byte source without providing a callback.",
+                        count);
 
-				return false;
-			}
-		}
+                _required = count;
+                _callback = callback;
+                _callbackState = state;
 
-		private byte NextByte() {
-			lock (_lock) {
-				if (_current == -1 || _currentPos >= _currentData.Length) {
-					if (!SwapBuffers())
-						throw new DicomIoException("Tried to retrieve byte past end of source.");
-				}
+                return false;
+            }
+        }
 
-				_position++;
-				return _currentData[_currentPos++];
-			}
-		}
-	}
+        public void Add(IByteBuffer buffer, bool last)
+        {
+            lock (_lock)
+            {
+                if (_fixed) throw new DicomIoException("Tried to extend fixed length byte source.");
+
+                if (buffer != null && buffer.Size > 0)
+                {
+                    _buffers.Add(buffer);
+                    _length += buffer.Size;
+
+                    if (_callback != null)
+                    {
+                        if ((_length - _position) >= _required)
+                        {
+                            _callback.BeginInvoke(this, _callbackState, Callback, _callback);
+                            _callback = null;
+                            _callbackState = null;
+                            _required = 0;
+                        }
+                    }
+                }
+
+                _fixed = last;
+            }
+        }
+
+        private void Callback(IAsyncResult result)
+        {
+            try
+            {
+                ByteSourceCallback cb = (ByteSourceCallback)result.AsyncState;
+                cb.EndInvoke(result);
+            }
+            catch
+            {
+            }
+        }
+
+        private bool SwapBuffers()
+        {
+            lock (_lock)
+            {
+                long pos = _position - _expired;
+
+                for (int i = 0; i < _buffers.Count; i++)
+                {
+                    if (pos < _buffers[i].Size)
+                    {
+                        _current = i;
+                        _currentPos = pos;
+                        _currentData = _buffers[i].Data;
+                        return true;
+                    }
+                    pos -= _buffers[i].Size;
+                }
+
+                return false;
+            }
+        }
+
+        private byte NextByte()
+        {
+            lock (_lock)
+            {
+                if (_current == -1 || _currentPos >= _currentData.Length)
+                {
+                    if (!SwapBuffers()) throw new DicomIoException("Tried to retrieve byte past end of source.");
+                }
+
+                _position++;
+                return _currentData[_currentPos++];
+            }
+        }
+    }
 }

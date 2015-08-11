@@ -1,119 +1,174 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Dicom.Threading {
-	public class WorkQueue<T> : IDisposable {
-		public delegate void WorkItemProcessor(T workItem);
+namespace Dicom.Threading
+{
+    public class WorkQueue<T> : IDisposable
+    {
+        public delegate void WorkItemProcessor(T workItem);
 
-		#region Private Members
-		private WorkItemProcessor _processor;
+        #region Private Members
 
-		private object _queueLock;
-		private Queue<T> _queue;
+        private WorkItemProcessor _processor;
 
-		private volatile bool _pause;
-		private volatile int _threadCount;
+        private object _queueLock;
 
-		private volatile int _processed;
-		private volatile int _active;
-		#endregion
+        private Queue<T> _queue;
 
-		#region Public Constructors
-		public WorkQueue(WorkItemProcessor processor) : this(processor, Environment.ProcessorCount) {
-		}
+        private volatile bool _pause;
 
-		public WorkQueue(WorkItemProcessor processor, int threads) {
-			_threadCount = threads;
+        private volatile int _threadCount;
 
-			_processor = processor;
+        private volatile int _processed;
 
-			_queueLock = new object();
-			_queue = new Queue<T>();
-		}
-		#endregion
+        private volatile int _active;
 
-		#region Public Properties
-		public int PendingWorkItems {
-			get {
-				lock (_queueLock) {
-					return _queue.Count;
-				}
-			}
-		}
+        #endregion
 
-		public int ProcessedWorkItems {
-			get { return _processed; }
-		}
+        #region Public Constructors
 
-		public int ActiveThreads {
-			get { return _active; }
-		}
+        public WorkQueue(WorkItemProcessor processor)
+            : this(processor, Environment.ProcessorCount)
+        {
+        }
 
-		public int ThreadCount {
-			get { return _threadCount; }
-		}
+        public WorkQueue(WorkItemProcessor processor, int threads)
+        {
+            _threadCount = threads;
 
-		public bool Pause {
-			get { return _pause; }
-			set {
-				lock (_queueLock) {
-					_pause = value;
-					ProcessNext();
-				}
-			}
-		}
-		#endregion
+            _processor = processor;
 
-		#region Public Methods
-		public void QueueWorkItem(T workItem) {
-			lock (_queueLock)
-				_queue.Enqueue(workItem);
-			ProcessNext();
-		}
-		#endregion
+            _queueLock = new object();
+            _queue = new Queue<T>();
+        }
 
-		#region Private Members
-		private void ProcessNext() {
-			lock (_queueLock) {
-				if (_queue.Count > 0 && !_pause && _active < _threadCount) {
-					T item = _queue.Dequeue();
-					_processor.BeginInvoke(item, WorkerProcComplete, null);
-					_active++;
-				}
-			}
-		}
+        #endregion
 
-		private void WorkerProcComplete(IAsyncResult result) {
-			try {
-				_processor.EndInvoke(result);
-			} catch {
-			} finally {
-				lock (_queueLock) {
-					_processed++;
-					_active--;
-				}
-				ProcessNext();
-			}
-		}
-		#endregion
+        #region Public Properties
 
-		#region IDisposable Members
+        public int PendingWorkItems
+        {
+            get
+            {
+                lock (_queueLock)
+                {
+                    return _queue.Count;
+                }
+            }
+        }
 
-		public void Dispose() {
-			lock (_queueLock) {
-				_queue.Clear();
-			}
-			while (true) {
-				lock (_queueLock) {
-					if (_active == 0)
-						break;
-				}
-				Thread.Sleep(0);
-			}
-			GC.SuppressFinalize(this);
-		}
+        public int ProcessedWorkItems
+        {
+            get
+            {
+                return _processed;
+            }
+        }
 
-		#endregion
-	}
+        public int ActiveThreads
+        {
+            get
+            {
+                return _active;
+            }
+        }
+
+        public int ThreadCount
+        {
+            get
+            {
+                return _threadCount;
+            }
+        }
+
+        public bool Pause
+        {
+            get
+            {
+                return _pause;
+            }
+            set
+            {
+                lock (_queueLock)
+                {
+                    _pause = value;
+                    ProcessNext();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void QueueWorkItem(T workItem)
+        {
+            lock (_queueLock) _queue.Enqueue(workItem);
+            ProcessNext();
+        }
+
+        #endregion
+
+        #region Private Members
+
+        private void ProcessNext()
+        {
+            lock (_queueLock)
+            {
+                if (_queue.Count > 0 && !_pause && _active < _threadCount)
+                {
+                    T item = _queue.Dequeue();
+                    _processor.BeginInvoke(item, WorkerProcComplete, null);
+                    _active++;
+                }
+            }
+        }
+
+        private void WorkerProcComplete(IAsyncResult result)
+        {
+            try
+            {
+                _processor.EndInvoke(result);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                lock (_queueLock)
+                {
+                    _processed++;
+                    _active--;
+                }
+                ProcessNext();
+            }
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            lock (_queueLock)
+            {
+                _queue.Clear();
+            }
+            while (true)
+            {
+                lock (_queueLock)
+                {
+                    if (_active == 0) break;
+                }
+                Thread.Sleep(0);
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+    }
 }

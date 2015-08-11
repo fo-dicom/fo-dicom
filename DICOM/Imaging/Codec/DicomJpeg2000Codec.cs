@@ -1,88 +1,155 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec {
-	public class DicomJpeg2000Params : DicomCodecParams {
-		private bool _irreversible;
-		private int _rate;
-		private int[] _rates;
-		private bool _isVerbose;
-		private bool _enableMct;
-		private bool _updatePmi;
-		private bool _signedAsUnsigned;
+namespace Dicom.Imaging.Codec
+{
+    public class DicomJpeg2000Params : DicomCodecParams
+    {
+        private bool _irreversible;
 
-		public DicomJpeg2000Params() {
-			_irreversible = true;
-			_rate = 20;
-			_isVerbose = false;
-			_enableMct = true;
-			_updatePmi = true;
-			_signedAsUnsigned = false;
+        private int _rate;
 
-			_rates = new int[9];
-			_rates[0] = 1280;
-			_rates[1] = 640;
-			_rates[2] = 320;
-			_rates[3] = 160;
-			_rates[4] = 80;
-			_rates[5] = 40;
-			_rates[6] = 20;
-			_rates[7] = 10;
-			_rates[8] = 5;
-		}
+        private int[] _rates;
 
-		public bool Irreversible {
-			get { return _irreversible; }
-			set { _irreversible = value; }
-		}
+        private bool _isVerbose;
 
-		public int Rate {
-			get { return _rate; }
-			set { _rate = value; }
-		}
+        private bool _enableMct;
 
-		public int[] RateLevels {
-			get { return _rates; }
-			set { _rates = value; }
-		}
+        private bool _updatePmi;
 
-		public bool IsVerbose {
-			get { return _isVerbose; }
-			set { _isVerbose = value; }
-		}
+        private bool _signedAsUnsigned;
 
-		public bool AllowMCT {
-			get { return _enableMct; }
-			set { _enableMct = value; }
-		}
+        public DicomJpeg2000Params()
+        {
+            _irreversible = true;
+            _rate = 20;
+            _isVerbose = false;
+            _enableMct = true;
+            _updatePmi = true;
+            _signedAsUnsigned = false;
 
-		public bool UpdatePhotometricInterpretation {
-			get { return _updatePmi; }
-			set { _updatePmi = value; }
-		}
+            _rates = new int[9];
+            _rates[0] = 1280;
+            _rates[1] = 640;
+            _rates[2] = 320;
+            _rates[3] = 160;
+            _rates[4] = 80;
+            _rates[5] = 40;
+            _rates[6] = 20;
+            _rates[7] = 10;
+            _rates[8] = 5;
+        }
 
-		public bool EncodeSignedPixelValuesAsUnsigned {
-			get { return _signedAsUnsigned; }
-			set { _signedAsUnsigned = value; }
-		}
-	}
+        public bool Irreversible
+        {
+            get
+            {
+                return _irreversible;
+            }
+            set
+            {
+                _irreversible = value;
+            }
+        }
 
-	public abstract class DicomJpeg2000Codec : IDicomCodec {
-		public string Name {
-			get { return TransferSyntax.UID.Name; }
-		}
+        public int Rate
+        {
+            get
+            {
+                return _rate;
+            }
+            set
+            {
+                _rate = value;
+            }
+        }
 
-		public abstract DicomTransferSyntax TransferSyntax {
-			get;
-		}
+        public int[] RateLevels
+        {
+            get
+            {
+                return _rates;
+            }
+            set
+            {
+                _rates = value;
+            }
+        }
 
-		public DicomCodecParams GetDefaultParameters() {
-			return new DicomJpeg2000Params();
-		}
+        public bool IsVerbose
+        {
+            get
+            {
+                return _isVerbose;
+            }
+            set
+            {
+                _isVerbose = value;
+            }
+        }
 
-		public abstract void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
-		public abstract void Decode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters);
-	}
+        public bool AllowMCT
+        {
+            get
+            {
+                return _enableMct;
+            }
+            set
+            {
+                _enableMct = value;
+            }
+        }
+
+        public bool UpdatePhotometricInterpretation
+        {
+            get
+            {
+                return _updatePmi;
+            }
+            set
+            {
+                _updatePmi = value;
+            }
+        }
+
+        public bool EncodeSignedPixelValuesAsUnsigned
+        {
+            get
+            {
+                return _signedAsUnsigned;
+            }
+            set
+            {
+                _signedAsUnsigned = value;
+            }
+        }
+    }
+
+    public abstract class DicomJpeg2000Codec : IDicomCodec
+    {
+        public string Name
+        {
+            get
+            {
+                return TransferSyntax.UID.Name;
+            }
+        }
+
+        public abstract DicomTransferSyntax TransferSyntax { get; }
+
+        public DicomCodecParams GetDefaultParameters()
+        {
+            return new DicomJpeg2000Params();
+        }
+
+        public abstract void Encode(
+            DicomPixelData oldPixelData,
+            DicomPixelData newPixelData,
+            DicomCodecParams parameters);
+
+        public abstract void Decode(
+            DicomPixelData oldPixelData,
+            DicomPixelData newPixelData,
+            DicomCodecParams parameters);
+    }
 }

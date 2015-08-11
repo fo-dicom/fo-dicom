@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
 using Dicom.Log;
 
@@ -16,10 +18,15 @@ namespace Dicom.Printing
         #region Properites and Attributes
 
         private readonly FilmSession _filmSession = null;
+
         public FilmSession FilmSession
         {
-            get { return _filmSession; }
+            get
+            {
+                return _filmSession;
+            }
         }
+
         /// <summary>
         /// Basic film box SOP class UID
         /// </summary>
@@ -90,8 +97,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string ImageDisplayFormat
         {
-            get { return this.Get<string>(DicomTag.ImageDisplayFormat); }
-            set { this.Add(DicomTag.ImageDisplayFormat, value); }
+            get
+            {
+                return this.Get<string>(DicomTag.ImageDisplayFormat);
+            }
+            set
+            {
+                this.Add(DicomTag.ImageDisplayFormat, value);
+            }
         }
 
         /// <summary>
@@ -112,8 +125,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string FilmOrienation
         {
-            get { return this.Get<string>(DicomTag.FilmOrientation, "PORTRAIT"); }
-            set { this.Add(DicomTag.FilmOrientation, value); }
+            get
+            {
+                return this.Get<string>(DicomTag.FilmOrientation, "PORTRAIT");
+            }
+            set
+            {
+                this.Add(DicomTag.FilmOrientation, value);
+            }
         }
 
         /// <summary>
@@ -143,8 +162,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string FilmSizeID
         {
-            get { return this.Get<string>(DicomTag.FilmSizeID, "A4"); }
-            set { this.Add(DicomTag.FilmSizeID, value); }
+            get
+            {
+                return this.Get<string>(DicomTag.FilmSizeID, "A4");
+            }
+            set
+            {
+                this.Add(DicomTag.FilmSizeID, value);
+            }
         }
 
         /// <summary>
@@ -162,8 +187,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string MagnificationType
         {
-            get { return this.Get<string>(DicomTag.MagnificationType, "BILINEAR"); }
-            set { this.Add(DicomTag.MagnificationType, value); }
+            get
+            {
+                return this.Get<string>(DicomTag.MagnificationType, "BILINEAR");
+            }
+            set
+            {
+                this.Add(DicomTag.MagnificationType, value);
+            }
         }
 
         /// <summary>
@@ -172,8 +203,14 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MaxDensity
         {
-            get { return this.Get<ushort>(DicomTag.MaxDensity, 0); }
-            set { this.Add(DicomTag.MaxDensity, value); }
+            get
+            {
+                return this.Get<ushort>(DicomTag.MaxDensity, 0);
+            }
+            set
+            {
+                this.Add(DicomTag.MaxDensity, value);
+            }
         }
 
 
@@ -183,8 +220,14 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MinDensity
         {
-            get { return this.Get<ushort>(DicomTag.MinDensity, 0); }
-            set { this.Add(DicomTag.MinDensity, value); }
+            get
+            {
+                return this.Get<ushort>(DicomTag.MinDensity, 0);
+            }
+            set
+            {
+                this.Add(DicomTag.MinDensity, value);
+            }
         }
 
         /// <summary>
@@ -208,8 +251,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string ConfigurationInformation
         {
-            get { return this.Get(DicomTag.ConfigurationInformation, string.Empty); }
-            set { this.Add(DicomTag.ConfigurationInformation, value); }
+            get
+            {
+                return this.Get(DicomTag.ConfigurationInformation, string.Empty);
+            }
+            set
+            {
+                this.Add(DicomTag.ConfigurationInformation, value);
+            }
         }
 
         /// <summary>
@@ -219,8 +268,14 @@ namespace Dicom.Printing
         /// </summary>
         public string AnnotationDisplayFormatID
         {
-            get { return this.Get(DicomTag.AnnotationDisplayFormatID, string.Empty); }
-            set { this.Add(DicomTag.AnnotationDisplayFormatID, value); }
+            get
+            {
+                return this.Get(DicomTag.AnnotationDisplayFormatID, string.Empty);
+            }
+            set
+            {
+                this.Add(DicomTag.AnnotationDisplayFormatID, value);
+            }
         }
 
         /// <summary>
@@ -229,8 +284,14 @@ namespace Dicom.Printing
         /// </summary>
         public string SmoothingType
         {
-            get { return this.Get(DicomTag.SmoothingType, string.Empty); }
-            set { this.Add(DicomTag.SmoothingType, value); }
+            get
+            {
+                return this.Get(DicomTag.SmoothingType, string.Empty);
+            }
+            set
+            {
+                this.Add(DicomTag.SmoothingType, value);
+            }
         }
 
         /// <summary>
@@ -250,8 +311,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string BorderDensity
         {
-            get { return this.Get(DicomTag.BorderDensity, "BLACK"); }
-            set { this.Add(DicomTag.BorderDensity, value); }
+            get
+            {
+                return this.Get(DicomTag.BorderDensity, "BLACK");
+            }
+            set
+            {
+                this.Add(DicomTag.BorderDensity, value);
+            }
         }
 
 
@@ -271,8 +338,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string EmptyImageDensity
         {
-            get { return this.Get(DicomTag.EmptyImageDensity, "BLACK"); }
-            set { this.Add(DicomTag.EmptyImageDensity, value); }
+            get
+            {
+                return this.Get(DicomTag.EmptyImageDensity, "BLACK");
+            }
+            set
+            {
+                this.Add(DicomTag.EmptyImageDensity, value);
+            }
         }
 
         /// <summary>
@@ -287,8 +360,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string Trim
         {
-            get { return this.Get(DicomTag.Trim, "NO"); }
-            set { this.Add(DicomTag.Trim, value); }
+            get
+            {
+                return this.Get(DicomTag.Trim, "NO");
+            }
+            set
+            {
+                this.Add(DicomTag.Trim, value);
+            }
         }
 
         /// <summary>
@@ -298,8 +377,14 @@ namespace Dicom.Printing
         /// </summary>
         public ushort Illumination
         {
-            get { return this.Get<ushort>(DicomTag.Illumination, 0); }
-            set { this.Add(DicomTag.Illumination, value); }
+            get
+            {
+                return this.Get<ushort>(DicomTag.Illumination, 0);
+            }
+            set
+            {
+                this.Add(DicomTag.Illumination, value);
+            }
         }
 
         /// <summary>
@@ -308,8 +393,14 @@ namespace Dicom.Printing
         /// </summary>
         public ushort ReflectedAmbientLight
         {
-            get { return this.Get<ushort>(DicomTag.ReflectedAmbientLight, 0); }
-            set { this.Add(DicomTag.ReflectedAmbientLight, value); }
+            get
+            {
+                return this.Get<ushort>(DicomTag.ReflectedAmbientLight, 0);
+            }
+            set
+            {
+                this.Add(DicomTag.ReflectedAmbientLight, value);
+            }
         }
 
         /// <summary>
@@ -330,8 +421,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string RequestedResolutionID
         {
-            get { return this.Get(DicomTag.RequestedResolutionID, "STANDARD"); }
-            set { this.Add(DicomTag.RequestedResolutionID, value); }
+            get
+            {
+                return this.Get(DicomTag.RequestedResolutionID, "STANDARD");
+            }
+            set
+            {
+                this.Add(DicomTag.RequestedResolutionID, value);
+            }
         }
 
         public DicomSequence ReferencedPresentationLutSequence
@@ -352,7 +449,8 @@ namespace Dicom.Printing
             {
                 if (ReferencedPresentationLutSequence != null && ReferencedPresentationLutSequence.Items.Count > 0)
                 {
-                    var sopInstanceUid = ReferencedPresentationLutSequence.Items[0].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
+                    var sopInstanceUid =
+                        ReferencedPresentationLutSequence.Items[0].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
                     return _filmSession.FindPresentationLut(sopInstanceUid);
                 }
                 else
@@ -361,9 +459,11 @@ namespace Dicom.Printing
                 }
             }
         }
+
         #endregion
 
         #region Constructors and Initialization
+
         /// <summary>
         /// Create baisc film box for specified film session
         /// </summary>
@@ -542,7 +642,10 @@ namespace Dicom.Printing
                 classUid = DicomUID.BasicColorImageBoxSOPClass;
             }
 
-            DicomUID sopInstance = new DicomUID(string.Format("{0}.{1}", SOPInstanceUID.UID, BasicImageBoxes.Count + 1), SOPInstanceUID.Name, SOPInstanceUID.Type);
+            DicomUID sopInstance = new DicomUID(
+                string.Format("{0}.{1}", SOPInstanceUID.UID, BasicImageBoxes.Count + 1),
+                SOPInstanceUID.Name,
+                SOPInstanceUID.Type);
 
             var imageBox = new ImageBox(this, classUid, sopInstance);
             imageBox.ImageBoxPosition = (ushort)(BasicImageBoxes.Count + 1);
@@ -550,8 +653,8 @@ namespace Dicom.Printing
             BasicImageBoxes.Add(imageBox);
 
             var item = new DicomDataset();
-            item.Add(DicomTag.ReferencedSOPClassUID,classUid);
-            item.Add(DicomTag.ReferencedSOPInstanceUID,sopInstance);
+            item.Add(DicomTag.ReferencedSOPClassUID, classUid);
+            item.Add(DicomTag.ReferencedSOPInstanceUID, sopInstance);
 
             var seq = Get<DicomSequence>(DicomTag.ReferencedImageBoxSequence);
             seq.Items.Add(item);
@@ -561,6 +664,7 @@ namespace Dicom.Printing
         {
             return BasicImageBoxes.FirstOrDefault(i => i.SOPClassUID == ImageBox.ColorSOPClassUID) != null;
         }
+
         #endregion
 
         #region Printing Methods
@@ -620,7 +724,8 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new ArgumentException(string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
+                    throw new ArgumentException(
+                        string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
                         "ImageDisplayFormat");
                 }
 
@@ -649,20 +754,22 @@ namespace Dicom.Printing
 
                     for (int r = 0; r < rowsCount; r++)
                     {
-                        boxes.Add(new RectangleF
-                        {
-                            X = marginBounds.X + c * boxSize.Width,
-                            Y = marginBounds.Y + r * boxSize.Height,
-                            Width = boxSize.Width,
-                            Height = boxSize.Height
-                        });
+                        boxes.Add(
+                            new RectangleF
+                                {
+                                    X = marginBounds.X + c * boxSize.Width,
+                                    Y = marginBounds.Y + r * boxSize.Height,
+                                    Width = boxSize.Width,
+                                    Height = boxSize.Height
+                                });
                     }
                 }
                 return boxes.ToArray();
             }
             else
             {
-                throw new ArgumentException(string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
+                throw new ArgumentException(
+                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
                     "ImageDisplayFormat");
             }
         }
@@ -685,20 +792,22 @@ namespace Dicom.Printing
 
                     for (int c = 0; c < colsCount; c++)
                     {
-                        boxes.Add(new RectangleF
-                        {
-                            X = marginBounds.X + c * boxSize.Width,
-                            Y = marginBounds.Y + r * boxSize.Height,
-                            Width = boxSize.Width,
-                            Height = boxSize.Height
-                        });
+                        boxes.Add(
+                            new RectangleF
+                                {
+                                    X = marginBounds.X + c * boxSize.Width,
+                                    Y = marginBounds.Y + r * boxSize.Height,
+                                    Width = boxSize.Width,
+                                    Height = boxSize.Height
+                                });
                     }
                 }
                 return boxes.ToArray();
             }
             else
             {
-                throw new ArgumentException(string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
+                throw new ArgumentException(
+                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
                     "ImageDisplayFormat");
             }
         }
@@ -719,13 +828,14 @@ namespace Dicom.Printing
                     for (int c = 0; c < columns; c++)
                     {
 
-                        boxes.Add(new RectangleF
-                        {
-                            X = marginBounds.X + c * boxSize.Width,
-                            Y = marginBounds.Y + r * boxSize.Height,
-                            Width = boxSize.Width,
-                            Height = boxSize.Height
-                        });
+                        boxes.Add(
+                            new RectangleF
+                                {
+                                    X = marginBounds.X + c * boxSize.Width,
+                                    Y = marginBounds.Y + r * boxSize.Height,
+                                    Width = boxSize.Width,
+                                    Height = boxSize.Height
+                                });
                     }
                 }
 
@@ -733,7 +843,8 @@ namespace Dicom.Printing
             }
             else
             {
-                throw new ArgumentException(string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
+                throw new ArgumentException(
+                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
                     "ImageDisplayFormat");
             }
         }
@@ -761,12 +872,13 @@ namespace Dicom.Printing
                 imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.FullName, i + 1));
             }
         }
+
         public static FilmBox Load(FilmSession filmSession, string filmBoxFolder)
         {
             var filmBoxFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
 
             var file = DicomFile.Open(filmBoxFile);
-            
+
 
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 

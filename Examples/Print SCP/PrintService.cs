@@ -1,7 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dicom;
+
 using Dicom.Network;
 
 namespace Dicom.Printing
@@ -9,21 +12,30 @@ namespace Dicom.Printing
     public class PrintService : DicomService, IDicomServiceProvider, IDicomNServiceProvider, IDicomCEchoProvider
     {
         #region Properties and Attributes
+
         public static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes = new DicomTransferSyntax[]
-		{
-			DicomTransferSyntax.ExplicitVRLittleEndian,
-			DicomTransferSyntax.ExplicitVRBigEndian,
-			DicomTransferSyntax.ImplicitVRLittleEndian
-		};
+                                                                                    {
+                                                                                        DicomTransferSyntax
+                                                                                            .ExplicitVRLittleEndian,
+                                                                                        DicomTransferSyntax
+                                                                                            .ExplicitVRBigEndian,
+                                                                                        DicomTransferSyntax
+                                                                                            .ImplicitVRLittleEndian
+                                                                                    };
+
         public static readonly DicomTransferSyntax[] AcceptedImageTransferSyntaxes = new DicomTransferSyntax[]
-		{
-			//Uncmpressed
-			DicomTransferSyntax.ExplicitVRLittleEndian,
-			DicomTransferSyntax.ExplicitVRBigEndian,
-			DicomTransferSyntax.ImplicitVRLittleEndian
-		};
+                                                                                         {
+                                                                                             //Uncmpressed
+                                                                                             DicomTransferSyntax
+                                                                                                 .ExplicitVRLittleEndian,
+                                                                                             DicomTransferSyntax
+                                                                                                 .ExplicitVRBigEndian,
+                                                                                             DicomTransferSyntax
+                                                                                                 .ImplicitVRLittleEndian
+                                                                                         };
 
         private static DicomServer<PrintService> _server;
+
         public static Printer Printer { get; private set; }
 
         public string CallingAE { get; protected set; }
@@ -35,7 +47,9 @@ namespace Dicom.Printing
         private Dictionary<string, PrintJob> _printJobList = new Dictionary<string, PrintJob>();
 
         private bool _sendEventReports = false;
+
         private readonly object _synchRoot = new object();
+
         #endregion
 
         #region Constructors and Initialization
@@ -43,10 +57,14 @@ namespace Dicom.Printing
         public PrintService(System.IO.Stream stream, Dicom.Log.Logger log)
             : base(stream, log)
         {
-            var pi = stream.GetType().GetProperty("Socket", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var pi = stream.GetType()
+                .GetProperty(
+                    "Socket",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (pi != null)
             {
-                var endPoint = ((System.Net.Sockets.Socket)pi.GetValue(stream, null)).RemoteEndPoint as System.Net.IPEndPoint;
+                var endPoint =
+                    ((System.Net.Sockets.Socket)pi.GetValue(stream, null)).RemoteEndPoint as System.Net.IPEndPoint;
                 RemoteIP = endPoint.Address;
             }
             else
@@ -76,9 +94,14 @@ namespace Dicom.Printing
 
             if (Printer.PrinterAet != association.CalledAE)
             {
-                this.Logger.Error("Association with {0} rejected since requested printer {1} not found",
-                    association.CallingAE, association.CalledAE);
-                SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser, DicomRejectReason.CalledAENotRecognized);
+                this.Logger.Error(
+                    "Association with {0} rejected since requested printer {1} not found",
+                    association.CallingAE,
+                    association.CalledAE);
+                SendAssociationReject(
+                    DicomRejectResult.Permanent,
+                    DicomRejectSource.ServiceUser,
+                    DicomRejectReason.CalledAENotRecognized);
                 return;
             }
 
@@ -87,14 +110,14 @@ namespace Dicom.Printing
 
             foreach (var pc in association.PresentationContexts)
             {
-                if (pc.AbstractSyntax == DicomUID.Verification ||
-                    pc.AbstractSyntax == DicomUID.BasicGrayscalePrintManagementMetaSOPClass ||
-                    pc.AbstractSyntax == DicomUID.BasicColorPrintManagementMetaSOPClass ||
-                    pc.AbstractSyntax == DicomUID.PrinterSOPClass ||
-                    pc.AbstractSyntax == DicomUID.BasicFilmSessionSOPClass ||
-                    pc.AbstractSyntax == DicomUID.BasicFilmBoxSOPClass ||
-                    pc.AbstractSyntax == DicomUID.BasicGrayscaleImageBoxSOPClass ||
-                    pc.AbstractSyntax == DicomUID.BasicColorImageBoxSOPClass)
+                if (pc.AbstractSyntax == DicomUID.Verification
+                    || pc.AbstractSyntax == DicomUID.BasicGrayscalePrintManagementMetaSOPClass
+                    || pc.AbstractSyntax == DicomUID.BasicColorPrintManagementMetaSOPClass
+                    || pc.AbstractSyntax == DicomUID.PrinterSOPClass
+                    || pc.AbstractSyntax == DicomUID.BasicFilmSessionSOPClass
+                    || pc.AbstractSyntax == DicomUID.BasicFilmBoxSOPClass
+                    || pc.AbstractSyntax == DicomUID.BasicGrayscaleImageBoxSOPClass
+                    || pc.AbstractSyntax == DicomUID.BasicColorImageBoxSOPClass)
                 {
                     pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
                 }
@@ -105,7 +128,10 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    this.Logger.Warn("Requested abstract syntax {abstractSyntax} from {callingAE} not supported", pc.AbstractSyntax, association.CallingAE);
+                    this.Logger.Warn(
+                        "Requested abstract syntax {abstractSyntax} from {callingAE} not supported",
+                        pc.AbstractSyntax,
+                        association.CallingAE);
                     pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
                 }
             }
@@ -275,8 +301,10 @@ namespace Dicom.Printing
 
             if (!request.SOPInstanceUID.Equals(_filmSession.SOPInstanceUID))
             {
-                this.Logger.Error("Can't delete a basic film session with instace UID {0} doesnot exist for this association {1}",
-                    request.SOPInstanceUID.UID, CallingAE);
+                this.Logger.Error(
+                    "Can't delete a basic film session with instace UID {0} doesnot exist for this association {1}",
+                    request.SOPInstanceUID.UID,
+                    CallingAE);
                 return new DicomNDeleteResponse(request, DicomStatus.NoSuchObjectInstance);
             }
             _filmSession = null;
@@ -300,8 +328,8 @@ namespace Dicom.Printing
                 {
                     return SetFilmBox(request);
                 }
-                else if (request.SOPClassUID == DicomUID.BasicColorImageBoxSOPClass ||
-                    request.SOPClassUID == DicomUID.BasicGrayscaleImageBoxSOPClass)
+                else if (request.SOPClassUID == DicomUID.BasicColorImageBoxSOPClass
+                         || request.SOPClassUID == DicomUID.BasicGrayscaleImageBoxSOPClass)
                 {
                     return SetImageBox(request);
                 }
@@ -325,7 +353,10 @@ namespace Dicom.Printing
             var imageBox = _filmSession.FindImageBox(request.SOPInstanceUID);
             if (imageBox == null)
             {
-                this.Logger.Error("Received N-SET request for invalid image box instance {0} for this association {1}", request.SOPInstanceUID.UID, CallingAE);
+                this.Logger.Error(
+                    "Received N-SET request for invalid image box instance {0} for this association {1}",
+                    request.SOPInstanceUID.UID,
+                    CallingAE);
                 return new DicomNSetResponse(request, DicomStatus.NoSuchObjectInstance);
             }
 
@@ -347,7 +378,10 @@ namespace Dicom.Printing
 
             if (filmBox == null)
             {
-                this.Logger.Error("Received N-SET request for invalid film box {0} from {1}", request.SOPInstanceUID.UID, CallingAE);
+                this.Logger.Error(
+                    "Received N-SET request for invalid film box {0} from {1}",
+                    request.SOPInstanceUID.UID,
+                    CallingAE);
                 return new DicomNSetResponse(request, DicomStatus.NoSuchObjectInstance);
             }
 
@@ -386,7 +420,8 @@ namespace Dicom.Printing
             {
                 this.Logger.Info(request.ToString(true));
 
-                if (request.SOPClassUID == DicomUID.PrinterSOPClass && request.SOPInstanceUID == DicomUID.PrinterSOPInstance)
+                if (request.SOPClassUID == DicomUID.PrinterSOPClass
+                    && request.SOPInstanceUID == DicomUID.PrinterSOPInstance)
                 {
                     return GetPrinter(request);
                 }
@@ -394,7 +429,8 @@ namespace Dicom.Printing
                 {
                     return GetPrintJob(request);
                 }
-                else if (request.SOPClassUID == DicomUID.PrinterConfigurationRetrievalSOPClass && request.SOPInstanceUID == DicomUID.PrinterConfigurationRetrievalSOPInstance)
+                else if (request.SOPClassUID == DicomUID.PrinterConfigurationRetrievalSOPClass
+                         && request.SOPInstanceUID == DicomUID.PrinterConfigurationRetrievalSOPInstance)
                 {
                     return GetPrinterConfiguration(request);
                 }
@@ -528,7 +564,10 @@ namespace Dicom.Printing
                         }
                         else
                         {
-                            this.Logger.Error("Received N-ACTION request for invalid film box {0} from {1}", request.SOPInstanceUID.UID, CallingAE);
+                            this.Logger.Error(
+                                "Received N-ACTION request for invalid film box {0} from {1}",
+                                request.SOPInstanceUID.UID,
+                                CallingAE);
                             return new DicomNActionResponse(request, DicomStatus.NoSuchObjectInstance);
                         }
                     }
@@ -536,12 +575,18 @@ namespace Dicom.Printing
                     {
                         if (request.ActionTypeID != 0x0001)
                         {
-                            this.Logger.Error("Received N-ACTION request for invalid action type {0} from {1}", request.ActionTypeID, CallingAE);
+                            this.Logger.Error(
+                                "Received N-ACTION request for invalid action type {0} from {1}",
+                                request.ActionTypeID,
+                                CallingAE);
                             return new DicomNActionResponse(request, DicomStatus.NoSuchActionType);
                         }
                         else
                         {
-                            this.Logger.Error("Received N-ACTION request for invalid SOP class {0} from {1}", request.SOPClassUID, CallingAE);
+                            this.Logger.Error(
+                                "Received N-ACTION request for invalid SOP class {0} from {1}",
+                                request.SOPClassUID,
+                                CallingAE);
                             return new DicomNActionResponse(request, DicomStatus.NoSuchSOPClass);
                         }
                     }
@@ -556,9 +601,15 @@ namespace Dicom.Printing
                     {
 
                         var result = new DicomDataset();
-                        result.Add(new DicomSequence(new DicomTag(0x2100, 0x0500),
-                            new DicomDataset(new DicomUniqueIdentifier(DicomTag.ReferencedSOPClassUID, DicomUID.PrintJobSOPClass)),
-                            new DicomDataset(new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUID, printJob.SOPInstanceUID))));
+                        result.Add(
+                            new DicomSequence(
+                                new DicomTag(0x2100, 0x0500),
+                                new DicomDataset(
+                                    new DicomUniqueIdentifier(DicomTag.ReferencedSOPClassUID, DicomUID.PrintJobSOPClass)),
+                                new DicomDataset(
+                                    new DicomUniqueIdentifier(
+                                        DicomTag.ReferencedSOPInstanceUID,
+                                        printJob.SOPInstanceUID))));
 
                         var response = new DicomNActionResponse(request, DicomStatus.Success);
                         response.Command.Add(DicomTag.AffectedSOPInstanceUID, printJob.SOPInstanceUID);
@@ -573,20 +624,26 @@ namespace Dicom.Printing
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.Error("Error occured during N-ACTION {0} for SOP class {1} and instance {2}",
-                        request.ActionTypeID, request.SOPClassUID.UID, request.SOPInstanceUID.UID);
+                    this.Logger.Error(
+                        "Error occured during N-ACTION {0} for SOP class {1} and instance {2}",
+                        request.ActionTypeID,
+                        request.SOPClassUID.UID,
+                        request.SOPInstanceUID.UID);
                     this.Logger.Error(ex.Message);
                     return new DicomNActionResponse(request, DicomStatus.ProcessingFailure);
                 }
             }
         }
 
-        void OnPrintJobStatusUpdate(object sender, StatusUpdateEventArgs e)
+        private void OnPrintJobStatusUpdate(object sender, StatusUpdateEventArgs e)
         {
             var printJob = sender as PrintJob;
             if (printJob.SendNEventReport)
             {
-                var reportRequest = new DicomNEventReportRequest(printJob.SOPClassUID, printJob.SOPInstanceUID, e.EventTypeId);
+                var reportRequest = new DicomNEventReportRequest(
+                    printJob.SOPClassUID,
+                    printJob.SOPInstanceUID,
+                    e.EventTypeId);
                 var ds = new DicomDataset();
                 ds.Add(DicomTag.ExecutionStatusInfo, e.ExecutionStatusInfo);
                 ds.Add(DicomTag.FilmSessionLabel, e.FilmSessionLabel);

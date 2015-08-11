@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Logging
@@ -11,7 +11,6 @@ namespace Dicom.Logging
 
     public class MessageNameFormatToOrdinalFormatTests
     {
-
         [Fact]
         public void ComplexMessageIsCorrectlyReformatted()
         {

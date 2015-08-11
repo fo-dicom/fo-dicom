@@ -1,35 +1,46 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.IO;
 
 using Dicom.Log;
 
-namespace Dicom.Network {
-	public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider {
-		public DicomCEchoProvider(Stream stream, Logger log) : base(stream, log) {
-		}
+namespace Dicom.Network
+{
+    public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+    {
+        public DicomCEchoProvider(Stream stream, Logger log)
+            : base(stream, log)
+        {
+        }
 
-		public void OnReceiveAssociationRequest(DicomAssociation association) {
-			foreach (var pc in association.PresentationContexts) {
-				if (pc.AbstractSyntax == DicomUID.Verification)
-					pc.SetResult(DicomPresentationContextResult.Accept);
-				else
-					pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
-			}
-			SendAssociationAccept(association);
-		}
+        public void OnReceiveAssociationRequest(DicomAssociation association)
+        {
+            foreach (var pc in association.PresentationContexts)
+            {
+                if (pc.AbstractSyntax == DicomUID.Verification) pc.SetResult(DicomPresentationContextResult.Accept);
+                else pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
+            }
+            SendAssociationAccept(association);
+        }
 
-		public void OnReceiveAssociationReleaseRequest() {
-			SendAssociationReleaseResponse();
-		}
+        public void OnReceiveAssociationReleaseRequest()
+        {
+            SendAssociationReleaseResponse();
+        }
 
-		public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) {
-		}
+        public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        {
+        }
 
-		public void OnConnectionClosed(Exception exception) {
-		}
+        public void OnConnectionClosed(Exception exception)
+        {
+        }
 
-		public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request) {
-			return new DicomCEchoResponse(request, DicomStatus.Success);
-		}
-	}
+        public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
+        {
+            return new DicomCEchoResponse(request, DicomStatus.Success);
+        }
+    }
 }

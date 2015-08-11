@@ -1,159 +1,215 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.Collections.Generic;
 using System.IO;
 
 using Dicom.IO.Buffer;
 
-namespace Dicom.IO {
-	public class StreamByteSource : IByteSource {
-		private Stream _stream;
-		private Endian _endian;
-		private BinaryReader _reader;
-		private long _mark;
+namespace Dicom.IO
+{
+    public class StreamByteSource : IByteSource
+    {
+        private Stream _stream;
 
-		private int _largeObjectSize;
+        private Endian _endian;
 
-		private Stack<long> _milestones;
-		private object _lock;
+        private BinaryReader _reader;
 
-		public StreamByteSource(Stream stream) {
-			_stream = stream;
-			_endian = Endian.LocalMachine;
-			_reader = EndianBinaryReader.Create(_stream, _endian);
-			_mark = 0;
+        private long _mark;
 
-			_largeObjectSize = 64 * 1024;
+        private int _largeObjectSize;
 
-			_milestones = new Stack<long>();
-			_lock = new object();
-		}
+        private Stack<long> _milestones;
 
-		public Endian Endian {
-			get { return _endian; }
-			set {
-				if (_endian != value) {
-					lock (_lock) {
-						_endian = value;
-						_reader = EndianBinaryReader.Create(_stream, _endian);
-					}
-				}
-			}
-		}
+        private object _lock;
 
-		public long Position {
-			get { return _stream.Position; }
-		}
+        public StreamByteSource(Stream stream)
+        {
+            _stream = stream;
+            _endian = Endian.LocalMachine;
+            _reader = EndianBinaryReader.Create(_stream, _endian);
+            _mark = 0;
 
-		public long Marker {
-			get { return _mark; }
-		}
+            _largeObjectSize = 64 * 1024;
 
-		public bool IsEOF {
-			get { return _stream.Position >= _stream.Length; }
-		}
+            _milestones = new Stack<long>();
+            _lock = new object();
+        }
 
-		public bool CanRewind {
-			get { return _stream.CanSeek; }
-		}
+        public Endian Endian
+        {
+            get
+            {
+                return _endian;
+            }
+            set
+            {
+                if (_endian != value)
+                {
+                    lock (_lock)
+                    {
+                        _endian = value;
+                        _reader = EndianBinaryReader.Create(_stream, _endian);
+                    }
+                }
+            }
+        }
 
-		public int LargeObjectSize {
-			get { return _largeObjectSize; }
-			set { _largeObjectSize = value; }
-		}
+        public long Position
+        {
+            get
+            {
+                return _stream.Position;
+            }
+        }
 
-		public byte GetUInt8() {
-			return _reader.ReadByte();
-		}
+        public long Marker
+        {
+            get
+            {
+                return _mark;
+            }
+        }
 
-		public short GetInt16() {
-			return _reader.ReadInt16();
-		}
+        public bool IsEOF
+        {
+            get
+            {
+                return _stream.Position >= _stream.Length;
+            }
+        }
 
-		public ushort GetUInt16() {
-			return _reader.ReadUInt16();
-		}
+        public bool CanRewind
+        {
+            get
+            {
+                return _stream.CanSeek;
+            }
+        }
 
-		public int GetInt32() {
-			return _reader.ReadInt32();
-		}
+        public int LargeObjectSize
+        {
+            get
+            {
+                return _largeObjectSize;
+            }
+            set
+            {
+                _largeObjectSize = value;
+            }
+        }
 
-		public uint GetUInt32() {
-			return _reader.ReadUInt32();
-		}
+        public byte GetUInt8()
+        {
+            return _reader.ReadByte();
+        }
 
-		public long GetInt64() {
-			return _reader.ReadInt64();
-		}
+        public short GetInt16()
+        {
+            return _reader.ReadInt16();
+        }
 
-		public ulong GetUInt64() {
-			return _reader.ReadUInt64();
-		}
+        public ushort GetUInt16()
+        {
+            return _reader.ReadUInt16();
+        }
 
-		public float GetSingle() {
-			return _reader.ReadSingle();
-		}
+        public int GetInt32()
+        {
+            return _reader.ReadInt32();
+        }
 
-		public double GetDouble() {
-			return _reader.ReadDouble();
-		}
+        public uint GetUInt32()
+        {
+            return _reader.ReadUInt32();
+        }
 
-		public byte[] GetBytes(int count) {
-			return _reader.ReadBytes(count);
-		}
+        public long GetInt64()
+        {
+            return _reader.ReadInt64();
+        }
 
-		public IByteBuffer GetBuffer(uint count) {
-			IByteBuffer buffer = null;
-			if (count == 0)
-				buffer = EmptyBuffer.Value;
-			else if (count >= _largeObjectSize) {
-				buffer = new StreamByteBuffer(_stream, _stream.Position, count);
-				_stream.Seek((int)count, SeekOrigin.Current);
-			} else
-				buffer = new MemoryByteBuffer(GetBytes((int)count));
-			return buffer;
-		}
+        public ulong GetUInt64()
+        {
+            return _reader.ReadUInt64();
+        }
 
-		public void Skip(int count) {
-			_stream.Seek(count, SeekOrigin.Current);
-		}
+        public float GetSingle()
+        {
+            return _reader.ReadSingle();
+        }
 
-		public void Mark() {
-			_mark = _stream.Position;
-		}
+        public double GetDouble()
+        {
+            return _reader.ReadDouble();
+        }
 
-		public void Rewind() {
-			_stream.Position = _mark;
-		}
+        public byte[] GetBytes(int count)
+        {
+            return _reader.ReadBytes(count);
+        }
 
-		public void PushMilestone(uint count) {
-			lock (_lock)
-				_milestones.Push(_stream.Position + count);
-		}
+        public IByteBuffer GetBuffer(uint count)
+        {
+            IByteBuffer buffer = null;
+            if (count == 0) buffer = EmptyBuffer.Value;
+            else if (count >= _largeObjectSize)
+            {
+                buffer = new StreamByteBuffer(_stream, _stream.Position, count);
+                _stream.Seek((int)count, SeekOrigin.Current);
+            }
+            else buffer = new MemoryByteBuffer(GetBytes((int)count));
+            return buffer;
+        }
 
-		public void PopMilestone() {
-			lock (_lock)
-				_milestones.Pop();
-		}
+        public void Skip(int count)
+        {
+            _stream.Seek(count, SeekOrigin.Current);
+        }
 
-		public bool HasReachedMilestone() {
-			lock (_lock) {
-				if (_milestones.Count > 0 && _stream.Position >= _milestones.Peek())
-					return true;
-				return false;
-			}
-		}
+        public void Mark()
+        {
+            _mark = _stream.Position;
+        }
 
-		public bool Require(uint count) {
-			return Require(count, null, null);
-		}
+        public void Rewind()
+        {
+            _stream.Position = _mark;
+        }
 
-		public bool Require(uint count, ByteSourceCallback callback, object state) {
-			lock (_lock) {
-				if ((_stream.Length - _stream.Position) >= count)
-					return true;
+        public void PushMilestone(uint count)
+        {
+            lock (_lock) _milestones.Push(_stream.Position + count);
+        }
 
-				throw new DicomIoException("Requested {0} bytes past end of fixed length stream.", count);
-			}
-		}
-	}
+        public void PopMilestone()
+        {
+            lock (_lock) _milestones.Pop();
+        }
+
+        public bool HasReachedMilestone()
+        {
+            lock (_lock)
+            {
+                if (_milestones.Count > 0 && _stream.Position >= _milestones.Peek()) return true;
+                return false;
+            }
+        }
+
+        public bool Require(uint count)
+        {
+            return Require(count, null, null);
+        }
+
+        public bool Require(uint count, ByteSourceCallback callback, object state)
+        {
+            lock (_lock)
+            {
+                if ((_stream.Length - _stream.Position) >= count) return true;
+
+                throw new DicomIoException("Requested {0} bytes past end of fixed length stream.", count);
+            }
+        }
+    }
 }

@@ -1,17 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network {
-	public class DicomNetworkException : DicomException {
-		public DicomNetworkException(string message) : base(message) {
-		}
+using System;
 
-		public DicomNetworkException(string format, params object[] args) : base(format, args) {
-		}
+namespace Dicom.Network
+{
+    public class DicomNetworkException : DicomException
+    {
+        public DicomNetworkException(string message)
+            : base(message)
+        {
+        }
 
-		public DicomNetworkException(string message, Exception innerException) : base(message, innerException) {
-		}
-	}
+        public DicomNetworkException(string format, params object[] args)
+            : base(format, args)
+        {
+        }
+
+        public DicomNetworkException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 }

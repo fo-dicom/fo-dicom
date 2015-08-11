@@ -1,53 +1,78 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Threading;
 
-namespace Dicom {
-	internal class EventAsyncResult : IAsyncResult {
-		private ManualResetEventSlim _event;
-		private object _state;
-		private AsyncCallback _callback;
+namespace Dicom
+{
+    internal class EventAsyncResult : IAsyncResult
+    {
+        private ManualResetEventSlim _event;
 
-		public EventAsyncResult(AsyncCallback callback=null, object state=null) {
-			_state = state;
-			_callback = callback;
-			_event = new ManualResetEventSlim(false);
-		}
+        private object _state;
 
-		public void Set() {
-			if (_event.IsSet)
-				return;
+        private AsyncCallback _callback;
 
-			_event.Set();
+        public EventAsyncResult(AsyncCallback callback = null, object state = null)
+        {
+            _state = state;
+            _callback = callback;
+            _event = new ManualResetEventSlim(false);
+        }
 
-			if (_callback != null)
-				_callback.BeginInvoke(this, OnAsyncCallbackComplete, null);
-		}
-		private void OnAsyncCallbackComplete(IAsyncResult ar) {
-			try {
-				_callback.EndInvoke(ar);
-			} catch {
-			}
-		}
+        public void Set()
+        {
+            if (_event.IsSet) return;
 
-		public object AsyncState {
-			get { return _state; }
-		}
+            _event.Set();
 
-		public object InternalState {
-			get;
-			set;
-		}
+            if (_callback != null) _callback.BeginInvoke(this, OnAsyncCallbackComplete, null);
+        }
 
-		public WaitHandle AsyncWaitHandle {
-			get { return _event.WaitHandle; }
-		}
+        private void OnAsyncCallbackComplete(IAsyncResult ar)
+        {
+            try
+            {
+                _callback.EndInvoke(ar);
+            }
+            catch
+            {
+            }
+        }
 
-		public bool CompletedSynchronously {
-			get { return false; }
-		}
+        public object AsyncState
+        {
+            get
+            {
+                return _state;
+            }
+        }
 
-		public bool IsCompleted {
-			get { return _event.IsSet; }
-		}
-	}
+        public object InternalState { get; set; }
+
+        public WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                return _event.WaitHandle;
+            }
+        }
+
+        public bool CompletedSynchronously
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool IsCompleted
+        {
+            get
+            {
+                return _event.IsSet;
+            }
+        }
+    }
 }

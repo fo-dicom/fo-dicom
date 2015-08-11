@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom {
-	public class DicomRange<T> where T : IComparable<T> {
-		public DicomRange(T min, T max) {
-			Minimum = min;
-			Maximum = max;
-		}
+using System;
 
-		public T Minimum {
-			get;
-			set;
-		}
+namespace Dicom
+{
+    public class DicomRange<T>
+        where T : IComparable<T>
+    {
+        public DicomRange(T min, T max)
+        {
+            Minimum = min;
+            Maximum = max;
+        }
 
-		public T Maximum {
-			get;
-			set;
-		}
+        public T Minimum { get; set; }
 
-		public bool Contains(T value) {
-			return Minimum.CompareTo(value) <= 0 && Maximum.CompareTo(value) >= 0;
-		}
-	}
+        public T Maximum { get; set; }
+
+        public bool Contains(T value)
+        {
+            return Minimum.CompareTo(value) <= 0 && Maximum.CompareTo(value) >= 0;
+        }
+    }
 }
