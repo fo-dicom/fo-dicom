@@ -445,7 +445,7 @@ namespace Dicom
                 if (_values == null)
                 {
                     var values = new List<DicomTag>();
-                    var parts = ByteBufferEnumerator<ushort>.Create(Buffer).ToArray();
+                    var parts = ByteConverter.ToArray<ushort>(Buffer);
                     for (int i = 0; i < parts.Length; i += 2)
                     {
                         var group = parts[i + 0];
@@ -965,29 +965,29 @@ namespace Dicom
         {
             if (!typeof(T).IsArray && item == -1) item = 0;
 
-            if (typeof(T) == typeof(short)) return (T)(object)ByteBufferEnumerator<short>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(short)) return (T)(object)ByteConverter.Get<short>(Buffer, item);
 
-            if (typeof(T) == typeof(short[])) return (T)(object)ByteBufferEnumerator<short>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(short[])) return (T)(object)ByteConverter.ToArray<short>(Buffer);
 
-            if (typeof(T) == typeof(ushort)) return (T)(object)ByteBufferEnumerator<ushort>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(ushort)) return (T)(object)ByteConverter.Get<ushort>(Buffer, item);
 
-            if (typeof(T) == typeof(ushort[])) return (T)(object)ByteBufferEnumerator<ushort>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(ushort[])) return (T)(object)ByteConverter.ToArray<ushort>(Buffer);
 
-            if (typeof(T) == typeof(int)) return (T)(object)ByteBufferEnumerator<int>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(int)) return (T)(object)ByteConverter.Get<int>(Buffer, item);
 
-            if (typeof(T) == typeof(int[])) return (T)(object)ByteBufferEnumerator<int>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(int[])) return (T)(object)ByteConverter.ToArray<int>(Buffer);
 
-            if (typeof(T) == typeof(uint)) return (T)(object)ByteBufferEnumerator<uint>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(uint)) return (T)(object)ByteConverter.Get<uint>(Buffer, item);
 
-            if (typeof(T) == typeof(uint[])) return (T)(object)ByteBufferEnumerator<uint>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(uint[])) return (T)(object)ByteConverter.ToArray<uint>(Buffer);
 
-            if (typeof(T) == typeof(float)) return (T)(object)ByteBufferEnumerator<float>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(float)) return (T)(object)ByteConverter.Get<float>(Buffer, item);
 
-            if (typeof(T) == typeof(float[])) return (T)(object)ByteBufferEnumerator<float>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(float[])) return (T)(object)ByteConverter.ToArray<float>(Buffer);
 
-            if (typeof(T) == typeof(double)) return (T)(object)ByteBufferEnumerator<double>.Create(Buffer).ToArray().GetValue(item);
+            if (typeof(T) == typeof(double)) return (T)(object)ByteConverter.Get<double>(Buffer, item);
 
-            if (typeof(T) == typeof(double[])) return (T)(object)ByteBufferEnumerator<double>.Create(Buffer).ToArray();
+            if (typeof(T) == typeof(double[])) return (T)(object)ByteConverter.ToArray<double>(Buffer);
 
             return base.Get<T>(item);
         }
