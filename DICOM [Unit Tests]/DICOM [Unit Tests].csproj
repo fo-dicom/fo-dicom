@@ -71,6 +71,7 @@
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
     <Compile Include="DicomFileTest.cs" />
+    <Compile Include="DicomOtherByteTest.cs" />
     <Compile Include="DicomPersonNameTest.cs" />
     <Compile Include="DicomTagTest.cs" />
     <Compile Include="DicomUIDTest.cs" />
