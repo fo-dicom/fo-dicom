@@ -19,7 +19,7 @@ namespace Dicom
             var tag = DicomTag.DoubleFloatPixelData;
             var dataset = new DicomDataset();
             dataset.Add(tag, 3.45);
-            Assert.IsType(typeof(DicomOtherDouble), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace Dicom
             var tag = DicomTag.DoubleFloatPixelData;
             var dataset = new DicomDataset();
             dataset.Add(tag, 3.45, 6.78, 9.01);
-            Assert.IsType(typeof(DicomOtherDouble), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal(3, dataset.Get<double[]>(tag).Length);
         }
 
@@ -38,7 +38,7 @@ namespace Dicom
             var tag = DicomTag.LongCodeValue;
             var dataset = new DicomDataset();
             dataset.Add(tag, "abc");
-            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("abc", dataset.Get<string>(tag));
         }
 
@@ -48,7 +48,7 @@ namespace Dicom
             var tag = DicomTag.LongCodeValue;
             var dataset = new DicomDataset();
             dataset.Add(tag, "a", "b", "c");
-            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("c", dataset.Get<string>(tag, 2));
         }
 
@@ -58,7 +58,7 @@ namespace Dicom
             var tag = DicomTag.URNCodeValue;
             var dataset = new DicomDataset();
             dataset.Add(tag, "abc");
-            Assert.IsType(typeof(DicomUniversalResource), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("abc", dataset.Get<string>(tag));
         }
 
@@ -68,7 +68,7 @@ namespace Dicom
             var tag = DicomTag.URNCodeValue;
             var dataset = new DicomDataset();
             dataset.Add(tag, "a", "b", "c");
-            Assert.IsType(typeof(DicomUniversalResource), dataset.First(item => item.Tag.Equals(tag)));
+            Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.Get<string[]>(tag);
             Assert.Equal(1, data.Length);
