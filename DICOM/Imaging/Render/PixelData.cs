@@ -194,29 +194,24 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private readonly Lazy<byte[]> _data;
+        private readonly byte[] _data;
  
         #endregion
 
         #region Public Constructor
 
         public GrayscalePixelDataU8(int width, int height, IByteBuffer data)
-            : this(width, height, () => data.Data)
-        {
-        }
-
-        protected GrayscalePixelDataU8(int width, int height, Func<byte[]> dataFunc)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<byte[]>(dataFunc, false);
+            _data = data.Data;
         }
 
-        private GrayscalePixelDataU8(int width, int height, byte[] data)
+        protected GrayscalePixelDataU8(int width, int height, byte[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<byte[]>(() => data, false);
+            _data = data;
         }
 
 
@@ -252,7 +247,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
@@ -339,7 +334,7 @@ namespace Dicom.Imaging.Render
         #region Public Constructor
 
         public SingleBitPixelData(int width, int height, IByteBuffer data)
-            : base(width, height, () => ExpandBits(width, height, data.Data))
+            : base(width, height, ExpandBits(width, height, data.Data))
         {
         }
 
@@ -394,7 +389,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private readonly Lazy<short[]> _data;
+        private readonly short[] _data;
  
         #endregion
 
@@ -406,34 +401,29 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            _data = new Lazy<short[]>(
-                () =>
-                    {
-                        var shortData = Dicom.IO.ByteConverter.ToArray<short>(data);
+            var shortData = Dicom.IO.ByteConverter.ToArray<short>(data);
 
-                        if (bitDepth.BitsStored != 16)
-                        {
-                            int sign = 1 << bitDepth.HighBit;
-                            int mask = (UInt16.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
+            if (bitDepth.BitsStored != 16)
+            {
+                int sign = 1 << bitDepth.HighBit;
+                int mask = (UInt16.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
-                            for (var i = 0; i < shortData.Length; ++i)
-                            {
-                                short d = shortData[i];
-                                if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
-                                else shortData[i] = (short)(d & mask);
-                            }
-                        }
+                for (var i = 0; i < shortData.Length; ++i)
+                {
+                    short d = shortData[i];
+                    if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
+                    else shortData[i] = (short)(d & mask);
+                }
+            }
 
-                        return shortData;
-                    },
-                false);
+            _data = shortData;
         }
 
         private GrayscalePixelDataS16(int width, int height, short[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<short[]>(() => data, false);
+            _data = data;
         }
 
         #endregion
@@ -468,7 +458,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
@@ -563,7 +553,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private readonly Lazy<ushort[]> _data;
+        private readonly ushort[] _data;
 
         #endregion
 
@@ -575,31 +565,26 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            _data = new Lazy<ushort[]>(
-                () =>
-                    {
-                        var ushortData = Dicom.IO.ByteConverter.ToArray<ushort>(data);
+            var ushortData = Dicom.IO.ByteConverter.ToArray<ushort>(data);
 
-                        if (bitDepth.BitsStored != 16)
-                        {
-                            int mask = (1 << (bitDepth.HighBit + 1)) - 1;
+            if (bitDepth.BitsStored != 16)
+            {
+                int mask = (1 << (bitDepth.HighBit + 1)) - 1;
 
-                            for (var i = 0; i < ushortData.Length; ++i)
-                            {
-                                ushortData[i] = (ushort)(ushortData[i] & mask);
-                            }
-                        }
+                for (var i = 0; i < ushortData.Length; ++i)
+                {
+                    ushortData[i] = (ushort)(ushortData[i] & mask);
+                }
+            }
 
-                        return ushortData;
-                    },
-                false);
+            _data = ushortData;
         }
 
         private GrayscalePixelDataU16(int width, int height, ushort[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<ushort[]>(() => data, false);
+            _data = data;
         }
 
         #endregion
@@ -634,7 +619,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
@@ -726,7 +711,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private Lazy<int[]> _data; 
+        private int[] _data; 
 
         #endregion
 
@@ -737,31 +722,26 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            _data = new Lazy<int[]>(
-                () =>
-                    {
-                        var intData = Dicom.IO.ByteConverter.ToArray<int>(data);
+            var intData = Dicom.IO.ByteConverter.ToArray<int>(data);
 
-                        int sign = 1 << bitDepth.HighBit;
-                        uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
+            int sign = 1 << bitDepth.HighBit;
+            uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
-                        for (var i = 0; i < intData.Length; ++i)
-                        {
-                            int d = intData[i];
-                            if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
-                            else intData[i] = (int)(d & mask);
-                        }
+            for (var i = 0; i < intData.Length; ++i)
+            {
+                int d = intData[i];
+                if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
+                else intData[i] = (int)(d & mask);
+            }
 
-                        return intData;
-                    },
-                false);
+            _data = intData;
         }
 
         private GrayscalePixelDataS32(int width, int height, int[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<int[]>(() => data, false);
+            _data = data;
         }
 
         #endregion
@@ -796,7 +776,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
@@ -879,7 +859,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private Lazy<uint[]> _data;
+        private uint[] _data;
  
         #endregion
 
@@ -890,9 +870,6 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            _data = new Lazy<uint[]>(
-                () =>
-                    {
                         var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data);
 
                         if (bitDepth.BitsStored != 32)
@@ -904,16 +881,15 @@ namespace Dicom.Imaging.Render
                                 uintData[i] = (uint)(uintData[i] & mask);
                             }
                         }
-                        return uintData;
-                    },
-                false);
+
+            _data = uintData;
         }
 
         private GrayscalePixelDataU32(int width, int height, uint[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<uint[]>(() => data, false);
+            _data = data;
         }
 
         #endregion
@@ -948,7 +924,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
@@ -1029,7 +1005,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private readonly Lazy<byte[]> _data;
+        private readonly byte[] _data;
 
         #endregion
 
@@ -1039,14 +1015,14 @@ namespace Dicom.Imaging.Render
         {
             _width = width;
             _height = height;
-            _data = new Lazy<byte[]>(() => data.Data, false);
+            _data = data.Data;
         }
 
         private ColorPixelData24(int width, int height, byte[] data)
         {
             _width = width;
             _height = height;
-            _data = new Lazy<byte[]>(() => data, false);
+            _data = data;
         }
 
         #endregion
@@ -1081,7 +1057,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _data.Value;
+                return _data;
             }
         }
 
