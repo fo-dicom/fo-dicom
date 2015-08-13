@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -207,9 +210,7 @@ namespace Dicom.IO
         {
             lock (_lock)
             {
-                if ((_stream.Length - _stream.Position) >= count) return true;
-
-                throw new DicomIoException("Requested {0} bytes past end of file.", count);
+                return (_stream.Length - _stream.Position) >= count;
             }
         }
 

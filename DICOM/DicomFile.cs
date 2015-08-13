@@ -138,6 +138,57 @@ namespace Dicom
         }
 
         /// <summary>
+        /// Reads a DICOM file with the specified filename, using default DICOM encoding, and returns a DicomFile object.
+        /// </summary>
+        /// <param name="fileName">The filename of the DICOM file.</param>
+        /// <returns>DicomFile instance.</returns>
+        /// <remarks>Uses MemoryMappedFile to avoid unneccesary copying of data into memory.</remarks>
+        public static DicomFile OpenLarge(string fileName)
+        {
+            return OpenLarge(fileName, DicomEncoding.Default);
+        }
+
+        /// <summary>
+        /// Reads a DICOM file with the specified filename and returns a DicomFile object.
+        /// </summary>
+        /// <param name="fileName">The filename of the DICOM file.</param>
+        /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
+        /// <returns>DicomFile instance.</returns>
+        /// <remarks>Uses MemoryMappedFile to avoid unneccesary copying of data into memory.</remarks>
+        public static DicomFile OpenLarge(string fileName, Encoding fallbackEncoding)
+        {
+            if (fallbackEncoding == null)
+            {
+                throw new ArgumentNullException("fallbackEncoding");
+            }
+            DicomFile df = new DicomFile();
+
+            try
+            {
+                df.File = new FileReference(fileName);
+
+                using (var source = new MemoryMappedFileByteSource(fileName))
+                {
+                    DicomFileReader reader = new DicomFileReader();
+                    reader.Read(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
+
+                    df.Format = reader.FileFormat;
+
+                    df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                    return df;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new DicomFileException(df, e.Message, e);
+            }
+        }
+
+        /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
         /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize

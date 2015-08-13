@@ -206,9 +206,7 @@ namespace Dicom.IO
         {
             lock (_lock)
             {
-                if ((_stream.Length - _stream.Position) >= count) return true;
-
-                throw new DicomIoException("Requested {0} bytes past end of fixed length stream.", count);
+                return (_stream.Length - _stream.Position) >= count;
             }
         }
     }
