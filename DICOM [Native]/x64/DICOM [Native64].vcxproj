@@ -90,18 +90,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CharLS\charls.h" />
     <ClInclude Include="..\CharLS\colortransform.h" />
-    <ClInclude Include="..\CharLS\config.h" />
     <ClInclude Include="..\CharLS\context.h" />
     <ClInclude Include="..\CharLS\contextrunmode.h" />
     <ClInclude Include="..\CharLS\decoderstrategy.h" />
     <ClInclude Include="..\CharLS\defaulttraits.h" />
     <ClInclude Include="..\CharLS\encoderstrategy.h" />
-    <ClInclude Include="..\CharLS\header.h" />
-    <ClInclude Include="..\CharLS\interface.h" />
+    <ClInclude Include="..\CharLS\jlscodecfactory.h" />
+    <ClInclude Include="..\CharLS\jpegimagedatasegment.h" />
+    <ClInclude Include="..\CharLS\jpegmarkercode.h" />
+    <ClInclude Include="..\CharLS\jpegmarkersegment.h" />
+    <ClInclude Include="..\CharLS\jpegsegment.h" />
+    <ClInclude Include="..\CharLS\jpegstreamreader.h" />
+    <ClInclude Include="..\CharLS\jpegstreamwriter.h" />
     <ClInclude Include="..\CharLS\lookuptable.h" />
     <ClInclude Include="..\CharLS\losslesstraits.h" />
     <ClInclude Include="..\CharLS\processline.h" />
+    <ClInclude Include="..\CharLS\publictypes.h" />
     <ClInclude Include="..\CharLS\scan.h" />
     <ClInclude Include="..\CharLS\util.h" />
     <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg.h" />
@@ -137,10 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AssemblyInfo.cpp" />
-    <ClCompile Include="..\CharLS\header.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
     <ClCompile Include="..\CharLS\interface.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
@@ -149,7 +151,15 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>
-    <ClCompile Include="..\CharLS\stdafx.cpp">
+    <ClCompile Include="..\CharLS\jpegmarkersegment.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegstreamreader.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegstreamwriter.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>

@@ -5,326 +5,311 @@
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
 
-#include "jpegmarker.h"
-#include "processline.h"
-#include "config.h"
+
 #include "util.h"
+#include "processline.h"
+#include <memory>
 
-// Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
-
-
-
+// Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class DecoderStrategy
 {
 public:
-	DecoderStrategy(const JlsParameters& info) :
-		  _info(info),	      
-		  _byteStream(NULL),
-		  _readCache(0),
-		  _validBits(0),
-		  _position(0)
-		  
-	  {
-	  }
+    DecoderStrategy(const JlsParameters& info) :
+        _info(info),
+        _byteStream(nullptr),
+        _readCache(0),
+        _validBits(0),
+        _position(nullptr),
+        _nextFFPosition(nullptr),
+        _endPosition(nullptr)
+    {
+    }
 
-	  virtual ~DecoderStrategy()
-	  {
-	  }
-	  
-	  virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
-	  
-	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual void DecodeScan(std::auto_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
+    virtual ~DecoderStrategy()
+    {
+    }
 
-	  
-	  void Init(ByteStreamInfo* compressedStream)
-	  {
-		  _validBits = 0;
-		  _readCache = 0;
+    virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
-		  if (compressedStream->rawStream != NULL)
-		  {
-			  _buffer.resize(40000);
-			  _position = (BYTE*)&_buffer[0];
-			  _endPosition = _position;
-			  _byteStream = compressedStream->rawStream;
-			  AddBytesFromStream();
-		  }
-		  else
-		  {
-			  _byteStream = NULL;
-			  _position = compressedStream->rawData;
-			  _endPosition = _position + compressedStream->count;
-		  }		  
-		  
-		  _nextFFPosition = FindNextFF();
-		  MakeValid();
-	  }
+    virtual void SetPresets(const JlsCustomParameters& presets) = 0;
+    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
 
-	  void AddBytesFromStream()
-	  {
-		  if (_byteStream == NULL || _byteStream->sgetc() == std::char_traits<char>::eof())
-				return;
+    void Init(ByteStreamInfo* compressedStream)
+    {
+        _validBits = 0;
+        _readCache = 0;
 
-		    size_t count = _endPosition - _position; 
-			
-			if (count > 64)
-				return;
+        if (compressedStream->rawStream)
+        {
+            _buffer.resize(40000);
+            _position = static_cast<uint8_t*>(&_buffer[0]);
+            _endPosition = _position;
+            _byteStream = compressedStream->rawStream;
+            AddBytesFromStream();
+        }
+        else
+        {
+            _byteStream = nullptr;
+            _position = compressedStream->rawData;
+            _endPosition = _position + compressedStream->count;
+        }
 
-			for (size_t i = 0; i < count; ++i)
-			{
-				_buffer[i] = _position[i];
-			}
-			size_t offset = &_buffer[0] - _position;
+        _nextFFPosition = FindNextFF();
+        MakeValid();
+    }
 
-			_position += offset;
-			_endPosition += offset;
-			_nextFFPosition += offset;
+    void AddBytesFromStream()
+    {
+        if (!_byteStream || _byteStream->sgetc() == std::char_traits<char>::eof())
+            return;
 
-			std::streamsize readbytes = _byteStream->sgetn((char*)_endPosition, _buffer.size() - count);
-			_endPosition += readbytes;
-	  }
+        std::size_t count = _endPosition - _position;
 
-	  inlinehint void Skip(LONG length)
-	  {
-		  _validBits -= length;
-		  _readCache = _readCache << length; 
-	  }
+        if (count > 64)
+            return;
 
-	
-	  void OnLineBegin(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) 
-	  {}
+        for (std::size_t i = 0; i < count; ++i)
+        {
+            _buffer[i] = _position[i];
+        }
+        std::size_t offset = &_buffer[0] - _position;
+
+        _position += offset;
+        _endPosition += offset;
+        _nextFFPosition += offset;
+
+        std::streamsize readbytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
+        _endPosition += readbytes;
+    }
+
+    inlinehint void Skip(int32_t length)
+    {
+        _validBits -= length;
+        _readCache = _readCache << length; 
+    }
 
 
-	  void OnLineEnd(LONG pixelCount, const void* ptypeBuffer, LONG pixelStride)
-	  {
-	  		_processLine->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
-	  }
-
-	  void EndScan()
-	  {
-		  if ((*_position) != 0xFF)
-		  {
-			  ReadBit();
-
-			  if ((*_position) != 0xFF)
-				throw JlsException(TooMuchCompressedData);
-		  }
-
-		  if (_readCache != 0)
-		     throw JlsException(TooMuchCompressedData);
-	  }
+    void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) 
+    {
+    }
 
 
-	  inlinehint bool OptimizedRead()
-	  {
-		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
-		  if (_position < _nextFFPosition - (sizeof(bufType)-1))
-		  {
-			  _readCache		 |= FromBigEndian<sizeof(bufType)>::Read(_position) >> _validBits;
-			  int bytesToRead = (bufferbits - _validBits) >> 3;
-			  _position += bytesToRead;
-			  _validBits += bytesToRead * 8;
-			  ASSERT(_validBits >= bufferbits - 8);
-			  return true;
-		  }
-		  return false;
-	  }
+    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride)
+    {
+        _processLine->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
+    }
 
-	  typedef size_t bufType;
+    void EndScan()
+    {
+        if ((*_position) != 0xFF)
+        {
+            ReadBit();
 
-	  enum { 
-		  bufferbits = sizeof( bufType ) * 8
-	  };
-		
-	  void MakeValid()
-	  {
-		  ASSERT(_validBits <=bufferbits - 8);
+            if ((*_position) != 0xFF)
+                throw std::system_error(static_cast<int>(charls::ApiResult::TooMuchCompressedData), CharLSCategoryInstance());
+        }
 
-		  if (OptimizedRead())
-			  return;
+        if (_readCache != 0)
+            throw std::system_error(static_cast<int>(charls::ApiResult::TooMuchCompressedData), CharLSCategoryInstance());
+    }
 
-		  AddBytesFromStream();
-		  
-		  do
-		  {
-			  if (_position >= _endPosition)
-			  {
-				  if (_validBits <= 0)
-					  throw JlsException(InvalidCompressedData);
+    inlinehint bool OptimizedRead()
+    {
+        // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
+        if (_position < _nextFFPosition - (sizeof(bufType)-1))
+        {
+            _readCache |= FromBigEndian<sizeof(bufType)>::Read(_position) >> _validBits;
+            int bytesToRead = (bufferbits - _validBits) >> 3;
+            _position += bytesToRead;
+            _validBits += bytesToRead * 8;
+            ASSERT(_validBits >= bufferbits - 8);
+            return true;
+        }
+        return false;
+    }
 
-				  return;
-			  }
+    typedef std::size_t bufType;
 
-			  bufType valnew	  = _position[0];
-			  
-			  if (valnew == 0xFF)		
-			  {
-				  // JPEG bitstream rule: no FF may be followed by 0x80 or higher	    			 
-				 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
-				 {
-					 if (_validBits <= 0)
-					 	throw JlsException(InvalidCompressedData);
-					 
-					 return;
-			     }
-			  }
+    enum
+    {
+        bufferbits = sizeof( bufType ) * 8
+    };
 
-			  _readCache	|= valnew << (bufferbits - 8 - _validBits);
-			  _position		+= 1;				
-			  _validBits	+= 8; 
+    void MakeValid()
+    {
+        ASSERT(_validBits <=bufferbits - 8);
 
-			  if (valnew == 0xFF)		
-			  {
-				  _validBits--;		
-			  }
-		  }
-		  while (_validBits < bufferbits - 8);
+        if (OptimizedRead())
+            return;
 
-		  _nextFFPosition = FindNextFF();
-		  return;
+        AddBytesFromStream();
 
-	  }
+        do
+        {
+            if (_position >= _endPosition)
+            {
+                if (_validBits <= 0)
+                    throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
+                return;
+            }
 
-	  BYTE* FindNextFF()
-	  {
-		  BYTE* pbyteNextFF = _position;
+            bufType valnew = _position[0];
 
-		  while (pbyteNextFF < _endPosition)
-	      {
-			  if (*pbyteNextFF == 0xFF) 
-				  break;
+            if (valnew == 0xFF)
+            {
+                // JPEG bitstream rule: no FF may be followed by 0x80 or higher
+                if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
+                {
+                    if (_validBits <= 0)
+                        throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
-			  pbyteNextFF++;
-		  }
-		  
+                    return;
+                }
+            }
 
-		  return pbyteNextFF;
-	  }
+            _readCache |= valnew << (bufferbits - 8 - _validBits);
+            _position += 1;
+            _validBits += 8;
 
+            if (valnew == 0xFF)
+            {
+                _validBits--;
+            }
+        }
+        while (_validBits < bufferbits - 8);
 
-	  BYTE* GetCurBytePos() const
-	  {
-		  LONG  validBits = _validBits;
-		  BYTE* compressedBytes = _position;
+        _nextFFPosition = FindNextFF();
+        return;
+    }
 
-		  for (;;)
-		  {
-			  LONG cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
+    uint8_t* FindNextFF()
+    {
+        uint8_t* pbyteNextFF = _position;
 
-			  if (validBits < cbitLast )
-				  return compressedBytes;
+        while (pbyteNextFF < _endPosition)
+        {
+            if (*pbyteNextFF == 0xFF) 
+                break;
 
-			  validBits -= cbitLast; 
-			  compressedBytes--;
-		  }	
-	  }
+            pbyteNextFF++;
+        }
 
+        return pbyteNextFF;
+    }
 
-	  inlinehint LONG ReadValue(LONG length)
-	  {
-		  if (_validBits < length)
-		  {
-			  MakeValid();
-			  if (_validBits < length)
-				  throw JlsException(InvalidCompressedData);
-		  }
-		
-		  ASSERT(length != 0 && length <= _validBits);
-		  ASSERT(length < 32);
-		  LONG result = LONG(_readCache >> (bufferbits - length));
-		  Skip(length);		
-		  return result;
-	  }
+    uint8_t* GetCurBytePos() const
+    {
+        int32_t validBits = _validBits;
+        uint8_t* compressedBytes = _position;
 
+        for (;;)
+        {
+            int32_t cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
 
-	  inlinehint LONG PeekByte()
-	  { 
-		  if (_validBits < 8)
-		  {
-			  MakeValid();
-		  }
+            if (validBits < cbitLast )
+                return compressedBytes;
 
-		  return _readCache >> (bufferbits - 8); 
-	  }
+            validBits -= cbitLast; 
+            compressedBytes--;
+        }
+    }
 
+    inlinehint int32_t ReadValue(int32_t length)
+    {
+        if (_validBits < length)
+        {
+            MakeValid();
+            if (_validBits < length)
+                throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+        }
 
+        ASSERT(length != 0 && length <= _validBits);
+        ASSERT(length < 32);
+        int32_t result = int32_t(_readCache >> (bufferbits - length));
+        Skip(length);
+        return result;
+    }
 
-	  inlinehint bool ReadBit()
-	  {
-		  if (_validBits <= 0)
-		  {
-			  MakeValid();
-		  }
+    inlinehint int32_t PeekByte()
+    {
+        if (_validBits < 8)
+        {
+            MakeValid();
+        }
 
-		  bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
-		  Skip(1);
-		  return bSet;
-	  }
+        return _readCache >> (bufferbits - 8); 
+    }
 
+    inlinehint bool ReadBit()
+    {
+        if (_validBits <= 0)
+        {
+            MakeValid();
+        }
 
+        bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
+        Skip(1);
+        return bSet;
+    }
 
-	  inlinehint LONG Peek0Bits()
-	  {
-		  if (_validBits < 16)
-		  {
-			  MakeValid();
-		  }
-		  bufType valTest = _readCache;
+    inlinehint int32_t Peek0Bits()
+    {
+        if (_validBits < 16)
+        {
+            MakeValid();
+        }
+        bufType valTest = _readCache;
 
-		  for (LONG count = 0; count < 16; count++)
-		  {
-			  if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
-				  return count;
+        for (int32_t count = 0; count < 16; count++)
+        {
+            if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
+                return count;
 
-			  valTest <<= 1;
-		  }
-		  return -1;
-	  }
+            valTest <<= 1;
+        }
+        return -1;
+    }
 
+    inlinehint int32_t ReadHighbits()
+    {
+        int32_t count = Peek0Bits();
+        if (count >= 0)
+        {
+            Skip(count + 1);
+            return count;
+        }
+        Skip(15);
 
+        for (int32_t highbits = 15; ; highbits++)
+        {
+            if (ReadBit())
+                return highbits;
+        }
+    }
 
-	  inlinehint LONG ReadHighbits()
-	  {
-		  LONG count = Peek0Bits();
-		  if (count >= 0)
-		  {
-			  Skip(count + 1);
-			  return count;
-		  }
-		  Skip(15);
+    int32_t ReadLongValue(int32_t length)
+    {
+        if (length <= 24)
+            return ReadValue(length);
 
-		  for (LONG highbits = 15; ; highbits++)
-		  { 
-			  if (ReadBit())
-				  return highbits;
-		  }                 	
-	  }
-
-
-	  LONG ReadLongValue(LONG length)
-	  {
-		  if (length <= 24)
-			  return ReadValue(length);
-
-		  return (ReadValue(length - 24) << 24) + ReadValue(24);
-	  }
+        return (ReadValue(length - 24) << 24) + ReadValue(24);
+    }
 
 protected:
-	JlsParameters _info;
-	std::auto_ptr<ProcessLine> _processLine;
+    JlsParameters _info;
+    std::unique_ptr<ProcessLine> _processLine;
 
 private:
-	std::vector<BYTE> _buffer;
-	std::basic_streambuf<char>* _byteStream;
+    std::vector<uint8_t> _buffer;
+    std::basic_streambuf<char>* _byteStream;
 
-	// decoding
-	bufType _readCache;
-	LONG _validBits;
-	BYTE* _position;
-	BYTE* _nextFFPosition;
-	BYTE* _endPosition;
+    // decoding
+    bufType _readCache;
+    int32_t _validBits;
+    uint8_t* _position;
+    uint8_t* _nextFFPosition;
+    uint8_t* _endPosition;
 };
 
 
