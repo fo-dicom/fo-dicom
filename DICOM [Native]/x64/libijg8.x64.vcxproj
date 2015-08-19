@@ -136,7 +136,6 @@
     <ClCompile Include="..\libijg8\jutils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libijg8\cfwin32.h" />
     <ClInclude Include="..\libijg8\jchuff8.h" />
     <ClInclude Include="..\libijg8\jconfig8.h" />
     <ClInclude Include="..\libijg8\jdct8.h" />

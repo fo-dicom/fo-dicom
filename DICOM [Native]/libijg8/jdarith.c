@@ -16,6 +16,8 @@
 /*
  * Module initialization routine for arithmetic entropy decoding.
  */
+GLOBAL(void)
+jinit_arith_decoder (j_decompress_ptr cinfo);
 
 GLOBAL(void)
 jinit_arith_decoder (j_decompress_ptr cinfo)

@@ -94,7 +94,7 @@ EXTERN(void) jpeg_free_large JPP((j_common_ptr cinfo, void FAR * object,
  * It is OK for jpeg_mem_available to underestimate the space available
  * (that'll just lead to more backing-store access than is really necessary).
  * However, an overestimate will lead to failure.  Hence it's wise to subtract
- * a slop factor from the true available space.  5hould be enough.
+ * a slop factor from the true available space.  5% should be enough.
  *
  * On machines with lots of virtual memory, any large constant may be returned.
  * Conversely, zero may be returned to always use the minimum amount of memory.
