@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 
 using Dicom.IO.Buffer;
 
@@ -291,23 +292,29 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = data[i];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = data[i];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = lut[data[i]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = lut[data[i]];
+                            }
+                        });
             }
         }
 
@@ -504,23 +511,29 @@ namespace Dicom.Imaging.Render
             if (lut == null)
             {
 
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = data[i];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = data[i];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = lut[data[i]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = lut[data[i]];
+                            }
+                        });
             }
         }
 
@@ -665,23 +678,29 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = data[i];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = data[i];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = lut[data[i]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = lut[data[i]];
+                            }
+                        });
             }
         }
 
@@ -819,24 +838,29 @@ namespace Dicom.Imaging.Render
 
             if (lut == null)
             {
-
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = data[i];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = data[i];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = lut[data[i]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = lut[data[i]];
+                            }
+                        });
             }
         }
 
@@ -966,23 +990,29 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = (int)data[i];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = (int)data[i];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        output[i] = lut[(int)data[i]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width; i < e; i++)
+                            {
+                                output[i] = lut[(int)data[i]];
+                            }
+                        });
             }
         }
 
@@ -1092,23 +1122,29 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                    {
-                        output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                            {
+                                output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
+                            }
+                        });
             }
             else
             {
-                for (var y = 0; y < Height; ++y)
-                {
-                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                    {
-                        output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
-                    }
-                }
+                Parallel.For(
+                    0,
+                    Height,
+                    y =>
+                        {
+                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                            {
+                                output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                            }
+                        });
             }
         }
 
