@@ -220,7 +220,7 @@ namespace Dicom.IO.Reader
             }
             finally
             {
-                if (_result != DicomReaderResult.Processing && _result != DicomReaderResult.Suspended)
+                if (_result != DicomReaderResult.Processing)
                 {
                     _async.Set();
                 }
