@@ -415,12 +415,18 @@ namespace Dicom.Imaging.Render
                 int sign = 1 << bitDepth.HighBit;
                 int mask = (UInt16.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
-                for (var i = 0; i < shortData.Length; ++i)
-                {
-                    short d = shortData[i];
-                    if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
-                    else shortData[i] = (short)(d & mask);
-                }
+                Parallel.For(
+                    0,
+                    _height,
+                    y =>
+                        {
+                            for (int i = _width * y, e = i + _width; i < e; i++)
+                            {
+                                short d = shortData[i];
+                                if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
+                                else shortData[i] = (short)(d & mask);
+                            }
+                        });
             }
 
             _data = shortData;
@@ -584,10 +590,16 @@ namespace Dicom.Imaging.Render
             {
                 int mask = (1 << (bitDepth.HighBit + 1)) - 1;
 
-                for (var i = 0; i < ushortData.Length; ++i)
-                {
-                    ushortData[i] = (ushort)(ushortData[i] & mask);
-                }
+                Parallel.For(
+                    0,
+                    _height,
+                    y =>
+                        {
+                            for (int i = _width * y, e = i + _width; i < e; i++)
+                            {
+                                ushortData[i] = (ushort)(ushortData[i] & mask);
+                            }
+                        });
             }
 
             _data = ushortData;
@@ -746,12 +758,18 @@ namespace Dicom.Imaging.Render
             int sign = 1 << bitDepth.HighBit;
             uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
 
-            for (var i = 0; i < intData.Length; ++i)
-            {
-                int d = intData[i];
-                if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
-                else intData[i] = (int)(d & mask);
-            }
+            Parallel.For(
+                0,
+                _height,
+                y =>
+                    {
+                        for (int i = _width * y, e = i + _width; i < e; i++)
+                        {
+                            int d = intData[i];
+                            if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
+                            else intData[i] = (int)(d & mask);
+                        }
+                    });
 
             _data = intData;
         }
@@ -894,17 +912,23 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-                        var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data);
+            var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data);
 
-                        if (bitDepth.BitsStored != 32)
+            if (bitDepth.BitsStored != 32)
+            {
+                int mask = (1 << (bitDepth.HighBit + 1)) - 1;
+
+                Parallel.For(
+                    0,
+                    _height,
+                    y =>
                         {
-                            int mask = (1 << (bitDepth.HighBit + 1)) - 1;
-
-                            for (var i = 0; i < uintData.Length; ++i)
+                            for (int i = _width * y, e = i + _width; i < e; i++)
                             {
                                 uintData[i] = (uint)(uintData[i] & mask);
                             }
-                        }
+                        });
+            }
 
             _data = uintData;
         }
