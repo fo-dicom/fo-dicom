@@ -209,9 +209,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libijg12\cfwin32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\libijg12\jchuff12.h">
       <Filter>Header Files</Filter>
     </ClInclude>

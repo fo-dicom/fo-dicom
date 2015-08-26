@@ -145,7 +145,7 @@ jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
     (*cinfo->master->pass_startup) (cinfo);
 
   /* Verify that at least one iMCU row has been passed. */
-  lines_per_iMCU_row = cinfo->max_v_samp_factor * cinfo->data_unit;
+  lines_per_iMCU_row = (JDIMENSION)(cinfo->max_v_samp_factor * cinfo->data_unit);
   if (num_lines < lines_per_iMCU_row)
     ERREXIT(cinfo, JERR_BUFFER_SIZE);
 

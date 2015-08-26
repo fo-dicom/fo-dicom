@@ -6,6 +6,10 @@
 #ifndef CHARLS_DEFAULTTRAITS
 #define CHARLS_DEFAULTTRAITS
 
+
+const int BASIC_RESET = 64;
+
+
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
 
 // This traits class is used to initialize a coder/decoder.
@@ -13,112 +17,109 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h 
 
-template <class sample, class pixel>
-struct DefaultTraitsT 
+template<typename sample, typename pixel>
+struct DefaultTraitsT
 {
-public:
-	typedef sample SAMPLE;
-	typedef pixel PIXEL;
-	
-	LONG MAXVAL;
-	LONG RANGE;
-	LONG NEAR;
-	LONG qbpp;
-	LONG bpp;
-	LONG LIMIT;
-	LONG RESET;
+    typedef sample SAMPLE;
+    typedef pixel PIXEL;
 
-	DefaultTraitsT(const DefaultTraitsT& src) :
-		MAXVAL(src.MAXVAL),
-		RANGE(src.RANGE),
-		NEAR(src.NEAR),
-		qbpp(src.qbpp),
-		bpp(src.bpp),
-		LIMIT(src.LIMIT),
-		RESET(src.RESET)
-	{
-	}
+    int32_t MAXVAL;
+    int32_t RANGE;
+    int32_t NEAR;
+    int32_t qbpp;
+    int32_t bpp;
+    int32_t LIMIT;
+    int32_t RESET;
 
-	DefaultTraitsT(LONG max, LONG jls_near)
-	{
-		NEAR   = jls_near;
-		MAXVAL = max;
-		RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
-		bpp = log_2(max);	
-		LIMIT = 2 * (bpp + MAX(8,bpp));
-		qbpp = log_2(RANGE);
-		RESET = BASIC_RESET;
-	}
+    DefaultTraitsT(const DefaultTraitsT& src) :
+        MAXVAL(src.MAXVAL),
+        RANGE(src.RANGE),
+        NEAR(src.NEAR),
+        qbpp(src.qbpp),
+        bpp(src.bpp),
+        LIMIT(src.LIMIT),
+        RESET(src.RESET)
+    {
+    }
 
-	
-	inlinehint LONG ComputeErrVal(LONG e) const
-	{
-	 	return ModRange(Quantize(e));
-	}
-	
-	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
-	{
-		return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
-	}
+    DefaultTraitsT(int32_t max, int32_t jls_near)
+    {
+        NEAR = jls_near;
+        MAXVAL = max;
+        RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
+        bpp = log_2(max);
+        LIMIT = 2 * (bpp + MAX(8,bpp));
+        qbpp = log_2(RANGE);
+        RESET = BASIC_RESET;
+    }
 
-	inlinehint bool IsNear(LONG lhs, LONG rhs) const
-		{ return abs(lhs-rhs) <=NEAR; }
+    inlinehint int32_t ComputeErrVal(int32_t e) const
+    {
+        return ModRange(Quantize(e));
+    }
 
-	bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
-	{
-		return abs(lhs.v1-rhs.v1) <=NEAR && 
-			abs(lhs.v2-rhs.v2) <=NEAR && 
-			abs(lhs.v3-rhs.v3) <=NEAR; 
-	}
+    inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
+    {
+        return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
+    }
 
-	inlinehint LONG CorrectPrediction(LONG Pxc) const
-	{
-		if ((Pxc & MAXVAL) == Pxc)
-			return Pxc;
-		
-		return (~(Pxc >> (LONG_BITCOUNT-1))) & MAXVAL;		
-	}
+    inlinehint bool IsNear(int32_t lhs, int32_t rhs) const
+    {
+        return abs(lhs-rhs) <= NEAR;
+    }
 
-	inlinehint LONG ModRange(LONG Errval) const
-	{
-		ASSERT(abs(Errval) <= RANGE);
-		if (Errval < 0)
-			Errval = Errval + RANGE;
+    bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
+    {
+        return abs(lhs.v1-rhs.v1) <= NEAR &&
+               abs(lhs.v2-rhs.v2) <= NEAR && 
+               abs(lhs.v3-rhs.v3) <= NEAR;
+    }
 
-		if (Errval >= ((RANGE + 1) / 2))
-			Errval = Errval - RANGE;
+    inlinehint int32_t CorrectPrediction(int32_t Pxc) const
+    {
+        if ((Pxc & MAXVAL) == Pxc)
+            return Pxc;
 
-		ASSERT(abs(Errval) <= RANGE/2);
+        return (~(Pxc >> (INT32_BITCOUNT-1))) & MAXVAL;
+    }
 
-		return Errval;
-	}
+    inlinehint int32_t ModRange(int32_t Errval) const
+    {
+        ASSERT(abs(Errval) <= RANGE);
+        if (Errval < 0)
+            Errval = Errval + RANGE;
 
+        if (Errval >= ((RANGE + 1) / 2))
+            Errval = Errval - RANGE;
+
+        ASSERT(abs(Errval) <= RANGE/2);
+
+        return Errval;
+    }
 
 private:
-	LONG Quantize(LONG Errval) const
-	{
-		if (Errval > 0)
-			return  (Errval + NEAR) / (2 * NEAR + 1);
-		else
-			return - (NEAR - Errval) / (2 * NEAR + 1);		
-	}
+    int32_t Quantize(int32_t Errval) const
+    {
+        if (Errval > 0)
+            return  (Errval + NEAR) / (2 * NEAR + 1);
+        else
+            return - (NEAR - Errval) / (2 * NEAR + 1);
+    }
 
+    inlinehint int32_t DeQuantize(int32_t Errval) const
+    {
+        return Errval * (2 * NEAR + 1);
+    }
 
-	inlinehint LONG DeQuantize(LONG Errval) const
-	{
-		return Errval * (2 * NEAR + 1);
-	}
+    inlinehint SAMPLE FixReconstructedValue(int32_t val) const
+    { 
+        if (val < -NEAR)
+            val = val + RANGE*(2*NEAR+1);
+        else if (val > MAXVAL + NEAR)
+            val = val - RANGE*(2*NEAR+1);
 
-	inlinehint SAMPLE FixReconstructedValue(LONG val) const
-	{ 
-		if (val < -NEAR)
-			val = val + RANGE*(2*NEAR+1);
-		else if (val > MAXVAL + NEAR)
-			val = val - RANGE*(2*NEAR+1);
-
-		return SAMPLE(CorrectPrediction(val)); 
-	}
-
+        return SAMPLE(CorrectPrediction(val));
+    }
 };
 
 

@@ -21,7 +21,7 @@
 #define JPEG_INTERNALS
 #include "jinclude8.h"
 #include "jpeglib8.h"
-#include "jlossls8.h"		/* Private declarations for lossless codec */
+#include "jlossls8.h"       /* Private declarations for lossless codec */
 
 
 #ifdef C_LOSSLESS_SUPPORTED
@@ -37,16 +37,16 @@ typedef c_predictor * c_pred_ptr;
 
 /* Forward declarations */
 LOCAL(void) reset_predictor
-	JPP((j_compress_ptr cinfo, int ci));
+    JPP((j_compress_ptr cinfo, int ci));
 METHODDEF(void) start_pass
-	JPP((j_compress_ptr cinfo));
+    JPP((j_compress_ptr cinfo));
 
 
 /* Predictor for the first column of the first row: 2^(P-Pt-1) */
-#define INITIAL_PREDICTORx	(1 << (cinfo->data_precision - cinfo->Al - 1))
+#define INITIAL_PREDICTORx  (1 << (cinfo->data_precision - cinfo->Al - 1))
 
 /* Predictor for the first column of the remaining rows: Rb */
-#define INITIAL_PREDICTOR2	GETJSAMPLE(prev_row[0])
+#define INITIAL_PREDICTOR2  GETJSAMPLE(prev_row[0])
 
 
 /*
@@ -59,28 +59,28 @@ METHODDEF(void) start_pass
  */
 
 #define DIFFERENCE_1D(INITIAL_PREDICTOR) \
-	j_lossless_c_ptr losslsc = (j_lossless_c_ptr) cinfo->codec; \
-	c_pred_ptr pred = (c_pred_ptr) losslsc->pred_private; \
-	boolean restart = FALSE; \
-	unsigned int xindex; \
-	int samp, Ra; \
+    j_lossless_c_ptr losslsc = (j_lossless_c_ptr) cinfo->codec; \
+    c_pred_ptr pred = (c_pred_ptr) losslsc->pred_private; \
+    boolean restart = FALSE; \
+    unsigned int xindex; \
+    int samp, Ra; \
  \
-	samp = GETJSAMPLE(input_buf[0]); \
-	diff_buf[0] = samp - INITIAL_PREDICTOR; \
+    samp = GETJSAMPLE(input_buf[0]); \
+    diff_buf[0] = samp - INITIAL_PREDICTOR; \
  \
-	for (xindex = 1; xindex < width; xindex++) { \
-	  Ra = samp; \
-	  samp = GETJSAMPLE(input_buf[xindex]); \
-	  diff_buf[xindex] = samp - PREDICTOR1; \
-	} \
+    for (xindex = 1; xindex < width; xindex++) { \
+      Ra = samp; \
+      samp = GETJSAMPLE(input_buf[xindex]); \
+      diff_buf[xindex] = samp - PREDICTOR1; \
+    } \
  \
-	/* Account for restart interval (no-op if not using restarts) */ \
-	if (cinfo->restart_interval) { \
-	  if (--(pred->restart_rows_to_go[ci]) == 0) { \
-	    reset_predictor(cinfo, ci); \
-	    restart = TRUE; \
-	  } \
-	}
+    /* Account for restart interval (no-op if not using restarts) */ \
+    if (cinfo->restart_interval) { \
+      if (--(pred->restart_rows_to_go[ci]) == 0) { \
+        reset_predictor(cinfo, ci); \
+        restart = TRUE; \
+      } \
+    }
 
 
 /*
@@ -96,29 +96,30 @@ METHODDEF(void) start_pass
  */
 
 #define DIFFERENCE_2D(PREDICTOR) \
-	j_lossless_c_ptr losslsc = (j_lossless_c_ptr) cinfo->codec; \
-	c_pred_ptr pred = (c_pred_ptr) losslsc->pred_private; \
-	unsigned int xindex; \
-	int samp, Ra, Rb, Rc; \
+    j_lossless_c_ptr losslsc = (j_lossless_c_ptr) cinfo->codec; \
+    c_pred_ptr pred = (c_pred_ptr) losslsc->pred_private; \
+    unsigned int xindex; \
+    int samp, Ra, Rb, Rc; \
  \
-	Rb = GETJSAMPLE(prev_row[0]); \
-	samp = GETJSAMPLE(input_buf[0]); \
-	diff_buf[0] = samp - PREDICTOR2; \
+    Rb = GETJSAMPLE(prev_row[0]); \
+    samp = GETJSAMPLE(input_buf[0]); \
+    diff_buf[0] = samp - PREDICTOR2; \
  \
-	for (xindex = 1; xindex < width; xindex++) { \
-	  Rc = Rb; \
-	  Rb = GETJSAMPLE(prev_row[xindex]); \
-	  Ra = samp; \
-	  samp = GETJSAMPLE(input_buf[xindex]); \
-	  diff_buf[xindex] = samp - PREDICTOR; \
-	} \
+    for (xindex = 1; xindex < width; xindex++) { \
+      Rc = Rb; \
+      Rb = GETJSAMPLE(prev_row[xindex]); \
+      Ra = samp; \
+      samp = GETJSAMPLE(input_buf[xindex]); \
+      diff_buf[xindex] = samp - PREDICTOR; \
+    } \
  \
-	/* Account for restart interval (no-op if not using restarts) */ \
-	if (cinfo->restart_interval) { \
-	  if (--pred->restart_rows_to_go[ci] == 0) \
-	    reset_predictor(cinfo, ci); \
-	}
+    /* Account for restart interval (no-op if not using restarts) */ \
+    if (cinfo->restart_interval) { \
+      if (--pred->restart_rows_to_go[ci] == 0) \
+        reset_predictor(cinfo, ci); \
+    }
 
+#define JPEG_UNUSED(x) ((void)x)
 
 /*
  * Differencers for the all rows but the first in a scan or restart interval.
@@ -129,61 +130,74 @@ METHODDEF(void) start_pass
 
 METHODDEF(void)
 jpeg_difference1(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   DIFFERENCE_1D(INITIAL_PREDICTOR2);
+  JPEG_UNUSED(restart);
 }
 
 METHODDEF(void)
 jpeg_difference2(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   DIFFERENCE_2D(PREDICTOR2);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 METHODDEF(void)
 jpeg_difference3(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   DIFFERENCE_2D(PREDICTOR3);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 METHODDEF(void)
 jpeg_difference4(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   DIFFERENCE_2D(PREDICTOR4);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 METHODDEF(void)
 jpeg_difference5(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   DIFFERENCE_2D(PREDICTOR5);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 METHODDEF(void)
 jpeg_difference6(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   DIFFERENCE_2D(PREDICTOR6);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 METHODDEF(void)
 jpeg_difference7(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   DIFFERENCE_2D(PREDICTOR7);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Ra);
 }
 
 
@@ -196,8 +210,8 @@ jpeg_difference7(j_compress_ptr cinfo, int ci,
 
 METHODDEF(void)
 jpeg_difference_first_row(j_compress_ptr cinfo, int ci,
-		 JSAMPROW input_buf, JSAMPROW prev_row,
-		 JDIFFROW diff_buf, JDIMENSION width)
+         JSAMPROW input_buf, JSAMPROW prev_row,
+         JDIFFROW diff_buf, JDIMENSION width)
 {
   DIFFERENCE_1D(INITIAL_PREDICTORx);
 
@@ -271,7 +285,7 @@ start_pass (j_compress_ptr cinfo)
    */
   if (cinfo->restart_interval % cinfo->MCUs_per_row != 0)
     ERREXIT2(cinfo, JERR_BAD_RESTART,
-	     cinfo->restart_interval, cinfo->MCUs_per_row);
+         (int)cinfo->restart_interval, (int)cinfo->MCUs_per_row);
 
   /* Set predictors for start of pass */
   for (ci = 0; ci < cinfo->num_components; ci++)
@@ -291,7 +305,7 @@ jinit_differencer (j_compress_ptr cinfo)
 
   pred = (c_pred_ptr)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(c_predictor));
+                SIZEOF(c_predictor));
   losslsc->pred_private = (void *) pred;
   losslsc->predict_start_pass = start_pass;
 }

@@ -1,15 +1,8 @@
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+#include "CharLS/charls.h"
 #include "Dicom.Imaging.Codec.JpegLs.h"
-
-#include "CharLS/interface.h"
-#include "CharLS/publictypes.h"
-#include "CharLS/util.h"
-#include "CharLS/defaulttraits.h"
-#include "CharLS/losslesstraits.h"
-#include "CharLS/colortransform.h"
-#include "CharLS/processline.h"
 
 using namespace System;
 
@@ -23,29 +16,29 @@ namespace Dicom {
 
 			public ref class DicomJpegLsCodecException : public DicomCodecException {
 			public:
-				DicomJpegLsCodecException(JLS_ERROR error) : DicomCodecException(GetErrorMessage(error)) {
+				DicomJpegLsCodecException(CharlsApiResultType error) : DicomCodecException(GetErrorMessage(error)) {
 				}
 
 			private:
-				static String^ GetErrorMessage(JLS_ERROR error) {
+				static String^ GetErrorMessage(CharlsApiResultType error) {
 					switch (error) {
-					case InvalidJlsParameters:
+					case CharlsApiResultType::InvalidJlsParameters:
 						return "Invalid JPEG-LS parameters";
-					case ParameterValueNotSupported:
+					case CharlsApiResultType::ParameterValueNotSupported:
 						return "Parameter value not supported";
-					case UncompressedBufferTooSmall:
+					case CharlsApiResultType::UncompressedBufferTooSmall:
 						return "Uncompressed buffer too small";
-					case CompressedBufferTooSmall:
+					case CharlsApiResultType::CompressedBufferTooSmall:
 						return "Compressed buffer too small";
-					case InvalidCompressedData:
+					case CharlsApiResultType::InvalidCompressedData:
 						return "Invalid compressed data";
-					case TooMuchCompressedData:
+					case CharlsApiResultType::TooMuchCompressedData:
 						return "Too much compressed data";
-					case ImageTypeNotSupported:
+					case CharlsApiResultType::ImageTypeNotSupported:
 						return "Image type not supported";
-					case UnsupportedBitDepthForTransform:
+					case CharlsApiResultType::UnsupportedBitDepthForTransform:
 						return "Unsupported bit depth for transform";
-					case UnsupportedColorTransform:
+					case CharlsApiResultType::UnsupportedColorTransform:
 						return "Unsupported color transform";
 					default:
 						return "Unknown error";
@@ -70,13 +63,13 @@ namespace Dicom {
 				params.bytesperline = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
 				params.components = oldPixelData->SamplesPerPixel;
 
-				params.ilv = ILV_NONE;
-				params.colorTransform = COLORXFORM_NONE;
+				params.ilv = CharlsInterleaveModeType::None;
+				params.colorTransform = CharlsColorTransformationType::None;
 
 				if (oldPixelData->SamplesPerPixel == 3) {
-					params.ilv = (interleavemode)jparams->InterleaveMode;
+					params.ilv = (CharlsInterleaveModeType)jparams->InterleaveMode;
 					if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb)
-						params.colorTransform = (int)jparams->ColorTransform;
+						params.colorTransform = (CharlsColorTransformationType)jparams->ColorTransform;
 				}
 
 				if (TransferSyntax == DicomTransferSyntax::JPEGLSNearLossless) {
@@ -93,8 +86,9 @@ namespace Dicom {
 
 					size_t jpegDataSize = 0;
 
-					JLS_ERROR err = JpegLsEncode((void*)jpegArray->Pointer, jpegArray->Count, &jpegDataSize, (void*)frameArray->Pointer, frameArray->Count, &params);
-					if (err != OK) throw gcnew DicomJpegLsCodecException(err);
+					char errorMessage[256];
+					CharlsApiResultType err = JpegLsEncode((void*)jpegArray->Pointer, jpegArray->Count, &jpegDataSize, (void*)frameArray->Pointer, frameArray->Count, &params, errorMessage);
+					if (err != CharlsApiResultType::OK) throw gcnew DicomJpegLsCodecException(err);
 
 					Array::Resize(jpegData, (int)jpegDataSize);
 
@@ -118,8 +112,9 @@ namespace Dicom {
 
 					JlsParameters params = { 0 };
 
-					JLS_ERROR err = JpegLsDecode((void*)frameArray->Pointer, frameData->Length, (void*)jpegArray->Pointer, jpegData->Size, &params);
-					if (err != OK) throw gcnew DicomJpegLsCodecException(err);
+					char errorMessage[256];
+					CharlsApiResultType err = JpegLsDecode((void*)frameArray->Pointer, frameData->Length, (void*)jpegArray->Pointer, jpegData->Size, &params, errorMessage);
+					if (err != CharlsApiResultType::OK) throw gcnew DicomJpegLsCodecException(err);
 
 					IByteBuffer^ buffer;
 					if (frameData->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)

@@ -43,6 +43,24 @@ The functions in INT.H have for goal to realize operations on integers.
 /** @name Exported functions (see also openjpeg.h) */
 /*@{*/
 /* ----------------------------------------------------------------------- */
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#else
+#if defined(_WIN32)
+typedef   signed __int8   int8_t;
+typedef unsigned __int8   uint8_t;
+typedef   signed __int16  int16_t;
+typedef unsigned __int16  uint16_t;
+typedef   signed __int32  int32_t;
+typedef unsigned __int32  uint32_t;
+typedef   signed __int64  int64_t;
+typedef unsigned __int64  uint64_t;
+#else
+#error unsupported platform
+#endif
+#endif
+
 /**
 Get the minimum of two integers
 @return Returns a if a < b else b
@@ -91,7 +109,7 @@ Divide an integer by a power of 2 and round upwards
 @return Returns a divided by 2^b
 */
 static INLINE int int_ceildivpow2(int a, int b) {
-	return (a + (1 << b) - 1) >> b;
+    return (int)((a + (int64_t)(1 << b) - 1) >> b);
 }
 /**
 Divide an integer by a power of 2 and round downwards

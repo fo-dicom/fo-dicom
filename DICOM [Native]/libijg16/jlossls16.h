@@ -25,6 +25,12 @@
 #define PREDICTOR6	(int) ((IJG_INT32) Rb + RIGHT_SHIFT((IJG_INT32) Ra - (IJG_INT32) Rc, 1))
 #define PREDICTOR7	(int) RIGHT_SHIFT((IJG_INT32) Ra + (IJG_INT32) Rb, 1)
 
+/* This is an incorrect predictor that causes an overflow for images with 16 bits/pixel.
+ * There is a known implementation of JPEG lossless that creates such incorrect images,
+ * and we need this predictor to be able to correctly decode such incorrect images.
+ */
+#define PREDICTOR6A     (int) ((INT16) Rb + RIGHT_SHIFT((INT16) Ra - (INT16) Rc, 1))
+
 
 typedef JMETHOD(void, predict_difference_method_ptr,
 		(j_compress_ptr cinfo, int ci,

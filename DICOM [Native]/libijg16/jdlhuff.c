@@ -17,8 +17,8 @@
 #define JPEG_INTERNALS
 #include "jinclude16.h"
 #include "jpeglib16.h"
-#include "jlossls16.h"		/* Private declarations for lossless codec */
-#include "jdhuff16.h"		/* Declarations shared with jd*huff.c */
+#include "jlossls16.h"      /* Private declarations for lossless codec */
+#include "jdhuff16.h"       /* Declarations shared with jd*huff.c */
 
 
 #ifdef D_LOSSLESS_SUPPORTED
@@ -32,7 +32,7 @@ typedef struct {
  */
 
 typedef struct {
-  huffd_common_fields;		/* Fields shared with other entropy decoders */
+  huffd_common_fields;      /* Fields shared with other entropy decoders */
 
   /* Pointers to derived tables (these workspaces have image lifespan) */
   d_derived_tbl * derived_tbls[NUM_HUFF_TBLS];
@@ -82,12 +82,12 @@ start_pass_lhuff_decoder (j_decompress_ptr cinfo)
     dctbl = compptr->dc_tbl_no;
     /* Make sure requested tables are present */
     if (dctbl < 0 || dctbl >= NUM_HUFF_TBLS ||
-	cinfo->dc_huff_tbl_ptrs[dctbl] == NULL)
+    cinfo->dc_huff_tbl_ptrs[dctbl] == NULL)
       ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, dctbl);
     /* Compute derived values for Huffman tables */
     /* We may do this more than once for a table, but it's not expensive */
     jpeg_make_d_derived_tbl(cinfo, TRUE, dctbl,
-			    & entropy->derived_tbls[dctbl]);
+                & entropy->derived_tbls[dctbl]);
   }
 
   /* Precalculate decoding info for each sample in an MCU of this scan */
@@ -100,10 +100,10 @@ start_pass_lhuff_decoder (j_decompress_ptr cinfo)
       entropy->output_ptr_info[ptrn].yoffset = yoffset;
       entropy->output_ptr_info[ptrn].MCU_width = compptr->MCU_width;
       for (xoffset = 0; xoffset < compptr->MCU_width; xoffset++, sampn++) {
-	/* Precalculate the output pointer index for each sample */
-	entropy->output_ptr_index[sampn] = ptrn;
-	/* Precalculate which table to use for each sample */
-	entropy->cur_tbls[sampn] = entropy->derived_tbls[compptr->dc_tbl_no];
+    /* Precalculate the output pointer index for each sample */
+    entropy->output_ptr_index[sampn] = ptrn;
+    /* Precalculate which table to use for each sample */
+    entropy->cur_tbls[sampn] = entropy->derived_tbls[compptr->dc_tbl_no];
       }
     }
   }
@@ -156,7 +156,7 @@ process_restart (j_decompress_ptr cinfo)
 
   /* Throw away any unused bits remaining in bit buffer; */
   /* include any full bytes in next_marker's count of discarded bytes */
-  cinfo->marker->discarded_bytes += entropy->bitstate.bits_left / 8;
+  cinfo->marker->discarded_bytes += (unsigned int)entropy->bitstate.bits_left / 8;
   entropy->bitstate.bits_left = 0;
 
   /* Advance past the RSTn marker */
@@ -192,7 +192,7 @@ process_restart (j_decompress_ptr cinfo)
 
 METHODDEF(JDIMENSION)
 decode_mcus (j_decompress_ptr cinfo, JDIFFIMAGE diff_buf,
-	     JDIMENSION MCU_row_num, JDIMENSION MCU_col_num, JDIMENSION nMCU)
+         JDIMENSION MCU_row_num, JDIMENSION MCU_col_num, JDIMENSION nMCU)
 {
   j_lossless_d_ptr losslsd = (j_lossless_d_ptr) cinfo->codec;
   lhuff_entropy_ptr entropy = (lhuff_entropy_ptr) losslsd->entropy_private;
@@ -206,7 +206,7 @@ decode_mcus (j_decompress_ptr cinfo, JDIFFIMAGE diff_buf,
     yoffset = entropy->output_ptr_info[ptrn].yoffset;
     MCU_width = entropy->output_ptr_info[ptrn].MCU_width;
     entropy->output_ptr[ptrn] =
-      diff_buf[ci][MCU_row_num + yoffset] + (MCU_col_num * MCU_width);
+      diff_buf[ci][MCU_row_num + (JDIMENSION)yoffset] + MCU_col_num * (JDIMENSION)MCU_width;
   }
 
   /*
@@ -219,7 +219,7 @@ decode_mcus (j_decompress_ptr cinfo, JDIFFIMAGE diff_buf,
   if (entropy->insufficient_data) {
     for (ptrn = 0; ptrn < entropy->num_output_ptrs; ptrn++)
       jzero_far((void FAR *) entropy->output_ptr[ptrn],
-		nMCU * entropy->output_ptr_info[ptrn].MCU_width * SIZEOF(JDIFF));
+        nMCU * (size_t)entropy->output_ptr_info[ptrn].MCU_width * SIZEOF(JDIFF));
 
     (*losslsd->predict_process_restart) (cinfo);
   }
@@ -235,23 +235,23 @@ decode_mcus (j_decompress_ptr cinfo, JDIFFIMAGE diff_buf,
 
       /* Inner loop handles the samples in the MCU */
       for (sampn = 0; sampn < cinfo->data_units_in_MCU; sampn++) {
-	d_derived_tbl * dctbl = entropy->cur_tbls[sampn];
-	register int s, r;
+    d_derived_tbl * dctbl = entropy->cur_tbls[sampn];
+    register int s, r;
 
-	/* Section H.2.2: decode the sample difference */
-	HUFF_DECODE(s, br_state, dctbl, return mcu_num, label1);
-	if (s) {
-	  if (s == 16)	/* special case: always output 32768 */
-	    s = 32768;
-	  else {	/* normal case: fetch subsequent bits */
-	    CHECK_BIT_BUFFER(br_state, s, return mcu_num);
-	    r = GET_BITS(s);
-	    s = HUFF_EXTEND(r, s);
-	  }
-	}
+    /* Section H.2.2: decode the sample difference */
+    HUFF_DECODE(s, br_state, dctbl, return mcu_num, label1);
+    if (s) {
+      if (s == 16)  /* special case: always output 32768 */
+        s = 32768;
+      else {    /* normal case: fetch subsequent bits */
+        CHECK_BIT_BUFFER(br_state, s, return mcu_num);
+        r = GET_BITS(s);
+        s = HUFF_EXTEND(r, s);
+      }
+    }
 
-	/* Output the sample difference */
-	*entropy->output_ptr[entropy->output_ptr_index[sampn]]++ = (JDIFF) s;
+    /* Output the sample difference */
+    *entropy->output_ptr[entropy->output_ptr_index[sampn]]++ = (JDIFF) s;
       }
 
       /* Completed MCU, so update state */
@@ -276,7 +276,7 @@ jinit_lhuff_decoder (j_decompress_ptr cinfo)
 
   entropy = (lhuff_entropy_ptr)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(lhuff_entropy_decoder));
+                SIZEOF(lhuff_entropy_decoder));
   losslsd->entropy_private = (void *) entropy;
   losslsd->entropy_start_pass = start_pass_lhuff_decoder;
   losslsd->entropy_process_restart = process_restart;
