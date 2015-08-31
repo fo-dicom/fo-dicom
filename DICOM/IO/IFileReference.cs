@@ -15,8 +15,8 @@ namespace Dicom.IO
         /// </summary>
         string Name { get; }
 
-        /// <summary>Gets whether the file is temporary or not.</summary>
-        bool IsTempFile { get; }
+        /// <summary>Gets and sets whether the file is temporary or not.</summary>
+        bool IsTempFile { get; set; }
 
         /// <summary>
         /// Open a file stream for reading.

@@ -31,7 +31,7 @@ namespace Dicom.IO
         public string Name { get; private set; }
 
         /// <summary>File will be deleted when object is <c>Disposed</c>.</summary>
-        public bool IsTempFile { get; internal set; }
+        public bool IsTempFile { get; set; }
 
         public Stream OpenRead()
         {
