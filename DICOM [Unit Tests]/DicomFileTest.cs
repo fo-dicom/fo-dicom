@@ -5,12 +5,21 @@ namespace Dicom
 {
     using System.IO;
 
-    using Dicom.IO.Buffer;
-
     using Xunit;
 
     public class DicomFileTest
     {
+        #region Fields
+
+        private const string MinimumDatasetInstanceUid = "1.2.3";
+
+        private static readonly DicomDataset MinimumDatatset =
+            new DicomDataset(
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
+
+        #endregion
+
         #region Unit tests
 
         [Fact]
@@ -19,10 +28,9 @@ namespace Dicom
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(
-                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
-                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
-                new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            var dataset = new DicomDataset(MinimumDatatset);
+            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
@@ -40,10 +48,9 @@ namespace Dicom
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(
-                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
-                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
-                new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            var dataset = new DicomDataset(MinimumDatatset);
+            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
@@ -52,6 +59,50 @@ namespace Dicom
             var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
             var actual = inFile.Dataset.Get<string>(tag);
 
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Save_ToFile_FileExistsOnDisk()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+            Assert.True(File.Exists(fileName));
+        }
+
+        [Fact]
+        public void BeginSave_ToFile_FileExistsOnDisk()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.EndSave(saveFile.BeginSave(fileName, null, null));
+            Assert.True(File.Exists(fileName));
+        }
+
+        [Fact]
+        public void Open_FromFile_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+
+            var openFile = DicomFile.Open(fileName);
+            var expected = MinimumDatasetInstanceUid;
+            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void BeginOpen_FromFile_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+
+            var openFile = DicomFile.EndOpen(DicomFile.BeginOpen(fileName, null, null));
+            var expected = MinimumDatasetInstanceUid;
+            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
 
