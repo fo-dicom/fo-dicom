@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Dicom.IO
 {
-    public sealed class FileReference
+    public sealed class FileReference : IFileReference
     {
         public FileReference(string fileName, bool isTempFile = false)
         {
