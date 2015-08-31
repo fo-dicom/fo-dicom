@@ -8,6 +8,18 @@ namespace Dicom.IO
     /// </summary>
     public abstract class IOManager
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes the static members of <see cref="IOManager"/>
+        /// </summary>
+        static IOManager()
+        {
+            Default = DesktopIOManager.Instance;
+        }
+
+        #endregion
+
         #region PROPERTIES
 
         /// <summary>
