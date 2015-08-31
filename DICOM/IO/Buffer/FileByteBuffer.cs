@@ -5,7 +5,7 @@ namespace Dicom.IO.Buffer
 {
     public sealed class FileByteBuffer : IByteBuffer
     {
-        public FileByteBuffer(FileReference file, long Position, uint Length)
+        public FileByteBuffer(IFileReference file, long Position, uint Length)
         {
             this.File = file;
             this.Position = Position;
@@ -20,7 +20,7 @@ namespace Dicom.IO.Buffer
             }
         }
 
-        public FileReference File { get; private set; }
+        public IFileReference File { get; private set; }
 
         public long Position { get; private set; }
 

@@ -27,7 +27,7 @@ namespace Dicom
             Format = DicomFileFormat.DICOM3;
         }
 
-        public FileReference File { get; protected set; }
+        public IFileReference File { get; protected set; }
 
         public DicomFileFormat Format { get; protected set; }
 
