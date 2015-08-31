@@ -80,7 +80,7 @@ namespace Dicom
             }
         }
 
-        public void BeginSave(string fileName, AsyncCallback callback, object state)
+        public IAsyncResult BeginSave(string fileName, AsyncCallback callback, object state)
         {
             if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -100,7 +100,7 @@ namespace Dicom
             EventAsyncResult result = new EventAsyncResult(callback, state);
 
             DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-            writer.BeginWrite(
+            return writer.BeginWrite(
                 target,
                 FileMetaInfo,
                 Dataset,
