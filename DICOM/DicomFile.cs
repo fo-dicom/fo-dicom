@@ -49,7 +49,7 @@ namespace Dicom
                 FileMetaInfo = new DicomFileMetaInformation(Dataset);
             }
 
-            File = new FileReference(fileName);
+            File = IOManager.Default.CreateFileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -90,7 +90,7 @@ namespace Dicom
                 FileMetaInfo = new DicomFileMetaInformation(Dataset);
             }
 
-            File = new FileReference(fileName);
+            File = IOManager.Default.CreateFileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -167,7 +167,7 @@ namespace Dicom
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = IOManager.Default.CreateFileReference(fileName);
 
                 using (var source = new FileByteSource(df.File))
                 {
@@ -237,7 +237,7 @@ namespace Dicom
             object state)
         {
             DicomFile df = new DicomFile();
-            df.File = new FileReference(fileName);
+            df.File = IOManager.Default.CreateFileReference(fileName);
 
             FileByteSource source = new FileByteSource(df.File);
 
