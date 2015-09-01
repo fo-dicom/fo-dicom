@@ -88,6 +88,7 @@
     <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
+    <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

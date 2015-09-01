@@ -35,5 +35,18 @@ namespace Dicom.Network
 
             Assert.NotEqual(notExpected, actual);
         }
+
+        [Fact]
+        public void Save_ToNonExistingDirectory_Succeeds()
+        {
+            var path = @".\Test Data\PDU Test";
+            var name = Path.Combine(path, "assoc.pdu");
+            if (Directory.Exists(path)) Directory.Delete(path, true);
+
+            var pdu = new RawPDU(0x01);
+            pdu.Save(name);
+
+            Assert.True(File.Exists(name));
+        }
     }
 }

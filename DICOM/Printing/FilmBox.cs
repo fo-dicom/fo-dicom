@@ -10,6 +10,8 @@ using Dicom.Log;
 
 namespace Dicom.Printing
 {
+    using Dicom.IO;
+
     /// <summary>
     /// Basic film box
     /// </summary>
@@ -864,12 +866,12 @@ namespace Dicom.Printing
 
             System.IO.File.WriteAllText(filmBoxTextFile, this.WriteToString());
 
-            var imageBoxFolderInfo = new System.IO.DirectoryInfo(string.Format(@"{0}\Images", filmBoxFolder));
+            var imageBoxFolderInfo = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
             imageBoxFolderInfo.Create();
             for (int i = 0; i < this.BasicImageBoxes.Count; i++)
             {
                 var imageBox = this.BasicImageBoxes[i];
-                imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.FullName, i + 1));
+                imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.Name, i + 1));
             }
         }
 
@@ -882,10 +884,10 @@ namespace Dicom.Printing
 
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
-            var imagesFolder = new System.IO.DirectoryInfo(string.Format(@"{0}\Images", filmBoxFolder));
-            foreach (var image in imagesFolder.EnumerateFiles("*.dcm"))
+            var imagesFolder = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            foreach (var image in imagesFolder.EnumerateFileNames("*.dcm"))
             {
-                var imageBox = ImageBox.Load(filmBox, image.FullName);
+                var imageBox = ImageBox.Load(filmBox, image);
 
                 filmBox.BasicImageBoxes.Add(imageBox);
             }
