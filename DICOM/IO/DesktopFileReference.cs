@@ -33,6 +33,17 @@ namespace Dicom.IO
         /// <summary>File will be deleted when object is <c>Disposed</c>.</summary>
         public bool IsTempFile { get; set; }
 
+        /// <summary>
+        /// Gets the directory reference of the file.
+        /// </summary>
+        public IDirectoryReference Directory
+        {
+            get
+            {
+                return new DesktopDirectoryReference(Path.GetDirectoryName(this.Name));
+            }
+        }
+
         public Stream OpenRead()
         {
             return File.OpenRead(Name);

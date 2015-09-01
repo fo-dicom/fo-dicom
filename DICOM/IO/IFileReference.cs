@@ -10,6 +10,8 @@ namespace Dicom.IO
     /// </summary>
     public interface IFileReference
     {
+        #region PROPERTIES
+
         /// <summary>
         /// Gets the file name.
         /// </summary>
@@ -17,6 +19,15 @@ namespace Dicom.IO
 
         /// <summary>Gets and sets whether the file is temporary or not.</summary>
         bool IsTempFile { get; set; }
+
+        /// <summary>
+        /// Gets the directory reference of the file.
+        /// </summary>
+        IDirectoryReference Directory { get; }
+
+        #endregion
+
+        #region METHODS
 
         /// <summary>
         /// Open a file stream for reading.
@@ -50,5 +61,7 @@ namespace Dicom.IO
         /// <param name="count"></param>
         /// <returns></returns>
         byte[] GetByteRange(int offset, int count);
+
+        #endregion
     }
 }
