@@ -43,7 +43,7 @@ namespace Dicom.IO
             get
             {
                 if (_path != null) return _path;
-                return Path.GetTempPath();
+                return IOManager.Path.GetTempDirectory();
             }
             set
             {
@@ -63,13 +63,13 @@ namespace Dicom.IO
             if (_path != null)
             {
                 // create file in user specified path
-                path = Path.Combine(_path, Guid.NewGuid().ToString());
+                path = IOManager.Path.Combine(_path, Guid.NewGuid().ToString());
                 File.Create(path).Close();
             }
             else
             {
                 // allow OS to create file in system temp path
-                path = Path.GetTempFileName();
+                path = IOManager.Path.GetTempFileName();
             }
 
             try
