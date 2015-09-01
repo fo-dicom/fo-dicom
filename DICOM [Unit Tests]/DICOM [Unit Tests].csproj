@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="IO\TemporaryFileTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
+    <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
