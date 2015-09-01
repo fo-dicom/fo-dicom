@@ -13,16 +13,21 @@ namespace Dicom.IO
         #region PROPERTIES
 
         /// <summary>
-        /// Path name of the current directory.
+        /// Gets the path name of the current directory.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets whether the directory exists or not.
+        /// </summary>
+        bool Exists { get; }
 
         #endregion
 
         #region METHODS
 
         /// <summary>
-        /// Create the directory path if it does not already exist.
+        /// Create the directory path.
         /// </summary>
         void Create();
 

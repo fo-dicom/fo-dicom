@@ -45,11 +45,22 @@ namespace Dicom.IO
         }
 
         /// <summary>
-        /// Create the directory path if it does not already exist.
+        /// Gets whether the directory exists or not.
+        /// </summary>
+        public bool Exists
+        {
+            get
+            {
+                return this.directoryInfo.Exists;
+            }
+        }
+
+        /// <summary>
+        /// Create the directory path.
         /// </summary>
         public void Create()
         {
-            if (!this.directoryInfo.Exists) this.directoryInfo.Create();
+            this.directoryInfo.Create();
         }
 
         /// <summary>
