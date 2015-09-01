@@ -106,6 +106,19 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void OpenMemoryMapped_FromFile_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+
+            var openFile = DicomFile.OpenMemoryMapped(fileName);
+            var expected = MinimumDatasetInstanceUid;
+            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
     }
 }
