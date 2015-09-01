@@ -306,16 +306,11 @@ namespace Dicom
         {
             try
             {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                var file = IOManager.CreateFileReference(path);
+                using (var fs = file.OpenRead())
                 {
                     fs.Seek(128, SeekOrigin.Begin);
-
-                    bool magic = false;
-                    if (fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M') magic = true;
-
-                    fs.Close();
-
-                    return magic;
+                    return fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M';
                 }
             }
             catch

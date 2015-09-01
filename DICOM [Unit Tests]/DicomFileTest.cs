@@ -119,6 +119,13 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void HasValidHeader_Part10File_ReturnsTrue()
+        {
+            var validHeader = DicomFile.HasValidHeader(@".\Test Data\CT1_J2KI");
+            Assert.True(validHeader);
+        }
+
         #endregion
     }
 }

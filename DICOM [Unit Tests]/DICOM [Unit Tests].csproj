@@ -107,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\CT1_J2KI">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\DICOMDIR">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
