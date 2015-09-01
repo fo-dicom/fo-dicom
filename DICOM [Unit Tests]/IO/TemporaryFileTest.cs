@@ -18,5 +18,11 @@ namespace Dicom.IO
             TemporaryFile.StoragePath = path;
             Assert.True(Directory.Exists(path));
         }
+
+        [Fact]
+        public void StoragePath_Setter_NullShouldNotThrow()
+        {
+            TemporaryFile.StoragePath = null;
+        }
     }
 }

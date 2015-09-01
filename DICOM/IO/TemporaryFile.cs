@@ -48,8 +48,11 @@ namespace Dicom.IO
             set
             {
                 _path = value;
-                var directory = IOManager.CreateDirectoryReference(_path);
-                if (!directory.Exists) directory.Create();
+                if (_path != null)
+                {
+                    var directory = IOManager.CreateDirectoryReference(_path);
+                    if (!directory.Exists) directory.Create();
+                }
             }
         }
 
