@@ -175,7 +175,7 @@ namespace Dicom.Media
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = IOManager.Default.CreateFileReference(fileName);
 
                 using (var source = new FileByteSource(df.File))
                 {
@@ -222,7 +222,7 @@ namespace Dicom.Media
             df.FileMetaInfo.Clear();
             df.Dataset.Clear();
 
-            df.File = new FileReference(fileName);
+            df.File = IOManager.Default.CreateFileReference(fileName);
 
             FileByteSource source = new FileByteSource(df.File);
 
