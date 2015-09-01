@@ -8,28 +8,34 @@ namespace Dicom.IO
     /// </summary>
     public abstract class IOManager
     {
+        #region FIELDS
+
+        private static IOManager implementation;
+
+        #endregion
+
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes the static members of <see cref="IOManager"/>
+        /// Initializes the static members of <see cref="IOManager"/>.
         /// </summary>
         static IOManager()
         {
-            Default = DesktopIOManager.Instance;
+            SetImplementation(DesktopIOManager.Instance);
         }
 
         #endregion
 
-        #region PROPERTIES
+        #region METHODS
 
         /// <summary>
-        /// Gets or sets the IOManager implementation type.
+        /// Set I/O manager implementation to use for file/directory reference initialization.
         /// </summary>
-        public static IOManager Default { get; set; }
-
-        #endregion
-
-        #region METHODS
+        /// <param name="impl">I/O manager implementation to use.</param>
+        public static void SetImplementation(IOManager impl)
+        {
+            implementation = impl;
+        }
 
         /// <summary>
         /// Create a file reference.
@@ -37,14 +43,35 @@ namespace Dicom.IO
         /// <param name="fileName">Name of the file.</param>
         /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
         /// <returns>A file reference object.</returns>
-        public abstract IFileReference CreateFileReference(string fileName, bool isTempFile = false);
+        public static IFileReference CreateFileReference(string fileName, bool isTempFile = false)
+        {
+            return implementation.CreateFileReferenceImpl(fileName, isTempFile);
+        }
 
         /// <summary>
         /// Create a directory reference.
         /// </summary>
         /// <param name="directoryName">Name of the directory.</param>
         /// <returns>A directory reference object.</returns>
-        public abstract IDirectoryReference CreateDirectoryReference(string directoryName);
+        public static IDirectoryReference CreateDirectoryReference(string directoryName)
+        {
+            return implementation.CreateDirectoryReferenceImpl(directoryName);
+        }
+
+        /// <summary>
+        /// Platform-specific implementation to create a file reference.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
+        /// <returns>A file reference object.</returns>
+        protected abstract IFileReference CreateFileReferenceImpl(string fileName, bool isTempFile = false);
+
+        /// <summary>
+        /// Platform-specific implementation to create a directory reference.
+        /// </summary>
+        /// <param name="directoryName">Name of the directory.</param>
+        /// <returns>A directory reference object.</returns>
+        protected abstract IDirectoryReference CreateDirectoryReferenceImpl(string directoryName);
 
         #endregion
     }

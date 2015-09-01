@@ -39,22 +39,22 @@ namespace Dicom.IO
         #region METHODS
 
         /// <summary>
-        /// Create a file reference.
+        /// Platform-specific implementation to create a file reference.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
         /// <returns>A file reference object.</returns>
-        public override IFileReference CreateFileReference(string fileName, bool isTempFile = false)
+        protected override IFileReference CreateFileReferenceImpl(string fileName, bool isTempFile = false)
         {
-            return new FileReference(fileName, isTempFile);
+            return new DesktopFileReference(fileName, isTempFile);
         }
 
         /// <summary>
-        /// Create a directory reference.
+        /// Platform-specific implementation to create a directory reference.
         /// </summary>
         /// <param name="directoryName">Name of the directory.</param>
         /// <returns>A directory reference object.</returns>
-        public override IDirectoryReference CreateDirectoryReference(string directoryName)
+        protected override IDirectoryReference CreateDirectoryReferenceImpl(string directoryName)
         {
             return new DesktopDirectoryReference(directoryName);
         }

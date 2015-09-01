@@ -39,7 +39,7 @@ namespace Dicom
 
             try
             {
-                df.File = IOManager.Default.CreateFileReference(fileName);
+                df.File = IOManager.CreateFileReference(fileName);
 
                 using (var source = new MemoryMappedFileByteSource(fileName))
                 {
