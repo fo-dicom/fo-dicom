@@ -26,6 +26,26 @@ namespace Dicom.IO
 
         #endregion
 
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the path helper implementation.
+        /// </summary>
+        public static IPath Path
+        {
+            get
+            {
+                return implementation.PathImpl;
+            }
+        }
+
+        /// <summary>
+        /// Gets the platform-specific path helper implementation.
+        /// </summary>
+        public abstract IPath PathImpl { get; }
+
+        #endregion
+
         #region METHODS
 
         /// <summary>

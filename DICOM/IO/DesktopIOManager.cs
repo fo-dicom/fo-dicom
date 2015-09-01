@@ -39,6 +39,17 @@ namespace Dicom.IO
         #region METHODS
 
         /// <summary>
+        /// Gets the platform-specific path helper implementation.
+        /// </summary>
+        public override IPath PathImpl
+        {
+            get
+            {
+                return DesktopPath.Instance;
+            }
+        }
+
+        /// <summary>
         /// Platform-specific implementation to create a file reference.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>

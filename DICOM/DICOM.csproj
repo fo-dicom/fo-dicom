@@ -62,6 +62,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
+    <Compile Include="IO\DesktopPath.cs" />
     <Compile Include="DicomDataException.cs" />
     <Compile Include="DicomDataset.cs" />
     <Compile Include="DicomDatasetExtensions.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="IO\IDirectoryReference.cs" />
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />
+    <Compile Include="IO\IPath.cs" />
     <Compile Include="IO\MemoryMappedFileByteSource.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
