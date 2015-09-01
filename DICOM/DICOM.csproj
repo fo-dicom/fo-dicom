@@ -189,7 +189,7 @@
     <Compile Include="IO\Buffer\StreamByteBuffer.cs" />
     <Compile Include="IO\FileByteSource.cs" />
     <Compile Include="IO\FileByteTarget.cs" />
-    <Compile Include="IO\FileReference.cs" />
+    <Compile Include="IO\DesktopFileReference.cs" />
     <Compile Include="IO\IByteSource.cs" />
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
@@ -318,7 +318,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

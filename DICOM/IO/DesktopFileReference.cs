@@ -6,15 +6,15 @@ using System.IO;
 
 namespace Dicom.IO
 {
-    public sealed class FileReference : IFileReference
+    public sealed class DesktopFileReference : IFileReference
     {
-        public FileReference(string fileName, bool isTempFile = false)
+        public DesktopFileReference(string fileName, bool isTempFile = false)
         {
             Name = fileName;
             IsTempFile = isTempFile;
         }
 
-        ~FileReference()
+        ~DesktopFileReference()
         {
             if (IsTempFile)
             {
