@@ -6,6 +6,8 @@ using System.IO;
 
 namespace Dicom.Imaging
 {
+    using Dicom.IO;
+
     public static class ColorTable
     {
         public static readonly Color32[] Monochrome1 = InitGrayscaleLUT(true);
@@ -62,14 +64,19 @@ namespace Dicom.Imaging
             }
         }
 
-        public static void SaveLUT(string file, Color32[] lut)
+        public static void SaveLUT(string path, Color32[] lut)
         {
             if (lut.Length != 256) return;
-            FileStream fs = new FileStream(file, FileMode.Create);
-            for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].R);
-            for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].G);
-            for (int i = 0; i < 256; i++) fs.WriteByte(lut[i].B);
-            fs.Close();
+
+            var file = IOManager.CreateFileReference(path);
+            file.Delete();
+
+            using (var fs = file.OpenWrite())
+            {
+                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].R);
+                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].G);
+                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].B);
+            }
         }
     }
 }
