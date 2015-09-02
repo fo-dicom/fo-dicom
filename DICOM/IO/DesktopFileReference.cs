@@ -30,13 +30,7 @@ namespace Dicom.IO
         {
             if (this.IsTempFile)
             {
-                try
-                {
-                    this.Delete();
-                }
-                catch
-                {
-                }
+                TemporaryFileRemover.Delete(this.Name);
             }
         }
 
@@ -66,7 +60,7 @@ namespace Dicom.IO
             }
             set
             {
-                if (value)
+                if (value && this.Exists)
                 {
                     try
                     {

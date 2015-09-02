@@ -21,6 +21,16 @@ namespace Dicom.IO
             Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
         }
 
+        [Fact]
+        public void Constructor_RegularFile_TempFileAttributeNotSet()
+        {
+            var path = @".\Test Data\tmp.tmp";
+            File.Create(path).Dispose();
+
+            var file = new DesktopFileReference(path, false);
+            Assert.False((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+        }
+
         #endregion
     }
 }
