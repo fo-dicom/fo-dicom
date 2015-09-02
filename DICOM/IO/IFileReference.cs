@@ -17,6 +17,11 @@ namespace Dicom.IO
         /// </summary>
         string Name { get; }
 
+        /// <summary>
+        /// Gets whether the file exist or not.
+        /// </summary>
+        bool Exists { get; }
+
         /// <summary>Gets and sets whether the file is temporary or not.</summary>
         bool IsTempFile { get; set; }
 
@@ -30,15 +35,27 @@ namespace Dicom.IO
         #region METHODS
 
         /// <summary>
-        /// Open a file stream for reading.
+        /// Creates a new file for reading and writing. Overwrites existing file.
+        /// </summary>
+        /// <returns>Stream to the created file.</returns>
+        Stream Create();
+
+        /// <summary>
+        /// Open a file stream for reading and writing, creates the file if not existing.
         /// </summary>
         /// <returns></returns>
+        Stream Open();
+
+        /// <summary>
+        /// Open a file stream for reading.
+        /// </summary>
+        /// <returns>Stream to the opened file.</returns>
         Stream OpenRead();
 
         /// <summary>
-        /// Open a file stream for writing.
+        /// Open a file stream for writing, creates the file if not existing.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Stream to the opened file.</returns>
         Stream OpenWrite();
 
         /// <summary>
@@ -55,11 +72,11 @@ namespace Dicom.IO
         void Move(string dstFileName, bool overwrite = false);
 
         /// <summary>
-        /// 
+        /// Gets a sub-range of the bytes in the file.
         /// </summary>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
+        /// <param name="offset">Offset from the start position of the file.</param>
+        /// <param name="count">Number of bytes to select.</param>
+        /// <returns>The specified sub-range of bytes in the file.</returns>
         byte[] GetByteRange(int offset, int count);
 
         #endregion
