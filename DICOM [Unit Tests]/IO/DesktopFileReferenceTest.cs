@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace Dicom.IO
+{
+    using System.IO;
+
+    using Xunit;
+
+    public class DesktopFileReferenceTest
+    {
+        #region Unit tests
+
+        [Fact]
+        public void Constructor_TempFile_TempFileAttributeSet()
+        {
+            var path = @".\Test Data\tmp.tmp";
+            File.Create(path).Dispose();
+
+            var file = new DesktopFileReference(path, true);
+            Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+        }
+
+        #endregion
+    }
+}
