@@ -69,6 +69,7 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
+    <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
     <Compile Include="IO\TemporaryFileTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
