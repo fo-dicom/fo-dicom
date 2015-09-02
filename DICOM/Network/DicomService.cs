@@ -18,6 +18,9 @@ using Dicom.Threading;
 
 namespace Dicom.Network
 {
+    /// <summary>
+    /// Base class for DICOM network services.
+    /// </summary>
     public abstract class DicomService
     {
         private Stream _network;
@@ -37,6 +40,8 @@ namespace Dicom.Network
         private DicomMessage _dimse;
 
         private Stream _dimseStream;
+
+        private string _dimseStreamFile;
 
         private bool _isTempFile;
 
@@ -368,6 +373,10 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Process P-DATA-TF PDUs.
+        /// </summary>
+        /// <param name="state">PDU to process.</param>
         private void ProcessPDataTF(object state)
         {
             var pdu = (PDataTF)state;
@@ -378,7 +387,11 @@ namespace Dicom.Network
                     if (_dimse == null)
                     {
                         // create stream for receiving command
-                        if (_dimseStream == null) _dimseStream = new MemoryStream();
+                        if (_dimseStream == null)
+                        {
+                            _dimseStream = new MemoryStream();
+                            _dimseStreamFile = null;
+                        }
                     }
                     else
                     {
@@ -399,10 +412,12 @@ namespace Dicom.Network
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
                                 _dimseStream = CreateCStoreReceiveStream(file);
+                                _dimseStreamFile = file.File == null ? null : file.File.Name;
                             }
                             else
                             {
                                 _dimseStream = new MemoryStream();
+                                _dimseStreamFile = null;
                             }
                         }
                     }
@@ -421,7 +436,9 @@ namespace Dicom.Network
                             reader.IsExplicitVR = false;
                             reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
 
+                            _dimseStream.Dispose();
                             _dimseStream = null;
+                            _dimseStreamFile = null;
 
                             var type = command.Get<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
@@ -522,7 +539,9 @@ namespace Dicom.Network
                                 reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
+                                _dimseStream.Dispose();
                                 _dimseStream = null;
+                                _dimseStreamFile = null;
                             }
                             else
                             {
@@ -531,7 +550,11 @@ namespace Dicom.Network
                                 try
                                 {
                                     var dicomFile = GetCStoreDicomFile();
+
+                                    _dimseStream.Dispose();
                                     _dimseStream = null;
+                                    _dimseStreamFile = null;
+
                                     _isTempFile = false;
 
                                     // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
@@ -546,18 +569,13 @@ namespace Dicom.Network
                                 }
                                 catch (Exception e)
                                 {
-                                    var fileName = "";
-                                    if (_dimseStream is FileStream)
-                                    {
-                                        fileName = (_dimseStream as FileStream).Name;
-                                    }
                                     // failed to parse received DICOM file; send error response instead of aborting connection
                                     SendResponse(
                                         new DicomCStoreResponse(
                                             request,
                                             new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
+                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile, e);
                                     return;
                                 }
                             }
@@ -617,26 +635,26 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (_dimseStream is FileStream)
+            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
             {
-                var name = (_dimseStream as FileStream).Name;
-                _dimseStream.Close();
+                _dimseStream.Dispose();
                 _dimseStream = null;
 
-                var file = DicomFile.Open(name, _fallbackEncoding);
+                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
                 file.File.IsTempFile = _isTempFile;
+                _dimseStreamFile = null;
+
                 return file;
             }
-            else if (_dimseStream.CanSeek)
+
+            if (_dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
                 var file = DicomFile.Open(_dimseStream, _fallbackEncoding);
                 return file;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private void PerformDimseCallback(object state)
