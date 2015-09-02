@@ -4,6 +4,7 @@
 namespace Dicom
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Xunit;
 
@@ -19,6 +20,37 @@ namespace Dicom
             Assert.NotEqual(DicomDictionary.UnknownTag, entry);
         }
 
+        [Theory]
+        [MemberData("Tags")]
+        public void Constructor_NoExplicitLoading_TagsNotFound(DicomTag tag)
+        {
+            var dict = new DicomDictionary();
+            var actual = dict[tag];
+            Assert.Equal(DicomDictionary.UnknownTag, actual);
+        }
+
+        [Fact]
+        public void Load_UncompressedFile_LoadedTagFound()
+        {
+            var dict = new DicomDictionary();
+            dict.Load(@".\Test Data\minimumdict.xml", DicomDictionaryFormat.XML);
+
+            var expected = DicomVR.CS;
+            var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Load_CompressedFile_LoadedTagFound()
+        {
+            var dict = new DicomDictionary();
+            dict.Load(@".\Test Data\minimumdict.xml.gz", DicomDictionaryFormat.XML);
+
+            var expected = DicomVR.CS;
+            var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Support data
@@ -27,6 +59,7 @@ namespace Dicom
         {
             get
             {
+                yield return new object[] { DicomTag.FileSetID };
                 yield return new object[] { DicomTag.ContourData };
                 yield return new object[] { DicomTag.ReferencePixelX0 };
                 yield return new object[] { DicomTag.dBdt };
