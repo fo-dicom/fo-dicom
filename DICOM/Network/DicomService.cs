@@ -614,11 +614,12 @@ namespace Dicom.Network
         /// <returns>The stream to write the SopInstance to</returns>
         protected virtual Stream CreateCStoreReceiveStream(DicomFile file)
         {
-            var fileName = TemporaryFile.Create();
+            var temp = TemporaryFile.Create();
 
-            file.Save(fileName);
+            var dimseStream = temp.Open();
+            file.Save(dimseStream);
+            dimseStream.Seek(0, SeekOrigin.Begin);
 
-            var dimseStream = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite);
             _isTempFile = true;
             dimseStream.Seek(0, SeekOrigin.End);
             return dimseStream;

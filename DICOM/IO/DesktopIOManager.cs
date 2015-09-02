@@ -53,11 +53,10 @@ namespace Dicom.IO
         /// Platform-specific implementation to create a file reference.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
-        /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
         /// <returns>A file reference object.</returns>
-        protected override IFileReference CreateFileReferenceImpl(string fileName, bool isTempFile = false)
+        protected override IFileReference CreateFileReferenceImpl(string fileName)
         {
-            return new DesktopFileReference(fileName, isTempFile);
+            return new DesktopFileReference(fileName);
         }
 
         /// <summary>

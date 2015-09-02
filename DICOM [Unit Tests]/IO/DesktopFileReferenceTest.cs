@@ -17,7 +17,7 @@ namespace Dicom.IO
             var path = @".\Test Data\tmp.tmp";
             File.Create(path).Dispose();
 
-            var file = new DesktopFileReference(path, true);
+            var file = new DesktopFileReference(path) { IsTempFile = true };
             Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
         }
 
@@ -27,7 +27,7 @@ namespace Dicom.IO
             var path = @".\Test Data\tmp.tmp";
             File.Create(path).Dispose();
 
-            var file = new DesktopFileReference(path, false);
+            var file = new DesktopFileReference(path);
             Assert.False((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
         }
 

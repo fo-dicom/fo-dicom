@@ -24,9 +24,7 @@ namespace Dicom.IO.Buffer
         /// <param name="data">Byte array subject to buffering.</param>
         public TempFileBuffer(byte[] data)
         {
-            var tempFile = new TemporaryFile();
-
-            this.file = IOManager.CreateFileReference(tempFile.Name);
+            this.file = TemporaryFile.Create();
             this.Size = (uint)data.Length;
 
             using (var stream = this.file.OpenWrite())

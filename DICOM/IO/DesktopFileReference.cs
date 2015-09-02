@@ -16,11 +16,10 @@ namespace Dicom.IO
         /// Initializes a <see cref="DesktopFileReference"/> object.
         /// </summary>
         /// <param name="fileName">File name.</param>
-        /// <param name="isTempFile">Indicates whether the file is a temporary file or not.</param>
-        public DesktopFileReference(string fileName, bool isTempFile = false)
+        public DesktopFileReference(string fileName)
         {
             this.Name = fileName;
-            this.IsTempFile = isTempFile;
+            this.IsTempFile = false;
         }
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace Dicom.IO
         }
 
         /// <summary>Gets and sets whether the file is temporary or not.</summary>
-        /// <remarks>File will be deleted when object is <c>Disposed</c>.</remarks>
+        /// <remarks>Temporary file will be deleted when object is <c>Disposed</c>.</remarks>
         public bool IsTempFile
         {
             get
@@ -161,7 +160,7 @@ namespace Dicom.IO
         {
             byte[] buffer = new byte[count];
 
-            using (Stream fs = this.OpenRead())
+            using (var fs = this.OpenRead())
             {
                 fs.Seek(offset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, count);
@@ -178,8 +177,7 @@ namespace Dicom.IO
         /// </returns>
         public override string ToString()
         {
-            if (this.IsTempFile) return string.Format("{0} [TEMP]", this.Name);
-            return this.Name;
+            return this.IsTempFile ? string.Format("{0} [TEMP]", this.Name) : this.Name;
         }
     }
 }

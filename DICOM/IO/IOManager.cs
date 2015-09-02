@@ -61,11 +61,10 @@ namespace Dicom.IO
         /// Create a file reference.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
-        /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
         /// <returns>A file reference object.</returns>
-        public static IFileReference CreateFileReference(string fileName, bool isTempFile = false)
+        public static IFileReference CreateFileReference(string fileName)
         {
-            return implementation.CreateFileReferenceImpl(fileName, isTempFile);
+            return implementation.CreateFileReferenceImpl(fileName);
         }
 
         /// <summary>
@@ -82,9 +81,8 @@ namespace Dicom.IO
         /// Platform-specific implementation to create a file reference.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
-        /// <param name="isTempFile">Indicates whether the file should be handled as a temporary file or not.</param>
         /// <returns>A file reference object.</returns>
-        protected abstract IFileReference CreateFileReferenceImpl(string fileName, bool isTempFile = false);
+        protected abstract IFileReference CreateFileReferenceImpl(string fileName);
 
         /// <summary>
         /// Platform-specific implementation to create a directory reference.

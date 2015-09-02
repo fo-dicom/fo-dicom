@@ -9,16 +9,25 @@ namespace Dicom.IO
 
     public class TemporaryFileTest
     {
+        #region Fields
+
+        private readonly object locker = new object();
+
+        #endregion
+
         #region Unit tests
 
         [Fact]
         public void StoragePath_Setter_DirectoryCreatedIfNonExisting()
         {
-            var path = @".\Test Data\Temporary Path";
-            if (Directory.Exists(path)) Directory.Delete(path);
+            lock (this.locker)
+            {
+                var path = @".\Test Data\Temporary Path 1";
+                if (Directory.Exists(path)) Directory.Delete(path);
 
-            TemporaryFile.StoragePath = path;
-            Assert.True(Directory.Exists(path));
+                TemporaryFile.StoragePath = path;
+                Assert.True(Directory.Exists(path));
+            }
         }
 
         [Fact]
@@ -30,35 +39,66 @@ namespace Dicom.IO
         [Fact]
         public void StoragePath_Getter_DefaultEqualToUserTemp()
         {
-            var expected = Path.GetTempPath();
+            lock (this.locker)
+            {
+                var expected = Path.GetTempPath();
 
-            TemporaryFile.StoragePath = null;
-            var actual = TemporaryFile.StoragePath;
+                TemporaryFile.StoragePath = null;
+                var actual = TemporaryFile.StoragePath;
 
-            Assert.Equal(expected, actual);
+                Assert.Equal(expected, actual);
+            }
         }
 
         [Fact]
         public void Create_StoragePathNull_LocatedInUserTemp()
         {
-            TemporaryFile.StoragePath = null;
-            var temp = TemporaryFile.Create();
+            lock (this.locker)
+            {
+                TemporaryFile.StoragePath = null;
+                var temp = TemporaryFile.Create().Name;
 
-            var expected = Path.GetTempPath().TrimEnd('\\');
-            var actual = Path.GetDirectoryName(temp);
-            Assert.Equal(expected, actual);
+                var expected = Path.GetTempPath().TrimEnd('\\');
+                var actual = Path.GetDirectoryName(temp);
+                Assert.Equal(expected, actual);
+            }
         }
 
         [Fact]
         public void Create_StoragePathNonNull_LocatedInSpecDirectory()
         {
-            var expected = @".\Test Data\Temporary Directory";
-            TemporaryFile.StoragePath = expected;
+            lock (this.locker)
+            {
+                var expected = @".\Test Data\Temporary Path 2";
+                TemporaryFile.StoragePath = expected;
 
-            var temp = TemporaryFile.Create();
+                var temp = TemporaryFile.Create().Name;
 
-            var actual = Path.GetDirectoryName(temp);
-            Assert.Equal(expected, actual);
+                var actual = Path.GetDirectoryName(temp);
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public void Create_StoragePathNonNull_FileAttributesContainTempFlag()
+        {
+            lock (this.locker)
+            {
+                TemporaryFile.StoragePath = @".\Test Data\Temporary Path 3";
+                var path = TemporaryFile.Create().Name;
+                Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+            }
+        }
+
+        [Fact]
+        public void Create_StoragePathNull_FileAttributesContainTempFlag()
+        {
+            lock (this.locker)
+            {
+                TemporaryFile.StoragePath = null;
+                var path = TemporaryFile.Create().Name;
+                Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+            }
         }
 
         #endregion
