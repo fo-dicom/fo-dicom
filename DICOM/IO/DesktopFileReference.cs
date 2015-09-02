@@ -105,12 +105,12 @@ namespace Dicom.IO
         }
 
         /// <summary>
-        /// Open a file stream for reading and writing, creates the file if not existing.
+        /// Open an existing file stream for reading and writing.
         /// </summary>
         /// <returns></returns>
         public Stream Open()
         {
-            return File.Open(this.Name, FileMode.OpenOrCreate);
+            return File.Open(this.Name, FileMode.Open, FileAccess.ReadWrite);
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ namespace Dicom.IO
         Stream Create();
 
         /// <summary>
-        /// Open a file stream for reading and writing, creates the file if not existing.
+        /// Open an existing file stream for reading and writing.
         /// </summary>
         /// <returns></returns>
         Stream Open();
