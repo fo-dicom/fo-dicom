@@ -105,9 +105,7 @@ namespace Dicom.Imaging
             if (lut.Length != 256) return;
 
             var file = IOManager.CreateFileReference(path);
-            file.Delete();
-
-            using (var fs = file.OpenWrite())
+            using (var fs = file.Create())
             {
                 for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].R);
                 for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].G);
