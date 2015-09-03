@@ -3,105 +3,151 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace Dicom.IO
 {
+    /// <summary>
+    /// Support class for removing temporary files, with repeated attempts if required.
+    /// </summary>
     public class TemporaryFileRemover : IDisposable
     {
-        private static TemporaryFileRemover _instance = new TemporaryFileRemover();
+        #region FIELDS
 
-        private object _lock = new object();
+        /// <summary>
+        /// Singleton instance of the temporary file remover.
+        /// </summary>
+        private static readonly TemporaryFileRemover Instance = new TemporaryFileRemover();
 
-        private List<string> _files = new List<string>();
+        private readonly object locker = new object();
 
-        private Timer _timer;
+        private readonly List<IFileReference> files = new List<IFileReference>();
 
-        private bool _running = false;
+        private readonly Timer timer;
 
+        private bool running;
+
+        #endregion
+
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="TemporaryFileRemover"/> class.
+        /// </summary>
+        /// <remarks>Private constructor since only a singleton instance of the class is required.</remarks>
         private TemporaryFileRemover()
         {
-            _timer = new Timer(OnTick);
+            this.timer = new Timer(this.OnTick);
         }
 
+        /// <summary>
+        /// Destructor.
+        /// </summary>
         ~TemporaryFileRemover()
         {
-            DeleteAllRemainingFiles();
+            this.DeleteAllRemainingFiles();
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Delete the specified temporary file.
+        /// </summary>
+        /// <param name="file"></param>
+        public static void Delete(IFileReference file)
+        {
+            if (!file.IsTempFile)
+            {
+                throw new DicomIoException("Only temporary files should be removed through this operation.");
+            }
+            Instance.DeletePrivate(file);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
-            DeleteAllRemainingFiles();
+            this.DeleteAllRemainingFiles();
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Final attempt to delete all remaining files.
+        /// </summary>
         private void DeleteAllRemainingFiles()
         {
-            // one last try to delete all of the files
-            for (int i = 0; i < _files.Count; i++)
+            foreach (var file in this.files)
             {
                 try
                 {
-                    File.Delete(_files[i]);
+                    file.Delete();
                 }
                 catch
                 {
+                    // Deletion failed, do nothing.
                 }
             }
         }
 
-        public static void Delete(string file)
-        {
-            _instance.DeletePrivate(file);
-        }
-
-        private void DeletePrivate(string file)
+        /// <summary>
+        /// Delete single file. If removal fails, place the file on queue for re-attempted removal.
+        /// </summary>
+        /// <param name="file">File name.</param>
+        private void DeletePrivate(IFileReference file)
         {
             try
             {
-                if (File.Exists(file)) File.Delete(file);
+                if (file.Exists) file.Delete();
             }
             catch
             {
-                if (File.Exists(file))
+                if (file.Exists)
                 {
-                    lock (_lock)
+                    lock (this.locker)
                     {
-                        _files.Add(file);
-                        if (!_running)
+                        this.files.Add(file);
+                        if (!this.running)
                         {
-                            _timer.Change(1000, 1000);
-                            _running = true;
+                            this.timer.Change(1000, 1000);
+                            this.running = true;
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Event handler for repeated file removal attempts.
+        /// </summary>
+        /// <param name="state">Event state, not used here.</param>
         private void OnTick(object state)
         {
-            lock (_lock)
+            lock (this.locker)
             {
-                for (int i = 0; i < _files.Count; i++)
+                for (int i = 0; i < this.files.Count; i++)
                 {
                     try
                     {
-                        File.Delete(_files[i]);
-                        _files.RemoveAt(i--);
+                        this.files[i].Delete();
+                        this.files.RemoveAt(i--);
                     }
                     catch
                     {
-                        if (!File.Exists(_files[i])) _files.RemoveAt(i--);
+                        if (!this.files[i].Exists) this.files.RemoveAt(i--);
                     }
                 }
 
-                if (_files.Count == 0)
+                if (this.files.Count == 0)
                 {
-                    _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    _running = false;
+                    this.timer.Change(Timeout.Infinite, Timeout.Infinite);
+                    this.running = false;
                 }
             }
         }
+
+        #endregion
     }
 }
