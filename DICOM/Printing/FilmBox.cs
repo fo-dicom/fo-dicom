@@ -10,6 +10,8 @@ using Dicom.Log;
 
 namespace Dicom.Printing
 {
+    using System.IO;
+
     using Dicom.IO;
 
     /// <summary>
@@ -856,6 +858,10 @@ namespace Dicom.Printing
 
         #region Load and Save
 
+        /// <summary>
+        /// Save the contents of the film box.
+        /// </summary>
+        /// <param name="filmBoxFolder">Folder in which to save the film box contents.</param>
         public void Save(string filmBoxFolder)
         {
             var filmBoxDicomFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
@@ -863,8 +869,11 @@ namespace Dicom.Printing
             var file = new DicomFile(this);
             file.Save(filmBoxDicomFile);
 
-
-            System.IO.File.WriteAllText(filmBoxTextFile, this.WriteToString());
+            using (var stream = IOManager.CreateFileReference(filmBoxTextFile).Create())
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.Write(this.WriteToString());
+            }
 
             var imageBoxFolderInfo = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
             imageBoxFolderInfo.Create();
@@ -875,12 +884,17 @@ namespace Dicom.Printing
             }
         }
 
+        /// <summary>
+        /// Load a film box for a specific session from a specific folder.
+        /// </summary>
+        /// <param name="filmSession">Film session.</param>
+        /// <param name="filmBoxFolder">Folder in which film box is stored.</param>
+        /// <returns>Film box for the specified <paramref name="filmSession"/> located in the <paramref name="filmBoxFolder"/>.</returns>
         public static FilmBox Load(FilmSession filmSession, string filmBoxFolder)
         {
             var filmBoxFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
 
             var file = DicomFile.Open(filmBoxFile);
-
 
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
