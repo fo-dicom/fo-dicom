@@ -4,6 +4,7 @@
 namespace Dicom
 {
     using System.IO;
+    using System.IO.MemoryMappedFiles;
 
     using Xunit;
 
@@ -107,13 +108,14 @@ namespace Dicom
         }
 
         [Fact]
-        public void OpenMemoryMapped_FromFile_YieldsValidDicomFile()
+        public void Open_StreamOfMemoryMappedFile_YieldsValidDicomFile()
         {
             var saveFile = new DicomFile(MinimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            var openFile = DicomFile.OpenMemoryMapped(fileName);
+            var file = MemoryMappedFile.CreateFromFile(fileName);
+            var openFile = DicomFile.Open(file.CreateViewStream());
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);

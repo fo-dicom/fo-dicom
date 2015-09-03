@@ -11,7 +11,10 @@ using Dicom.IO.Writer;
 
 namespace Dicom
 {
-    public partial class DicomFile
+    /// <summary>
+    /// Representation of one DICOM file.
+    /// </summary>
+    public class DicomFile
     {
         public DicomFile()
         {
