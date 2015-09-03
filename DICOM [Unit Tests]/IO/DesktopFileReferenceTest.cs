@@ -24,7 +24,7 @@ namespace Dicom.IO
         [Fact]
         public void Constructor_RegularFile_TempFileAttributeNotSet()
         {
-            var path = @".\Test Data\tmp.tmp";
+            var path = @".\Test Data\nontmp.tmp";
             File.Create(path).Dispose();
 
             var file = new DesktopFileReference(path);

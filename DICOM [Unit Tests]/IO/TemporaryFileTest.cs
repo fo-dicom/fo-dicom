@@ -23,7 +23,7 @@ namespace Dicom.IO
             lock (this.locker)
             {
                 var path = @".\Test Data\Temporary Path 1";
-                if (Directory.Exists(path)) Directory.Delete(path);
+                if (Directory.Exists(path)) Directory.Delete(path, true);
 
                 TemporaryFile.StoragePath = path;
                 Assert.True(Directory.Exists(path));
