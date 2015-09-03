@@ -127,18 +127,18 @@ namespace Dicom.IO
         {
             lock (this.locker)
             {
-                for (int i = 0; i < this.files.Count; i++)
+                foreach (var file in this.files)
                 {
                     try
                     {
-                        this.files[i].Delete();
-                        this.files.RemoveAt(i--);
+                        file.Delete();
                     }
                     catch
                     {
-                        if (!this.files[i].Exists) this.files.RemoveAt(i--);
+                        // Just ignore if deletion fails.
                     }
                 }
+                this.files.RemoveAll(file => !file.Exists);
 
                 if (this.files.Count == 0)
                 {
