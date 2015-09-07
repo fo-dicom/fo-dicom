@@ -11,7 +11,7 @@ namespace Dicom.IO
 {
     public class FileByteSource : IByteSource, IDisposable
     {
-        private FileReference _file;
+        private IFileReference _file;
 
         private Stream _stream;
 
@@ -27,7 +27,7 @@ namespace Dicom.IO
 
         private object _lock;
 
-        public FileByteSource(FileReference file)
+        public FileByteSource(IFileReference file)
         {
             _file = file;
             _stream = _file.OpenRead();

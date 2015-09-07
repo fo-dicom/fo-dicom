@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
@@ -14,6 +13,8 @@ using Dicom.Log;
 
 namespace Dicom.Imaging.Codec
 {
+    using Dicom.IO;
+
     public class DicomTranscoder
     {
         #region Static
@@ -35,7 +36,7 @@ namespace Dicom.Imaging.Codec
 
         public static void LoadCodecs(string path = null, string search = null)
         {
-            if (path == null) path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
+            if (path == null) path = IOManager.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
 
             if (search == null) search = "Dicom.Native*.dll";
 

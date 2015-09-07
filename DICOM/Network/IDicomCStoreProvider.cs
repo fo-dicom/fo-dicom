@@ -5,6 +5,9 @@ using System;
 
 namespace Dicom.Network
 {
+    /// <summary>
+    /// Interface for a DICOM C-STORE Service Class Provider.
+    /// </summary>
     public interface IDicomCStoreProvider
     {
         /// <summary>
@@ -13,7 +16,9 @@ namespace Dicom.Network
         /// for each SopInstance received.  See the documentation for DicomService.CreateCStoreReceiveStream()
         /// and DicomService.GetCStoreDicomFile() for information about changing this 
         /// behavior (e.g. writing to your own custom stream and avoiding the temporary file)
-        /// <returns></returns>
+        /// </summary>
+        /// <param name="request">C-STORE request.</param>
+        /// <returns>C-STORE response.</returns>
         DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request);
 
         /// <summary>
@@ -21,8 +26,8 @@ namespace Dicom.Network
         /// it is possible to avoid parsing the file by overriding DicomService.GetCStoreDicomFile() if
         /// desired.
         /// </summary>
-        /// <param name="tempFileName"></param>
-        /// <param name="e"></param>
+        /// <param name="tempFileName">Name of the temporary file, may be null.</param>
+        /// <param name="e">Thrown exception.</param>
         void OnCStoreRequestException(string tempFileName, Exception e);
     }
 }

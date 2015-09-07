@@ -68,6 +68,12 @@
     </Compile>
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="Imaging\ColorTableTest.cs" />
+    <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
+    <Compile Include="IO\DesktopFileReferenceTest.cs" />
+    <Compile Include="IO\DesktopPathTest.cs" />
+    <Compile Include="IO\TemporaryFileTest.cs" />
+    <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
     <Compile Include="DicomFileTest.cs" />
@@ -82,8 +88,10 @@
     <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
     <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
+    <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
+    <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +110,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\CT1_J2KI">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\DICOMDIR">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\minimumdict.xml.gz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Test Data\minimumdict.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

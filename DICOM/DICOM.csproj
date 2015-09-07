@@ -62,6 +62,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
+    <Compile Include="IO\DesktopPath.cs" />
     <Compile Include="DicomDataException.cs" />
     <Compile Include="DicomDataset.cs" />
     <Compile Include="DicomDatasetExtensions.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="DicomDictionary.cs" />
     <Compile Include="DicomDictionaryEntry.cs" />
     <Compile Include="DicomDictionaryReader.cs" />
-    <Compile Include="DicomFile.Mapped.cs" />
     <Compile Include="DicomFileExtensions.cs" />
     <Compile Include="DicomTagGenerated.cs">
       <AutoGen>True</AutoGen>
@@ -86,7 +86,12 @@
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
     <Compile Include="Imaging\Render\ImageGraphic.cs" />
-    <Compile Include="IO\MemoryMappedFileByteSource.cs" />
+    <Compile Include="IO\DesktopDirectoryReference.cs" />
+    <Compile Include="IO\DesktopIOManager.cs" />
+    <Compile Include="IO\IDirectoryReference.cs" />
+    <Compile Include="IO\IFileReference.cs" />
+    <Compile Include="IO\IOManager.cs" />
+    <Compile Include="IO\IPath.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
@@ -184,7 +189,7 @@
     <Compile Include="IO\Buffer\StreamByteBuffer.cs" />
     <Compile Include="IO\FileByteSource.cs" />
     <Compile Include="IO\FileByteTarget.cs" />
-    <Compile Include="IO\FileReference.cs" />
+    <Compile Include="IO\DesktopFileReference.cs" />
     <Compile Include="IO\IByteSource.cs" />
     <Compile Include="IO\IByteTarget.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserver.cs" />
@@ -313,7 +318,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

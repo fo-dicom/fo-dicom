@@ -114,16 +114,16 @@ namespace Dicom.Network
         /// Saves PDU to file
         /// </summary>
         /// <param name="file">Filename</param>
-        public void Save(String file)
+        public void Save(string file)
         {
-            FileInfo f = new FileInfo(file);
-            DirectoryInfo d = f.Directory;
+            var f = IOManager.CreateFileReference(file);
+            var d = f.Directory;
 
             if (!d.Exists)
             {
                 d.Create();
             }
-            using (FileStream fs = f.OpenWrite())
+            using (var fs = f.OpenWrite())
             {
                 WritePDU(fs);
             }

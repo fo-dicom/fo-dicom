@@ -8,6 +8,10 @@ using Dicom.Log;
 
 namespace Dicom.Printing
 {
+    using System.IO;
+
+    using Dicom.IO;
+
     /// <summary>
     /// Color or gray scale basic image box
     /// </summary>
@@ -468,6 +472,12 @@ namespace Dicom.Printing
 
         #region Load and Save
 
+        /// <summary>
+        /// Load image box for a specified <paramref name="filmBox"/> from a specified file.
+        /// </summary>
+        /// <param name="filmBox">Film box.</param>
+        /// <param name="imageBoxFile">Name of the image box file.</param>
+        /// <returns>Image box for a specified <paramref name="filmBox"/> from a file named <paramref name="imageBoxFile"/>.</returns>
         public static ImageBox Load(FilmBox filmBox, string imageBoxFile)
         {
             var file = DicomFile.Open(imageBoxFile);
@@ -481,13 +491,21 @@ namespace Dicom.Printing
             return imageBox;
         }
 
+        /// <summary>
+        /// Save the image box contents to file.
+        /// </summary>
+        /// <param name="imageBoxFile">Name of the image box file.</param>
         public void Save(string imageBoxFile)
         {
             var imageBoxDicomFile = imageBoxFile + ".dcm";
             var imageBoxTextFile = imageBoxFile + ".txt";
 
+            using (var stream = IOManager.CreateFileReference(imageBoxTextFile).Create())
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.Write(this.WriteToString());
+            }
 
-            System.IO.File.WriteAllText(imageBoxTextFile, this.WriteToString());
             var file = new DicomFile(this);
             file.Save(imageBoxDicomFile);
         }

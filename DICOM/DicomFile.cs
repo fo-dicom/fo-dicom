@@ -11,7 +11,10 @@ using Dicom.IO.Writer;
 
 namespace Dicom
 {
-    public partial class DicomFile
+    /// <summary>
+    /// Representation of one DICOM file.
+    /// </summary>
+    public class DicomFile
     {
         public DicomFile()
         {
@@ -27,7 +30,7 @@ namespace Dicom
             Format = DicomFileFormat.DICOM3;
         }
 
-        public FileReference File { get; protected set; }
+        public IFileReference File { get; protected set; }
 
         public DicomFileFormat Format { get; protected set; }
 
@@ -49,7 +52,7 @@ namespace Dicom
                 FileMetaInfo = new DicomFileMetaInformation(Dataset);
             }
 
-            File = new FileReference(fileName);
+            File = IOManager.CreateFileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -80,7 +83,7 @@ namespace Dicom
             }
         }
 
-        public void BeginSave(string fileName, AsyncCallback callback, object state)
+        public IAsyncResult BeginSave(string fileName, AsyncCallback callback, object state)
         {
             if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
 
@@ -90,7 +93,7 @@ namespace Dicom
                 FileMetaInfo = new DicomFileMetaInformation(Dataset);
             }
 
-            File = new FileReference(fileName);
+            File = IOManager.CreateFileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -100,7 +103,7 @@ namespace Dicom
             EventAsyncResult result = new EventAsyncResult(callback, state);
 
             DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-            writer.BeginWrite(
+            return writer.BeginWrite(
                 target,
                 FileMetaInfo,
                 Dataset,
@@ -167,7 +170,7 @@ namespace Dicom
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = IOManager.CreateFileReference(fileName);
 
                 using (var source = new FileByteSource(df.File))
                 {
@@ -237,7 +240,7 @@ namespace Dicom
             object state)
         {
             DicomFile df = new DicomFile();
-            df.File = new FileReference(fileName);
+            df.File = IOManager.CreateFileReference(fileName);
 
             FileByteSource source = new FileByteSource(df.File);
 
@@ -306,16 +309,11 @@ namespace Dicom
         {
             try
             {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                var file = IOManager.CreateFileReference(path);
+                using (var fs = file.OpenRead())
                 {
                     fs.Seek(128, SeekOrigin.Begin);
-
-                    bool magic = false;
-                    if (fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M') magic = true;
-
-                    fs.Close();
-
-                    return magic;
+                    return fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M';
                 }
             }
             catch
