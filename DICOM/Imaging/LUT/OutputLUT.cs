@@ -11,7 +11,7 @@ namespace Dicom.Imaging.LUT
     {
         #region Private Members
 
-        private Color32[] _lut;
+        private readonly GrayscaleRenderOptions _options;
 
         #endregion
 
@@ -20,10 +20,10 @@ namespace Dicom.Imaging.LUT
         /// <summary>
         /// Initialize new instance of <seealso cref="OutputLUT"/> 
         /// </summary>
-        /// <param name="lut">The color palette map to use for the output</param>
-        public OutputLUT(Color32[] lut)
+        /// <param name="options">The grayscale render options containing the grayscale color map.</param>
+        public OutputLUT(GrayscaleRenderOptions options)
         {
-            ColorMap = lut;
+            _options = options;
         }
 
         #endregion
@@ -31,21 +31,19 @@ namespace Dicom.Imaging.LUT
         #region Public Properties
 
         /// <summary>
-        /// The color map
+        /// Gets the color map
         /// </summary>
         public Color32[] ColorMap
         {
             get
             {
-                return _lut;
-            }
-            set
-            {
-                if (value == null || value.Length != 256) throw new DicomImagingException("Expected 256 entry color map");
-                _lut = value;
+                return _options.ColorMap;
             }
         }
 
+        /// <summary>
+        /// Get the minimum output value
+        /// </summary>
         public int MinimumOutputValue
         {
             get
@@ -54,6 +52,9 @@ namespace Dicom.Imaging.LUT
             }
         }
 
+        /// <summary>
+        /// Get the maximum output value
+        /// </summary>
         public int MaximumOutputValue
         {
             get
@@ -62,23 +63,31 @@ namespace Dicom.Imaging.LUT
             }
         }
 
+        /// <summary>
+        /// Returns true if the lookup table is valid
+        /// </summary>
         public bool IsValid
         {
             get
             {
-                return _lut != null;
+                return this._options != null;
             }
         }
 
+        /// <summary>
+        /// Indexer to transform input value into output value
+        /// </summary>
+        /// <param name="value">Input value</param>
+        /// <returns>Output value</returns>
         public int this[int value]
         {
             get
             {
                 unchecked
                 {
-                    if (value < 0) return _lut[0].Value;
-                    if (value > 255) return _lut[255].Value;
-                    return _lut[value].Value;
+                    if (value < 0) return _options.ColorMap[0].Value;
+                    if (value > 255) return _options.ColorMap[255].Value;
+                    return _options.ColorMap[value].Value;
                 }
             }
         }
@@ -87,6 +96,9 @@ namespace Dicom.Imaging.LUT
 
         #region Public Methods
 
+        /// <summary>
+        /// Force the recalculation of LUT
+        /// </summary>
         public void Recalculate()
         {
         }
