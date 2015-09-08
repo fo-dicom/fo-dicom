@@ -111,6 +111,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Test Data\CT1_J2KI">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
