@@ -69,6 +69,8 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
+    <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
+    <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
@@ -109,6 +111,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Test Data\CT1_J2KI">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

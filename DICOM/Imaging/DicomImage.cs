@@ -13,7 +13,7 @@ using Dicom.Imaging.Render;
 namespace Dicom.Imaging
 {
     /// <summary>
-    /// DICOM Image calss with capability of
+    /// DICOM Image class for image rendering.
     /// </summary>
     public class DicomImage
     {
@@ -150,6 +150,30 @@ namespace Dicom.Imaging
                 if (_pipeline is GenericGrayscalePipeline)
                 {
                     _renderOptions.WindowCenter = value;
+                }
+            }
+        }
+
+        /// <summary>Gets or sets the color map to be applied when rendering grayscale images.</summary>
+        public virtual Color32[] GrayscaleColorMap
+        {
+            get
+            {
+                if (_pipeline == null)
+                {
+                    CreatePipeline();
+                }
+                return _pipeline is GenericGrayscalePipeline ? _renderOptions.ColorMap : null;
+            }
+            set
+            {
+                if (_pipeline == null)
+                {
+                    CreatePipeline();
+                }
+                if (_pipeline is GenericGrayscalePipeline)
+                {
+                    _renderOptions.ColorMap = value;
                 }
             }
         }
@@ -330,7 +354,10 @@ namespace Dicom.Imaging
 
             CurrentFrame = frame;
 
-            CreatePipeline();
+            if (_pipeline == null)
+            {
+                CreatePipeline();
+            }
         }
 
         /// <summary>
@@ -338,8 +365,6 @@ namespace Dicom.Imaging
         /// </summary>
         private void CreatePipeline()
         {
-            if (_pipeline != null) return;
-
             var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
             var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 
