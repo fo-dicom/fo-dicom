@@ -97,7 +97,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return _scale != 1.0f || _rotate != 0.0f || _pan == Point.Empty;
+                return _scale != 1.0f || _rotate != 0.0f || _pan != Point.Empty;
             }
         }
 
