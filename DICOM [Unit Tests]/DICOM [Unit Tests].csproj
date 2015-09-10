@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
     <Reference Include="xunit.abstractions">
@@ -71,6 +72,7 @@
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
+    <Compile Include="Imaging\SpatialTransformTest.cs" />
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
