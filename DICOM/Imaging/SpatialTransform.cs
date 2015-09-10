@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
-
 namespace Dicom.Imaging
 {
+    using Dicom.Imaging.Mathematics;
+
     /// <summary>
     /// Representation of a spatial 2D transform.
     /// </summary>
@@ -12,7 +12,7 @@ namespace Dicom.Imaging
     {
         #region Private Members
 
-        private Point _pan;
+        private Point2 _pan;
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace Dicom.Imaging
         /// </summary>
         public SpatialTransform()
         {
-            _pan = new Point(0, 0);
+            _pan = new Point2(0, 0);
             Reset();
         }
 
@@ -54,7 +54,7 @@ namespace Dicom.Imaging
         /// <summary>
         /// Gets or sets the pan of the transform.
         /// </summary>
-        public Point Pan
+        public Point2 Pan
         {
             get
             {
@@ -73,7 +73,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return this.Scale != 1.0 || this.Rotation != 0 || this.Pan != Point.Empty;
+                return this.Scale != 1.0 || this.Rotation != 0 || !this.Pan.Equals(Point2.Origin);
             }
         }
 
