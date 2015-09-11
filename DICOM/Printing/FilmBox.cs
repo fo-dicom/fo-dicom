@@ -741,7 +741,13 @@ namespace Dicom.Printing
             }
         }
 
-        protected RectF[] PrintColumnFormat(string[] parts, RectF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in column format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in column format.</returns>
+        public static RectF[] PrintColumnFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
@@ -775,7 +781,13 @@ namespace Dicom.Printing
             return null;
         }
 
-        protected RectF[] PrintRowFormat(string[] parts, RectF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in row format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in row format.</returns>
+        public static RectF[] PrintRowFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
@@ -809,7 +821,13 @@ namespace Dicom.Printing
             return null;
         }
 
-        protected RectF[] PrintStandardFormat(string[] parts, RectF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in standard format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in standard format.</returns>
+        public static RectF[] PrintStandardFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 3)
             {
