@@ -7,7 +7,6 @@ namespace Dicom.Printing
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Drawing;
 
     using Dicom.Imaging.Mathematics;
     using Dicom.IO;
@@ -515,9 +514,9 @@ namespace Dicom.Printing
         }
 
         /// <summary>
-        /// Iniitalize the film box dataset attributes to defaults
+        /// Initalize the film box dataset attributes to defaults
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if film box attributes could be initialized, false otherwise.</returns>
         public bool Initialize()
         {
             //initialization
@@ -611,6 +610,7 @@ namespace Dicom.Printing
             {
                 Logger.Error("FilmBox.Initialize, exception message: {0}", ex.Message);
             }
+
             return false;
         }
 
@@ -637,6 +637,9 @@ namespace Dicom.Printing
             return BasicImageBoxes.FirstOrDefault(i => i.SOPInstanceUID.Equals(sopInstance));
         }
 
+        /// <summary>
+        /// Create image box from DICOM data.
+        /// </summary>
         private void CreateImageBox()
         {
             DicomUID classUid = DicomUID.BasicGrayscaleImageBoxSOPClass;
@@ -664,82 +667,18 @@ namespace Dicom.Printing
             seq.Items.Add(item);
         }
 
+        /// <summary>
+        /// Gets whether one or more image boxes is colored.
+        /// </summary>
+        /// <returns></returns>
         public bool IsColor()
         {
-            return BasicImageBoxes.FirstOrDefault(i => i.SOPClassUID == ImageBox.ColorSOPClassUID) != null;
+            return BasicImageBoxes.Any(i => i.SOPClassUID == ImageBox.ColorSOPClassUID);
         }
 
         #endregion
 
         #region Printing Methods
-
-        public SizeF GetSizeInInch()
-        {
-            const float CM_PER_INCH = 2.54f;
-            var filmSizeId = FilmSizeID;
-
-            if (filmSizeId.Contains("IN"))
-            {
-                var parts = filmSizeId.Split(new[] { "IN" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var width = parts[0].Replace('_', '.');
-                    var height = parts[1].TrimStart('X').Replace('_', '.');
-
-                    return new SizeF(float.Parse(width), float.Parse(height));
-                }
-            }
-            else if (filmSizeId.Contains("CM"))
-            {
-                var parts = filmSizeId.Split(new[] { "CM" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var width = parts[0].Replace('_', '.');
-                    var height = parts[1].TrimStart('X').Replace('_', '.');
-
-                    return new SizeF(float.Parse(width) / CM_PER_INCH, float.Parse(height) / CM_PER_INCH);
-                }
-            }
-            else if (filmSizeId == "A3")
-            {
-                return new SizeF(29.7f / CM_PER_INCH, 42.0f / CM_PER_INCH);
-            }
-
-            return new SizeF(210 / CM_PER_INCH, 297 / CM_PER_INCH);
-        }
-
-        public void Print(Graphics graphics, Rectangle marginBounds, int imageResolution)
-        {
-            var parts = this.ImageDisplayFormat.Split('\\', ',');
-
-            if (parts.Length > 0)
-            {
-                RectF[] boxes = null;
-                if (parts[0] == "STANDARD")
-                {
-                    boxes = PrintStandardFormat(parts, ToRectF(marginBounds));
-                }
-                else if (parts[0] == "ROW")
-                {
-                    boxes = PrintRowFormat(parts, ToRectF(marginBounds));
-                }
-                else if (parts[0] == "COL")
-                {
-                    boxes = PrintColumnFormat(parts, ToRectF(marginBounds));
-                }
-                
-                if (boxes == null)
-                {
-                    throw new InvalidOperationException(
-                        string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat));
-                }
-
-                for (int i = 0; i < BasicImageBoxes.Count; i++)
-                {
-                    BasicImageBoxes[i].Print(graphics, boxes[i], imageResolution);
-                }
-            }
-        }
 
         /// <summary>
         /// Generate rectangles arranged in column format.
@@ -858,11 +797,6 @@ namespace Dicom.Printing
             }
 
             return null;
-        }
-
-        private static RectF ToRectF(Rectangle rectangle)
-        {
-            return new RectF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
         #endregion

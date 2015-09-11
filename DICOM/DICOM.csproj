@@ -270,6 +270,7 @@
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Printing\FilmBox.cs" />
+    <Compile Include="Printing\FilmBoxExtensions.cs" />
     <Compile Include="Printing\FilmSession.cs" />
     <Compile Include="Printing\ImageBox.cs" />
     <Compile Include="Printing\PresentationLut.cs" />
