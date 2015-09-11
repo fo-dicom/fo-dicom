@@ -71,6 +71,7 @@
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
+    <Compile Include="Imaging\Mathematics\RectFTest.cs" />
     <Compile Include="Imaging\SpatialTransformTest.cs" />
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />

@@ -1,17 +1,16 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using Dicom.Log;
-
-
 namespace Dicom.Printing
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using System.Drawing;
 
+    using Dicom.Log;
+    using Dicom.Imaging.Mathematics;
     using Dicom.IO;
 
     /// <summary>
@@ -677,6 +676,7 @@ namespace Dicom.Printing
         {
             const float CM_PER_INCH = 2.54f;
             var filmSizeId = FilmSizeID;
+
             if (filmSizeId.Contains("IN"))
             {
                 var parts = filmSizeId.Split(new[] { "IN" }, StringSplitOptions.RemoveEmptyEntries);
@@ -704,7 +704,7 @@ namespace Dicom.Printing
                 return new SizeF(29.7f / CM_PER_INCH, 42.0f / CM_PER_INCH);
             }
 
-            return new SizeF(210 / 2.54f, 297 / 2.54f);
+            return new SizeF(210 / CM_PER_INCH, 297 / CM_PER_INCH);
         }
 
         public void Print(Graphics graphics, Rectangle marginBounds, int imageResolution)
@@ -713,24 +713,24 @@ namespace Dicom.Printing
 
             if (parts.Length > 0)
             {
-                RectangleF[] boxes = null;
+                RectF[] boxes = null;
                 if (parts[0] == "STANDARD")
                 {
-                    boxes = PrintStandardFormat(parts, marginBounds);
+                    boxes = PrintStandardFormat(parts, ToRectF(marginBounds));
                 }
                 else if (parts[0] == "ROW")
                 {
-                    boxes = PrintRowFormat(parts, marginBounds);
+                    boxes = PrintRowFormat(parts, ToRectF(marginBounds));
                 }
                 else if (parts[0] == "COL")
                 {
-                    boxes = PrintColumnFormat(parts, marginBounds);
+                    boxes = PrintColumnFormat(parts, ToRectF(marginBounds));
                 }
-                else
+                
+                if (boxes == null)
                 {
-                    throw new ArgumentException(
-                        string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                        "ImageDisplayFormat");
+                    throw new InvalidOperationException(
+                        string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat));
                 }
 
                 for (int i = 0; i < BasicImageBoxes.Count; i++)
@@ -740,117 +740,110 @@ namespace Dicom.Printing
             }
         }
 
-        protected RectangleF[] PrintColumnFormat(string[] parts, RectangleF marginBounds)
+        protected RectF[] PrintColumnFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
                 int colsCount = parts.Length - 1;
 
-                SizeF boxSize = new SizeF(marginBounds.Width / (float)colsCount, 0);
+                var boxWidth = marginBounds.Width / colsCount;
 
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
 
                 for (int c = 0; c < colsCount; c++)
                 {
                     int rowsCount = int.Parse(parts[c + 1]);
 
-                    boxSize.Height = marginBounds.Height / (float)rowsCount;
+                    var boxHeight = marginBounds.Height / rowsCount;
 
                     for (int r = 0; r < rowsCount; r++)
                     {
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+            
+            return null;
         }
 
-        protected RectangleF[] PrintRowFormat(string[] parts, RectangleF marginBounds)
+        protected RectF[] PrintRowFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
                 int rowsCount = parts.Length - 1;
 
-                SizeF boxSize = new SizeF(0, marginBounds.Height / (float)rowsCount);
+                var boxHeight = marginBounds.Height / rowsCount;
 
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
 
                 for (int r = 0; r < rowsCount; r++)
                 {
                     int colsCount = int.Parse(parts[r + 1]);
 
-                    boxSize.Width = marginBounds.Width / (float)colsCount;
+                    var boxWidth = marginBounds.Width / colsCount;
 
                     for (int c = 0; c < colsCount; c++)
                     {
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+
+            return null;
         }
 
-        protected RectangleF[] PrintStandardFormat(string[] parts, RectangleF marginBounds)
+        protected RectF[] PrintStandardFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 3)
             {
                 int columns = int.Parse(parts[1]);
                 int rows = int.Parse(parts[2]);
 
-                SizeF boxSize = new SizeF(marginBounds.Width / (float)columns, marginBounds.Height / (float)rows);
+                var boxWidth = marginBounds.Width / columns;
+                var boxHeight = marginBounds.Height / rows;
 
-
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
                 for (int r = 0; r < rows; r++)
                 {
                     for (int c = 0; c < columns; c++)
                     {
 
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
 
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+
+            return null;
+        }
+
+        private static RectF ToRectF(Rectangle rectangle)
+        {
+            return new RectF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
         #endregion
