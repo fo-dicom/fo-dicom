@@ -9,16 +9,18 @@ namespace Dicom.Printing
     using System.Linq;
     using System.Drawing;
 
-    using Dicom.Log;
     using Dicom.Imaging.Mathematics;
     using Dicom.IO;
+    using Dicom.Log;
 
     /// <summary>
     /// Basic film box
     /// </summary>
     public class FilmBox : DicomDataset
     {
-        #region Properites and Attributes
+        #region Properties and Attributes
+
+        private static readonly Logger Logger = LogManager.Default.GetLogger("Dicom.Printing");
 
         private readonly FilmSession _filmSession = null;
 
@@ -562,11 +564,11 @@ namespace Dicom.Printing
             {
                 if (string.IsNullOrEmpty(ImageDisplayFormat))
                 {
-                    //Log.Logger.Error("No display format present in N-CREATE Basic Film Box dataset");
+                    Logger.Error("No display format present in N-CREATE Basic Film Box dataset");
                     return false;
                 }
 
-                //Core.Logger.Info("Applying display format {0} for film box {1}", ImageDisplayFormat, SOPInstanceUID);
+                Logger.Info("Applying display format {0} for film box {1}", ImageDisplayFormat, SOPInstanceUID);
 
                 var parts = ImageDisplayFormat.Split('\\');
 
@@ -607,9 +609,8 @@ namespace Dicom.Printing
             }
             catch (Exception ex)
             {
-                //Core.Logger.Error("FilmBox.Initialize", ex);
+                Logger.Error("FilmBox.Initialize, exception message: {0}", ex.Message);
             }
-            //Core.Logger.Error("Unsupported image display format \"{0}\"", ImageDisplayFormat);
             return false;
         }
 
