@@ -34,6 +34,18 @@ namespace Dicom.Imaging.Mathematics
             Assert.Equal(h1, rect.Height);
         }
 
+        [Fact]
+        public void Assignment_ChangeInNewInstance_DoesNotAffectOldInstance()
+        {
+            var oldRect = new RectF(10f, 20f, 30f, 40f);
+            var newRect = oldRect;
+            newRect.Inflate(10f, 10f);
+            Assert.Equal(10f, oldRect.X);
+            Assert.Equal(20f, oldRect.Y);
+            Assert.Equal(30f, oldRect.Width);
+            Assert.Equal(40f, oldRect.Height);
+        }
+
         #endregion
     }
 }

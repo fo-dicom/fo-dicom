@@ -3,11 +3,8 @@
 
 namespace Dicom.Printing
 {
-    using System;
-    using System.Drawing;
     using System.IO;
 
-    using Dicom.Imaging.Mathematics;
     using Dicom.IO;
     using Dicom.Log;
 
@@ -44,7 +41,7 @@ namespace Dicom.Printing
         public DicomUID SOPInstanceUID { get; private set; }
 
         /// <summary>
-        /// Color or grayscal basic image sequence
+        /// Gets or sets the color or grayscale basic image sequence
         /// </summary>
         public DicomDataset ImageSequence
         {
@@ -82,7 +79,7 @@ namespace Dicom.Printing
         }
 
         /// <summary>
-        /// The position of the image on the film, based on image display format. See C.13.5.1 for specification.
+        /// Gets or sets the position of the image on the film, based on image display format. See C.13.5.1 for specification.
         /// </summary>
         public ushort ImageBoxPosition
         {
@@ -291,11 +288,10 @@ namespace Dicom.Printing
         /// <summary>
         /// Construct new ImageBox for specified filmBox using specified SOP class UID and SOP instance UID
         /// </summary>
-        /// <param name="filmBox"></param>
-        /// <param name="sopClass"></param>
-        /// <param name="sopInstance"></param>
+        /// <param name="filmBox">Film box in which image box should be constained.</param>
+        /// <param name="sopClass">SOP Class UID for the image.</param>
+        /// <param name="sopInstance">SOP instance UID for the image.</param>
         public ImageBox(FilmBox filmBox, DicomUID sopClass, DicomUID sopInstance)
-            : base()
         {
             this.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
             FilmBox = filmBox;
@@ -315,9 +311,10 @@ namespace Dicom.Printing
         }
 
         /// <summary>
-        /// Construct new ImageBox cloned from another imagebox
+        /// Construct new ImageBox cloned from another imagebox.
         /// </summary>
-        /// <param name="imageBox">The source ImageBox instance to clone</param>
+        /// <param name="imageBox">The source ImageBox instance to clone.</param>
+        /// <param name="filmBox">The film box in which the cloned image box is contained.</param>
         private ImageBox(ImageBox imageBox, FilmBox filmBox)
             : this(filmBox, imageBox.SOPClassUID, imageBox.SOPInstanceUID)
         {
@@ -332,118 +329,6 @@ namespace Dicom.Printing
         public ImageBox Clone(FilmBox filmBox)
         {
             return new ImageBox(this, filmBox);
-        }
-
-        #endregion
-
-        #region Printing
-
-        public void Print(Graphics graphics, RectF box, int imageResolution)
-        {
-            var state = graphics.Save();
-
-            FillBox(box, graphics);
-
-            var imageBox = box;
-            if (FilmBox.Trim == "YES")
-            {
-                imageBox.Inflate(-BORDER, -BORDER);
-            }
-
-            if (ImageSequence != null && ImageSequence.Contains(DicomTag.PixelData))
-            {
-                Image bitmap = null;
-                try
-                {
-                    var image = new Dicom.Imaging.DicomImage(ImageSequence);
-                    var frame = image.RenderImage(0);
-
-                    bitmap = frame;
-
-                    DrawBitmap(graphics, imageBox, bitmap, imageResolution);
-                }
-                finally
-                {
-                    if (bitmap != null)
-                    {
-                        bitmap.Dispose();
-                    }
-                }
-            }
-
-            graphics.Restore(state);
-        }
-
-        private void FillBox(RectF box, Graphics graphics)
-        {
-            if (FilmBox.EmptyImageDensity == "BLACK")
-            {
-                RectF fillBox = box;
-                if (FilmBox.BorderDensity == "WHITE" && FilmBox.Trim == "YES")
-                {
-                    fillBox.Inflate(-BORDER, -BORDER);
-                }
-                using (var brush = new SolidBrush(Color.Black))
-                {
-                    graphics.FillRectangle(brush, fillBox.X, fillBox.Y, fillBox.Width, fillBox.Height);
-                }
-            }
-        }
-
-        private void DrawBitmap(Graphics graphics, RectF box, Image bitmap, int imageResolution)
-        {
-            var imageWidthInInch = 100 * bitmap.Width / imageResolution;
-            var imageHeightInInch = 100 * bitmap.Height / imageResolution;
-            double factor = Math.Min(box.Height / imageHeightInInch, box.Width / imageWidthInInch);
-
-            if (factor > 1)
-            {
-                var targetWidth = (int)(imageResolution * box.Width / 100);
-                                         var targetHeight = (int)(imageResolution * box.Height / 100);
-
-
-                using (var membmp = new Bitmap(targetWidth, targetHeight))
-                {
-                    membmp.SetResolution(imageResolution, imageResolution);
-
-                    using (var memg = Graphics.FromImage(membmp))
-                    {
-
-                        memg.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
-                        memg.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                        if (FilmBox.EmptyImageDensity == "BLACK")
-                        {
-                            using (var brush = new SolidBrush(Color.Black))
-                            {
-                                memg.FillRectangle(brush, 0, 0, targetWidth, targetHeight);
-                            }
-                        }
-
-                        factor = Math.Min(
-                            targetHeight / (double)bitmap.Height,
-                            targetWidth / (double)bitmap.Width);
-
-                        var x = (float)((targetWidth - bitmap.Width * factor) / 2.0f);
-                        var y = (float)((targetHeight - bitmap.Height * factor) / 2.0f);
-                        var width = (float)(bitmap.Width * factor);
-                        var height = (float)(bitmap.Height * factor);
-
-                        memg.DrawImage(bitmap, x, y, width, height);
-                    }
-                    graphics.DrawImage(membmp, box.X, box.Y, box.Width, box.Height);
-                }
-            }
-            else
-            {
-                var x = box.X + (float)(box.Width - imageWidthInInch * factor) / 2.0f;
-                var y = box.Y + (float)(box.Height - imageHeightInInch * factor) / 2.0f;
-                var width = (float)(imageWidthInInch * factor);
-                var height = (float)(imageHeightInInch * factor);
-
-                graphics.DrawImage(bitmap, x, y, width, height);
-            }
-
         }
 
         #endregion

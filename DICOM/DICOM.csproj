@@ -273,6 +273,7 @@
     <Compile Include="Printing\FilmBoxExtensions.cs" />
     <Compile Include="Printing\FilmSession.cs" />
     <Compile Include="Printing\ImageBox.cs" />
+    <Compile Include="Printing\ImageBoxExtensions.cs" />
     <Compile Include="Printing\PresentationLut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtensions.cs" />
