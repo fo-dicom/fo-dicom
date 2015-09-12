@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 using Dicom.Imaging.Mathematics;
@@ -301,47 +300,6 @@ namespace Dicom.Imaging
                 }
             }
             return overlays.ToArray();
-        }
-
-        /// <summary>
-        /// Creates a DICOM overlay from a GDI+ Bitmap.
-        /// </summary>
-        /// <param name="ds">Dataset</param>
-        /// <param name="bitmap">Bitmap</param>
-        /// <param name="mask">Color mask for overlay</param>
-        /// <returns>DICOM overlay</returns>
-        public static DicomOverlayData FromBitmap(DicomDataset ds, Bitmap bitmap, Color mask)
-        {
-            ushort group = 0x6000;
-            while (ds.Contains(new DicomTag(group, DicomTag.OverlayBitPosition.Element))) group += 2;
-
-            var overlay = new DicomOverlayData(ds, group);
-            overlay.Type = DicomOverlayType.Graphics;
-            overlay.Rows = bitmap.Height;
-            overlay.Columns = bitmap.Width;
-            overlay.OriginX = 1;
-            overlay.OriginY = 1;
-            overlay.BitsAllocated = 1;
-            overlay.BitPosition = 1;
-
-            var count = overlay.Rows * overlay.Columns / 8;
-            if ((overlay.Rows * overlay.Columns) % 8 > 0) count++;
-
-            var array = new BitList();
-            array.Capacity = overlay.Rows * overlay.Columns;
-
-            int p = 0;
-            for (int y = 0; y < bitmap.Height; y++)
-            {
-                for (int x = 0; x < bitmap.Width; x++, p++)
-                {
-                    if (bitmap.GetPixel(x, y).ToArgb() == mask.ToArgb()) array[p] = true;
-                }
-            }
-
-            overlay.Data = EvenLengthBuffer.Create(new MemoryByteBuffer(array.Array));
-
-            return overlay;
         }
 
         public static bool HasEmbeddedOverlays(DicomDataset ds)
