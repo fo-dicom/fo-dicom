@@ -59,6 +59,7 @@
 			this.error5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.error10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.rLELosslessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportPixelDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lvDicom = new System.Windows.Forms.ListView();
 			this.columnHeaderTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeaderVR = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -110,16 +111,17 @@
 			// 
 			this.menuItemTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemView,
-            this.menuItemSyntax});
+            this.menuItemSyntax,
+            this.exportPixelDataToolStripMenuItem});
 			this.menuItemTools.Name = "menuItemTools";
-			this.menuItemTools.Size = new System.Drawing.Size(48, 20);
+			this.menuItemTools.Size = new System.Drawing.Size(47, 20);
 			this.menuItemTools.Text = "&Tools";
 			// 
 			// menuItemView
 			// 
 			this.menuItemView.Enabled = false;
 			this.menuItemView.Name = "menuItemView";
-			this.menuItemView.Size = new System.Drawing.Size(152, 22);
+			this.menuItemView.Size = new System.Drawing.Size(161, 22);
 			this.menuItemView.Text = "&View";
 			this.menuItemView.Click += new System.EventHandler(this.OnClickView);
 			// 
@@ -139,7 +141,7 @@
             this.rLELosslessToolStripMenuItem});
 			this.menuItemSyntax.Enabled = false;
 			this.menuItemSyntax.Name = "menuItemSyntax";
-			this.menuItemSyntax.Size = new System.Drawing.Size(152, 22);
+			this.menuItemSyntax.Size = new System.Drawing.Size(161, 22);
 			this.menuItemSyntax.Text = "&Change Syntax";
 			// 
 			// explicitVRLittleEndianToolStripMenuItem
@@ -355,6 +357,13 @@
 			this.rLELosslessToolStripMenuItem.Text = "RLE Lossless";
 			this.rLELosslessToolStripMenuItem.Click += new System.EventHandler(this.OnClickRLELossless);
 			// 
+			// exportPixelDataToolStripMenuItem
+			// 
+			this.exportPixelDataToolStripMenuItem.Name = "exportPixelDataToolStripMenuItem";
+			this.exportPixelDataToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.exportPixelDataToolStripMenuItem.Text = "Export Pixel Data";
+			this.exportPixelDataToolStripMenuItem.Click += new System.EventHandler(this.OnClickExportPixelData);
+			// 
 			// lvDicom
 			// 
 			this.lvDicom.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -398,25 +407,26 @@
             this.copyValueToolStripMenuItem,
             this.copyTagToolStripMenuItem});
 			this.cmDicom.Name = "cmDicom";
-			this.cmDicom.Size = new System.Drawing.Size(153, 70);
+			this.cmDicom.Size = new System.Drawing.Size(134, 48);
 			this.cmDicom.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
 			// 
 			// copyValueToolStripMenuItem
 			// 
 			this.copyValueToolStripMenuItem.Name = "copyValueToolStripMenuItem";
-			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
 			this.copyValueToolStripMenuItem.Text = "Copy &Value";
 			this.copyValueToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyValue);
 			// 
 			// copyTagToolStripMenuItem
 			// 
 			this.copyTagToolStripMenuItem.Name = "copyTagToolStripMenuItem";
-			this.copyTagToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyTagToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
 			this.copyTagToolStripMenuItem.Text = "Copy &Tag";
 			this.copyTagToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyTag);
 			// 
 			// MainForm
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(792, 573);
@@ -425,6 +435,8 @@
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "DICOM Dump";
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.OnDragEnter);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.cmDicom.ResumeLayout(false);
@@ -479,6 +491,7 @@
 		private System.Windows.Forms.ToolStripMenuItem quality60ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem quality50ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem copyTagToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportPixelDataToolStripMenuItem;
 	}
 }
 

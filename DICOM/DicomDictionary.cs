@@ -101,7 +101,7 @@ namespace Dicom
 
         private static DicomDictionary _default;
 
-        private static void LoadInternalDictionaries()
+        public static void LoadInternalDictionaries(bool loadPrivateDictionary = true)
         {
             lock (_lock)
             {
@@ -130,19 +130,23 @@ namespace Dicom
                             "Unable to load DICOM dictionary from resources.\n\n" + e.Message,
                             e);
                     }
-                    try
+                    if (loadPrivateDictionary)
                     {
-                        var assembly = Assembly.GetExecutingAssembly();
-                        var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
-                        var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                        var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
-                        reader.Process();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new DicomDataException(
-                            "Unable to load private dictionary from resources.\n\n" + e.Message,
-                            e);
+                        try
+                        {
+                            var assembly = Assembly.GetExecutingAssembly();
+                            var stream =
+                                assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
+                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                            var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                            reader.Process();
+                        }
+                        catch (Exception e)
+                        {
+                            throw new DicomDataException(
+                                "Unable to load private dictionary from resources.\n\n" + e.Message,
+                                e);
+                        }
                     }
                 }
             }
