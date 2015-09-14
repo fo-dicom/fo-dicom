@@ -76,11 +76,9 @@ namespace Dicom
 
             OnSave();
 
-            using (var target = new StreamByteTarget(stream))
-            {
-                DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-                writer.Write(target, FileMetaInfo, Dataset);
-            }
+            var target = new StreamByteTarget(stream);
+            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
+            writer.Write(target, FileMetaInfo, Dataset);
         }
 
         public IAsyncResult BeginSave(string fileName, AsyncCallback callback, object state)
