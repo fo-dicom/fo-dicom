@@ -5,6 +5,9 @@ using System;
 
 namespace Dicom.IO.Writer
 {
+    /// <summary>
+    /// Writer for DICOM Part 10 objects.
+    /// </summary>
     public class DicomFileWriter
     {
         private EventAsyncResult _async;
@@ -17,13 +20,20 @@ namespace Dicom.IO.Writer
 
         private DicomDataset _dataset;
 
-        private DicomWriteOptions _options;
+        private readonly DicomWriteOptions _options;
 
+        /// <summary>
+        /// Initializes an instance of a <see cref="DicomFileWriter"/>.
+        /// </summary>
+        /// <param name="options">Writer options.</param>
         public DicomFileWriter(DicomWriteOptions options)
         {
             _options = options;
         }
 
+        /// <summary>
+        /// Gets the byte target written to.
+        /// </summary>
         public IByteTarget Target
         {
             get
@@ -32,6 +42,12 @@ namespace Dicom.IO.Writer
             }
         }
 
+        /// <summary>
+        /// Write DICOM Part 10 object to <paramref name="target"/>.
+        /// </summary>
+        /// <param name="target">Byte target subject to writing.</param>
+        /// <param name="fileMetaInfo">File meta information-</param>
+        /// <param name="dataset">Dataset.</param>
         public void Write(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             EndWrite(BeginWrite(target, fileMetaInfo, dataset, null, null));
@@ -67,6 +83,11 @@ namespace Dicom.IO.Writer
             if (_exception != null) throw _exception;
         }
 
+        /// <summary>
+        /// Continuation when preamble is written.
+        /// </summary>
+        /// <param name="target">Byte target subject to writing.</param>
+        /// <param name="state">Object state (ignored.)</param>
         private void OnCompletePreamble(IByteTarget target, object state)
         {
             // recalculate FMI group length as required by standard
@@ -77,6 +98,10 @@ namespace Dicom.IO.Writer
             walker.BeginWalk(writer, OnCompleteFileMetaInfo, walker);
         }
 
+        /// <summary>
+        /// Continuation when file meta information has been written.
+        /// </summary>
+        /// <param name="result">Dataset walker.</param>
         private void OnCompleteFileMetaInfo(IAsyncResult result)
         {
             try
@@ -118,6 +143,10 @@ namespace Dicom.IO.Writer
             }
         }
 
+        /// <summary>
+        /// Continuation when dataset has been written.
+        /// </summary>
+        /// <param name="result">Dataset walker.</param>
         private void OnCompleteDataset(IAsyncResult result)
         {
             try
