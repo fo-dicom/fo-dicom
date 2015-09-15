@@ -85,6 +85,14 @@ namespace Dicom.IO
         /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
         /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
         /// <param name="count">Number of bytes to write to byte target.</param>
+        void Write(byte[] buffer, uint offset, uint count);
+
+        /// <summary>
+        /// Write array of <see cref="byte"/>s to target.
+        /// </summary>
+        /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
+        /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
+        /// <param name="count">Number of bytes to write to byte target.</param>
         /// <param name="callback">Asynchronous callback method.</param>
         /// <param name="state">Callback state.</param>
         void Write(
