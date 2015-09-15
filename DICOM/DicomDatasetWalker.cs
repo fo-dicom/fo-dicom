@@ -9,28 +9,79 @@ using Dicom.IO.Buffer;
 
 namespace Dicom
 {
+    /// <summary>
+    /// Callback delegate for DICOM dataset traversal.
+    /// </summary>
     public delegate void DicomDatasetWalkerCallback();
 
+    /// <summary>
+    /// Interface for traversing a DICOM dataset.
+    /// </summary>
     public interface IDicomDatasetWalker
     {
+        /// <summary>
+        /// Handler for beginning the traversal.
+        /// </summary>
+        /// <param name="walker">Walker performing the actual operations.</param>
+        /// <param name="callback">Callback method.</param>
         void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback);
 
+        /// <summary>
+        /// Handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnElement(DicomElement element);
 
+        /// <summary>
+        /// Handler for traversing beginning of sequence.
+        /// </summary>
+        /// <param name="sequence">Sequence to traverse.</param>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnBeginSequence(DicomSequence sequence);
 
+        /// <summary>
+        /// Handler for traversing beginning of sequence item.
+        /// </summary>
+        /// <param name="dataset">Item dataset.</param>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnBeginSequenceItem(DicomDataset dataset);
 
+        /// <summary>
+        /// Handler for traversing end of sequence item.
+        /// </summary>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnEndSequenceItem();
 
+        /// <summary>
+        /// Handler for traversing end of sequence.
+        /// </summary>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnEndSequence();
 
+        /// <summary>
+        /// Handler for traversing beginning of fragment.
+        /// </summary>
+        /// <param name="fragment">Fragment sequence.</param>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnBeginFragment(DicomFragmentSequence fragment);
 
+        /// <summary>
+        /// Handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnFragmentItem(IByteBuffer item);
 
+        /// <summary>
+        /// Handler for traversing end of fragment.
+        /// </summary>
+        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
         bool OnEndFragment();
 
+        /// <summary>
+        /// Handler for end of traversal.
+        /// </summary>
         void OnEndWalk();
     }
 
