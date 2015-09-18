@@ -56,7 +56,7 @@ namespace Dicom.IO.Writer
         /// Handler for beginning the traversal.
         /// </summary>
         /// <param name="walker">Walker performing the actual operations.</param>
-        /// <param name="callback">Callback method.</param>
+        /// <param name="callback">Callback method to be called when an On... method returns false.</param>
         public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
         {
             _target.Endian = _syntax.Endian;
@@ -68,7 +68,8 @@ namespace Dicom.IO.Writer
         /// Handler for traversing a DICOM element.
         /// </summary>
         /// <param name="element">Element to traverse.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnElement(DicomElement element)
         {
             WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
@@ -97,7 +98,8 @@ namespace Dicom.IO.Writer
         /// Handler for traversing beginning of sequence.
         /// </summary>
         /// <param name="sequence">Sequence to traverse.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequence(DicomSequence sequence)
         {
             uint length = UndefinedLength;
@@ -118,7 +120,8 @@ namespace Dicom.IO.Writer
         /// Handler for traversing beginning of sequence item.
         /// </summary>
         /// <param name="dataset">Item dataset.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
             uint length = UndefinedLength;
@@ -136,7 +139,8 @@ namespace Dicom.IO.Writer
         /// <summary>
         /// Handler for traversing end of sequence item.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndSequenceItem()
         {
             DicomSequence sequence = _sequences.Peek();
@@ -152,7 +156,8 @@ namespace Dicom.IO.Writer
         /// <summary>
         /// Handler for traversing end of sequence.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndSequence()
         {
             DicomSequence sequence = _sequences.Pop();
@@ -169,7 +174,8 @@ namespace Dicom.IO.Writer
         /// Handler for traversing beginning of fragment.
         /// </summary>
         /// <param name="fragment">Fragment sequence.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
             WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, UndefinedLength);
@@ -182,7 +188,8 @@ namespace Dicom.IO.Writer
         /// Handler for traversing fragment item.
         /// </summary>
         /// <param name="item">Buffer containing the fragment item.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnFragmentItem(IByteBuffer item)
         {
             WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
@@ -206,7 +213,8 @@ namespace Dicom.IO.Writer
         /// <summary>
         /// Handler for traversing end of fragment.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndFragment()
         {
             WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);

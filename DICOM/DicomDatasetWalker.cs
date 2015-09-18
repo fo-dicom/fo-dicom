@@ -23,60 +23,68 @@ namespace Dicom
         /// Handler for beginning the traversal.
         /// </summary>
         /// <param name="walker">Walker performing the actual operations.</param>
-        /// <param name="callback">Callback method.</param>
+        /// <param name="callback">Callback method to be called when an On... method returns false.</param>
         void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback);
 
         /// <summary>
         /// Handler for traversing a DICOM element.
         /// </summary>
         /// <param name="element">Element to traverse.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnElement(DicomElement element);
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
         /// </summary>
         /// <param name="sequence">Sequence to traverse.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnBeginSequence(DicomSequence sequence);
 
         /// <summary>
         /// Handler for traversing beginning of sequence item.
         /// </summary>
         /// <param name="dataset">Item dataset.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnBeginSequenceItem(DicomDataset dataset);
 
         /// <summary>
         /// Handler for traversing end of sequence item.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnEndSequenceItem();
 
         /// <summary>
         /// Handler for traversing end of sequence.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnEndSequence();
 
         /// <summary>
         /// Handler for traversing beginning of fragment.
         /// </summary>
         /// <param name="fragment">Fragment sequence.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnBeginFragment(DicomFragmentSequence fragment);
 
         /// <summary>
         /// Handler for traversing fragment item.
         /// </summary>
         /// <param name="item">Buffer containing the fragment item.</param>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnFragmentItem(IByteBuffer item);
 
         /// <summary>
         /// Handler for traversing end of fragment.
         /// </summary>
-        /// <returns>true if traversing should continue sequentially, false if traversing should return to upper level.</returns>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="OnBeginWalk"/> before returning.</remarks>
         bool OnEndFragment();
 
         /// <summary>

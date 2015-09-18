@@ -67,6 +67,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DicomDatasetTest.cs" />
+    <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
