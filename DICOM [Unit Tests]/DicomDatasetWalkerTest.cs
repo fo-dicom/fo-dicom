@@ -11,6 +11,71 @@ namespace Dicom
 
     public class DicomDatasetWalkerTest
     {
+        #region Fields
+
+        private readonly DicomDatasetWalker walker;
+
+        private readonly DatasetWalkerImpl walkerImpl;
+
+        #endregion
+
+        #region Constructors
+
+        public DicomDatasetWalkerTest()
+        {
+            var dataset = new DicomDataset(
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
+                new DicomDate(DicomTag.AcquisitionDate, DateTime.Today),
+                new DicomPersonName(DicomTag.ConsultingPhysicianName, "Doe", "John"),
+                new DicomDecimalString(DicomTag.GridFrameOffsetVector, 1.0m, 2.0m, 3.0m, 4.0m, 5.0m, 6.0m),
+                new DicomSequence(
+                    DicomTag.BeamSequence,
+                    new DicomDataset(
+                        new DicomIntegerString(DicomTag.BeamNumber, 1),
+                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 1.0m),
+                        new DicomLongString(DicomTag.BeamName, "Ant")),
+                    new DicomDataset(
+                        new DicomIntegerString(DicomTag.BeamNumber, 2),
+                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 100.0m),
+                        new DicomLongString(DicomTag.BeamName, "Post")),
+                    new DicomDataset(
+                        new DicomIntegerString(DicomTag.BeamNumber, 3),
+                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 2.0m),
+                        new DicomLongString(DicomTag.BeamName, "Left"))),
+                new DicomIntegerString(DicomTag.NumberOfContourPoints, 120));
+
+            this.walker = new DicomDatasetWalker(dataset);
+            this.walkerImpl = new DatasetWalkerImpl();
+        }
+
+        #endregion
+
+        #region Unit tests
+
+        [Fact]
+        public void Walk_CheckSequenceItems_ShouldBeThree()
+        {
+            this.walker.Walk(this.walkerImpl);
+            Assert.Equal(3, this.walkerImpl.itemVisits);
+        }
+
+        [Fact]
+        public void Walk_OnElementReturnedFalse_FallbackBehaviorContinueWalk()
+        {
+            this.walker.Walk(this.walkerImpl);
+            Assert.Equal(120, this.walkerImpl.numberOfCountourPoints);
+        }
+
+        [Fact]
+        public void Walk_OnBeginSequenceItemReturnedFalse_FallbackBehaviorContinueWalk()
+        {
+            this.walker.Walk(this.walkerImpl);
+            Assert.Equal(100.0, this.walkerImpl.maxFinalCumulativeMetersetWeight);
+        }
+
+        #endregion
+
         #region Mock classes
 
         private class DatasetWalkerImpl : IDicomDatasetWalker
@@ -98,71 +163,6 @@ namespace Dicom
             }
 
             #endregion
-        }
-
-        #endregion
-
-        #region Fields
-
-        private readonly DicomDatasetWalker walker;
-
-        private readonly DatasetWalkerImpl walkerImpl;
-
-        #endregion
-
-        #region Constructors
-
-        public DicomDatasetWalkerTest()
-        {
-            var dataset = new DicomDataset(
-                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
-                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
-                new DicomDate(DicomTag.AcquisitionDate, DateTime.Today),
-                new DicomPersonName(DicomTag.ConsultingPhysicianName, "Doe", "John"),
-                new DicomDecimalString(DicomTag.GridFrameOffsetVector, 1.0m, 2.0m, 3.0m, 4.0m, 5.0m, 6.0m),
-                new DicomSequence(
-                    DicomTag.BeamSequence,
-                    new DicomDataset(
-                        new DicomIntegerString(DicomTag.BeamNumber, 1),
-                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 1.0m),
-                        new DicomLongString(DicomTag.BeamName, "Ant")),
-                    new DicomDataset(
-                        new DicomIntegerString(DicomTag.BeamNumber, 2),
-                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 100.0m),
-                        new DicomLongString(DicomTag.BeamName, "Post")),
-                    new DicomDataset(
-                        new DicomIntegerString(DicomTag.BeamNumber, 3),
-                        new DicomDecimalString(DicomTag.FinalCumulativeMetersetWeight, 2.0m),
-                        new DicomLongString(DicomTag.BeamName, "Left"))),
-                new DicomIntegerString(DicomTag.NumberOfContourPoints, 120));
-
-            this.walker = new DicomDatasetWalker(dataset);
-            this.walkerImpl = new DatasetWalkerImpl();
-        }
-
-        #endregion
-
-        #region Unit tests
-
-        [Fact]
-        public void Walk_CheckSequenceItems_ShouldBeThree()
-        {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(3, this.walkerImpl.itemVisits);
-        }
-
-        [Fact]
-        public void Walk_OnElementReturnedFalse_FallbackBehaviorContinueWalk()
-        {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(120, this.walkerImpl.numberOfCountourPoints);
-        }
-
-        [Fact]
-        public void Walk_OnBeginSequenceItemReturnedFalse_FallbackBehaviorContinueWalk()
-        {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(100.0, this.walkerImpl.maxFinalCumulativeMetersetWeight);
         }
 
         #endregion

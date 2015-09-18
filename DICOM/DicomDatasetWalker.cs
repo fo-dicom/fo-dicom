@@ -185,7 +185,9 @@ namespace Dicom
 
         #endregion
 
-        private IEnumerable<DicomItem> _dataset;
+        #region Fields
+
+        private readonly IEnumerable<DicomItem> _dataset;
 
         private Queue<DicomItem> _items;
 
@@ -195,14 +197,31 @@ namespace Dicom
 
         private Exception _exception;
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes an instance of a <see cref="DicomDatasetWalker"/>.
+        /// </summary>
+        /// <param name="dataset"></param>
         public DicomDatasetWalker(IEnumerable<DicomItem> dataset)
         {
             _dataset = dataset;
         }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Perform a synchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
+        /// </summary>
+        /// <param name="walker">Dataset walker implementation to be used for dataset traversal.</param>
         public void Walk(IDicomDatasetWalker walker)
         {
-            EndWalk(BeginWalk(walker, null, null));
+            var items = new Queue<DicomItem>();
+            Walk(walker, this._dataset, items);
         }
 
         public IAsyncResult BeginWalk(IDicomDatasetWalker walker, AsyncCallback callback, object state)
@@ -331,5 +350,127 @@ namespace Dicom
                 _async.Set();
             }
         }
+
+        /// <summary>
+        /// Perform a dataset walk.
+        /// </summary>
+        /// <param name="walker">Walker implementation.</param>
+        /// <param name="dataset">DICOM dataset subject to traversal.</param>
+        /// <param name="items">Queue of internal items; must be initialized and empty when called from external method.</param>
+        /// <param name="initialize">True for initializing the walk, false otherwise. Must be true when called from external method.</param>
+        private static void Walk(
+            IDicomDatasetWalker walker,
+            IEnumerable<DicomItem> dataset,
+            Queue<DicomItem> items,
+            bool initialize = true)
+        {
+            try
+            {
+                if (initialize)
+                {
+                    BuildWalkQueue(dataset, items);
+                    walker.OnBeginWalk(
+                        null,
+                        () =>
+                            {
+                                items.Dequeue();
+                                Walk(walker, dataset, items, false);
+                            });
+                }
+
+                while (items.Count > 0)
+                {
+                    var item = items.Peek();
+
+                    if (item is DicomElement)
+                    {
+                        if (!walker.OnElement(item as DicomElement)) return;
+                    }
+                    else if (item is DicomFragmentSequence)
+                    {
+                        if (!walker.OnBeginFragment(item as DicomFragmentSequence)) return;
+                    }
+                    else if (item is DicomFragmentItem)
+                    {
+                        if (!walker.OnFragmentItem((item as DicomFragmentItem).Buffer)) return;
+                    }
+                    else if (item is EndDicomFragment)
+                    {
+                        if (!walker.OnEndFragment()) return;
+                    }
+                    else if (item is DicomSequence)
+                    {
+                        if (!walker.OnBeginSequence(item as DicomSequence)) return;
+                    }
+                    else if (item is BeginDicomSequenceItem)
+                    {
+                        if (!walker.OnBeginSequenceItem((item as BeginDicomSequenceItem).Dataset)) return;
+                    }
+                    else if (item is EndDicomSequenceItem)
+                    {
+                        if (!walker.OnEndSequenceItem()) return;
+                    }
+                    else if (item is EndDicomSequence)
+                    {
+                        if (!walker.OnEndSequence()) return;
+                    }
+
+                    items.Dequeue();
+                }
+
+                walker.OnEndWalk();
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    walker.OnEndWalk();
+                }
+                finally
+                {
+                    throw e;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Populate the <paramref name="items"/> queue.
+        /// </summary>
+        /// <param name="dataset">Source of population.</param>
+        /// <param name="items">Destination of polpulation.</param>
+        private static void BuildWalkQueue(IEnumerable<DicomItem> dataset, Queue<DicomItem> items)
+        {
+            foreach (var item in dataset)
+            {
+                if (item is DicomElement)
+                {
+                    items.Enqueue(item);
+                }
+                else if (item is DicomFragmentSequence)
+                {
+                    var sq = item as DicomFragmentSequence;
+                    items.Enqueue(item);
+                    foreach (var fragment in sq)
+                    {
+                        items.Enqueue(new DicomFragmentItem(fragment));
+                    }
+                    items.Enqueue(new EndDicomFragment());
+                }
+                else if (item is DicomSequence)
+                {
+                    var sq = item as DicomSequence;
+                    items.Enqueue(item);
+                    foreach (var sqi in sq)
+                    {
+                        items.Enqueue(new BeginDicomSequenceItem(sqi));
+                        BuildWalkQueue(sqi, items);
+                        items.Enqueue(new EndDicomSequenceItem());
+                    }
+                    items.Enqueue(new EndDicomSequence());
+                }
+            }
+        }
+
+        #endregion
     }
 }
