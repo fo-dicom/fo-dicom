@@ -425,8 +425,9 @@ namespace Dicom
                 try
                 {
                     walker.OnEndWalk();
+                    throw;
                 }
-                finally
+                catch
                 {
                     throw e;
                 }
@@ -437,7 +438,7 @@ namespace Dicom
         /// Populate the <paramref name="items"/> queue.
         /// </summary>
         /// <param name="dataset">Source of population.</param>
-        /// <param name="items">Destination of polpulation.</param>
+        /// <param name="items">Destination of population.</param>
         private static void BuildWalkQueue(IEnumerable<DicomItem> dataset, Queue<DicomItem> items)
         {
             foreach (var item in dataset)
