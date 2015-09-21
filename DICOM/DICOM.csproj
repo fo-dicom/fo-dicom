@@ -62,6 +62,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
+    <Compile Include="DicomDatasetWalkerExtensions.cs" />
+    <Compile Include="APMHelper.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
     <Compile Include="IO\DesktopPath.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />
     <Compile Include="IO\IPath.cs" />
+    <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
@@ -321,7 +324,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

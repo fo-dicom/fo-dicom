@@ -179,7 +179,7 @@ namespace Dicom.Dump
 
             private string Indent { get; set; }
 
-            public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+            public void OnBeginWalk()
             {
             }
 

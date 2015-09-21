@@ -1,16 +1,18 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Text;
-using Dicom.IO;
-
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-
 namespace Dicom
 {
+    using System;
+    using System.IO;
+    using System.Text;
+    using Dicom.IO;
+
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
+
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Representation of one DICOM file.
     /// </summary>
@@ -81,61 +83,34 @@ namespace Dicom
             writer.Write(target, FileMetaInfo, Dataset);
         }
 
-        public IAsyncResult BeginSave(string fileName, AsyncCallback callback, object state)
+        /// <summary>
+        /// Save to file asynchronously.
+        /// </summary>
+        /// <param name="fileName">Name of file.</param>
+        /// <returns>Awaitable <see cref="Task"/>.</returns>
+        public async Task SaveAsync(string fileName)
         {
-            if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
+            {
+                throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+            }
 
-            if (Format == DicomFileFormat.DICOM3NoFileMetaInfo)
+            if (this.Format == DicomFileFormat.DICOM3NoFileMetaInfo)
             {
                 // create file meta information from dataset
-                FileMetaInfo = new DicomFileMetaInformation(Dataset);
+                this.FileMetaInfo = new DicomFileMetaInformation(this.Dataset);
             }
 
-            File = IOManager.CreateFileReference(fileName);
-            File.Delete();
+            this.File = IOManager.CreateFileReference(fileName);
+            this.File.Delete();
 
-            OnSave();
+            this.OnSave();
 
-            FileByteTarget target = new FileByteTarget(File);
-
-            EventAsyncResult result = new EventAsyncResult(callback, state);
-
-            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-            return writer.BeginWrite(
-                target,
-                FileMetaInfo,
-                Dataset,
-                OnWriteComplete,
-                new Tuple<DicomFileWriter, EventAsyncResult>(writer, result));
-        }
-
-        private static void OnWriteComplete(IAsyncResult result)
-        {
-            var state = result.AsyncState as Tuple<DicomFileWriter, EventAsyncResult>;
-
-            try
+            using (var target = new FileByteTarget(this.File))
             {
-                state.Item1.EndWrite(result);
-
-                // ensure that file handles are closed
-                var target = (FileByteTarget)state.Item1.Target;
-                target.Dispose();
+                var writer = new DicomFileWriter(DicomWriteOptions.Default);
+                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset);
             }
-            catch (Exception ex)
-            {
-                state.Item2.InternalState = ex;
-            }
-
-            state.Item2.Set();
-        }
-
-        public void EndSave(IAsyncResult result)
-        {
-            EventAsyncResult eventResult = result as EventAsyncResult;
-
-            result.AsyncWaitHandle.WaitOne();
-
-            if (eventResult.InternalState != null) throw eventResult.InternalState as Exception;
         }
 
         /// <summary>

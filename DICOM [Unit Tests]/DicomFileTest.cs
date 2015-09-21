@@ -5,6 +5,7 @@ namespace Dicom
 {
     using System.IO;
     using System.IO.MemoryMappedFiles;
+    using System.Threading.Tasks;
 
     using Xunit;
 
@@ -69,6 +70,15 @@ namespace Dicom
             var saveFile = new DicomFile(MinimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
+            Assert.True(File.Exists(fileName));
+        }
+
+        [Fact]
+        public async Task SaveAsync_ToFile_FileExistsOnDisk()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
         }
 

@@ -66,6 +66,30 @@ namespace Dicom.IO.Writer
             }
         }
 
+        [Fact]
+        public void BeginWrite_SimpleFile_CommentMaintained()
+        {
+            lock (this.locker)
+            {
+                const string fileName = @".\Test Data\dicomfilewriter_beginwrite.dcm";
+                var file = IOManager.CreateFileReference(fileName);
+
+                using (var target = new FileByteTarget(file))
+                {
+                    var writer = new DicomFileWriter(new DicomWriteOptions());
+                    writer.EndWrite(writer.BeginWrite(target, this.metaInfo, this.dataset, null, null));
+                }
+
+                var expected = Comment;
+                var readFile = DicomFile.Open(fileName);
+                var actual = readFile.Dataset.Get<string>(DoseCommentTag);
+                Assert.Equal(expected, actual);
+
+                var syntax = readFile.FileMetaInfo.TransferSyntax;
+                Assert.Equal(DicomTransferSyntax.JPEG2000Lossless, syntax);
+            }
+        }
+
         #endregion
     }
 }

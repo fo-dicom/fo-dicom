@@ -27,7 +27,7 @@ namespace Dicom.Log
             _value = valueLength;
         }
 
-        public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+        public void OnBeginWalk()
         {
         }
 

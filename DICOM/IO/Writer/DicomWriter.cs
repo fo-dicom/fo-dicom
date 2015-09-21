@@ -22,8 +22,6 @@ namespace Dicom.IO.Writer
 
         private Stack<DicomSequence> _sequences;
 
-        private DicomDatasetWalkerCallback _callback;
-
         /// <summary>
         /// Initializes an instance of <see cref="DicomWriter"/>.
         /// </summary>
@@ -55,12 +53,9 @@ namespace Dicom.IO.Writer
         /// <summary>
         /// Handler for beginning the traversal.
         /// </summary>
-        /// <param name="walker">Walker performing the actual operations.</param>
-        /// <param name="callback">Callback method to be called when an On... method returns false.</param>
-        public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+        public void OnBeginWalk()
         {
             _target.Endian = _syntax.Endian;
-            _callback = callback;
             _sequences = new Stack<DicomSequence>();
         }
 
@@ -88,7 +83,6 @@ namespace Dicom.IO.Writer
             _target.Write(buffer.Data, 0, buffer.Size);
             if (element.Length >= _options.LargeObjectSize)
             {
-                _callback();
                 return false;
             }
             return true;
@@ -204,7 +198,6 @@ namespace Dicom.IO.Writer
             _target.Write(buffer.Data, 0, buffer.Size);
             if (item.Size >= _options.LargeObjectSize)
             {
-                _callback();
                 return false;
             }
             return true;
@@ -227,7 +220,6 @@ namespace Dicom.IO.Writer
         public void OnEndWalk()
         {
             _sequences = null;
-            _callback = null;
         }
 
         /// <summary>

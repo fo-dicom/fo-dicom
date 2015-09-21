@@ -61,6 +61,13 @@ namespace Dicom
         }
 
         [Fact]
+        public void BeginWalk_CheckSequenceItems_ShouldBeThree()
+        {
+            this.walker.EndWalk(this.walker.BeginWalk(this.walkerImpl, null, null));
+            Assert.Equal(3, this.walkerImpl.itemVisits);
+        }
+
+        [Fact]
         public void Walk_OnElementReturnedFalse_FallbackBehaviorContinueWalk()
         {
             this.walker.Walk(this.walkerImpl);
@@ -82,8 +89,6 @@ namespace Dicom
         {
             #region Fields
 
-            private DicomDatasetWalkerCallback callback;
-
             internal int itemVisits = 0;
 
             internal int numberOfCountourPoints;
@@ -94,9 +99,8 @@ namespace Dicom
 
             #region Methods
 
-            public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+            public void OnBeginWalk()
             {
-                this.callback = callback;
             }
 
             public bool OnElement(DicomElement element)
@@ -113,7 +117,6 @@ namespace Dicom
                 }
 
                 var success = !element.Tag.Equals(DicomTag.AcquisitionDate);
-                if (!success) this.callback();
 
                 return success;
             }
@@ -128,7 +131,6 @@ namespace Dicom
                 ++this.itemVisits;
 
                 var success = this.itemVisits != 2;
-                if (!success) this.callback();
 
                 return success;
             }
