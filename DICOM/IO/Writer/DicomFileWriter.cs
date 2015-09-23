@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom.IO.Writer
 {
+    using System;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -63,11 +62,12 @@ namespace Dicom.IO.Writer
         /// <param name="fileMetaInfo">File meta information.</param>
         /// <param name="dataset">Dataset.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public async Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
+        public Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
-            WritePreamble(target);
-            await WriteFileMetaInfoAsync(target, fileMetaInfo, this._options);
-            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this._options);
+            return
+                Task.Run(() => WritePreamble(target))
+                    .ContinueWith(task => WriteFileMetaInfo(target, fileMetaInfo, this._options))
+                    .ContinueWith(task => WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this._options));
         }
 
         /// <summary>
@@ -105,26 +105,6 @@ namespace Dicom.IO.Writer
         }
 
         /// <summary>
-        /// Write DICOM file meta information asynchronously.
-        /// </summary>
-        /// <param name="target">Byte target subject to writing.</param>
-        /// <param name="fileMetaInfo">File meta information.</param>
-        /// <param name="options">Writer options.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
-        private static async Task WriteFileMetaInfoAsync(
-            IByteTarget target,
-            DicomDataset fileMetaInfo,
-            DicomWriteOptions options)
-        {
-            // recalculate FMI group length as required by standard
-            fileMetaInfo.RecalculateGroupLengths();
-
-            var writer = new DicomWriter(DicomTransferSyntax.ExplicitVRLittleEndian, options, target);
-            var walker = new DicomDatasetWalker(fileMetaInfo);
-            await walker.WalkAsync(writer);
-        }
-
-        /// <summary>
         /// Write DICOM dataset.
         /// </summary>
         /// <param name="target">Byte target subject to writing.</param>
@@ -142,27 +122,6 @@ namespace Dicom.IO.Writer
             var writer = new DicomWriter(syntax, options, target);
             var walker = new DicomDatasetWalker(dataset);
             walker.Walk(writer);
-        }
-
-        /// <summary>
-        /// Write DICOM dataset asynchronously.
-        /// </summary>
-        /// <param name="target">Byte target subject to writing.</param>
-        /// <param name="syntax">Transfer syntax applicable to dataset.</param>
-        /// <param name="dataset">Dataset.</param>
-        /// <param name="options">Writer options.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
-        private static async Task WriteDatasetAsync(
-            IByteTarget target,
-            DicomTransferSyntax syntax,
-            DicomDataset dataset,
-            DicomWriteOptions options)
-        {
-            UpdateDatasetGroupLengths(syntax, dataset, options);
-
-            var writer = new DicomWriter(syntax, options, target);
-            var walker = new DicomDatasetWalker(dataset);
-            await walker.WalkAsync(writer);
         }
 
         /// <summary>
