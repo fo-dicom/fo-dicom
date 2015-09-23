@@ -216,16 +216,13 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Perform a synchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
+        /// Perform an asynchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
         /// </summary>
         /// <param name="walker">Dataset walker implementation to be used for dataset traversal.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public Task WalkAsync(IDicomDatasetWalker walker)
         {
-            var items = new Queue<DicomItem>();
-            BuildWalkQueue(this._dataset, items);
-
-            return Task.Run(() => DoWalk(walker, items));
+            return Task.Run(() => this.Walk(walker));
         }
 
         /// <summary>

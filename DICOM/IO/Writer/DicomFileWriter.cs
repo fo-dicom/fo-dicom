@@ -64,10 +64,7 @@ namespace Dicom.IO.Writer
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
-            return
-                Task.Run(() => WritePreamble(target))
-                    .ContinueWith(task => WriteFileMetaInfo(target, fileMetaInfo, this._options))
-                    .ContinueWith(task => WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this._options));
+            return Task.Run(() => this.Write(target, fileMetaInfo, dataset));
         }
 
         /// <summary>
