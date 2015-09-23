@@ -6,6 +6,8 @@ using System.IO;
 
 namespace Dicom.IO
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Representation of a stream byte target.
     /// </summary>
@@ -157,53 +159,15 @@ namespace Dicom.IO
         }
 
         /// <summary>
-        /// Write array of <see cref="byte"/>s to target.
+        /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
         /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
         /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
         /// <param name="count">Number of bytes to write to byte target.</param>
-        /// <param name="callback">Asynchronous callback method.</param>
-        /// <param name="state">Callback state.</param>
-        public void Write(
-            byte[] buffer,
-            uint offset = 0,
-            uint count = 0xffffffff,
-            ByteTargetCallback callback = null,
-            object state = null)
+        /// <returns>Avaitable <see cref="Task"/>.</returns>
+        public Task WriteAsync(byte[] buffer, uint offset, uint count)
         {
-            if (count == uint.MaxValue) count = (uint)buffer.Length - offset;
-
-            if (callback != null)
-                _stream.BeginWrite(
-                    buffer,
-                    (int)offset,
-                    (int)count,
-                    OnEndWrite,
-                    new Tuple<ByteTargetCallback, object>(callback, state));
-            else _stream.Write(buffer, (int)offset, (int)count);
-        }
-
-        /// <summary>
-        /// Asynchronous callback handler.
-        /// </summary>
-        /// <param name="result">Asynchronous result object.</param>
-        private void OnEndWrite(IAsyncResult result)
-        {
-            try
-            {
-                _stream.EndWrite(result);
-            }
-            catch
-            {
-            }
-            finally
-            {
-                if (result.AsyncState != null)
-                {
-                    Tuple<ByteTargetCallback, object> state = result.AsyncState as Tuple<ByteTargetCallback, object>;
-                    state.Item1(this, state.Item2);
-                }
-            }
+            return _stream.WriteAsync(buffer, (int)offset, (int)count);
         }
     }
 }
