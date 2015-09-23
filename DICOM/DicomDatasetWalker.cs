@@ -28,6 +28,13 @@ namespace Dicom
         bool OnElement(DicomElement element);
 
         /// <summary>
+        /// Asynchronous handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        Task<bool> OnElementAsync(DicomElement element);
+
+        /// <summary>
         /// Handler for traversing beginning of sequence.
         /// </summary>
         /// <param name="sequence">Sequence to traverse.</param>
@@ -66,6 +73,13 @@ namespace Dicom
         /// <param name="item">Buffer containing the fragment item.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnFragmentItem(IByteBuffer item);
+
+        /// <summary>
+        /// Asynchronous handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        Task<bool> OnFragmentItemAsync(IByteBuffer item);
 
         /// <summary>
         /// Handler for traversing end of fragment.

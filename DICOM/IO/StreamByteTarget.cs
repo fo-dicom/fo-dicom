@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-
 namespace Dicom.IO
 {
+    using System.IO;
     using System.Threading.Tasks;
 
     /// <summary>

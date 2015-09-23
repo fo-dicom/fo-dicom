@@ -12,6 +12,8 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Dump
 {
+    using System.Threading.Tasks;
+
     public partial class MainForm : Form
     {
         private DicomFile _file;
@@ -205,6 +207,11 @@ namespace Dicom.Dump
                 return true;
             }
 
+            public Task<bool> OnElementAsync(DicomElement element)
+            {
+                return Task.FromResult(this.OnElement(element));
+            }
+
             public bool OnBeginSequence(DicomSequence sequence)
             {
                 var tag = String.Format(
@@ -261,6 +268,11 @@ namespace Dicom.Dump
 
                 Form.AddItem(tag, String.Empty, item.Size.ToString(), String.Empty);
                 return true;
+            }
+
+            public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+            {
+                return Task.FromResult(this.OnFragmentItem(item));
             }
 
             public bool OnEndFragment()

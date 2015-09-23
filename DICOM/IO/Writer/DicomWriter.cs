@@ -7,6 +7,8 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.IO.Writer
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// DICOM object writer.
     /// </summary>
@@ -86,6 +88,11 @@ namespace Dicom.IO.Writer
                 return false;
             }
             return true;
+        }
+
+        public Task<bool> OnElementAsync(DicomElement element)
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -201,6 +208,11 @@ namespace Dicom.IO.Writer
                 return false;
             }
             return true;
+        }
+
+        public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>

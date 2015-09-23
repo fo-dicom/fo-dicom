@@ -4,6 +4,7 @@
 namespace Dicom
 {
     using System;
+    using System.Threading.Tasks;
 
     using Dicom.IO.Buffer;
 
@@ -75,6 +76,13 @@ namespace Dicom
         }
 
         [Fact]
+        public async Task WalkAsync_OnElementAsyncReturnedFalse_FallbackBehaviorContinueWalk()
+        {
+            await this.walker.WalkAsync(this.walkerImpl);
+            Assert.Equal(120, this.walkerImpl.numberOfCountourPoints);
+        }
+
+        [Fact]
         public void Walk_OnBeginSequenceItemReturnedFalse_FallbackBehaviorContinueWalk()
         {
             this.walker.Walk(this.walkerImpl);
@@ -121,6 +129,11 @@ namespace Dicom
                 return success;
             }
 
+            public Task<bool> OnElementAsync(DicomElement element)
+            {
+                return Task.FromResult(this.OnElement(element));
+            }
+
             public bool OnBeginSequence(DicomSequence sequence)
             {
                 return true;
@@ -153,6 +166,11 @@ namespace Dicom
             public bool OnFragmentItem(IByteBuffer item)
             {
                 return true;
+            }
+
+            public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+            {
+                return Task.FromResult(this.OnFragmentItem(item));
             }
 
             public bool OnEndFragment()
