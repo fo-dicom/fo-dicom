@@ -88,7 +88,7 @@ namespace Dicom
         /// </summary>
         /// <param name="fileName">Name of file.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public Task SaveAsync(string fileName)
+        public async Task SaveAsync(string fileName)
         {
             if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
             {
@@ -106,10 +106,11 @@ namespace Dicom
 
             this.OnSave();
 
-            var target = new FileByteTarget(this.File);
-            var writer = new DicomFileWriter(DicomWriteOptions.Default);
-
-            return writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ContinueWith(task => target.Dispose());
+            using (var target = new FileByteTarget(this.File))
+            {
+                var writer = new DicomFileWriter(DicomWriteOptions.Default);
+                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset);
+            }
         }
 
         /// <summary>

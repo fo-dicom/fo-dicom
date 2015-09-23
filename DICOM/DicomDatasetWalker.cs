@@ -236,7 +236,10 @@ namespace Dicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public Task WalkAsync(IDicomDatasetWalker walker)
         {
-            return Task.Run(() => this.Walk(walker));
+            var items = new Queue<DicomItem>();
+            BuildWalkQueue(this._dataset, items);
+
+            return DoWalkAsync(walker, items);
         }
 
         /// <summary>
@@ -303,6 +306,71 @@ namespace Dicom
                     else if (item is DicomFragmentItem)
                     {
                         walker.OnFragmentItem((item as DicomFragmentItem).Buffer);
+                    }
+                    else if (item is EndDicomFragment)
+                    {
+                        walker.OnEndFragment();
+                    }
+                    else if (item is DicomSequence)
+                    {
+                        walker.OnBeginSequence(item as DicomSequence);
+                    }
+                    else if (item is BeginDicomSequenceItem)
+                    {
+                        walker.OnBeginSequenceItem((item as BeginDicomSequenceItem).Dataset);
+                    }
+                    else if (item is EndDicomSequenceItem)
+                    {
+                        walker.OnEndSequenceItem();
+                    }
+                    else if (item is EndDicomSequence)
+                    {
+                        walker.OnEndSequence();
+                    }
+                }
+
+                walker.OnEndWalk();
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    walker.OnEndWalk();
+                    throw;
+                }
+                catch
+                {
+                    throw e;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Perform an asynchronous dataset walk.
+        /// </summary>
+        /// <param name="walker">Walker implementation.</param>
+        /// <param name="items">Queue of internal items; must be initialized and empty when called from external method.</param>
+        private static async Task DoWalkAsync(IDicomDatasetWalker walker, Queue<DicomItem> items)
+        {
+            try
+            {
+                walker.OnBeginWalk();
+
+                while (items.Count > 0)
+                {
+                    var item = items.Dequeue();
+
+                    if (item is DicomElement)
+                    {
+                        await walker.OnElementAsync(item as DicomElement);
+                    }
+                    else if (item is DicomFragmentSequence)
+                    {
+                        walker.OnBeginFragment(item as DicomFragmentSequence);
+                    }
+                    else if (item is DicomFragmentItem)
+                    {
+                        await walker.OnFragmentItemAsync((item as DicomFragmentItem).Buffer);
                     }
                     else if (item is EndDicomFragment)
                     {

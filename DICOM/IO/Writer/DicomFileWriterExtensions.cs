@@ -4,6 +4,7 @@
 namespace Dicom.IO.Writer
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Extension class for providing legacy methods from <see cref="DicomFileWriter"/> class.
@@ -28,7 +29,7 @@ namespace Dicom.IO.Writer
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(@this.WriteAsync(target, fileMetaInfo, dataset), callback, state);
+            return APMHelper.ToBegin(Task.Run(() => @this.Write(target, fileMetaInfo, dataset)), callback, state);
         }
 
         /// <summary>

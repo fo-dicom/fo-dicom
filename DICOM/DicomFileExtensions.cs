@@ -4,6 +4,7 @@
 namespace Dicom
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Extension class providing legacy method support from <see cref="DicomFile"/> class.
@@ -38,7 +39,7 @@ namespace Dicom
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(@this.SaveAsync(fileName), callback, state);
+            return APMHelper.ToBegin(Task.Run(() => @this.Save(fileName)), callback, state);
         }
 
         /// <summary>

@@ -62,9 +62,11 @@ namespace Dicom.IO.Writer
         /// <param name="fileMetaInfo">File meta information.</param>
         /// <param name="dataset">Dataset.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
+        public async Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
-            return Task.Run(() => this.Write(target, fileMetaInfo, dataset));
+            await WritePreambleAsync(target);
+            await WriteFileMetaInfoAsync(target, fileMetaInfo, this._options);
+            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this._options);
         }
 
         /// <summary>
@@ -80,6 +82,21 @@ namespace Dicom.IO.Writer
             preamble[131] = (byte)'M';
 
             target.Write(preamble, 0, 132);
+        }
+
+        /// <summary>
+        /// Write DICOM file preamble.
+        /// </summary>
+        /// <param name="target">Byte target subject to writing.</param>
+        private static Task WritePreambleAsync(IByteTarget target)
+        {
+            var preamble = new byte[132];
+            preamble[128] = (byte)'D';
+            preamble[129] = (byte)'I';
+            preamble[130] = (byte)'C';
+            preamble[131] = (byte)'M';
+
+            return target.WriteAsync(preamble, 0, 132);
         }
 
         /// <summary>
@@ -102,6 +119,25 @@ namespace Dicom.IO.Writer
         }
 
         /// <summary>
+        /// Write DICOM file meta information.
+        /// </summary>
+        /// <param name="target">Byte target subject to writing.</param>
+        /// <param name="fileMetaInfo">File meta information.</param>
+        /// <param name="options">Writer options.</param>
+        private static Task WriteFileMetaInfoAsync(
+            IByteTarget target,
+            DicomDataset fileMetaInfo,
+            DicomWriteOptions options)
+        {
+            // recalculate FMI group length as required by standard
+            fileMetaInfo.RecalculateGroupLengths();
+
+            var writer = new DicomWriter(DicomTransferSyntax.ExplicitVRLittleEndian, options, target);
+            var walker = new DicomDatasetWalker(fileMetaInfo);
+            return walker.WalkAsync(writer);
+        }
+
+        /// <summary>
         /// Write DICOM dataset.
         /// </summary>
         /// <param name="target">Byte target subject to writing.</param>
@@ -119,6 +155,26 @@ namespace Dicom.IO.Writer
             var writer = new DicomWriter(syntax, options, target);
             var walker = new DicomDatasetWalker(dataset);
             walker.Walk(writer);
+        }
+
+        /// <summary>
+        /// Write DICOM dataset.
+        /// </summary>
+        /// <param name="target">Byte target subject to writing.</param>
+        /// <param name="syntax">Transfer syntax applicable to dataset.</param>
+        /// <param name="dataset">Dataset.</param>
+        /// <param name="options">Writer options.</param>
+        private static Task WriteDatasetAsync(
+            IByteTarget target,
+            DicomTransferSyntax syntax,
+            DicomDataset dataset,
+            DicomWriteOptions options)
+        {
+            UpdateDatasetGroupLengths(syntax, dataset, options);
+
+            var writer = new DicomWriter(syntax, options, target);
+            var walker = new DicomDatasetWalker(dataset);
+            return walker.WalkAsync(writer);
         }
 
         /// <summary>

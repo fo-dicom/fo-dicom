@@ -83,16 +83,33 @@ namespace Dicom.IO.Writer
             }
 
             _target.Write(buffer.Data, 0, buffer.Size);
-            if (element.Length >= _options.LargeObjectSize)
-            {
-                return false;
-            }
-            return true;
+
+            return element.Length < this._options.LargeObjectSize;
         }
 
-        public Task<bool> OnElementAsync(DicomElement element)
+        /// <summary>
+        /// Asynchronous handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public async Task<bool> OnElementAsync(DicomElement element)
         {
-            throw new System.NotImplementedException();
+            WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
+
+            IByteBuffer buffer = element.Buffer;
+            if (buffer is EndianByteBuffer)
+            {
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
+            else if (_target.Endian != Endian.LocalMachine)
+            {
+                if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+            }
+
+            await _target.WriteAsync(buffer.Data, 0, buffer.Size);
+
+            return element.Length < this._options.LargeObjectSize;
         }
 
         /// <summary>
@@ -203,16 +220,29 @@ namespace Dicom.IO.Writer
             }
 
             _target.Write(buffer.Data, 0, buffer.Size);
-            if (item.Size >= _options.LargeObjectSize)
-            {
-                return false;
-            }
-            return true;
+
+            return item.Size < this._options.LargeObjectSize;
         }
 
-        public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+        /// <summary>
+        /// Asynchronous handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public async Task<bool> OnFragmentItemAsync(IByteBuffer item)
         {
-            throw new System.NotImplementedException();
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
+
+            IByteBuffer buffer = item;
+            if (buffer is EndianByteBuffer)
+            {
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
+
+            await _target.WriteAsync(buffer.Data, 0, buffer.Size);
+
+            return item.Size < this._options.LargeObjectSize;
         }
 
         /// <summary>
