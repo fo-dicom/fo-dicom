@@ -84,7 +84,7 @@ namespace Dicom.IO.Writer
 
             _target.Write(buffer.Data, 0, buffer.Size);
 
-            return element.Length < this._options.LargeObjectSize;
+            return true;
         }
 
         /// <summary>
@@ -107,9 +107,16 @@ namespace Dicom.IO.Writer
                 if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
-            await _target.WriteAsync(buffer.Data, 0, buffer.Size);
+            if (element.Length < this._options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size);
+            }
+            else
+            {
+                await _target.WriteAsync(buffer.Data, 0, buffer.Size).ConfigureAwait(false);
+            }
 
-            return element.Length < this._options.LargeObjectSize;
+            return true;
         }
 
         /// <summary>
@@ -221,7 +228,7 @@ namespace Dicom.IO.Writer
 
             _target.Write(buffer.Data, 0, buffer.Size);
 
-            return item.Size < this._options.LargeObjectSize;
+            return true;
         }
 
         /// <summary>
@@ -240,9 +247,16 @@ namespace Dicom.IO.Writer
                 if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
             }
 
-            await _target.WriteAsync(buffer.Data, 0, buffer.Size);
+            if (item.Size < this._options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size);
+            }
+            else
+            {
+                await _target.WriteAsync(buffer.Data, 0, buffer.Size).ConfigureAwait(false);
+            }
 
-            return item.Size < this._options.LargeObjectSize;
+            return true;
         }
 
         /// <summary>

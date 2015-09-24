@@ -362,7 +362,7 @@ namespace Dicom
 
                     if (item is DicomElement)
                     {
-                        await walker.OnElementAsync(item as DicomElement);
+                        await walker.OnElementAsync(item as DicomElement).ConfigureAwait(false);
                     }
                     else if (item is DicomFragmentSequence)
                     {
@@ -370,7 +370,7 @@ namespace Dicom
                     }
                     else if (item is DicomFragmentItem)
                     {
-                        await walker.OnFragmentItemAsync((item as DicomFragmentItem).Buffer);
+                        await walker.OnFragmentItemAsync((item as DicomFragmentItem).Buffer).ConfigureAwait(false);
                     }
                     else if (item is EndDicomFragment)
                     {

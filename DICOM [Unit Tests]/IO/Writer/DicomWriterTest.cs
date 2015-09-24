@@ -16,7 +16,7 @@ namespace Dicom.IO.Writer
         #region Unit tests
 
         [Fact]
-        public void OnElement_LargeObject_ReturnValueFalse()
+        public void OnElement_LargeObject_ReturnValueTrue()
         {
             const string expected = "ELECTRON_SQUARE";
 
@@ -31,7 +31,7 @@ namespace Dicom.IO.Writer
                     new DicomWriteOptions { LargeObjectSize = 14 },
                     target);
                 writer.OnBeginWalk();
-                Assert.False(writer.OnElement(element));
+                Assert.True(writer.OnElement(element));
 
                 e.Wait(100);
 
@@ -74,7 +74,7 @@ namespace Dicom.IO.Writer
         }
 
         [Fact]
-        public void OnFragmentItem_LargeBuffer_ReturnValueFalse()
+        public void OnFragmentItem_LargeBuffer_ReturnValueTrue()
         {
             var expected = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
 
@@ -88,7 +88,7 @@ namespace Dicom.IO.Writer
                     new DicomWriteOptions { LargeObjectSize = 200 },
                     target);
                 writer.OnBeginWalk();
-                Assert.False(writer.OnFragmentItem(new MemoryByteBuffer(expected)));
+                Assert.True(writer.OnFragmentItem(new MemoryByteBuffer(expected)));
 
                 e.Wait(100);
 

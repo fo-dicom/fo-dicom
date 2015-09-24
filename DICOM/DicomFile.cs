@@ -109,7 +109,7 @@ namespace Dicom
             using (var target = new FileByteTarget(this.File))
             {
                 var writer = new DicomFileWriter(DicomWriteOptions.Default);
-                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset);
+                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
             }
         }
 

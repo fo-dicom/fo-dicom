@@ -29,7 +29,7 @@ namespace Dicom.IO.Writer
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(Task.Run(() => @this.Write(target, fileMetaInfo, dataset)), callback, state);
+            return APMHelper.ToBegin(@this.WriteAsync(target, fileMetaInfo, dataset), callback, state);
         }
 
         /// <summary>

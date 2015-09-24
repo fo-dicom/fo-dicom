@@ -39,7 +39,7 @@ namespace Dicom
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(Task.Run(() => @this.Save(fileName)), callback, state);
+            return APMHelper.ToBegin(@this.SaveAsync(fileName), callback, state);
         }
 
         /// <summary>
