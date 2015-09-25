@@ -18,13 +18,14 @@ namespace Dicom
         /// <param name="callback">Asynchronous callback.</param>
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndWalk"/>.</returns>
+        [Obsolete]
         public static IAsyncResult BeginWalk(
             this DicomDatasetWalker @this,
             IDicomDatasetWalker walker,
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(@this.WalkAsync(walker), callback, state);
+            return AsyncFactory.ToBegin(@this.WalkAsync(walker), callback, state);
         }
 
         /// <summary>
@@ -32,9 +33,10 @@ namespace Dicom
         /// </summary>
         /// <param name="this"><see cref="DicomDatasetWalker"/> object used to perform walk.</param>
         /// <param name="result">Asynchronous result emanating from <see cref="BeginWalk"/>.</param>
+        [Obsolete]
         public static void EndWalk(this DicomDatasetWalker @this, IAsyncResult result)
         {
-            APMHelper.ToEnd(result);
+            AsyncFactory.ToEnd(result);
         }
     }
 }

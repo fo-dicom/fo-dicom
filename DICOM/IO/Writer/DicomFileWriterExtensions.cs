@@ -29,7 +29,7 @@ namespace Dicom.IO.Writer
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(@this.WriteAsync(target, fileMetaInfo, dataset), callback, state);
+            return AsyncFactory.ToBegin(@this.WriteAsync(target, fileMetaInfo, dataset), callback, state);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Dicom.IO.Writer
         [Obsolete]
         public static void EndWrite(this DicomFileWriter @this, IAsyncResult result)
         {
-            APMHelper.ToEnd(result);
+            AsyncFactory.ToEnd(result);
         }
     }
 }

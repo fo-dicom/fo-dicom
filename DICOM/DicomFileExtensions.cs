@@ -33,13 +33,14 @@ namespace Dicom
         /// <param name="callback">Asynchronous callback.</param>
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndSave"/>.</returns>
+        [Obsolete]
         public static IAsyncResult BeginSave(
             this DicomFile @this,
             string fileName,
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(@this.SaveAsync(fileName), callback, state);
+            return AsyncFactory.ToBegin(@this.SaveAsync(fileName), callback, state);
         }
 
         /// <summary>
@@ -47,9 +48,10 @@ namespace Dicom
         /// </summary>
         /// <param name="this"><see cref="DicomFile"/> object performing the save operation.</param>
         /// <param name="result">Asynchronous result emanating from <see cref="BeginSave"/>.</param>
+        [Obsolete]
         public static void EndSave(this DicomFile @this, IAsyncResult result)
         {
-            APMHelper.ToEnd(result);
+            AsyncFactory.ToEnd(result);
         }
     }
 }

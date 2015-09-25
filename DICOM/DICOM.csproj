@@ -63,7 +63,7 @@
     </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
     <Compile Include="DicomDatasetWalkerExtensions.cs" />
-    <Compile Include="APMHelper.cs" />
+    <Compile Include="AsyncFactory.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
     <Compile Include="IO\DesktopPath.cs" />

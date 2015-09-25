@@ -10,7 +10,7 @@ namespace Dicom
     /// <summary>
     /// Helper class for converting <see cref="Task"/>-based asynchronous pattern to Asynchronous Programming Model (APM) pattern.
     /// </summary>
-    internal static class APMHelper
+    internal static class AsyncFactory
     {
         /// <summary>
         /// Convert <see cref="Task"/> to Begin... method

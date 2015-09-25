@@ -30,7 +30,7 @@ namespace Dicom.IO.Reader
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(Task.Run(() => @this.Read(source, fileMetaInfo, dataset)), callback, state);
+            return AsyncFactory.ToBegin(Task.Run(() => @this.Read(source, fileMetaInfo, dataset)), callback, state);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Dicom.IO.Reader
         [Obsolete]
         public static DicomReaderResult EndRead(this DicomFileReader @this, IAsyncResult result)
         {
-            return APMHelper.ToEnd<DicomReaderResult>(result);
+            return AsyncFactory.ToEnd<DicomReaderResult>(result);
         }
 
     }

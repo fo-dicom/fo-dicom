@@ -31,7 +31,7 @@ namespace Dicom.IO.Reader
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(Task.Run(() => @this.Read(source, observer, stop)), callback, state);
+            return AsyncFactory.ToBegin(Task.Run(() => @this.Read(source, observer, stop)), callback, state);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Dicom.IO.Reader
         [Obsolete]
         public static DicomReaderResult EndRead(this DicomReader @this, IAsyncResult result)
         {
-            return APMHelper.ToEnd<DicomReaderResult>(result);
+            return AsyncFactory.ToEnd<DicomReaderResult>(result);
         }
     }
 }
