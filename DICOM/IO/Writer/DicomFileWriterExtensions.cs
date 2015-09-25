@@ -4,7 +4,6 @@
 namespace Dicom.IO.Writer
 {
     using System;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Extension class for providing legacy methods from <see cref="DicomFileWriter"/> class.
@@ -21,6 +20,7 @@ namespace Dicom.IO.Writer
         /// <param name="callback">Asynchronous callback.</param>
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndWrite"/>.</returns>
+        [Obsolete]
         public static IAsyncResult BeginWrite(
             this DicomFileWriter @this,
             IByteTarget target,
@@ -37,6 +37,7 @@ namespace Dicom.IO.Writer
         /// </summary>
         /// <param name="this"><see cref="DicomFileWriter"/> object performing the write operation.</param>
         /// <param name="result">Asynchronous result emanating from <see cref="BeginWrite"/>.</param>
+        [Obsolete]
         public static void EndWrite(this DicomFileWriter @this, IAsyncResult result)
         {
             APMHelper.ToEnd(result);

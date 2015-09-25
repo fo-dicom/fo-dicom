@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom.IO.Reader
 {
     /// <summary>
@@ -59,14 +57,5 @@ namespace Dicom.IO.Reader
         /// <param name="stop">Tag at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
         DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null);
-
-        IAsyncResult BeginRead(
-            IByteSource source,
-            IDicomReaderObserver observer,
-            DicomTag stop,
-            AsyncCallback callback,
-            object state);
-
-        DicomReaderResult EndRead(IAsyncResult result);
     }
 }

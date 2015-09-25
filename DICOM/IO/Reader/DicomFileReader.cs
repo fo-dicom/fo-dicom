@@ -10,7 +10,7 @@ namespace Dicom.IO.Reader
     {
         private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private IDicomReader _reader;
+        private DicomReader _reader;
 
         private EventAsyncResult _async;
 

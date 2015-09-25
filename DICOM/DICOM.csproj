@@ -96,6 +96,7 @@
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />
     <Compile Include="IO\IPath.cs" />
+    <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
     <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
@@ -205,7 +206,6 @@
     <Compile Include="IO\Reader\DicomReaderMultiObserver.cs" />
     <Compile Include="IO\Reader\IDicomReader.cs" />
     <Compile Include="IO\Reader\IDicomReaderObserver.cs" />
-    <Compile Include="IO\Reader\MockObserver.cs" />
     <Compile Include="IO\PinnedArray.cs" />
     <Compile Include="IO\StreamByteSource.cs" />
     <Compile Include="IO\StreamByteTarget.cs" />
@@ -324,7 +324,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

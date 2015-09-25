@@ -77,6 +77,8 @@
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
+    <Compile Include="IO\Reader\DicomFileReaderTest.cs" />
+    <Compile Include="IO\Reader\MockObserver.cs" />
     <Compile Include="IO\TemporaryFileTest.cs" />
     <Compile Include="IO\Writer\DicomFileWriterTest.cs" />
     <Compile Include="IO\Writer\DicomWriterTest.cs" />
