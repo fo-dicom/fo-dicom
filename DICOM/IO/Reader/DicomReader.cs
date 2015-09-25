@@ -18,24 +18,6 @@ namespace Dicom.IO.Reader
     /// </summary>
     public class DicomReader : IDicomReader
     {
-        #region INNER TYPES
-
-        /// <summary>
-        /// Available parse states.
-        /// </summary>
-        private enum ParseState
-        {
-            Tag,
-
-            VR,
-
-            Length,
-
-            Value
-        }
-
-        #endregion
-
         #region FIELDS
 
         /// <summary>
@@ -110,6 +92,24 @@ namespace Dicom.IO.Reader
             {
                 return _result;
             }
+        }
+
+        #endregion
+
+        #region INNER TYPES
+
+        /// <summary>
+        /// Available parse states.
+        /// </summary>
+        private enum ParseState
+        {
+            Tag,
+
+            VR,
+
+            Length,
+
+            Value
         }
 
         #endregion
@@ -363,7 +363,7 @@ namespace Dicom.IO.Reader
                                 break;
                             }
 
-                            if (IsPrivateSequenceBad(source))
+                            if (IsPrivateSequenceBad(source, this.IsExplicitVR))
                             {
                                 _badPrivateSequence = true;
                                 this.IsExplicitVR = !this.IsExplicitVR;
@@ -382,7 +382,7 @@ namespace Dicom.IO.Reader
                                 source.PushMilestone(_length);
                             }
                             else _implicit = true;
-                            PushState(state);
+                            this._stack.Push(state);
                             var last = source.Position;
                             ParseItemSequence(source, null);
 
@@ -400,7 +400,7 @@ namespace Dicom.IO.Reader
                         {
                             _observer.OnBeginFragmentSequence(source, _tag, _vr);
                             _state = ParseState.Tag;
-                            PushState(state);
+                            this._stack.Push(state);
                             ParseFragmentSequence(source, null);
                             continue;
                         }
@@ -559,7 +559,7 @@ namespace Dicom.IO.Reader
             }
         }
 
-        private bool IsPrivateSequence(IByteSource source)
+        private static bool IsPrivateSequence(IByteSource source)
         {
             source.Mark();
 
@@ -579,27 +579,25 @@ namespace Dicom.IO.Reader
             return false;
         }
 
-        private bool IsPrivateSequenceBad(IByteSource source)
+        private static bool IsPrivateSequenceBad(IByteSource source, bool isExplicitVR)
         {
             source.Mark();
 
             try
             {
-                var group = source.GetUInt16();
-                var element = source.GetUInt16();
-                var tag = new DicomTag(group, element);
-                var length = source.GetUInt32();
+                source.GetUInt16(); // group
+                source.GetUInt16(); // element
+                source.GetUInt32(); // length
 
-                group = source.GetUInt16();
-                element = source.GetUInt16();
-                tag = new DicomTag(group, element);
+                source.GetUInt16(); // group
+                source.GetUInt16(); // element
 
                 byte[] bytes = source.GetBytes(2);
-                string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                 DicomVR dummy;
-                if (DicomVR.TryParse(vr, out dummy)) return !this.IsExplicitVR;
+                if (DicomVR.TryParse(vr, out dummy)) return isExplicitVR;
                 // unable to parse VR
-                if (this.IsExplicitVR) return true;
+                if (isExplicitVR) return true;
             }
             finally
             {
@@ -642,7 +640,7 @@ namespace Dicom.IO.Reader
                             _observer.OnEndFragmentSequence();
                             _fragmentItem = 0;
                             ResetState();
-                            ParseDataset(source, PopState());
+                            ParseDataset(source, this._stack.Count > 0 ? this._stack.Pop() : null);
                             return;
                         }
 
@@ -679,17 +677,6 @@ namespace Dicom.IO.Reader
                     _async.Set();
                 }
             }
-        }
-
-        private void PushState(object state)
-        {
-            _stack.Push(state);
-        }
-
-        private object PopState()
-        {
-            if (_stack.Count > 0) return _stack.Pop();
-            return null;
         }
 
         private void ResetState()
