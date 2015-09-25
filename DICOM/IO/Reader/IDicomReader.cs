@@ -45,11 +45,6 @@ namespace Dicom.IO.Reader
         bool IsExplicitVR { get; set; }
 
         /// <summary>
-        /// Gets the current reader status.
-        /// </summary>
-        DicomReaderResult Status { get; }
-
-        /// <summary>
         /// Perform DICOM reading of a byte source.
         /// </summary>
         /// <param name="source">Byte source to read.</param>

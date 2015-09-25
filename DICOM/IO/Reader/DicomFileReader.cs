@@ -87,7 +87,7 @@ namespace Dicom.IO.Reader
         {
             _async.AsyncWaitHandle.WaitOne();
             if (_exception != null) throw _exception;
-            return _reader.Status;
+            return _result;
         }
 
         private void ParsePreamble(IByteSource source, object state)

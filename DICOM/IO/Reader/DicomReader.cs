@@ -46,17 +46,6 @@ namespace Dicom.IO.Reader
         public bool IsExplicitVR { get; set; }
 
         /// <summary>
-        /// Gets the current reader status.
-        /// </summary>
-        public DicomReaderResult Status
-        {
-            get
-            {
-                return _result;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the DICOM dictionary to be used by the reader..
         /// </summary>
         public DicomDictionary Dictionary { get; set; }
