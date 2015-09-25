@@ -13,11 +13,17 @@ using Dicom.Imaging.Mathematics;
 
 namespace Dicom.IO.Reader
 {
+    /// <summary>
+    /// DICOM reader implementation.
+    /// </summary>
     public class DicomReader : IDicomReader
     {
-        private const uint UndefinedLength = 0xffffffff;
+        #region INNER TYPES
 
-        public enum ParseState
+        /// <summary>
+        /// Available parse states.
+        /// </summary>
+        private enum ParseState
         {
             Tag,
 
@@ -27,6 +33,15 @@ namespace Dicom.IO.Reader
 
             Value
         }
+
+        #endregion
+
+        #region FIELDS
+
+        /// <summary>
+        /// Defined value for undefined length.
+        /// </summary>
+        private const uint UndefinedLength = 0xffffffff;
 
         private ParseState _state;
 
@@ -52,47 +67,43 @@ namespace Dicom.IO.Reader
 
         private volatile DicomReaderResult _result;
 
-        private bool _explicit;
-
         private bool _badPrivateSequence;
 
-        private DicomDictionary _dict;
+        private readonly Dictionary<uint, string> _private;
 
-        private Dictionary<uint, string> _private;
+        private readonly Stack<object> _stack;
 
-        private Stack<object> _stack;
+        #endregion
 
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomReader"/>.
+        /// </summary>
         public DicomReader()
         {
             _private = new Dictionary<uint, string>();
             _stack = new Stack<object>();
-            _dict = DicomDictionary.Default;
+            this.Dictionary = DicomDictionary.Default;
         }
 
-        public DicomDictionary Dictionary
-        {
-            get
-            {
-                return _dict;
-            }
-            set
-            {
-                _dict = value;
-            }
-        }
+        #endregion
 
-        public bool IsExplicitVR
-        {
-            get
-            {
-                return _explicit;
-            }
-            set
-            {
-                _explicit = value;
-            }
-        }
+        #region PROPERTIES
 
+        /// <summary>
+        /// Gets or sets the DICOM dictionary to be used by the reader..
+        /// </summary>
+        public DicomDictionary Dictionary { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether value representation is explicit or not.
+        /// </summary>
+        public bool IsExplicitVR { get; set; }
+
+        /// <summary>
+        /// Gets the current reader status.
+        /// </summary>
         public DicomReaderResult Status
         {
             get
@@ -101,6 +112,17 @@ namespace Dicom.IO.Reader
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Perform DICOM reading of a byte source.
+        /// </summary>
+        /// <param name="source">Byte source to read.</param>
+        /// <param name="observer">Reader observer.</param>
+        /// <param name="stop">Tag at which to stop.</param>
+        /// <returns>Reader resulting status.</returns>
         public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null)
         {
             return EndRead(BeginRead(source, observer, stop, null, null));
@@ -344,7 +366,7 @@ namespace Dicom.IO.Reader
                             if (IsPrivateSequenceBad(source))
                             {
                                 _badPrivateSequence = true;
-                                _explicit = !_explicit;
+                                this.IsExplicitVR = !this.IsExplicitVR;
                             }
                             break;
                         }
@@ -465,7 +487,7 @@ namespace Dicom.IO.Reader
                             _observer.OnEndSequence();
                             if (_badPrivateSequence)
                             {
-                                _explicit = !_explicit;
+                                this.IsExplicitVR = !this.IsExplicitVR;
                                 _badPrivateSequence = false;
                             }
                             return;
@@ -479,7 +501,7 @@ namespace Dicom.IO.Reader
                             _observer.OnEndSequence();
                             if (_badPrivateSequence)
                             {
-                                _explicit = !_explicit;
+                                this.IsExplicitVR = !this.IsExplicitVR;
                                 _badPrivateSequence = false;
                             }
                             ResetState();
@@ -519,7 +541,7 @@ namespace Dicom.IO.Reader
                 _observer.OnEndSequence();
                 if (_badPrivateSequence)
                 {
-                    _explicit = !_explicit;
+                    this.IsExplicitVR = !this.IsExplicitVR;
                     _badPrivateSequence = false;
                 }
             }
@@ -575,9 +597,9 @@ namespace Dicom.IO.Reader
                 byte[] bytes = source.GetBytes(2);
                 string vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                 DicomVR dummy;
-                if (DicomVR.TryParse(vr, out dummy)) return !_explicit;
+                if (DicomVR.TryParse(vr, out dummy)) return !this.IsExplicitVR;
                 // unable to parse VR
-                if (_explicit) return true;
+                if (this.IsExplicitVR) return true;
             }
             finally
             {
@@ -678,5 +700,7 @@ namespace Dicom.IO.Reader
             _vr = null;
             _length = 0;
         }
+
+        #endregion
     }
 }
