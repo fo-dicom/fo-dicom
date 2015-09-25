@@ -3,13 +3,10 @@
 
 namespace Dicom
 {
-    using System;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Extension class providing legacy method support from <see cref="DicomFile"/> class.
     /// </summary>
-    public static class DicomFileExtensions
+    public static partial class DicomFileExtensions
     {
         /// <summary>
         /// Deep-copy clone <see cref="DicomFile"/> object.
@@ -23,35 +20,6 @@ namespace Dicom
             df.Dataset.Add(original.Dataset);
             df.Dataset.InternalTransferSyntax = original.Dataset.InternalTransferSyntax;
             return df;
-        }
-
-        /// <summary>
-        /// Perform background save operation.
-        /// </summary>
-        /// <param name="this"><see cref="DicomFile"/> object to perform the save operation.</param>
-        /// <param name="fileName">File name.</param>
-        /// <param name="callback">Asynchronous callback.</param>
-        /// <param name="state">Asynchronous state.</param>
-        /// <returns>Asynchronous result handle to be managed by <see cref="EndSave"/>.</returns>
-        [Obsolete]
-        public static IAsyncResult BeginSave(
-            this DicomFile @this,
-            string fileName,
-            AsyncCallback callback,
-            object state)
-        {
-            return AsyncFactory.ToBegin(@this.SaveAsync(fileName), callback, state);
-        }
-
-        /// <summary>
-        /// Complete background save operation.
-        /// </summary>
-        /// <param name="this"><see cref="DicomFile"/> object performing the save operation.</param>
-        /// <param name="result">Asynchronous result emanating from <see cref="BeginSave"/>.</param>
-        [Obsolete]
-        public static void EndSave(this DicomFile @this, IAsyncResult result)
-        {
-            AsyncFactory.ToEnd(result);
         }
     }
 }

@@ -6,17 +6,16 @@ namespace Dicom
     using System;
     using System.IO;
     using System.Text;
-    using Dicom.IO;
+    using System.Threading.Tasks;
 
+    using Dicom.IO;
     using Dicom.IO.Reader;
     using Dicom.IO.Writer;
-
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Representation of one DICOM file.
     /// </summary>
-    public class DicomFile
+    public partial class DicomFile
     {
         public DicomFile()
         {
@@ -199,73 +198,6 @@ namespace Dicom
             {
                 throw new DicomFileException(df, e.Message, e);
             }
-        }
-
-        public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
-        {
-            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
-        }
-
-        public static IAsyncResult BeginOpen(
-            string fileName,
-            Encoding fallbackEncoding,
-            AsyncCallback callback,
-            object state)
-        {
-            DicomFile df = new DicomFile();
-            df.File = IOManager.CreateFileReference(fileName);
-
-            FileByteSource source = new FileByteSource(df.File);
-
-            EventAsyncResult result = new EventAsyncResult(callback, state);
-
-            DicomFileReader reader = new DicomFileReader();
-            reader.BeginRead(
-                source,
-                new DicomDatasetReaderObserver(df.FileMetaInfo),
-                new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                OnReadComplete,
-                new Tuple<DicomFileReader, DicomFile, EventAsyncResult>(reader, df, result));
-
-            return result;
-        }
-
-        private static void OnReadComplete(IAsyncResult result)
-        {
-            var state = result.AsyncState as Tuple<DicomFileReader, DicomFile, EventAsyncResult>;
-
-            Exception e = null;
-            try
-            {
-                state.Item1.EndRead(result);
-
-                // ensure that file handles are closed
-                var source = (FileByteSource)state.Item1.Source;
-                source.Dispose();
-
-                state.Item2.Format = state.Item1.FileFormat;
-                state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
-            }
-            catch (Exception ex)
-            {
-                state.Item2.Format = state.Item1.FileFormat;
-                e = ex;
-            }
-
-            state.Item3.InternalState = new Tuple<DicomFile, Exception>(state.Item2, e);
-            state.Item3.Set();
-        }
-
-        public static DicomFile EndOpen(IAsyncResult result)
-        {
-            result.AsyncWaitHandle.WaitOne();
-
-            EventAsyncResult eventResult = result as EventAsyncResult;
-            var state = eventResult.InternalState as Tuple<DicomFile, Exception>;
-
-            if (state.Item2 != null) throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
-
-            return state.Item1;
         }
 
         public override string ToString()

@@ -3,7 +3,6 @@
 
 namespace Dicom.IO.Reader
 {
-    using System;
     using System.Text;
 
     /// <summary>
@@ -35,15 +34,6 @@ namespace Dicom.IO.Reader
         #endregion
 
         #region PROPERTIES
-
-        [Obsolete]
-        public IByteSource Source
-        {
-            get
-            {
-                return null;
-            }
-        }
 
         /// <summary>
         /// Gets file format of latest read.

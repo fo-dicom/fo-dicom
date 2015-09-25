@@ -11,7 +11,7 @@ using Dicom.IO.Writer;
 
 namespace Dicom.Media
 {
-    public class DicomDirectory : DicomFile
+    public partial class DicomDirectory : DicomFile
     {
         #region Properties and Attributes
 
@@ -203,92 +203,6 @@ namespace Dicom.Media
             {
                 throw new DicomFileException(df, e.Message, e);
             }
-        }
-
-        public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
-        {
-            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
-        }
-
-        public static new IAsyncResult BeginOpen(
-            string fileName,
-            Encoding fallbackEncoding,
-            AsyncCallback callback,
-            object state)
-        {
-            var df = new DicomDirectory();
-
-            // reset datasets
-            df.FileMetaInfo.Clear();
-            df.Dataset.Clear();
-
-            df.File = IOManager.CreateFileReference(fileName);
-
-            FileByteSource source = new FileByteSource(df.File);
-
-            EventAsyncResult result = new EventAsyncResult(callback, state);
-
-            DicomFileReader reader = new DicomFileReader();
-
-            var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
-            var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
-
-            reader.BeginRead(
-                source,
-                new DicomDatasetReaderObserver(df.FileMetaInfo),
-                new DicomReaderMultiObserver(datasetObserver, dirObserver),
-                OnReadComplete,
-                new Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>(
-                    reader,
-                    df,
-                    dirObserver,
-                    result));
-
-            return result;
-        }
-
-        private static void OnReadComplete(IAsyncResult result)
-        {
-            var state =
-                result.AsyncState as
-                Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>;
-
-            Exception e = null;
-            try
-            {
-                state.Item1.EndRead(result);
-
-                // ensure that file handles are closed
-                var source = (FileByteSource)state.Item1.Source;
-                source.Dispose();
-
-                state.Item2.Format = state.Item1.FileFormat;
-                state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
-
-                state.Item2._directoryRecordSequence =
-                    state.Item2.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
-                state.Item2.RootDirectoryRecord = state.Item3.BuildDirectoryRecords();
-            }
-            catch (Exception ex)
-            {
-                state.Item2.Format = state.Item1.FileFormat;
-                e = ex;
-            }
-
-            state.Item4.InternalState = new Tuple<DicomDirectory, Exception>(state.Item2, e);
-            state.Item4.Set();
-        }
-
-        public static new DicomDirectory EndOpen(IAsyncResult result)
-        {
-            result.AsyncWaitHandle.WaitOne();
-
-            EventAsyncResult eventResult = result as EventAsyncResult;
-            var state = eventResult.InternalState as Tuple<DicomDirectory, Exception>;
-
-            if (state.Item2 != null) throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
-
-            return state.Item1;
         }
 
         private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem)
