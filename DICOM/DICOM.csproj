@@ -96,6 +96,7 @@
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />
     <Compile Include="IO\IPath.cs" />
+    <Compile Include="IO\Reader\DicomFileReaderExtensions.cs" />
     <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
     <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />

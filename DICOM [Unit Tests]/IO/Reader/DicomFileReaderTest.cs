@@ -27,6 +27,30 @@ namespace Dicom.IO.Reader
             }
         }
 
+        [Fact]
+        public void Read_ValidSource_ReturnsSuccess()
+        {
+            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
+            {
+                var source = new StreamByteSource(stream);
+                var reader = new DicomFileReader();
+
+                var fileMetaInfo = new DicomFileMetaInformation();
+                var dataset = new DicomDataset();
+
+                const DicomReaderResult expected = DicomReaderResult.Success;
+                var actual = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(fileMetaInfo),
+                    new DicomDatasetReaderObserver(dataset));
+
+                Assert.Equal(expected, actual);
+
+                var modality = dataset.Get<string>(DicomTag.Modality);
+                Assert.Equal("CT", modality);
+            }
+        }
+
         #endregion
     }
 }

@@ -24,7 +24,7 @@ namespace Dicom.IO.Reader
         Error,
 
         /// <summary>
-        /// Reader was stopped.
+        /// Reader was stopped at specific tag.
         /// </summary>
         Stopped,
 

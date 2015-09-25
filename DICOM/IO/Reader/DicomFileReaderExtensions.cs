@@ -7,43 +7,42 @@ namespace Dicom.IO.Reader
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Extension class for providing legacy methods from <see cref="DicomReader"/> class.
+    /// Extension class for providing legacy methods from <see cref="DicomFileReader"/> class.
     /// </summary>
-    [Obsolete]
-    public static class DicomReaderExtensions
+    public static class DicomFileReaderExtensions
     {
         /// <summary>
         /// Perform background read operation.
         /// </summary>
-        /// <param name="this"><see cref="DicomReader"/> object performing the read operation.</param>
-        /// <param name="source">Byte source to read.</param>
-        /// <param name="observer">Reader observer.</param>
-        /// <param name="stop">Tag at which to stop.</param>
+        /// <param name="this"><see cref="DicomFileReader"/> object performing the read operation.</param>
+        /// <param name="source">Byte source subject to reading.</param>
+        /// <param name="fileMetaInfo">DICOM file meta information reader observer.</param>
+        /// <param name="dataset">DICOM dataset reader observer.</param>
         /// <param name="callback">Asynchronous callback.</param>
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndRead"/>.</returns>
         [Obsolete]
         public static IAsyncResult BeginRead(
-            this DicomReader @this,
+            this DicomFileReader @this,
             IByteSource source,
-            IDicomReaderObserver observer,
-            DicomTag stop,
+            IDicomReaderObserver fileMetaInfo,
+            IDicomReaderObserver dataset,
             AsyncCallback callback,
             object state)
         {
-            return APMHelper.ToBegin(Task.Run(() => @this.Read(source, observer, stop)), callback, state);
+            return APMHelper.ToBegin(Task.Run(() => @this.Read(source, fileMetaInfo, dataset)), callback, state);
         }
 
         /// <summary>
         /// Complete background read operation.
         /// </summary>
-        /// <param name="this"><see cref="DicomReader"/> object performing the write operation.</param>
+        /// <param name="this"><see cref="DicomFileReader"/> object performing the read operation.</param>
         /// <param name="result">Asynchronous result emanating from <see cref="BeginRead"/>.</param>
-        /// <returns>Result of the read operation.</returns>
         [Obsolete]
-        public static DicomReaderResult EndRead(this DicomReader @this, IAsyncResult result)
+        public static DicomReaderResult EndRead(this DicomFileReader @this, IAsyncResult result)
         {
             return APMHelper.ToEnd<DicomReaderResult>(result);
         }
+
     }
 }
