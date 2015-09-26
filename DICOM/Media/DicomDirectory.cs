@@ -11,6 +11,9 @@ using Dicom.IO.Writer;
 
 namespace Dicom.Media
 {
+    /// <summary>
+    /// Class for managing DICOM directory objects.
+    /// </summary>
     public partial class DicomDirectory : DicomFile
     {
         #region Properties and Attributes

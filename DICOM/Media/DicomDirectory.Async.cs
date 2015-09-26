@@ -11,12 +11,27 @@ namespace Dicom.Media
     {
         #region Save/Load Methods
 
+        /// <summary>
+        /// Perform background DICOM directory open operation.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="callback">Asynchronous callback.</param>
+        /// <param name="state">Asynchronous state.</param>
+        /// <returns>Asynchronous result handle to be managed by <see cref="EndOpen"/>.</returns>
         [Obsolete]
         public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
             return BeginOpen(fileName, DicomEncoding.Default, callback, state);
         }
 
+        /// <summary>
+        /// Perform background DICOM directory open operation.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if encoding cannot be retrieved from file.</param>
+        /// <param name="callback">Asynchronous callback.</param>
+        /// <param name="state">Asynchronous state.</param>
+        /// <returns>Asynchronous result handle to be managed by <see cref="EndOpen"/>.</returns>
         [Obsolete]
         public static new IAsyncResult BeginOpen(
             string fileName,
@@ -27,6 +42,11 @@ namespace Dicom.Media
             return AsyncFactory.ToBegin(Task.Run(() => Open(fileName, fallbackEncoding)), callback, state);
         }
 
+        /// <summary>
+        /// Complete background DICOM directory open operation.
+        /// </summary>
+        /// <param name="result">Asynchronous result from <code>BeginOpen</code> operation.</param>
+        /// <returns>Resulting <see cref="DicomDirectory"/>.</returns>
         [Obsolete]
         public static new DicomDirectory EndOpen(IAsyncResult result)
         {
