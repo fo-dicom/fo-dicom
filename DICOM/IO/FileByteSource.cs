@@ -355,6 +355,8 @@ namespace Dicom.IO
             catch
             {
             }
+
+            this.disposed = true;
         }
 
         #endregion

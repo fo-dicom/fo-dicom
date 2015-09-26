@@ -72,24 +72,24 @@ namespace Dicom.IO.Reader
         #region INNER TYPES
 
         /// <summary>
-        /// Available parse states.
-        /// </summary>
-        private enum ParseState
-        {
-            Tag,
-
-            VR,
-
-            Length,
-
-            Value
-        }
-
-        /// <summary>
         /// Support class performing the actual reading.
         /// </summary>
         private class DicomReaderWorker
         {
+            /// <summary>
+            /// Available parse states.
+            /// </summary>
+            private enum ParseState
+            {
+                Tag,
+
+                VR,
+
+                Length,
+
+                Value
+            }
+
             #region FIELDS
 
             /// <summary>
@@ -190,9 +190,12 @@ namespace Dicom.IO.Reader
 
                         if (group.IsOdd() && element > 0x00ff)
                         {
-                            string pvt;
                             var card = (uint)(group << 16) + (uint)(element >> 8);
-                            if (this._private.TryGetValue(card, out pvt)) creator = this.dictionary.GetPrivateCreator(pvt);
+                            lock (this.locker)
+                            {
+                                string pvt;
+                                if (this._private.TryGetValue(card, out pvt)) creator = this.dictionary.GetPrivateCreator(pvt);
+                            }
                         }
 
                         this._tag = new DicomTag(group, element, creator);
