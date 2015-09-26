@@ -10,6 +10,9 @@
         <Reference Include="Dicom.Native64">
           <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native64.dll</HintPath>
         </Reference>
+        <None Include="$(MSBuildThisFileDirectory)\net45\Dicom.Native64.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
       </ItemGroup>
     </When>
     <When Condition="'$(PlatformTarget)' == 'x86'">
@@ -17,6 +20,9 @@
         <Reference Include="Dicom.Native">
           <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native.dll</HintPath>
         </Reference>
+        <None Include="$(MSBuildThisFileDirectory)\net45\Dicom.Native.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
       </ItemGroup>
     </When>
     <Otherwise>
