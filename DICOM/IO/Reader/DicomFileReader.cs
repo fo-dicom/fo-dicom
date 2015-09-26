@@ -3,6 +3,7 @@
 
 namespace Dicom.IO.Reader
 {
+    using System;
     using System.Text;
 
     /// <summary>
@@ -18,6 +19,8 @@ namespace Dicom.IO.Reader
 
         private DicomTransferSyntax syntax;
 
+        private readonly object locker;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -28,7 +31,8 @@ namespace Dicom.IO.Reader
         public DicomFileReader()
         {
             this.fileFormat = DicomFileFormat.Unknown;
-            this.syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            this.syntax = null;
+            this.locker = new object();
         }
 
         #endregion
@@ -73,20 +77,27 @@ namespace Dicom.IO.Reader
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset)
         {
-            return DoParse(source, fileMetaInfo, dataset, out this.fileFormat, out this.syntax);
+            var parse = DoParse(source, fileMetaInfo, dataset);
+            lock (this.locker)
+            {
+                this.fileFormat = parse.Item2;
+                this.syntax = parse.Item3;
+            }
+            return parse.Item1;
         }
 
-        private static DicomReaderResult DoParse(
+        private static Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax> DoParse(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
-            IDicomReaderObserver datasetObserver,
-            out DicomFileFormat fileFormat,
-            out DicomTransferSyntax syntax)
+            IDicomReaderObserver datasetObserver)
         {
-            fileFormat = DicomFileFormat.Unknown;
-            syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            if (!source.Require(132, (bs, obj) => DoParse(bs, fileMetasetInfoObserver, datasetObserver), null))
+            {
+                return Tuple.Create(DicomReaderResult.Error, DicomFileFormat.Unknown, (DicomTransferSyntax)null);
+            }
 
-            if (!source.Require(132)) return DicomReaderResult.Error;
+            var fileFormat = DicomFileFormat.Unknown;
+            var syntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 
             var reader = new DicomReader();
 
@@ -220,7 +231,7 @@ namespace Dicom.IO.Reader
                 result = reader.Read(source, datasetObserver);
             }
 
-            return result;
+            return Tuple.Create(result, fileFormat, syntax);
         }
 
         private static void UpdateFileFormatAndSyntax(
