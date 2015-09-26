@@ -192,14 +192,6 @@ namespace Dicom
 
         private readonly IEnumerable<DicomItem> _dataset;
 
-        private Queue<DicomItem> _items;
-
-        private IDicomDatasetWalker _walker;
-
-        private EventAsyncResult _async;
-
-        private Exception _exception;
-
         #endregion
 
         #region Constructors
