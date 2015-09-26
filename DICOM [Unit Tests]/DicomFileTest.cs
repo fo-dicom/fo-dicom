@@ -105,6 +105,19 @@ namespace Dicom
         }
 
         [Fact]
+        public async Task OpenAsync_FromFile_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+
+            var openFile = await DicomFile.OpenAsync(fileName);
+            var expected = MinimumDatasetInstanceUid;
+            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void BeginOpen_FromFile_YieldsValidDicomFile()
         {
             var saveFile = new DicomFile(MinimumDatatset);

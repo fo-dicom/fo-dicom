@@ -5,7 +5,6 @@ namespace Dicom
 {
     using System;
     using System.Text;
-    using System.Threading.Tasks;
 
     public partial class DicomFile
     {
@@ -19,7 +18,7 @@ namespace Dicom
         [Obsolete]
         public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
-            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
+            return AsyncFactory.ToBegin(OpenAsync(fileName, DicomEncoding.Default), callback, state);
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Dicom
             AsyncCallback callback,
             object state)
         {
-            return AsyncFactory.ToBegin(Task.Run(() => Open(fileName, fallbackEncoding)), callback, state);
+            return AsyncFactory.ToBegin(OpenAsync(fileName, fallbackEncoding), callback, state);
         }
 
         /// <summary>

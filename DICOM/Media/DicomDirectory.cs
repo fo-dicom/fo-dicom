@@ -11,6 +11,8 @@ using Dicom.IO.Writer;
 
 namespace Dicom.Media
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Class for managing DICOM directory objects.
     /// </summary>
@@ -105,6 +107,9 @@ namespace Dicom.Media
 
         #region Save/Load Methods
 
+        /// <summary>
+        /// Method to call before performing the actual saving.
+        /// </summary>
         protected override void OnSave()
         {
             if (RootDirectoryRecord == null) throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
@@ -159,11 +164,22 @@ namespace Dicom.Media
             }
         }
 
+        /// <summary>
+        /// Read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <returns><see cref="DicomDirectory"/> instance.</returns>
         public static new DicomDirectory Open(string fileName)
         {
             return Open(fileName, DicomEncoding.Default);
         }
 
+        /// <summary>
+        /// Read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <returns><see cref="DicomDirectory"/> instance.</returns>
         public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding)
         {
             if (fallbackEncoding == null)
@@ -206,6 +222,27 @@ namespace Dicom.Media
             {
                 throw new DicomFileException(df, e.Message, e);
             }
+        }
+
+        /// <summary>
+        /// Asynchronously read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
+        public static new Task<DicomDirectory> OpenAsync(string fileName)
+        {
+            return Task.Run(() => Open(fileName, DicomEncoding.Default));
+        }
+
+        /// <summary>
+        /// Asynchronously read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
+        public static new Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding)
+        {
+            return Task.Run(() => Open(fileName, fallbackEncoding));
         }
 
         private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem)

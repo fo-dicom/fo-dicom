@@ -17,6 +17,8 @@ namespace Dicom
     /// </summary>
     public partial class DicomFile
     {
+        #region CONSTRUCTORS
+
         public DicomFile()
         {
             FileMetaInfo = new DicomFileMetaInformation();
@@ -31,18 +33,45 @@ namespace Dicom
             Format = DicomFileFormat.DICOM3;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the file reference of the DICOM file.
+        /// </summary>
         public IFileReference File { get; protected set; }
 
+        /// <summary>
+        /// Gets the DICOM file format.
+        /// </summary>
         public DicomFileFormat Format { get; protected set; }
 
+        /// <summary>
+        /// Gets the DICOM file meta information of the file.
+        /// </summary>
         public DicomFileMetaInformation FileMetaInfo { get; protected set; }
 
+        /// <summary>
+        /// Gets the DICOM dataset of the file.
+        /// </summary>
         public DicomDataset Dataset { get; protected set; }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Method to call before performing the actual saving.
+        /// </summary>
         protected virtual void OnSave()
         {
         }
 
+        /// <summary>
+        /// Save DICOM file.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
         public void Save(string fileName)
         {
             if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
@@ -65,6 +94,10 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Save DICOM file to stream.
+        /// </summary>
+        /// <param name="stream">Stream on which to save DICOM file.</param>
         public void Save(Stream stream)
         {
             if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
@@ -165,11 +198,22 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Read a DICOM file from stream.
+        /// </summary>
+        /// <param name="stream">Stream to read.</param>
+        /// <returns>Read <see cref="DicomFile"/>.</returns>
         public static DicomFile Open(Stream stream)
         {
             return Open(stream, DicomEncoding.Default);
         }
 
+        /// <summary>
+        /// Read a DICOM file from stream.
+        /// </summary>
+        /// <param name="stream">Stream to read.</param>
+        /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
+        /// <returns>Read <see cref="DicomFile"/>.</returns>
         public static DicomFile Open(Stream stream, Encoding fallbackEncoding)
         {
             if (fallbackEncoding == null)
@@ -200,9 +244,50 @@ namespace Dicom
             }
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
+        /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
+        /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
+        /// </summary>
+        /// <param name="fileName">The filename of the DICOM file</param>
+        /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
+        public static Task<DicomFile> OpenAsync(string fileName)
         {
-            return String.Format("DICOM File [{0}]", Format);
+            return OpenAsync(fileName, DicomEncoding.Default);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
+        /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
+        /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
+        /// </summary>
+        /// <param name="fileName">The filename of the DICOM file</param>
+        /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
+        /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
+        public static Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding)
+        {
+            return Task.Run(() => Open(fileName, fallbackEncoding));
+        }
+
+        /// <summary>
+        /// Asynchronously read a DICOM file from stream.
+        /// </summary>
+        /// <param name="stream">Stream to read.</param>
+        /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
+        public static Task<DicomFile> OpenAsync(Stream stream)
+        {
+            return OpenAsync(stream, DicomEncoding.Default);
+        }
+
+        /// <summary>
+        /// Asynchronously read a DICOM file from stream.
+        /// </summary>
+        /// <param name="stream">Stream to read.</param>
+        /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
+        /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
+        public static Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding)
+        {
+            return Task.Run(() => Open(stream, fallbackEncoding));
         }
 
         /// <summary>
@@ -226,5 +311,18 @@ namespace Dicom
                 return false;
             }
         }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format("DICOM File [{0}]", this.Format);
+        }
+
+        #endregion
     }
 }

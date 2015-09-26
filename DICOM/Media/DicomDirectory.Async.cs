@@ -21,7 +21,7 @@ namespace Dicom.Media
         [Obsolete]
         public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
-            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
+            return AsyncFactory.ToBegin(OpenAsync(fileName, DicomEncoding.Default), callback, state);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Dicom.Media
             AsyncCallback callback,
             object state)
         {
-            return AsyncFactory.ToBegin(Task.Run(() => Open(fileName, fallbackEncoding)), callback, state);
+            return AsyncFactory.ToBegin(OpenAsync(fileName, fallbackEncoding), callback, state);
         }
 
         /// <summary>
