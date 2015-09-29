@@ -105,8 +105,6 @@ namespace Dicom.IO.Reader
 
             private readonly Dictionary<uint, string> _private;
 
-            private readonly Stack<object> stack;
-
             private bool isExplicitVR;
 
             private ParseState _state;
@@ -148,7 +146,6 @@ namespace Dicom.IO.Reader
                 this.dictionary = dictionary;
                 this.isExplicitVR = isExplicitVR;
                 this._private = @private;
-                this.stack = new Stack<object>();
                 this.locker = new object();
             }
 
@@ -164,11 +161,11 @@ namespace Dicom.IO.Reader
             internal DicomReaderResult DoWork(IByteSource source)
             {
                 this.ResetState();
-                this.ParseDataset(source, null);
+                this.ParseDataset(source);
                 return this.result;
             }
 
-            private void ParseDataset(IByteSource source, object state)
+            private void ParseDataset(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
 
@@ -178,7 +175,7 @@ namespace Dicom.IO.Reader
                     {
                         source.Mark();
 
-                        if (!source.Require(4, this.ParseDataset, state))
+                        if (!source.Require(4))
                         {
                             this.result = DicomReaderResult.Suspended;
                             return;
@@ -224,7 +221,7 @@ namespace Dicom.IO.Reader
 
                         if (this.isExplicitVR)
                         {
-                            if (!source.Require(2, this.ParseDataset, state))
+                            if (!source.Require(2))
                             {
                                 this.result = DicomReaderResult.Suspended;
                                 return;
@@ -280,7 +277,7 @@ namespace Dicom.IO.Reader
                         if (this._tag == DicomTag.Item || this._tag == DicomTag.ItemDelimitationItem
                             || this._tag == DicomTag.SequenceDelimitationItem)
                         {
-                            if (!source.Require(4, this.ParseDataset, state))
+                            if (!source.Require(4))
                             {
                                 this.result = DicomReaderResult.Suspended;
                                 return;
@@ -296,7 +293,7 @@ namespace Dicom.IO.Reader
                         {
                             if (this._vr == DicomVR.Implicit)
                             {
-                                if (!source.Require(4, this.ParseDataset, state))
+                                if (!source.Require(4))
                                 {
                                     this.result = DicomReaderResult.Suspended;
                                     return;
@@ -309,7 +306,7 @@ namespace Dicom.IO.Reader
                             }
                             else if (this._vr.Is16bitLength)
                             {
-                                if (!source.Require(2, this.ParseDataset, state))
+                                if (!source.Require(2))
                                 {
                                     this.result = DicomReaderResult.Suspended;
                                     return;
@@ -319,7 +316,7 @@ namespace Dicom.IO.Reader
                             }
                             else
                             {
-                                if (!source.Require(6, this.ParseDataset, state))
+                                if (!source.Require(6))
                                 {
                                     this.result = DicomReaderResult.Suspended;
                                     return;
@@ -331,7 +328,7 @@ namespace Dicom.IO.Reader
                         }
                         else
                         {
-                            if (!source.Require(4, this.ParseDataset, state))
+                            if (!source.Require(4))
                             {
                                 this.result = DicomReaderResult.Suspended;
                                 return;
@@ -395,9 +392,8 @@ namespace Dicom.IO.Reader
                                 source.PushMilestone(this.length);
                             }
                             else this._implicit = true;
-                            this.stack.Push(state);
                             var last = source.Position;
-                            this.ParseItemSequence(source, null);
+                            this.ParseItemSequence(source);
 
                             // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
                             // Fix reading of SQ with parsed VR of UN
@@ -411,12 +407,11 @@ namespace Dicom.IO.Reader
                         {
                             this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
                             this._state = ParseState.Tag;
-                            this.stack.Push(state);
-                            this.ParseFragmentSequence(source, null);
+                            this.ParseFragmentSequence(source);
                             continue;
                         }
 
-                        if (!source.Require(this.length, this.ParseDataset, state))
+                        if (!source.Require(this.length))
                         {
                             this.result = DicomReaderResult.Suspended;
                             return;
@@ -458,7 +453,7 @@ namespace Dicom.IO.Reader
                 this.result = DicomReaderResult.Success;
             }
 
-            private void ParseItemSequence(IByteSource source, object state)
+            private void ParseItemSequence(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
 
@@ -468,7 +463,7 @@ namespace Dicom.IO.Reader
                     {
                         source.Mark();
 
-                        if (!source.Require(8, this.ParseItemSequence, state))
+                        if (!source.Require(8))
                         {
                             this.result = DicomReaderResult.Suspended;
                             return;
@@ -515,7 +510,7 @@ namespace Dicom.IO.Reader
                     {
                         if (this.length != UndefinedLength)
                         {
-                            if (!source.Require(this.length, this.ParseItemSequence, state))
+                            if (!source.Require(this.length))
                             {
                                 this.result = DicomReaderResult.Suspended;
                                 return;
@@ -527,7 +522,7 @@ namespace Dicom.IO.Reader
                         this.observer.OnBeginSequenceItem(source, this.length);
 
                         this.ResetState();
-                        this.ParseDataset(source, state);
+                        this.ParseDataset(source);
                         this.ResetState();
 
                         this.observer.OnEndSequenceItem();
@@ -545,7 +540,7 @@ namespace Dicom.IO.Reader
                 }
             }
 
-            private void ParseFragmentSequence(IByteSource source, object state)
+            private void ParseFragmentSequence(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
 
@@ -555,7 +550,7 @@ namespace Dicom.IO.Reader
                     {
                         source.Mark();
 
-                        if (!source.Require(8, this.ParseFragmentSequence, state))
+                        if (!source.Require(8))
                         {
                             this.result = DicomReaderResult.Suspended;
                             return;
@@ -579,7 +574,7 @@ namespace Dicom.IO.Reader
                             this.observer.OnEndFragmentSequence();
                             this.fragmentItem = 0;
                             this.ResetState();
-                            this.ParseDataset(source, this.stack.Count > 0 ? this.stack.Pop() : null);
+                            this.ParseDataset(source);
                             return;
                         }
 
@@ -589,7 +584,7 @@ namespace Dicom.IO.Reader
 
                     if (this._state == ParseState.Value)
                     {
-                        if (!source.Require(this.length, this.ParseFragmentSequence, state))
+                        if (!source.Require(this.length))
                         {
                             this.result = DicomReaderResult.Suspended;
                             return;

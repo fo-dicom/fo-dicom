@@ -91,7 +91,7 @@ namespace Dicom.IO.Reader
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver)
         {
-            if (!source.Require(132, (bs, obj) => DoParse(bs, fileMetasetInfoObserver, datasetObserver), null))
+            if (!source.Require(132))
             {
                 return Tuple.Create(DicomReaderResult.Error, DicomFileFormat.Unknown, (DicomTransferSyntax)null);
             }
