@@ -19,8 +19,6 @@ namespace Dicom.IO.Reader
     {
         #region FIELDS
 
-        private volatile DicomReaderResult _result;
-
         private readonly Dictionary<uint, string> _private;
 
         #endregion
@@ -74,10 +72,10 @@ namespace Dicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Tag at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        public async Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null)
+        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
-            return await worker.DoWorkAsync(source).ConfigureAwait(false);
+            return worker.DoWorkAsync(source);
         }
 
         #endregion
@@ -199,102 +197,7 @@ namespace Dicom.IO.Reader
                     if (!this.ParseTag(source)) return;
                     if (!this.ParseVR(source)) return;
                     if (!this.ParseLength(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        // check dictionary for VR after reading length to handle 16-bit lengths
-                        // check before reading value to handle SQ elements
-                        var parsedVR = this._vr;
-
-                        // check dictionary for VR after reading length to handle 16-bit lengths
-                        // check before reading value to handle SQ elements
-                        if (this._vr == DicomVR.Implicit || (this._vr == DicomVR.UN && this.isExplicitVR))
-                        {
-                            var entry = this.dictionary[this._tag];
-                            if (entry != null) this._vr = entry.ValueRepresentations.FirstOrDefault();
-
-                            if (this._vr == null) this._vr = DicomVR.UN;
-                        }
-
-                        if (this._tag == DicomTag.ItemDelimitationItem)
-                        {
-                            // end of sequence item
-                            return;
-                        }
-
-                        while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
-                        {
-                            if (!IsPrivateSequence(source))
-                            {
-                                this._vr = DicomVR.UN;
-                                break;
-                            }
-
-                            if (IsPrivateSequenceBad(source, this.isExplicitVR))
-                            {
-                                this.badPrivateSequence = true;
-                                this.isExplicitVR = !this.isExplicitVR;
-                            }
-                            break;
-                        }
-
-                        if (this._vr == DicomVR.SQ)
-                        {
-                            // start of sequence
-                            this.observer.OnBeginSequence(source, this._tag, this.length);
-                            this._state = ParseState.Tag;
-                            if (this.length != UndefinedLength)
-                            {
-                                this._implicit = false;
-                                source.PushMilestone(this.length);
-                            }
-                            else this._implicit = true;
-                            var last = source.Position;
-                            this.ParseItemSequence(source);
-
-                            // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
-                            // Fix reading of SQ with parsed VR of UN
-                            if (source.Position > last || this.length == 0) continue;
-
-                            this._state = ParseState.Value;
-                            this._vr = parsedVR;
-                        }
-
-                        if (this.length == UndefinedLength)
-                        {
-                            this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
-                            this._state = ParseState.Tag;
-                            this.ParseFragmentSequence(source);
-                            continue;
-                        }
-
-                        if (!source.Require(this.length))
-                        {
-                            this.result = DicomReaderResult.Suspended;
-                            return;
-                        }
-
-                        var buffer = source.GetBuffer(this.length);
-
-                        if (!this._vr.IsString) buffer = EndianByteBuffer.Create(buffer, source.Endian, this._vr.UnitSize);
-                        this.observer.OnElement(source, this._tag, this._vr, buffer);
-
-                        // parse private creator value and add to lookup table
-                        if (this._tag.IsPrivate && this._tag.Element != 0x0000 && this._tag.Element <= 0x00ff)
-                        {
-                            var creator =
-                                DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
-                                    .TrimEnd((char)DicomVR.LO.PaddingValue);
-                            var card = (uint)(this._tag.Group << 16) + this._tag.Element;
-
-                            lock (this.locker)
-                            {
-                                this._private[card] = creator;
-                            }
-                        }
-
-                        this.ResetState();
-                    }
+                    if (!this.ParseValue(source)) return;
                 }
 
                 if (source.HasReachedMilestone())
@@ -319,102 +222,7 @@ namespace Dicom.IO.Reader
                     if (!this.ParseTag(source)) return;
                     if (!this.ParseVR(source)) return;
                     if (!this.ParseLength(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        // check dictionary for VR after reading length to handle 16-bit lengths
-                        // check before reading value to handle SQ elements
-                        var parsedVR = this._vr;
-
-                        // check dictionary for VR after reading length to handle 16-bit lengths
-                        // check before reading value to handle SQ elements
-                        if (this._vr == DicomVR.Implicit || (this._vr == DicomVR.UN && this.isExplicitVR))
-                        {
-                            var entry = this.dictionary[this._tag];
-                            if (entry != null) this._vr = entry.ValueRepresentations.FirstOrDefault();
-
-                            if (this._vr == null) this._vr = DicomVR.UN;
-                        }
-
-                        if (this._tag == DicomTag.ItemDelimitationItem)
-                        {
-                            // end of sequence item
-                            return;
-                        }
-
-                        while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
-                        {
-                            if (!IsPrivateSequence(source))
-                            {
-                                this._vr = DicomVR.UN;
-                                break;
-                            }
-
-                            if (IsPrivateSequenceBad(source, this.isExplicitVR))
-                            {
-                                this.badPrivateSequence = true;
-                                this.isExplicitVR = !this.isExplicitVR;
-                            }
-                            break;
-                        }
-
-                        if (this._vr == DicomVR.SQ)
-                        {
-                            // start of sequence
-                            this.observer.OnBeginSequence(source, this._tag, this.length);
-                            this._state = ParseState.Tag;
-                            if (this.length != UndefinedLength)
-                            {
-                                this._implicit = false;
-                                source.PushMilestone(this.length);
-                            }
-                            else this._implicit = true;
-                            var last = source.Position;
-                            await this.ParseItemSequenceAsync(source).ConfigureAwait(false);
-
-                            // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
-                            // Fix reading of SQ with parsed VR of UN
-                            if (source.Position > last || this.length == 0) continue;
-
-                            this._state = ParseState.Value;
-                            this._vr = parsedVR;
-                        }
-
-                        if (this.length == UndefinedLength)
-                        {
-                            this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
-                            this._state = ParseState.Tag;
-                            await this.ParseFragmentSequenceAsync(source).ConfigureAwait(false);
-                            continue;
-                        }
-
-                        if (!source.Require(this.length))
-                        {
-                            this.result = DicomReaderResult.Suspended;
-                            return;
-                        }
-
-                        var buffer = await source.GetBufferAsync(this.length).ConfigureAwait(false);
-
-                        if (!this._vr.IsString) buffer = EndianByteBuffer.Create(buffer, source.Endian, this._vr.UnitSize);
-                        this.observer.OnElement(source, this._tag, this._vr, buffer);
-
-                        // parse private creator value and add to lookup table
-                        if (this._tag.IsPrivate && this._tag.Element != 0x0000 && this._tag.Element <= 0x00ff)
-                        {
-                            var creator =
-                                DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
-                                    .TrimEnd((char)DicomVR.LO.PaddingValue);
-                            var card = (uint)(this._tag.Group << 16) + this._tag.Element;
-
-                            lock (this.locker)
-                            {
-                                this._private[card] = creator;
-                            }
-                        }
-
-                        this.ResetState();
-                    }
+                    if (!await this.ParseValueAsync(source).ConfigureAwait(false)) return;
                 }
 
                 if (source.HasReachedMilestone())
@@ -641,6 +449,236 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
+            private bool ParseValue(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    // check dictionary for VR after reading length to handle 16-bit lengths
+                    // check before reading value to handle SQ elements
+                    var parsedVR = this._vr;
+
+                    // check dictionary for VR after reading length to handle 16-bit lengths
+                    // check before reading value to handle SQ elements
+                    if (this._vr == DicomVR.Implicit || (this._vr == DicomVR.UN && this.isExplicitVR))
+                    {
+                        var entry = this.dictionary[this._tag];
+                        if (entry != null)
+                        {
+                            this._vr = entry.ValueRepresentations.FirstOrDefault();
+                        }
+
+                        if (this._vr == null)
+                        {
+                            this._vr = DicomVR.UN;
+                        }
+                    }
+
+                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    {
+                        // end of sequence item
+                        return false;
+                    }
+
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    {
+                        if (!IsPrivateSequence(source))
+                        {
+                            this._vr = DicomVR.UN;
+                            break;
+                        }
+
+                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        {
+                            this.badPrivateSequence = true;
+                            this.isExplicitVR = !this.isExplicitVR;
+                        }
+                        break;
+                    }
+
+                    if (this._vr == DicomVR.SQ)
+                    {
+                        // start of sequence
+                        this.observer.OnBeginSequence(source, this._tag, this.length);
+                        this._state = ParseState.Tag;
+                        if (this.length != UndefinedLength)
+                        {
+                            this._implicit = false;
+                            source.PushMilestone(this.length);
+                        }
+                        else
+                        {
+                            this._implicit = true;
+                        }
+                        var last = source.Position;
+                        this.ParseItemSequence(source);
+
+                        // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
+                        // Fix reading of SQ with parsed VR of UN
+                        if (source.Position > last || this.length == 0)
+                        {
+                            return true;
+                        }
+
+                        this._state = ParseState.Value;
+                        this._vr = parsedVR;
+                    }
+
+                    if (this.length == UndefinedLength)
+                    {
+                        this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
+                        this._state = ParseState.Tag;
+                        this.ParseFragmentSequence(source);
+                        return true;
+                    }
+
+                    if (!source.Require(this.length))
+                    {
+                        this.result = DicomReaderResult.Suspended;
+                        return false;
+                    }
+
+                    var buffer = source.GetBuffer(this.length);
+
+                    if (!this._vr.IsString)
+                    {
+                        buffer = EndianByteBuffer.Create(buffer, source.Endian, this._vr.UnitSize);
+                    }
+                    this.observer.OnElement(source, this._tag, this._vr, buffer);
+
+                    // parse private creator value and add to lookup table
+                    if (this._tag.IsPrivate && this._tag.Element != 0x0000 && this._tag.Element <= 0x00ff)
+                    {
+                        var creator =
+                            DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
+                                .TrimEnd((char)DicomVR.LO.PaddingValue);
+                        var card = (uint)(this._tag.Group << 16) + this._tag.Element;
+
+                        lock (this.locker)
+                        {
+                            this._private[card] = creator;
+                        }
+                    }
+
+                    this.ResetState();
+                }
+                return true;
+            }
+
+            private async Task<bool> ParseValueAsync(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    // check dictionary for VR after reading length to handle 16-bit lengths
+                    // check before reading value to handle SQ elements
+                    var parsedVR = this._vr;
+
+                    // check dictionary for VR after reading length to handle 16-bit lengths
+                    // check before reading value to handle SQ elements
+                    if (this._vr == DicomVR.Implicit || (this._vr == DicomVR.UN && this.isExplicitVR))
+                    {
+                        var entry = this.dictionary[this._tag];
+                        if (entry != null)
+                        {
+                            this._vr = entry.ValueRepresentations.FirstOrDefault();
+                        }
+
+                        if (this._vr == null)
+                        {
+                            this._vr = DicomVR.UN;
+                        }
+                    }
+
+                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    {
+                        // end of sequence item
+                        return false;
+                    }
+
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    {
+                        if (!IsPrivateSequence(source))
+                        {
+                            this._vr = DicomVR.UN;
+                            break;
+                        }
+
+                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        {
+                            this.badPrivateSequence = true;
+                            this.isExplicitVR = !this.isExplicitVR;
+                        }
+                        break;
+                    }
+
+                    if (this._vr == DicomVR.SQ)
+                    {
+                        // start of sequence
+                        this.observer.OnBeginSequence(source, this._tag, this.length);
+                        this._state = ParseState.Tag;
+                        if (this.length != UndefinedLength)
+                        {
+                            this._implicit = false;
+                            source.PushMilestone(this.length);
+                        }
+                        else
+                        {
+                            this._implicit = true;
+                        }
+                        var last = source.Position;
+                        await this.ParseItemSequenceAsync(source).ConfigureAwait(false);
+
+                        // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
+                        // Fix reading of SQ with parsed VR of UN
+                        if (source.Position > last || this.length == 0)
+                        {
+                            return true;
+                        }
+
+                        this._state = ParseState.Value;
+                        this._vr = parsedVR;
+                    }
+
+                    if (this.length == UndefinedLength)
+                    {
+                        this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
+                        this._state = ParseState.Tag;
+                        await this.ParseFragmentSequenceAsync(source).ConfigureAwait(false);
+                        return true;
+                    }
+
+                    if (!source.Require(this.length))
+                    {
+                        this.result = DicomReaderResult.Suspended;
+                        return false;
+                    }
+
+                    var buffer = await source.GetBufferAsync(this.length).ConfigureAwait(false);
+
+                    if (!this._vr.IsString)
+                    {
+                        buffer = EndianByteBuffer.Create(buffer, source.Endian, this._vr.UnitSize);
+                    }
+                    this.observer.OnElement(source, this._tag, this._vr, buffer);
+
+                    // parse private creator value and add to lookup table
+                    if (this._tag.IsPrivate && this._tag.Element != 0x0000 && this._tag.Element <= 0x00ff)
+                    {
+                        var creator =
+                            DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
+                                .TrimEnd((char)DicomVR.LO.PaddingValue);
+                        var card = (uint)(this._tag.Group << 16) + this._tag.Element;
+
+                        lock (this.locker)
+                        {
+                            this._private[card] = creator;
+                        }
+                    }
+
+                    this.ResetState();
+                }
+                return true;
+            }
+
             private void ParseItemSequence(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -648,39 +686,10 @@ namespace Dicom.IO.Reader
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
                     if (!this.ParseItemSequenceTag(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        if (this.length != UndefinedLength)
-                        {
-                            if (!source.Require(this.length))
-                            {
-                                this.result = DicomReaderResult.Suspended;
-                                return;
-                            }
-
-                            source.PushMilestone(this.length);
-                        }
-
-                        this.observer.OnBeginSequenceItem(source, this.length);
-
-                        this.ResetState();
-                        this.ParseDataset(source);
-                        this.ResetState();
-
-                        this.observer.OnEndSequenceItem();
-                    }
+                    if (!this.ParseItemSequenceValue(source)) return;
                 }
 
-                // end of explicit length sequence
-                if (source.HasReachedMilestone()) source.PopMilestone();
-
-                this.observer.OnEndSequence();
-                if (this.badPrivateSequence)
-                {
-                    this.isExplicitVR = !this.isExplicitVR;
-                    this.badPrivateSequence = false;
-                }
+                this.ParseItemSequencePostProcess(source);
             }
 
             private async Task ParseItemSequenceAsync(IByteSource source)
@@ -690,39 +699,10 @@ namespace Dicom.IO.Reader
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
                     if (!this.ParseItemSequenceTag(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        if (this.length != UndefinedLength)
-                        {
-                            if (!source.Require(this.length))
-                            {
-                                this.result = DicomReaderResult.Suspended;
-                                return;
-                            }
-
-                            source.PushMilestone(this.length);
-                        }
-
-                        this.observer.OnBeginSequenceItem(source, this.length);
-
-                        this.ResetState();
-                        await this.ParseDatasetAsync(source).ConfigureAwait(false);
-                        this.ResetState();
-
-                        this.observer.OnEndSequenceItem();
-                    }
+                    if (!await this.ParseItemSequenceValueAsync(source).ConfigureAwait(false)) return;
                 }
 
-                // end of explicit length sequence
-                if (source.HasReachedMilestone()) source.PopMilestone();
-
-                this.observer.OnEndSequence();
-                if (this.badPrivateSequence)
-                {
-                    this.isExplicitVR = !this.isExplicitVR;
-                    this.badPrivateSequence = false;
-                }
+                this.ParseItemSequencePostProcess(source);
             }
 
             private bool ParseItemSequenceTag(IByteSource source)
@@ -779,6 +759,74 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
+            private bool ParseItemSequenceValue(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    if (this.length != UndefinedLength)
+                    {
+                        if (!source.Require(this.length))
+                        {
+                            this.result = DicomReaderResult.Suspended;
+                            return false;
+                        }
+
+                        source.PushMilestone(this.length);
+                    }
+
+                    this.observer.OnBeginSequenceItem(source, this.length);
+
+                    this.ResetState();
+                    this.ParseDataset(source);
+                    this.ResetState();
+
+                    this.observer.OnEndSequenceItem();
+                }
+                return true;
+            }
+
+            private async Task<bool> ParseItemSequenceValueAsync(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    if (this.length != UndefinedLength)
+                    {
+                        if (!source.Require(this.length))
+                        {
+                            this.result = DicomReaderResult.Suspended;
+                            return false;
+                        }
+
+                        source.PushMilestone(this.length);
+                    }
+
+                    this.observer.OnBeginSequenceItem(source, this.length);
+
+                    this.ResetState();
+                    await this.ParseDatasetAsync(source).ConfigureAwait(false);
+                    this.ResetState();
+
+                    this.observer.OnEndSequenceItem();
+                }
+                return true;
+            }
+
+            private void ParseItemSequencePostProcess(IByteSource source)
+            {
+                // end of explicit length sequence
+                if (source.HasReachedMilestone())
+                {
+                    source.PopMilestone();
+                }
+
+                this.observer.OnEndSequence();
+                if (this.badPrivateSequence)
+                {
+                    this.isExplicitVR = !this.isExplicitVR;
+                    this.badPrivateSequence = false;
+                }
+            }
+
             private void ParseFragmentSequence(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -786,24 +834,7 @@ namespace Dicom.IO.Reader
                 while (!source.IsEOF)
                 {
                     if (!this.ParseFragmentSequenceTag(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        if (!source.Require(this.length))
-                        {
-                            this.result = DicomReaderResult.Suspended;
-                            return;
-                        }
-
-                        var buffer = source.GetBuffer(this.length);
-                        buffer = EndianByteBuffer.Create(
-                            buffer,
-                            source.Endian,
-                            this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
-                        this.observer.OnFragmentSequenceItem(source, buffer);
-
-                        this._state = ParseState.Tag;
-                    }
+                    if (!this.ParseFragmentSequenceValue(source)) return;
                 }
             }
 
@@ -814,24 +845,7 @@ namespace Dicom.IO.Reader
                 while (!source.IsEOF)
                 {
                     if (!this.ParseFragmentSequenceTag(source)) return;
-
-                    if (this._state == ParseState.Value)
-                    {
-                        if (!source.Require(this.length))
-                        {
-                            this.result = DicomReaderResult.Suspended;
-                            return;
-                        }
-
-                        var buffer = await source.GetBufferAsync(this.length).ConfigureAwait(false);
-                        buffer = EndianByteBuffer.Create(
-                            buffer,
-                            source.Endian,
-                            this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
-                        this.observer.OnFragmentSequenceItem(source, buffer);
-
-                        this._state = ParseState.Tag;
-                    }
+                    if (!await this.ParseFragmentSequenceValueAsync(source).ConfigureAwait(false)) return;
                 }
             }
 
@@ -871,6 +885,44 @@ namespace Dicom.IO.Reader
 
                     this.fragmentItem++;
                     this._state = ParseState.Value;
+                }
+                return true;
+            }
+
+            private bool ParseFragmentSequenceValue(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    if (!source.Require(this.length))
+                    {
+                        this.result = DicomReaderResult.Suspended;
+                        return false;
+                    }
+
+                    var buffer = source.GetBuffer(this.length);
+                    buffer = EndianByteBuffer.Create(buffer, source.Endian, this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
+                    this.observer.OnFragmentSequenceItem(source, buffer);
+
+                    this._state = ParseState.Tag;
+                }
+                return true;
+            }
+
+            private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source)
+            {
+                if (this._state == ParseState.Value)
+                {
+                    if (!source.Require(this.length))
+                    {
+                        this.result = DicomReaderResult.Suspended;
+                        return false;
+                    }
+
+                    var buffer = await source.GetBufferAsync(this.length).ConfigureAwait(false);
+                    buffer = EndianByteBuffer.Create(buffer, source.Endian, this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
+                    this.observer.OnFragmentSequenceItem(source, buffer);
+
+                    this._state = ParseState.Tag;
                 }
                 return true;
             }
