@@ -30,7 +30,7 @@ namespace Dicom.IO.Reader
             AsyncCallback callback,
             object state)
         {
-            return AsyncFactory.ToBegin(Task.Run(() => @this.Read(source, fileMetaInfo, dataset)), callback, state);
+            return AsyncFactory.ToBegin(@this.ReadAsync(source, fileMetaInfo, dataset), callback, state);
         }
 
         /// <summary>

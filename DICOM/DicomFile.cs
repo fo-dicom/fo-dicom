@@ -180,10 +180,13 @@ namespace Dicom
                 using (var source = new FileByteSource(df.File))
                 {
                     DicomFileReader reader = new DicomFileReader();
-                    reader.Read(
+                    if (reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding)) == DicomReaderResult.Error)
+                    {
+                        return null;
+                    }
 
                     df.Format = reader.FileFormat;
 
@@ -227,10 +230,13 @@ namespace Dicom
                 var source = new StreamByteSource(stream);
 
                 var reader = new DicomFileReader();
-                reader.Read(
+                if (reader.Read(
                     source,
                     new DicomDatasetReaderObserver(df.FileMetaInfo),
-                    new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
+                    new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding)) == DicomReaderResult.Error)
+                {
+                    return null;
+                }
 
                 df.Format = reader.FileFormat;
 
@@ -264,9 +270,43 @@ namespace Dicom
         /// <param name="fileName">The filename of the DICOM file</param>
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding)
+        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding)
         {
-            return Task.Run(() => Open(fileName, fallbackEncoding));
+            if (fallbackEncoding == null)
+            {
+                throw new ArgumentNullException("fallbackEncoding");
+            }
+            var df = new DicomFile();
+
+            try
+            {
+                df.File = IOManager.CreateFileReference(fileName);
+
+                using (var source = new FileByteSource(df.File))
+                {
+                    var reader = new DicomFileReader();
+                    var result =
+                        await
+                        reader.ReadAsync(
+                            source,
+                            new DicomDatasetReaderObserver(df.FileMetaInfo),
+                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding)).ConfigureAwait(false);
+
+                    if (result == DicomReaderResult.Error)
+                    {
+                        return null;
+                    }
+
+                    df.Format = reader.FileFormat;
+                    df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                    return df;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new DicomFileException(df, e.Message, e);
+            }
         }
 
         /// <summary>
@@ -285,9 +325,40 @@ namespace Dicom
         /// <param name="stream">Stream to read.</param>
         /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding)
+        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding)
         {
-            return Task.Run(() => Open(stream, fallbackEncoding));
+            if (fallbackEncoding == null)
+            {
+                throw new ArgumentNullException("fallbackEncoding");
+            }
+            var df = new DicomFile();
+
+            try
+            {
+                var source = new StreamByteSource(stream);
+
+                var reader = new DicomFileReader();
+                var result =
+                    await
+                    reader.ReadAsync(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding)).ConfigureAwait(false);
+
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+
+                df.Format = reader.FileFormat;
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
+            }
+            catch (Exception e)
+            {
+                throw new DicomFileException(df, e.Message, e);
+            }
         }
 
         /// <summary>

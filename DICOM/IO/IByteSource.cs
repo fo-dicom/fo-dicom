@@ -3,6 +3,8 @@
 
 namespace Dicom.IO
 {
+    using System.Threading.Tasks;
+
     using Dicom.IO.Buffer;
 
     /// <summary>
@@ -109,6 +111,13 @@ namespace Dicom.IO
         /// <param name="count">Number of bytes to read.</param>
         /// <returns>Byte buffer containing the read bytes.</returns>
         IByteBuffer GetBuffer(uint count);
+
+        /// <summary>
+        /// Asynchronously gets a byte buffer of specified length from the current position and moves to subsequent position.
+        /// </summary>
+        /// <param name="count">Number of bytes to read.</param>
+        /// <returns>Awaitable byte buffer containing the read bytes.</returns>
+        Task<IByteBuffer> GetBufferAsync(uint count);
 
         /// <summary>
         /// Skip position <see cref="count"/> number of bytes.

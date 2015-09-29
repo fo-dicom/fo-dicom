@@ -5,7 +5,6 @@ namespace Dicom.Media
 {
     using System;
     using System.Text;
-    using System.Threading.Tasks;
 
     public partial class DicomDirectory
     {

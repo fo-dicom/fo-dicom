@@ -8,6 +8,8 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.IO
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Stream byte source for reading.
     /// </summary>
@@ -234,6 +236,16 @@ namespace Dicom.IO
             }
             else buffer = new MemoryByteBuffer(GetBytes((int)count));
             return buffer;
+        }
+
+        /// <summary>
+        /// Asynchronously gets a byte buffer of specified length from the current position and moves to subsequent position.
+        /// </summary>
+        /// <param name="count">Number of bytes to read.</param>
+        /// <returns>Awaitable byte buffer containing the read bytes.</returns>
+        public Task<IByteBuffer> GetBufferAsync(uint count)
+        {
+            return Task.FromResult(this.GetBuffer(count));
         }
 
         /// <summary>
