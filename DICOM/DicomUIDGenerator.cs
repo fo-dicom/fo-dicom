@@ -77,11 +77,7 @@ namespace Dicom
                 if (sourceUid != null && _uidMap.TryGetValue(sourceUid.UID, out destinationUid)) return destinationUid;
 
                 long ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-                while (ticks == LastTicks)
-                {
-                    Thread.Sleep(1);
-                    ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-                }
+                if (ticks == LastTicks) ++ticks;
                 LastTicks = ticks;
 
                 string str = ticks.ToString();
