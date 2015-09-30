@@ -62,6 +62,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DatabaseQueryTransformRule.cs" />
+    <Compile Include="DicomDatasetWalkerExtensions.cs" />
+    <Compile Include="AsyncFactory.cs" />
+    <Compile Include="DicomFile.Async.cs" />
+    <Compile Include="DicomFileExtensions.Async.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
     <Compile Include="IO\DesktopPath.cs" />
@@ -94,10 +98,14 @@
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />
     <Compile Include="IO\IPath.cs" />
+    <Compile Include="IO\Reader\DicomFileReaderExtensions.cs" />
+    <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
+    <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
     <Compile Include="Log\LogManager.cs" />
+    <Compile Include="Media\DicomDirectory.Async.cs" />
     <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
     <Compile Include="Media\DicomFileScanner.cs" />
     <Compile Include="DicomMatchRules.cs" />
@@ -130,7 +138,6 @@
     <Compile Include="DicomVR.cs" />
     <Compile Include="DicomException.cs" />
     <Compile Include="EventAsyncResult.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Extensions\DicomUID.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
@@ -203,7 +210,6 @@
     <Compile Include="IO\Reader\DicomReaderMultiObserver.cs" />
     <Compile Include="IO\Reader\IDicomReader.cs" />
     <Compile Include="IO\Reader\IDicomReaderObserver.cs" />
-    <Compile Include="IO\Reader\MockObserver.cs" />
     <Compile Include="IO\PinnedArray.cs" />
     <Compile Include="IO\StreamByteSource.cs" />
     <Compile Include="IO\StreamByteTarget.cs" />

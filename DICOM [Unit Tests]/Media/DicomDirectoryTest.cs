@@ -3,6 +3,8 @@
 
 namespace Dicom.Media
 {
+    using System.Threading.Tasks;
+
     using Xunit;
 
     public class DicomDirectoryTest
@@ -13,6 +15,16 @@ namespace Dicom.Media
         public void Open_DicomDirFile_Succeeds()
         {
             var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
+
+            var expected = DicomUID.MediaStorageDirectoryStorage.UID;
+            var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task OpenAsync_DicomDirFile_Succeeds()
+        {
+            var dir = await DicomDirectory.OpenAsync(@".\Test Data\DICOMDIR");
 
             var expected = DicomUID.MediaStorageDirectoryStorage.UID;
             var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;

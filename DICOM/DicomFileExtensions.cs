@@ -3,8 +3,16 @@
 
 namespace Dicom
 {
-    public static class DicomFileExtensions
+    /// <summary>
+    /// Extension class providing legacy method support from <see cref="DicomFile"/> class.
+    /// </summary>
+    public static partial class DicomFileExtensions
     {
+        /// <summary>
+        /// Deep-copy clone <see cref="DicomFile"/> object.
+        /// </summary>
+        /// <param name="original"><see cref="DicomFile"/> source.</param>
+        /// <returns>Deep-copy clone of <paramref name="original"/>.</returns>
         public static DicomFile Clone(this DicomFile original)
         {
             var df = new DicomFile();

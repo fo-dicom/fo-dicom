@@ -5,6 +5,7 @@ namespace Dicom
 {
     using System.IO;
     using System.IO.MemoryMappedFiles;
+    using System.Threading.Tasks;
 
     using Xunit;
 
@@ -73,6 +74,15 @@ namespace Dicom
         }
 
         [Fact]
+        public async Task SaveAsync_ToFile_FileExistsOnDisk()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            await saveFile.SaveAsync(fileName);
+            Assert.True(File.Exists(fileName));
+        }
+
+        [Fact]
         public void BeginSave_ToFile_FileExistsOnDisk()
         {
             var saveFile = new DicomFile(MinimumDatatset);
@@ -89,6 +99,19 @@ namespace Dicom
             saveFile.Save(fileName);
 
             var openFile = DicomFile.Open(fileName);
+            var expected = MinimumDatasetInstanceUid;
+            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task OpenAsync_FromFile_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(MinimumDatatset);
+            var fileName = Path.GetTempFileName();
+            saveFile.Save(fileName);
+
+            var openFile = await DicomFile.OpenAsync(fileName);
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
