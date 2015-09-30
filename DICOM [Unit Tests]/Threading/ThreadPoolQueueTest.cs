@@ -13,6 +13,8 @@ namespace Dicom.Threading
         [Fact]
         public void Queue_OrderOfExecutionForSameKey_ShouldBeFifo()
         {
+            var locker = new object();
+
             string[] expected = { "", "", "" }, actual = { "", "", "" };
             bool[] finished = { false, false, false };
             var handle = new ManualResetEventSlim(false);
@@ -26,18 +28,21 @@ namespace Dicom.Threading
                     group,
                     state =>
                         {
-                            actual[group] += string.Format("B{0}", (int)state);
+                            lock (locker) actual[group] += string.Format("B{0}", (int)state);
                             Thread.Sleep((int)state % 2 + 1);
-                            actual[group] += string.Format("E{0}", (int)state);
+                            lock (locker) actual[group] += string.Format("E{0}", (int)state);
                             if ((int)state > 95)
                             {
-                                finished[group] = true;
-                                if (finished.All(f => f)) handle.Set();
+                                lock (locker)
+                                {
+                                    finished[group] = true;
+                                    if (finished.All(f => f)) handle.Set();
+                                }
                             }
                         },
                     i);
             }
-            handle.Wait(1000);
+            handle.Wait(10000);
 
             Assert.Equal(expected, actual);
         }
