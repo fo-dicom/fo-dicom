@@ -25,7 +25,6 @@ namespace Dicom
                     {
                         if (_instanceRootUid == null)
                         {
-#if !SILVERLIGHT
                             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
                             for (int i = 0; i < interfaces.Length; i++)
                             {
@@ -49,7 +48,7 @@ namespace Dicom
                                     }
                                 }
                             }
-#endif
+
                             _instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
                         }
                     }

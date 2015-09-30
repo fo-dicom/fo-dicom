@@ -1,9 +1,7 @@
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !SILVERLIGHT
 using System.Drawing;
-#endif
 using System.Windows.Media.Imaging;
 using Dicom.Imaging.LUT;
 
@@ -107,14 +105,12 @@ namespace Dicom.Imaging.Render
         /// <param name="flipy">True to flip horizontally</param>
         void Transform(double scale, int rotation, bool flipx, bool flipy);
 
-#if !SILVERLIGHT
         /// <summary>
         /// Render the image and return the result as <seealso cref="Image"/>
         /// </summary>
         /// <param name="lut">The image LUT </param>
         /// <returns>Image after applying LUT and transformation</returns>
         Image RenderImage(ILUT lut);
-#endif
 
         /// <summary>
         /// Render the image and return the result as <seealso cref="BitmapSource"/>
