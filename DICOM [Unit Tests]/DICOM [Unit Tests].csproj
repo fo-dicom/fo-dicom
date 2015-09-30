@@ -69,6 +69,7 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="Helpers\StringLogManager.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
     <Compile Include="Media\DicomFileScannerTest.cs" />
+    <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
