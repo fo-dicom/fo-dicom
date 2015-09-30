@@ -30,12 +30,9 @@ namespace Dicom.Helpers
                 this.builder.AppendLine(string.Format(format, args));
             }
 
-            internal string Text
+            public override string ToString()
             {
-                get
-                {
-                    return this.builder.ToString();
-                }
+                return this.builder.ToString();
             }
         }
     }
