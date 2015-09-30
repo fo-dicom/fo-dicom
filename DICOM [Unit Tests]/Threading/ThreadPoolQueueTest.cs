@@ -26,11 +26,10 @@ namespace Dicom.Threading
                     group,
                     state =>
                         {
-                            actual[group] += string.Format("B{0}", state);
-                            Thread.Sleep(1);
-                            actual[group] += string.Format("E{0}", state);
-                            Thread.Sleep(1);
-                            if ((int)state > 96)
+                            actual[group] += string.Format("B{0}", (int)state);
+                            Thread.Sleep((int)state % 2 + 1);
+                            actual[group] += string.Format("E{0}", (int)state);
+                            if ((int)state > 95)
                             {
                                 finished[group] = true;
                                 if (finished.All(f => f)) handle.Set();
