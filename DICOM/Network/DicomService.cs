@@ -72,8 +72,7 @@ namespace Dicom.Network
             MaximumPDUsInQueue = 16;
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _processQueue = new ThreadPoolQueue<int>();
-            _processQueue.DefaultGroup = Int32.MinValue;
+            _processQueue = new ThreadPoolQueue<int>(int.MinValue);
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
             Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
