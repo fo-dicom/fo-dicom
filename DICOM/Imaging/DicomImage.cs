@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !SILVERLIGHT
 using System.Drawing;
-#endif
 using System.Linq;
 using System.Windows.Media;
 
@@ -43,7 +41,6 @@ namespace Dicom.Imaging
             Load(dataset, frame);
         }
 
-#if !SILVERLIGHT
         /// <summary>Creates DICOM image object from file</summary>
         /// <param name="fileName">Source file</param>
         /// <param name="frame">Zero indexed frame number</param>
@@ -54,7 +51,6 @@ namespace Dicom.Imaging
             var file = DicomFile.Open(fileName);
             Load(file.Dataset, frame);
         }
-#endif
 
         /// <summary>Source DICOM dataset</summary>
         public DicomDataset Dataset { get; private set; }
@@ -197,7 +193,6 @@ namespace Dicom.Imaging
 
         public int CurrentFrame { get; private set; }
 
-#if !SILVERLIGHT
         /// <summary>Renders DICOM image to System.Drawing.Image</summary>
         /// <param name="frame">Zero indexed frame number</param>
         /// <returns>Rendered image</returns>
@@ -238,7 +233,6 @@ namespace Dicom.Imaging
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 

@@ -25,7 +25,6 @@ namespace Dicom
                     {
                         if (_instanceRootUid == null)
                         {
-#if !SILVERLIGHT
                             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
                             for (int i = 0; i < interfaces.Length; i++)
                             {
@@ -49,7 +48,7 @@ namespace Dicom
                                     }
                                 }
                             }
-#endif
+
                             _instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
                         }
                     }
@@ -78,11 +77,7 @@ namespace Dicom
                 if (sourceUid != null && _uidMap.TryGetValue(sourceUid.UID, out destinationUid)) return destinationUid;
 
                 long ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-                while (ticks == LastTicks)
-                {
-                    Thread.Sleep(1);
-                    ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-                }
+                if (ticks == LastTicks) ++ticks;
                 LastTicks = ticks;
 
                 string str = ticks.ToString();

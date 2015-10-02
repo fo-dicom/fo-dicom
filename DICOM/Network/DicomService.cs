@@ -72,8 +72,7 @@ namespace Dicom.Network
             MaximumPDUsInQueue = 16;
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _processQueue = new ThreadPoolQueue<int>();
-            _processQueue.DefaultGroup = Int32.MinValue;
+            _processQueue = new ThreadPoolQueue<int>(int.MinValue);
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
             Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
@@ -765,20 +764,20 @@ namespace Dicom.Network
 
         protected void SendPDU(PDU pdu)
         {
-            // throttle queueing of PDUs to prevent out of memory errors for very large datasets
-            do
+            using (var flag = new ManualResetEvent(false))
+            using (new Timer(
+                state =>
+                    {
+                        if (this._pduQueue.Count >= this.MaximumPDUsInQueue) return;
+                        lock (this._lock)
+                        {
+                            this._pduQueue.Enqueue((PDU)state);
+                            flag.Set();
+                        }
+                    }, pdu, 0, 10))
             {
-                if (_pduQueue.Count >= MaximumPDUsInQueue)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }
-
-                lock (_lock) _pduQueue.Enqueue(pdu);
-
-                break;
+                flag.WaitOne();
             }
-            while (true);
 
             SendNextPDU();
         }

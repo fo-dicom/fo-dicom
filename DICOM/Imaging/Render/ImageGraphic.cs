@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
 using System.Drawing;
 using System.Runtime.InteropServices;
-#endif
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -29,15 +27,11 @@ namespace Dicom.Imaging.Render
 
         protected PinnedIntArray _pixels;
 
-#if SILVERLIGHT
-		protected WriteableBitmap _bitmap;
-#else
         private const int DPI = 96;
 
         protected BitmapSource _bitmapSource;
 
         protected Bitmap _bitmap;
-#endif
 
         protected double _scaleFactor;
 
@@ -300,42 +294,6 @@ namespace Dicom.Imaging.Render
             _flipY = flipy;
         }
 
-#if SILVERLIGHT
-		public BitmapSource RenderImageSource(ILUT lut)
-		{
-			bool render = false;
-
-			if (_bitmap == null) {
-				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-				_bitmap = new WriteableBitmap(ScaledData.Width, ScaledData.Height);
-				render = true;
-			}
-
-			if (_applyLut && lut != null && !lut.IsValid) {
-				lut.Recalculate();
-				render = true;
-			}
-
-			if (render) {
-				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
-
-				foreach (var overlay in _overlays) {
-					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
-				}
-			}
-
-			MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
-
-			_bitmap.Rotate(_rotation);
-
-			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
-			if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
-
-			_bitmap.Invalidate();
-
-			return _bitmap;
-		}
-#else
         public BitmapSource RenderImageSource(ILUT lut)
         {
             bool render = false;
@@ -485,7 +443,6 @@ namespace Dicom.Imaging.Render
                 }
             }
         }
-#endif
 
         #endregion
 

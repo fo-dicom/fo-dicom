@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
 using System.Drawing;
-#endif
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Dicom.Imaging.LUT;
@@ -184,27 +182,6 @@ namespace Dicom.Imaging.Render
             foreach (IGraphic graphic in _layers) graphic.Transform(scale, rotation, flipx, flipy);
         }
 
-#if SILVERLIGHT
-        public BitmapSource RenderImageSource(ILUT lut)
-        {
-            WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
-            if (img != null && _layers.Count > 1)
-            {
-                for (int i = 1; i < _layers.Count; ++i)
-                {
-                    var g = _layers[i];
-                    var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
-
-                    if (layer != null)
-                    {
-                        var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
-                        img.Blit(rect, layer, rect);
-                    }
-                }
-            }
-            return img;
-        }
-#else
         public BitmapSource RenderImageSource(ILUT lut)
         {
             WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
@@ -246,7 +223,6 @@ namespace Dicom.Imaging.Render
             }
             return img;
         }
-#endif
 
         #endregion
     }
