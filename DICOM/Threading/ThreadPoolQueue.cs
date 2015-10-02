@@ -11,7 +11,7 @@ namespace Dicom.Threading
     /// <summary>
     /// Class for handling queue of categorized work items.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Group key type.</typeparam>
     public class ThreadPoolQueue<T>
     {
         /// <summary>
@@ -166,7 +166,7 @@ namespace Dicom.Threading
         {
             lock (_lock)
             {
-                WorkGroup group = null;
+                WorkGroup group;
                 if (!_groups.TryGetValue(item.Group, out group))
                 {
                     group = new WorkGroup(item.Group);
@@ -187,7 +187,7 @@ namespace Dicom.Threading
         {
             if (_stopped) return;
 
-            WorkGroup group = null;
+            WorkGroup group;
             lock (_lock)
             {
                 if (!_groups.TryGetValue(groupKey, out group)) return;
@@ -225,7 +225,6 @@ namespace Dicom.Threading
                 lock (group.Lock)
                 {
                     empty = group.Items.Count == 0;
-
                     if (!empty) item = group.Items.Dequeue();
                 }
 
@@ -237,10 +236,10 @@ namespace Dicom.Threading
                             lock (group.Lock)
                             {
                                 if (group.Items.Count == 0) return;
-                                empty = false;
                                 item = group.Items.Dequeue();
-                                ((ManualResetEvent)obj).Set();
                             }
+                            empty = false;
+                            ((ManualResetEvent)obj).Set();
                         }, flag, 0, 1))
                     {
                         flag.WaitOne(this.Linger);
@@ -255,7 +254,6 @@ namespace Dicom.Threading
                             lock (_lock)
                             {
                                 if (!group.Key.Equals(DefaultGroup)) _groups.Remove(group.Key);
-
                                 return;
                             }
                         }
