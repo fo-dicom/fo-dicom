@@ -1047,7 +1047,7 @@ namespace Dicom.Network
             }
         }
 
-        public void SendRequest(DicomRequest request)
+        public virtual void SendRequest(DicomRequest request)
         {
             SendMessage(request);
         }
