@@ -67,6 +67,10 @@
     <Compile Include="DicomFile.Async.cs" />
     <Compile Include="DicomFileExtensions.Async.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
+    <Compile Include="Imaging\FormsImage.cs" />
+    <Compile Include="Imaging\FormsImageManager.cs" />
+    <Compile Include="Imaging\IImage.cs" />
+    <Compile Include="Imaging\ImageManager.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
     <Compile Include="IO\DesktopPath.cs" />
     <Compile Include="DicomDataException.cs" />
@@ -324,7 +328,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
