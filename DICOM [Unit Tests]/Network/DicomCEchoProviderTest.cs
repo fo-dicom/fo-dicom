@@ -8,6 +8,7 @@ namespace Dicom.Network
 
     using Xunit;
 
+    [Collection("Network")]
     public class DicomCEchoProviderTest
     {
         [Fact]
@@ -15,7 +16,7 @@ namespace Dicom.Network
         {
             LogManager.Default = new StringLogManager();
 
-            const int port = 12345;
+            const int port = 11112;
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var client = new DicomClient();

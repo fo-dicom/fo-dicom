@@ -12,6 +12,7 @@ namespace Dicom.Network
 
     using Xunit;
 
+    [Collection("Network")]
     public class DicomClientTest
     {
         #region Unit tests

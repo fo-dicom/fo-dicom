@@ -11,6 +11,7 @@ namespace Dicom.Network
 
     using Xunit;
 
+    [Collection("Network")]
     public class DicomServiceTest
     {
         #region Unit tests
@@ -18,7 +19,7 @@ namespace Dicom.Network
         [Fact]
         public void Send_SingleRequest_DataSufficientlyTransported()
         {
-            const int port = 54321;
+            const int port = 11112;
             using (new DicomServer<MockCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
@@ -45,7 +46,7 @@ namespace Dicom.Network
         [Fact]
         public async Task SendAsync_SingleRequest_DataSufficientlyTransported()
         {
-            const int port = 54321;
+            const int port = 11112;
             using (new DicomServer<MockCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
