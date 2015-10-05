@@ -41,12 +41,15 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
+    <Reference Include="WindowsBase" />
     <Reference Include="xunit.abstractions">
       <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
@@ -72,9 +75,12 @@
     <Compile Include="Helpers\StringLogManager.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
+    <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
     <Compile Include="Imaging\Mathematics\RectFTest.cs" />
     <Compile Include="Imaging\SpatialTransformTest.cs" />
+    <Compile Include="Imaging\WinFormsImageTest.cs" />
+    <Compile Include="Imaging\WPFImageTest.cs" />
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
