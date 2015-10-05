@@ -12,7 +12,7 @@ namespace Dicom.Network
 
     using Xunit;
 
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTest
     {
         #region Unit tests
@@ -112,6 +112,27 @@ namespace Dicom.Network
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await Task.WhenAny(task, Task.Delay(10000));
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [InlineData(20)]
+        public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
+        {
+            const int port = 11112;
+            using (new DicomServer<DicomCEchoProvider>(port))
+            {
+                var actual = 0;
+
+                var client = new DicomClient();
+                for (var i = 0; i < expected; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                    var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                    await Task.WhenAny(task, Task.Delay(1000));
+                }
 
                 Assert.Equal(expected, actual);
             }

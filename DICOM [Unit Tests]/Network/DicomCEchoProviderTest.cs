@@ -8,7 +8,7 @@ namespace Dicom.Network
 
     using Xunit;
 
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class DicomCEchoProviderTest
     {
         [Fact]
