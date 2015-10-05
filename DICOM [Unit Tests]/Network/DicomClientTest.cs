@@ -88,7 +88,8 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 client.AddRequest(request);
 
-                await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await Task.WhenAny(task, Task.Delay(10000));
 
                 Assert.Equal(1, counter);
             }
@@ -109,7 +110,8 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
 
-                await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await Task.WhenAny(task, Task.Delay(10000));
 
                 Assert.Equal(expected, actual);
             }
@@ -165,7 +167,7 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = client.WaitForAssociation(10000);
-                task.Wait();
+                task.Wait(10000);
                 Assert.Equal(true, actual);
             }
         }
@@ -181,7 +183,7 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = client.WaitForAssociation(1);
-                task.Wait();
+                task.Wait(10000);
                 Assert.Equal(false, actual);
             }
         }
@@ -197,7 +199,7 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = await client.WaitForAssociationAsync(10000);
-                task.Wait();
+                task.Wait(10000);
                 Assert.Equal(true, actual);
             }
         }
@@ -213,7 +215,7 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = await client.WaitForAssociationAsync(1);
-                task.Wait();
+                task.Wait(10000);
                 Assert.Equal(false, actual);
             }
         }
