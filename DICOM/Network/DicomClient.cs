@@ -1,153 +1,267 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-
-using Dicom.Log;
-
 namespace Dicom.Network
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Sockets;
+    using System.Net.Security;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Dicom.Log;
+
+    /// <summary>
+    /// General client class for DICOM services.
+    /// </summary>
     public class DicomClient
     {
-        private EventAsyncResult _async;
+        #region FIELDS
 
-        private ManualResetEventSlim _assoc;
+        private TaskCompletionSource<bool> completeNotifier;
 
-        private Exception _exception;
+        private TaskCompletionSource<bool> associateNotifier;
 
-        private List<DicomRequest> _requests;
+        private readonly List<DicomRequest> requests;
 
-        private List<DicomPresentationContext> _contexts;
+        private DicomServiceUser service;
 
-        private DicomServiceUser _service;
+        private int asyncInvoked;
 
-        private int _asyncInvoked;
+        private int asyncPerformed;
 
-        private int _asyncPerformed;
+        private TcpClient tcpClient;
 
-        private TcpClient _client;
+        private bool abort;
 
-        private bool _abort;
+        #endregion
 
-        public DicomClient()
-        {
-            _requests = new List<DicomRequest>();
-            _contexts = new List<DicomPresentationContext>();
-            _asyncInvoked = 1;
-            _asyncPerformed = 1;
-            Linger = 50;
-        }
-
-        public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
-        {
-            _asyncInvoked = invoked;
-            _asyncPerformed = performed;
-        }
+        #region CONSTRUCTORS
 
         /// <summary>
-        /// Time in milliseconds to keep connection alive for additional requests.
+        /// Initializes an instance of <see cref="DicomClient"/>.
+        /// </summary>
+        public DicomClient()
+        {
+            this.requests = new List<DicomRequest>();
+            this.AdditionalPresentationContexts = new List<DicomPresentationContext>();
+            this.asyncInvoked = 1;
+            this.asyncPerformed = 1;
+            this.Linger = 50;
+        }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets or sets time in milliseconds to keep connection alive for additional requests.
         /// </summary>
         public int Linger { get; set; }
 
         /// <summary>
-        /// Logger that is passed to the underlying DicomService implementation.
+        /// Gets or sets logger that is passed to the underlying <see cref="DicomService"/> implementation.
         /// </summary>
         public Logger Logger { get; set; }
 
         /// <summary>
-        /// Options to control behavior of <see cref="DicomService"/> base class.
+        /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
         public DicomServiceOptions Options { get; set; }
 
         /// <summary>
-        /// Additional presentation contexts to negotiate with association.
+        /// Gets or sets additional presentation contexts to negotiate with association.
         /// </summary>
-        public List<DicomPresentationContext> AdditionalPresentationContexts
+        public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Set negotiation asynchronous operations.
+        /// </summary>
+        /// <param name="invoked">Asynchronous operations invoked.</param>
+        /// <param name="performed">Asynchronous operations performed.</param>
+        public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
         {
-            get
-            {
-                return _contexts;
-            }
-            set
-            {
-                _contexts = value;
-            }
+            this.asyncInvoked = invoked;
+            this.asyncPerformed = performed;
         }
 
-        public object UserState { get; set; }
-
+        /// <summary>
+        /// Add DICOM service request.
+        /// </summary>
+        /// <param name="request">DICOM request.</param>
         public void AddRequest(DicomRequest request)
         {
-            if (_service != null && _service.IsConnected)
+            if (this.service != null && this.service.IsConnected)
             {
-                _service.SendRequest(request);
-                if (_service._timer != null) _service._timer.Change(Timeout.Infinite, Timeout.Infinite);
+                this.service.SendRequest(request);
             }
-            else _requests.Add(request);
+            else this.requests.Add(request);
         }
 
+        /// <summary>
+        /// Synchonously send existing requests to DICOM service.
+        /// </summary>
+        /// <param name="host">DICOM host.</param>
+        /// <param name="port">Port.</param>
+        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            EndSend(BeginSend(host, port, useTls, callingAe, calledAe, null, null));
+            if (this.requests.Count == 0) return;
+
+            var stream = this.CreateSendStream(host, port, useTls);
+            this.InitializeSend(stream, callingAe, calledAe);
+            this.completeNotifier.Task.Wait();
+            this.FinalizeSend();
         }
 
-        public IAsyncResult BeginSend(
-            string host,
-            int port,
-            bool useTls,
-            string callingAe,
-            string calledAe,
-            AsyncCallback callback,
-            object state)
+        /// <summary>
+        /// Asynchonously send existing requests to DICOM service.
+        /// </summary>
+        /// <param name="host">DICOM host.</param>
+        /// <param name="port">Port.</param>
+        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <returns>Awaitable task.</returns>
+        public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            _client = new TcpClient(host, port);
+            if (this.requests.Count == 0) return;
 
-            if (Options != null) _client.NoDelay = Options.TcpNoDelay;
-            else _client.NoDelay = DicomServiceOptions.Default.TcpNoDelay;
-
-            Stream stream = _client.GetStream();
-
-            if (useTls)
-            {
-                var ssl = new SslStream(stream, false, ValidateServerCertificate);
-                ssl.AuthenticateAsClient(host);
-                stream = ssl;
-            }
-
-            return BeginSend(stream, callingAe, calledAe, callback, state);
+            var stream = this.CreateSendStream(host, port, useTls);
+            this.InitializeSend(stream, callingAe, calledAe);
+            await this.completeNotifier.Task.ConfigureAwait(false);
+            this.FinalizeSend();
         }
 
+        /// <summary>
+        /// Synchronously send existing requests to DICOM service.
+        /// </summary>
+        /// <param name="stream">Established network stream.</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(Stream stream, string callingAe, string calledAe)
         {
-            EndSend(BeginSend(stream, callingAe, calledAe, null, null));
+            if (this.requests.Count == 0) return;
+
+            this.InitializeSend(stream, callingAe, calledAe);
+            this.completeNotifier.Task.Wait();
+            this.FinalizeSend();
         }
 
-        public IAsyncResult BeginSend(
-            Stream stream,
-            string callingAe,
-            string calledAe,
-            AsyncCallback callback,
-            object state)
+        /// <summary>
+        /// Asynchronously send existing requests to DICOM service.
+        /// </summary>
+        /// <param name="stream">Established network stream.</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <returns>Awaitable task.</returns>
+        public async Task SendAsync(Stream stream, string callingAe, string calledAe)
         {
-            var assoc = new DicomAssociation(callingAe, calledAe);
-            assoc.MaxAsyncOpsInvoked = _asyncInvoked;
-            assoc.MaxAsyncOpsPerformed = _asyncPerformed;
-            foreach (var request in _requests) assoc.PresentationContexts.AddFromRequest(request);
-            foreach (var context in _contexts) assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
+            if (this.requests.Count == 0) return;
 
-            _service = new DicomServiceUser(this, stream, assoc, Logger);
+            this.InitializeSend(stream, callingAe, calledAe);
+            await this.completeNotifier.Task.ConfigureAwait(false);
+            this.FinalizeSend();
+        }
 
-            _assoc = new ManualResetEventSlim(false);
+        /// <summary>
+        /// Synchronously wait for association.
+        /// </summary>
+        /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
+        /// <returns>True if association is established, false otherwise.</returns>
+        public bool WaitForAssociation(int millisecondsTimeout = 5000)
+        {
+            return this.associateNotifier != null && this.associateNotifier.Task.Wait(millisecondsTimeout);
+        }
 
-            _async = new EventAsyncResult(callback, state);
-            return _async;
+        /// <summary>
+        /// Asynchronously wait for association.
+        /// </summary>
+        /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
+        /// <returns>True if association is established, false otherwise.</returns>
+        public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = 5000)
+        {
+            if (this.associateNotifier == null) return false;
+            await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+            return this.associateNotifier.Task.IsCompleted;
+        }
+
+        /// <summary>
+        /// Synchronously release association.
+        /// </summary>
+        public void Release()
+        {
+            try
+            {
+                this.service._SendAssociationReleaseRequest();
+                this.completeNotifier.Task.Wait(10000);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.Abort();
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously release association.
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReleaseAsync()
+        {
+            try
+            {
+                this.service._SendAssociationReleaseRequest();
+                await Task.WhenAny(this.completeNotifier.Task, Task.Delay(10000)).ConfigureAwait(false);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.Abort();
+            }
+        }
+
+        /// <summary>
+        /// Abort DICOM service connection.
+        /// </summary>
+        public void Abort()
+        {
+            if (this.abort) return;
+
+            try
+            {
+                this.abort = true;
+                this.tcpClient.Close();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                this.tcpClient = null;
+                try
+                {
+                    this.completeNotifier.TrySetResult(true);
+                }
+                catch
+                {
+                }
+                this.completeNotifier = null;
+            }
         }
 
         private bool ValidateServerCertificate(
@@ -156,162 +270,114 @@ namespace Dicom.Network
             X509Chain chain,
             SslPolicyErrors sslPolicyErrors)
         {
-            if (sslPolicyErrors == SslPolicyErrors.None) return true;
-
-            if (Options != null)
-            {
-                if (Options.IgnoreSslPolicyErrors) return true;
-            }
-            else if (DicomServiceOptions.Default.IgnoreSslPolicyErrors) return true;
-
-            return false;
+            return sslPolicyErrors == SslPolicyErrors.None
+                   || (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
         }
 
-        public void EndSend(IAsyncResult result)
+        private Stream CreateSendStream(string host, int port, bool useTls)
         {
-            if (_async != null) _async.AsyncWaitHandle.WaitOne();
+            this.tcpClient = new TcpClient(host, port)
+                                 {
+                                     NoDelay =
+                                         this.Options != null
+                                             ? this.Options.TcpNoDelay
+                                             : DicomServiceOptions.Default.TcpNoDelay
+                                 };
 
-            if (_assoc != null) _assoc.Set();
+            Stream stream = this.tcpClient.GetStream();
 
-            if (_client != null)
+            if (useTls)
+            {
+                var ssl = new SslStream(stream, false, this.ValidateServerCertificate);
+                ssl.AuthenticateAsClient(host);
+                stream = ssl;
+            }
+
+            return stream;
+        }
+
+        private void InitializeSend(Stream stream, string callingAe, string calledAe)
+        {
+            var assoc = new DicomAssociation(callingAe, calledAe)
+                            {
+                                MaxAsyncOpsInvoked = this.asyncInvoked,
+                                MaxAsyncOpsPerformed = this.asyncPerformed
+                            };
+            foreach (var request in this.requests)
+            {
+                assoc.PresentationContexts.AddFromRequest(request);
+            }
+            foreach (var context in this.AdditionalPresentationContexts)
+            {
+                assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
+            }
+
+            this.service = new DicomServiceUser(this, stream, assoc, this.Options, this.Logger);
+            this.associateNotifier = new TaskCompletionSource<bool>();
+            this.completeNotifier = new TaskCompletionSource<bool>();
+        }
+
+        private void FinalizeSend()
+        {
+            if (this.associateNotifier != null) this.associateNotifier.SetResult(true);
+
+            if (this.tcpClient != null)
             {
                 try
                 {
-                    _client.Close();
+                    this.tcpClient.Close();
                 }
                 catch
                 {
                 }
             }
 
-            _service = null;
-            _client = null;
-            _async = null;
-            _assoc = null;
-
-            if (_exception != null && !_abort) throw _exception;
+            this.service = null;
+            this.tcpClient = null;
+            this.completeNotifier = null;
+            this.associateNotifier = null;
         }
 
-        public void WaitForAssociation(int millisecondsTimeout = 5000)
-        {
-            if (_assoc == null) return;
+        #endregion
 
-            _assoc.Wait(millisecondsTimeout);
-        }
-
-        public void Release()
-        {
-            try
-            {
-                _service._SendAssociationReleaseRequest();
-
-                _async.AsyncWaitHandle.WaitOne(10000);
-            }
-            catch
-            {
-            }
-            finally
-            {
-                Abort();
-            }
-        }
-
-        public void Abort()
-        {
-            try
-            {
-                _abort = true;
-                _client.Close();
-            }
-            catch
-            {
-            }
-            finally
-            {
-                _client = null;
-                try
-                {
-                    _async.Set();
-                }
-                catch
-                {
-                }
-                _async = null;
-            }
-        }
+        #region INNER TYPES
 
         private class DicomServiceUser : DicomService, IDicomServiceUser
         {
-            public DicomClient _client;
+            #region FIELDS
 
-            public Timer _timer;
+            private readonly DicomClient client;
 
-            public DicomServiceUser(DicomClient client, Stream stream, DicomAssociation association, Logger log)
+            private Timer timer;
+
+            #endregion
+
+            #region CONSTRUCTORS
+
+            internal DicomServiceUser(
+                DicomClient client,
+                Stream stream,
+                DicomAssociation association,
+                DicomServiceOptions options,
+                Logger log)
                 : base(stream, log)
             {
-                _client = client;
-                if (_client.Options != null) Options = _client.Options;
-                SendAssociationRequest(association);
+                this.client = client;
+                if (options != null) this.Options = options;
+                this.SendAssociationRequest(association);
             }
 
-            public void _SendAssociationReleaseRequest()
-            {
-                try
-                {
-                    SendAssociationReleaseRequest();
-                }
-                catch
-                {
-                    // may have already disconnected
-                    _client._async.Set();
-                    return;
-                }
+            #endregion
 
-                _timer = new Timer(OnReleaseTimeout);
-                _timer.Change(2500, Timeout.Infinite);
-            }
+            #region METHODS
 
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
-                _client._assoc.Set();
-                _client._assoc = null;
+                this.client.associateNotifier.TrySetResult(true);
+                this.client.associateNotifier = null;
 
-                foreach (var request in _client._requests) SendRequest(request);
-                _client._requests.Clear();
-            }
-
-            protected override void OnSendQueueEmpty()
-            {
-                if (_client.Linger == Timeout.Infinite)
-                {
-                    OnLingerTimeout(null);
-                }
-                else
-                {
-                    _timer = new Timer(OnLingerTimeout);
-                    _timer.Change(_client.Linger, Timeout.Infinite);
-                }
-            }
-
-            private void OnLingerTimeout(object state)
-            {
-                if (!IsSendQueueEmpty) return;
-
-                if (IsConnected) _SendAssociationReleaseRequest();
-            }
-
-            private void OnReleaseTimeout(object state)
-            {
-                if (_timer != null) _timer.Change(Timeout.Infinite, Timeout.Infinite);
-
-                try
-                {
-                    if (_client._async != null) _client._async.Set();
-                }
-                catch
-                {
-                    // event handler has already fired
-                }
+                foreach (var request in this.client.requests) base.SendRequest(request);
+                this.client.requests.Clear();
             }
 
             public void OnReceiveAssociationReject(
@@ -319,42 +385,91 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                if (_timer != null) _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                this.DisableTimer();
 
-                _client._exception = new DicomAssociationRejectedException(result, source, reason);
-                _client._async.Set();
+                throw new DicomAssociationRejectedException(result, source, reason);
             }
 
             public void OnReceiveAssociationReleaseResponse()
             {
-                if (_timer != null) _timer.Change(Timeout.Infinite, Timeout.Infinite);
-
-                _client._async.Set();
+                this.DisableTimer();
+                this.SignalCompleted();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                if (_timer != null) _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                this.DisableTimer();
 
-                _client._exception = new DicomAssociationAbortedException(source, reason);
-                _client._async.Set();
+                throw new DicomAssociationAbortedException(source, reason);
             }
 
             public void OnConnectionClosed(Exception exception)
             {
-                if (_timer != null) _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                this.DisableTimer();
+                this.SignalCompleted();
+            }
 
-                _client._exception = exception;
+            public override void SendRequest(DicomRequest request)
+            {
+                this.DisableTimer();
+                base.SendRequest(request);
+            }
 
+            protected override void OnSendQueueEmpty()
+            {
+                this.timer = new Timer(this.OnLingerTimeout,
+                    null,
+                    this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger,
+                    Timeout.Infinite);
+            }
+
+            internal void _SendAssociationReleaseRequest()
+            {
                 try
                 {
-                    if (_client._async != null) _client._async.Set();
+                    this.SendAssociationReleaseRequest();
                 }
                 catch
                 {
-                    // event handler has already fired
+                    // may have already disconnected
+                    this.SignalCompleted();
+                    return;
+                }
+
+                this.timer = new Timer(this.OnReleaseTimeout, null, 2500, Timeout.Infinite);
+            }
+
+            private void OnLingerTimeout(object state)
+            {
+                if (!this.IsSendQueueEmpty) return;
+                if (this.IsConnected) this._SendAssociationReleaseRequest();
+            }
+
+            private void OnReleaseTimeout(object state)
+            {
+                this.DisableTimer();
+                this.SignalCompleted();
+            }
+
+            private void DisableTimer()
+            {
+                if (this.timer != null)
+                {
+                    this.timer.Change(Timeout.Infinite, Timeout.Infinite);
                 }
             }
+
+            private void SignalCompleted()
+            {
+                if (this.client.completeNotifier != null)
+                {
+                    this.client.completeNotifier.TrySetResult(true);
+                }
+            }
+
+            #endregion
         }
+
+        #endregion
     }
 }

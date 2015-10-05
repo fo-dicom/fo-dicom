@@ -3,7 +3,6 @@
 
 namespace Dicom.IO.Writer
 {
-    using System;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -13,17 +12,7 @@ namespace Dicom.IO.Writer
     {
         #region FIELDS
 
-        private EventAsyncResult _async;
-
-        private Exception _exception;
-
-        private IByteTarget _target;
-
-        private DicomFileMetaInformation _fileMetaInfo;
-
-        private DicomDataset _dataset;
-
-        private readonly DicomWriteOptions _options;
+        private readonly DicomWriteOptions options;
 
         #endregion
 
@@ -35,7 +24,7 @@ namespace Dicom.IO.Writer
         /// <param name="options">Writer options.</param>
         public DicomFileWriter(DicomWriteOptions options)
         {
-            _options = options;
+            this.options = options;
         }
 
         #endregion
@@ -51,8 +40,8 @@ namespace Dicom.IO.Writer
         public void Write(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             WritePreamble(target);
-            WriteFileMetaInfo(target, fileMetaInfo, this._options);
-            WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this._options);
+            WriteFileMetaInfo(target, fileMetaInfo, this.options);
+            WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this.options);
         }
 
         /// <summary>
@@ -65,8 +54,8 @@ namespace Dicom.IO.Writer
         public async Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             await WritePreambleAsync(target).ConfigureAwait(false);
-            await WriteFileMetaInfoAsync(target, fileMetaInfo, this._options).ConfigureAwait(false);
-            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this._options).ConfigureAwait(false);
+            await WriteFileMetaInfoAsync(target, fileMetaInfo, this.options).ConfigureAwait(false);
+            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this.options).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -137,7 +137,6 @@
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
     <Compile Include="DicomException.cs" />
-    <Compile Include="EventAsyncResult.cs" />
     <Compile Include="Extensions\DicomUID.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
@@ -229,6 +228,7 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
+    <Compile Include="Network\DicomClientExtensions.cs" />
     <Compile Include="Network\IDicomNServiceProvider.cs" />
     <Compile Include="Network\DicomNDeleteRequest.cs" />
     <Compile Include="Network\DicomNDeleteResponse.cs" />

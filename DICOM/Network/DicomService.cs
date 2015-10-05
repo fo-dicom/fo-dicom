@@ -991,26 +991,25 @@ namespace Dicom.Network
 
             dimse.Walker = new DicomDatasetWalker(msg.Command);
 
-            if (dimse.Message.HasDataset) dimse.Walker.BeginWalk(writer, OnEndSendCommand, dimse);
-            else dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
+            if (dimse.Message.HasDataset) this.SendPre(dimse, writer);
+            else this.SendMain(dimse, writer);
         }
 
-        private void OnEndSendCommand(IAsyncResult result)
+        private void SendPre(Dimse dimse, IDicomDatasetWalker writer)
         {
-            var dimse = result.AsyncState as Dimse;
             try
             {
-                dimse.Walker.EndWalk(result);
+                dimse.Walker.Walk(writer);
 
                 dimse.Stream.IsCommand = false;
 
-                var writer = new DicomWriter(
+                var messageWriter = new DicomWriter(
                     dimse.PresentationContext.AcceptedTransferSyntax,
                     DicomWriteOptions.Default,
                     new StreamByteTarget(dimse.Stream));
 
                 dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
+                this.SendMain(dimse, messageWriter);
             }
             catch (Exception e)
             {
@@ -1026,12 +1025,11 @@ namespace Dicom.Network
             }
         }
 
-        private void OnEndSendMessage(IAsyncResult result)
+        private void SendMain(Dimse dimse, IDicomDatasetWalker writer)
         {
-            var dimse = result.AsyncState as Dimse;
             try
             {
-                dimse.Walker.EndWalk(result);
+                dimse.Walker.Walk(writer);
             }
             catch (Exception e)
             {
@@ -1047,7 +1045,7 @@ namespace Dicom.Network
             }
         }
 
-        public void SendRequest(DicomRequest request)
+        public virtual void SendRequest(DicomRequest request)
         {
             SendMessage(request);
         }
