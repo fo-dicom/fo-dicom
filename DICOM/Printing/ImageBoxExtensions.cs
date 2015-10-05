@@ -48,7 +48,7 @@ namespace Dicom.Printing
                 try
                 {
                     var image = new DicomImage(imageBox.ImageSequence);
-                    var frame = image.RenderImage();
+                    var frame = image.RenderImage().As<Image>();
 
                     bitmap = frame;
 

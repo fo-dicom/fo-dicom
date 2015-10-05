@@ -196,7 +196,7 @@ namespace Dicom.Imaging
         /// <summary>Renders DICOM image to System.Drawing.Image</summary>
         /// <param name="frame">Zero indexed frame number</param>
         /// <returns>Rendered image</returns>
-        public virtual Image RenderImage(int frame = 0)
+        public virtual IImage RenderImage(int frame = 0)
         {
             if (frame != CurrentFrame || _pixelData == null) Load(Dataset, frame);
 
@@ -221,9 +221,7 @@ namespace Dicom.Imaging
                     }
                 }
 
-                var image = graphic.RenderImage(_pipeline.LUT);
-
-                return new Bitmap(image);
+                return graphic.RenderImage(this._pipeline.LUT);
             }
             finally
             {

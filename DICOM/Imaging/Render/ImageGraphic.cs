@@ -31,7 +31,7 @@ namespace Dicom.Imaging.Render
 
         protected BitmapSource _bitmapSource;
 
-        protected Bitmap _bitmap;
+        protected IImage _bitmap;
 
         protected double _scaleFactor;
 
@@ -347,17 +347,13 @@ namespace Dicom.Imaging.Render
             return bitmap;
         }
 
-        public Image RenderImage(ILUT lut)
+        public IImage RenderImage(ILUT lut)
         {
-            bool render = false;
+            var render = false;
 
             if (_bitmap == null)
             {
-                System.Drawing.Imaging.PixelFormat format = Components == 4
-                                                                ? System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                                                                : System.Drawing.Imaging.PixelFormat.Format32bppRgb;
                 _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-                _bitmap = new Bitmap(ScaledData.Width, ScaledData.Height, ScaledData.Width * 4, format, _pixels.Pointer);
                 render = true;
             }
 
@@ -367,8 +363,6 @@ namespace Dicom.Imaging.Render
                 render = true;
             }
 
-            _bitmap.RotateFlip(RotateFlipType.RotateNoneFlipNone);
-
             if (render)
             {
                 ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
@@ -377,9 +371,9 @@ namespace Dicom.Imaging.Render
                 {
                     overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
                 }
-            }
 
-            _bitmap.RotateFlip(GetRotateFlipType());
+                _bitmap = ImageManager.CreateImage(ScaledData.Width, ScaledData.Height, Components, _flipX, _flipY, _rotation, _pixels);
+            }
 
             return _bitmap;
         }

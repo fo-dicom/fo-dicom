@@ -207,9 +207,11 @@ namespace Dicom.Imaging.Render
             return img;
         }
 
-        public Image RenderImage(ILUT lut)
+        public IImage RenderImage(ILUT lut)
         {
-            Image img = BackgroundLayer.RenderImage(lut);
+            // TODO
+            return null;
+            /*Image img = BackgroundLayer.RenderImage(lut);
             if (_layers.Count > 1)
             {
                 using (Graphics graphics = Graphics.FromImage(img))
@@ -221,7 +223,7 @@ namespace Dicom.Imaging.Render
                     }
                 }
             }
-            return img;
+            return img;*/
         }
 
         #endregion

@@ -110,7 +110,7 @@ namespace Dicom.Imaging.Render
         /// </summary>
         /// <param name="lut">The image LUT </param>
         /// <returns>Image after applying LUT and transformation</returns>
-        Image RenderImage(ILUT lut);
+        IImage RenderImage(ILUT lut);
 
         /// <summary>
         /// Render the image and return the result as <seealso cref="BitmapSource"/>
