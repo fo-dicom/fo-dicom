@@ -55,6 +55,26 @@ namespace Dicom.Network
             }
         }
 
+        [Theory]
+        [InlineData(20)]
+        public void Send_MultipleTimes_AllRecognized(int expected)
+        {
+            const int port = 11112;
+            using (new DicomServer<DicomCEchoProvider>(port))
+            {
+                var actual = 0;
+
+                var client = new DicomClient();
+                for (var i = 0; i < expected; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                    client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                }
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
         [Fact]
         public async Task SendAsync_SingleRequest_Recognized()
         {
@@ -137,7 +157,7 @@ namespace Dicom.Network
         public void WaitForAssociation_WithinTimeout_ReturnsTrue()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -153,7 +173,7 @@ namespace Dicom.Network
         public void WaitForAssociation_TooShortTimeout_ReturnsFalse()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -169,7 +189,7 @@ namespace Dicom.Network
         public async Task WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -185,7 +205,7 @@ namespace Dicom.Network
         public async Task WaitForAssociationAsync_TooShortTimeout_ReturnsFalse()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -201,7 +221,7 @@ namespace Dicom.Network
         public void Release_AfterAssociation_SendIsCompleted()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -221,7 +241,7 @@ namespace Dicom.Network
         public async Task ReleaseAsync_AfterAssociation_SendIsCompleted()
         {
             const int port = 11112;
-            using (new DicomServer<MockServiceProvider>(port))
+            using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
@@ -241,9 +261,9 @@ namespace Dicom.Network
 
         #region Support classes
 
-        public class MockServiceProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+        public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockServiceProvider(Stream stream, Logger log)
+            public MockCEchoProvider(Stream stream, Logger log)
                 : base(stream, log)
             {
             }
