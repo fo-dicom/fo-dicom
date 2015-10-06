@@ -68,7 +68,7 @@ namespace Dicom.IO.Reader
                     new DicomDatasetReaderObserver(fileMetaInfo),
                     new DicomDatasetReaderObserver(dataset));
 
-                var expected = DicomTransferSyntax.JPEG2000Lossless;
+                var expected = DicomTransferSyntax.JPEG2000Lossy;
                 var actual = reader.Syntax;
                 Assert.Equal(expected, actual);
             }
@@ -91,7 +91,7 @@ namespace Dicom.IO.Reader
                         new DicomDatasetReaderObserver(fileMetaInfo),
                         new DicomDatasetReaderObserver(dataset));
 
-                var expected = DicomTransferSyntax.JPEG2000Lossless;
+                var expected = DicomTransferSyntax.JPEG2000Lossy;
                 var actual = reader.Syntax;
                 Assert.Equal(expected, actual);
             }
