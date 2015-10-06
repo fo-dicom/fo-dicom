@@ -51,6 +51,28 @@ namespace Dicom.IO.Reader
             }
         }
 
+        [Fact]
+        public void Read_CompressedImage_RecognizeTransferSyntax()
+        {
+            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
+            {
+                var source = new StreamByteSource(stream);
+                var reader = new DicomFileReader();
+
+                var fileMetaInfo = new DicomFileMetaInformation();
+                var dataset = new DicomDataset();
+
+                reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(fileMetaInfo),
+                    new DicomDatasetReaderObserver(dataset));
+
+                var expected = DicomTransferSyntax.JPEG2000Lossless;
+                var actual = reader.Syntax;
+                Assert.Equal(expected, actual);
+            }
+        }
+
         #endregion
     }
 }
