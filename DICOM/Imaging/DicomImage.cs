@@ -1,15 +1,13 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
-using System.Linq;
-using System.Windows.Media;
-
-using Dicom.Imaging.Codec;
-using Dicom.Imaging.Render;
-
 namespace Dicom.Imaging
 {
+    using System.Linq;
+
+    using Dicom.Imaging.Codec;
+    using Dicom.Imaging.Render;
+
     /// <summary>
     /// DICOM Image class for image rendering.
     /// </summary>
@@ -193,7 +191,7 @@ namespace Dicom.Imaging
 
         public int CurrentFrame { get; private set; }
 
-        /// <summary>Renders DICOM image to System.Drawing.Image</summary>
+        /// <summary>Renders DICOM image to <see cref="IImage"/>.</summary>
         /// <param name="frame">Zero indexed frame number</param>
         /// <returns>Rendered image</returns>
         public virtual IImage RenderImage(int frame = 0)
@@ -231,48 +229,6 @@ namespace Dicom.Imaging
                 }
             }
         }
-
-        /// <summary>
-        /// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 
-        /// </summary>
-        /// <param name="frame">Zero indexed frame nu,ber</param>
-        /// <returns>Rendered image</returns>
-        public ImageSource RenderImageSource(int frame = 0)
-        {
-            if (frame != CurrentFrame || _pixelData == null) Load(Dataset, frame);
-
-            var graphic = new ImageGraphic(_pixelData);
-
-            try
-            {
-                if (ShowOverlays)
-                {
-                    foreach (var overlay in _overlays)
-                    {
-                        if ((frame + 1) < overlay.OriginFrame
-                            || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1)) continue;
-
-                        var og = new OverlayGraphic(
-                            PixelDataFactory.Create(overlay),
-                            overlay.OriginX - 1,
-                            overlay.OriginY - 1,
-                            OverlayColor);
-                        graphic.AddOverlay(og);
-                        og.Scale(this._scale);
-                    }
-                }
-
-                return graphic.RenderImageSource(_pipeline.LUT);
-            }
-            finally
-            {
-                if (graphic != null)
-                {
-                    graphic.Dispose();
-                }
-            }
-        }
-
 
         /// <summary>
         /// Loads the pixel data for specified frame and set the internal dataset

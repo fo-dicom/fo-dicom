@@ -3,11 +3,13 @@
 
 namespace Dicom.Imaging
 {
+    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
 
+    using Dicom.Imaging.Render;
     using Dicom.IO;
 
     /// <summary>
@@ -19,7 +21,7 @@ namespace Dicom.Imaging
 
         private const int DPI = 96;
 
-        private readonly ImageSource image;
+        private readonly WriteableBitmap image;
 
         #endregion
 
@@ -55,7 +57,33 @@ namespace Dicom.Imaging
             return (T)(object)this.image;
         }
 
-        private static BitmapSource CreateBitmap(int width, int height, int components, int[] pixelData)
+        /// <summary>
+        /// Draw graphics onto existing image.
+        /// </summary>
+        /// <param name="graphics">Graphics to draw.</param>
+        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        {
+            foreach (var graphic in graphics)
+            {
+                var layer = graphic.RenderImage(null).As<WriteableBitmap>();
+
+                var pixels = new int[graphic.ScaledWidth * graphic.ScaledHeight];
+                var stride = 4 * graphic.ScaledWidth;
+                layer.CopyPixels(pixels, stride, 0);
+
+                this.image.WritePixels(
+                    new Int32Rect(
+                        graphic.ScaledOffsetX,
+                        graphic.ScaledOffsetY,
+                        graphic.ScaledWidth,
+                        graphic.ScaledHeight),
+                    pixels,
+                    stride,
+                    0);
+            }
+        }
+
+        private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)
         {
             var format = components == 4 ? PixelFormats.Bgra32 : PixelFormats.Bgr32;
             var bitmap = new WriteableBitmap(width, height, DPI, DPI, format, null);
@@ -74,7 +102,7 @@ namespace Dicom.Imaging
             return bitmap;
         }
 
-        private static ImageSource ApplyFlipRotate(BitmapSource bitmap, bool flipX, bool flipY, int rotation)
+        private static WriteableBitmap ApplyFlipRotate(WriteableBitmap bitmap, bool flipX, bool flipY, int rotation)
         {
             if (rotation == 0 && !flipX && !flipY)
             {
@@ -84,7 +112,8 @@ namespace Dicom.Imaging
             var rotFlipTransform = new TransformGroup();
             rotFlipTransform.Children.Add(new RotateTransform(rotation));
             rotFlipTransform.Children.Add(new ScaleTransform(flipX ? -1 : 1, flipY ? -1 : 1));
-            return new TransformedBitmap(bitmap, rotFlipTransform);
+
+            return new WriteableBitmap(new TransformedBitmap(bitmap, rotFlipTransform));
         }
 
         #endregion

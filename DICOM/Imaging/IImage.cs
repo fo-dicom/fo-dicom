@@ -3,6 +3,10 @@
 
 namespace Dicom.Imaging
 {
+    using System.Collections.Generic;
+
+    using Dicom.Imaging.Render;
+
     /// <summary>
     /// Image interface.
     /// </summary>
@@ -16,6 +20,12 @@ namespace Dicom.Imaging
         /// <typeparam name="T">Real image type to cast to.</typeparam>
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         T As<T>();
+
+        /// <summary>
+        /// Draw graphics onto existing image.
+        /// </summary>
+        /// <param name="graphics">Graphics to draw.</param>
+        void DrawGraphics(IEnumerable<IGraphic> graphics);
 
         #endregion
     }

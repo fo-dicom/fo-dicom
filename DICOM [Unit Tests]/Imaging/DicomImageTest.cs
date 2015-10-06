@@ -3,12 +3,13 @@
 
 namespace Dicom.Imaging
 {
-    using Dicom.IO;
+    using System.Drawing;
+    using System.Windows.Media;
 
     using Xunit;
 
     [Collection("Imaging")]
-    public class ImageManagerTest
+    public class DicomImageTest
     {
         #region Fields
 
@@ -19,24 +20,24 @@ namespace Dicom.Imaging
         #region Unit tests
 
         [Fact]
-        public void SetImplementation_WinForms_ImageManagerUsesWinFormsImplementation()
+        public void RenderImage_WinFormsManager_AsReturnsImage()
         {
-            lock (@lock)
+            lock (this.@lock)
             {
                 ImageManager.SetImplementation(WinFormsImageManager.Instance);
-                var image = ImageManager.CreateImage(100, 100, 4, false, false, 0, new PinnedIntArray(100 * 100));
-                Assert.IsType<WinFormsImage>(image);
+                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
+                Assert.IsAssignableFrom<Image>(image.As<Image>());
             }
         }
 
         [Fact]
-        public void SetImplementation_WPF_ImageManagerUsesWPFImplementation()
+        public void RenderImage_WPFManager_AsReturnsImageSource()
         {
-            lock (@lock)
+            lock (this.@lock)
             {
                 ImageManager.SetImplementation(WPFImageManager.Instance);
-                var image = ImageManager.CreateImage(100, 100, 4, false, false, 0, new PinnedIntArray(100 * 100));
-                Assert.IsType<WPFImage>(image);
+                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
+                Assert.IsAssignableFrom<ImageSource>(image.As<ImageSource>());
             }
         }
 

@@ -1,12 +1,10 @@
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
-using System.Windows.Media.Imaging;
-using Dicom.Imaging.LUT;
-
 namespace Dicom.Imaging.Render
 {
+    using Dicom.Imaging.LUT;
+
     /// <summary>
     /// Graphic interface
     /// </summary>
@@ -106,17 +104,10 @@ namespace Dicom.Imaging.Render
         void Transform(double scale, int rotation, bool flipx, bool flipy);
 
         /// <summary>
-        /// Render the image and return the result as <seealso cref="Image"/>
+        /// Render the image and return the result as <seealso cref="IImage"/>
         /// </summary>
         /// <param name="lut">The image LUT </param>
         /// <returns>Image after applying LUT and transformation</returns>
         IImage RenderImage(ILUT lut);
-
-        /// <summary>
-        /// Render the image and return the result as <seealso cref="BitmapSource"/>
-        /// </summary>
-        /// <param name="lut">The image LUT </param>
-        /// <returns>Image after applying LUT and transformation</returns>
-        BitmapSource RenderImageSource(ILUT lut);
     }
 }

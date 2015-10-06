@@ -74,6 +74,7 @@
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="Helpers\StringLogManager.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
+    <Compile Include="Imaging\DicomImageTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
@@ -131,6 +132,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Test Data\CT-MONO2-16-ankle">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\CT1_J2KI">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

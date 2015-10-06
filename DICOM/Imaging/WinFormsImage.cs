@@ -3,9 +3,11 @@
 
 namespace Dicom.Imaging
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using System.Drawing.Imaging;
 
+    using Dicom.Imaging.Render;
     using Dicom.IO;
 
     /// <summary>
@@ -57,6 +59,22 @@ namespace Dicom.Imaging
         public T As<T>()
         {
             return (T)(object)this.image;
+        }
+
+        /// <summary>
+        /// Draw graphics onto existing image.
+        /// </summary>
+        /// <param name="graphics">Graphics to draw.</param>
+        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        {
+            using (var g = Graphics.FromImage(this.image))
+            {
+                foreach (var graphic in graphics)
+                {
+                    var layer = graphic.RenderImage(null).As<Image>();
+                    g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
+                }
+            }
         }
 
         private static int GetStride(int width, PixelFormat format)
