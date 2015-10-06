@@ -42,7 +42,7 @@ namespace Dicom.IO
         /// <summary>
         /// Gets the platform-specific path helper implementation.
         /// </summary>
-        public abstract IPath PathImpl { get; }
+        protected abstract IPath PathImpl { get; }
 
         #endregion
 
