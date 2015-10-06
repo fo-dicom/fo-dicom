@@ -123,43 +123,10 @@ namespace Dicom.IO.Reader
 
             Preprocess(source, ref fileFormat, ref syntax);
 
-            string code = null, uid = null;
-            var obs = new DicomReaderCallbackObserver();
-            if (fileFormat != DicomFileFormat.DICOM3)
-            {
-                obs.Add(
-                    DicomTag.RecognitionCodeRETIRED,
-                    (sender, ea) =>
-                        {
-                            try
-                            {
-                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
-                            }
-                            catch
-                            {
-                            }
-                        });
-            }
-            obs.Add(
-                DicomTag.TransferSyntaxUID,
-                (sender, ea) =>
-                    {
-                        try
-                        {
-                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
-                        }
-                        catch
-                        {
-                        }
-                    });
-
             var result = DoParse(
                 source,
                 fileMetasetInfoObserver,
                 datasetObserver,
-                obs,
-                code,
-                uid,
                 ref syntax,
                 ref fileFormat);
 
@@ -181,40 +148,9 @@ namespace Dicom.IO.Reader
 
             Preprocess(source, ref fileFormat, ref syntax);
 
-            string code = null, uid = null;
-            var obs = new DicomReaderCallbackObserver();
-            if (fileFormat != DicomFileFormat.DICOM3)
-            {
-                obs.Add(
-                    DicomTag.RecognitionCodeRETIRED,
-                    (sender, ea) =>
-                        {
-                            try
-                            {
-                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
-                            }
-                            catch
-                            {
-                            }
-                        });
-            }
-            obs.Add(
-                DicomTag.TransferSyntaxUID,
-                (sender, ea) =>
-                    {
-                        try
-                        {
-                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
-                        }
-                        catch
-                        {
-                        }
-                    });
-
             return
                 await
-                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, obs, code, uid, syntax, fileFormat)
-                    .ConfigureAwait(false);
+                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, syntax, fileFormat).ConfigureAwait(false);
         }
 
         private static void Preprocess(
@@ -296,19 +232,47 @@ namespace Dicom.IO.Reader
             {
                 throw new DicomReaderException("Attempted to read invalid DICOM file");
             }
+
+            // Adopt transfer syntax endianess to byte source.
+            source.Endian = syntax.Endian;
         }
 
         private static DicomReaderResult DoParse(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            IDicomReaderObserver obs,
-            string code,
-            string uid,
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
-            source.Endian = syntax.Endian;
+            string code = null, uid = null;
+            var obs = new DicomReaderCallbackObserver();
+            if (fileFormat != DicomFileFormat.DICOM3)
+            {
+                obs.Add(
+                    DicomTag.RecognitionCodeRETIRED,
+                    (sender, ea) =>
+                        {
+                            try
+                            {
+                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                            }
+                            catch
+                            {
+                            }
+                        });
+            }
+            obs.Add(
+                DicomTag.TransferSyntaxUID,
+                (sender, ea) =>
+                    {
+                        try
+                        {
+                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                        }
+                        catch
+                        {
+                        }
+                    });
 
             var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR };
 
@@ -344,13 +308,38 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            IDicomReaderObserver obs,
-            string code,
-            string uid,
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {
-            source.Endian = syntax.Endian;
+            string code = null, uid = null;
+            var obs = new DicomReaderCallbackObserver();
+            if (fileFormat != DicomFileFormat.DICOM3)
+            {
+                obs.Add(
+                    DicomTag.RecognitionCodeRETIRED,
+                    (sender, ea) =>
+                        {
+                            try
+                            {
+                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                            }
+                            catch
+                            {
+                            }
+                        });
+            }
+            obs.Add(
+                DicomTag.TransferSyntaxUID,
+                (sender, ea) =>
+                    {
+                        try
+                        {
+                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                        }
+                        catch
+                        {
+                        }
+                    });
 
             var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR };
 
