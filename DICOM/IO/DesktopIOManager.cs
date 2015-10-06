@@ -41,7 +41,7 @@ namespace Dicom.IO
         /// <summary>
         /// Gets the platform-specific path helper implementation.
         /// </summary>
-        public override IPath PathImpl
+        protected override IPath PathImpl
         {
             get
             {
