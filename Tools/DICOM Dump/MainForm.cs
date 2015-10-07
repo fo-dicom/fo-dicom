@@ -12,6 +12,7 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Dump
 {
+    using System.Drawing;
     using System.Threading.Tasks;
 
     public partial class MainForm : Form
@@ -149,7 +150,7 @@ namespace Dicom.Dump
             else
             {
                 var image = new DicomImage(_file.Dataset);
-                image.RenderImage().Save(sfd.FileName);
+                image.RenderImage().As<Image>().Save(sfd.FileName);
             }
         }
 

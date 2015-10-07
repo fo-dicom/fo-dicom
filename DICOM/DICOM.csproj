@@ -67,7 +67,13 @@
     <Compile Include="DicomFile.Async.cs" />
     <Compile Include="DicomFileExtensions.Async.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
+    <Compile Include="Imaging\WinFormsImage.cs" />
+    <Compile Include="Imaging\WinFormsImageManager.cs" />
+    <Compile Include="Imaging\IImage.cs" />
+    <Compile Include="Imaging\ImageManager.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
+    <Compile Include="Imaging\WPFImage.cs" />
+    <Compile Include="Imaging\WPFImageManager.cs" />
     <Compile Include="IO\DesktopPath.cs" />
     <Compile Include="DicomDataException.cs" />
     <Compile Include="DicomDataset.cs" />

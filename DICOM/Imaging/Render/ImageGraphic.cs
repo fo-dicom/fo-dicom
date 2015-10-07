@@ -1,19 +1,14 @@
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-using Dicom.Imaging.LUT;
-using Dicom.IO;
-
 namespace Dicom.Imaging.Render
 {
+    using System;
+    using System.Collections.Generic;
+
+    using Dicom.Imaging.LUT;
+    using Dicom.IO;
+
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>
@@ -27,11 +22,7 @@ namespace Dicom.Imaging.Render
 
         protected PinnedIntArray _pixels;
 
-        private const int DPI = 96;
-
-        protected BitmapSource _bitmapSource;
-
-        protected Bitmap _bitmap;
+        protected IImage _bitmap;
 
         protected double _scaleFactor;
 
@@ -294,154 +285,31 @@ namespace Dicom.Imaging.Render
             _flipY = flipy;
         }
 
-        public BitmapSource RenderImageSource(ILUT lut)
+        public IImage RenderImage(ILUT lut)
         {
-            bool render = false;
+            var render = _bitmap == null;
 
             if (_applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
                 render = true;
             }
-
-            if (_bitmapSource == null || render)
-            {
-                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-
-                ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
-
-                foreach (var overlay in _overlays)
-                {
-                    overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
-                }
-
-                _bitmapSource = RenderBitmapSource(ScaledData.Width, ScaledData.Height, _pixels.Data);
-            }
-
-            if (_rotation != 0 || _flipX || _flipY)
-            {
-                TransformGroup rotFlipTransform = new TransformGroup();
-                rotFlipTransform.Children.Add(new RotateTransform(_rotation));
-                rotFlipTransform.Children.Add(new ScaleTransform(_flipX ? -1 : 1, _flipY ? -1 : 1));
-                _bitmapSource = new TransformedBitmap(_bitmapSource, rotFlipTransform);
-            }
-
-            return _bitmapSource;
-        }
-
-        private static BitmapSource RenderBitmapSource(int iWidth, int iHeight, int[] iPixelData)
-        {
-            var bitmap = new WriteableBitmap(iWidth, iHeight, DPI, DPI, PixelFormats.Bgr32, null);
-
-            // Reserve the back buffer for updates.
-            bitmap.Lock();
-
-            Marshal.Copy(iPixelData, 0, bitmap.BackBuffer, iPixelData.Length);
-
-            // Specify the area of the bitmap that changed.
-            bitmap.AddDirtyRect(new Int32Rect(0, 0, (int)bitmap.Width, (int)bitmap.Height));
-
-            // Release the back buffer and make it available for display.
-            bitmap.Unlock();
-
-            return bitmap;
-        }
-
-        public Image RenderImage(ILUT lut)
-        {
-            bool render = false;
-
-            if (_bitmap == null)
-            {
-                System.Drawing.Imaging.PixelFormat format = Components == 4
-                                                                ? System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                                                                : System.Drawing.Imaging.PixelFormat.Format32bppRgb;
-                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-                _bitmap = new Bitmap(ScaledData.Width, ScaledData.Height, ScaledData.Width * 4, format, _pixels.Pointer);
-                render = true;
-            }
-
-            if (_applyLut && lut != null && !lut.IsValid)
-            {
-                lut.Recalculate();
-                render = true;
-            }
-
-            _bitmap.RotateFlip(RotateFlipType.RotateNoneFlipNone);
 
             if (render)
             {
+                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+
                 ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
 
                 foreach (var overlay in _overlays)
                 {
                     overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
                 }
-            }
 
-            _bitmap.RotateFlip(GetRotateFlipType());
+                _bitmap = ImageManager.CreateImage(ScaledData.Width, ScaledData.Height, Components, _flipX, _flipY, _rotation, _pixels);
+            }
 
             return _bitmap;
-        }
-
-        protected RotateFlipType GetRotateFlipType()
-        {
-            if (_flipX && _flipY)
-            {
-                switch (_rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipXY;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipXY;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipXY;
-                    default:
-                        return RotateFlipType.RotateNoneFlipXY;
-                }
-            }
-            else if (_flipX)
-            {
-                switch (_rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipX;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipX;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipX;
-                    default:
-                        return RotateFlipType.RotateNoneFlipX;
-                }
-            }
-            else if (_flipY)
-            {
-                switch (_rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipY;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipY;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipY;
-                    default:
-                        return RotateFlipType.RotateNoneFlipY;
-                }
-            }
-            else
-            {
-                switch (_rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipNone;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipNone;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipNone;
-                    default:
-                        return RotateFlipType.RotateNoneFlipNone;
-                }
-            }
         }
 
         #endregion

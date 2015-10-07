@@ -1,15 +1,13 @@
 // Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using Dicom.Imaging.LUT;
-
 namespace Dicom.Imaging.Render
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Dicom.Imaging.LUT;
+
     /// <summary>
     /// The Composite Graphic implementation of <seealso cref="IGraphic"/> which layers graphics one over the other
     /// </summary>
@@ -17,7 +15,7 @@ namespace Dicom.Imaging.Render
     {
         #region Private Members
 
-        private List<IGraphic> _layers = new List<IGraphic>();
+        private readonly List<IGraphic> _layers = new List<IGraphic>();
 
         #endregion
 
@@ -182,44 +180,12 @@ namespace Dicom.Imaging.Render
             foreach (IGraphic graphic in _layers) graphic.Transform(scale, rotation, flipx, flipy);
         }
 
-        public BitmapSource RenderImageSource(ILUT lut)
+        public IImage RenderImage(ILUT lut)
         {
-            WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
-            if (img != null && _layers.Count > 1)
-            {
-                for (int i = 1; i < _layers.Count; ++i)
-                {
-                    var g = _layers[i];
-                    var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
-
-                    if (layer != null)
-                    {
-                        Array pixels = new int[g.ScaledWidth * g.ScaledHeight];
-                        layer.CopyPixels(pixels, 4, 0);
-                        img.WritePixels(
-                            new Int32Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight),
-                            pixels,
-                            4,
-                            0);
-                    }
-                }
-            }
-            return img;
-        }
-
-        public Image RenderImage(ILUT lut)
-        {
-            Image img = BackgroundLayer.RenderImage(lut);
+            var img = BackgroundLayer.RenderImage(lut);
             if (_layers.Count > 1)
             {
-                using (Graphics graphics = Graphics.FromImage(img))
-                {
-                    for (int i = 1; i < _layers.Count; i++)
-                    {
-                        Image layer = _layers[i].RenderImage(null);
-                        graphics.DrawImage(layer, _layers[i].ScaledOffsetX, _layers[i].ScaledOffsetY);
-                    }
-                }
+                img.DrawGraphics(_layers.Skip(1));
             }
             return img;
         }
