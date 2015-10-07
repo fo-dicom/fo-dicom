@@ -7,16 +7,28 @@ namespace Dicom.Log
     /// Log manager for the MetroLog logging framework.
     /// </summary>
     /// <example>
-    /// LogManager.Default = new MetroLogManager();
+    /// LogManager.SetImplementation(MetroLogManager.Instance);
     /// </example>
     public class MetroLogManager : LogManager
     {
+        /// <summary>
+        /// Singleton instance of the <see cref="MetroLogManager"/>.
+        /// </summary>
+        public static readonly LogManager Instance = new MetroLogManager();
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="MetroLogManager"/>.
+        /// </summary>
+        private MetroLogManager()
+        {
+        }
+
         /// <summary>
         /// Returns a logger for the specified (type) name.
         /// </summary>
         /// <param name="name">Name of logger, typically type or namespace name.</param>
         /// <returns>Logger for the specified name.</returns>
-        public override Logger GetLogger(string name)
+        protected override Logger GetLoggerImpl(string name)
         {
             return new MetroLogger(MetroLog.LogManagerFactory.DefaultLogManager.GetLogger(name));
         }

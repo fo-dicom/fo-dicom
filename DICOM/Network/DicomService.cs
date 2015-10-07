@@ -75,7 +75,7 @@ namespace Dicom.Network
             _processQueue = new ThreadPoolQueue<int>(int.MinValue);
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
-            Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
+            Logger = log ?? LogManager.GetLogger("Dicom.Network");
             BeginReadPDUHeader();
             Options = DicomServiceOptions.Default;
         }
@@ -265,7 +265,7 @@ namespace Dicom.Network
                             var pdu = new AAssociateRQ(Association);
                             pdu.Read(raw);
                             LogID = Association.CallingAE;
-                            if (Options.UseRemoteAEForLogName) Logger = LogManager.Default.GetLogger(LogID);
+                            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
                             Logger.Info(
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
@@ -1302,7 +1302,7 @@ namespace Dicom.Network
         protected void SendAssociationRequest(DicomAssociation association)
         {
             LogID = association.CalledAE;
-            if (Options.UseRemoteAEForLogName) Logger = LogManager.Default.GetLogger(LogID);
+            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
             SendPDU(new AAssociateRQ(Association));
