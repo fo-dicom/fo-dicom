@@ -1,23 +1,22 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-
-using Dicom.Imaging.Codec;
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-using Dicom.Log;
-using Dicom.Threading;
-
 namespace Dicom.Network
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+
+    using Dicom.Imaging.Codec;
+    using Dicom.IO;
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
+    using Dicom.Log;
+    using Dicom.Threading;
+
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
@@ -160,15 +159,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
         }
@@ -216,15 +207,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
             catch (Exception e)
@@ -349,15 +332,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
             catch (NullReferenceException)
@@ -812,15 +787,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while writing PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while writing PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, false);
                 CloseConnection(e);
             }
         }
@@ -835,15 +802,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while writing PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while writing PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, false);
                 CloseConnection(e);
             }
             catch
@@ -1360,6 +1319,26 @@ namespace Dicom.Network
 
         protected virtual void OnSendQueueEmpty()
         {
+        }
+
+        #endregion
+
+        #region Helper methods
+
+        private static void LogIOException(Logger logger, IOException e, bool reading)
+        {
+            var socketFmt = string.Format(@"Socket error {0} PDU: {{socketErrorCode}} [{{errorCode}}]", reading ? "reading" : "writing");
+            var otherFmt = string.Format(@"IO exception while {0} PDU: {{@error}}", reading ? "reading" : "writing");
+
+            var socketEx = e.InnerException as System.Net.Sockets.SocketException;
+            if (socketEx != null)
+            {
+                logger.Error(socketFmt, socketEx.SocketErrorCode, socketEx.ErrorCode);
+            }
+            else if (!(e.InnerException is ObjectDisposedException))
+            {
+                logger.Error(otherFmt, e);
+            }
         }
 
         #endregion
