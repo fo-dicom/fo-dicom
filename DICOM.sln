@@ -34,7 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1E86A172-B9C5-4BBF-BD0F-22507432C8A5}"
 	ProjectSection(SolutionItems) = preProject
-		fo-dicom.nuspec = fo-dicom.nuspec
 		fo-dicom.targets = fo-dicom.targets
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
@@ -175,6 +174,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{16FD143D-6E25-4CD9-AEC0-B096644B0045} = {96052E4E-90EF-431F-A599-8723506A424B}
 		{8DC28743-3826-453A-B400-B0AE7B2C04E7} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{0331D451-7C7A-4DB7-A11D-61708F2E8D05} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
 		{63088DEC-9F99-404C-B4E8-D823D2A0018F} = {A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}
