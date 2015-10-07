@@ -40,7 +40,7 @@ namespace Dicom.Imaging.Codec
 
             if (search == null) search = "Dicom.Native*.dll";
 
-            var log = LogManager.Default.GetLogger("Dicom.Imaging.Codec");
+            var log = LogManager.GetLogger("Dicom.Imaging.Codec");
             log.Debug("Searching {path}\\{wildcard} for Dicom codecs", path, search);
 
             var foundAnyCodecs = false;

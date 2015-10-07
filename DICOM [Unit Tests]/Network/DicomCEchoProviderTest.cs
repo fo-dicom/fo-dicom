@@ -14,7 +14,7 @@ namespace Dicom.Network
         [Fact]
         public void Send_FromDicomClient_DoesNotDeadlock()
         {
-            LogManager.Default = new StringLogManager();
+            LogManager.SetImplementation(new StringLogManager());
 
             const int port = 11112;
             using (new DicomServer<DicomCEchoProvider>(port))
@@ -25,7 +25,7 @@ namespace Dicom.Network
 
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 
-                var log = LogManager.Default.GetLogger(null).ToString();
+                var log = LogManager.GetLogger(null).ToString();
                 Assert.True(log.Length > 0);
             }
         }

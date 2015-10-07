@@ -19,7 +19,7 @@ namespace Dicom.Printing
     {
         #region Properties and Attributes
 
-        private static readonly Logger Logger = LogManager.Default.GetLogger("Dicom.Printing");
+        private static readonly Logger Logger = LogManager.GetLogger("Dicom.Printing");
 
         private readonly FilmSession _filmSession = null;
 

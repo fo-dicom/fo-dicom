@@ -31,7 +31,7 @@ namespace Dicom.Demo.SerilogDemo
             //file.Dataset.WriteToLog(LogManager.Default.GetLogger("dumpedDataset"), LogLevel.Info);
 
             //Other logging using fo-dicom's log abstraction
-            Dicom.Log.Logger foDicomLogger = LogManager.Default.GetLogger("testLog");
+            Dicom.Log.Logger foDicomLogger = LogManager.GetLogger("testLog");
             foDicomLogger.Fatal("A fatal message at {dateTime}", DateTime.Now);
             foDicomLogger.Debug("A debug for file {filename} - info: {@metaInfo}", file.File.Name, file.FileMetaInfo);
 
@@ -51,7 +51,7 @@ namespace Dicom.Demo.SerilogDemo
             logger = logger.ForContext("Purpose", "Demonstration");
 
             //Configure fo-dicom & Serilog
-            LogManager.Default = new SerilogManager(logger);
+            LogManager.SetImplementation(new SerilogManager(logger));
 
         }
 
@@ -61,7 +61,7 @@ namespace Dicom.Demo.SerilogDemo
             ConfigureLogging();
 
             //Configure fo-dicom & Serilog
-            LogManager.Default = new SerilogManager();
+            LogManager.SetImplementation(new SerilogManager());
 
         }
 

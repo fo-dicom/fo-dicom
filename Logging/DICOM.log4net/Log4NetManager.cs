@@ -7,20 +7,28 @@ namespace Dicom.Log
     /// Log manager for the log4net logging framework.
     /// </summary>
     /// <example>
-    /// LogManager.Default = new Log4NetLogger();
+    /// LogManager.SetImplementation(Log4NetManager.Instance);
     /// </example>
     public sealed class Log4NetManager : LogManager
     {
         /// <summary>
-        /// Get a log4net based logger.
+        /// Singleton instance of the <see cref="Log4NetManager"/>.
         /// </summary>
-        /// <param name="name">
-        /// Type or namespace name.
-        /// </param>
-        /// <returns>
-        /// A log4net based <see cref="Logger"/>.
-        /// </returns>
-        public override Logger GetLogger(string name)
+        public static readonly LogManager Instance = new Log4NetManager();
+
+        /// <summary>
+        /// Initializes an instance of <see cref="Log4NetManager"/>.
+        /// </summary>
+        private Log4NetManager()
+        {
+        }
+
+        /// <summary>
+        /// Get logger from the current log manager implementation.
+        /// </summary>
+        /// <param name="name">Classifier name, typically namespace or type name.</param>
+        /// <returns>Logger from the current log manager implementation.</returns>
+        protected override Logger GetLoggerImpl(string name)
         {
             return new Log4NetLogger(log4net.LogManager.GetLogger(name));
         }
@@ -47,17 +55,11 @@ namespace Dicom.Log
             }
 
             /// <summary>
-            /// Log a message.
+            /// Log a message to the logger.
             /// </summary>
-            /// <param name="level">
-            /// Log level.
-            /// </param>
-            /// <param name="msg">
-            /// Formatted message string.
-            /// </param>
-            /// <param name="args">
-            /// Message arguments.
-            /// </param>
+            /// <param name="level">Log level.</param>
+            /// <param name="msg">Log message (format string).</param>
+            /// <param name="args">Log message arguments.</param>
             public override void Log(LogLevel level, string msg, params object[] args)
             {
                 var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);

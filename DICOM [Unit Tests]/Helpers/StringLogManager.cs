@@ -9,7 +9,7 @@ namespace Dicom.Helpers
 
     public class StringLogManager : LogManager
     {
-        public override Logger GetLogger(string name)
+        protected override Logger GetLoggerImpl(string name)
         {
             return StringLogger.Instance;
         }
