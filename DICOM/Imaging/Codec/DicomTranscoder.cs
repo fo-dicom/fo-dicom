@@ -1,85 +1,20 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.ComponentModel.Composition.Hosting;
-
-using Dicom.Imaging.Render;
-using Dicom.IO.Buffer;
-using Dicom.IO.Writer;
-using Dicom.Log;
-
 namespace Dicom.Imaging.Codec
 {
-    using Dicom.IO;
+    using System;
+    using System.Collections.Generic;
+
+    using Dicom.Imaging.Render;
+    using Dicom.IO.Buffer;
+    using Dicom.IO.Writer;
 
     /// <summary>
     /// Generic DICOM transcoder.
     /// </summary>
     public class DicomTranscoder : IDicomTranscoder
     {
-        #region Static
-
-        private static readonly Dictionary<DicomTransferSyntax, IDicomCodec> _codecs =
-            new Dictionary<DicomTransferSyntax, IDicomCodec>();
-
-        static DicomTranscoder()
-        {
-            LoadCodecs();
-        }
-
-        public static IDicomCodec GetCodec(DicomTransferSyntax syntax)
-        {
-            IDicomCodec codec = null;
-            if (!_codecs.TryGetValue(syntax, out codec)) throw new DicomCodecException("No codec registered for tranfer syntax: {0}", syntax);
-            return codec;
-        }
-
-        public static void LoadCodecs(string path = null, string search = null)
-        {
-            if (path == null) path = IOManager.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
-
-            if (search == null) search = "Dicom.Native*.dll";
-
-            var log = LogManager.GetLogger("Dicom.Imaging.Codec");
-            log.Debug("Searching {path}\\{wildcard} for Dicom codecs", path, search);
-
-            var foundAnyCodecs = false;
-
-            DirectoryCatalog catalog;
-            try
-            {
-                catalog = new DirectoryCatalog(path, search);
-            }
-            catch (Exception ex)
-            {
-                log.Error(
-                    "Error encountered creating new DirectCatalog({path}, {search}) - {@exception}",
-                    path,
-                    search,
-                    ex);
-                throw;
-            }
-
-            var container = new CompositionContainer(catalog);
-            foreach (var lazy in container.GetExports<IDicomCodec>())
-            {
-                foundAnyCodecs = true;
-                var codec = lazy.Value;
-                log.Debug("Codec: {codecName}", codec.TransferSyntax.UID.Name);
-                _codecs[codec.TransferSyntax] = codec;
-            }
-
-            if (!foundAnyCodecs)
-            {
-                log.Warn("No Dicom codecs were found after searching {path}\\{wildcard}", path, search);
-            }
-        }
-
-        #endregion
-
         /// <summary>
         /// Initializes an instance of <see cref="DicomTranscoder"/>.
         /// </summary>
@@ -115,7 +50,7 @@ namespace Dicom.Imaging.Codec
         {
             get
             {
-                if (InputSyntax.IsEncapsulated && _inputCodec == null) _inputCodec = GetCodec(InputSyntax);
+                if (InputSyntax.IsEncapsulated && _inputCodec == null) _inputCodec = DicomTranscoderManager.GetCodec(InputSyntax);
                 return _inputCodec;
             }
         }
@@ -136,7 +71,7 @@ namespace Dicom.Imaging.Codec
         {
             get
             {
-                if (OutputSyntax.IsEncapsulated && _outputCodec == null) _outputCodec = GetCodec(OutputSyntax);
+                if (OutputSyntax.IsEncapsulated && _outputCodec == null) _outputCodec = DicomTranscoderManager.GetCodec(OutputSyntax);
                 return _outputCodec;
             }
         }

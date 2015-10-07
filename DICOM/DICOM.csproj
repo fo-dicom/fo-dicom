@@ -66,7 +66,9 @@
     <Compile Include="AsyncFactory.cs" />
     <Compile Include="DicomFile.Async.cs" />
     <Compile Include="DicomFileExtensions.Async.cs" />
+    <Compile Include="Imaging\Codec\DesktopTranscoderManager.cs" />
     <Compile Include="Imaging\Codec\IDicomTranscoder.cs" />
+    <Compile Include="Imaging\Codec\DicomTranscoderManager.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
     <Compile Include="Imaging\WinFormsImage.cs" />
     <Compile Include="Imaging\WinFormsImageManager.cs" />
