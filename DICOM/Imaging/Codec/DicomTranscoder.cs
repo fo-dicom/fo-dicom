@@ -15,11 +15,14 @@ namespace Dicom.Imaging.Codec
 {
     using Dicom.IO;
 
-    public class DicomTranscoder
+    /// <summary>
+    /// Generic DICOM transcoder.
+    /// </summary>
+    public class DicomTranscoder : IDicomTranscoder
     {
         #region Static
 
-        private static Dictionary<DicomTransferSyntax, IDicomCodec> _codecs =
+        private static readonly Dictionary<DicomTransferSyntax, IDicomCodec> _codecs =
             new Dictionary<DicomTransferSyntax, IDicomCodec>();
 
         static DicomTranscoder()
@@ -77,15 +80,34 @@ namespace Dicom.Imaging.Codec
 
         #endregion
 
-        public DicomTranscoder(DicomTransferSyntax input, DicomTransferSyntax output)
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomTranscoder"/>.
+        /// </summary>
+        /// <param name="inputSyntax">Input transfer syntax.</param>
+        /// <param name="outputSyntax">Output transfer syntax.</param>
+        /// <param name="inputCodecParams">Input codec parameters.</param>
+        /// <param name="outputCodecParams">Output codec parameters.</param>
+        public DicomTranscoder(
+            DicomTransferSyntax inputSyntax,
+            DicomTransferSyntax outputSyntax,
+            DicomCodecParams inputCodecParams = null,
+            DicomCodecParams outputCodecParams = null)
         {
-            InputSyntax = input;
-            OutputSyntax = output;
+            InputSyntax = inputSyntax;
+            OutputSyntax = outputSyntax;
+            InputCodecParams = inputCodecParams;
+            OutputCodecParams = outputCodecParams;
         }
 
+        /// <summary>
+        /// Gets the transfer syntax of the input codec.
+        /// </summary>
         public DicomTransferSyntax InputSyntax { get; private set; }
 
-        public DicomCodecParams InputCodecParams { get; set; }
+        /// <summary>
+        /// Gets the parameters associated with the input codec.
+        /// </summary>
+        public DicomCodecParams InputCodecParams { get; private set; }
 
         private IDicomCodec _inputCodec;
 
@@ -98,9 +120,15 @@ namespace Dicom.Imaging.Codec
             }
         }
 
+        /// <summary>
+        /// Gets the transfer syntax of the output codec.
+        /// </summary>
         public DicomTransferSyntax OutputSyntax { get; private set; }
 
-        public DicomCodecParams OutputCodecParams { get; set; }
+        /// <summary>
+        /// Gets the parameters associated with the output codec.
+        /// </summary>
+        public DicomCodecParams OutputCodecParams { get; private set; }
 
         private IDicomCodec _outputCodec;
 
@@ -113,9 +141,14 @@ namespace Dicom.Imaging.Codec
             }
         }
 
+        /// <summary>
+        /// Transcode a <see cref="DicomFile"/> from <see cref="IDicomTranscoder.InputSyntax"/> to <see cref="IDicomTranscoder.OutputSyntax"/>.
+        /// </summary>
+        /// <param name="file">DICOM file.</param>
+        /// <returns>New, transcoded, DICOM file.</returns>
         public DicomFile Transcode(DicomFile file)
         {
-            DicomFile f = new DicomFile();
+            var f = new DicomFile();
             f.FileMetaInfo.Add(file.FileMetaInfo);
             f.FileMetaInfo.TransferSyntax = OutputSyntax;
             f.Dataset.InternalTransferSyntax = OutputSyntax;
@@ -123,6 +156,11 @@ namespace Dicom.Imaging.Codec
             return f;
         }
 
+        /// <summary>
+        /// Transcode a <see cref="DicomDataset"/> from <see cref="IDicomTranscoder.InputSyntax"/> to <see cref="IDicomTranscoder.OutputSyntax"/>.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset.</param>
+        /// <returns>New, transcoded, DICOM dataset.</returns>
         public DicomDataset Transcode(DicomDataset dataset)
         {
             if (!dataset.Contains(DicomTag.PixelData))
@@ -188,7 +226,7 @@ namespace Dicom.Imaging.Codec
         /// <returns>Uncompressed frame buffer</returns>
         public IByteBuffer DecodeFrame(DicomDataset dataset, int frame)
         {
-            var pixelData = DicomPixelData.Create(dataset, false);
+            var pixelData = DicomPixelData.Create(dataset);
             var buffer = pixelData.GetFrame(frame);
 
             // is pixel data already uncompressed?
@@ -201,14 +239,20 @@ namespace Dicom.Imaging.Codec
             oldPixelData.AddFrame(buffer);
 
             var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
-            var newPixelData = DicomPixelData.Create(newDataset, false);
+            var newPixelData = DicomPixelData.Create(newDataset);
 
             return newPixelData.GetFrame(0);
         }
 
+        /// <summary>
+        /// Decompress pixel data from DICOM dataset and return uncompressed pixel data.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset.</param>
+        /// <param name="frame">Frame number.</param>
+        /// <returns>Uncompressed pixel data.</returns>
         public IPixelData DecodePixelData(DicomDataset dataset, int frame)
         {
-            var pixelData = DicomPixelData.Create(dataset, false);
+            var pixelData = DicomPixelData.Create(dataset);
 
             // is pixel data already uncompressed?
             if (!dataset.InternalTransferSyntax.IsEncapsulated) return PixelDataFactory.Create(pixelData, frame);
@@ -222,22 +266,22 @@ namespace Dicom.Imaging.Codec
             oldPixelData.AddFrame(buffer);
 
             var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
-            var newPixelData = DicomPixelData.Create(newDataset, false);
+            var newPixelData = DicomPixelData.Create(newDataset);
 
             return PixelDataFactory.Create(newPixelData, 0);
         }
 
-        private DicomDataset Decode(
+        private static DicomDataset Decode(
             DicomDataset oldDataset,
             DicomTransferSyntax outSyntax,
             IDicomCodec codec,
             DicomCodecParams parameters)
         {
-            DicomPixelData oldPixelData = DicomPixelData.Create(oldDataset, false);
+            var oldPixelData = DicomPixelData.Create(oldDataset, false);
 
-            DicomDataset newDataset = oldDataset.Clone();
+            var newDataset = oldDataset.Clone();
             newDataset.InternalTransferSyntax = outSyntax;
-            DicomPixelData newPixelData = DicomPixelData.Create(newDataset, true);
+            var newPixelData = DicomPixelData.Create(newDataset, true);
 
             codec.Decode(oldPixelData, newPixelData, parameters);
 
@@ -248,17 +292,17 @@ namespace Dicom.Imaging.Codec
             return newDataset;
         }
 
-        private DicomDataset Encode(
+        private static DicomDataset Encode(
             DicomDataset oldDataset,
             DicomTransferSyntax inSyntax,
             IDicomCodec codec,
             DicomCodecParams parameters)
         {
-            DicomPixelData oldPixelData = DicomPixelData.Create(oldDataset, false);
+            var oldPixelData = DicomPixelData.Create(oldDataset, false);
 
-            DicomDataset newDataset = oldDataset.Clone();
+            var newDataset = oldDataset.Clone();
             newDataset.InternalTransferSyntax = codec.TransferSyntax;
-            DicomPixelData newPixelData = DicomPixelData.Create(newDataset, true);
+            var newPixelData = DicomPixelData.Create(newDataset, true);
 
             codec.Encode(oldPixelData, newPixelData, parameters);
 
@@ -266,14 +310,14 @@ namespace Dicom.Imaging.Codec
             {
                 newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompression, "01"));
 
-                List<string> methods = new List<string>();
+                var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod)) methods.AddRange(newDataset.Get<string[]>(DicomTag.LossyImageCompressionMethod));
                 methods.Add(codec.TransferSyntax.LossyCompressionMethod);
                 newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
 
                 double oldSize = oldPixelData.GetFrame(0).Size;
                 double newSize = newPixelData.GetFrame(0).Size;
-                string ratio = String.Format("{0:0.000}", oldSize / newSize);
+                var ratio = String.Format("{0:0.000}", oldSize / newSize);
                 newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
             }
 
@@ -286,9 +330,7 @@ namespace Dicom.Imaging.Codec
 
         private static void ProcessOverlays(DicomDataset input, DicomDataset output)
         {
-            DicomOverlayData[] overlays = null;
-            if (input.InternalTransferSyntax.IsEncapsulated) overlays = DicomOverlayData.FromDataset(output);
-            else overlays = DicomOverlayData.FromDataset(input);
+            var overlays = DicomOverlayData.FromDataset(input.InternalTransferSyntax.IsEncapsulated ? output : input);
 
             foreach (var overlay in overlays)
             {

@@ -263,10 +263,10 @@ namespace Dicom.Imaging
                 }
 
                 var transcoder = new DicomTranscoder(
-                    Dataset.InternalTransferSyntax,
-                    DicomTransferSyntax.ExplicitVRLittleEndian);
-                transcoder.InputCodecParams = cparams;
-                transcoder.OutputCodecParams = cparams;
+                    this.Dataset.InternalTransferSyntax,
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                    cparams,
+                    cparams);
                 var buffer = transcoder.DecodeFrame(Dataset, frame);
 
                 // clone the dataset because modifying the pixel data modifies the dataset

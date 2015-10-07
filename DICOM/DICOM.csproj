@@ -66,6 +66,7 @@
     <Compile Include="AsyncFactory.cs" />
     <Compile Include="DicomFile.Async.cs" />
     <Compile Include="DicomFileExtensions.Async.cs" />
+    <Compile Include="Imaging\Codec\IDicomTranscoder.cs" />
     <Compile Include="Imaging\DicomOverlayDataFactory.cs" />
     <Compile Include="Imaging\WinFormsImage.cs" />
     <Compile Include="Imaging\WinFormsImageManager.cs" />
@@ -330,7 +331,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
