@@ -6,8 +6,15 @@ namespace Dicom.Network
     using System;
     using System.IO;
 
+    /// <summary>
+    /// Interface representing a network stream.
+    /// </summary>
     public interface INetworkStream : IDisposable
     {
+        /// <summary>
+        /// Get corresponding <see cref="Stream"/> object.
+        /// </summary>
+        /// <returns>Network stream as <see cref="Stream"/> object.</returns>
         Stream AsStream();
     }
 }

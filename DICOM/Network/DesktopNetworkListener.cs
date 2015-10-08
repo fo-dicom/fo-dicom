@@ -7,6 +7,9 @@ namespace Dicom.Network
     using System.Net.Sockets;
     using System.Security.Cryptography.X509Certificates;
 
+    /// <summary>
+    /// .NET implementation of the <see cref="INetworkListener"/>.
+    /// </summary>
     public class DesktopNetworkListener : INetworkListener
     {
         #region FIELDS
@@ -19,6 +22,10 @@ namespace Dicom.Network
 
         #region CONSTRUCTORS
 
+        /// <summary>
+        /// Initializes an instance of <see cref="DesktopNetworkListener"/>.
+        /// </summary>
+        /// <param name="port"></param>
         internal DesktopNetworkListener(int port)
         {
             this.listener = new TcpListener(IPAddress.Any, port);
@@ -28,16 +35,29 @@ namespace Dicom.Network
 
         #region METHODS
 
+        /// <summary>
+        /// Start listening.
+        /// </summary>
         public void Start()
         {
             this.listener.Start();
         }
 
+        /// <summary>
+        /// Stop listening.
+        /// </summary>
         public void Stop()
         {
             this.listener.Stop();
         }
 
+        /// <summary>
+        /// Wait until a network stream is trying to connect, and return the accepted stream.
+        /// </summary>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="certificateName">Certificate name of authenticated connections.</param>
+        /// <param name="noDelay">No delay?</param>
+        /// <returns>Connected network stream.</returns>
         public INetworkStream AcceptNetworkStream(int port, string certificateName, bool noDelay)
         {
             var tcpClient = this.listener.AcceptTcpClient();
