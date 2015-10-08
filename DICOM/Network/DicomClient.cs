@@ -192,8 +192,8 @@ namespace Dicom.Network
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = 5000)
         {
             if (this.associateNotifier == null) return false;
-            await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
-            return this.associateNotifier.Task.IsCompleted;
+            var task = await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+            return task is Task<bool>;
         }
 
         /// <summary>
