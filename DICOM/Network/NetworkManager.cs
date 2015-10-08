@@ -34,9 +34,9 @@ namespace Dicom.Network
             return implementation.CreateNetworkListenerImpl(port);
         }
 
-        public static INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay)
+        public static INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            return implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay);
+            return implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
 
         public static bool IsSocketException(Exception exception, out int errorCode, out string errorDescriptor)
@@ -51,7 +51,7 @@ namespace Dicom.Network
 
         protected abstract INetworkListener CreateNetworkListenerImpl(int port);
 
-        protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay);
+        protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors);
 
         protected abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor);
 

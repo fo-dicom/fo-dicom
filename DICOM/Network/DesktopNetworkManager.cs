@@ -33,12 +33,12 @@ namespace Dicom.Network
 
         protected override INetworkListener CreateNetworkListenerImpl(int port)
         {
-            throw new System.NotImplementedException();
+            return new DesktopNetworkListener(port);
         }
 
-        protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay)
+        protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            throw new System.NotImplementedException();
+            return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
 
         protected override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
