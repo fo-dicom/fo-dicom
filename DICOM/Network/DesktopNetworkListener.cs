@@ -54,11 +54,10 @@ namespace Dicom.Network
         /// <summary>
         /// Wait until a network stream is trying to connect, and return the accepted stream.
         /// </summary>
-        /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
         /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(int port, string certificateName, bool noDelay)
+        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
         {
             var tcpClient = this.listener.AcceptTcpClient();
             tcpClient.NoDelay = noDelay;

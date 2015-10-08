@@ -5,9 +5,10 @@ namespace Dicom
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Text;
+
+    using Dicom.Network;
 
     /// <summary>
     /// Class for generating DICOM UIDs.
@@ -41,7 +42,7 @@ namespace Dicom
                         if (instanceRootUid == null)
                         {
                             DicomUID dicomUid;
-                            if (TryGetNetworkUid(out dicomUid)) return dicomUid;
+                            if (NetworkManager.TryGetNetworkIdentifier(out dicomUid)) return dicomUid;
 
                             instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
                         }
@@ -104,34 +105,6 @@ namespace Dicom
                     this.RegenerateAll(item);
                 }
             }
-        }
-
-        private static bool TryGetNetworkUid(out DicomUID dicomUid)
-        {
-            var interfaces = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
-            for (var i = 0; i < interfaces.Length; i++)
-            {
-                if (System.Net.NetworkInformation.NetworkInterface.LoopbackInterfaceIndex == i
-                    || interfaces[i].OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
-
-                var hex = interfaces[i].GetPhysicalAddress().ToString();
-                if (string.IsNullOrEmpty(hex)) continue;
-
-                try
-                {
-                    var mac = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-                    {
-                        dicomUid = DicomUID.Append(DicomImplementation.ClassUID, mac);
-                        return true;
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            dicomUid = null;
-            return false;
         }
 
         #endregion

@@ -6,11 +6,6 @@ namespace Dicom.Network
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Net.Security;
-    using System.Security.Authentication;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -24,8 +19,6 @@ namespace Dicom.Network
         where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
-
-        private X509Certificate cert;
 
         private bool disposed = false;
 
@@ -110,14 +103,16 @@ namespace Dicom.Network
 
             using (new Timer(this.OnTimerTick, false, 1000, 1000))
             {
-                TcpListener listener = null;
+                INetworkListener listener = null;
                 do
                 {
                     try
                     {
-                        var stream = ListenForNetworkStream(out listener, port, noDelay, certificateName, ref this.cert);
+                        listener = NetworkManager.CreateNetworkListener(port);
+                        listener.Start();
+                        var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
 
-                        var scp = this.CreateScp(stream);
+                        var scp = this.CreateScp(networkStream.AsStream());
                         if (this.Options != null) scp.Options = this.Options;
 
                         this.clients.Add(scp);
@@ -137,42 +132,6 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Start listening for a new network stream, and return stream when obtained.
-        /// </summary>
-        /// <param name="listener">Network listener.</param>
-        /// <param name="port">Port to listen to.</param>
-        /// <param name="noDelay">True if no delay in connection, false otherwise.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        /// <param name="certificate">X509 certificate, if <paramref name="certificateName"/> exists.</param>
-        /// <returns>Network stream.</returns>
-        private static Stream ListenForNetworkStream(
-            out TcpListener listener,
-            int port,
-            bool noDelay,
-            string certificateName,
-            ref X509Certificate certificate)
-        {
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
-            var client = listener.AcceptTcpClient();
-
-            client.NoDelay = noDelay;
-
-            Stream stream = client.GetStream();
-            if (string.IsNullOrEmpty(certificateName)) return stream;
-
-            var ssl = new SslStream(stream, false);
-            ssl.AuthenticateAsServer(
-                certificate ?? (certificate = GetX509Certificate(certificateName)),
-                false,
-                SslProtocols.Tls,
-                false);
-            stream = ssl;
-
-            return stream;
-        }
-
-        /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
         /// <param name="state">Object state.</param>
@@ -185,27 +144,6 @@ namespace Dicom.Network
             catch
             {
             }
-        }
-
-        /// <summary>
-        /// Get X509 certificate from the certificate store.
-        /// </summary>
-        /// <param name="certificateName">Certificate name.</param>
-        /// <returns>Certificate with the specified name.</returns>
-        private static X509Certificate GetX509Certificate(string certificateName)
-        {
-            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-
-            store.Open(OpenFlags.ReadOnly);
-            var certs = store.Certificates.Find(X509FindType.FindBySubjectName, certificateName, false);
-            store.Close();
-
-            if (certs.Count == 0)
-            {
-                throw new DicomNetworkException("Unable to find certificate for " + certificateName);
-            }
-
-            return certs[0];
         }
 
         #endregion

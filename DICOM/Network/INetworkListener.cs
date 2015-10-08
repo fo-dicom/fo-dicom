@@ -21,10 +21,9 @@ namespace Dicom.Network
         /// <summary>
         /// Wait until a network stream is trying to connect, and return the accepted stream.
         /// </summary>
-        /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
         /// <returns>Connected network stream.</returns>
-        INetworkStream AcceptNetworkStream(int port, string certificateName, bool noDelay);
+        INetworkStream AcceptNetworkStream(string certificateName, bool noDelay);
     }
 }

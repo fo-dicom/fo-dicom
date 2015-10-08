@@ -1325,15 +1325,16 @@ namespace Dicom.Network
 
         #region Helper methods
 
-        private static void LogIOException(Logger logger, IOException e, bool reading)
+        private static void LogIOException(Logger logger, Exception e, bool reading)
         {
             var socketFmt = string.Format(@"Socket error {0} PDU: {{socketErrorCode}} [{{errorCode}}]", reading ? "reading" : "writing");
             var otherFmt = string.Format(@"IO exception while {0} PDU: {{@error}}", reading ? "reading" : "writing");
 
-            var socketEx = e.InnerException as System.Net.Sockets.SocketException;
-            if (socketEx != null)
+            int errorCode;
+            string errorDescriptor;
+            if (NetworkManager.IsSocketException(e, out errorCode, out errorDescriptor))
             {
-                logger.Error(socketFmt, socketEx.SocketErrorCode, socketEx.ErrorCode);
+                logger.Error(socketFmt, errorDescriptor, errorCode);
             }
             else if (!(e.InnerException is ObjectDisposedException))
             {
