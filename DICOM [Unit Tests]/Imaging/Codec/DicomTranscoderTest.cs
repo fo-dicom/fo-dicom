@@ -15,7 +15,7 @@ namespace Dicom.Imaging.Codec
         [MemberData("TransferSyntaxesNames")]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
-            var codec = DicomTranscoder.GetCodec(transferSyntax);
+            var codec = DicomTranscoderManager.GetCodec(transferSyntax);
             var actual = codec.Name;
             Assert.Equal(expected, actual);
         }
