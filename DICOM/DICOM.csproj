@@ -237,6 +237,9 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
+    <Compile Include="Network\DesktopNetworkListener.cs" />
+    <Compile Include="Network\DesktopNetworkManager.cs" />
+    <Compile Include="Network\DesktopNetworkStream.cs" />
     <Compile Include="Network\DicomClientExtensions.cs" />
     <Compile Include="Network\IDicomNServiceProvider.cs" />
     <Compile Include="Network\DicomNDeleteRequest.cs" />
@@ -284,6 +287,9 @@
     <Compile Include="Network\IDicomCStoreProvider.cs" />
     <Compile Include="Network\IDicomServiceProvider.cs" />
     <Compile Include="Network\IDicomServiceUser.cs" />
+    <Compile Include="Network\INetworkListener.cs" />
+    <Compile Include="Network\INetworkStream.cs" />
+    <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Printing\FilmBox.cs" />
     <Compile Include="Printing\FilmBoxExtensions.cs" />

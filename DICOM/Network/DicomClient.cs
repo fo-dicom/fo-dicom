@@ -7,9 +7,6 @@ namespace Dicom.Network
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Net.Sockets;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -34,7 +31,7 @@ namespace Dicom.Network
 
         private int asyncPerformed;
 
-        private TcpClient tcpClient;
+        private INetworkStream networkStream;
 
         private bool abort;
 
@@ -118,8 +115,12 @@ namespace Dicom.Network
         {
             if (this.requests.Count == 0) return;
 
-            var stream = this.CreateSendStream(host, port, useTls);
-            this.InitializeSend(stream, callingAe, calledAe);
+            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
+            var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
+
+            this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
         }
@@ -137,8 +138,12 @@ namespace Dicom.Network
         {
             if (this.requests.Count == 0) return;
 
-            var stream = this.CreateSendStream(host, port, useTls);
-            this.InitializeSend(stream, callingAe, calledAe);
+            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
+            var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
+
+            this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
         }
@@ -192,8 +197,8 @@ namespace Dicom.Network
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = 5000)
         {
             if (this.associateNotifier == null) return false;
-            await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
-            return this.associateNotifier.Task.IsCompleted;
+            var task = await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+            return task is Task<bool>;
         }
 
         /// <summary>
@@ -245,55 +250,16 @@ namespace Dicom.Network
             try
             {
                 this.abort = true;
-                this.tcpClient.Close();
+                this.networkStream.Dispose();
             }
             catch
             {
             }
             finally
             {
-                this.tcpClient = null;
-                try
-                {
-                    this.completeNotifier.TrySetResult(true);
-                }
-                catch
-                {
-                }
-                this.completeNotifier = null;
+                this.networkStream = null;
+                if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
             }
-        }
-
-        private bool ValidateServerCertificate(
-            object sender,
-            X509Certificate certificate,
-            X509Chain chain,
-            SslPolicyErrors sslPolicyErrors)
-        {
-            return sslPolicyErrors == SslPolicyErrors.None
-                   || (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
-        }
-
-        private Stream CreateSendStream(string host, int port, bool useTls)
-        {
-            this.tcpClient = new TcpClient(host, port)
-                                 {
-                                     NoDelay =
-                                         this.Options != null
-                                             ? this.Options.TcpNoDelay
-                                             : DicomServiceOptions.Default.TcpNoDelay
-                                 };
-
-            Stream stream = this.tcpClient.GetStream();
-
-            if (useTls)
-            {
-                var ssl = new SslStream(stream, false, this.ValidateServerCertificate);
-                ssl.AuthenticateAsClient(host);
-                stream = ssl;
-            }
-
-            return stream;
         }
 
         private void InitializeSend(Stream stream, string callingAe, string calledAe)
@@ -319,13 +285,13 @@ namespace Dicom.Network
 
         private void FinalizeSend()
         {
-            if (this.associateNotifier != null) this.associateNotifier.SetResult(true);
+            this.associateNotifier.TrySetResult(true);
 
-            if (this.tcpClient != null)
+            if (this.networkStream != null)
             {
                 try
                 {
-                    this.tcpClient.Close();
+                    this.networkStream.Dispose();
                 }
                 catch
                 {
@@ -333,9 +299,7 @@ namespace Dicom.Network
             }
 
             this.service = null;
-            this.tcpClient = null;
-            this.completeNotifier = null;
-            this.associateNotifier = null;
+            this.networkStream = null;
         }
 
         #endregion
@@ -374,7 +338,6 @@ namespace Dicom.Network
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
                 this.client.associateNotifier.TrySetResult(true);
-                this.client.associateNotifier = null;
 
                 foreach (var request in this.client.requests) base.SendRequest(request);
                 this.client.requests.Clear();
