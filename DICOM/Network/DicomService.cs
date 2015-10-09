@@ -741,15 +741,15 @@ namespace Dicom.Network
         {
             using (var flag = new ManualResetEvent(false))
             using (new Timer(
-                state =>
+                obj =>
                     {
                         if (this._pduQueue.Count >= this.MaximumPDUsInQueue) return;
                         lock (this._lock)
                         {
-                            this._pduQueue.Enqueue((PDU)state);
-                            flag.Set();
+                            this._pduQueue.Enqueue(pdu);
+                            ((ManualResetEvent)obj).Set();
                         }
-                    }, pdu, 0, 10))
+                    }, flag, 0, 10))
             {
                 flag.WaitOne();
             }
