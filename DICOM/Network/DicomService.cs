@@ -22,19 +22,19 @@ namespace Dicom.Network
     /// </summary>
     public abstract class DicomService
     {
-        private Stream _network;
+        private readonly Stream _network;
 
-        private object _lock;
+        private readonly object _lock;
 
         private volatile bool _writing;
 
         private volatile bool _sending;
 
-        private Queue<PDU> _pduQueue;
+        private readonly Queue<PDU> _pduQueue;
 
-        private Queue<DicomMessage> _msgQueue;
+        private readonly Queue<DicomMessage> _msgQueue;
 
-        private List<DicomRequest> _pending;
+        private readonly List<DicomRequest> _pending;
 
         private DicomMessage _dimse;
 
@@ -48,7 +48,7 @@ namespace Dicom.Network
 
         private bool _isConnected;
 
-        private ThreadPoolQueue<int> _processQueue;
+        private readonly ThreadPoolQueue<int> _processQueue;
 
         private DicomServiceOptions _options;
 
@@ -125,7 +125,7 @@ namespace Dicom.Network
             _isConnected = false;
             try
             {
-                _network.Close();
+                _network.Dispose();
             }
             catch
             {
