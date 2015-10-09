@@ -5,9 +5,9 @@ namespace Dicom.Imaging.Codec
 {
     using System;
     using System.ComponentModel.Composition.Hosting;
+    using System.IO;
     using System.Reflection;
 
-    using Dicom.IO;
     using Dicom.Log;
 
     /// <summary>
@@ -54,7 +54,7 @@ namespace Dicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         protected override void LoadCodecsImpl(string path, string search)
         {
-            if (path == null) path = IOManager.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
+            if (path == null) path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
 
             if (search == null) search = "Dicom.Native*.dll";
 
