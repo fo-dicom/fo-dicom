@@ -739,7 +739,7 @@ namespace Dicom.Network
 
         protected void SendPDU(PDU pdu)
         {
-            using (var flag = new ManualResetEvent(false))
+            var flag = new ManualResetEvent(false);
             using (new Timer(
                 obj =>
                     {

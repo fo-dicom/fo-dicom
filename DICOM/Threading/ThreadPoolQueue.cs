@@ -230,7 +230,7 @@ namespace Dicom.Threading
 
                 if (empty)
                 {
-                    using (var flag = new ManualResetEvent(false))
+                    var flag = new ManualResetEvent(false);
                     using (new Timer(obj =>
                         {
                             lock (group.Lock)
