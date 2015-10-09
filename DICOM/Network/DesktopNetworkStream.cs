@@ -40,7 +40,6 @@ namespace Dicom.Network
             this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
 
             Stream stream = this.tcpClient.GetStream();
-
             if (useTls)
             {
                 var ssl = new SslStream(
@@ -59,17 +58,19 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="tcpClient">TCP client.</param>
         /// <param name="certificate">Certificate for authenticated connection.</param>
+        /// <remarks>Ownership of <paramref name="tcpClient"/> remains with the caller, including responsibility for
+        /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="DesktopNetworkStream"/>
+        /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {
-            this.tcpClient = tcpClient;
-
-            Stream stream = this.tcpClient.GetStream();
+            Stream stream = tcpClient.GetStream();
             if (certificate != null)
             {
                 var ssl = new SslStream(stream, false);
                 ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls, false);
                 stream = ssl;
             }
+
             this.networkStream = stream;
         }
 
@@ -107,12 +108,16 @@ namespace Dicom.Network
         /// Do the actual disposal.
         /// </summary>
         /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
+        /// <remarks>The underlying stream is normally passed on to a <see cref="DicomService"/> implementation that
+        /// is responsible for disposing the stream when appropriate. Therefore, the stream should not be disposed here.</remarks>
         private void Dispose(bool disposing)
         {
             if (this.disposed) return;
 
-            this.networkStream.Dispose();
-            this.tcpClient.Close();
+            if (this.tcpClient != null)
+            {
+                this.tcpClient.Close();
+            }
 
             this.disposed = true;
         }
