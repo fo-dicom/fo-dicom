@@ -5,6 +5,7 @@ namespace Dicom.Imaging.LUT
 {
     using Xunit;
 
+    [Collection("General")]
     public class OutputLUTTest
     {
         #region Unit tests

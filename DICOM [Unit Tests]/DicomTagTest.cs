@@ -11,6 +11,7 @@ namespace Dicom
     ///     This is a test class for DicomTagTest and is intended
     ///     to contain all DicomTagTest Unit Tests
     /// </summary>
+    [Collection("General")]
     public class DicomTagTest
     {
         /// <summary>

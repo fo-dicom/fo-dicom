@@ -5,6 +5,7 @@ namespace Dicom.Imaging
 {
     using Xunit;
 
+    [Collection("General")]
     public class GrayscaleRenderOptionsTest
     {
         #region Unit tests

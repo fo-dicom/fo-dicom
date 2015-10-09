@@ -72,6 +72,7 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="GeneralFixture.cs" />
     <Compile Include="Helpers\StringLogManager.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\DicomImageTest.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
     <Compile Include="Imaging\Mathematics\RectFTest.cs" />
+    <Compile Include="Imaging\ImagingFixture.cs" />
     <Compile Include="Imaging\SpatialTransformTest.cs" />
     <Compile Include="Imaging\WinFormsImageTest.cs" />
     <Compile Include="Imaging\WPFImageTest.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
     <Compile Include="Network\DicomServiceTest.cs" />
+    <Compile Include="Network\NetworkFixture.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />

@@ -11,6 +11,7 @@ namespace Dicom.IO.Reader
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomReaderTest
     {
         #region Unit tests

@@ -7,6 +7,7 @@ namespace Dicom.Imaging
 
     using Xunit;
 
+    [Collection("General")]
     public class ColorTableTest
     {
         #region Unit tests

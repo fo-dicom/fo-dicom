@@ -7,6 +7,7 @@ namespace Dicom.Media
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomFileScannerTest
     {
         [Fact]

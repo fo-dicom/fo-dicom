@@ -5,6 +5,7 @@ namespace Dicom.Imaging.Mathematics
 {
     using Xunit;
 
+    [Collection("General")]
     public class RectFTest
     {
         #region Unit tests

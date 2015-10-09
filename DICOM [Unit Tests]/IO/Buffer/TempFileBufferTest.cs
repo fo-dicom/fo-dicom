@@ -8,6 +8,7 @@ namespace Dicom.IO.Buffer
 
     using Xunit;
 
+    [Collection("General")]
     public class TempFileBufferTest
     {
         #region Unit tests

@@ -12,6 +12,7 @@ namespace Dicom.IO.Reader
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomDatasetReaderObserverTest
     {
         #region Unit tests

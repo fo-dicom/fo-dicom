@@ -5,6 +5,7 @@ namespace Dicom.IO.Writer
 {
     using Xunit;
 
+    [Collection("General")]
     public class DicomFileWriterTest
     {
         #region Fields

@@ -8,6 +8,7 @@ namespace Dicom.IO.Reader
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomFileReaderTest
     {
         #region Unit tests

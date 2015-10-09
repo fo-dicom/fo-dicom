@@ -7,6 +7,7 @@ namespace Dicom.IO
 
     using Xunit;
 
+    [Collection("General")]
     public class DesktopFileReferenceTest
     {
         #region Unit tests

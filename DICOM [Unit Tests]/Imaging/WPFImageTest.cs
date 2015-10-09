@@ -11,6 +11,7 @@ namespace Dicom.Imaging
 
     using Xunit;
 
+    [Collection("General")]
     public class WPFImageTest
     {
         #region Unit tests

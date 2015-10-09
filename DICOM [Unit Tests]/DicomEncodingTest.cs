@@ -7,6 +7,7 @@ namespace Dicom
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomEncodingTest
     {
         [Fact]

@@ -5,6 +5,7 @@ namespace Dicom
 {
     using Xunit;
 
+    [Collection("General")]
     public class DicomVRTest
     {
         #region Unit tests

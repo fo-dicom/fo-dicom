@@ -11,6 +11,7 @@ namespace Dicom.IO.Writer
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomWriterTest
     {
         #region Unit tests

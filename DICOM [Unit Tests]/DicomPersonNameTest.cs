@@ -11,6 +11,7 @@ namespace Dicom
     ///This is a test class for DicomPersonNameTest and is intended
     ///to contain all DicomPersonNameTest Unit Tests
     ///</summary>
+    [Collection("General")]
     public class DicomPersonNameTest
     {
         /// <summary>

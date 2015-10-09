@@ -9,6 +9,7 @@ namespace Dicom.Logging
 
     using Xunit;
 
+    [Collection("General")]
     public class MessageNameFormatToOrdinalFormatTests
     {
         [Fact]

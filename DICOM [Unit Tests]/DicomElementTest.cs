@@ -9,6 +9,7 @@ namespace Dicom
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomElementTest
     {
         #region Unit tests

@@ -7,6 +7,7 @@ namespace Dicom.Printing
 
     using Xunit;
 
+    [Collection("General")]
     public class FilmBoxTest
     {
         #region Unit tests

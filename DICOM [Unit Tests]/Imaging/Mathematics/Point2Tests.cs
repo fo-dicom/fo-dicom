@@ -9,6 +9,7 @@ namespace Dicom.Imaging.Mathematics
 
     using Xunit;
 
+    [Collection("General")]
     public class Point2Tests
     {
         [Fact]

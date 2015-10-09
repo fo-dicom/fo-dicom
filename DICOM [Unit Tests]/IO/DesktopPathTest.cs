@@ -5,6 +5,7 @@ namespace Dicom.IO
 {
     using Xunit;
 
+    [Collection("General")]
     public class DesktopPathTest
     {
         #region Unit tests

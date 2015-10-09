@@ -7,6 +7,7 @@ namespace Dicom.Imaging.Codec
 
     using Xunit;
 
+    [Collection("General")]
     public class DicomTranscoderTest
     {
         #region Unit tests

@@ -8,6 +8,7 @@ namespace Dicom.Threading
 
     using Xunit;
 
+    [Collection("General")]
     public class ThreadPoolQueueTest
     {
         [Fact]

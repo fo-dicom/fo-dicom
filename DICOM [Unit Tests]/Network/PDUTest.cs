@@ -7,6 +7,7 @@ namespace Dicom.Network
 
     using Xunit;
 
+    [Collection("Network")]
     public class PDUTest
     {
         [Fact]
