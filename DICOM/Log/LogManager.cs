@@ -34,7 +34,7 @@ namespace Dicom.Log
         /// <param name="impl"></param>
         public static void SetImplementation(LogManager impl)
         {
-            implementation = impl;
+            implementation = impl ?? NullLoggerManager.Instance;
         }
 
         /// <summary>

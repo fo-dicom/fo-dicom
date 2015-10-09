@@ -5,6 +5,9 @@ namespace Dicom.Imaging.Codec
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Abstract manager class for DICOM transcoder operations.
+    /// </summary>
     public abstract class DicomTranscoderManager
     {
         #region FIELDS
@@ -19,18 +22,6 @@ namespace Dicom.Imaging.Codec
         /// </summary>
         protected static readonly Dictionary<DicomTransferSyntax, IDicomCodec> Codecs =
             new Dictionary<DicomTransferSyntax, IDicomCodec>();
-
-        #endregion
-
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="DicomTranscoderManager"/>.
-        /// </summary>
-        static DicomTranscoderManager()
-        {
-            SetImplementation(DesktopTranscoderManager.Instance);
-        }
 
         #endregion
 

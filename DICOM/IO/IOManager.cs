@@ -14,18 +14,6 @@ namespace Dicom.IO
 
         #endregion
 
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static members of <see cref="IOManager"/>.
-        /// </summary>
-        static IOManager()
-        {
-            SetImplementation(DesktopIOManager.Instance);
-        }
-
-        #endregion
-
         #region PROPERTIES
 
         /// <summary>

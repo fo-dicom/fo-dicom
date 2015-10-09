@@ -19,18 +19,6 @@ namespace Dicom.Network
 
         #endregion
 
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="NetworkManager"/>.
-        /// </summary>
-        static NetworkManager()
-        {
-            SetImplementation(DesktopNetworkManager.Instance);
-        }
-
-        #endregion
-
         #region METHODS
 
         /// <summary>

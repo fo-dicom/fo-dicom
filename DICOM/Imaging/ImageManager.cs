@@ -19,18 +19,6 @@ namespace Dicom.Imaging
 
         #endregion
 
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="ImageManager"/>.
-        /// </summary>
-        static ImageManager()
-        {
-            SetImplementation(WinFormsImageManager.Instance);
-        }
-
-        #endregion
-
         #region METHODS
 
         /// <summary>
