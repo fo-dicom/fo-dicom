@@ -258,14 +258,7 @@ namespace Dicom.Network
             finally
             {
                 this.networkStream = null;
-                try
-                {
-                    this.completeNotifier.TrySetResult(true);
-                }
-                catch
-                {
-                }
-                this.completeNotifier = null;
+                if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
             }
         }
 
@@ -292,7 +285,7 @@ namespace Dicom.Network
 
         private void FinalizeSend()
         {
-            if (this.associateNotifier != null) this.associateNotifier.SetResult(true);
+            this.associateNotifier.TrySetResult(true);
 
             if (this.networkStream != null)
             {
@@ -307,8 +300,6 @@ namespace Dicom.Network
 
             this.service = null;
             this.networkStream = null;
-            this.completeNotifier = null;
-            this.associateNotifier = null;
         }
 
         #endregion
@@ -347,7 +338,6 @@ namespace Dicom.Network
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
                 this.client.associateNotifier.TrySetResult(true);
-                this.client.associateNotifier = null;
 
                 foreach (var request in this.client.requests) base.SendRequest(request);
                 this.client.requests.Clear();
