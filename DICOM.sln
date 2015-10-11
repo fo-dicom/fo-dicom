@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Core", "DICOM.Core\DI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Desktop", "DICOM.Desktop\DICOM.Desktop.csproj", "{59B38770-D2E7-40B9-8D27-A20691F1CAA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Legacy", "Dicom.Legacy\DICOM.Legacy.csproj", "{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,10 @@ Global
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

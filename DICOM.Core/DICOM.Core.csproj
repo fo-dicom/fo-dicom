@@ -466,9 +466,6 @@
     <Compile Include="..\DICOM\IO\Writer\DicomFileWriter.cs">
       <Link>IO\Writer\DicomFileWriter.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\Writer\DicomFileWriterExtensions.cs">
-      <Link>IO\Writer\DicomFileWriterExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\IO\Writer\DicomWriteLengthCalculator.cs">
       <Link>IO\Writer\DicomWriteLengthCalculator.cs</Link>
     </Compile>
@@ -549,9 +546,6 @@
     </Compile>
     <Compile Include="..\DICOM\Network\DicomClient.cs">
       <Link>Network\DicomClient.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\Network\DicomClientExtensions.cs">
-      <Link>Network\DicomClientExtensions.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Network\DicomCMoveRequest.cs">
       <Link>Network\DicomCMoveRequest.cs</Link>
