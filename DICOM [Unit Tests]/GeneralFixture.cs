@@ -26,12 +26,21 @@ namespace Dicom
 
         public void Dispose()
         {
-            Managers.Setup(null, null, null, null, null);
         }
     }
 
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GeneralFixture>
+    {
+    }
+
+    [CollectionDefinition("Imaging")]
+    public class ImagingCollection : ICollectionFixture<GeneralFixture>
+    {
+    }
+
+    [CollectionDefinition("Network")]
+    public class NetworkCollection : ICollectionFixture<GeneralFixture>
     {
     }
 }
