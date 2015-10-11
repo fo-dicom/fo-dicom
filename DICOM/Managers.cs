@@ -29,11 +29,11 @@ namespace Dicom
             ImageManager imageManagerImpl,
             LogManager logManagerImpl)
         {
-            IOManager.SetImplementation(ioManagerImpl);
-            NetworkManager.SetImplementation(networkManagerImpl);
-            DicomTranscoderManager.SetImplementation(transcoderManagerImpl);
-            ImageManager.SetImplementation(imageManagerImpl);
             LogManager.SetImplementation(logManagerImpl);
+            IOManager.SetImplementation(ioManagerImpl);
+            DicomTranscoderManager.SetImplementation(transcoderManagerImpl);
+            NetworkManager.SetImplementation(networkManagerImpl);
+            ImageManager.SetImplementation(imageManagerImpl);
         }
     }
 }
