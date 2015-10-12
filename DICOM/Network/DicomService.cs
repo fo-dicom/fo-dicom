@@ -8,7 +8,6 @@ namespace Dicom.Network
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
 
     using Dicom.Imaging.Codec;
@@ -66,6 +65,7 @@ namespace Dicom.Network
             {
                 throw new ArgumentNullException("fallbackEncoding");
             }
+
             _network = stream;
             _lock = new object();
             _pduQueue = new Queue<PDU>();
@@ -76,8 +76,9 @@ namespace Dicom.Network
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
-            BeginReadPDUHeader();
             Options = DicomServiceOptions.Default;
+
+            Task.Run(() => this.BeginReadPDUHeader());
         }
 
         public Logger Logger { get; set; }
@@ -139,14 +140,15 @@ namespace Dicom.Network
             else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnConnectionClosed(exception);
         }
 
-        private void BeginReadPDUHeader()
+        private async Task BeginReadPDUHeader()
         {
             try
             {
                 _readLength = 6;
 
-                byte[] buffer = new byte[6];
-                _network.BeginRead(buffer, 0, 6, EndReadPDUHeader, buffer);
+                var buffer = new byte[6];
+                var count = await this._network.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                await this.EndReadPDUHeader(buffer, count).ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -165,36 +167,35 @@ namespace Dicom.Network
             }
         }
 
-        private void EndReadPDUHeader(IAsyncResult result)
+        private async Task EndReadPDUHeader(byte[] buffer, int count)
         {
             try
             {
-                byte[] buffer = (byte[])result.AsyncState;
-
-                int count = _network.EndRead(result);
                 if (count == 0)
                 {
                     // disconnected
-                    CloseConnection(null);
+                    this.CloseConnection(null);
                     return;
                 }
 
-                _readLength -= count;
+                this._readLength -= count;
 
-                if (_readLength > 0)
+                if (this._readLength > 0)
                 {
-                    _network.BeginRead(buffer, 6 - _readLength, _readLength, EndReadPDUHeader, buffer);
+                    count = await this._network.ReadAsync(buffer, 6 - this._readLength, this._readLength).ConfigureAwait(false);
+                    await this.EndReadPDUHeader(buffer, count).ConfigureAwait(false);
                     return;
                 }
 
-                int length = BitConverter.ToInt32(buffer, 2);
+                var length = BitConverter.ToInt32(buffer, 2);
                 length = Endian.Swap(length);
 
-                _readLength = length;
+                this._readLength = length;
 
                 Array.Resize(ref buffer, length + 6);
 
-                _network.BeginRead(buffer, 6, length, EndReadPDU, buffer);
+                count = await this._network.ReadAsync(buffer, 6, length).ConfigureAwait(false);
+                await this.EndReadPDU(buffer, count).ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -217,25 +218,26 @@ namespace Dicom.Network
             }
         }
 
-        private void EndReadPDU(IAsyncResult result)
+        private async Task EndReadPDU(byte[] buffer, int count)
         {
             try
             {
-                byte[] buffer = (byte[])result.AsyncState;
-
-                int count = _network.EndRead(result);
                 if (count == 0)
                 {
                     // disconnected
-                    CloseConnection(null);
+                    this.CloseConnection(null);
                     return;
                 }
 
-                _readLength -= count;
+                this._readLength -= count;
 
-                if (_readLength > 0)
+                if (this._readLength > 0)
                 {
-                    _network.BeginRead(buffer, buffer.Length - _readLength, _readLength, EndReadPDU, buffer);
+                    count =
+                        await
+                        this._network.ReadAsync(buffer, buffer.Length - this._readLength, this._readLength)
+                            .ConfigureAwait(false);
+                    await this.EndReadPDU(buffer, count).ConfigureAwait(false);
                     return;
                 }
 
@@ -329,7 +331,7 @@ namespace Dicom.Network
                         throw new DicomNetworkException("Unknown PDU type");
                 }
 
-                BeginReadPDUHeader();
+                await this.BeginReadPDUHeader().ConfigureAwait(false);
             }
             catch (IOException e)
             {
@@ -753,61 +755,46 @@ namespace Dicom.Network
             SendNextPDU();
         }
 
-        private void SendNextPDU()
+        private async void SendNextPDU()
         {
-            if (!_isConnected) return;
-
-            PDU pdu;
-
-            lock (_lock)
+            while (true)
             {
-                if (_writing) return;
+                if (!_isConnected) return;
 
-                if (_pduQueue.Count == 0) return;
+                PDU pdu;
 
-                _writing = true;
+                lock (_lock)
+                {
+                    if (_writing) return;
 
-                pdu = _pduQueue.Dequeue();
-            }
+                    if (_pduQueue.Count == 0) return;
 
-            if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
+                    _writing = true;
 
-            MemoryStream ms = new MemoryStream();
-            pdu.Write().WritePDU(ms);
+                    pdu = _pduQueue.Dequeue();
+                }
 
-            byte[] buffer = ms.ToArray();
+                if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-            try
-            {
-                _network.BeginWrite(buffer, 0, (int)ms.Length, OnEndSendPDU, buffer);
-            }
-            catch (IOException e)
-            {
-                LogIOException(this.Logger, e, false);
-                CloseConnection(e);
-            }
-        }
+                MemoryStream ms = new MemoryStream();
+                pdu.Write().WritePDU(ms);
 
-        private void OnEndSendPDU(IAsyncResult ar)
-        {
-            byte[] buffer = (byte[])ar.AsyncState;
+                byte[] buffer = ms.ToArray();
 
-            try
-            {
-                _network.EndWrite(ar);
-            }
-            catch (IOException e)
-            {
-                LogIOException(this.Logger, e, false);
-                CloseConnection(e);
-            }
-            catch
-            {
-            }
-            finally
-            {
+                try
+                {
+                    await this._network.WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
+                }
+                catch (IOException e)
+                {
+                    LogIOException(this.Logger, e, false);
+                    CloseConnection(e);
+                }
+                catch
+                {
+                }
+
                 lock (_lock) _writing = false;
-                SendNextPDU();
             }
         }
 
