@@ -97,6 +97,9 @@
     <Compile Include="..\DICOM\DicomEncoding.cs">
       <Link>DicomEncoding.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\DicomEncoding.Portable.cs">
+      <Link>DicomEncoding.Portable.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\DicomException.cs">
       <Link>DicomException.cs</Link>
     </Compile>

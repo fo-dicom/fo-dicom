@@ -11,17 +11,17 @@ namespace Dicom
     public class DicomEncodingTest
     {
         [Fact]
-        public void Default_Getter_ReturnsUSASCII()
+        public void Default_Getter_ReturnsUTF8()
         {
-            var expected = Encoding.ASCII.CodePage;
+            var expected = Encoding.UTF8.CodePage;
             var actual = DicomEncoding.Default.CodePage;
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void GetEncoding_NonMatchingCharset_ReturnsUSASCII()
+        public void GetEncoding_NonMatchingCharset_ReturnsUTF8()
         {
-            var expected = Encoding.ASCII.CodePage;
+            var expected = Encoding.UTF8.CodePage;
             var actual = DicomEncoding.GetEncoding("GBK").CodePage;
             Assert.Equal(expected, actual);
         }
