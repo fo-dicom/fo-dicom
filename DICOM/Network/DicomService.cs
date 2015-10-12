@@ -9,6 +9,7 @@ namespace Dicom.Network
     using System.Linq;
     using System.Text;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Dicom.Imaging.Codec;
     using Dicom.IO;
@@ -485,7 +486,7 @@ namespace Dicom.Network
                                 Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
                             if (!_dimse.HasDataset)
                             {
-                                if (DicomMessage.IsRequest(_dimse.Type)) ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+                                if (DicomMessage.IsRequest(_dimse.Type)) _processQueue.Queue(PerformDimseCallback, _dimse);
                                 else
                                     _processQueue.Queue(
                                         (_dimse as DicomResponse).RequestMessageID,
@@ -554,7 +555,7 @@ namespace Dicom.Network
                                 }
                             }
 
-                            if (DicomMessage.IsRequest(_dimse.Type)) ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+                            if (DicomMessage.IsRequest(_dimse.Type)) _processQueue.Queue(PerformDimseCallback, _dimse);
                             else
                                 _processQueue.Queue(
                                     (_dimse as DicomResponse).RequestMessageID,
@@ -997,7 +998,7 @@ namespace Dicom.Network
             finally
             {
                 dimse.Stream.Flush(true);
-                dimse.Stream.Close();
+                dimse.Stream.Dispose();
 
                 lock (_lock) _sending = false;
                 SendNextMessage();
