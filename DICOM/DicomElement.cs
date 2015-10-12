@@ -1,17 +1,18 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-
-using Dicom.IO;
-using Dicom.IO.Buffer;
-
 namespace Dicom
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+
+    using Dicom.IO;
+    using Dicom.IO.Buffer;
+
     public abstract class DicomElement : DicomItem
     {
         protected DicomElement(DicomTag tag, IByteBuffer data)
@@ -94,9 +95,9 @@ namespace Dicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)(new string[] { StringValue });
 
-            if (typeof(T).IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(StringValue);
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(StringValue);
 
-            if (typeof(T).IsEnum) return (T)Enum.Parse(typeof(T), StringValue, true);
+            if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), StringValue, true);
 
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -157,9 +158,9 @@ namespace Dicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)_values;
 
-            if (typeof(T).IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(_values[item]);
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(_values[item]);
 
-            if (typeof(T).IsEnum) return (T)Enum.Parse(typeof(T), _values[item], true);
+            if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), _values[item], true);
 
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -318,7 +319,7 @@ namespace Dicom
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
             }
 
-            if (typeof(T).IsEnum)
+            if (typeof(T).GetTypeInfo().IsEnum)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -326,7 +327,7 @@ namespace Dicom
                 return (T)Enum.Parse(typeof(T), s, true);
             }
 
-            if (typeof(T).IsValueType)
+            if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
@@ -840,14 +841,14 @@ namespace Dicom
                 return (T)(object)_values;
             }
 
-            if (typeof(T).IsEnum)
+            if (typeof(T).GetTypeInfo().IsEnum)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
                 return (T)(object)_values[item];
             }
 
-            if (typeof(T).IsValueType)
+            if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 

@@ -72,6 +72,7 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="DicomParseableTest.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="Helpers\StringLogManager.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
