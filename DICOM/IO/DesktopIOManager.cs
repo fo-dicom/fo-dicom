@@ -3,6 +3,8 @@
 
 namespace Dicom.IO
 {
+    using System.Text;
+
     /// <summary>
     /// .NET/Windows Desktop implementation of the I/O manager.
     /// </summary>
@@ -14,6 +16,8 @@ namespace Dicom.IO
         /// Single instance of the desktop I/O manager.
         /// </summary>
         public static readonly IOManager Instance;
+
+        private Encoding baseEncodingImpl;
 
         #endregion
 
@@ -37,6 +41,17 @@ namespace Dicom.IO
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Implementation of the base encoding getter.
+        /// </summary>
+        protected override Encoding BaseEncodingImpl
+        {
+            get
+            {
+                return Encoding.ASCII;
+            }
+        }
 
         /// <summary>
         /// Gets the platform-specific path helper implementation.

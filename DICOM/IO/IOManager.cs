@@ -3,6 +3,8 @@
 
 namespace Dicom.IO
 {
+    using System.Text;
+
     /// <summary>
     /// Abstract manager class for file and directory based I/O.
     /// </summary>
@@ -15,6 +17,22 @@ namespace Dicom.IO
         #endregion
 
         #region PROPERTIES
+
+        /// <summary>
+        /// Gets the base encoding for the current platform.
+        /// </summary>
+        public static Encoding BaseEncoding
+        {
+            get
+            {
+                return implementation.BaseEncodingImpl;
+            }
+        }
+
+        /// <summary>
+        /// Implementation of the base encoding getter.
+        /// </summary>
+        protected  abstract Encoding BaseEncodingImpl { get; }
 
         /// <summary>
         /// Gets the path helper implementation.

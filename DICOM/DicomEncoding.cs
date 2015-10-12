@@ -6,11 +6,18 @@ using System.Text;
 
 namespace Dicom
 {
+    using Dicom.IO;
+
     /// <summary>
     /// Support methods for DICOM encoding.
     /// </summary>
-    public static partial class DicomEncoding
+    public static class DicomEncoding
     {
+        /// <summary>
+        /// Default DICOM encoding.
+        /// </summary>
+        public static readonly Encoding Default = IOManager.BaseEncoding;
+
         /// <summary>
         /// Get encoding from charset.
         /// </summary>

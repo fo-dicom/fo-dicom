@@ -64,7 +64,6 @@
     <Compile Include="DatabaseQueryTransformRule.cs" />
     <Compile Include="DicomDatasetWalkerExtensions.cs" />
     <Compile Include="AsyncFactory.cs" />
-    <Compile Include="DicomEncoding.Desktop.cs" />
     <Compile Include="DicomFile.Async.cs" />
     <Compile Include="DicomFileExtensions.Async.cs" />
     <Compile Include="Imaging\Codec\DesktopTranscoderManager.cs" />
@@ -342,7 +341,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.YearDayOfYear" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
