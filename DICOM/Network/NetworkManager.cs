@@ -19,6 +19,26 @@ namespace Dicom.Network
 
         #endregion
 
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets machine name.
+        /// </summary>
+        public static string MachineName
+        {
+            get
+            {
+                return implementation.MachineNameImpl;
+            }
+        }
+
+        /// <summary>
+        /// Implementation of the machine name getter.
+        /// </summary>
+        protected abstract string MachineNameImpl { get; }
+
+        #endregion
+
         #region METHODS
 
         /// <summary>

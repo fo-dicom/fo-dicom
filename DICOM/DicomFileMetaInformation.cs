@@ -1,20 +1,19 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom
 {
+    using Dicom.Network;
+
     public class DicomFileMetaInformation : DicomDataset
     {
         public DicomFileMetaInformation()
-            : base()
         {
             Version = new byte[] { 0x00, 0x01 };
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var machine = Environment.MachineName;
+            var machine = NetworkManager.MachineName;
             if (machine.Length > 16) machine = machine.Substring(0, 16);
             SourceApplicationEntityTitle = machine;
         }

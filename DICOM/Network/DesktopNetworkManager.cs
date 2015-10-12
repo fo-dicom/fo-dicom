@@ -41,6 +41,21 @@ namespace Dicom.Network
 
         #endregion
 
+        #region PROPERTIES
+
+        /// <summary>
+        /// Implementation of the machine name getter.
+        /// </summary>
+        protected override string MachineNameImpl
+        {
+            get
+            {
+                return Environment.MachineName;
+            }
+        }
+
+        #endregion
+
         #region METHODS
 
         /// <summary>
