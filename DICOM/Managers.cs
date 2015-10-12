@@ -25,13 +25,13 @@ namespace Dicom
         public static void Setup(
             IOManager ioManagerImpl,
             NetworkManager networkManagerImpl,
-            DicomTranscoderManager transcoderManagerImpl,
+            TranscoderManager transcoderManagerImpl,
             ImageManager imageManagerImpl,
             LogManager logManagerImpl)
         {
             LogManager.SetImplementation(logManagerImpl);
             IOManager.SetImplementation(ioManagerImpl);
-            DicomTranscoderManager.SetImplementation(transcoderManagerImpl);
+            TranscoderManager.SetImplementation(transcoderManagerImpl);
             NetworkManager.SetImplementation(networkManagerImpl);
             ImageManager.SetImplementation(imageManagerImpl);
         }

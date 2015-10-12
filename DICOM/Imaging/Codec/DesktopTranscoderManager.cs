@@ -11,16 +11,16 @@ namespace Dicom.Imaging.Codec
     using Dicom.Log;
 
     /// <summary>
-    /// Implementation of <see cref="DicomTranscoderManager"/> for Windows desktop (.NET) applications.
+    /// Implementation of <see cref="TranscoderManager"/> for Windows desktop (.NET) applications.
     /// </summary>
-    public sealed class DesktopTranscoderManager : DicomTranscoderManager
+    public sealed class DesktopTranscoderManager : TranscoderManager
     {
         #region FIELDS
 
         /// <summary>
         /// Singleton instance of the <see cref="DesktopTranscoderManager"/>.
         /// </summary>
-        public static readonly DicomTranscoderManager Instance;
+        public static readonly TranscoderManager Instance;
 
         #endregion
 

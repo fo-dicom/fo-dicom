@@ -8,14 +8,14 @@ namespace Dicom.Imaging.Codec
     /// <summary>
     /// Abstract manager class for DICOM transcoder operations.
     /// </summary>
-    public abstract class DicomTranscoderManager
+    public abstract class TranscoderManager
     {
         #region FIELDS
 
         /// <summary>
         /// Selected DICOM transcoder implementation.
         /// </summary>
-        private static DicomTranscoderManager implementation;
+        private static TranscoderManager implementation;
 
         /// <summary>
         /// Collection of known transfer syntaxes and their associated codecs.
@@ -31,7 +31,7 @@ namespace Dicom.Imaging.Codec
         /// Set the implementation to use for DICOM transcoder management.
         /// </summary>
         /// <param name="impl"></param>
-        public static void SetImplementation(DicomTranscoderManager impl)
+        public static void SetImplementation(TranscoderManager impl)
         {
             implementation = impl;
         }

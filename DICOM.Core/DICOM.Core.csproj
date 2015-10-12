@@ -211,14 +211,14 @@
     <Compile Include="..\DICOM\Imaging\Codec\DicomTranscoder.cs">
       <Link>Imaging\Codec\DicomTranscoder.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomTranscoderManager.cs">
-      <Link>Imaging\Codec\DicomTranscoderManager.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\Imaging\Codec\IDicomCodec.cs">
       <Link>Imaging\Codec\IDicomCodec.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Imaging\Codec\IDicomTranscoder.cs">
       <Link>Imaging\Codec\IDicomTranscoder.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\TranscoderManager.cs">
+      <Link>Imaging\Codec\TranscoderManager.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Imaging\Color32.cs">
       <Link>Imaging\Color32.cs</Link>
