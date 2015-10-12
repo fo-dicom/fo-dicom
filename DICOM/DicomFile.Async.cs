@@ -6,7 +6,11 @@ namespace Dicom
     using System;
     using System.Text;
 
+#if LEGACY
+    public static class _DicomFile
+#else
     public partial class DicomFile
+#endif
     {
         /// <summary>
         /// Perform background DICOM file open operation.
@@ -18,7 +22,7 @@ namespace Dicom
         [Obsolete]
         public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
-            return AsyncFactory.ToBegin(OpenAsync(fileName, DicomEncoding.Default), callback, state);
+            return AsyncFactory.ToBegin(DicomFile.OpenAsync(fileName, DicomEncoding.Default), callback, state);
         }
 
         /// <summary>
@@ -36,7 +40,7 @@ namespace Dicom
             AsyncCallback callback,
             object state)
         {
-            return AsyncFactory.ToBegin(OpenAsync(fileName, fallbackEncoding), callback, state);
+            return AsyncFactory.ToBegin(DicomFile.OpenAsync(fileName, fallbackEncoding), callback, state);
         }
 
         /// <summary>

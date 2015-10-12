@@ -6,9 +6,6 @@ namespace Dicom
     using System;
 
     using Dicom.Imaging;
-    using Dicom.Imaging.Codec;
-    using Dicom.IO;
-    using Dicom.Network;
 
     using Xunit;
 
@@ -16,12 +13,7 @@ namespace Dicom
     {
         public SetupFixture()
         {
-            Managers.Setup(
-                DesktopIOManager.Instance,
-                DesktopNetworkManager.Instance,
-                DesktopTranscoderManager.Instance,
-                WinFormsImageManager.Instance,
-                null);
+            DesktopManagers.Setup(WinFormsImageManager.Instance);
         }
 
         public void Dispose()

@@ -17,8 +17,6 @@ namespace Dicom.IO
         /// </summary>
         public static readonly IOManager Instance;
 
-        private Encoding baseEncodingImpl;
-
         #endregion
 
         #region CONSTRUCTORS

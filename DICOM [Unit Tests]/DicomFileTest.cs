@@ -125,7 +125,7 @@ namespace Dicom
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            var openFile = DicomFile.EndOpen(DicomFile.BeginOpen(fileName, null, null));
+            var openFile = _DicomFile.EndOpen(_DicomFile.BeginOpen(fileName, null, null));
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
