@@ -310,9 +310,9 @@ namespace Dicom.Network
         {
             #region FIELDS
 
-            private readonly DicomClient client;
+            private const int ReleaseTimeout = 2500;
 
-            private Timer timer;
+            private readonly DicomClient client;
 
             #endregion
 
@@ -339,7 +339,7 @@ namespace Dicom.Network
             {
                 this.client.associateNotifier.TrySetResult(true);
 
-                foreach (var request in this.client.requests) base.SendRequest(request);
+                foreach (var request in this.client.requests) this.SendRequest(request);
                 this.client.requests.Clear();
             }
 
@@ -348,42 +348,27 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                this.DisableTimer();
-
                 throw new DicomAssociationRejectedException(result, source, reason);
             }
 
             public void OnReceiveAssociationReleaseResponse()
             {
-                this.DisableTimer();
-                this.SignalCompleted();
+                this.SetComplete();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                this.DisableTimer();
-
                 throw new DicomAssociationAbortedException(source, reason);
             }
 
             public void OnConnectionClosed(Exception exception)
             {
-                this.DisableTimer();
-                this.SignalCompleted();
-            }
-
-            public override void SendRequest(DicomRequest request)
-            {
-                this.DisableTimer();
-                base.SendRequest(request);
+                this.SetComplete();
             }
 
             protected override void OnSendQueueEmpty()
             {
-                this.timer = new Timer(this.OnLingerTimeout,
-                    null,
-                    this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger,
-                    Timeout.Infinite);
+                Task.Run((Action)this.OnLingerTimeout);
             }
 
             internal void _SendAssociationReleaseRequest()
@@ -395,34 +380,29 @@ namespace Dicom.Network
                 catch
                 {
                     // may have already disconnected
-                    this.SignalCompleted();
+                    this.SetComplete();
                     return;
                 }
 
-                this.timer = new Timer(this.OnReleaseTimeout, null, 2500, Timeout.Infinite);
+                Task.Run((Action)this.OnReleaseTimeout);
             }
 
-            private void OnLingerTimeout(object state)
+            private async void OnLingerTimeout()
             {
-                if (!this.IsSendQueueEmpty) return;
-                if (this.IsConnected) this._SendAssociationReleaseRequest();
+                await Task.Delay(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger).ConfigureAwait(false);
+                if (!this.IsSendQueueEmpty || !this.IsConnected) return;
+
+                await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
+                this.SetComplete();
             }
 
-            private void OnReleaseTimeout(object state)
+            private async void OnReleaseTimeout()
             {
-                this.DisableTimer();
-                this.SignalCompleted();
+                await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
+                this.SetComplete();
             }
 
-            private void DisableTimer()
-            {
-                if (this.timer != null)
-                {
-                    this.timer.Change(Timeout.Infinite, Timeout.Infinite);
-                }
-            }
-
-            private void SignalCompleted()
+            private void SetComplete()
             {
                 if (this.client.completeNotifier != null)
                 {
