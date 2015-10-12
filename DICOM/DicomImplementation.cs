@@ -1,11 +1,10 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Reflection;
-
 namespace Dicom
 {
+    using System.Reflection;
+
     public static class DicomImplementation
     {
         public static DicomUID ClassUID = new DicomUID(
@@ -17,8 +16,8 @@ namespace Dicom
 
         private static string GetImplementationVersion()
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            return String.Format("fo-dicom {0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            var version = typeof(DicomImplementation).GetTypeInfo().Assembly.GetName().Version;
+            return string.Format("fo-dicom {0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
     }
 }
