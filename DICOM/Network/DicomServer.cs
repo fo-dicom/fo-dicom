@@ -101,8 +101,11 @@ namespace Dicom.Network
         {
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
 
-            using (new Timer(this.OnTimerTick, false, 1000, 1000))
+            using (var cancellationSource = new CancellationTokenSource())
             {
+                var token = cancellationSource.Token;
+                Task.Run(() => this.OnTimerTick(token), token);
+
                 INetworkListener listener = null;
                 do
                 {
@@ -128,21 +131,27 @@ namespace Dicom.Network
                 {
                     listener.Stop();
                 }
+
+                cancellationSource.Cancel();
             }
         }
 
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        /// <param name="state">Object state.</param>
-        private void OnTimerTick(object state)
+        /// <param name="token">Cancellation token.</param>
+        private async void OnTimerTick(CancellationToken token)
         {
-            try
+            while (true)
             {
-                this.clients.RemoveAll(client => !client.IsConnected);
-            }
-            catch
-            {
+                await Task.Delay(1000, token);
+                try
+                {
+                    this.clients.RemoveAll(client => !client.IsConnected);
+                }
+                catch
+                {
+                }
             }
         }
 
