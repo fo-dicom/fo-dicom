@@ -88,7 +88,7 @@ namespace Dicom.Log
         {
             var matches = CurlyBracePairRegex.Matches(message).Cast<Match>();
 
-            var handledMatchNames = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            var handledMatchNames = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             //Stores the updated message
             var updatedMessage = message;
