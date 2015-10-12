@@ -111,6 +111,7 @@
     <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
     <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
     <Compile Include="Log\ConsoleLogger.cs" />
+    <Compile Include="Log\ConsoleExtensions.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
     <Compile Include="Log\LogManager.cs" />

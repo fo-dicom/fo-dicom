@@ -75,6 +75,9 @@
     <Compile Include="..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Log\ConsoleExtensions.cs">
+      <Link>Log\ConsoleExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
       <Link>Log\ConsoleLogger.cs</Link>
     </Compile>
