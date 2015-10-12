@@ -740,19 +740,14 @@ namespace Dicom.Network
 
         protected void SendPDU(PDU pdu)
         {
-            var flag = new ManualResetEvent(false);
-            using (new Timer(
-                obj =>
-                    {
-                        if (this._pduQueue.Count >= this.MaximumPDUsInQueue) return;
-                        lock (this._lock)
-                        {
-                            this._pduQueue.Enqueue(pdu);
-                            ((ManualResetEvent)obj).Set();
-                        }
-                    }, flag, 0, 10))
+            while (this._pduQueue.Count >= this.MaximumPDUsInQueue)
             {
-                flag.WaitOne();
+                Task.Delay(10).Wait();
+            }
+
+            lock (this._lock)
+            {
+                this._pduQueue.Enqueue(pdu);
             }
 
             SendNextPDU();
