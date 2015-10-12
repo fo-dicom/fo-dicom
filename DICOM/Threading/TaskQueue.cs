@@ -1,18 +1,19 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
 namespace Dicom.Threading
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Class for handling queue of categorized work items.
     /// </summary>
     /// <typeparam name="T">Group key type.</typeparam>
-    public class ThreadPoolQueue<T>
+    public class TaskQueue<T>
     {
         /// <summary>
         /// Work item.
@@ -23,7 +24,7 @@ namespace Dicom.Threading
 
             public Action Action;
 
-            public WaitCallback Callback;
+            public Action<object> Callback;
 
             public object State;
         }
@@ -54,9 +55,9 @@ namespace Dicom.Threading
         private readonly Dictionary<T, WorkGroup> _groups;
 
         /// <summary>
-        /// Initializes an instance of <see cref="ThreadPoolQueue{T}"/>.
+        /// Initializes an instance of <see cref="TaskQueue{T}"/>.
         /// </summary>
-        public ThreadPoolQueue(T defaultGroup = default(T))
+        public TaskQueue(T defaultGroup = default(T))
         {
             _groups = new Dictionary<T, WorkGroup>();
             Linger = 200;
@@ -112,7 +113,7 @@ namespace Dicom.Threading
         /// Queue a <see cref="WaitCallback"/> to the <see cref="DefaultGroup"/>.
         /// </summary>
         /// <param name="callback">Callback to queue.</param>
-        public void Queue(WaitCallback callback)
+        public void Queue(Action<object> callback)
         {
             Queue(new WorkItem { Group = DefaultGroup, Callback = callback });
         }
@@ -122,7 +123,7 @@ namespace Dicom.Threading
         /// </summary>
         /// <param name="callback">Callback to queue.</param>
         /// <param name="state">Callback state.</param>
-        public void Queue(WaitCallback callback, object state)
+        public void Queue(Action<object> callback, object state)
         {
             Queue(new WorkItem { Group = DefaultGroup, Callback = callback, State = state });
         }
@@ -142,7 +143,7 @@ namespace Dicom.Threading
         /// </summary>
         /// <param name="group">Group within which to execute work item.</param>
         /// <param name="callback">Callback to queue.</param>
-        public void Queue(T group, WaitCallback callback)
+        public void Queue(T group, Action<object> callback)
         {
             Queue(new WorkItem { Group = group, Callback = callback });
         }
@@ -153,7 +154,7 @@ namespace Dicom.Threading
         /// <param name="group">Group within which to execute work item.</param>
         /// <param name="callback">Callback to queue.</param>
         /// <param name="state">Callback state.</param>
-        public void Queue(T group, WaitCallback callback, object state)
+        public void Queue(T group, Action<object> callback, object state)
         {
             Queue(new WorkItem { Group = group, Callback = callback, State = state });
         }
@@ -205,18 +206,16 @@ namespace Dicom.Threading
 
                 group.Executing = true;
 
-                ThreadPool.QueueUserWorkItem(ExecuteProc, group);
+                Task.Run(() => this.ExecuteProc(group));
             }
         }
 
         /// <summary>
         /// The delegate invocation for executing a group of work items. 
         /// </summary>
-        /// <param name="state"></param>
-        private void ExecuteProc(object state)
+        /// <param name="group">Group to execute.</param>
+        private async void ExecuteProc(WorkGroup group)
         {
-            var group = (WorkGroup)state;
-
             while (!_stopped)
             {
                 WorkItem item = null;
@@ -230,19 +229,23 @@ namespace Dicom.Threading
 
                 if (empty)
                 {
-                    var flag = new ManualResetEvent(false);
-                    using (new Timer(obj =>
+                    // Linger specified time in case new tasks are added.
+                    using (var cancellationSource = new CancellationTokenSource(this.Linger))
+                    {
+                        do
                         {
                             lock (group.Lock)
                             {
-                                if (group.Items.Count == 0) return;
-                                item = group.Items.Dequeue();
+                                if (group.Items.Count > 0)
+                                {
+                                    empty = false;
+                                    item = group.Items.Dequeue();
+                                    cancellationSource.Cancel();
+                                }
                             }
-                            empty = false;
-                            ((ManualResetEvent)obj).Set();
-                        }, flag, 0, 1))
-                    {
-                        flag.WaitOne(this.Linger);
+                            await Task.Delay(1).ConfigureAwait(false);
+                        }
+                        while (!cancellationSource.IsCancellationRequested);
                     }
 
                     if (empty)

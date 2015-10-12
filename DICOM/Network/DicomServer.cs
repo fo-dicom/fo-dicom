@@ -144,7 +144,7 @@ namespace Dicom.Network
         {
             while (true)
             {
-                await Task.Delay(1000, token);
+                await Task.Delay(1000, token).ConfigureAwait(false);
                 try
                 {
                     this.clients.RemoveAll(client => !client.IsConnected);

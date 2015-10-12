@@ -9,7 +9,7 @@ namespace Dicom.Threading
     using Xunit;
 
     [Collection("General")]
-    public class ThreadPoolQueueTest
+    public class TaskQueueTest
     {
         [Fact]
         public void Queue_OrderOfExecutionForSameKey_ShouldBeFifo()
@@ -19,7 +19,7 @@ namespace Dicom.Threading
             string[] expected = { "", "", "" }, actual = { "", "", "" };
             bool[] finished = { false, false, false };
             var handle = new ManualResetEventSlim(false);
-            var pool = new ThreadPoolQueue<int>(int.MinValue);
+            var pool = new TaskQueue<int>(int.MinValue);
 
             for (var i = 0; i < 99; ++i)
             {
@@ -46,6 +46,44 @@ namespace Dicom.Threading
             handle.Wait(10000);
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Linger_TaskAddedWithinTimeout_ExecutedOnSameThread()
+        {
+            var pool = new TaskQueue<int> { Linger = 1000 };
+            var expected = -1;
+
+            pool.Queue(1, () => { expected = Thread.CurrentThread.ManagedThreadId; });
+            Thread.Sleep(100);
+
+            pool.Queue(
+                1,
+                state =>
+                    {
+                        var actual = Thread.CurrentThread.ManagedThreadId;
+                        Assert.Equal((int)state, actual);
+                    },
+                expected);
+        }
+
+        [Fact]
+        public void Linger_TaskAddedAfterTimeout_ExecutedOnDifferentThread()
+        {
+            var pool = new TaskQueue<int> { Linger = 100 };
+            var expected = -1;
+
+            pool.Queue(1, () => { expected = Thread.CurrentThread.ManagedThreadId; });
+            Thread.Sleep(200);
+
+            pool.Queue(
+                1,
+                state =>
+                {
+                    var actual = Thread.CurrentThread.ManagedThreadId;
+                    Assert.NotEqual((int)state, actual);
+                },
+                expected);
         }
     }
 }

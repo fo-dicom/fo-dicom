@@ -12,9 +12,9 @@ namespace Dicom
 
     using Xunit;
 
-    public class GeneralFixture : IDisposable
+    public class SetupFixture : IDisposable
     {
-        public GeneralFixture()
+        public SetupFixture()
         {
             Managers.Setup(
                 DesktopIOManager.Instance,
@@ -30,17 +30,17 @@ namespace Dicom
     }
 
     [CollectionDefinition("General")]
-    public class GeneralCollection : ICollectionFixture<GeneralFixture>
+    public class GeneralCollection : ICollectionFixture<SetupFixture>
     {
     }
 
     [CollectionDefinition("Imaging")]
-    public class ImagingCollection : ICollectionFixture<GeneralFixture>
+    public class ImagingCollection : ICollectionFixture<SetupFixture>
     {
     }
 
     [CollectionDefinition("Network")]
-    public class NetworkCollection : ICollectionFixture<GeneralFixture>
+    public class NetworkCollection : ICollectionFixture<SetupFixture>
     {
     }
 }

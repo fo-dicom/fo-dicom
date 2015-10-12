@@ -306,7 +306,7 @@
     <Compile Include="StructuredReport\DicomReferencedSOP.cs" />
     <Compile Include="StructuredReport\DicomStructuredReportException.cs" />
     <Compile Include="StructuredReport\DicomStructuredReport.cs" />
-    <Compile Include="Threading\ThreadPoolQueue.cs" />
+    <Compile Include="Threading\TaskQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dictionaries\Private Dictionary.xml.gz" />

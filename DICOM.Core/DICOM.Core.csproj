@@ -703,8 +703,8 @@
     <Compile Include="..\DICOM\StructuredReport\DicomStructuredReportException.cs">
       <Link>StructuredReport\DicomStructuredReportException.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Threading\ThreadPoolQueue.cs">
-      <Link>Threading\ThreadPoolQueue.cs</Link>
+    <Compile Include="..\DICOM\Threading\TaskQueue.cs">
+      <Link>Threading\TaskQueue.cs</Link>
     </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
