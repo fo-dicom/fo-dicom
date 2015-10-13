@@ -17,7 +17,7 @@ namespace Dicom.CStoreSCP
         {
             // Initialize managers.
 #if MONO
-			MonoManagers.Setup();
+            MonoManagers.Setup(ConsoleLogManager.Instance);
 #else
             DesktopManagers.Setup(null, ConsoleLogManager.Instance);
 #endif
