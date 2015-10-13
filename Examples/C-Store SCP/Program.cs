@@ -19,7 +19,7 @@ namespace Dicom.CStoreSCP
 #if MONO
 			MonoManagers.Setup();
 #else
-            DesktopManagers.Setup();
+            DesktopManagers.Setup(null, ConsoleLogManager.Instance);
 #endif
             // preload dictionary to prevent timeouts
             var dict = DicomDictionary.Default;
