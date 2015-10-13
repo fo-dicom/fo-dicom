@@ -48,6 +48,9 @@
     <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\DesktopManagers.cs">
+      <Link>DesktopManagers.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
       <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
@@ -102,7 +105,6 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DesktopManagers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

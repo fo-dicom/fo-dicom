@@ -27,6 +27,12 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -39,6 +45,9 @@
     </Compile>
     <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\MonoManagers.cs">
+      <Link>MonoManagers.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Imaging\DicomOverlayDataFactory.cs">
       <Link>Imaging\DicomOverlayDataFactory.cs</Link>
@@ -82,7 +91,6 @@
     <Compile Include="..\DICOM\Printing\ImageBoxExtensions.cs">
       <Link>Printing\ImageBoxExtensions.cs</Link>
     </Compile>
-    <Compile Include="MonoManagers.cs" />
     <Compile Include="..\DICOM\Imaging\Codec\MonoTranscoderManager.cs">
       <Link>Imaging\Codec\MonoTranscoderManager.cs</Link>
     </Compile>
