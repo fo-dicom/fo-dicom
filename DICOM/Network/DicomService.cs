@@ -740,11 +740,11 @@ namespace Dicom.Network
             }
         }
 
-        protected void SendPDU(PDU pdu)
+        protected async Task SendPDU(PDU pdu)
         {
             while (this._pduQueue.Count >= this.MaximumPDUsInQueue)
             {
-                Task.Delay(10).Wait();
+                await Task.Delay(10).ConfigureAwait(false);
             }
 
             lock (this._lock)
@@ -752,10 +752,10 @@ namespace Dicom.Network
                 this._pduQueue.Enqueue(pdu);
             }
 
-            SendNextPDU();
+            await this.SendNextPDU().ConfigureAwait(false);
         }
 
-        private async void SendNextPDU()
+        private async Task SendNextPDU()
         {
             while (true)
             {
