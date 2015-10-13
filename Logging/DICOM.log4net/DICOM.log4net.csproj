@@ -7,8 +7,8 @@
     <ProjectGuid>{B815FCAE-63D5-4F14-9C36-ED8E19D4640B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DICOM.Log</RootNamespace>
-    <AssemblyName>DICOM.log4net</AssemblyName>
+    <RootNamespace>Dicom.Log</RootNamespace>
+    <AssemblyName>Dicom.Log4Net</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>

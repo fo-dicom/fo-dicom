@@ -71,7 +71,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Serilog", "logging\DI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging Serilog", "Examples\Logging Serilog\Logging Serilog.csproj", "{3AAFAAC6-3224-4754-884E-1CBEACEE2D59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.MetroLog", "Logging\DICOM.MetroLog\DICOM.MetroLog.csproj", "{DDE18386-EFFD-4854-99F3-D511B822213B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.MetroLog.Desktop", "Logging\DICOM.MetroLog\DICOM.MetroLog.Desktop.csproj", "{DDE18386-EFFD-4854-99F3-D511B822213B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.log4net", "Logging\DICOM.log4net\DICOM.log4net.csproj", "{B815FCAE-63D5-4F14-9C36-ED8E19D4640B}"
 EndProject
