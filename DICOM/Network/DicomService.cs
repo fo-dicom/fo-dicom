@@ -1124,7 +1124,7 @@ namespace Dicom.Network
                 {
                     if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
-                    await _service.SendPDU(_pdu);
+                    await _service.SendPDU(_pdu).ConfigureAwait(false);
 
                     _pdu = new PDataTF();
                 }
@@ -1247,7 +1247,7 @@ namespace Dicom.Network
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
-            await SendPDU(new AAssociateRQ(Association));
+            await SendPDU(new AAssociateRQ(Association)).ConfigureAwait(false);
         }
 
         protected async void SendAssociationAccept(DicomAssociation association)
@@ -1261,7 +1261,7 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            await SendPDU(new AAssociateAC(Association));
+            await SendPDU(new AAssociateAC(Association)).ConfigureAwait(false);
         }
 
         protected async void SendAssociationReject(
@@ -1275,25 +1275,25 @@ namespace Dicom.Network
                 result,
                 source,
                 reason);
-            await SendPDU(new AAssociateRJ(result, source, reason));
+            await SendPDU(new AAssociateRJ(result, source, reason)).ConfigureAwait(false);
         }
 
         protected async void SendAssociationReleaseRequest()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            await SendPDU(new AReleaseRQ());
+            await SendPDU(new AReleaseRQ()).ConfigureAwait(false);
         }
 
         protected async void SendAssociationReleaseResponse()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            await SendPDU(new AReleaseRP());
+            await SendPDU(new AReleaseRP()).ConfigureAwait(false);
         }
 
         protected async void SendAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            await SendPDU(new AAbort(source, reason));
+            await SendPDU(new AAbort(source, reason)).ConfigureAwait(false);
         }
 
         #endregion
