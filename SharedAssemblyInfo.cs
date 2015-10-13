@@ -3,8 +3,11 @@
 
 #if WIN32
 using namespace System::Reflection;
+using namespace System::Resources;
 #else
 using System.Reflection;
+using System.Resources;
+
 #endif
 
 [assembly: AssemblyCompanyAttribute("fo-dicom")]
@@ -12,6 +15,7 @@ using System.Reflection;
 [assembly: AssemblyCopyrightAttribute("Copyright © fo-dicom contributors 2012-2015")]
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
+[assembly: NeutralResourcesLanguage("en")]
 
 [assembly: AssemblyVersionAttribute("1.1.0")]
 [assembly: AssemblyFileVersion("1.1.0.0")]
