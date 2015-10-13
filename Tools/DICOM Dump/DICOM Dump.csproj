@@ -117,9 +117,13 @@
       <Project>{C6148839-334D-4894-BDB9-E2D57438CF8A}</Project>
       <Name>DICOM [Native]</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DICOM\DICOM.csproj">
-      <Project>{D6E309B0-4837-459E-8C85-ABC268440D62}</Project>
-      <Name>DICOM</Name>
+    <ProjectReference Include="..\..\DICOM.Desktop\DICOM.Desktop.csproj">
+      <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
+      <Name>DICOM.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
+      <Name>DICOM.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
