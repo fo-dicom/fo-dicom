@@ -265,8 +265,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM\DICOM.csproj">
-      <Project>{d6e309b0-4837-459e-8c85-abc268440d62}</Project>
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x64.vcxproj">
       <Project>{1b3557d4-1146-428a-aec9-12cadf994527}</Project>

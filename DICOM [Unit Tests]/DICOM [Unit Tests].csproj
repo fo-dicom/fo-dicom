@@ -126,6 +126,18 @@
       <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
       <Name>DICOM [Native]</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DICOM.Desktop\DICOM.Desktop.csproj">
+      <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
+      <Name>DICOM.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
+      <Name>DICOM.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DICOM\DICOM.Legacy.csproj">
+      <Project>{a3550fe3-1cb5-4760-8670-9c8afe0925a3}</Project>
+      <Name>DICOM.Legacy</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

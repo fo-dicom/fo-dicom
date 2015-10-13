@@ -265,8 +265,8 @@
     <ClInclude Include="..\OpenJPEG\tgt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM\DICOM.csproj">
-      <Project>{d6e309b0-4837-459e-8c85-abc268440d62}</Project>
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x86.vcxproj">
       <Project>{0331d451-7c7a-4db7-a11d-61708f2e8d05}</Project>
