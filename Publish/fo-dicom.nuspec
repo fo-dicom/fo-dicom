@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>fo-dicom</id>
-        <version>1.1.0</version>
+        <version>2.0.0-alpha1</version>
         <title>Fellow Oak DICOM for .NET</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
@@ -15,8 +15,15 @@
         <file src="..\DICOM [Native]\Release\Dicom.Native.dll" target="build\net45\Dicom.Native.dll" />
         <file src="..\DICOM [Native]\Release\Dicom.Native64.dll" target="build\net45\Dicom.Native64.dll" />
         <file src="..\fo-dicom.targets" target="build\fo-dicom.targets" />
-        <file src="..\DICOM\bin\Release\Dicom.dll" target="lib\net45\Dicom.dll" />
-        <file src="..\DICOM\bin\Release\Dicom.pdb" target="lib\net45\Dicom.pdb" />
-        <file src="..\DICOM\bin\Release\Dicom.xml" target="lib\net45\Dicom.xml" />
+        <file src="..\DICOM\bin\Release\Dicom.Core.dll" target="lib\net45\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.Core.pdb" target="lib\net45\Dicom.pdb" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.dll" target="lib\net45\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.pdb" target="lib\net45\Dicom.pdb" />
+        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45\Dicom.dll" />
+        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45\Dicom.pdb" />
+        <file src="..\DICOM\bin\Release\Dicom.Core.dll" target="lib\portable-net45+netcore45+wpa81\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.Core.pdb" target="lib\portable-net45+netcore45+wpa81\Dicom.pdb" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.dll" target="lib\portable-net45+netcore45+wpa81\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.pdb" target="lib\portable-net45+netcore45+wpa81\Dicom.pdb" />
     </files>
 </package>
