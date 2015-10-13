@@ -51,6 +51,9 @@
     <Compile Include="..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
       <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
+    <Compile Include="..\DICOM\Imaging\DicomOverlayDataFactory.cs">
+      <Link>Imaging\DicomOverlayDataFactory.cs</Link>
+    </Compile>
     <Compile Include="..\DICOM\Imaging\WinFormsImage.cs">
       <Link>Imaging\WinFormsImage.cs</Link>
     </Compile>
@@ -103,7 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM.Core\DICOM.Core.csproj">
+    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>

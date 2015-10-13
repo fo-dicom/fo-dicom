@@ -37,47 +37,29 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\DICOM.Core\DICOM.Core.csproj">
+    <ProjectReference Include="DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DICOM\AsyncFactory.cs">
-      <Link>AsyncFactory.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\DicomDatasetWalkerExtensions.cs">
-      <Link>DicomDatasetWalkerExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\DicomFile.Async.cs">
-      <Link>DicomFile.Async.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\DicomFileExtensions.Async.cs">
-      <Link>DicomFileExtensions.Async.cs</Link>
-    </Compile>
-    <Compile Include="..\dicom\io\reader\DicomFileReaderExtensions.cs">
-      <Link>IO\Reader\DicomFileReaderExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\dicom\io\reader\DicomReaderExtensions.cs">
-      <Link>IO\Reader\DicomReaderExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\dicom\io\writer\DicomFileWriterExtensions.cs">
-      <Link>IO\Writer\DicomFileWriterExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\Media\DicomDirectory.Async.cs">
-      <Link>Media\DicomDirectory.Async.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\Network\DicomClientExtensions.cs">
-      <Link>Network\DicomClientExtensions.cs</Link>
-    </Compile>
+    <Compile Include="AsyncFactory.cs"/>
+    <Compile Include="DicomDatasetWalkerExtensions.cs"/>
+    <Compile Include="DicomFile.Async.cs"/>
+    <Compile Include="DicomFileExtensions.Async.cs"/>
+    <Compile Include="io\reader\DicomFileReaderExtensions.cs"/>
+    <Compile Include="io\reader\DicomReaderExtensions.cs"/>
+    <Compile Include="io\writer\DicomFileWriterExtensions.cs"/>
+    <Compile Include="Media\DicomDirectory.Async.cs"/>
+    <Compile Include="Network\DicomClientExtensions.cs"/>
+    <Compile Include="Properties\AssemblyInfo.Legacy.cs" />
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
