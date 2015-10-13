@@ -37,7 +37,8 @@ namespace Dicom.Compare
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            DesktopManagers.Setup(null);
+            // Initialize managers.
+            DesktopManagers.Setup();
         }
 
         public int Level

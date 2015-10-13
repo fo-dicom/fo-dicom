@@ -1,16 +1,20 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
-using Dicom.Printing;
-
 namespace Print_SCP
 {
+    using System;
+
+    using Dicom;
+    using Dicom.Printing;
+
     internal class Program
     {
         private static void Main(string[] args)
         {
+            // Initialize managers.
+            DesktopManagers.Setup();
+
             //This is a simple DICOM Print SCP implementation with Print Job and Send Event Report Support
             //This sample depends on the Microsoft XPS Document Writer Printer to be installed on the system
             //You are free to use what ever printer you like by modifieing the PrintJob DoPrint method hard coded

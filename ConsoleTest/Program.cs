@@ -1,23 +1,28 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-
-using NLog.Config;
-using NLog.Targets;
-
-using Dicom;
-using Dicom.Network;
-
 namespace ConsoleTest
 {
+    using System;
+    using System.IO;
+
+    using NLog.Config;
+    using NLog.Targets;
+
+    using Dicom;
+    using Dicom.Imaging;
+    using Dicom.Log;
+    using Dicom.Network;
+
     internal class Program
     {
         private static void Main(string[] args)
         {
             try
             {
+                // Initialize managers.
+                DesktopManagers.Setup(WinFormsImageManager.Instance, NLogManager.Instance);
+
                 DicomException.OnException += delegate(object sender, DicomExceptionEventArgs ea)
                     {
                         ConsoleColor old = Console.ForegroundColor;
@@ -34,9 +39,6 @@ namespace ConsoleTest
                 config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, target));
 
                 NLog.LogManager.Configuration = config;
-
-                //Use NLog for logging.
-                Dicom.Log.LogManager.SetImplementation(Dicom.Log.NLogManager.Instance);
 
                 //var server = new DicomServer<DicomCEchoProvider>(12345);
 

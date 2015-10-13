@@ -12,6 +12,9 @@ namespace Dicom.Media
         {
             try
             {
+                // Initialize managers.
+                DesktopManagers.Setup();
+
                 if (args.Length < 2)
                 {
                     PrintUsage();

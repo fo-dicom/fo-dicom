@@ -9,9 +9,17 @@ namespace Dicom
     using Dicom.Log;
     using Dicom.Network;
 
+    /// <summary>
+    /// Convenience class for enabling desktop managers.
+    /// </summary>
     public static class DesktopManagers
     {
-        public static void Setup(ImageManager imageManagerImpl, LogManager logManagerImpl = null)
+        /// <summary>
+        /// Setup managers for desktop (.NET) session. Image and log managers are configurable.
+        /// </summary>
+        /// <param name="imageManagerImpl">Selected image manager implementation.</param>
+        /// <param name="logManagerImpl">Selected log manager implementation.</param>
+        public static void Setup(ImageManager imageManagerImpl = null, LogManager logManagerImpl = null)
         {
             Managers.Setup(
                 DesktopIOManager.Instance,

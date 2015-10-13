@@ -15,6 +15,9 @@ namespace Dicom.CStoreSCP
 
         private static void Main(string[] args)
         {
+            // Initialize managers.
+            DesktopManagers.Setup();
+
             // preload dictionary to prevent timeouts
             var dict = DicomDictionary.Default;
 

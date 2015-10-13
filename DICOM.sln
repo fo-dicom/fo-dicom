@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM", "DICOM\DICOM.csproj", "{D6E309B0-4837-459E-8C85-ABC268440D62}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{16FD143D-6E25-4CD9-AEC0-B096644B0045}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x86", "DICOM [Native]\x86\libijg8.x86.vcxproj", "{8DC28743-3826-453A-B400-B0AE7B2C04E7}"
@@ -87,10 +85,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6E309B0-4837-459E-8C85-ABC268440D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6E309B0-4837-459E-8C85-ABC268440D62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16FD143D-6E25-4CD9-AEC0-B096644B0045}.Release|Any CPU.ActiveCfg = Release|Any CPU

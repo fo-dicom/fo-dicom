@@ -6,12 +6,16 @@ namespace Print_SCU
     using System;
     using System.Drawing;
 
+    using Dicom;
     using Dicom.Imaging;
 
     internal class Program
     {
         private static void Main(string[] args)
         {
+            // Initialize managers.
+            DesktopManagers.Setup(WinFormsImageManager.Instance);
+
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
