@@ -6,11 +6,7 @@ namespace Dicom.Media
     using System;
     using System.Text;
 
-#if LEGACY
     public static class _DicomDirectory
-#else
-    public partial class DicomDirectory
-#endif
     {
         #region Save/Load Methods
 
@@ -22,7 +18,7 @@ namespace Dicom.Media
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndOpen"/>.</returns>
         [Obsolete]
-        public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
+        public static IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
         {
             return AsyncFactory.ToBegin(DicomDirectory.OpenAsync(fileName, DicomEncoding.Default), callback, state);
         }
@@ -36,7 +32,7 @@ namespace Dicom.Media
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndOpen"/>.</returns>
         [Obsolete]
-        public static new IAsyncResult BeginOpen(
+        public static IAsyncResult BeginOpen(
             string fileName,
             Encoding fallbackEncoding,
             AsyncCallback callback,
@@ -51,7 +47,7 @@ namespace Dicom.Media
         /// <param name="result">Asynchronous result from <code>BeginOpen</code> operation.</param>
         /// <returns>Resulting <see cref="DicomDirectory"/>.</returns>
         [Obsolete]
-        public static new DicomDirectory EndOpen(IAsyncResult result)
+        public static DicomDirectory EndOpen(IAsyncResult result)
         {
             return AsyncFactory.ToEnd<DicomDirectory>(result);
         }

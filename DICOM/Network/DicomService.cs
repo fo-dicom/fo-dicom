@@ -1116,7 +1116,7 @@ namespace Dicom.Network
                 }
             }
 
-            private void WritePDU(bool last)
+            private async void WritePDU(bool last)
             {
                 if (_length > 0) CreatePDV(last);
 
@@ -1124,7 +1124,7 @@ namespace Dicom.Network
                 {
                     if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
-                    _service.SendPDU(_pdu);
+                    await _service.SendPDU(_pdu);
 
                     _pdu = new PDataTF();
                 }
@@ -1241,16 +1241,16 @@ namespace Dicom.Network
 
         #region Send Methods
 
-        protected void SendAssociationRequest(DicomAssociation association)
+        protected async void SendAssociationRequest(DicomAssociation association)
         {
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
-            SendPDU(new AAssociateRQ(Association));
+            await SendPDU(new AAssociateRQ(Association));
         }
 
-        protected void SendAssociationAccept(DicomAssociation association)
+        protected async void SendAssociationAccept(DicomAssociation association)
         {
             Association = association;
 
@@ -1261,10 +1261,10 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            SendPDU(new AAssociateAC(Association));
+            await SendPDU(new AAssociateAC(Association));
         }
 
-        protected void SendAssociationReject(
+        protected async void SendAssociationReject(
             DicomRejectResult result,
             DicomRejectSource source,
             DicomRejectReason reason)
@@ -1275,25 +1275,25 @@ namespace Dicom.Network
                 result,
                 source,
                 reason);
-            SendPDU(new AAssociateRJ(result, source, reason));
+            await SendPDU(new AAssociateRJ(result, source, reason));
         }
 
-        protected void SendAssociationReleaseRequest()
+        protected async void SendAssociationReleaseRequest()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            SendPDU(new AReleaseRQ());
+            await SendPDU(new AReleaseRQ());
         }
 
-        protected void SendAssociationReleaseResponse()
+        protected async void SendAssociationReleaseResponse()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            SendPDU(new AReleaseRP());
+            await SendPDU(new AReleaseRP());
         }
 
-        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason)
+        protected async void SendAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            SendPDU(new AAbort(source, reason));
+            await SendPDU(new AAbort(source, reason));
         }
 
         #endregion

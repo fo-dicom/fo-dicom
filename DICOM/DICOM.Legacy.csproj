@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;LEGACY</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;LEGACY</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,15 +47,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncFactory.cs"/>
-    <Compile Include="DicomDatasetWalkerExtensions.cs"/>
-    <Compile Include="DicomFile.Async.cs"/>
-    <Compile Include="DicomFileExtensions.Async.cs"/>
-    <Compile Include="io\reader\DicomFileReaderExtensions.cs"/>
-    <Compile Include="io\reader\DicomReaderExtensions.cs"/>
-    <Compile Include="io\writer\DicomFileWriterExtensions.cs"/>
-    <Compile Include="Media\DicomDirectory.Async.cs"/>
-    <Compile Include="Network\DicomClientExtensions.cs"/>
+    <Compile Include="AsyncFactory.cs" />
+    <Compile Include="DicomDatasetWalkerExtensions.cs" />
+    <Compile Include="DicomFile.Async.cs" />
+    <Compile Include="DicomFileExtensions.Async.cs" />
+    <Compile Include="IO\Reader\DicomFileReaderExtensions.cs" />
+    <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
+    <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
+    <Compile Include="Media\DicomDirectory.Async.cs" />
+    <Compile Include="Network\DicomClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.Legacy.cs" />
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

@@ -6,11 +6,7 @@ namespace Dicom
     using System;
     using System.Text;
 
-#if LEGACY
     public static class _DicomFile
-#else
-    public partial class DicomFile
-#endif
     {
         /// <summary>
         /// Perform background DICOM file open operation.

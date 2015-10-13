@@ -5,7 +5,7 @@ namespace Dicom
 {
     using System;
 
-    public static partial class _DicomFileExtensions
+    public static class _DicomFileExtensions
     {
         /// <summary>
         /// Perform background save operation.
