@@ -104,7 +104,6 @@
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\LogLevel.cs" />
     <Compile Include="Log\LogManager.cs" />
-    <Compile Include="Managers.cs" />
     <Compile Include="Media\DicomDirectoryReaderObserver.cs" />
     <Compile Include="Media\DicomFileScanner.cs" />
     <Compile Include="DicomMatchRules.cs" />

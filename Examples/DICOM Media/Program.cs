@@ -13,7 +13,7 @@ namespace Dicom.Media
             try
             {
                 // Initialize managers.
-                DesktopManagers.Setup();
+                Managers.Setup();
 
                 if (args.Length < 2)
                 {

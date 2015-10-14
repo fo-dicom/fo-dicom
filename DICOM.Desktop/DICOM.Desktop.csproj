@@ -48,9 +48,6 @@
     <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\DesktopManagers.cs">
-      <Link>DesktopManagers.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
       <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
@@ -86,6 +83,12 @@
     </Compile>
     <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
       <Link>Log\ConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Managers.cs">
+      <Link>Managers.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Managers.Desktop.cs">
+      <Link>Managers.Desktop.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Network\DesktopNetworkListener.cs">
       <Link>Network\DesktopNetworkListener.cs</Link>

@@ -13,7 +13,7 @@ namespace Dicom
     {
         public SetupFixture()
         {
-            DesktopManagers.Setup(WinFormsImageManager.Instance);
+            Managers.Setup(WinFormsImageManager.Instance);
         }
 
         public void Dispose()

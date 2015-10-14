@@ -14,7 +14,7 @@ namespace Print_SCU
         private static void Main(string[] args)
         {
             // Initialize managers.
-            DesktopManagers.Setup(WinFormsImageManager.Instance);
+            Managers.Setup(WinFormsImageManager.Instance);
 
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();

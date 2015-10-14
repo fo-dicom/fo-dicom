@@ -13,7 +13,7 @@ namespace Print_SCP
         private static void Main(string[] args)
         {
             // Initialize managers.
-            DesktopManagers.Setup();
+            Managers.Setup();
 
             //This is a simple DICOM Print SCP implementation with Print Job and Send Event Report Support
             //This sample depends on the Microsoft XPS Document Writer Printer to be installed on the system

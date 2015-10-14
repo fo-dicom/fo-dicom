@@ -16,11 +16,8 @@ namespace Dicom.CStoreSCP
         private static void Main(string[] args)
         {
             // Initialize managers.
-#if MONO
-            MonoManagers.Setup(ConsoleLogManager.Instance);
-#else
-            DesktopManagers.Setup(null, ConsoleLogManager.Instance);
-#endif
+            Managers.Setup(ConsoleLogManager.Instance);
+
             // preload dictionary to prevent timeouts
             var dict = DicomDictionary.Default;
 

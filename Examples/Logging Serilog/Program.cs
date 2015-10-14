@@ -24,7 +24,7 @@ namespace Dicom.Demo.SerilogDemo
             var serilogManager = UseGlobalSerilogLogger();
 
             // Initialize managers.
-            DesktopManagers.Setup(null, serilogManager);
+            Managers.Setup(serilogManager);
 
             //Do some DICOM work
             var file = DicomFile.Open(@"..\..\..\DICOM Media\Data\Patient1\2.dcm");

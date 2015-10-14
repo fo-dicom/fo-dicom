@@ -21,7 +21,7 @@ namespace ConsoleTest
             try
             {
                 // Initialize managers.
-                DesktopManagers.Setup(WinFormsImageManager.Instance, NLogManager.Instance);
+                Managers.Setup(NLogManager.Instance, WinFormsImageManager.Instance);
 
                 DicomException.OnException += delegate(object sender, DicomExceptionEventArgs ea)
                     {
