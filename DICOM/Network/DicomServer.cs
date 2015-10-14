@@ -101,38 +101,44 @@ namespace Dicom.Network
         {
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
 
-            using (var cancellationSource = new CancellationTokenSource())
+            try
             {
-                var token = cancellationSource.Token;
-                Task.Run(() => this.OnTimerTick(token), token);
-
-                INetworkListener listener = null;
-                do
+                using (var cancellationSource = new CancellationTokenSource())
                 {
-                    try
+                    var token = cancellationSource.Token;
+                    Task.Run(() => this.OnTimerTick(token), token);
+
+                    INetworkListener listener = null;
+                    do
                     {
-                        listener = NetworkManager.CreateNetworkListener(port);
-                        listener.Start();
-                        var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
+                        try
+                        {
+                            listener = NetworkManager.CreateNetworkListener(port);
+                            listener.Start();
+                            var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
 
-                        var scp = this.CreateScp(networkStream.AsStream());
-                        if (this.Options != null) scp.Options = this.Options;
+                            var scp = this.CreateScp(networkStream.AsStream());
+                            if (this.Options != null) scp.Options = this.Options;
 
-                        this.clients.Add(scp);
+                            this.clients.Add(scp);
+                        }
+                        catch (Exception e)
+                        {
+                            this.Logger.Error("Exception accepting client {@error}", e);
+                        }
                     }
-                    catch (Exception e)
+                    while (!this.disposed);
+
+                    if (listener != null)
                     {
-                        this.Logger.Error("Exception accepting client {@error}", e);
+                        listener.Stop();
                     }
-                }
-                while (!this.disposed);
 
-                if (listener != null)
-                {
-                    listener.Stop();
+                    cancellationSource.Cancel();
                 }
-
-                cancellationSource.Cancel();
+            }
+            catch (TaskCanceledException)
+            {
             }
         }
 
@@ -142,11 +148,11 @@ namespace Dicom.Network
         /// <param name="token">Cancellation token.</param>
         private async void OnTimerTick(CancellationToken token)
         {
-            while (true)
+            while (!token.IsCancellationRequested)
             {
-                await Task.Delay(1000, token).ConfigureAwait(false);
                 try
                 {
+                    await Task.Delay(1000, token).ConfigureAwait(false);
                     this.clients.RemoveAll(client => !client.IsConnected);
                 }
                 catch

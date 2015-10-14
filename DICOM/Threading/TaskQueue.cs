@@ -110,7 +110,7 @@ namespace Dicom.Threading
         }
 
         /// <summary>
-        /// Queue a <see cref="WaitCallback"/> to the <see cref="DefaultGroup"/>.
+        /// Queue a <see cref="Action{T}"/> to the <see cref="DefaultGroup"/>.
         /// </summary>
         /// <param name="callback">Callback to queue.</param>
         public void Queue(Action<object> callback)
@@ -119,7 +119,7 @@ namespace Dicom.Threading
         }
 
         /// <summary>
-        /// Queue a <see cref="WaitCallback"/> to the <see cref="DefaultGroup"/>.
+        /// Queue a <see cref="Action{T}"/> to the <see cref="DefaultGroup"/>.
         /// </summary>
         /// <param name="callback">Callback to queue.</param>
         /// <param name="state">Callback state.</param>
@@ -139,7 +139,7 @@ namespace Dicom.Threading
         }
 
         /// <summary>
-        /// Queue a <see cref="WaitCallback"/>.
+        /// Queue a <see cref="Action{T}"/>.
         /// </summary>
         /// <param name="group">Group within which to execute work item.</param>
         /// <param name="callback">Callback to queue.</param>
@@ -149,7 +149,7 @@ namespace Dicom.Threading
         }
 
         /// <summary>
-        /// Queue a <see cref="WaitCallback"/>.
+        /// Queue a <see cref="Action{T}"/>.
         /// </summary>
         /// <param name="group">Group within which to execute work item.</param>
         /// <param name="callback">Callback to queue.</param>
@@ -230,22 +230,28 @@ namespace Dicom.Threading
                 if (empty)
                 {
                     // Linger specified time in case new tasks are added.
-                    using (var cancellationSource = new CancellationTokenSource(this.Linger))
+                    try
                     {
-                        do
+                        using (var cancellationSource = new CancellationTokenSource(this.Linger))
                         {
-                            lock (group.Lock)
+                            do
                             {
-                                if (group.Items.Count > 0)
+                                lock (group.Lock)
                                 {
-                                    empty = false;
-                                    item = group.Items.Dequeue();
-                                    cancellationSource.Cancel();
+                                    if (group.Items.Count > 0)
+                                    {
+                                        empty = false;
+                                        item = group.Items.Dequeue();
+                                        cancellationSource.Cancel();
+                                    }
                                 }
+                                await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
                             }
-                            await Task.Delay(1).ConfigureAwait(false);
+                            while (!cancellationSource.IsCancellationRequested);
                         }
-                        while (!cancellationSource.IsCancellationRequested);
+                    }
+                    catch (TaskCanceledException)
+                    {
                     }
 
                     if (empty)
