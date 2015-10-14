@@ -108,13 +108,12 @@ namespace Dicom.Network
                     var token = cancellationSource.Token;
                     Task.Run(() => this.OnTimerTick(token), token);
 
-                    INetworkListener listener = null;
+                    var listener = NetworkManager.CreateNetworkListener(port);
+                    listener.Start();
                     do
                     {
                         try
                         {
-                            listener = NetworkManager.CreateNetworkListener(port);
-                            listener.Start();
                             var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
 
                             var scp = this.CreateScp(networkStream.AsStream());
