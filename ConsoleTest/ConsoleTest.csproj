@@ -61,11 +61,11 @@
   <ItemGroup>
     <ProjectReference Include="..\DICOM [Native]\x64\DICOM [Native64].vcxproj">
       <Project>{FA9C7678-B9D9-46BC-8921-8152FD6787CA}</Project>
-      <Name>DICOM [Native64]</Name>
+      <Name>DICOM.Native64</Name>
     </ProjectReference>
     <ProjectReference Include="..\DICOM [Native]\x86\DICOM [Native].vcxproj">
       <Project>{C6148839-334D-4894-BDB9-E2D57438CF8A}</Project>
-      <Name>DICOM [Native]</Name>
+      <Name>DICOM.Native</Name>
     </ProjectReference>
     <ProjectReference Include="..\DICOM.Desktop\DICOM.Desktop.csproj">
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
