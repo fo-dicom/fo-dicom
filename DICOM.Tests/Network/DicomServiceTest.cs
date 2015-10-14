@@ -20,7 +20,7 @@ namespace Dicom.Network
         public void Send_SingleRequest_DataSufficientlyTransported()
         {
             const int port = 11112;
-            using (new DicomServer<MockCStoreProvider>(port))
+            using (new DicomServer<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
                 var request = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
@@ -47,7 +47,7 @@ namespace Dicom.Network
         public async Task SendAsync_SingleRequest_DataSufficientlyTransported()
         {
             const int port = 11112;
-            using (new DicomServer<MockCStoreProvider>(port))
+            using (new DicomServer<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
                 var request = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
@@ -74,15 +74,49 @@ namespace Dicom.Network
 
         #region Support classes
 
-        public class MockCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
+        private class SimpleCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
-            public MockCStoreProvider(Stream stream, Logger log)
+            private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+                {
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                    DicomTransferSyntax.ExplicitVRBigEndian,
+                    DicomTransferSyntax.ImplicitVRLittleEndian
+                };
+
+            private static readonly DicomTransferSyntax[] AcceptedImageTransferSyntaxes =
+                {
+                    // Lossless
+                    DicomTransferSyntax.JPEGLSLossless,
+                    DicomTransferSyntax.JPEG2000Lossless,
+                    DicomTransferSyntax.JPEGProcess14SV1,
+                    DicomTransferSyntax.JPEGProcess14,
+                    DicomTransferSyntax.RLELossless,
+
+                    // Lossy
+                    DicomTransferSyntax.JPEGLSNearLossless,
+                    DicomTransferSyntax.JPEG2000Lossy,
+                    DicomTransferSyntax.JPEGProcess1,
+                    DicomTransferSyntax.JPEGProcess2_4,
+
+                    // Uncompressed
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                    DicomTransferSyntax.ExplicitVRBigEndian,
+                    DicomTransferSyntax.ImplicitVRLittleEndian
+                };
+
+            public SimpleCStoreProvider(Stream stream, Logger log)
                 : base(stream, log)
             {
             }
 
             public void OnReceiveAssociationRequest(DicomAssociation association)
             {
+                foreach (var pc in association.PresentationContexts)
+                {
+                    if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
+                    else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
+                }
+
                 this.SendAssociationAccept(association);
             }
 

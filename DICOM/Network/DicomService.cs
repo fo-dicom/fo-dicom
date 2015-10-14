@@ -42,8 +42,6 @@ namespace Dicom.Network
 
         private string _dimseStreamFile;
 
-        private bool _isTempFile;
-
         private int _readLength;
 
         private bool _isConnected;
@@ -388,8 +386,7 @@ namespace Dicom.Network
                                 file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
-                                _dimseStream = CreateCStoreReceiveStream(file);
-                                _dimseStreamFile = file.File == null ? null : file.File.Name;
+                                CreateCStoreReceiveStream(file);
                             }
                             else
                             {
@@ -412,10 +409,8 @@ namespace Dicom.Network
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
                             reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
-
-                            _dimseStream.Dispose();
-                            _dimseStream = null;
-                            _dimseStreamFile = null;
+                            
+                            this.DisposeDimseStream();
 
                             var type = command.Get<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
@@ -516,9 +511,7 @@ namespace Dicom.Network
                                 reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
-                                _dimseStream.Dispose();
-                                _dimseStream = null;
-                                _dimseStreamFile = null;
+                                this.DisposeDimseStream();
                             }
                             else
                             {
@@ -527,12 +520,7 @@ namespace Dicom.Network
                                 try
                                 {
                                     var dicomFile = GetCStoreDicomFile();
-
-                                    _dimseStream.Dispose();
-                                    _dimseStream = null;
-                                    _dimseStreamFile = null;
-
-                                    _isTempFile = false;
+                                    this.DisposeDimseStream();
 
                                     // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
                                     // GetCStoreDicomFile(), but can be null if a child class overrides either method and changes behavior.
@@ -589,17 +577,15 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="file">A DicomFile with FileMetaInfo populated</param>
         /// <returns>The stream to write the SopInstance to</returns>
-        protected virtual Stream CreateCStoreReceiveStream(DicomFile file)
+        protected virtual void CreateCStoreReceiveStream(DicomFile file)
         {
             var temp = TemporaryFile.Create();
 
-            var dimseStream = temp.Open();
-            file.Save(dimseStream);
-            dimseStream.Seek(0, SeekOrigin.Begin);
+            _dimseStream = temp.Open();
+            file.Save(_dimseStream);
+            _dimseStream.Seek(0, SeekOrigin.End);
 
-            _isTempFile = true;
-            dimseStream.Seek(0, SeekOrigin.End);
-            return dimseStream;
+            _dimseStreamFile = temp.Name;
         }
 
         /// <summary>
@@ -613,14 +599,13 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
+            string fileName = _dimseStreamFile;
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
-                _dimseStream.Dispose();
-                _dimseStream = null;
+                this.DisposeDimseStream();
 
-                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
-                file.File.IsTempFile = _isTempFile;
-                _dimseStreamFile = null;
+                var file = DicomFile.Open(fileName, _fallbackEncoding);
+                file.File.IsTempFile = true;
 
                 return file;
             }
@@ -985,6 +970,14 @@ namespace Dicom.Network
                 lock (_lock) _sending = false;
                 SendNextMessage();
             }
+        }
+
+        private void DisposeDimseStream()
+        {
+            if (this._dimseStream != null) this._dimseStream.Dispose();
+
+            this._dimseStream = null;
+            this._dimseStreamFile = null;
         }
 
         public virtual void SendRequest(DicomRequest request)
