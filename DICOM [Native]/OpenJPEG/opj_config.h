@@ -1,7 +1,7 @@
 /* create config.h for CMake */
-#define PACKAGE_VERSION "1.5.0"
+#define PACKAGE_VERSION "1.5.3"
 
-/* #undef HAVE_INTTYPES_H */
+#define HAVE_INTTYPES_H
 #define HAVE_MEMORY_H
 #define HAVE_STDINT_H
 #define HAVE_STDLIB_H
@@ -19,6 +19,7 @@
 /* #undef HAVE_LIBLCMS2 */
 /* #undef HAVE_LCMS1_H */
 /* #undef HAVE_LCMS2_H */
+/* #undef USE_SYSTEM_GETOPT */
 
 /* Byte order.  */
 /* All compilers that support Mac OS X define either __BIG_ENDIAN__ or
@@ -32,3 +33,4 @@ On other platforms we use the result of the TRY_RUN. */
 #elif defined(__BIG_ENDIAN__)
 # define OPJ_BIG_ENDIAN
 #endif
+

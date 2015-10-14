@@ -8,8 +8,15 @@ using System.Threading;
 
 namespace Dicom.Threading
 {
+    /// <summary>
+    /// Class for handling queue of categorized work items.
+    /// </summary>
+    /// <typeparam name="T">Group key type.</typeparam>
     public class ThreadPoolQueue<T>
     {
+        /// <summary>
+        /// Work item.
+        /// </summary>
         private class WorkItem
         {
             public T Group;
@@ -21,15 +28,18 @@ namespace Dicom.Threading
             public object State;
         }
 
+        /// <summary>
+        /// Group of work items.
+        /// </summary>
         private class WorkGroup
         {
-            public T Key;
+            public readonly T Key;
 
-            public object Lock = new object();
+            public readonly object Lock = new object();
 
             public volatile bool Executing = false;
 
-            public Queue<WorkItem> Items = new Queue<WorkItem>();
+            public readonly Queue<WorkItem> Items = new Queue<WorkItem>();
 
             public WorkGroup(T key)
             {
@@ -37,22 +47,28 @@ namespace Dicom.Threading
             }
         }
 
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         private volatile bool _stopped = false;
 
-        private Dictionary<T, WorkGroup> _groups;
+        private readonly Dictionary<T, WorkGroup> _groups;
 
-        public ThreadPoolQueue()
+        /// <summary>
+        /// Initializes an instance of <see cref="ThreadPoolQueue{T}"/>.
+        /// </summary>
+        public ThreadPoolQueue(T defaultGroup = default(T))
         {
             _groups = new Dictionary<T, WorkGroup>();
             Linger = 200;
-            DefaultGroup = default(T);
+            DefaultGroup = defaultGroup;
         }
 
-        /// <summary>Time in milliseconds (MS) to keep the WorkGroup alive after processing last item.</summary>
+        /// <summary>Gets or sets the time in milliseconds (ms) to keep the WorkGroup alive after processing last item.</summary>
         public int Linger { get; set; }
 
+        /// <summary>
+        /// Gets whether the thread pool queue is running.
+        /// </summary>
         public bool IsRunning
         {
             get
@@ -61,9 +77,12 @@ namespace Dicom.Threading
             }
         }
 
-        /// <summary>Value of key for default group.</summary>
-        public T DefaultGroup { get; set; }
+        /// <summary>Gets or sets the value of key for default group.</summary>
+        public T DefaultGroup { get; private set; }
 
+        /// <summary>
+        /// Starts the queue.
+        /// </summary>
         public void Start()
         {
             _stopped = false;
@@ -71,46 +90,83 @@ namespace Dicom.Threading
             foreach (var group in _groups.Keys.ToArray()) Execute(group);
         }
 
+        /// <summary>
+        /// Stops the queue.
+        /// </summary>
+        /// <remarks>Executing work item will run to completion.</remarks>
         public void Stop()
         {
             _stopped = true;
         }
 
+        /// <summary>
+        /// Queue an <see cref="Action"/> to the <see cref="DefaultGroup"/>.
+        /// </summary>
+        /// <param name="action">Action to queue.</param>
         public void Queue(Action action)
         {
             Queue(new WorkItem { Group = DefaultGroup, Action = action });
         }
 
+        /// <summary>
+        /// Queue a <see cref="WaitCallback"/> to the <see cref="DefaultGroup"/>.
+        /// </summary>
+        /// <param name="callback">Callback to queue.</param>
         public void Queue(WaitCallback callback)
         {
             Queue(new WorkItem { Group = DefaultGroup, Callback = callback });
         }
 
+        /// <summary>
+        /// Queue a <see cref="WaitCallback"/> to the <see cref="DefaultGroup"/>.
+        /// </summary>
+        /// <param name="callback">Callback to queue.</param>
+        /// <param name="state">Callback state.</param>
         public void Queue(WaitCallback callback, object state)
         {
             Queue(new WorkItem { Group = DefaultGroup, Callback = callback, State = state });
         }
 
+        /// <summary>
+        /// Queue an <see cref="Action"/>.
+        /// </summary>
+        /// <param name="group">Group within which to execute work item.</param>
+        /// <param name="action">Action to queue.</param>
         public void Queue(T group, Action action)
         {
             Queue(new WorkItem { Group = group, Action = action });
         }
 
+        /// <summary>
+        /// Queue a <see cref="WaitCallback"/>.
+        /// </summary>
+        /// <param name="group">Group within which to execute work item.</param>
+        /// <param name="callback">Callback to queue.</param>
         public void Queue(T group, WaitCallback callback)
         {
             Queue(new WorkItem { Group = group, Callback = callback });
         }
 
+        /// <summary>
+        /// Queue a <see cref="WaitCallback"/>.
+        /// </summary>
+        /// <param name="group">Group within which to execute work item.</param>
+        /// <param name="callback">Callback to queue.</param>
+        /// <param name="state">Callback state.</param>
         public void Queue(T group, WaitCallback callback, object state)
         {
             Queue(new WorkItem { Group = group, Callback = callback, State = state });
         }
 
+        /// <summary>
+        /// Queue work item.
+        /// </summary>
+        /// <param name="item">Work item to queue.</param>
         private void Queue(WorkItem item)
         {
             lock (_lock)
             {
-                WorkGroup group = null;
+                WorkGroup group;
                 if (!_groups.TryGetValue(item.Group, out group))
                 {
                     group = new WorkGroup(item.Group);
@@ -123,11 +179,15 @@ namespace Dicom.Threading
             }
         }
 
+        /// <summary>
+        /// Execute group of work items.
+        /// </summary>
+        /// <param name="groupKey">Group key.</param>
         private void Execute(T groupKey)
         {
             if (_stopped) return;
 
-            WorkGroup group = null;
+            WorkGroup group;
             lock (_lock)
             {
                 if (!_groups.TryGetValue(groupKey, out group)) return;
@@ -149,36 +209,40 @@ namespace Dicom.Threading
             }
         }
 
+        /// <summary>
+        /// The delegate invocation for executing a group of work items. 
+        /// </summary>
+        /// <param name="state"></param>
         private void ExecuteProc(object state)
         {
             var group = (WorkGroup)state;
 
-            do
+            while (!_stopped)
             {
-                if (_stopped) return;
-
                 WorkItem item = null;
 
                 bool empty;
                 lock (group.Lock)
                 {
                     empty = group.Items.Count == 0;
-
                     if (!empty) item = group.Items.Dequeue();
                 }
 
                 if (empty)
                 {
-                    var linger = DateTime.Now.AddMilliseconds(Linger);
-                    while (empty && DateTime.Now < linger)
-                    {
-                        Thread.Sleep(0);
-                        lock (group.Lock)
+                    var flag = new ManualResetEvent(false);
+                    using (new Timer(obj =>
                         {
-                            empty = group.Items.Count == 0;
-
-                            if (!empty) item = group.Items.Dequeue();
-                        }
+                            lock (group.Lock)
+                            {
+                                if (group.Items.Count == 0) return;
+                                item = group.Items.Dequeue();
+                            }
+                            empty = false;
+                            ((ManualResetEvent)obj).Set();
+                        }, flag, 0, 1))
+                    {
+                        flag.WaitOne(this.Linger);
                     }
 
                     if (empty)
@@ -190,7 +254,6 @@ namespace Dicom.Threading
                             lock (_lock)
                             {
                                 if (!group.Key.Equals(DefaultGroup)) _groups.Remove(group.Key);
-
                                 return;
                             }
                         }
@@ -207,7 +270,6 @@ namespace Dicom.Threading
                     // log this somewhere?
                 }
             }
-            while (true);
         }
     }
 }

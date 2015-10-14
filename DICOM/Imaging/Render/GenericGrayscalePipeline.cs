@@ -14,15 +14,15 @@ namespace Dicom.Imaging.Render
 
         private CompositeLUT _lut;
 
-        private ModalityLUT _rescaleLut;
+        private readonly ModalityLUT _rescaleLut;
 
-        private VOILUT _voiLut;
+        private readonly VOILUT _voiLut;
 
-        private OutputLUT _outputLut;
+        private readonly OutputLUT _outputLut;
 
-        private InvertLUT _invertLut;
+        private readonly InvertLUT _invertLut;
 
-        private GrayscaleRenderOptions _options;
+        private readonly GrayscaleRenderOptions _options;
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Dicom.Imaging.Render
             _options = options;
             if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0) _rescaleLut = new ModalityLUT(_options);
             _voiLut = VOILUT.Create(_options);
-            _outputLut = new OutputLUT(_options.Monochrome1 ? ColorTable.Monochrome1 : ColorTable.Monochrome2);
+            _outputLut = new OutputLUT(_options);
             if (_options.Invert) _invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);
         }
 
@@ -47,7 +47,7 @@ namespace Dicom.Imaging.Render
         #region Public Properties
 
         /// <summary>
-        /// Get <seealso cref="CompositeLUT"/> of avaliavble LUTs available in this pipeline instance
+        /// Get <seealso cref="CompositeLUT"/> of LUTs available in this pipeline instance
         /// </summary>
         public ILUT LUT
         {

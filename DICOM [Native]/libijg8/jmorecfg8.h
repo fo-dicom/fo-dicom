@@ -11,6 +11,9 @@
  */
 
 
+#define DCMTK_IJG8_EXPORT __declspec(dllexport)
+
+
 /*
  * Define BITS_IN_JSAMPLE as either
  *   8   for 8-bit sample values (the usual setting)
@@ -218,7 +221,7 @@ typedef unsigned int JDIMENSION;
 /* a function referenced thru EXTERNs: */
 #define GLOBAL(type)		type
 /* a reference to a GLOBAL function: */
-#define EXTERN(type)		extern type
+#define EXTERN(type)		extern DCMTK_IJG8_EXPORT type
 
 
 /* This macro is used to declare a "method", that is, a function pointer.
@@ -240,6 +243,7 @@ typedef unsigned int JDIMENSION;
  * explicit coding is needed; see uses of the NEED_FAR_POINTERS symbol.
  */
 
+#undef FAR
 #ifdef NEED_FAR_POINTERS
 #define FAR  far
 #else

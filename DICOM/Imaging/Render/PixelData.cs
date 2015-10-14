@@ -195,8 +195,8 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
-
+        private readonly byte[] _data;
+ 
         #endregion
 
         #region Public Constructor
@@ -205,17 +205,14 @@ namespace Dicom.Imaging.Render
         {
             _width = width;
             _height = height;
-
-            _buffer = new MappedFileBuffer(data.Data);
+            _data = data.Data;
         }
 
-        private GrayscalePixelDataU8(int width, int height, byte[] data)
+        protected GrayscalePixelDataU8(int width, int height, byte[] data)
         {
             _width = width;
             _height = height;
-
-            _buffer = new MappedFileBuffer(data);
-            //_data = data;
+            _data = data;
         }
 
 
@@ -251,7 +248,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _buffer.Data;
+                return _data;
             }
         }
 
@@ -344,7 +341,7 @@ namespace Dicom.Imaging.Render
         #region Public Constructor
 
         public SingleBitPixelData(int width, int height, IByteBuffer data)
-            : base(width, height, new MemoryByteBuffer(ExpandBits(width, height, data.Data)))
+            : base(width, height, ExpandBits(width, height, data.Data))
         {
         }
 
@@ -399,8 +396,8 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
-
+        private readonly short[] _data;
+ 
         #endregion
 
         #region Public Constructor
@@ -420,23 +417,26 @@ namespace Dicom.Imaging.Render
 
                 Parallel.For(
                     0,
-                    shortData.Length,
-                    (int i) =>
+                    _height,
+                    y =>
                         {
-                            short d = shortData[i];
-                            if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
-                            else shortData[i] = (short)(d & mask);
+                            for (int i = _width * y, e = i + _width; i < e; i++)
+                            {
+                                short d = shortData[i];
+                                if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
+                                else shortData[i] = (short)(d & mask);
+                            }
                         });
             }
 
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<short>(shortData).Data);
+            _data = shortData;
         }
 
         private GrayscalePixelDataS16(int width, int height, short[] data)
         {
             _width = width;
             _height = height;
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<short>(data).Data);
+            _data = data;
         }
 
         #endregion
@@ -471,7 +471,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return Dicom.IO.ByteConverter.ToArray<short>(_buffer);
+                return _data;
             }
         }
 
@@ -572,7 +572,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
+        private readonly ushort[] _data;
 
         #endregion
 
@@ -590,18 +590,26 @@ namespace Dicom.Imaging.Render
             {
                 int mask = (1 << (bitDepth.HighBit + 1)) - 1;
 
-                Parallel.For(0, ushortData.Length, (int i) => { ushortData[i] = (ushort)(ushortData[i] & mask); });
+                Parallel.For(
+                    0,
+                    _height,
+                    y =>
+                        {
+                            for (int i = _width * y, e = i + _width; i < e; i++)
+                            {
+                                ushortData[i] = (ushort)(ushortData[i] & mask);
+                            }
+                        });
             }
 
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<ushort>(ushortData).Data);
+            _data = ushortData;
         }
 
         private GrayscalePixelDataU16(int width, int height, ushort[] data)
         {
             _width = width;
             _height = height;
-
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<ushort>(data).Data);
+            _data = data;
         }
 
         #endregion
@@ -636,7 +644,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return Dicom.IO.ByteConverter.ToArray<ushort>(_buffer);
+                return _data;
             }
         }
 
@@ -734,7 +742,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
+        private int[] _data; 
 
         #endregion
 
@@ -752,22 +760,25 @@ namespace Dicom.Imaging.Render
 
             Parallel.For(
                 0,
-                intData.Length,
-                (int i) =>
+                _height,
+                y =>
                     {
-                        int d = intData[i];
-                        if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
-                        else intData[i] = (int)(d & mask);
+                        for (int i = _width * y, e = i + _width; i < e; i++)
+                        {
+                            int d = intData[i];
+                            if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
+                            else intData[i] = (int)(d & mask);
+                        }
                     });
 
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<int>(intData).Data);
+            _data = intData;
         }
 
         private GrayscalePixelDataS32(int width, int height, int[] data)
         {
             _width = width;
             _height = height;
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<int>(data).Data);
+            _data = data;
         }
 
         #endregion
@@ -802,8 +813,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return Dicom.IO.ByteConverter.ToArray<int>(_buffer);
-                ;
+                return _data;
             }
         }
 
@@ -846,7 +856,6 @@ namespace Dicom.Imaging.Render
 
             if (lut == null)
             {
-
                 Parallel.For(
                     0,
                     Height,
@@ -892,8 +901,8 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
-
+        private uint[] _data;
+ 
         #endregion
 
         #region Public Constructor
@@ -909,19 +918,26 @@ namespace Dicom.Imaging.Render
             {
                 int mask = (1 << (bitDepth.HighBit + 1)) - 1;
 
-                Parallel.For(0, uintData.Length, (int i) => { uintData[i] = (uint)(uintData[i] & mask); });
+                Parallel.For(
+                    0,
+                    _height,
+                    y =>
+                        {
+                            for (int i = _width * y, e = i + _width; i < e; i++)
+                            {
+                                uintData[i] = (uint)(uintData[i] & mask);
+                            }
+                        });
             }
 
-
-
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<uint>(uintData).Data);
+            _data = uintData;
         }
 
         private GrayscalePixelDataU32(int width, int height, uint[] data)
         {
             _width = width;
             _height = height;
-            _buffer = new MappedFileBuffer(Dicom.IO.ByteConverter.ToByteBuffer<uint>(data).Data);
+            _data = data;
         }
 
         #endregion
@@ -956,7 +972,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return Dicom.IO.ByteConverter.ToArray<uint>(_buffer);
+                return _data;
             }
         }
 
@@ -1043,7 +1059,7 @@ namespace Dicom.Imaging.Render
 
         private int _height;
 
-        private MappedFileBuffer _buffer;
+        private readonly byte[] _data;
 
         #endregion
 
@@ -1053,14 +1069,14 @@ namespace Dicom.Imaging.Render
         {
             _width = width;
             _height = height;
-            _buffer = new MappedFileBuffer(data.Data);
+            _data = data.Data;
         }
 
         private ColorPixelData24(int width, int height, byte[] data)
         {
             _width = width;
             _height = height;
-            _buffer = new MappedFileBuffer(data);
+            _data = data;
         }
 
         #endregion
@@ -1095,7 +1111,7 @@ namespace Dicom.Imaging.Render
         {
             get
             {
-                return _buffer.Data;
+                return _data;
             }
         }
 

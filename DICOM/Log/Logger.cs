@@ -1,44 +1,77 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace Dicom.Log
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
+    /// <summary>
+    /// Abstract base class for loggers.
+    /// </summary>
     public abstract class Logger
     {
+        /// <summary>
+        /// Log a message to the logger.
+        /// </summary>
+        /// <param name="level">Log level.</param>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public abstract void Log(LogLevel level, string msg, params object[] args);
 
+        /// <summary>
+        /// Log a debug message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public void Debug(string msg, params object[] args)
         {
-            Log(LogLevel.Debug, msg, args);
+            this.Log(LogLevel.Debug, msg, args);
         }
 
+        /// <summary>
+        /// Log an informational message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public void Info(string msg, params object[] args)
         {
-            Log(LogLevel.Info, msg, args);
+            this.Log(LogLevel.Info, msg, args);
         }
 
+        /// <summary>
+        /// Log a warning message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public void Warn(string msg, params object[] args)
         {
-            Log(LogLevel.Warning, msg, args);
+            this.Log(LogLevel.Warning, msg, args);
         }
 
+        /// <summary>
+        /// Log an error message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public void Error(string msg, params object[] args)
         {
-            Log(LogLevel.Error, msg, args);
+            this.Log(LogLevel.Error, msg, args);
         }
 
+        /// <summary>
+        /// Log a fatal error message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
         public void Fatal(string msg, params object[] args)
         {
-            Log(LogLevel.Fatal, msg, args);
+            this.Log(LogLevel.Fatal, msg, args);
         }
 
-
-        private static readonly Regex _curlyBracePairRegex = new Regex(@"{.*?}");
+        private static readonly Regex CurlyBracePairRegex = new Regex(@"{.*?}");
 
         /// <summary>
         /// Called to adapt the string message before passing through
@@ -53,7 +86,7 @@ namespace Dicom.Log
         /// <returns></returns>
         protected static string NameFormatToPositionalFormat(string message)
         {
-            var matches = _curlyBracePairRegex.Matches(message).Cast<Match>();
+            var matches = CurlyBracePairRegex.Matches(message).Cast<Match>();
 
             var handledMatchNames = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -62,7 +95,7 @@ namespace Dicom.Log
             var positionDelta = 0;
 
             //Is every encountered match a number?  If so, we've been given a string already in positional format so it should not be amended
-            bool everyMatchIsANumber = true; //until proven otherwise
+            var everyMatchIsANumber = true; //until proven otherwise
 
             foreach (var match in matches)
             {
@@ -117,6 +150,11 @@ namespace Dicom.Log
             return updatedMessage;
         }
 
+        /// <summary>
+        /// Checks whether string represents an integer value.
+        /// </summary>
+        /// <param name="s">String potentially containing integer value.</param>
+        /// <returns>True if <paramref name="s"/> could be interpreted as integer value, false otherwise.</returns>
         internal static bool IsNumber(string s)
         {
             int dummy;

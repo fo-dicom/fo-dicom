@@ -1,21 +1,25 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using Dicom.Log;
-
-
 namespace Dicom.Printing
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+
+    using Dicom.Imaging.Mathematics;
+    using Dicom.IO;
+    using Dicom.Log;
+
     /// <summary>
     /// Basic film box
     /// </summary>
     public class FilmBox : DicomDataset
     {
-        #region Properites and Attributes
+        #region Properties and Attributes
+
+        private static readonly Logger Logger = LogManager.GetLogger("Dicom.Printing");
 
         private readonly FilmSession _filmSession = null;
 
@@ -510,9 +514,9 @@ namespace Dicom.Printing
         }
 
         /// <summary>
-        /// Iniitalize the film box dataset attributes to defaults
+        /// Initalize the film box dataset attributes to defaults
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if film box attributes could be initialized, false otherwise.</returns>
         public bool Initialize()
         {
             //initialization
@@ -559,11 +563,11 @@ namespace Dicom.Printing
             {
                 if (string.IsNullOrEmpty(ImageDisplayFormat))
                 {
-                    //Log.Logger.Error("No display format present in N-CREATE Basic Film Box dataset");
+                    Logger.Error("No display format present in N-CREATE Basic Film Box dataset");
                     return false;
                 }
 
-                //Core.Logger.Info("Applying display format {0} for film box {1}", ImageDisplayFormat, SOPInstanceUID);
+                Logger.Info("Applying display format {0} for film box {1}", ImageDisplayFormat, SOPInstanceUID);
 
                 var parts = ImageDisplayFormat.Split('\\');
 
@@ -604,9 +608,9 @@ namespace Dicom.Printing
             }
             catch (Exception ex)
             {
-                //Core.Logger.Error("FilmBox.Initialize", ex);
+                Logger.Error("FilmBox.Initialize, exception message: {0}", ex.Message);
             }
-            //Core.Logger.Error("Unsupported image display format \"{0}\"", ImageDisplayFormat);
+
             return false;
         }
 
@@ -633,6 +637,9 @@ namespace Dicom.Printing
             return BasicImageBoxes.FirstOrDefault(i => i.SOPInstanceUID.Equals(sopInstance));
         }
 
+        /// <summary>
+        /// Create image box from DICOM data.
+        /// </summary>
         private void CreateImageBox()
         {
             DicomUID classUid = DicomUID.BasicGrayscaleImageBoxSOPClass;
@@ -660,193 +667,136 @@ namespace Dicom.Printing
             seq.Items.Add(item);
         }
 
+        /// <summary>
+        /// Gets whether one or more image boxes is colored.
+        /// </summary>
+        /// <returns></returns>
         public bool IsColor()
         {
-            return BasicImageBoxes.FirstOrDefault(i => i.SOPClassUID == ImageBox.ColorSOPClassUID) != null;
+            return BasicImageBoxes.Any(i => i.SOPClassUID == ImageBox.ColorSOPClassUID);
         }
 
         #endregion
 
         #region Printing Methods
 
-        public SizeF GetSizeInInch()
-        {
-            const float CM_PER_INCH = 2.54f;
-            var filmSizeId = FilmSizeID;
-            if (filmSizeId.Contains("IN"))
-            {
-                var parts = filmSizeId.Split(new[] { "IN" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var width = parts[0].Replace('_', '.');
-                    var height = parts[1].TrimStart('X').Replace('_', '.');
-
-                    return new SizeF(float.Parse(width), float.Parse(height));
-                }
-            }
-            else if (filmSizeId.Contains("CM"))
-            {
-                var parts = filmSizeId.Split(new[] { "CM" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var width = parts[0].Replace('_', '.');
-                    var height = parts[1].TrimStart('X').Replace('_', '.');
-
-                    return new SizeF(float.Parse(width) / CM_PER_INCH, float.Parse(height) / CM_PER_INCH);
-                }
-            }
-            else if (filmSizeId == "A3")
-            {
-                return new SizeF(29.7f / CM_PER_INCH, 42.0f / CM_PER_INCH);
-            }
-
-            return new SizeF(210 / 2.54f, 297 / 2.54f);
-        }
-
-        public void Print(Graphics graphics, Rectangle marginBounds, int imageResolution)
-        {
-            var parts = this.ImageDisplayFormat.Split('\\', ',');
-
-            if (parts.Length > 0)
-            {
-                RectangleF[] boxes = null;
-                if (parts[0] == "STANDARD")
-                {
-                    boxes = PrintStandardFormat(parts, marginBounds);
-                }
-                else if (parts[0] == "ROW")
-                {
-                    boxes = PrintRowFormat(parts, marginBounds);
-                }
-                else if (parts[0] == "COL")
-                {
-                    boxes = PrintColumnFormat(parts, marginBounds);
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                        "ImageDisplayFormat");
-                }
-
-                for (int i = 0; i < BasicImageBoxes.Count; i++)
-                {
-                    BasicImageBoxes[i].Print(graphics, boxes[i], imageResolution);
-                }
-            }
-        }
-
-        protected RectangleF[] PrintColumnFormat(string[] parts, RectangleF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in column format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in column format.</returns>
+        public static RectF[] PrintColumnFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
                 int colsCount = parts.Length - 1;
 
-                SizeF boxSize = new SizeF(marginBounds.Width / (float)colsCount, 0);
+                var boxWidth = marginBounds.Width / colsCount;
 
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
 
                 for (int c = 0; c < colsCount; c++)
                 {
                     int rowsCount = int.Parse(parts[c + 1]);
 
-                    boxSize.Height = marginBounds.Height / (float)rowsCount;
+                    var boxHeight = marginBounds.Height / rowsCount;
 
                     for (int r = 0; r < rowsCount; r++)
                     {
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+            
+            return null;
         }
 
-        protected RectangleF[] PrintRowFormat(string[] parts, RectangleF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in row format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in row format.</returns>
+        public static RectF[] PrintRowFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 2)
             {
                 int rowsCount = parts.Length - 1;
 
-                SizeF boxSize = new SizeF(0, marginBounds.Height / (float)rowsCount);
+                var boxHeight = marginBounds.Height / rowsCount;
 
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
 
                 for (int r = 0; r < rowsCount; r++)
                 {
                     int colsCount = int.Parse(parts[r + 1]);
 
-                    boxSize.Width = marginBounds.Width / (float)colsCount;
+                    var boxWidth = marginBounds.Width / colsCount;
 
                     for (int c = 0; c < colsCount; c++)
                     {
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+
+            return null;
         }
 
-        protected RectangleF[] PrintStandardFormat(string[] parts, RectangleF marginBounds)
+        /// <summary>
+        /// Generate rectangles arranged in standard format.
+        /// </summary>
+        /// <param name="parts">Display format data.</param>
+        /// <param name="marginBounds">Margin bounds.</param>
+        /// <returns>Rectangles arranged in standard format.</returns>
+        public static RectF[] PrintStandardFormat(string[] parts, RectF marginBounds)
         {
             if (parts.Length >= 3)
             {
                 int columns = int.Parse(parts[1]);
                 int rows = int.Parse(parts[2]);
 
-                SizeF boxSize = new SizeF(marginBounds.Width / (float)columns, marginBounds.Height / (float)rows);
+                var boxWidth = marginBounds.Width / columns;
+                var boxHeight = marginBounds.Height / rows;
 
-
-                var boxes = new List<RectangleF>();
+                var boxes = new List<RectF>();
                 for (int r = 0; r < rows; r++)
                 {
                     for (int c = 0; c < columns; c++)
                     {
 
                         boxes.Add(
-                            new RectangleF
+                            new RectF
                                 {
-                                    X = marginBounds.X + c * boxSize.Width,
-                                    Y = marginBounds.Y + r * boxSize.Height,
-                                    Width = boxSize.Width,
-                                    Height = boxSize.Height
+                                    X = marginBounds.X + c * boxWidth,
+                                    Y = marginBounds.Y + r * boxHeight,
+                                    Width = boxWidth,
+                                    Height = boxHeight
                                 });
                     }
                 }
 
                 return boxes.ToArray();
             }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("ImageDisplayFormat {0} invalid", this.ImageDisplayFormat),
-                    "ImageDisplayFormat");
-            }
+
+            return null;
         }
 
         #endregion
@@ -854,6 +804,10 @@ namespace Dicom.Printing
 
         #region Load and Save
 
+        /// <summary>
+        /// Save the contents of the film box.
+        /// </summary>
+        /// <param name="filmBoxFolder">Folder in which to save the film box contents.</param>
         public void Save(string filmBoxFolder)
         {
             var filmBoxDicomFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
@@ -861,31 +815,39 @@ namespace Dicom.Printing
             var file = new DicomFile(this);
             file.Save(filmBoxDicomFile);
 
+            using (var stream = IOManager.CreateFileReference(filmBoxTextFile).Create())
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.Write(this.WriteToString());
+            }
 
-            System.IO.File.WriteAllText(filmBoxTextFile, this.WriteToString());
-
-            var imageBoxFolderInfo = new System.IO.DirectoryInfo(string.Format(@"{0}\Images", filmBoxFolder));
+            var imageBoxFolderInfo = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
             imageBoxFolderInfo.Create();
             for (int i = 0; i < this.BasicImageBoxes.Count; i++)
             {
                 var imageBox = this.BasicImageBoxes[i];
-                imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.FullName, i + 1));
+                imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.Name, i + 1));
             }
         }
 
+        /// <summary>
+        /// Load a film box for a specific session from a specific folder.
+        /// </summary>
+        /// <param name="filmSession">Film session.</param>
+        /// <param name="filmBoxFolder">Folder in which film box is stored.</param>
+        /// <returns>Film box for the specified <paramref name="filmSession"/> located in the <paramref name="filmBoxFolder"/>.</returns>
         public static FilmBox Load(FilmSession filmSession, string filmBoxFolder)
         {
             var filmBoxFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
 
             var file = DicomFile.Open(filmBoxFile);
 
-
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
-            var imagesFolder = new System.IO.DirectoryInfo(string.Format(@"{0}\Images", filmBoxFolder));
-            foreach (var image in imagesFolder.EnumerateFiles("*.dcm"))
+            var imagesFolder = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            foreach (var image in imagesFolder.EnumerateFileNames("*.dcm"))
             {
-                var imageBox = ImageBox.Load(filmBox, image.FullName);
+                var imageBox = ImageBox.Load(filmBox, image);
 
                 filmBox.BasicImageBoxes.Add(imageBox);
             }

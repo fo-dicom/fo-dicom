@@ -8,6 +8,8 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Log
 {
+    using System.Threading.Tasks;
+
     public class DicomDatasetDumper : IDicomDatasetWalker
     {
         private StringBuilder _log;
@@ -27,10 +29,18 @@ namespace Dicom.Log
             _value = valueLength;
         }
 
-        public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+        /// <summary>
+        /// Handler for beginning the traversal.
+        /// </summary>
+        public void OnBeginWalk()
         {
         }
 
+        /// <summary>
+        /// Handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnElement(DicomElement element)
         {
             StringBuilder sb = new StringBuilder();
@@ -85,6 +95,21 @@ namespace Dicom.Log
             return true;
         }
 
+        /// <summary>
+        /// Asynchronous handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public Task<bool> OnElementAsync(DicomElement element)
+        {
+            return Task.FromResult(this.OnElement(element));
+        }
+
+        /// <summary>
+        /// Handler for traversing beginning of sequence.
+        /// </summary>
+        /// <param name="sequence">Sequence to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginSequence(DicomSequence sequence)
         {
             _log.AppendFormat(
@@ -96,6 +121,11 @@ namespace Dicom.Log
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing beginning of sequence item.
+        /// </summary>
+        /// <param name="dataset">Item dataset.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
             _log.AppendLine(_pad + "Item:");
@@ -103,18 +133,31 @@ namespace Dicom.Log
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing end of sequence item.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnEndSequenceItem()
         {
             DecreaseDepth();
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing end of sequence.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnEndSequence()
         {
             DecreaseDepth();
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing beginning of fragment.
+        /// </summary>
+        /// <param name="fragment">Fragment sequence.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
             _log.AppendFormat(
@@ -128,16 +171,38 @@ namespace Dicom.Log
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnFragmentItem(IByteBuffer item)
         {
             return true;
         }
 
+        /// <summary>
+        /// Asynchronous handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+        {
+            return Task.FromResult(this.OnFragmentItem(item));
+        }
+
+        /// <summary>
+        /// Handler for traversing end of fragment.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnEndFragment()
         {
             return true;
         }
 
+        /// <summary>
+        /// Handler for end of traversal.
+        /// </summary>
         public void OnEndWalk()
         {
         }

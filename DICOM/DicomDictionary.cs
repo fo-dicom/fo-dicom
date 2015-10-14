@@ -3,14 +3,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 
 namespace Dicom
 {
-    public partial class DicomDictionary : IEnumerable<DicomDictionaryEntry>
+    using Dicom.IO;
+
+    /// <summary>
+    /// Class for managing DICOM dictionaries.
+    /// </summary>
+    public class DicomDictionary : IEnumerable<DicomDictionaryEntry>
     {
         #region Private Members
 
@@ -97,7 +101,7 @@ namespace Dicom
 
         private static DicomDictionary _default;
 
-        private static void LoadInternalDictionaries()
+        public static void LoadInternalDictionaries(bool loadPrivateDictionary = true)
         {
             lock (_lock)
             {
@@ -126,19 +130,23 @@ namespace Dicom
                             "Unable to load DICOM dictionary from resources.\n\n" + e.Message,
                             e);
                     }
-                    try
+                    if (loadPrivateDictionary)
                     {
-                        var assembly = Assembly.GetExecutingAssembly();
-                        var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
-                        var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                        var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
-                        reader.Process();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new DicomDataException(
-                            "Unable to load private dictionary from resources.\n\n" + e.Message,
-                            e);
+                        try
+                        {
+                            var assembly = Assembly.GetExecutingAssembly();
+                            var stream =
+                                assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
+                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                            var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                            reader.Process();
+                        }
+                        catch (Exception e)
+                        {
+                            throw new DicomDataException(
+                                "Unable to load private dictionary from resources.\n\n" + e.Message,
+                                e);
+                        }
                     }
                 }
             }
@@ -244,15 +252,22 @@ namespace Dicom
             return pvt;
         }
 
+        /// <summary>
+        /// Load DICOM dictionary data from file.
+        /// </summary>
+        /// <param name="file">File name.</param>
+        /// <param name="format">File format.</param>
         public void Load(string file, DicomDictionaryFormat format)
         {
-            using (var fs = File.OpenRead(file))
+            using (var fs = IOManager.CreateFileReference(file).OpenRead())
             {
-                Stream s = fs;
+                var s = fs;
+                if (file.EndsWith(".gz"))
+                {
+                    s = new GZipStream(s, CompressionMode.Decompress);
+                }
 
-                if (file.EndsWith(".gz")) s = new GZipStream(s, CompressionMode.Decompress);
-
-                DicomDictionaryReader reader = new DicomDictionaryReader(this, format, s);
+                var reader = new DicomDictionaryReader(this, format, s);
                 reader.Process();
             }
         }

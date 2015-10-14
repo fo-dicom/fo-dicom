@@ -239,7 +239,7 @@ forward_DCT (j_compress_ptr cinfo, jpeg_component_info * compptr,
 	 * In most files, at least half of the output values will be zero
 	 * (at default quantization settings, more like three-quarters...)
 	 * so we should ensure that this case is fast.  On many machines,
-	 * a comDicomon is enough cheaper than a divide to make a special test
+	 * a comparison is enough cheaper than a divide to make a special test
 	 * a win.  Since both inputs will be nonnegative, we need only test
 	 * for a < b to discover whether a/b is 0.
 	 * If your machine's division is fast enough, define FAST_DIVIDE.

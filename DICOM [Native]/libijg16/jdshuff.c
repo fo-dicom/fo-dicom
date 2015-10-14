@@ -17,8 +17,8 @@
 #define JPEG_INTERNALS
 #include "jinclude16.h"
 #include "jpeglib16.h"
-#include "jlossy16.h"		/* Private declarations for lossy codec */
-#include "jdhuff16.h"		/* Declarations shared with jd*huff.c */
+#include "jlossy16.h"       /* Private declarations for lossy codec */
+#include "jdhuff16.h"       /* Declarations shared with jd*huff.c */
 
 
 /*
@@ -42,24 +42,24 @@ typedef struct {
 #else
 #if MAX_COMPS_IN_SCAN == 4
 #define ASSIGN_STATE(dest,src)  \
-	((dest).last_dc_val[0] = (src).last_dc_val[0], \
-	 (dest).last_dc_val[1] = (src).last_dc_val[1], \
-	 (dest).last_dc_val[2] = (src).last_dc_val[2], \
-	 (dest).last_dc_val[3] = (src).last_dc_val[3])
+    ((dest).last_dc_val[0] = (src).last_dc_val[0], \
+     (dest).last_dc_val[1] = (src).last_dc_val[1], \
+     (dest).last_dc_val[2] = (src).last_dc_val[2], \
+     (dest).last_dc_val[3] = (src).last_dc_val[3])
 #endif
 #endif
 
 
 typedef struct {
-  huffd_common_fields;		/* Fields shared with other entropy decoders */
+  huffd_common_fields;      /* Fields shared with other entropy decoders */
 
   /* These fields are loaded into local variables at start of each MCU.
    * In case of suspension, we exit WITHOUT updating them.
    */
-  savable_state saved;		/* Other state at start of MCU */
+  savable_state saved;      /* Other state at start of MCU */
 
   /* These fields are NOT loaded into local working state. */
-  unsigned int restarts_to_go;	/* MCUs left in this restart interval */
+  unsigned int restarts_to_go;  /* MCUs left in this restart interval */
 
   /* Pointers to derived tables (these workspaces have image lifespan) */
   d_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
@@ -105,9 +105,9 @@ start_pass_huff_decoder (j_decompress_ptr cinfo)
     /* Compute derived values for Huffman tables */
     /* We may do this more than once for a table, but it's not expensive */
     jpeg_make_d_derived_tbl(cinfo, TRUE, dctbl,
-			    & entropy->dc_derived_tbls[dctbl]);
+                & entropy->dc_derived_tbls[dctbl]);
     jpeg_make_d_derived_tbl(cinfo, FALSE, actbl,
-			    & entropy->ac_derived_tbls[actbl]);
+                & entropy->ac_derived_tbls[actbl]);
     /* Initialize DC predictions to 0 */
     entropy->saved.last_dc_val[ci] = 0;
   }
@@ -179,7 +179,7 @@ process_restart (j_decompress_ptr cinfo)
 
   /* Throw away any unused bits remaining in bit buffer; */
   /* include any full bytes in next_marker's count of discarded bytes */
-  cinfo->marker->discarded_bytes += entropy->bitstate.bits_left / 8;
+  cinfo->marker->discarded_bytes += (unsigned int)(entropy->bitstate.bits_left / 8);
   entropy->bitstate.bits_left = 0;
 
   /* Advance past the RSTn marker */
@@ -233,7 +233,7 @@ decode_mcu (j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
       if (! process_restart(cinfo))
-	return FALSE;
+    return FALSE;
   }
 
   /* If we've run out of data, just leave the MCU set to zeroes.
@@ -258,67 +258,67 @@ decode_mcu (j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
       /* Section F.2.2.1: decode the DC coefficient difference */
       HUFF_DECODE(s, br_state, dctbl, return FALSE, label1);
       if (s) {
-	CHECK_BIT_BUFFER(br_state, s, return FALSE);
-	r = GET_BITS(s);
-	s = HUFF_EXTEND(r, s);
+    CHECK_BIT_BUFFER(br_state, s, return FALSE);
+    r = GET_BITS(s);
+    s = HUFF_EXTEND(r, s);
       }
 
       if (entropy->dc_needed[blkn]) {
-	/* Convert DC difference to actual value, update last_dc_val */
-	int ci = cinfo->MCU_membership[blkn];
-	s += state.last_dc_val[ci];
-	state.last_dc_val[ci] = s;
-	/* Output the DC coefficient (assumes jpeg_natural_order[0] = 0) */
-	(*block)[0] = (JCOEF) s;
+    /* Convert DC difference to actual value, update last_dc_val */
+    int ci = cinfo->MCU_membership[blkn];
+    s += state.last_dc_val[ci];
+    state.last_dc_val[ci] = s;
+    /* Output the DC coefficient (assumes jpeg_natural_order[0] = 0) */
+    (*block)[0] = (JCOEF) s;
       }
 
       if (entropy->ac_needed[blkn]) {
 
-	/* Section F.2.2.2: decode the AC coefficients */
-	/* Since zeroes are skipped, output area must be cleared beforehand */
-	for (k = 1; k < DCTSIZE2; k++) {
-	  HUFF_DECODE(s, br_state, actbl, return FALSE, label2);
+    /* Section F.2.2.2: decode the AC coefficients */
+    /* Since zeroes are skipped, output area must be cleared beforehand */
+    for (k = 1; k < DCTSIZE2; k++) {
+      HUFF_DECODE(s, br_state, actbl, return FALSE, label2);
       
-	  r = s >> 4;
-	  s &= 15;
+      r = s >> 4;
+      s &= 15;
       
-	  if (s) {
-	    k += r;
-	    CHECK_BIT_BUFFER(br_state, s, return FALSE);
-	    r = GET_BITS(s);
-	    s = HUFF_EXTEND(r, s);
-	    /* Output coefficient in natural (dezigzagged) order.
-	     * Note: the extra entries in jpeg_natural_order[] will save us
-	     * if k >= DCTSIZE2, which could happen if the data is corrupted.
-	     */
-	    (*block)[jpeg_natural_order[k]] = (JCOEF) s;
-	  } else {
-	    if (r != 15)
-	      break;
-	    k += 15;
-	  }
-	}
+      if (s) {
+        k += r;
+        CHECK_BIT_BUFFER(br_state, s, return FALSE);
+        r = GET_BITS(s);
+        s = HUFF_EXTEND(r, s);
+        /* Output coefficient in natural (dezigzagged) order.
+         * Note: the extra entries in jpeg_natural_order[] will save us
+         * if k >= DCTSIZE2, which could happen if the data is corrupted.
+         */
+        (*block)[jpeg_natural_order[k]] = (JCOEF) s;
+      } else {
+        if (r != 15)
+          break;
+        k += 15;
+      }
+    }
 
       } else {
 
-	/* Section F.2.2.2: decode the AC coefficients */
-	/* In this path we just discard the values */
-	for (k = 1; k < DCTSIZE2; k++) {
-	  HUFF_DECODE(s, br_state, actbl, return FALSE, label3);
+    /* Section F.2.2.2: decode the AC coefficients */
+    /* In this path we just discard the values */
+    for (k = 1; k < DCTSIZE2; k++) {
+      HUFF_DECODE(s, br_state, actbl, return FALSE, label3);
       
-	  r = s >> 4;
-	  s &= 15;
+      r = s >> 4;
+      s &= 15;
       
-	  if (s) {
-	    k += r;
-	    CHECK_BIT_BUFFER(br_state, s, return FALSE);
-	    DROP_BITS(s);
-	  } else {
-	    if (r != 15)
-	      break;
-	    k += 15;
-	  }
-	}
+      if (s) {
+        k += r;
+        CHECK_BIT_BUFFER(br_state, s, return FALSE);
+        DROP_BITS(s);
+      } else {
+        if (r != 15)
+          break;
+        k += 15;
+      }
+    }
 
       }
     }
@@ -348,7 +348,7 @@ jinit_shuff_decoder (j_decompress_ptr cinfo)
 
   entropy = (shuff_entropy_ptr)
     (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(shuff_entropy_decoder));
+                SIZEOF(shuff_entropy_decoder));
   lossyd->entropy_private = (void *) entropy;
   lossyd->entropy_start_pass = start_pass_huff_decoder;
   lossyd->entropy_decode_mcu = decode_mcu;

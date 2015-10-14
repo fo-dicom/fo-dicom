@@ -1,31 +1,29 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
-
 namespace Dicom.Imaging
 {
+    using Dicom.Imaging.Mathematics;
+
+    /// <summary>
+    /// Representation of a spatial 2D transform.
+    /// </summary>
     public class SpatialTransform
     {
         #region Private Members
 
-        private double _scale;
-
-        private int _rotate;
-
-        private bool _flipx;
-
-        private bool _flipy;
-
-        private Point _pan;
+        private Point2 _pan;
 
         #endregion
 
         #region Public Constructors
-
+        
+        /// <summary>
+        /// Initializes an instance of <see cref="SpatialTransform"/>.
+        /// </summary>
         public SpatialTransform()
         {
-            _pan = new Point(0, 0);
+            _pan = new Point2(0, 0);
             Reset();
         }
 
@@ -33,55 +31,30 @@ namespace Dicom.Imaging
 
         #region Public Properties
 
-        public double Scale
-        {
-            get
-            {
-                return _scale;
-            }
-            set
-            {
-                _scale = value;
-            }
-        }
+        /// <summary>
+        /// Gets or sets the scale of the transform.
+        /// </summary>
+        public double Scale { get; set; }
 
-        public int Rotation
-        {
-            get
-            {
-                return _rotate;
-            }
-            set
-            {
-                _rotate = value;
-            }
-        }
+        /// <summary>
+        /// Gets or sets the rotation of the transform.
+        /// </summary>
+        public int Rotation { get; set; }
 
-        public bool FlipX
-        {
-            get
-            {
-                return _flipx;
-            }
-            set
-            {
-                _flipx = value;
-            }
-        }
+        /// <summary>
+        /// Gets or sets whether to flip in X direction.
+        /// </summary>
+        public bool FlipX { get; set; }
 
-        public bool FlipY
-        {
-            get
-            {
-                return _flipy;
-            }
-            set
-            {
-                _flipy = value;
-            }
-        }
+        /// <summary>
+        /// Gets or sets whether to flip in Y direction.
+        /// </summary>
+        public bool FlipY { get; set; }
 
-        public Point Pan
+        /// <summary>
+        /// Gets or sets the pan of the transform.
+        /// </summary>
+        public Point2 Pan
         {
             get
             {
@@ -93,11 +66,14 @@ namespace Dicom.Imaging
             }
         }
 
+        /// <summary>
+        /// Gets whether the transform is set or reset.
+        /// </summary>
         public bool IsTransformed
         {
             get
             {
-                return _scale != 1.0f || _rotate != 0.0f || _pan == Point.Empty;
+                return this.Scale != 1.0 || this.Rotation != 0 || !this.Pan.Equals(Point2.Origin);
             }
         }
 
@@ -105,17 +81,24 @@ namespace Dicom.Imaging
 
         #region Public Members
 
+        /// <summary>
+        /// Add further rotation to the transform.
+        /// </summary>
+        /// <param name="angle">Angle with which to rotate.</param>
         public void Rotate(int angle)
         {
-            _rotate += angle;
+            this.Rotation += angle;
         }
 
+        /// <summary>
+        /// Reset the transform.
+        /// </summary>
         public void Reset()
         {
-            _scale = 1.0;
-            _rotate = 0;
-            _flipx = false;
-            _flipy = false;
+            this.Scale = 1.0;
+            this.Rotation = 0;
+            this.FlipX = false;
+            this.FlipY = false;
             _pan.X = 0;
             _pan.Y = 0;
         }

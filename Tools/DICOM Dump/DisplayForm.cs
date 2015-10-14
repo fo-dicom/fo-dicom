@@ -77,7 +77,7 @@ namespace Dicom.Dump
             {
                 var image = (DicomImage)state;
 
-                pbDisplay.Image = image.RenderImage(_frame);
+                pbDisplay.Image = image.RenderImage(_frame).As<Image>();
 
                 if (_grayscale)
                     Text = String.Format(

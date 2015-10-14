@@ -1,42 +1,46 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-
-using Dicom.Imaging.Codec;
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-using Dicom.Log;
-using Dicom.Threading;
-
 namespace Dicom.Network
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+
+    using Dicom.Imaging.Codec;
+    using Dicom.IO;
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
+    using Dicom.Log;
+    using Dicom.Threading;
+
+    /// <summary>
+    /// Base class for DICOM network services.
+    /// </summary>
     public abstract class DicomService
     {
-        private Stream _network;
+        private readonly Stream _network;
 
-        private object _lock;
+        private readonly object _lock;
 
         private volatile bool _writing;
 
         private volatile bool _sending;
 
-        private Queue<PDU> _pduQueue;
+        private readonly Queue<PDU> _pduQueue;
 
-        private Queue<DicomMessage> _msgQueue;
+        private readonly Queue<DicomMessage> _msgQueue;
 
-        private List<DicomRequest> _pending;
+        private readonly List<DicomRequest> _pending;
 
         private DicomMessage _dimse;
 
         private Stream _dimseStream;
+
+        private string _dimseStreamFile;
 
         private bool _isTempFile;
 
@@ -44,7 +48,7 @@ namespace Dicom.Network
 
         private bool _isConnected;
 
-        private ThreadPoolQueue<int> _processQueue;
+        private readonly ThreadPoolQueue<int> _processQueue;
 
         private DicomServiceOptions _options;
 
@@ -67,11 +71,10 @@ namespace Dicom.Network
             MaximumPDUsInQueue = 16;
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _processQueue = new ThreadPoolQueue<int>();
-            _processQueue.DefaultGroup = Int32.MinValue;
+            _processQueue = new ThreadPoolQueue<int>(int.MinValue);
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
-            Logger = log ?? LogManager.Default.GetLogger("Dicom.Network");
+            Logger = log ?? LogManager.GetLogger("Dicom.Network");
             BeginReadPDUHeader();
             Options = DicomServiceOptions.Default;
         }
@@ -122,7 +125,7 @@ namespace Dicom.Network
             _isConnected = false;
             try
             {
-                _network.Close();
+                _network.Dispose();
             }
             catch
             {
@@ -156,15 +159,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
         }
@@ -212,15 +207,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
             catch (Exception e)
@@ -261,7 +248,7 @@ namespace Dicom.Network
                             var pdu = new AAssociateRQ(Association);
                             pdu.Read(raw);
                             LogID = Association.CallingAE;
-                            if (Options.UseRemoteAEForLogName) Logger = LogManager.Default.GetLogger(LogID);
+                            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
                             Logger.Info(
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
@@ -345,15 +332,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while reading PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while reading PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, true);
                 CloseConnection(e);
             }
             catch (NullReferenceException)
@@ -368,6 +347,10 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Process P-DATA-TF PDUs.
+        /// </summary>
+        /// <param name="state">PDU to process.</param>
         private void ProcessPDataTF(object state)
         {
             var pdu = (PDataTF)state;
@@ -378,7 +361,11 @@ namespace Dicom.Network
                     if (_dimse == null)
                     {
                         // create stream for receiving command
-                        if (_dimseStream == null) _dimseStream = new MemoryStream();
+                        if (_dimseStream == null)
+                        {
+                            _dimseStream = new MemoryStream();
+                            _dimseStreamFile = null;
+                        }
                     }
                     else
                     {
@@ -399,10 +386,12 @@ namespace Dicom.Network
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
                                 _dimseStream = CreateCStoreReceiveStream(file);
+                                _dimseStreamFile = file.File == null ? null : file.File.Name;
                             }
                             else
                             {
                                 _dimseStream = new MemoryStream();
+                                _dimseStreamFile = null;
                             }
                         }
                     }
@@ -421,7 +410,9 @@ namespace Dicom.Network
                             reader.IsExplicitVR = false;
                             reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
 
+                            _dimseStream.Dispose();
                             _dimseStream = null;
+                            _dimseStreamFile = null;
 
                             var type = command.Get<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
@@ -522,7 +513,9 @@ namespace Dicom.Network
                                 reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
+                                _dimseStream.Dispose();
                                 _dimseStream = null;
+                                _dimseStreamFile = null;
                             }
                             else
                             {
@@ -531,7 +524,11 @@ namespace Dicom.Network
                                 try
                                 {
                                     var dicomFile = GetCStoreDicomFile();
+
+                                    _dimseStream.Dispose();
                                     _dimseStream = null;
+                                    _dimseStreamFile = null;
+
                                     _isTempFile = false;
 
                                     // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
@@ -546,18 +543,13 @@ namespace Dicom.Network
                                 }
                                 catch (Exception e)
                                 {
-                                    var fileName = "";
-                                    if (_dimseStream is FileStream)
-                                    {
-                                        fileName = (_dimseStream as FileStream).Name;
-                                    }
                                     // failed to parse received DICOM file; send error response instead of aborting connection
                                     SendResponse(
                                         new DicomCStoreResponse(
                                             request,
                                             new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(fileName, e);
+                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile, e);
                                     return;
                                 }
                             }
@@ -596,11 +588,12 @@ namespace Dicom.Network
         /// <returns>The stream to write the SopInstance to</returns>
         protected virtual Stream CreateCStoreReceiveStream(DicomFile file)
         {
-            var fileName = TemporaryFile.Create();
+            var temp = TemporaryFile.Create();
 
-            file.Save(fileName);
+            var dimseStream = temp.Open();
+            file.Save(dimseStream);
+            dimseStream.Seek(0, SeekOrigin.Begin);
 
-            var dimseStream = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite);
             _isTempFile = true;
             dimseStream.Seek(0, SeekOrigin.End);
             return dimseStream;
@@ -617,26 +610,26 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (_dimseStream is FileStream)
+            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
             {
-                var name = (_dimseStream as FileStream).Name;
-                _dimseStream.Close();
+                _dimseStream.Dispose();
                 _dimseStream = null;
 
-                var file = DicomFile.Open(name, _fallbackEncoding);
+                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
                 file.File.IsTempFile = _isTempFile;
+                _dimseStreamFile = null;
+
                 return file;
             }
-            else if (_dimseStream.CanSeek)
+
+            if (_dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
                 var file = DicomFile.Open(_dimseStream, _fallbackEncoding);
                 return file;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private void PerformDimseCallback(object state)
@@ -746,20 +739,20 @@ namespace Dicom.Network
 
         protected void SendPDU(PDU pdu)
         {
-            // throttle queueing of PDUs to prevent out of memory errors for very large datasets
-            do
+            var flag = new ManualResetEvent(false);
+            using (new Timer(
+                obj =>
+                    {
+                        if (this._pduQueue.Count >= this.MaximumPDUsInQueue) return;
+                        lock (this._lock)
+                        {
+                            this._pduQueue.Enqueue(pdu);
+                            ((ManualResetEvent)obj).Set();
+                        }
+                    }, flag, 0, 10))
             {
-                if (_pduQueue.Count >= MaximumPDUsInQueue)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }
-
-                lock (_lock) _pduQueue.Enqueue(pdu);
-
-                break;
+                flag.WaitOne();
             }
-            while (true);
 
             SendNextPDU();
         }
@@ -794,15 +787,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while writing PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while writing PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, false);
                 CloseConnection(e);
             }
         }
@@ -817,15 +802,7 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                if (e.InnerException is SocketException)
-                {
-                    Logger.Error(
-                        "Socket error while writing PDU: {socketErrorCode} [{errorCode}]",
-                        (e.InnerException as SocketException).SocketErrorCode,
-                        (e.InnerException as SocketException).ErrorCode);
-                }
-                else if (!(e.InnerException is ObjectDisposedException)) Logger.Error("IO exception while writing PDU: {@error}", e);
-
+                LogIOException(this.Logger, e, false);
                 CloseConnection(e);
             }
             catch
@@ -973,26 +950,25 @@ namespace Dicom.Network
 
             dimse.Walker = new DicomDatasetWalker(msg.Command);
 
-            if (dimse.Message.HasDataset) dimse.Walker.BeginWalk(writer, OnEndSendCommand, dimse);
-            else dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
+            if (dimse.Message.HasDataset) this.SendPre(dimse, writer);
+            else this.SendMain(dimse, writer);
         }
 
-        private void OnEndSendCommand(IAsyncResult result)
+        private void SendPre(Dimse dimse, IDicomDatasetWalker writer)
         {
-            var dimse = result.AsyncState as Dimse;
             try
             {
-                dimse.Walker.EndWalk(result);
+                dimse.Walker.Walk(writer);
 
                 dimse.Stream.IsCommand = false;
 
-                var writer = new DicomWriter(
+                var messageWriter = new DicomWriter(
                     dimse.PresentationContext.AcceptedTransferSyntax,
                     DicomWriteOptions.Default,
                     new StreamByteTarget(dimse.Stream));
 
                 dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                dimse.Walker.BeginWalk(writer, OnEndSendMessage, dimse);
+                this.SendMain(dimse, messageWriter);
             }
             catch (Exception e)
             {
@@ -1008,12 +984,11 @@ namespace Dicom.Network
             }
         }
 
-        private void OnEndSendMessage(IAsyncResult result)
+        private void SendMain(Dimse dimse, IDicomDatasetWalker writer)
         {
-            var dimse = result.AsyncState as Dimse;
             try
             {
-                dimse.Walker.EndWalk(result);
+                dimse.Walker.Walk(writer);
             }
             catch (Exception e)
             {
@@ -1029,7 +1004,7 @@ namespace Dicom.Network
             }
         }
 
-        public void SendRequest(DicomRequest request)
+        public virtual void SendRequest(DicomRequest request)
         {
             SendMessage(request);
         }
@@ -1286,7 +1261,7 @@ namespace Dicom.Network
         protected void SendAssociationRequest(DicomAssociation association)
         {
             LogID = association.CalledAE;
-            if (Options.UseRemoteAEForLogName) Logger = LogManager.Default.GetLogger(LogID);
+            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
             SendPDU(new AAssociateRQ(Association));
@@ -1344,6 +1319,27 @@ namespace Dicom.Network
 
         protected virtual void OnSendQueueEmpty()
         {
+        }
+
+        #endregion
+
+        #region Helper methods
+
+        private static void LogIOException(Logger logger, Exception e, bool reading)
+        {
+            var socketFmt = string.Format(@"Socket error {0} PDU: {{socketErrorCode}} [{{errorCode}}]", reading ? "reading" : "writing");
+            var otherFmt = string.Format(@"IO exception while {0} PDU: {{@error}}", reading ? "reading" : "writing");
+
+            int errorCode;
+            string errorDescriptor;
+            if (NetworkManager.IsSocketException(e, out errorCode, out errorDescriptor))
+            {
+                logger.Error(socketFmt, errorDescriptor, errorCode);
+            }
+            else if (!(e.InnerException is ObjectDisposedException))
+            {
+                logger.Error(otherFmt, e);
+            }
         }
 
         #endregion

@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
-using Dicom.Imaging;
-
 namespace Print_SCU
 {
+    using System;
+    using System.Drawing;
+
+    using Dicom.Imaging;
+
     internal class Program
     {
         private static void Main(string[] args)
@@ -32,7 +33,7 @@ namespace Print_SCU
             //color
             //var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
 
-            var bitmap = dicomImage.RenderImage() as System.Drawing.Bitmap;
+            var bitmap = dicomImage.RenderImage().As<Bitmap>();
 
             printJob.AddImage(bitmap, 0);
 

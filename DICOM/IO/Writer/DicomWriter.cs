@@ -7,20 +7,29 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.IO.Writer
 {
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// DICOM object writer.
+    /// </summary>
     public class DicomWriter : IDicomDatasetWalker
     {
         private const uint UndefinedLength = 0xffffffff;
 
         private DicomTransferSyntax _syntax;
 
-        private DicomWriteOptions _options;
+        private readonly DicomWriteOptions _options;
 
-        private IByteTarget _target;
+        private readonly IByteTarget _target;
 
         private Stack<DicomSequence> _sequences;
 
-        private DicomDatasetWalkerCallback _callback;
-
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomWriter"/>.
+        /// </summary>
+        /// <param name="syntax">Writer transfer syntax.</param>
+        /// <param name="options">Writer options.</param>
+        /// <param name="target">Target to which to write the DICOM object.</param>
         public DicomWriter(DicomTransferSyntax syntax, DicomWriteOptions options, IByteTarget target)
         {
             _syntax = syntax;
@@ -28,6 +37,9 @@ namespace Dicom.IO.Writer
             _target = target;
         }
 
+        /// <summary>
+        /// Gets or sets the DICOM transfer syntax to apply in writing.
+        /// </summary>
         public DicomTransferSyntax Syntax
         {
             get
@@ -40,13 +52,21 @@ namespace Dicom.IO.Writer
             }
         }
 
-        public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+        /// <summary>
+        /// Handler for beginning the traversal.
+        /// </summary>
+        public void OnBeginWalk()
         {
             _target.Endian = _syntax.Endian;
-            _callback = callback;
             _sequences = new Stack<DicomSequence>();
         }
 
+        /// <summary>
+        /// Handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnElement(DicomElement element)
         {
             WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
@@ -62,18 +82,49 @@ namespace Dicom.IO.Writer
                 if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
-            if (element.Length >= _options.LargeObjectSize)
+            _target.Write(buffer.Data, 0, buffer.Size);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Asynchronous handler for traversing a DICOM element.
+        /// </summary>
+        /// <param name="element">Element to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public async Task<bool> OnElementAsync(DicomElement element)
+        {
+            WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
+
+            IByteBuffer buffer = element.Buffer;
+            if (buffer is EndianByteBuffer)
             {
-                _target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
-                return false;
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
+            else if (_target.Endian != Endian.LocalMachine)
+            {
+                if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+            }
+
+            if (element.Length < this._options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size);
             }
             else
             {
-                _target.Write(buffer.Data);
-                return true;
+                await _target.WriteAsync(buffer.Data, 0, buffer.Size).ConfigureAwait(false);
             }
+
+            return true;
         }
 
+        /// <summary>
+        /// Handler for traversing beginning of sequence.
+        /// </summary>
+        /// <param name="sequence">Sequence to traverse.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequence(DicomSequence sequence)
         {
             uint length = UndefinedLength;
@@ -90,6 +141,12 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing beginning of sequence item.
+        /// </summary>
+        /// <param name="dataset">Item dataset.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
             uint length = UndefinedLength;
@@ -104,6 +161,11 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing end of sequence item.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndSequenceItem()
         {
             DicomSequence sequence = _sequences.Peek();
@@ -116,6 +178,11 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing end of sequence.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndSequence()
         {
             DicomSequence sequence = _sequences.Pop();
@@ -128,6 +195,12 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing beginning of fragment.
+        /// </summary>
+        /// <param name="fragment">Fragment sequence.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
             WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, UndefinedLength);
@@ -136,6 +209,12 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+        /// <summary>
+        /// Handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnFragmentItem(IByteBuffer item)
         {
             WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
@@ -147,30 +226,64 @@ namespace Dicom.IO.Writer
                 if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
             }
 
-            if (item.Size >= _options.LargeObjectSize)
+            _target.Write(buffer.Data, 0, buffer.Size);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Asynchronous handler for traversing fragment item.
+        /// </summary>
+        /// <param name="item">Buffer containing the fragment item.</param>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        public async Task<bool> OnFragmentItemAsync(IByteBuffer item)
+        {
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
+
+            IByteBuffer buffer = item;
+            if (buffer is EndianByteBuffer)
             {
-                _target.Write(buffer.Data, 0, buffer.Size, OnEndWriteBuffer, null);
-                return false;
+                EndianByteBuffer ebb = buffer as EndianByteBuffer;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+            }
+
+            if (item.Size < this._options.LargeObjectSize)
+            {
+                _target.Write(buffer.Data, 0, buffer.Size);
             }
             else
             {
-                _target.Write(buffer.Data);
-                return true;
+                await _target.WriteAsync(buffer.Data, 0, buffer.Size).ConfigureAwait(false);
             }
+
+            return true;
         }
 
+        /// <summary>
+        /// Handler for traversing end of fragment.
+        /// </summary>
+        /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndFragment()
         {
             WriteTagHeader(DicomTag.SequenceDelimitationItem, DicomVR.NONE, 0);
             return true;
         }
 
+        /// <summary>
+        /// Handler for end of traversal.
+        /// </summary>
         public void OnEndWalk()
         {
             _sequences = null;
-            _callback = null;
         }
 
+        /// <summary>
+        /// Write tag header.
+        /// </summary>
+        /// <param name="tag">DICOM tag.</param>
+        /// <param name="vr">Value Representation.</param>
+        /// <param name="length">Element length.</param>
         private void WriteTagHeader(DicomTag tag, DicomVR vr, uint length)
         {
             _target.Write(tag.Group);
@@ -195,11 +308,6 @@ namespace Dicom.IO.Writer
             {
                 _target.Write(length);
             }
-        }
-
-        private void OnEndWriteBuffer(IByteTarget target, object state)
-        {
-            _callback();
         }
     }
 }

@@ -162,7 +162,7 @@ EXTERN(boolean) jpeg_fill_bit_buffer
  * Again, this is time-critical and we make the main paths be macros.
  *
  * We use a lookahead table to process codes of up to HUFF_LOOKAHEAD bits
- * without looping.  Usually, more than 950f the Huffman codes will be 8
+ * without looping.  Usually, more than 95% of the Huffman codes will be 8
  * or fewer bits long.  The few overlength codes are handled with a loop,
  * which need not be inline code.
  *

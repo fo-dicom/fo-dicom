@@ -1,19 +1,15 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !SILVERLIGHT
-using System.Drawing;
-#endif
-using System.Linq;
-using System.Windows.Media;
-
-using Dicom.Imaging.Codec;
-using Dicom.Imaging.Render;
-
 namespace Dicom.Imaging
 {
+    using System.Linq;
+
+    using Dicom.Imaging.Codec;
+    using Dicom.Imaging.Render;
+
     /// <summary>
-    /// DICOM Image calss with capability of
+    /// DICOM Image class for image rendering.
     /// </summary>
     public class DicomImage
     {
@@ -43,7 +39,6 @@ namespace Dicom.Imaging
             Load(dataset, frame);
         }
 
-#if !SILVERLIGHT
         /// <summary>Creates DICOM image object from file</summary>
         /// <param name="fileName">Source file</param>
         /// <param name="frame">Zero indexed frame number</param>
@@ -54,7 +49,6 @@ namespace Dicom.Imaging
             var file = DicomFile.Open(fileName);
             Load(file.Dataset, frame);
         }
-#endif
 
         /// <summary>Source DICOM dataset</summary>
         public DicomDataset Dataset { get; private set; }
@@ -154,6 +148,30 @@ namespace Dicom.Imaging
             }
         }
 
+        /// <summary>Gets or sets the color map to be applied when rendering grayscale images.</summary>
+        public virtual Color32[] GrayscaleColorMap
+        {
+            get
+            {
+                if (_pipeline == null)
+                {
+                    CreatePipeline();
+                }
+                return _pipeline is GenericGrayscalePipeline ? _renderOptions.ColorMap : null;
+            }
+            set
+            {
+                if (_pipeline == null)
+                {
+                    CreatePipeline();
+                }
+                if (_pipeline is GenericGrayscalePipeline)
+                {
+                    _renderOptions.ColorMap = value;
+                }
+            }
+        }
+
         /// <summary>Show or hide DICOM overlays</summary>
         public bool ShowOverlays { get; set; }
 
@@ -173,11 +191,10 @@ namespace Dicom.Imaging
 
         public int CurrentFrame { get; private set; }
 
-#if !SILVERLIGHT
-        /// <summary>Renders DICOM image to System.Drawing.Image</summary>
+        /// <summary>Renders DICOM image to <see cref="IImage"/>.</summary>
         /// <param name="frame">Zero indexed frame number</param>
         /// <returns>Rendered image</returns>
-        public virtual Image RenderImage(int frame = 0)
+        public virtual IImage RenderImage(int frame = 0)
         {
             if (frame != CurrentFrame || _pixelData == null) Load(Dataset, frame);
 
@@ -202,9 +219,7 @@ namespace Dicom.Imaging
                     }
                 }
 
-                var image = graphic.RenderImage(_pipeline.LUT);
-
-                return new Bitmap(image);
+                return graphic.RenderImage(this._pipeline.LUT);
             }
             finally
             {
@@ -214,49 +229,6 @@ namespace Dicom.Imaging
                 }
             }
         }
-#endif
-
-        /// <summary>
-        /// Renders DICOM image to <see cref="System.Windows.Media.ImageSource"/> 
-        /// </summary>
-        /// <param name="frame">Zero indexed frame nu,ber</param>
-        /// <returns>Rendered image</returns>
-        public ImageSource RenderImageSource(int frame = 0)
-        {
-            if (frame != CurrentFrame || _pixelData == null) Load(Dataset, frame);
-
-            var graphic = new ImageGraphic(_pixelData);
-
-            try
-            {
-                if (ShowOverlays)
-                {
-                    foreach (var overlay in _overlays)
-                    {
-                        if ((frame + 1) < overlay.OriginFrame
-                            || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1)) continue;
-
-                        var og = new OverlayGraphic(
-                            PixelDataFactory.Create(overlay),
-                            overlay.OriginX - 1,
-                            overlay.OriginY - 1,
-                            OverlayColor);
-                        graphic.AddOverlay(og);
-                        og.Scale(this._scale);
-                    }
-                }
-
-                return graphic.RenderImageSource(_pipeline.LUT);
-            }
-            finally
-            {
-                if (graphic != null)
-                {
-                    graphic.Dispose();
-                }
-            }
-        }
-
 
         /// <summary>
         /// Loads the pixel data for specified frame and set the internal dataset
@@ -291,10 +263,10 @@ namespace Dicom.Imaging
                 }
 
                 var transcoder = new DicomTranscoder(
-                    Dataset.InternalTransferSyntax,
-                    DicomTransferSyntax.ExplicitVRLittleEndian);
-                transcoder.InputCodecParams = cparams;
-                transcoder.OutputCodecParams = cparams;
+                    this.Dataset.InternalTransferSyntax,
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                    cparams,
+                    cparams);
                 var buffer = transcoder.DecodeFrame(Dataset, frame);
 
                 // clone the dataset because modifying the pixel data modifies the dataset
@@ -330,7 +302,10 @@ namespace Dicom.Imaging
 
             CurrentFrame = frame;
 
-            CreatePipeline();
+            if (_pipeline == null)
+            {
+                CreatePipeline();
+            }
         }
 
         /// <summary>
@@ -338,8 +313,6 @@ namespace Dicom.Imaging
         /// </summary>
         private void CreatePipeline()
         {
-            if (_pipeline != null) return;
-
             var pi = Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
             var samples = Dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
 

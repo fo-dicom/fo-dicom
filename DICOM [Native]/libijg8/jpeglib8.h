@@ -646,7 +646,13 @@ struct jpeg_decompress_struct {
   struct jpeg_upsampler * upsample;
   struct jpeg_color_deconverter * cconvert;
   struct jpeg_color_quantizer * cquantize;
+
+  /* Options that enable or disable various workarounds */
+  unsigned int workaround_options;
 };
+
+/* constants for workaround_options in struct jpeg_decompress_struct */
+#define WORKAROUND_PREDICTOR6OVERFLOW 1
 
 
 /* "Object" declarations for JPEG modules that may be supplied or called

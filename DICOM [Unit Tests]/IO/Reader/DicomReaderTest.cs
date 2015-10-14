@@ -33,6 +33,23 @@ namespace Dicom.IO.Reader
         }
 
         [Theory]
+        [MemberData("ValidExplicitVRData")]
+        public void BeginRead_ValidExplicitVRData_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
+        {
+            var stream = new MemoryStream(bytes);
+            var source = new StreamByteSource(stream);
+            var reader = new DicomReader { IsExplicitVR = true };
+
+            var observer = new LastElementObserver();
+            var result = reader.EndRead(reader.BeginRead(source, observer, null, null, null));
+
+            Assert.Equal(DicomReaderResult.Success, result);
+            Assert.Equal(tag, observer.Tag);
+            Assert.Equal(vr, observer.VR);
+            Assert.Equal(data, observer.Data);
+        }
+
+        [Theory]
         [MemberData("ValidExplicitVRSequences")]
         public void Read_ValidExplicitVRSequence_YieldsSuccess(byte[] bytes)
         {

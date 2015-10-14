@@ -35,8 +35,8 @@ namespace ConsoleTest
 
                 NLog.LogManager.Configuration = config;
 
-                //Not necessary due to inclusion of the Dicom.Nlog assembly
-                //Dicom.Log.LogManager.Default = new Dicom.Log.NLogManager();
+                //Use NLog for logging.
+                Dicom.Log.LogManager.SetImplementation(Dicom.Log.NLogManager.Instance);
 
                 //var server = new DicomServer<DicomCEchoProvider>(12345);
 

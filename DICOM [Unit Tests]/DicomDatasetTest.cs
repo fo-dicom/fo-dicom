@@ -16,55 +16,61 @@ namespace Dicom
         [Fact]
         public void Add_OtherDoubleElement_Succeeds()
         {
+            var tag = DicomTag.DoubleFloatPixelData;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.DoubleFloatPixelData, 3.45);
-            Assert.IsType(typeof(DicomOtherDouble), dataset.First());
+            dataset.Add(tag, 3.45);
+            Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
         }
 
         [Fact]
         public void Add_OtherDoubleElementWithMultipleDoubles_Succeeds()
         {
+            var tag = DicomTag.DoubleFloatPixelData;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.DoubleFloatPixelData, 3.45, 6.78, 9.01);
-            Assert.IsType(typeof(DicomOtherDouble), dataset.First());
-            Assert.Equal(3, dataset.Get<double[]>(DicomTag.DoubleFloatPixelData).Length);
+            dataset.Add(tag, 3.45, 6.78, 9.01);
+            Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
+            Assert.Equal(3, dataset.Get<double[]>(tag).Length);
         }
 
         [Fact]
         public void Add_UnlimitedCharactersElement_Succeeds()
         {
+            var tag = DicomTag.LongCodeValue;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.LongCodeValue, "abc");
-            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First());
-            Assert.Equal("abc", dataset.Get<string>(DicomTag.LongCodeValue));
+            dataset.Add(tag, "abc");
+            Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
+            Assert.Equal("abc", dataset.Get<string>(tag));
         }
 
         [Fact]
         public void Add_UnlimitedCharactersElementWithMultipleStrings_Succeeds()
         {
+            var tag = DicomTag.LongCodeValue;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.LongCodeValue, "a", "b", "c");
-            Assert.IsType(typeof(DicomUnlimitedCharacters), dataset.First());
-            Assert.Equal("c", dataset.Get<string>(DicomTag.LongCodeValue, 2));
+            dataset.Add(tag, "a", "b", "c");
+            Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
+            Assert.Equal("c", dataset.Get<string>(tag, 2));
         }
 
         [Fact]
         public void Add_UniversalResourceElement_Succeeds()
         {
+            var tag = DicomTag.URNCodeValue;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.URNCodeValue, "abc");
-            Assert.IsType(typeof(DicomUniversalResource), dataset.First());
-            Assert.Equal("abc", dataset.Get<string>(DicomTag.URNCodeValue));
+            dataset.Add(tag, "abc");
+            Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
+            Assert.Equal("abc", dataset.Get<string>(tag));
         }
 
         [Fact]
         public void Add_UniversalResourceElementWithMultipleStrings_OnlyFirstValueIsUsed()
         {
+            var tag = DicomTag.URNCodeValue;
             var dataset = new DicomDataset();
-            dataset.Add(DicomTag.URNCodeValue, "a", "b", "c");
-            Assert.IsType(typeof(DicomUniversalResource), dataset.First());
+            dataset.Add(tag, "a", "b", "c");
+            Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
 
-            var data = dataset.Get<string[]>(DicomTag.URNCodeValue);
+            var data = dataset.Get<string[]>(tag);
             Assert.Equal(1, data.Length);
             Assert.Equal("a", data.First());
         }
@@ -72,15 +78,16 @@ namespace Dicom
         [Fact]
         public void Add_PersonName_MultipleNames_YieldsMultipleValues()
         {
+            var tag = DicomTag.PerformingPhysicianName;
             var dataset = new DicomDataset();
             dataset.Add(
-                DicomTag.PerformingPhysicianName,
+                tag,
                 "Gustafsson^Anders^L",
                 "Yates^Ian",
                 "Desouky^Hesham",
                 "Horn^Chris");
 
-            var data = dataset.Get<string[]>(DicomTag.PerformingPhysicianName);
+            var data = dataset.Get<string[]>(tag);
             Assert.Equal(4, data.Length);
             Assert.Equal("Desouky^Hesham", data[2]);
         }
@@ -92,7 +99,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, values);
 
-            Assert.IsType(expectedType, dataset.First());
+            Assert.IsType(expectedType, dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.Get<string[]>(tag);
             Assert.Equal(values.Length, data.Length);

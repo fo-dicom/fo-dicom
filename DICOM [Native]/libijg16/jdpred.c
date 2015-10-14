@@ -21,16 +21,16 @@
 #define JPEG_INTERNALS
 #include "jinclude16.h"
 #include "jpeglib16.h"
-#include "jlossls16.h"		/* Private declarations for lossless codec */
+#include "jlossls16.h"      /* Private declarations for lossless codec */
 
 
 #ifdef D_LOSSLESS_SUPPORTED
 
 /* Predictor for the first column of the first row: 2^(P-Pt-1) */
-#define INITIAL_PREDICTORx	(1 << (cinfo->data_precision - cinfo->Al - 1))
+#define INITIAL_PREDICTORx  (1 << (cinfo->data_precision - cinfo->Al - 1))
 
 /* Predictor for the first column of the remaining rows: Rb */
-#define INITIAL_PREDICTOR2	GETJSAMPLE(prev_row[0])
+#define INITIAL_PREDICTOR2  GETJSAMPLE(prev_row[0])
 
 
 /*
@@ -46,16 +46,16 @@
 */
 
 #define UNDIFFERENCE_1D(INITIAL_PREDICTOR) \
-	unsigned int xindex; \
-	int Ra; \
+    unsigned int xindex; \
+    int Ra; \
  \
-	Ra = (diff_buf[0] + INITIAL_PREDICTOR) & 0xFFFF; \
-	undiff_buf[0] = Ra; \
+    Ra = (diff_buf[0] + INITIAL_PREDICTOR) & 0xFFFF; \
+    undiff_buf[0] = Ra; \
  \
-	for (xindex = 1; xindex < width; xindex++) { \
-	  Ra = (diff_buf[xindex] + PREDICTOR1) & 0xFFFF; \
-	  undiff_buf[xindex] = Ra; \
-	}
+    for (xindex = 1; xindex < width; xindex++) { \
+      Ra = (diff_buf[xindex] + PREDICTOR1) & 0xFFFF; \
+      undiff_buf[xindex] = Ra; \
+    }
 
 /*
  * 2-Dimensional undifferencer routine.
@@ -73,20 +73,21 @@
  */
 
 #define UNDIFFERENCE_2D(PREDICTOR) \
-	unsigned int xindex; \
-	int Ra, Rb, Rc; \
+    unsigned int xindex; \
+    int Ra, Rb, Rc; \
  \
-	Rb = GETJSAMPLE(prev_row[0]); \
-	Ra = (diff_buf[0] + PREDICTOR2) & 0xFFFF; \
-	undiff_buf[0] = Ra; \
+    Rb = GETJSAMPLE(prev_row[0]); \
+    Ra = (diff_buf[0] + PREDICTOR2) & 0xFFFF; \
+    undiff_buf[0] = Ra; \
  \
-	for (xindex = 1; xindex < width; xindex++) { \
-	  Rc = Rb; \
-	  Rb = GETJSAMPLE(prev_row[xindex]); \
-	  Ra = (diff_buf[xindex] + PREDICTOR) & 0xFFFF; \
-	  undiff_buf[xindex] = Ra; \
-	}
+    for (xindex = 1; xindex < width; xindex++) { \
+      Rc = Rb; \
+      Rb = GETJSAMPLE(prev_row[xindex]); \
+      Ra = (diff_buf[xindex] + PREDICTOR) & 0xFFFF; \
+      undiff_buf[xindex] = Ra; \
+    }
 
+#define JPEG_UNUSED(x) ((void)x)
 
 /*
  * Undifferencers for the all rows but the first in a scan or restart interval.
@@ -97,61 +98,84 @@
 
 METHODDEF(void)
 jpeg_undifference1(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   UNDIFFERENCE_1D(INITIAL_PREDICTOR2);
 }
 
 METHODDEF(void)
 jpeg_undifference2(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   UNDIFFERENCE_2D(PREDICTOR2);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 METHODDEF(void)
 jpeg_undifference3(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   UNDIFFERENCE_2D(PREDICTOR3);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 METHODDEF(void)
 jpeg_undifference4(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   UNDIFFERENCE_2D(PREDICTOR4);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 METHODDEF(void)
 jpeg_undifference5(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   UNDIFFERENCE_2D(PREDICTOR5);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 METHODDEF(void)
 jpeg_undifference6(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   UNDIFFERENCE_2D(PREDICTOR6);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
+}
+
+METHODDEF(void)
+jpeg_undifference6a(j_decompress_ptr cinfo, int comp_index,
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
+{
+  SHIFT_TEMPS
+  UNDIFFERENCE_2D(PREDICTOR6A);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 METHODDEF(void)
 jpeg_undifference7(j_decompress_ptr cinfo, int comp_index,
-		   JDIFFROW diff_buf, JDIFFROW prev_row,
-		   JDIFFROW undiff_buf, JDIMENSION width)
+           JDIFFROW diff_buf, JDIFFROW prev_row,
+           JDIFFROW undiff_buf, JDIMENSION width)
 {
   SHIFT_TEMPS
   UNDIFFERENCE_2D(PREDICTOR7);
+  JPEG_UNUSED(Rc);
+  JPEG_UNUSED(Rb);
 }
 
 
@@ -164,8 +188,8 @@ jpeg_undifference7(j_decompress_ptr cinfo, int comp_index,
 
 METHODDEF(void)
 jpeg_undifference_first_row(j_decompress_ptr cinfo, int comp_index,
-			    JDIFFROW diff_buf, JDIFFROW prev_row,
-			    JDIFFROW undiff_buf, JDIMENSION width)
+                JDIFFROW diff_buf, JDIFFROW prev_row,
+                JDIFFROW undiff_buf, JDIMENSION width)
 {
   j_lossless_d_ptr losslsd = (j_lossless_d_ptr) cinfo->codec;
 
@@ -193,7 +217,12 @@ jpeg_undifference_first_row(j_decompress_ptr cinfo, int comp_index,
     losslsd->predict_undifference[comp_index] = jpeg_undifference5;
     break;
   case 6:
-    losslsd->predict_undifference[comp_index] = jpeg_undifference6;
+    /* DCMTK specific code that is only needed in the 16-bit library.
+     * Enables workaround for faulty images with integer overflow in predictor 6.
+     */
+    if (cinfo->workaround_options & WORKAROUND_PREDICTOR6OVERFLOW)
+      losslsd->predict_undifference[comp_index] = jpeg_undifference6a;
+      else losslsd->predict_undifference[comp_index] = jpeg_undifference6;
     break;
   case 7:
     losslsd->predict_undifference[comp_index] = jpeg_undifference7;
@@ -223,9 +252,9 @@ predict_start_pass (j_decompress_ptr cinfo)
    */
   if (cinfo->Ss < 1 || cinfo->Ss > 7 ||
       cinfo->Se != 0 || cinfo->Ah != 0 ||
-      cinfo->Al > 15)				/* need not check for < 0 */
+      cinfo->Al > 15)               /* need not check for < 0 */
     ERREXIT4(cinfo, JERR_BAD_LOSSLESS,
-	     cinfo->Ss, cinfo->Se, cinfo->Ah, cinfo->Al);
+         cinfo->Ss, cinfo->Se, cinfo->Ah, cinfo->Al);
 
   /* Set undifference functions to first row function */
   for (ci = 0; ci < cinfo->num_components; ci++)

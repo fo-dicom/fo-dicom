@@ -1,17 +1,22 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Linq;
-using System.Text;
-
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-
 namespace Dicom.Media
 {
-    public class DicomDirectory : DicomFile
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    using Dicom.IO;
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
+
+
+    /// <summary>
+    /// Class for managing DICOM directory objects.
+    /// </summary>
+    public partial class DicomDirectory : DicomFile
     {
         #region Properties and Attributes
 
@@ -102,6 +107,9 @@ namespace Dicom.Media
 
         #region Save/Load Methods
 
+        /// <summary>
+        /// Method to call before performing the actual saving.
+        /// </summary>
         protected override void OnSave()
         {
             if (RootDirectoryRecord == null) throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
@@ -156,11 +164,22 @@ namespace Dicom.Media
             }
         }
 
+        /// <summary>
+        /// Read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <returns><see cref="DicomDirectory"/> instance.</returns>
         public static new DicomDirectory Open(string fileName)
         {
             return Open(fileName, DicomEncoding.Default);
         }
 
+        /// <summary>
+        /// Read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <returns><see cref="DicomDirectory"/> instance.</returns>
         public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding)
         {
             if (fallbackEncoding == null)
@@ -175,19 +194,24 @@ namespace Dicom.Media
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = IOManager.CreateFileReference(fileName);
 
                 using (var source = new FileByteSource(df.File))
                 {
-                    DicomFileReader reader = new DicomFileReader();
+                    var reader = new DicomFileReader();
 
                     var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
                     var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                    reader.Read(
+                    var result = reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
                         new DicomReaderMultiObserver(datasetObserver, dirObserver));
+
+                    if (result == DicomReaderResult.Error)
+                    {
+                        return null;
+                    }
 
                     df.Format = reader.FileFormat;
 
@@ -205,90 +229,71 @@ namespace Dicom.Media
             }
         }
 
-        public static new IAsyncResult BeginOpen(string fileName, AsyncCallback callback, object state)
+        /// <summary>
+        /// Asynchronously read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
+        public static new Task<DicomDirectory> OpenAsync(string fileName)
         {
-            return BeginOpen(fileName, DicomEncoding.Default, callback, state);
+            return OpenAsync(fileName, DicomEncoding.Default);
         }
 
-        public static new IAsyncResult BeginOpen(
-            string fileName,
-            Encoding fallbackEncoding,
-            AsyncCallback callback,
-            object state)
+        /// <summary>
+        /// Asynchronously read DICOM Directory.
+        /// </summary>
+        /// <param name="fileName">File name.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding)
         {
+            if (fallbackEncoding == null)
+            {
+                throw new ArgumentNullException("fallbackEncoding");
+            }
             var df = new DicomDirectory();
 
             // reset datasets
             df.FileMetaInfo.Clear();
             df.Dataset.Clear();
 
-            df.File = new FileReference(fileName);
-
-            FileByteSource source = new FileByteSource(df.File);
-
-            EventAsyncResult result = new EventAsyncResult(callback, state);
-
-            DicomFileReader reader = new DicomFileReader();
-
-            var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
-            var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
-
-            reader.BeginRead(
-                source,
-                new DicomDatasetReaderObserver(df.FileMetaInfo),
-                new DicomReaderMultiObserver(datasetObserver, dirObserver),
-                OnReadComplete,
-                new Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>(
-                    reader,
-                    df,
-                    dirObserver,
-                    result));
-
-            return result;
-        }
-
-        private static void OnReadComplete(IAsyncResult result)
-        {
-            var state =
-                result.AsyncState as
-                Tuple<DicomFileReader, DicomDirectory, DicomDirectoryReaderObserver, EventAsyncResult>;
-
-            Exception e = null;
             try
             {
-                state.Item1.EndRead(result);
+                df.File = IOManager.CreateFileReference(fileName);
 
-                // ensure that file handles are closed
-                var source = (FileByteSource)state.Item1.Source;
-                source.Dispose();
+                using (var source = new FileByteSource(df.File))
+                {
+                    var reader = new DicomFileReader();
 
-                state.Item2.Format = state.Item1.FileFormat;
-                state.Item2.Dataset.InternalTransferSyntax = state.Item1.Syntax;
+                    var datasetObserver = new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding);
+                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                state.Item2._directoryRecordSequence =
-                    state.Item2.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
-                state.Item2.RootDirectoryRecord = state.Item3.BuildDirectoryRecords();
+                    var result =
+                        await
+                        reader.ReadAsync(
+                            source,
+                            new DicomDatasetReaderObserver(df.FileMetaInfo),
+                            new DicomReaderMultiObserver(datasetObserver, dirObserver)).ConfigureAwait(false);
+
+                    if (result == DicomReaderResult.Error)
+                    {
+                        return null;
+                    }
+
+                    df.Format = reader.FileFormat;
+
+                    df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                    df._directoryRecordSequence = df.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+                    df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
+
+                    return df;
+                }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                state.Item2.Format = state.Item1.FileFormat;
-                e = ex;
+                throw new DicomFileException(df, e.Message, e);
             }
-
-            state.Item4.InternalState = new Tuple<DicomDirectory, Exception>(state.Item2, e);
-            state.Item4.Set();
-        }
-
-        public static new DicomDirectory EndOpen(IAsyncResult result)
-        {
-            result.AsyncWaitHandle.WaitOne();
-
-            EventAsyncResult eventResult = result as EventAsyncResult;
-            var state = eventResult.InternalState as Tuple<DicomDirectory, Exception>;
-
-            if (state.Item2 != null) throw new DicomFileException(state.Item1, state.Item2.Message, state.Item2);
-
-            return state.Item1;
         }
 
         private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem)

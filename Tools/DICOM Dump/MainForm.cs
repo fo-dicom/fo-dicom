@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 
 using Dicom.Imaging;
@@ -11,6 +12,9 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Dump
 {
+    using System.Drawing;
+    using System.Threading.Tasks;
+
     public partial class MainForm : Form
     {
         private DicomFile _file;
@@ -18,6 +22,19 @@ namespace Dicom.Dump
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            DicomDictionary.LoadInternalDictionaries(ModifierKeys != Keys.Shift);
+
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length > 1)
+            {
+                OpenFile(args[1]);
+            }
+
+            base.OnLoad(e);
         }
 
         private void Reset()
@@ -42,6 +59,16 @@ namespace Dicom.Dump
             lvi.SubItems.Add(value);
         }
 
+        private bool IsStructuredReport
+        {
+            get
+            {
+                return _file != null && _file.FileMetaInfo != null && _file.FileMetaInfo.MediaStorageSOPClassUID != null
+                       && _file.FileMetaInfo.MediaStorageSOPClassUID.StorageCategory
+                       == DicomStorageCategory.StructuredReport;
+            }
+        }
+
         public void OpenFile(string fileName)
         {
             DicomFile file = null;
@@ -61,7 +88,7 @@ namespace Dicom.Dump
                     MessageBoxIcon.Error);
             }
 
-            OpenFile(file);
+            if (file != null) OpenFile(file);
         }
 
         public void OpenFile(DicomFile file)
@@ -77,7 +104,7 @@ namespace Dicom.Dump
                 new DicomDatasetWalker(_file.FileMetaInfo).Walk(new DumpWalker(this));
                 new DicomDatasetWalker(_file.Dataset).Walk(new DumpWalker(this));
 
-                if (_file.Dataset.Contains(DicomTag.PixelData)) menuItemView.Enabled = true;
+                if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport) menuItemView.Enabled = true;
                 menuItemSyntax.Enabled = true;
                 menuItemSave.Enabled = true;
 
@@ -123,7 +150,7 @@ namespace Dicom.Dump
             else
             {
                 var image = new DicomImage(_file.Dataset);
-                image.RenderImage().Save(sfd.FileName);
+                image.RenderImage().As<Image>().Save(sfd.FileName);
             }
         }
 
@@ -155,7 +182,7 @@ namespace Dicom.Dump
 
             private string Indent { get; set; }
 
-            public void OnBeginWalk(DicomDatasetWalker walker, DicomDatasetWalkerCallback callback)
+            public void OnBeginWalk()
             {
             }
 
@@ -179,6 +206,11 @@ namespace Dicom.Dump
 
                 Form.AddItem(tag, element.ValueRepresentation.Code, element.Length.ToString(), value);
                 return true;
+            }
+
+            public Task<bool> OnElementAsync(DicomElement element)
+            {
+                return Task.FromResult(this.OnElement(element));
             }
 
             public bool OnBeginSequence(DicomSequence sequence)
@@ -239,6 +271,11 @@ namespace Dicom.Dump
                 return true;
             }
 
+            public Task<bool> OnFragmentItemAsync(IByteBuffer item)
+            {
+                return Task.FromResult(this.OnFragmentItem(item));
+            }
+
             public bool OnEndFragment()
             {
                 Level--;
@@ -252,8 +289,16 @@ namespace Dicom.Dump
 
         private void OnClickView(object sender, EventArgs e)
         {
-            var form = new DisplayForm(_file);
-            form.ShowDialog(this);
+            if (IsStructuredReport)
+            {
+                var form = new ReportForm(_file);
+                form.ShowDialog(this);
+            }
+            else
+            {
+                var form = new DisplayForm(_file);
+                form.ShowDialog(this);
+            }
         }
 
         private void OnContextMenuOpening(object sender, CancelEventArgs e)
@@ -442,6 +487,51 @@ namespace Dicom.Dump
         private void OnClickRLELossless(object sender, EventArgs e)
         {
             ChangeSyntax(DicomTransferSyntax.RLELossless);
+        }
+
+        private void OnClickExportPixelData(object sender, EventArgs e)
+        {
+            try
+            {
+                var pixel = DicomPixelData.Create(_file.Dataset);
+                var frame = pixel.GetFrame(0);
+
+                var sfd = new SaveFileDialog();
+                if (sfd.ShowDialog(this) == DialogResult.OK)
+                {
+                    File.WriteAllBytes(sfd.FileName, frame.Data);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    this,
+                    "Unable to extract raw pixel data: " + ex.Message,
+                    "Export Pixel Data",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void OnDragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0) OpenFile(files[0]);
+            }
+        }
+
+        private void OnDragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ using System.Threading;
 
 namespace Dicom.Media
 {
+    using Dicom.IO;
+
     public delegate void DicomScanProgressCallback(DicomFileScanner scanner, string directory, int count);
 
     public delegate void DicomScanFileFoundCallback(DicomFileScanner scanner, DicomFile file, string fileName);
@@ -115,17 +117,16 @@ namespace Dicom.Media
             if (Complete != null) Complete(this);
         }
 
-        private void ScanDirectory(string directory)
+        private void ScanDirectory(string path)
         {
             if (_stop) return;
 
-            if (Progress != null && _progressOnDirectory) Progress(this, directory, _count);
+            if (Progress != null && _progressOnDirectory) Progress(this, path, _count);
 
             try
             {
-                string[] files;
-                if (!String.IsNullOrEmpty(_pattern)) files = Directory.GetFiles(directory, _pattern);
-                else files = Directory.GetFiles(directory);
+                var directory = IOManager.CreateDirectoryReference(path);
+                var files = directory.EnumerateFileNames(_pattern);
 
                 foreach (string file in files)
                 {
@@ -134,12 +135,12 @@ namespace Dicom.Media
                     ScanFile(file);
 
                     _count++;
-                    if ((_count % _progressAfterCount) == 0 && Progress != null) Progress(this, directory, _count);
+                    if ((_count % _progressAfterCount) == 0 && Progress != null) Progress(this, path, _count);
                 }
 
                 if (!_recursive) return;
 
-                string[] dirs = Directory.GetDirectories(directory);
+                var dirs = directory.EnumerateDirectoryNames();
                 foreach (string dir in dirs)
                 {
                     if (_stop) return;

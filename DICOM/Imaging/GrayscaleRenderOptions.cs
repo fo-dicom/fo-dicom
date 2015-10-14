@@ -12,41 +12,47 @@ namespace Dicom.Imaging
     /// </summary>
     public class GrayscaleRenderOptions
     {
+        #region FIELDS
+
+        private Color32[] _colorMap;
+
+        #endregion
+
+        #region CONSTRUCTORS
+
         /// <summary>
         /// GrayscaleRenderOptions constructor using BitDepth values
         /// </summary>
         /// <param name="bits">Bit depth information</param>
-        public GrayscaleRenderOptions(BitDepth bits)
+        private GrayscaleRenderOptions(BitDepth bits)
         {
             BitDepth = bits;
-            RescaleSlope = 1.0;
-            RescaleIntercept = 0.0;
-            VOILUTFunction = "LINEAR";
-            WindowWidth = bits.MaximumValue - bits.MinimumValue;
-            WindowCenter = (bits.MaximumValue + bits.MinimumValue) / 2.0;
-            Monochrome1 = false;
             Invert = false;
         }
+
+        #endregion
+
+        #region PROPERTIES
 
         /// <summary>
         /// BitDepth used to initialize the GrayscaleRenderOptions
         /// </summary>
-        public BitDepth BitDepth { get; set; }
+        public BitDepth BitDepth { get; private set; }
 
         /// <summary>
         /// Pixel data rescale slope
         /// </summary>
-        public double RescaleSlope { get; set; }
+        public double RescaleSlope { get; private set; }
 
         /// <summary>
-        /// Pixel data resclae interception
+        /// Pixel data rescale interception
         /// </summary>
-        public double RescaleIntercept { get; set; }
+        public double RescaleIntercept { get; private set; }
 
         /// <summary>
         /// VOI LUT function (LINEAR or SEGMOID)
         /// </summary>
-        public string VOILUTFunction { get; set; }
+        public string VOILUTFunction { get; private set; }
 
         /// <summary>
         /// Window width
@@ -59,14 +65,29 @@ namespace Dicom.Imaging
         public double WindowCenter { get; set; }
 
         /// <summary>
-        /// Specify if this grey scale image is Monochrome1 or Monorchrome2, true means Monochrome1
+        /// Gets or sets the color map associated with the grayscale image.
         /// </summary>
-        public bool Monochrome1 { get; set; }
+        public Color32[] ColorMap
+        {
+            get
+            {
+                return _colorMap;
+            }
+            set
+            {
+                if (value == null || value.Length != 256) throw new DicomImagingException("Expected 256 entry color map");
+                _colorMap = value;
+            }
+        }
 
         /// <summary>
         /// Set to true to render the output in inverted grey
         /// </summary>
-        public bool Invert { get; set; }
+        public bool Invert { get; private set; }
+
+        #endregion
+
+        #region METHODS
 
         /// <summary>
         /// Create <see cref="GrayscaleRenderOptions"/>  from <paramref name="dataset"/> and populate the options properties with values:
@@ -80,38 +101,30 @@ namespace Dicom.Imaging
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset)
         {
-            var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
-
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
-
             if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) != 0.0)
             {
                 //If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 return FromWindowLevel(dataset);
             }
-            else if (dataset.Contains(DicomTag.SmallestImagePixelValue)
-                     && dataset.Contains(DicomTag.LargestImagePixelValue))
+
+            if (dataset.Contains(DicomTag.SmallestImagePixelValue)
+                && dataset.Contains(DicomTag.LargestImagePixelValue))
             {
                 //If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
                 //WindowWidth and WindowCenter
                 return FromImagePixelValueTags(dataset);
             }
-            else
-            {
-                //If reached here, minimum and maximum pixel values calculated from pixels data to calculate
-                //WindowWidth and WindowCenter
-                return FromMinMax(dataset);
-            }
 
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
-
-            return options;
+            //If reached here, minimum and maximum pixel values calculated from pixels data to calculate
+            //WindowWidth and WindowCenter
+            return FromMinMax(dataset);
         }
 
+        /// <summary>
+        /// Create grayscale render options based on window level data.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
+        /// <returns>Grayscale render options based on window level data.</returns>
         public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
@@ -124,12 +137,16 @@ namespace Dicom.Imaging
             options.WindowCenter = dataset.Get<double>(DicomTag.WindowCenter);
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
+            options.ColorMap = GetColorMap(dataset);
 
             return options;
         }
 
+        /// <summary>
+        /// Create grayscale render options based on specified image pixel values.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
+        /// <returns>Grayscale render options based on specified image pixel values.</returns>
         public static GrayscaleRenderOptions FromImagePixelValueTags(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
@@ -148,12 +165,16 @@ namespace Dicom.Imaging
             }
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
+            options.ColorMap = GetColorMap(dataset);
 
             return options;
         }
 
+        /// <summary>
+        /// Create grayscale render options based on identified minimum and maximum pixel values.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
+        /// <returns>Grayscale render options based on identified minimum and maximum pixel values.</returns>
         public static GrayscaleRenderOptions FromMinMax(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
@@ -181,12 +202,16 @@ namespace Dicom.Imaging
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
+            options.ColorMap = GetColorMap(dataset);
 
             return options;
         }
 
+        /// <summary>
+        /// Create grayscale render options based on bit range.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
+        /// <returns>Grayscale render options based on bit range.</returns>
         public static GrayscaleRenderOptions FromBitRange(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
@@ -202,12 +227,17 @@ namespace Dicom.Imaging
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
+            options.ColorMap = GetColorMap(dataset);
 
             return options;
         }
 
+        /// <summary>
+        /// Create grayscale render options based on pixel data histogram.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
+        /// <param name="percent">Percentage of histogram window to include.</param>
+        /// <returns>Grayscale render options based on pixel data histogram.</returns>
         public static GrayscaleRenderOptions FromHistogram(DicomDataset dataset, int percent = 90)
         {
             var bits = BitDepth.FromDataset(dataset);
@@ -235,10 +265,24 @@ namespace Dicom.Imaging
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.Monochrome1 = dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
-                                  == PhotometricInterpretation.Monochrome1;
+            options.ColorMap = GetColorMap(dataset);
 
             return options;
         }
+
+        /// <summary>
+        /// Get grayscale color map based on Photometric Interpretation.
+        /// </summary>
+        /// <param name="dataset">DICOM dataset from which Photometric Interpretation should be obtained.</param>
+        /// <returns>Color map associated with the identified Photometric Interpretation.</returns>
+        private static Color32[] GetColorMap(DicomDataset dataset)
+        {
+            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
+                   == PhotometricInterpretation.Monochrome1
+                       ? ColorTable.Monochrome1
+                       : ColorTable.Monochrome2;
+        }
+
+        #endregion
     }
 }
