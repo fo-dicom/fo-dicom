@@ -11,7 +11,7 @@
         <description>Support library for using MetroLog log handler with fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom" version="2.0.0-alpha1" />
+            <dependency id="fo-dicom.Core" version="2.0.0-alpha1" />
             <dependency id="MetroLog" version="0.8.9" />
         </dependencies>
     </metadata>
