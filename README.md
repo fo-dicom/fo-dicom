@@ -1,4 +1,4 @@
-# Fellow Oak DICOM for .NET
+# Fellow Oak DICOM
 
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
@@ -81,6 +81,23 @@ client.AddRequest(cmove);
 client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
 await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
+
+### 2.0 Breaking Change!
+Due to the split into a core Portable Class Library and platform-specific support libraries, manager classes must be initiated before *fo-dicom* can be used in an application. Initialization should be performed using one of the `Dicom.Managers.Setup` overloads, e.g.
+
+    Dicom.Managers.Setup();
+
+In a .NET application, initialization may additionally require selection of the appropriate log and image managers. Available image managers are `WinFormsImageManager.Instance` and `WPFImageManager.Instance`:
+
+    Dicom.Managers.Setup(WinFormsImageManager.Instance);  // or ...
+    Dicom.Managers.Setup(WPFImageManager.Instance);
+
+Several log managers are available on .NET, for example `ConsoleLogManager.Instance` and `NLogManager.Instance`:
+
+    Dicom.Managers.Setup(ConsoleLogManager.Instance);  // or ...
+    Dicom.Managers.Setup(NLogManager.Instance);        // or ...
+
+To configure both the log and image managers, use the `Dicom.Managers.Setup(LogManager, ImageManager)` overload.
 
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
