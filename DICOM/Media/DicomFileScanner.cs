@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Threading;
-
 namespace Dicom.Media
 {
+    using System.Threading.Tasks;
+
     using Dicom.IO;
 
     public delegate void DicomScanProgressCallback(DicomFileScanner scanner, string directory, int count);
@@ -19,9 +17,9 @@ namespace Dicom.Media
     {
         #region Private Members
 
-        private string _pattern;
+        private readonly string _pattern;
 
-        private bool _recursive;
+        private readonly bool _recursive;
 
         private bool _stop;
 
@@ -48,7 +46,9 @@ namespace Dicom.Media
         #endregion
 
         public event DicomScanProgressCallback Progress;
+
         public event DicomScanFileFoundCallback FileFound;
+
         public event DicomScanCompleteCallback Complete;
 
         #region Public Properties
@@ -97,7 +97,7 @@ namespace Dicom.Media
         {
             _stop = false;
             _count = 0;
-            new Thread(ScanProc).Start(directory);
+            Task.Run(() => this.ScanProc(directory));
         }
 
         public void Stop()
@@ -109,9 +109,8 @@ namespace Dicom.Media
 
         #region Private Methods
 
-        private void ScanProc(object state)
+        private void ScanProc(string directory)
         {
-            string directory = (string)state;
             ScanDirectory(directory);
 
             if (Complete != null) Complete(this);

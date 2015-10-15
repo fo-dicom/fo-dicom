@@ -49,7 +49,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }

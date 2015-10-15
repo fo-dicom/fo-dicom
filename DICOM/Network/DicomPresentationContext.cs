@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Dicom.Network
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+
     public enum DicomPresentationContextResult : byte
     {
         Proposed = 255,
@@ -25,13 +26,13 @@ namespace Dicom.Network
     {
         #region Private Members
 
-        private byte _pcid;
+        private readonly byte _pcid;
 
         private DicomPresentationContextResult _result;
 
-        private DicomUID _abstract;
+        private readonly DicomUID _abstract;
 
-        private List<DicomTransferSyntax> _transferSyntaxes;
+        private readonly List<DicomTransferSyntax> _transferSyntaxes;
 
         #endregion
 
@@ -195,7 +196,7 @@ namespace Dicom.Network
 
         public IList<DicomTransferSyntax> GetTransferSyntaxes()
         {
-            return _transferSyntaxes.AsReadOnly();
+            return new ReadOnlyCollection<DicomTransferSyntax>(_transferSyntaxes);
         }
 
         public bool HasTransferSyntax(DicomTransferSyntax ts)

@@ -8,7 +8,7 @@ namespace Dicom.Network
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
+    using System.Threading.Tasks;
 
     using Dicom.Imaging.Codec;
     using Dicom.IO;
@@ -42,13 +42,11 @@ namespace Dicom.Network
 
         private string _dimseStreamFile;
 
-        private bool _isTempFile;
-
         private int _readLength;
 
         private bool _isConnected;
 
-        private readonly ThreadPoolQueue<int> _processQueue;
+        private readonly TaskQueue<int> _processQueue;
 
         private DicomServiceOptions _options;
 
@@ -65,18 +63,20 @@ namespace Dicom.Network
             {
                 throw new ArgumentNullException("fallbackEncoding");
             }
+
             _network = stream;
             _lock = new object();
             _pduQueue = new Queue<PDU>();
             MaximumPDUsInQueue = 16;
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _processQueue = new ThreadPoolQueue<int>(int.MinValue);
+            _processQueue = new TaskQueue<int>(int.MinValue);
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding;
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
-            BeginReadPDUHeader();
             Options = DicomServiceOptions.Default;
+
+            Task.Run(() => this.BeginReadPDUHeader());
         }
 
         public Logger Logger { get; set; }
@@ -138,14 +138,15 @@ namespace Dicom.Network
             else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnConnectionClosed(exception);
         }
 
-        private void BeginReadPDUHeader()
+        private async Task BeginReadPDUHeader()
         {
             try
             {
                 _readLength = 6;
 
-                byte[] buffer = new byte[6];
-                _network.BeginRead(buffer, 0, 6, EndReadPDUHeader, buffer);
+                var buffer = new byte[6];
+                var count = await this._network.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                await this.EndReadPDUHeader(buffer, count).ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -164,36 +165,35 @@ namespace Dicom.Network
             }
         }
 
-        private void EndReadPDUHeader(IAsyncResult result)
+        private async Task EndReadPDUHeader(byte[] buffer, int count)
         {
             try
             {
-                byte[] buffer = (byte[])result.AsyncState;
-
-                int count = _network.EndRead(result);
                 if (count == 0)
                 {
                     // disconnected
-                    CloseConnection(null);
+                    this.CloseConnection(null);
                     return;
                 }
 
-                _readLength -= count;
+                this._readLength -= count;
 
-                if (_readLength > 0)
+                if (this._readLength > 0)
                 {
-                    _network.BeginRead(buffer, 6 - _readLength, _readLength, EndReadPDUHeader, buffer);
+                    count = await this._network.ReadAsync(buffer, 6 - this._readLength, this._readLength).ConfigureAwait(false);
+                    await this.EndReadPDUHeader(buffer, count).ConfigureAwait(false);
                     return;
                 }
 
-                int length = BitConverter.ToInt32(buffer, 2);
+                var length = BitConverter.ToInt32(buffer, 2);
                 length = Endian.Swap(length);
 
-                _readLength = length;
+                this._readLength = length;
 
                 Array.Resize(ref buffer, length + 6);
 
-                _network.BeginRead(buffer, 6, length, EndReadPDU, buffer);
+                count = await this._network.ReadAsync(buffer, 6, length).ConfigureAwait(false);
+                await this.EndReadPDU(buffer, count).ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -216,25 +216,26 @@ namespace Dicom.Network
             }
         }
 
-        private void EndReadPDU(IAsyncResult result)
+        private async Task EndReadPDU(byte[] buffer, int count)
         {
             try
             {
-                byte[] buffer = (byte[])result.AsyncState;
-
-                int count = _network.EndRead(result);
                 if (count == 0)
                 {
                     // disconnected
-                    CloseConnection(null);
+                    this.CloseConnection(null);
                     return;
                 }
 
-                _readLength -= count;
+                this._readLength -= count;
 
-                if (_readLength > 0)
+                if (this._readLength > 0)
                 {
-                    _network.BeginRead(buffer, buffer.Length - _readLength, _readLength, EndReadPDU, buffer);
+                    count =
+                        await
+                        this._network.ReadAsync(buffer, buffer.Length - this._readLength, this._readLength)
+                            .ConfigureAwait(false);
+                    await this.EndReadPDU(buffer, count).ConfigureAwait(false);
                     return;
                 }
 
@@ -328,7 +329,7 @@ namespace Dicom.Network
                         throw new DicomNetworkException("Unknown PDU type");
                 }
 
-                BeginReadPDUHeader();
+                await this.BeginReadPDUHeader().ConfigureAwait(false);
             }
             catch (IOException e)
             {
@@ -385,8 +386,7 @@ namespace Dicom.Network
                                 file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
-                                _dimseStream = CreateCStoreReceiveStream(file);
-                                _dimseStreamFile = file.File == null ? null : file.File.Name;
+                                CreateCStoreReceiveStream(file);
                             }
                             else
                             {
@@ -409,10 +409,8 @@ namespace Dicom.Network
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
                             reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
-
-                            _dimseStream.Dispose();
-                            _dimseStream = null;
-                            _dimseStreamFile = null;
+                            
+                            this.DisposeDimseStream();
 
                             var type = command.Get<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
@@ -485,7 +483,7 @@ namespace Dicom.Network
                                 Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
                             if (!_dimse.HasDataset)
                             {
-                                if (DicomMessage.IsRequest(_dimse.Type)) ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+                                if (DicomMessage.IsRequest(_dimse.Type)) _processQueue.Queue(PerformDimseCallback, _dimse);
                                 else
                                     _processQueue.Queue(
                                         (_dimse as DicomResponse).RequestMessageID,
@@ -513,9 +511,7 @@ namespace Dicom.Network
                                 reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
-                                _dimseStream.Dispose();
-                                _dimseStream = null;
-                                _dimseStreamFile = null;
+                                this.DisposeDimseStream();
                             }
                             else
                             {
@@ -524,12 +520,7 @@ namespace Dicom.Network
                                 try
                                 {
                                     var dicomFile = GetCStoreDicomFile();
-
-                                    _dimseStream.Dispose();
-                                    _dimseStream = null;
-                                    _dimseStreamFile = null;
-
-                                    _isTempFile = false;
+                                    this.DisposeDimseStream();
 
                                     // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
                                     // GetCStoreDicomFile(), but can be null if a child class overrides either method and changes behavior.
@@ -554,7 +545,7 @@ namespace Dicom.Network
                                 }
                             }
 
-                            if (DicomMessage.IsRequest(_dimse.Type)) ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
+                            if (DicomMessage.IsRequest(_dimse.Type)) _processQueue.Queue(PerformDimseCallback, _dimse);
                             else
                                 _processQueue.Queue(
                                     (_dimse as DicomResponse).RequestMessageID,
@@ -586,17 +577,15 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="file">A DicomFile with FileMetaInfo populated</param>
         /// <returns>The stream to write the SopInstance to</returns>
-        protected virtual Stream CreateCStoreReceiveStream(DicomFile file)
+        protected virtual void CreateCStoreReceiveStream(DicomFile file)
         {
             var temp = TemporaryFile.Create();
 
-            var dimseStream = temp.Open();
-            file.Save(dimseStream);
-            dimseStream.Seek(0, SeekOrigin.Begin);
+            _dimseStream = temp.Open();
+            file.Save(_dimseStream);
+            _dimseStream.Seek(0, SeekOrigin.End);
 
-            _isTempFile = true;
-            dimseStream.Seek(0, SeekOrigin.End);
-            return dimseStream;
+            _dimseStreamFile = temp.Name;
         }
 
         /// <summary>
@@ -610,14 +599,13 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
+            string fileName = _dimseStreamFile;
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
-                _dimseStream.Dispose();
-                _dimseStream = null;
+                this.DisposeDimseStream();
 
-                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
-                file.File.IsTempFile = _isTempFile;
-                _dimseStreamFile = null;
+                var file = DicomFile.Open(fileName, _fallbackEncoding);
+                file.File.IsTempFile = true;
 
                 return file;
             }
@@ -737,81 +725,61 @@ namespace Dicom.Network
             }
         }
 
-        protected void SendPDU(PDU pdu)
+        protected async Task SendPDU(PDU pdu)
         {
-            var flag = new ManualResetEvent(false);
-            using (new Timer(
-                obj =>
-                    {
-                        if (this._pduQueue.Count >= this.MaximumPDUsInQueue) return;
-                        lock (this._lock)
-                        {
-                            this._pduQueue.Enqueue(pdu);
-                            ((ManualResetEvent)obj).Set();
-                        }
-                    }, flag, 0, 10))
+            while (this._pduQueue.Count >= this.MaximumPDUsInQueue)
             {
-                flag.WaitOne();
+                await Task.Delay(10).ConfigureAwait(false);
             }
 
-            SendNextPDU();
+            lock (this._lock)
+            {
+                this._pduQueue.Enqueue(pdu);
+            }
+
+            await this.SendNextPDU().ConfigureAwait(false);
         }
 
-        private void SendNextPDU()
+        private async Task SendNextPDU()
         {
-            if (!_isConnected) return;
-
-            PDU pdu;
-
-            lock (_lock)
+            while (true)
             {
-                if (_writing) return;
+                if (!_isConnected) return;
 
-                if (_pduQueue.Count == 0) return;
+                PDU pdu;
 
-                _writing = true;
+                lock (_lock)
+                {
+                    if (_writing) return;
 
-                pdu = _pduQueue.Dequeue();
-            }
+                    if (_pduQueue.Count == 0) return;
 
-            if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
+                    _writing = true;
 
-            MemoryStream ms = new MemoryStream();
-            pdu.Write().WritePDU(ms);
+                    pdu = _pduQueue.Dequeue();
+                }
 
-            byte[] buffer = ms.ToArray();
+                if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-            try
-            {
-                _network.BeginWrite(buffer, 0, (int)ms.Length, OnEndSendPDU, buffer);
-            }
-            catch (IOException e)
-            {
-                LogIOException(this.Logger, e, false);
-                CloseConnection(e);
-            }
-        }
+                MemoryStream ms = new MemoryStream();
+                pdu.Write().WritePDU(ms);
 
-        private void OnEndSendPDU(IAsyncResult ar)
-        {
-            byte[] buffer = (byte[])ar.AsyncState;
+                byte[] buffer = ms.ToArray();
 
-            try
-            {
-                _network.EndWrite(ar);
-            }
-            catch (IOException e)
-            {
-                LogIOException(this.Logger, e, false);
-                CloseConnection(e);
-            }
-            catch
-            {
-            }
-            finally
-            {
+                try
+                {
+                    await this._network.WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
+                }
+                catch (IOException e)
+                {
+                    LogIOException(this.Logger, e, false);
+                    CloseConnection(e);
+                }
+                catch
+                {
+                }
+
                 lock (_lock) _writing = false;
-                SendNextPDU();
             }
         }
 
@@ -997,11 +965,19 @@ namespace Dicom.Network
             finally
             {
                 dimse.Stream.Flush(true);
-                dimse.Stream.Close();
+                dimse.Stream.Dispose();
 
                 lock (_lock) _sending = false;
                 SendNextMessage();
             }
+        }
+
+        private void DisposeDimseStream()
+        {
+            if (this._dimseStream != null) this._dimseStream.Dispose();
+
+            this._dimseStream = null;
+            this._dimseStreamFile = null;
         }
 
         public virtual void SendRequest(DicomRequest request)
@@ -1133,7 +1109,7 @@ namespace Dicom.Network
                 }
             }
 
-            private void WritePDU(bool last)
+            private async void WritePDU(bool last)
             {
                 if (_length > 0) CreatePDV(last);
 
@@ -1141,7 +1117,7 @@ namespace Dicom.Network
                 {
                     if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
-                    _service.SendPDU(_pdu);
+                    await _service.SendPDU(_pdu).ConfigureAwait(false);
 
                     _pdu = new PDataTF();
                 }
@@ -1258,16 +1234,16 @@ namespace Dicom.Network
 
         #region Send Methods
 
-        protected void SendAssociationRequest(DicomAssociation association)
+        protected async void SendAssociationRequest(DicomAssociation association)
         {
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
-            SendPDU(new AAssociateRQ(Association));
+            await SendPDU(new AAssociateRQ(Association)).ConfigureAwait(false);
         }
 
-        protected void SendAssociationAccept(DicomAssociation association)
+        protected async void SendAssociationAccept(DicomAssociation association)
         {
             Association = association;
 
@@ -1278,10 +1254,10 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            SendPDU(new AAssociateAC(Association));
+            await SendPDU(new AAssociateAC(Association)).ConfigureAwait(false);
         }
 
-        protected void SendAssociationReject(
+        protected async void SendAssociationReject(
             DicomRejectResult result,
             DicomRejectSource source,
             DicomRejectReason reason)
@@ -1292,25 +1268,25 @@ namespace Dicom.Network
                 result,
                 source,
                 reason);
-            SendPDU(new AAssociateRJ(result, source, reason));
+            await SendPDU(new AAssociateRJ(result, source, reason)).ConfigureAwait(false);
         }
 
-        protected void SendAssociationReleaseRequest()
+        protected async void SendAssociationReleaseRequest()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            SendPDU(new AReleaseRQ());
+            await SendPDU(new AReleaseRQ()).ConfigureAwait(false);
         }
 
-        protected void SendAssociationReleaseResponse()
+        protected async void SendAssociationReleaseResponse()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            SendPDU(new AReleaseRP());
+            await SendPDU(new AReleaseRP()).ConfigureAwait(false);
         }
 
-        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason)
+        protected async void SendAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            SendPDU(new AAbort(source, reason));
+            await SendPDU(new AAbort(source, reason)).ConfigureAwait(false);
         }
 
         #endregion

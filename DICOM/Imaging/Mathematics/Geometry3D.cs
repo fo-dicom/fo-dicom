@@ -1011,7 +1011,7 @@ namespace Dicom.Imaging.Mathematics
             Point3D p = Plane.ClosestPoint(point);
             //normal vector?
             throw new NotImplementedException();
-            return p;
+            //return p;
         }
 
         public Segment3D Project(Segment3D segment)

@@ -43,7 +43,7 @@ namespace Dicom.Network
             _type = type;
             _ms = new MemoryStream();
             _ms.Seek(0, SeekOrigin.Begin);
-            _bw = EndianBinaryWriter.Create(_ms, Encoding.ASCII, Endian.Big);
+            _bw = EndianBinaryWriter.Create(_ms, DicomEncoding.Default, Endian.Big);
             _m16 = new Stack<long>();
             _m32 = new Stack<long>();
         }

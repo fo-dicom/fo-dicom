@@ -4,7 +4,6 @@
 namespace Dicom.IO.Reader
 {
     using System;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Extension class for providing legacy methods from <see cref="DicomFileReader"/> class.

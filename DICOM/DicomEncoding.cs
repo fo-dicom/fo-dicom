@@ -6,10 +6,23 @@ using System.Text;
 
 namespace Dicom
 {
+    using Dicom.IO;
+
+    /// <summary>
+    /// Support methods for DICOM encoding.
+    /// </summary>
     public static class DicomEncoding
     {
-        public static readonly Encoding Default = Encoding.ASCII;
+        /// <summary>
+        /// Default DICOM encoding.
+        /// </summary>
+        public static readonly Encoding Default = IOManager.BaseEncoding;
 
+        /// <summary>
+        /// Get encoding from charset.
+        /// </summary>
+        /// <param name="charset">Charset.</param>
+        /// <returns>DICOM encoding.</returns>
         public static Encoding GetEncoding(string charset)
         {
             if (String.IsNullOrWhiteSpace(charset)) return Default;
@@ -90,6 +103,11 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Get charset from encoding.
+        /// </summary>
+        /// <param name="encoding">Encoding.</param>
+        /// <returns>Charset.</returns>
         public static string GetCharset(Encoding encoding)
         {
             if (encoding == null) return "ISO 2022 IR 6";

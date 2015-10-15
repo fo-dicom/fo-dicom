@@ -428,11 +428,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _pattern;
+        private readonly string _pattern;
 
-        private Regex _regex;
+        private readonly Regex _regex;
 
         #endregion
 
@@ -442,7 +442,7 @@ namespace Dicom
         {
             _tag = tag;
             _pattern = pattern;
-            _regex = new Regex(_pattern, RegexOptions.Compiled);
+            _regex = new Regex(_pattern);
         }
 
         #endregion

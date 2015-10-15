@@ -5,22 +5,22 @@ namespace Dicom.Imaging.Codec
 {
     using System;
     using System.ComponentModel.Composition.Hosting;
+    using System.IO;
     using System.Reflection;
 
-    using Dicom.IO;
     using Dicom.Log;
 
     /// <summary>
-    /// Implementation of <see cref="DicomTranscoderManager"/> for Windows desktop (.NET) applications.
+    /// Implementation of <see cref="TranscoderManager"/> for Windows desktop (.NET) applications.
     /// </summary>
-    public sealed class DesktopTranscoderManager : DicomTranscoderManager
+    public sealed class DesktopTranscoderManager : TranscoderManager
     {
         #region FIELDS
 
         /// <summary>
         /// Singleton instance of the <see cref="DesktopTranscoderManager"/>.
         /// </summary>
-        public static readonly DicomTranscoderManager Instance;
+        public static readonly TranscoderManager Instance;
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Dicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         protected override void LoadCodecsImpl(string path, string search)
         {
-            if (path == null) path = IOManager.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
+            if (path == null) path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
 
             if (search == null) search = "Dicom.Native*.dll";
 

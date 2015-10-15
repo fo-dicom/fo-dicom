@@ -50,7 +50,7 @@ namespace Dicom.Imaging.Codec
         {
             get
             {
-                if (InputSyntax.IsEncapsulated && _inputCodec == null) _inputCodec = DicomTranscoderManager.GetCodec(InputSyntax);
+                if (InputSyntax.IsEncapsulated && _inputCodec == null) _inputCodec = TranscoderManager.GetCodec(InputSyntax);
                 return _inputCodec;
             }
         }
@@ -71,7 +71,7 @@ namespace Dicom.Imaging.Codec
         {
             get
             {
-                if (OutputSyntax.IsEncapsulated && _outputCodec == null) _outputCodec = DicomTranscoderManager.GetCodec(OutputSyntax);
+                if (OutputSyntax.IsEncapsulated && _outputCodec == null) _outputCodec = TranscoderManager.GetCodec(OutputSyntax);
                 return _outputCodec;
             }
         }

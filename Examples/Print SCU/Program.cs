@@ -6,12 +6,17 @@ namespace Print_SCU
     using System;
     using System.Drawing;
 
+    using Dicom;
     using Dicom.Imaging;
+    using Dicom.Log;
 
     internal class Program
     {
         private static void Main(string[] args)
         {
+            // Initialize managers.
+            Managers.Setup(ConsoleLogManager.Instance, WinFormsImageManager.Instance);
+
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
@@ -46,7 +51,7 @@ namespace Print_SCU
             stopwatch.Stop();
             Console.WriteLine();
             Console.WriteLine(stopwatch.Elapsed);
-
+            Console.Read();
         }
     }
 }

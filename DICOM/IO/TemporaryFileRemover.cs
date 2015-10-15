@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace Dicom.IO
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Support class for removing temporary files, with repeated attempts if required.
     /// </summary>
@@ -23,8 +23,6 @@ namespace Dicom.IO
 
         private readonly List<IFileReference> files = new List<IFileReference>();
 
-        private readonly Timer timer;
-
         private bool running;
 
         #endregion
@@ -37,7 +35,6 @@ namespace Dicom.IO
         /// <remarks>Private constructor since only a singleton instance of the class is required.</remarks>
         private TemporaryFileRemover()
         {
-            this.timer = new Timer(this.OnTick);
         }
 
         /// <summary>
@@ -111,8 +108,8 @@ namespace Dicom.IO
                         this.files.Add(file);
                         if (!this.running)
                         {
-                            this.timer.Change(1000, 1000);
                             this.running = true;
+                            Task.Run((Action)this.DeleteAll);
                         }
                     }
                 }
@@ -122,29 +119,33 @@ namespace Dicom.IO
         /// <summary>
         /// Event handler for repeated file removal attempts.
         /// </summary>
-        /// <param name="state">Event state, not used here.</param>
-        private void OnTick(object state)
+        private async void DeleteAll()
         {
-            lock (this.locker)
+            while (true)
             {
-                foreach (var file in this.files)
+                lock (this.locker)
                 {
-                    try
+                    foreach (var file in this.files)
                     {
-                        file.Delete();
+                        try
+                        {
+                            file.Delete();
+                        }
+                        catch
+                        {
+                            // Just ignore if deletion fails.
+                        }
                     }
-                    catch
-                    {
-                        // Just ignore if deletion fails.
-                    }
-                }
-                this.files.RemoveAll(file => !file.Exists);
+                    this.files.RemoveAll(file => !file.Exists);
 
-                if (this.files.Count == 0)
-                {
-                    this.timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    this.running = false;
+                    if (this.files.Count == 0)
+                    {
+                        this.running = false;
+                        return;
+                    }
                 }
+
+                await Task.Delay(1000).ConfigureAwait(false);
             }
         }
 

@@ -19,15 +19,23 @@ namespace Dicom.Network
 
         #endregion
 
-        #region CONSTRUCTORS
+        #region PROPERTIES
 
         /// <summary>
-        /// Initializes the static fields of <see cref="NetworkManager"/>.
+        /// Gets machine name.
         /// </summary>
-        static NetworkManager()
+        public static string MachineName
         {
-            SetImplementation(DesktopNetworkManager.Instance);
+            get
+            {
+                return implementation.MachineNameImpl;
+            }
         }
+
+        /// <summary>
+        /// Implementation of the machine name getter.
+        /// </summary>
+        protected abstract string MachineNameImpl { get; }
 
         #endregion
 

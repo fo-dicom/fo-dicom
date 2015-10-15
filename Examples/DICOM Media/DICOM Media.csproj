@@ -126,26 +126,26 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM [Native]\x64\DICOM [Native64].vcxproj">
-      <Project>{fa9c7678-b9d9-46bc-8921-8152fd6787ca}</Project>
-      <Name>DICOM [Native64]</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DICOM [Native]\x86\DICOM [Native].vcxproj">
-      <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
-      <Name>DICOM [Native]</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DICOM\DICOM.csproj">
-      <Project>{d6e309b0-4837-459e-8c85-abc268440d62}</Project>
-      <Name>DICOM</Name>
-    </ProjectReference>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM\DICOM.csproj">
-      <Project>{D6E309B0-4837-459E-8C85-ABC268440D62}</Project>
-      <Name>DICOM</Name>
+    <ProjectReference Include="..\..\DICOM.Desktop\DICOM.Desktop.csproj">
+      <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
+      <Name>DICOM.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOM.Native\x64\DICOM.Native64.vcxproj">
+      <Project>{fa9c7678-b9d9-46bc-8921-8152fd6787ca}</Project>
+      <Name>DICOM.Native64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOM.Native\x86\DICOM.Native.vcxproj">
+      <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
+      <Name>DICOM.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
+      <Name>DICOM.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

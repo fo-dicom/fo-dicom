@@ -10,6 +10,8 @@ using Dicom.StructuredReport;
 
 namespace Dicom
 {
+    using System.Reflection;
+
     public class DicomDataset : IEnumerable<DicomItem>
     {
         private IDictionary<DicomTag, DicomItem> _items;
@@ -18,7 +20,7 @@ namespace Dicom
 
         public DicomDataset()
         {
-            _items = new SortedList<DicomTag, DicomItem>();
+            _items = new SortedDictionary<DicomTag, DicomItem>();
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
         }
 
@@ -80,15 +82,15 @@ namespace Dicom
 
             if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
 
-            if (typeof(T).IsSubclassOf(typeof(DicomItem))) return (T)(object)item;
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomItem))) return (T)(object)item;
 
             if (typeof(T) == typeof(DicomVR)) return (T)(object)item.ValueRepresentation;
 
-            if (item.GetType().IsSubclassOf(typeof(DicomElement)))
+            if (item.GetType().GetTypeInfo().IsSubclassOf(typeof(DicomElement)))
             {
                 DicomElement element = (DicomElement)item;
 
-                if (typeof(IByteBuffer).IsAssignableFrom(typeof(T))) return (T)(object)element.Buffer;
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) return (T)(object)element.Buffer;
 
                 if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
 
@@ -214,7 +216,7 @@ namespace Dicom
             {
                 if (values == null) return Add(new DicomCodeString(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(string)) return Add(new DicomCodeString(tag, values.Cast<string>().ToArray()));
-                if (typeof(T).IsEnum) return Add(new DicomCodeString(tag, values.Select(x => x.ToString()).ToArray()));
+                if (typeof(T).GetTypeInfo().IsEnum) return Add(new DicomCodeString(tag, values.Select(x => x.ToString()).ToArray()));
             }
 
             if (vr == DicomVR.DA)

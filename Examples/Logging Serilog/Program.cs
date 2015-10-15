@@ -18,11 +18,13 @@ namespace Dicom.Demo.SerilogDemo
 
         private static void Main(string[] args)
         {
-
             //SPECIFIC LOGGER VERSUS GLOBAL LOGGER
-            //UseSpecificSerilogLogger();
+            //var serilogManager = UseSpecificSerilogLogger();
             //ALTERNATE
-            UseGlobalSerilogLogger();
+            var serilogManager = UseGlobalSerilogLogger();
+
+            // Initialize managers.
+            Managers.Setup(serilogManager);
 
             //Do some DICOM work
             var file = DicomFile.Open(@"..\..\..\DICOM Media\Data\Patient1\2.dcm");
@@ -42,7 +44,7 @@ namespace Dicom.Demo.SerilogDemo
         }
 
 
-        private static void UseSpecificSerilogLogger()
+        private static SerilogManager UseSpecificSerilogLogger()
         {
             //Get a Serilog logger instance
             var logger = ConfigureLogging();
@@ -51,18 +53,16 @@ namespace Dicom.Demo.SerilogDemo
             logger = logger.ForContext("Purpose", "Demonstration");
 
             //Configure fo-dicom & Serilog
-            LogManager.SetImplementation(new SerilogManager(logger));
-
+            return new SerilogManager(logger);
         }
 
-        private static void UseGlobalSerilogLogger()
+        private static SerilogManager UseGlobalSerilogLogger()
         {
             //Configure logging
             ConfigureLogging();
 
             //Configure fo-dicom & Serilog
-            LogManager.SetImplementation(new SerilogManager());
-
+            return new SerilogManager();
         }
 
 

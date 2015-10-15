@@ -15,12 +15,15 @@ namespace Dicom.CStoreSCP
 
         private static void Main(string[] args)
         {
+            // Initialize managers.
+            Managers.Setup(ConsoleLogManager.Instance);
+
             // preload dictionary to prevent timeouts
             var dict = DicomDictionary.Default;
 
 
-            // start DICOM server on port 104
-            var server = new DicomServer<CStoreSCP>(104);
+            // start DICOM server on port 11112
+            var server = new DicomServer<CStoreSCP>(11112);
 
 
             // end process
