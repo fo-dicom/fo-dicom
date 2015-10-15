@@ -1,16 +1,17 @@
 # Fellow Oak DICOM for .NET
 
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[//]: # ( [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/) )
 
 ### Features
-* Targets .NET 4.5 and higher
+* Core functionality in Portable Class Library
+* Targets .NET 4.5 and higher, and Mono
 * DICOM dictionary version 2015c
-* High-performance, fully asynchronous API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
+* High-performance, fully asynchronous `async`/`await` API
+* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (.NET only)
 * Supports very large datasets with content loading on demand
 * Image rendering
 
@@ -18,7 +19,8 @@
 
 #### File Operations
 ```csharp
-var file = DicomFile.Open(@"test.dcm");
+var file = DicomFile.Open(@"test.dcm");             // Alt 1
+var file = await DicomFile.OpenAsync(@"test.dcm");  // Alt 2
 
 var patientid = file.Dataset.Get<string>(DicomTag.PatientID);
 
@@ -27,7 +29,8 @@ file.Dataset.Add(DicomTag.PatientsName, "DOE^JOHN");
 // creates a new instance of DicomFile
 file = file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
 
-file.Save(@"output.dcm");
+file.Save(@"output.dcm");             // Alt 1
+await file.SaveAsync(@"output.dcm");  // Alt 2
 ```
 
 #### Render Image to JPEG
@@ -40,7 +43,8 @@ image.RenderImage().Save(@"test.jpg");
 ```csharp
 var client = new DicomClient();
 client.AddRequest(new DicomCStoreRequest(@"test.dcm"));
-client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");             // Alt 1
+await client.SendAsync("127.0.0.1", 12345, false, "SCU", "ANY-SCP");  // Alt 2
 ```
 
 #### C-Echo SCU/SCP
@@ -51,7 +55,8 @@ var client = new DicomClient();
 client.NegotiateAsyncOps();
 for (int i = 0; i < 10; i++)
     client.AddRequest(new DicomCEchoRequest());
-client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");             // Alt 1
+await client.SendAsync("127.0.0.1", 12345, false, "SCU", "ANY-SCP");  // Alt 2
 ```
 
 #### C-Find SCU
@@ -63,7 +68,8 @@ cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
 
 var client = new DicomClient();
 client.AddRequest(cfind);
-client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
+client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
+await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
 #### C-Move SCU
@@ -72,7 +78,8 @@ var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
 
 var client = new DicomClient();
 client.AddRequest(cmove);
-client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");
+client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
+await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
 ### Contributors
