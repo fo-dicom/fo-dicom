@@ -52,30 +52,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM.Desktop\DICOM.Desktop.csproj">
+    <ProjectReference Include="..\..\DICOM.Desktop\DICOM.Desktop.csproj">
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
       <Name>DICOM.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM.Native\x64\DICOM.Native64.vcxproj">
+    <ProjectReference Include="..\..\DICOM.Native\x64\DICOM.Native64.vcxproj">
       <Project>{fa9c7678-b9d9-46bc-8921-8152fd6787ca}</Project>
       <Name>DICOM.Native64</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM.Native\x86\DICOM.Native.vcxproj">
+    <ProjectReference Include="..\..\DICOM.Native\x86\DICOM.Native.vcxproj">
       <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
       <Name>DICOM.Native</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Logging\DICOM.NLog\DICOM.NLog.csproj">
+    <ProjectReference Include="..\..\Logging\DICOM.NLog\DICOM.NLog.csproj">
       <Project>{89075100-3f00-44fb-a1cc-f77c10a59667}</Project>
       <Name>DICOM.NLog</Name>
     </ProjectReference>
