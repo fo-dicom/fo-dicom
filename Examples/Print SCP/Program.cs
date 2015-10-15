@@ -6,6 +6,8 @@ namespace Print_SCP
     using System;
 
     using Dicom;
+    using Dicom.Imaging;
+    using Dicom.Log;
     using Dicom.Printing;
 
     internal class Program
@@ -13,7 +15,7 @@ namespace Print_SCP
         private static void Main(string[] args)
         {
             // Initialize managers.
-            Managers.Setup();
+            Managers.Setup(ConsoleLogManager.Instance, WinFormsImageManager.Instance);
 
             //This is a simple DICOM Print SCP implementation with Print Job and Send Event Report Support
             //This sample depends on the Microsoft XPS Document Writer Printer to be installed on the system
