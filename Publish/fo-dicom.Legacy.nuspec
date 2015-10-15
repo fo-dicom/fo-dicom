@@ -1,22 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>fo-dicom.NLog</id>
+        <id>fo-dicom.Legacy</id>
         <version>2.0.0-alpha1</version>
-        <title>Fellow Oak DICOM NLog support</title>
+        <title>Fellow Oak DICOM Legacy Support</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Support library for using NLog log handler with fo-dicom.</description>
+        <description>A DICOM library, legacy support</description>
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Core" version="2.0.0-alpha1" />
-            <dependency id="NLog" version="3.2.1" />
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Logging\DICOM.NLog\bin\Release\Dicom.NLog.dll" target="lib\net45\Dicom.NLog.dll" />
-        <file src="..\Logging\DICOM.NLog\bin\Release\Dicom.NLog.pdb" target="lib\net45\Dicom.NLog.pdb" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.dll" target="lib\portable-net45+netcore45+wpa81\Dicom.dll" />
+        <file src="..\DICOM\bin\Release\Dicom.Legacy.pdb" target="lib\portable-net45+netcore45+wpa81\Dicom.pdb" />
     </files>
 </package>
