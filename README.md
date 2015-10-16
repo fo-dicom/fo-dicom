@@ -7,13 +7,40 @@
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### Features
-* Core functionality in Portable Class Library
+* Core functionality in Portable Class Library (PCL)
 * Targets .NET 4.5 and higher, and Mono
 * DICOM dictionary version 2015c
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (.NET only)
 * Supports very large datasets with content loading on demand
 * Image rendering
+
+### Installation
+Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package contains all assemblies required to consume *fo-dicom* in a .NET application.
+
+Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and 
+[Dicom.Platform](https://www.nuget.org/packages/fo-dicom.Platform/). *Dicom.Core* is the PCL library with core functionality, *Dicom.Legacy* is a PCL library with obsolete asynchronous API methods, and *Dicom.Platform* contains
+the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher is the available platform in the *Dicom.Platform* *NuGet* package.
+
+*fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/), 
+[log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/).
+
+### v2.0 Breaking Change
+Due to the split into a core Portable Class Library and platform-specific support libraries, manager classes must be initiated before *fo-dicom* can be used in an application. Initialization should be performed using one of the `Dicom.Managers.Setup` overloads, e.g.
+
+    Dicom.Managers.Setup();
+
+In a .NET application, initialization may additionally require selection of the appropriate log and image managers. Available image managers are `WinFormsImageManager.Instance` and `WPFImageManager.Instance`:
+
+    Dicom.Managers.Setup(WinFormsImageManager.Instance);  // or ...
+    Dicom.Managers.Setup(WPFImageManager.Instance);
+
+Several log managers are available on .NET, for example `ConsoleLogManager.Instance` and `NLogManager.Instance`:
+
+    Dicom.Managers.Setup(ConsoleLogManager.Instance);  // or ...
+    Dicom.Managers.Setup(NLogManager.Instance);        // or ...
+
+To configure both the log and image managers, use the `Dicom.Managers.Setup(LogManager, ImageManager)` overload.
 
 ### Examples
 
@@ -82,23 +109,6 @@ client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
 await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
-### 2.0 Breaking Change!
-Due to the split into a core Portable Class Library and platform-specific support libraries, manager classes must be initiated before *fo-dicom* can be used in an application. Initialization should be performed using one of the `Dicom.Managers.Setup` overloads, e.g.
-
-    Dicom.Managers.Setup();
-
-In a .NET application, initialization may additionally require selection of the appropriate log and image managers. Available image managers are `WinFormsImageManager.Instance` and `WPFImageManager.Instance`:
-
-    Dicom.Managers.Setup(WinFormsImageManager.Instance);  // or ...
-    Dicom.Managers.Setup(WPFImageManager.Instance);
-
-Several log managers are available on .NET, for example `ConsoleLogManager.Instance` and `NLogManager.Instance`:
-
-    Dicom.Managers.Setup(ConsoleLogManager.Instance);  // or ...
-    Dicom.Managers.Setup(NLogManager.Instance);        // or ...
-
-To configure both the log and image managers, use the `Dicom.Managers.Setup(LogManager, ImageManager)` overload.
-
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
 * [Anders Gustafsson](https://github.com/anders9ustafsson) (Cureos AB)
@@ -106,8 +116,13 @@ To configure both the log and image managers, use the `Dicom.Managers.Setup(LogM
 * [Ian Yates](http://github.com/IanYates)
 * [Chris Horn](https://github.com/GMZ)
 * [Mahesh Dubey](https://github.com/mdubey82)
+* [Alexander Saratow](https://github.com/swalex)
 * [Justin Wake](https://github.com/jwake)
+* [Ryan Melena](https://github.com/RyanMelenaNoesis)
+* [Chris Hafey](https://github.com/chafey)
+* [Michael Pavlovsky](https://github.com/michaelp)
 * [captainstark](https://github.com/captainstark)
+* [lste](https://github.com/lste)
 
 ### License
-This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See _License.txt_ for more information.
+This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
