@@ -18,7 +18,7 @@
     <files>
         <file src="..\DICOM.Native\Release\Dicom.Native.dll" target="build\net45" />
         <file src="..\DICOM.Native\Release\Dicom.Native64.dll" target="build\net45" />
-        <file src="..\fo-dicom.targets" target="build" />
+        <file src="..\fo-dicom.targets" target="build\fo-dicom.Platform.targets" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
     </files>

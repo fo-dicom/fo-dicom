@@ -11,20 +11,10 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A DICOM library</description>
         <language>en-US</language>
+        <dependencies>
+            <dependency id="fo-dicom.Legacy" version="$version$" />
+            <dependency id="fo-dicom.Platform" version="$version$" />
+        </dependencies>
     </metadata>
-    <files>
-        <file src="..\DICOM.Native\Release\Dicom.Native.dll" target="build\net45" />
-        <file src="..\DICOM.Native\Release\Dicom.Native64.dll" target="build\net45" />
-        <file src="..\fo-dicom.targets" target="build" />
-        <file src="..\DICOM\bin\Release\Dicom.Core.dll" target="lib\net45" />
-        <file src="..\DICOM\bin\Release\Dicom.Core.pdb" target="lib\net45" />
-        <file src="..\DICOM\bin\Release\Dicom.Legacy.dll" target="lib\net45" />
-        <file src="..\DICOM\bin\Release\Dicom.Legacy.pdb" target="lib\net45" />
-        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
-        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
-        <file src="..\DICOM\bin\Release\Dicom.Core.dll" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\DICOM\bin\Release\Dicom.Core.pdb" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\DICOM\bin\Release\Dicom.Legacy.dll" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\DICOM\bin\Release\Dicom.Legacy.pdb" target="lib\portable-net45+netcore45+wpa81" />
-    </files>
+    <files/>
 </package>
