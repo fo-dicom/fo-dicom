@@ -5,7 +5,6 @@ namespace Dicom.Threading
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -38,7 +37,7 @@ namespace Dicom.Threading
 
             public readonly object Lock = new object();
 
-            public volatile bool Executing = false;
+            public volatile Task Task;
 
             public readonly Queue<WorkItem> Items = new Queue<WorkItem>();
 
@@ -88,7 +87,7 @@ namespace Dicom.Threading
         {
             _stopped = false;
 
-            foreach (var group in _groups.Keys.ToArray()) Execute(group);
+            foreach (var group in _groups.Keys) Execute(group);
         }
 
         /// <summary>
@@ -196,17 +195,8 @@ namespace Dicom.Threading
 
             lock (group.Lock)
             {
-                if (group.Executing) return;
-
-                if (group.Items.Count == 0 && !group.Key.Equals(DefaultGroup))
-                {
-                    _groups.Remove(groupKey);
-                    return;
-                }
-
-                group.Executing = true;
-
-                Task.Run(() => this.ExecuteProc(group));
+                if (group.Task != null && !group.Task.IsCompleted) return;
+                group.Task = Task.Run(() => this.ExecuteProc(group));
             }
         }
 
@@ -258,7 +248,7 @@ namespace Dicom.Threading
                     {
                         lock (group.Lock)
                         {
-                            group.Executing = false;
+                            group.Task = null;
 
                             lock (_lock)
                             {
