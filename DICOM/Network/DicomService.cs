@@ -964,7 +964,7 @@ namespace Dicom.Network
             }
             finally
             {
-                dimse.Stream.Flush(true);
+                dimse.Stream.Flush(true).Wait();
                 dimse.Stream.Dispose();
 
                 lock (_lock) _sending = false;
@@ -1064,10 +1064,10 @@ namespace Dicom.Network
 
             #region Public Members
 
-            public void Flush(bool last)
+            public async Task Flush(bool last)
             {
-                CreatePDV(last);
-                WritePDU(last);
+                await CreatePDV(last).ConfigureAwait(false);
+                await WritePDU(last).ConfigureAwait(false);
             }
 
             #endregion
@@ -1080,7 +1080,7 @@ namespace Dicom.Network
                 return 6 + _pdu.GetLengthOfPDVs();
             }
 
-            private void CreatePDV(bool last)
+            private async Task CreatePDV(bool last)
             {
                 try
                 {
@@ -1096,7 +1096,7 @@ namespace Dicom.Network
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
                     // is the current PDU at its maximum size or do we have room for another PDV?
-                    if ((CurrentPduSize() + 6) >= _max || (!_command && last)) WritePDU(last);
+                    if ((CurrentPduSize() + 6) >= _max || (!_command && last)) await WritePDU(last).ConfigureAwait(false);
 
                     // Max PDU Size - Current Size - Size of PDV header
                     uint max = _max - CurrentPduSize() - 6;
@@ -1109,7 +1109,7 @@ namespace Dicom.Network
                 }
             }
 
-            private async void WritePDU(bool last)
+            private async Task WritePDU(bool last)
             {
                 if (_length > 0) CreatePDV(last);
 
