@@ -1234,16 +1234,16 @@ namespace Dicom.Network
 
         #region Send Methods
 
-        protected async void SendAssociationRequest(DicomAssociation association)
+        protected void SendAssociationRequest(DicomAssociation association)
         {
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
-            await SendPDU(new AAssociateRQ(Association)).ConfigureAwait(false);
+            SendPDU(new AAssociateRQ(Association)).Wait();
         }
 
-        protected async void SendAssociationAccept(DicomAssociation association)
+        protected void SendAssociationAccept(DicomAssociation association)
         {
             Association = association;
 
@@ -1254,10 +1254,10 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            await SendPDU(new AAssociateAC(Association)).ConfigureAwait(false);
+            SendPDU(new AAssociateAC(Association)).Wait();
         }
 
-        protected async void SendAssociationReject(
+        protected void SendAssociationReject(
             DicomRejectResult result,
             DicomRejectSource source,
             DicomRejectReason reason)
@@ -1268,25 +1268,25 @@ namespace Dicom.Network
                 result,
                 source,
                 reason);
-            await SendPDU(new AAssociateRJ(result, source, reason)).ConfigureAwait(false);
+            SendPDU(new AAssociateRJ(result, source, reason)).Wait();
         }
 
-        protected async void SendAssociationReleaseRequest()
+        protected void SendAssociationReleaseRequest()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            await SendPDU(new AReleaseRQ()).ConfigureAwait(false);
+            SendPDU(new AReleaseRQ()).Wait();
         }
 
-        protected async void SendAssociationReleaseResponse()
+        protected void SendAssociationReleaseResponse()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            await SendPDU(new AReleaseRP()).ConfigureAwait(false);
+            SendPDU(new AReleaseRP()).Wait();
         }
 
-        protected async void SendAbort(DicomAbortSource source, DicomAbortReason reason)
+        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            await SendPDU(new AAbort(source, reason)).ConfigureAwait(false);
+            SendPDU(new AAbort(source, reason)).Wait();
         }
 
         #endregion
