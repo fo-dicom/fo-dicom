@@ -1054,7 +1054,7 @@ namespace Dicom.Network
                                        ? _service.Options.MaxDataBuffer
                                        : Math.Min(_pduMax, _service.Options.MaxDataBuffer);
 
-                        CreatePDV(true);
+                        CreatePDV(true).Wait();
                         _command = value;
                     }
                 }
@@ -1111,7 +1111,7 @@ namespace Dicom.Network
 
             private async Task WritePDU(bool last)
             {
-                if (_length > 0) CreatePDV(last);
+                if (_length > 0) await CreatePDV(last).ConfigureAwait(false);
 
                 if (_pdu.PDVs.Count > 0)
                 {
@@ -1211,7 +1211,7 @@ namespace Dicom.Network
                         offset += c;
                         count -= c;
 
-                        CreatePDV(false);
+                        CreatePDV(false).Wait();
                     }
 
                     if (count > 0)
@@ -1219,7 +1219,7 @@ namespace Dicom.Network
                         Array.Copy(buffer, offset, _bytes, _length, count);
                         _length += count;
 
-                        if (_bytes.Length == _length) CreatePDV(false);
+                        if (_bytes.Length == _length) CreatePDV(false).Wait();
                     }
                 }
                 catch (Exception e)

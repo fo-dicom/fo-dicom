@@ -392,8 +392,7 @@ namespace Dicom.Network
                 await Task.Delay(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger).ConfigureAwait(false);
                 if (!this.IsSendQueueEmpty || !this.IsConnected) return;
 
-                await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
-                this.SetComplete();
+                this._SendAssociationReleaseRequest();
             }
 
             private async Task OnReleaseTimeout()
