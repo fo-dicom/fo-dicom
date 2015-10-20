@@ -21,5 +21,7 @@
         <file src="..\fo-dicom.targets" target="build\fo-dicom.Platform.targets" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
+        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
     </files>
 </package>
