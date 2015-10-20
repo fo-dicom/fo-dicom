@@ -16,7 +16,7 @@ namespace Dicom
     {
         #region FIELDS
 
-        protected static readonly LogManager PlatformLogManagerImpl;
+        protected static LogManager PlatformLogManagerImpl;
 
         protected static readonly IOManager PlatformIOManagerImpl;
 
@@ -24,7 +24,7 @@ namespace Dicom
 
         protected static readonly TranscoderManager PlatformTranscoderManagerImpl;
 
-        protected static readonly ImageManager PlatformImageManagerImpl;
+        protected static ImageManager PlatformImageManagerImpl;
 
         #endregion
 
@@ -59,6 +59,9 @@ namespace Dicom
         /// <param name="imageManagerImpl">Selected image manager implementation.</param>
         public static void Setup(LogManager logManagerImpl, ImageManager imageManagerImpl)
         {
+            if (logManagerImpl != null) PlatformLogManagerImpl = logManagerImpl;
+            if (imageManagerImpl != null) PlatformImageManagerImpl = imageManagerImpl;
+
             Setup(
                 logManagerImpl,
                 PlatformIOManagerImpl,
@@ -73,6 +76,8 @@ namespace Dicom
         /// <param name="logManagerImpl">Selected log manager implementation.</param>
         public static void Setup(LogManager logManagerImpl)
         {
+            if (logManagerImpl != null) PlatformLogManagerImpl = logManagerImpl;
+
             Setup(
                 logManagerImpl,
                 PlatformIOManagerImpl,
@@ -87,6 +92,8 @@ namespace Dicom
         /// <param name="imageManagerImpl">Selected image manager implementation.</param>
         public static void Setup(ImageManager imageManagerImpl)
         {
+            if (imageManagerImpl != null) PlatformImageManagerImpl = imageManagerImpl;
+
             Setup(
                 PlatformLogManagerImpl,
                 PlatformIOManagerImpl,

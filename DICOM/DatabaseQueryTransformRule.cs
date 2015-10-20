@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+#if !__IOS__
 using System.Data.Odbc;
+#endif
 using System.Data.SqlClient;
 
 namespace Dicom
@@ -134,9 +136,10 @@ namespace Dicom
 
             try
             {
-                if (_dbType == DatabaseType.Odbc) connection = new OdbcConnection(_connectionString);
-                else if (_dbType == DatabaseType.MsSql) connection = new SqlConnection(_connectionString);
-
+                if (_dbType == DatabaseType.MsSql) connection = new SqlConnection(_connectionString);
+#if !__IOS__
+                else if (_dbType == DatabaseType.Odbc) connection = new OdbcConnection(_connectionString);
+#endif
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.Connection = connection;
