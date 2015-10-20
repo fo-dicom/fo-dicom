@@ -34,29 +34,51 @@ namespace Dicom.Log
         {
             lock (this.@lock)
             {
-                var previous = Console.ForegroundColor;
+                var previous = ConsoleForegroundColor;
                 switch (level)
                 {
                     case LogLevel.Debug:
-                        Console.ForegroundColor = ConsoleColor.Blue;
+                        ConsoleForegroundColor = ConsoleColor.Blue;
                         break;
                     case LogLevel.Info:
-                        Console.ForegroundColor = ConsoleColor.White;
+                        ConsoleForegroundColor = ConsoleColor.White;
                         break;
                     case LogLevel.Warning:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        ConsoleForegroundColor = ConsoleColor.Yellow;
                         break;
                     case LogLevel.Error:
-                        Console.ForegroundColor = ConsoleColor.Red;
+                        ConsoleForegroundColor = ConsoleColor.Red;
                         break;
                     case LogLevel.Fatal:
-                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        ConsoleForegroundColor = ConsoleColor.Magenta;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException("level", level, null);
                 }
                 Console.WriteLine(NameFormatToPositionalFormat(msg), args);
-                Console.ForegroundColor = previous;
+                ConsoleForegroundColor = previous;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the console foreground color.
+        /// </summary>
+        /// <remarks>Dispatcher method to allow for platform-specific handling.</remarks>
+        private static ConsoleColor ConsoleForegroundColor
+        {
+            get
+            {
+#if __IOS__
+                return ConsoleColor.Black;
+#else
+                return Console.ForegroundColor;
+#endif
+            }
+            set
+            {
+#if !__IOS__
+                Console.ForegroundColor = value;
+#endif
             }
         }
     }

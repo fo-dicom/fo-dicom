@@ -3,13 +3,13 @@
     <metadata>
         <id>fo-dicom.MetroLog</id>
         <version>$version$</version>
-        <title>Fellow Oak DICOM MetroLog support</title>
+        <title>Fellow Oak DICOM MetroLog connector</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Support library for using MetroLog log handler with fo-dicom.</description>
+        <description>Support library for connecting MetroLog log handler to fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Core" version="$version$" />

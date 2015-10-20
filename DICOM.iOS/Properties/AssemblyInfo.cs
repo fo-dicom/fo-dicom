@@ -7,5 +7,5 @@ using System.Reflection;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Dicom.Platform")]
-[assembly: AssemblyDescription(".NET specific assembly for fo-dicom")]
+[assembly: AssemblyDescription("iOS specific assembly for fo-dicom")]
 [assembly: AssemblyConfiguration("")]

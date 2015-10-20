@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{322DD2FF-C0B7-4CBF-BE95-F0032FD94E02}</ProjectGuid>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Dicom</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Dicom.Platform</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
+      <Link>DatabaseQueryTransformRule.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\Codec\IOSTranscoderManager.cs">
+      <Link>Imaging\Codec\IOSTranscoderManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\IOSImage.cs">
+      <Link>Imaging\IOSImage.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Imaging\IOSImageManager.cs">
+      <Link>Imaging\IOSImageManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\DesktopDirectoryReference.cs">
+      <Link>IO\DesktopDirectoryReference.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\DesktopFileReference.cs">
+      <Link>IO\DesktopFileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\DesktopIOManager.cs">
+      <Link>IO\DesktopIOManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\DesktopPath.cs">
+      <Link>IO\DesktopPath.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\ConsoleExtensions.cs">
+      <Link>Log\ConsoleExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
+      <Link>Log\ConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Managers.cs">
+      <Link>Managers.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Managers.iOS.cs">
+      <Link>Managers.iOS.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DesktopNetworkListener.cs">
+      <Link>Network\DesktopNetworkListener.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DesktopNetworkManager.cs">
+      <Link>Network\DesktopNetworkManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DesktopNetworkStream.cs">
+      <Link>Network\DesktopNetworkStream.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
+      <Name>DICOM.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+</Project>
