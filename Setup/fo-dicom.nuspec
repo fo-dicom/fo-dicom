@@ -9,7 +9,7 @@
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A DICOM library</description>
+        <description>A portable DICOM library for .NET, Universal Windows Platform, Xamarin iOS and Xamarin Android.</description>
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Legacy" version="$version$" />
