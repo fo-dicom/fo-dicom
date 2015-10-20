@@ -5,7 +5,7 @@
     <Message Importance="high" Text="Change '$(MSBuildProjectName)' Platform Target Build Project Property from '$(PlatformTarget)' to either x86 or x64 to remove this message." />
   </Target>
   <Choose>
-    <When Condition="'$(PlatformTarget)' == 'x64'">
+    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' == 'x64'">
       <ItemGroup>
         <Reference Include="Dicom.Native64">
           <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native64.dll</HintPath>
@@ -15,7 +15,7 @@
         </None>
       </ItemGroup>
     </When>
-    <When Condition="'$(PlatformTarget)' == 'x86'">
+    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' == 'x86'">
       <ItemGroup>
         <Reference Include="Dicom.Native">
           <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native.dll</HintPath>
@@ -25,13 +25,13 @@
         </None>
       </ItemGroup>
     </When>
-    <Otherwise>
+    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' != 'x64' And '$(PlatformTarget)' != 'x86'">
       <PropertyGroup>
         <BuildDependsOn>
           $(BuildDependsOn);
           Warn-fo-dicom-platform
         </BuildDependsOn>
       </PropertyGroup>
-    </Otherwise>
+    </When>
   </Choose>
 </Project>
