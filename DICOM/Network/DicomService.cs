@@ -169,22 +169,20 @@ namespace Dicom.Network
         {
             try
             {
-                if (count == 0)
+                do
                 {
-                    // disconnected
-                    this.CloseConnection(null);
-                    return;
+                    if (count == 0)
+                    {
+                        // disconnected
+                        this.CloseConnection(null);
+                        return;
+                    }
+
+                    this._readLength -= count;
+                    if (this._readLength > 0) count = this._network.Read(buffer, 6 - this._readLength, this._readLength);
                 }
-
-                this._readLength -= count;
-
-                if (this._readLength > 0)
-                {
-                    count = await this._network.ReadAsync(buffer, 6 - this._readLength, this._readLength).ConfigureAwait(false);
-                    await this.EndReadPDUHeader(buffer, count).ConfigureAwait(false);
-                    return;
-                }
-
+                while (this._readLength > 0);
+                
                 var length = BitConverter.ToInt32(buffer, 2);
                 length = Endian.Swap(length);
 
@@ -220,25 +218,20 @@ namespace Dicom.Network
         {
             try
             {
-                if (count == 0)
+                do
                 {
-                    // disconnected
-                    this.CloseConnection(null);
-                    return;
+                    if (count == 0)
+                    {
+                        // disconnected
+                        this.CloseConnection(null);
+                        return;
+                    }
+
+                    this._readLength -= count;
+                    if (this._readLength > 0) count = this._network.Read(buffer, buffer.Length - this._readLength, this._readLength);
                 }
-
-                this._readLength -= count;
-
-                if (this._readLength > 0)
-                {
-                    count =
-                        await
-                        this._network.ReadAsync(buffer, buffer.Length - this._readLength, this._readLength)
-                            .ConfigureAwait(false);
-                    await this.EndReadPDU(buffer, count).ConfigureAwait(false);
-                    return;
-                }
-
+                while (this._readLength > 0);
+                
                 var raw = new RawPDU(buffer);
 
                 switch (raw.Type)
