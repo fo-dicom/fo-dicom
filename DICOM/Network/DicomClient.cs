@@ -368,7 +368,7 @@ namespace Dicom.Network
 
             protected override void OnSendQueueEmpty()
             {
-                this.OnLingerTimeout().Wait();
+                this.OnLingerTimeout();
             }
 
             internal void _SendAssociationReleaseRequest()
@@ -384,15 +384,22 @@ namespace Dicom.Network
                     return;
                 }
 
-                this.OnReleaseTimeout().Wait();
+                this.OnReleaseTimeout();
             }
 
             private async Task OnLingerTimeout()
             {
                 await Task.Delay(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger).ConfigureAwait(false);
-                if (!this.IsSendQueueEmpty || !this.IsConnected) return;
+                if (!this.IsSendQueueEmpty) return;
 
-                this._SendAssociationReleaseRequest();
+                if (this.IsConnected)
+                {
+                    this._SendAssociationReleaseRequest();
+                }
+                else
+                {
+                    this.SetComplete();
+                }
             }
 
             private async Task OnReleaseTimeout()
