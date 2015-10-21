@@ -320,6 +320,8 @@ namespace Dicom.Network
 
             private readonly DicomClient client;
 
+            private bool isLingering;
+
             #endregion
 
             #region CONSTRUCTORS
@@ -333,6 +335,7 @@ namespace Dicom.Network
                 : base(stream, log)
             {
                 this.client = client;
+                this.isLingering = false;
                 if (options != null) this.Options = options;
                 this.SendAssociationRequest(association);
             }
@@ -397,7 +400,12 @@ namespace Dicom.Network
 
             private async void OnLingerTimeout()
             {
+                if (this.isLingering) return;
+
+                this.isLingering = true;
                 var disconnected = await this.WaitForDisconnect(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger);
+                this.isLingering = false;
+
                 if (disconnected || !this.IsSendQueueEmpty) return;
 
                 this._SendAssociationReleaseRequest();
