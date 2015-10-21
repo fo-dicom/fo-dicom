@@ -387,7 +387,7 @@ namespace Dicom.Network
                 this.OnReleaseTimeout();
             }
 
-            private async Task OnLingerTimeout()
+            private async void OnLingerTimeout()
             {
                 await Task.Delay(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger).ConfigureAwait(false);
                 if (!this.IsSendQueueEmpty) return;
@@ -402,7 +402,7 @@ namespace Dicom.Network
                 }
             }
 
-            private async Task OnReleaseTimeout()
+            private async void OnReleaseTimeout()
             {
                 await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
                 this.SetComplete();
