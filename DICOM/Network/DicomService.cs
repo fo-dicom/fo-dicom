@@ -76,7 +76,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = DicomServiceOptions.Default;
 
-            this.ReadPDUAsync();
+            this.ReadPDU();
         }
 
         public Logger Logger { get; set; }
@@ -138,7 +138,7 @@ namespace Dicom.Network
             else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnConnectionClosed(exception);
         }
 
-        private async void ReadPDUAsync()
+        private async void ReadPDU()
         {
             try
             {
@@ -366,7 +366,7 @@ namespace Dicom.Network
                         }
                     }
 
-                    _dimseStream.Write(pdv.Value, 0, pdv.Value.Length);
+                    lock (this._lock) _dimseStream.Write(pdv.Value, 0, pdv.Value.Length);
 
                     if (pdv.IsLastFragment)
                     {
@@ -695,7 +695,7 @@ namespace Dicom.Network
             }
         }
 
-        protected async Task SendPDU(PDU pdu)
+        protected async Task SendPDUAsync(PDU pdu)
         {
             while (this._pduQueue.Count >= this.MaximumPDUsInQueue)
             {
@@ -707,10 +707,10 @@ namespace Dicom.Network
                 this._pduQueue.Enqueue(pdu);
             }
 
-            await this.SendNextPDU().ConfigureAwait(false);
+            await this.SendNextPDUAsync().ConfigureAwait(false);
         }
 
-        private async Task SendNextPDU()
+        private async Task SendNextPDUAsync()
         {
             while (true)
             {
@@ -1037,7 +1037,7 @@ namespace Dicom.Network
             public async Task Flush(bool last)
             {
                 await CreatePDV(last).ConfigureAwait(false);
-                await WritePDU(last).ConfigureAwait(false);
+                await this.WritePDUAsync(last).ConfigureAwait(false);
             }
 
             #endregion
@@ -1066,7 +1066,7 @@ namespace Dicom.Network
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
                     // is the current PDU at its maximum size or do we have room for another PDV?
-                    if ((CurrentPduSize() + 6) >= _max || (!_command && last)) await WritePDU(last).ConfigureAwait(false);
+                    if ((CurrentPduSize() + 6) >= _max || (!_command && last)) await this.WritePDUAsync(last).ConfigureAwait(false);
 
                     // Max PDU Size - Current Size - Size of PDV header
                     uint max = _max - CurrentPduSize() - 6;
@@ -1079,7 +1079,7 @@ namespace Dicom.Network
                 }
             }
 
-            private async Task WritePDU(bool last)
+            private async Task WritePDUAsync(bool last)
             {
                 if (_length > 0) await CreatePDV(last).ConfigureAwait(false);
 
@@ -1087,7 +1087,7 @@ namespace Dicom.Network
                 {
                     if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
-                    await _service.SendPDU(_pdu).ConfigureAwait(false);
+                    await _service.SendPDUAsync(_pdu).ConfigureAwait(false);
 
                     _pdu = new PDataTF();
                 }
@@ -1210,7 +1210,7 @@ namespace Dicom.Network
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
             Association = association;
-            SendPDU(new AAssociateRQ(Association)).Wait();
+            this.SendPDUAsync(new AAssociateRQ(Association)).Wait();
         }
 
         protected void SendAssociationAccept(DicomAssociation association)
@@ -1224,7 +1224,7 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            SendPDU(new AAssociateAC(Association)).Wait();
+            this.SendPDUAsync(new AAssociateAC(Association)).Wait();
         }
 
         protected void SendAssociationReject(
@@ -1238,25 +1238,25 @@ namespace Dicom.Network
                 result,
                 source,
                 reason);
-            SendPDU(new AAssociateRJ(result, source, reason)).Wait();
+            this.SendPDUAsync(new AAssociateRJ(result, source, reason)).Wait();
         }
 
         protected void SendAssociationReleaseRequest()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            SendPDU(new AReleaseRQ()).Wait();
+            this.SendPDUAsync(new AReleaseRQ()).Wait();
         }
 
         protected void SendAssociationReleaseResponse()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            SendPDU(new AReleaseRP()).Wait();
+            this.SendPDUAsync(new AReleaseRP()).Wait();
         }
 
         protected void SendAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            SendPDU(new AAbort(source, reason)).Wait();
+            this.SendPDUAsync(new AAbort(source, reason)).Wait();
         }
 
         #endregion
