@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Concurrent;
+
 namespace Dicom
 {
     using System;
@@ -64,15 +66,16 @@ namespace Dicom
 
         private DicomPrivateCreator _privateCreator;
 
-        private IDictionary<string, DicomPrivateCreator> _creators;
+        private ConcurrentDictionary<string, DicomPrivateCreator> _creators;
 
-        private IDictionary<DicomPrivateCreator, DicomDictionary> _private;
+        private ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
 
-        private IDictionary<DicomTag, DicomDictionaryEntry> _entries;
+        private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
+        private object _maskedLock;
         private List<DicomDictionaryEntry> _masked;
 
-        private bool _sortMasked;
+        private bool _maskedNeedsSort;
 
         #endregion
 
@@ -80,17 +83,21 @@ namespace Dicom
 
         public DicomDictionary()
         {
-            _creators = new Dictionary<string, DicomPrivateCreator>();
-            _private = new Dictionary<DicomPrivateCreator, DicomDictionary>();
-            _entries = new Dictionary<DicomTag, DicomDictionaryEntry>();
+            _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
+            _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
+            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
+            _maskedLock = new object();
+            _maskedNeedsSort = false;
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
         {
             _privateCreator = creator;
-            _entries = new Dictionary<DicomTag, DicomDictionaryEntry>();
+            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
+            _maskedLock = new object();
+            _maskedNeedsSort = false;
         }
 
         #endregion
@@ -194,9 +201,12 @@ namespace Dicom
                 if (_entries.TryGetValue(tag, out entry)) return entry;
 
                 // this is faster than LINQ query
-                foreach (var x in _masked)
+                lock (_maskedLock)
                 {
-                    if (x.MaskTag.IsMatch(tag)) return x;
+                    foreach (var x in _masked)
+                    {
+                        if (x.MaskTag.IsMatch(tag)) return x;
+                    }
                 }
 
                 return UnknownTag;
@@ -207,13 +217,7 @@ namespace Dicom
         {
             get
             {
-                DicomDictionary pvt = null;
-                if (!_private.TryGetValue(creator, out pvt))
-                {
-                    pvt = new DicomDictionary(creator);
-                    _private.Add(creator, pvt);
-                }
-                return pvt;
+                return _private.GetOrAdd(creator, _ => new DicomDictionary(creator));
             }
         }
 
@@ -236,20 +240,17 @@ namespace Dicom
             }
             else
             {
-                _masked.Add(entry);
-                _sortMasked = true;
+                lock (_maskedLock)
+                {
+                    _masked.Add(entry);
+                    _maskedNeedsSort = true;
+                }
             }
         }
 
         public DicomPrivateCreator GetPrivateCreator(string creator)
         {
-            DicomPrivateCreator pvt = null;
-            if (!_creators.TryGetValue(creator, out pvt))
-            {
-                pvt = new DicomPrivateCreator(creator);
-                _creators.Add(creator, pvt);
-            }
-            return pvt;
+            return _creators.GetOrAdd(creator, _ => new DicomPrivateCreator(creator));
         }
 
         /// <summary>
@@ -281,13 +282,15 @@ namespace Dicom
             List<DicomDictionaryEntry> items = new List<DicomDictionaryEntry>();
             items.AddRange(_entries.Values.OrderBy(x => x.Tag));
 
-            if (_sortMasked)
+            lock (_maskedLock)
             {
-                _masked.Sort((a, b) => { return a.MaskTag.Mask.CompareTo(b.MaskTag.Mask); });
-                _sortMasked = false;
+                if (_maskedNeedsSort)
+                {
+                    _masked.Sort((a, b) => a.MaskTag.Mask.CompareTo(b.MaskTag.Mask));
+                    _maskedNeedsSort = false;
+                }
+                items.AddRange(_masked);
             }
-            items.AddRange(_masked);
-
             return items.GetEnumerator();
         }
 
