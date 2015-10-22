@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Concurrent;
+
 namespace Dicom
 {
     using System;
@@ -64,7 +66,7 @@ namespace Dicom
 
         private DicomPrivateCreator _privateCreator;
 
-        private IDictionary<string, DicomPrivateCreator> _creators;
+        private ConcurrentDictionary<string, DicomPrivateCreator> _creators;
 
         private IDictionary<DicomPrivateCreator, DicomDictionary> _private;
 
@@ -80,7 +82,7 @@ namespace Dicom
 
         public DicomDictionary()
         {
-            _creators = new Dictionary<string, DicomPrivateCreator>();
+            _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new Dictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new Dictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
@@ -243,13 +245,7 @@ namespace Dicom
 
         public DicomPrivateCreator GetPrivateCreator(string creator)
         {
-            DicomPrivateCreator pvt = null;
-            if (!_creators.TryGetValue(creator, out pvt))
-            {
-                pvt = new DicomPrivateCreator(creator);
-                _creators.Add(creator, pvt);
-            }
-            return pvt;
+            return _creators.GetOrAdd(creator, _ => new DicomPrivateCreator(creator));
         }
 
         /// <summary>
