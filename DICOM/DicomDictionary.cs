@@ -70,7 +70,7 @@ namespace Dicom
 
         private IDictionary<DicomPrivateCreator, DicomDictionary> _private;
 
-        private IDictionary<DicomTag, DicomDictionaryEntry> _entries;
+        private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
         private List<DicomDictionaryEntry> _masked;
 
@@ -84,14 +84,14 @@ namespace Dicom
         {
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new Dictionary<DicomPrivateCreator, DicomDictionary>();
-            _entries = new Dictionary<DicomTag, DicomDictionaryEntry>();
+            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
         {
             _privateCreator = creator;
-            _entries = new Dictionary<DicomTag, DicomDictionaryEntry>();
+            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
         }
 
