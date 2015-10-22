@@ -72,9 +72,10 @@ namespace Dicom
 
         private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
+        private object _maskedLock;
         private List<DicomDictionaryEntry> _masked;
 
-        private bool _sortMasked;
+        private bool _maskedNeedsSort;
 
         #endregion
 
@@ -86,6 +87,8 @@ namespace Dicom
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
+            _maskedLock = new object();
+            _maskedNeedsSort = false;
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
@@ -93,6 +96,8 @@ namespace Dicom
             _privateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
+            _maskedLock = new object();
+            _maskedNeedsSort = false;
         }
 
         #endregion
@@ -196,9 +201,12 @@ namespace Dicom
                 if (_entries.TryGetValue(tag, out entry)) return entry;
 
                 // this is faster than LINQ query
-                foreach (var x in _masked)
+                lock (_maskedLock)
                 {
-                    if (x.MaskTag.IsMatch(tag)) return x;
+                    foreach (var x in _masked)
+                    {
+                        if (x.MaskTag.IsMatch(tag)) return x;
+                    }
                 }
 
                 return UnknownTag;
@@ -232,8 +240,11 @@ namespace Dicom
             }
             else
             {
-                _masked.Add(entry);
-                _sortMasked = true;
+                lock (_maskedLock)
+                {
+                    _masked.Add(entry);
+                    _maskedNeedsSort = true;
+                }
             }
         }
 
@@ -271,13 +282,15 @@ namespace Dicom
             List<DicomDictionaryEntry> items = new List<DicomDictionaryEntry>();
             items.AddRange(_entries.Values.OrderBy(x => x.Tag));
 
-            if (_sortMasked)
+            lock (_maskedLock)
             {
-                _masked.Sort((a, b) => { return a.MaskTag.Mask.CompareTo(b.MaskTag.Mask); });
-                _sortMasked = false;
+                if (_maskedNeedsSort)
+                {
+                    _masked.Sort((a, b) => a.MaskTag.Mask.CompareTo(b.MaskTag.Mask));
+                    _maskedNeedsSort = false;
+                }
+                items.AddRange(_masked);
             }
-            items.AddRange(_masked);
-
             return items.GetEnumerator();
         }
 
