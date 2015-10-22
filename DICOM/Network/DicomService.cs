@@ -53,11 +53,22 @@ namespace Dicom.Network
 
         #region CONSTRUCTORS
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomService"/> class.
+        /// </summary>
+        /// <param name="stream">Network stream.</param>
+        /// <param name="log">Logger</param>
         protected DicomService(Stream stream, Logger log)
             : this(stream, DicomEncoding.Default, log)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomService"/> class.
+        /// </summary>
+        /// <param name="stream">Network stream.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="log">Logger</param>
         protected DicomService(Stream stream, Encoding fallbackEncoding, Logger log)
         {
             if (fallbackEncoding == null)
@@ -76,7 +87,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = DicomServiceOptions.Default;
 
-            this.ReadPDU();
+            this.ReadAndProcessPDUs();
         }
 
         #endregion
@@ -249,7 +260,7 @@ namespace Dicom.Network
             else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnConnectionClosed(exception);
         }
 
-        private async void ReadPDU()
+        private async void ReadAndProcessPDUs()
         {
             try
             {
