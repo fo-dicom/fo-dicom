@@ -68,7 +68,7 @@ namespace Dicom
 
         private ConcurrentDictionary<string, DicomPrivateCreator> _creators;
 
-        private IDictionary<DicomPrivateCreator, DicomDictionary> _private;
+        private ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
 
         private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
@@ -83,7 +83,7 @@ namespace Dicom
         public DicomDictionary()
         {
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
-            _private = new Dictionary<DicomPrivateCreator, DicomDictionary>();
+            _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _masked = new List<DicomDictionaryEntry>();
         }
@@ -209,13 +209,7 @@ namespace Dicom
         {
             get
             {
-                DicomDictionary pvt = null;
-                if (!_private.TryGetValue(creator, out pvt))
-                {
-                    pvt = new DicomDictionary(creator);
-                    _private.Add(creator, pvt);
-                }
-                return pvt;
+                return _private.GetOrAdd(creator, _ => new DicomDictionary(creator));
             }
         }
 
