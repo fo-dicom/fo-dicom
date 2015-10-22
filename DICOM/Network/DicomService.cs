@@ -189,18 +189,17 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable.</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            string fileName = _dimseStreamFile;
-            if (!string.IsNullOrWhiteSpace(fileName))
+            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
             {
-                this.DisposeDimseStream();
+                if (_dimseStream != null) _dimseStream.Dispose();
 
-                var file = DicomFile.Open(fileName, _fallbackEncoding);
+                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
                 file.File.IsTempFile = true;
 
                 return file;
             }
 
-            if (_dimseStream.CanSeek)
+            if (_dimseStream != null && _dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
                 var file = DicomFile.Open(_dimseStream, _fallbackEncoding);
@@ -489,8 +488,9 @@ namespace Dicom.Network
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
                             reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
-                            
-                            this.DisposeDimseStream();
+
+                            _dimseStream = null;
+                            _dimseStreamFile = null;
 
                             var type = command.Get<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
@@ -586,7 +586,8 @@ namespace Dicom.Network
                                 reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
-                                this.DisposeDimseStream();
+                                _dimseStream = null;
+                                _dimseStreamFile = null;
                             }
                             else
                             {
@@ -595,7 +596,8 @@ namespace Dicom.Network
                                 try
                                 {
                                     var dicomFile = GetCStoreDicomFile();
-                                    this.DisposeDimseStream();
+                                    _dimseStream = null;
+                                    _dimseStreamFile = null;
 
                                     // NOTE: dicomFile will be valid with the default implementation of CreateCStoreReceiveStream() and
                                     // GetCStoreDicomFile(), but can be null if a child class overrides either method and changes behavior.
@@ -635,14 +637,6 @@ namespace Dicom.Network
             {
                 SendNextMessage();
             }
-        }
-
-        private void DisposeDimseStream()
-        {
-            if (this._dimseStream != null) this._dimseStream.Dispose();
-
-            this._dimseStream = null;
-            this._dimseStreamFile = null;
         }
 
         private void PerformDimse(DicomMessage dimse)
@@ -885,9 +879,11 @@ namespace Dicom.Network
                 return;
             }
 
-            var dimse = new Dimse();
-            dimse.Message = msg;
-            dimse.PresentationContext = pc;
+            var dimse = new Dimse
+            {
+                Message = msg,
+                PresentationContext = pc
+            };
 
             // force calculation of command group length as required by standard
             msg.Command.RecalculateGroupLengths();
@@ -901,59 +897,36 @@ namespace Dicom.Network
                 //	   element values and changes in transfer syntax.
                 msg.Dataset.RemoveGroupLengths();
 
-                if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax) msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
+                if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
+                    msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
             }
 
             Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
-            dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
-
-            var writer = new DicomWriter(
-                DicomTransferSyntax.ImplicitVRLittleEndian,
-                DicomWriteOptions.Default,
-                new StreamByteTarget(dimse.Stream));
-
-            dimse.Walker = new DicomDatasetWalker(msg.Command);
-
-            if (dimse.Message.HasDataset) this.SendPre(dimse, writer);
-            else this.SendMain(dimse, writer);
-        }
-
-        private void SendPre(Dimse dimse, IDicomDatasetWalker writer)
-        {
             try
             {
-                dimse.Walker.Walk(writer);
+                dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
-                dimse.Stream.IsCommand = false;
-
-                var messageWriter = new DicomWriter(
-                    dimse.PresentationContext.AcceptedTransferSyntax,
+                var writer = new DicomWriter(
+                    DicomTransferSyntax.ImplicitVRLittleEndian,
                     DicomWriteOptions.Default,
                     new StreamByteTarget(dimse.Stream));
 
-                dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                this.SendMain(dimse, messageWriter);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Exception sending DIMSE: {@error}", e);
-            }
-            finally
-            {
-                if (!dimse.Message.HasDataset)
-                {
-                    lock (_lock) _sending = false;
-                    SendNextMessage();
-                }
-            }
-        }
-
-        private void SendMain(Dimse dimse, IDicomDatasetWalker writer)
-        {
-            try
-            {
+                dimse.Walker = new DicomDatasetWalker(msg.Command);
                 dimse.Walker.Walk(writer);
+
+                if (dimse.Message.HasDataset)
+                {
+                    dimse.Stream.IsCommand = false;
+
+                    writer = new DicomWriter(
+                        dimse.PresentationContext.AcceptedTransferSyntax,
+                        DicomWriteOptions.Default,
+                        new StreamByteTarget(dimse.Stream));
+
+                    dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
+                    dimse.Walker.Walk(writer);
+                }
             }
             catch (Exception e)
             {
