@@ -41,7 +41,7 @@ namespace Dicom.Network
 
         private Stream _dimseStream;
 
-        private string _dimseStreamFile;
+        private IFileReference _dimseStreamFile;
 
         private int _readLength;
 
@@ -180,13 +180,12 @@ namespace Dicom.Network
         /// <returns>The stream to write the SopInstance to.</returns>
         protected virtual void CreateCStoreReceiveStream(DicomFile file)
         {
-            var temp = TemporaryFile.Create();
+            _dimseStreamFile = TemporaryFile.Create();
 
-            _dimseStream = temp.Open();
+            _dimseStream = _dimseStreamFile.Open();
             file.Save(_dimseStream);
             _dimseStream.Seek(0, SeekOrigin.End);
 
-            _dimseStreamFile = temp.Name;
         }
 
         /// <summary>
@@ -200,21 +199,16 @@ namespace Dicom.Network
         /// <returns>The DicomFile or null if the stream is not seekable.</returns>
         protected virtual DicomFile GetCStoreDicomFile()
         {
-            if (!string.IsNullOrWhiteSpace(_dimseStreamFile))
+            if (_dimseStreamFile != null)
             {
                 if (_dimseStream != null) _dimseStream.Dispose();
-
-                var file = DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
-                file.File.IsTempFile = true;
-
-                return file;
+                return DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
             }
 
             if (_dimseStream != null && _dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
-                var file = DicomFile.Open(_dimseStream, _fallbackEncoding);
-                return file;
+                return DicomFile.Open(_dimseStream, _fallbackEncoding);
             }
 
             return null;
@@ -628,7 +622,8 @@ namespace Dicom.Network
                                             request,
                                             new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile, e);
+                                    (this as IDicomCStoreProvider).OnCStoreRequestException(
+                                        _dimseStreamFile != null ? _dimseStreamFile.Name : null, e);
                                     return;
                                 }
                             }
