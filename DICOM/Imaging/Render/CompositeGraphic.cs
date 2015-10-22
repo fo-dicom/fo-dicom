@@ -1,189 +1,195 @@
-using System;
-using System.Collections.Generic;
-#if !SILVERLIGHT
-using System.Drawing;
-#endif
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Text;
-using Dicom.Imaging.LUT;
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Render {
-	/// <summary>
-	/// The Composite Graphic implementation of <seealso cref="IGraphic"/> which layers graphics one over the other
-	/// </summary>
-	public class CompositeGraphic : IGraphic {
-		#region Private Members
-		private List<IGraphic> _layers = new List<IGraphic>();
-		#endregion
+namespace Dicom.Imaging.Render
+{
+    using System.Collections.Generic;
+    using System.Linq;
 
-		#region Public Constructor
-		/// <summary>
-		/// Initialize new instance of <seealso cref="CompositeGraphic"/>
-		/// </summary>
-		/// <param name="bg">background (initial) graphic layer</param>
-		public CompositeGraphic(IGraphic bg) {
-			_layers.Add(bg);
-		}
-		#endregion
+    using Dicom.Imaging.LUT;
 
-		#region Public Properties
-		/// <summary>
-		/// The backgroun graphic layer
-		/// </summary>
-		public IGraphic BackgroundLayer {
-			get { return _layers[0]; }
-		}
+    /// <summary>
+    /// The Composite Graphic implementation of <seealso cref="IGraphic"/> which layers graphics one over the other
+    /// </summary>
+    public class CompositeGraphic : IGraphic
+    {
+        #region Private Members
 
-		public int OriginalWidth {
-			get { return BackgroundLayer.OriginalWidth; }
-		}
+        private readonly List<IGraphic> _layers = new List<IGraphic>();
 
-		public int OriginalHeight {
-			get { return BackgroundLayer.OriginalHeight; }
-		}
+        #endregion
 
-		public int OriginalOffsetX {
-			get { return 0; }
-		}
+        #region Public Constructor
 
-		public int OriginalOffsetY {
-			get { return 0; }
-		}
+        /// <summary>
+        /// Initialize new instance of <seealso cref="CompositeGraphic"/>
+        /// </summary>
+        /// <param name="bg">background (initial) graphic layer</param>
+        public CompositeGraphic(IGraphic bg)
+        {
+            _layers.Add(bg);
+        }
 
-		public double ScaleFactor {
-			get { return BackgroundLayer.ScaleFactor; }
-		}
+        #endregion
 
-		public int ScaledWidth {
-			get { return BackgroundLayer.ScaledWidth; }
-		}
+        #region Public Properties
 
-		public int ScaledHeight {
-			get { return BackgroundLayer.ScaledHeight; }
-		}
+        /// <summary>
+        /// The backgroun graphic layer
+        /// </summary>
+        public IGraphic BackgroundLayer
+        {
+            get
+            {
+                return _layers[0];
+            }
+        }
 
-		public int ScaledOffsetX {
-			get { return 0; }
-		}
+        public int OriginalWidth
+        {
+            get
+            {
+                return BackgroundLayer.OriginalWidth;
+            }
+        }
 
-		public int ScaledOffsetY {
-			get { return 0; }
-		}
+        public int OriginalHeight
+        {
+            get
+            {
+                return BackgroundLayer.OriginalHeight;
+            }
+        }
 
-		public int ZOrder {
-			get { return 0; }
-		}
-		#endregion
+        public int OriginalOffsetX
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-		#region Public Members
-		/// <summary>
-		/// Add new graphic layer to the existing layers according to its Z Order
-		/// </summary>
-		/// <param name="layer">The layer graphic instance</param>
-		public void AddLayer(IGraphic layer) {
-			_layers.Add(layer);
-			_layers.Sort(delegate(IGraphic a, IGraphic b) {
-				if (b.ZOrder > a.ZOrder)
-					return 1;
-				else if (a.ZOrder > b.ZOrder)
-					return -1;
-				else
-					return 0;
-			});
-		}
+        public int OriginalOffsetY
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-		public void Reset() {
-			foreach (IGraphic graphic in _layers)
-				graphic.Reset();
-		}
+        public double ScaleFactor
+        {
+            get
+            {
+                return BackgroundLayer.ScaleFactor;
+            }
+        }
 
-		public void Scale(double scale) {
-			foreach (IGraphic graphic in _layers)
-				graphic.Scale(scale);
-		}
+        public int ScaledWidth
+        {
+            get
+            {
+                return BackgroundLayer.ScaledWidth;
+            }
+        }
 
-		public void BestFit(int width, int height) {
-			foreach (IGraphic graphic in _layers)
-				graphic.BestFit(width, height);
-		}
+        public int ScaledHeight
+        {
+            get
+            {
+                return BackgroundLayer.ScaledHeight;
+            }
+        }
 
-		public void Rotate(int angle) {
-			foreach (IGraphic graphic in _layers)
-				graphic.Rotate(angle);
-		}
+        public int ScaledOffsetX
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-		public void FlipX() {
-			foreach (IGraphic graphic in _layers)
-				graphic.FlipX();
-		}
+        public int ScaledOffsetY
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-		public void FlipY() {
-			foreach (IGraphic graphic in _layers)
-				graphic.FlipY();
-		}
+        public int ZOrder
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-		public void Transform(double scale, int rotation, bool flipx, bool flipy) {
-			foreach (IGraphic graphic in _layers)
-				graphic.Transform(scale, rotation, flipx, flipy);
-		}
-#if SILVERLIGHT
-		public BitmapSource RenderImageSource(ILUT lut)
-		{
-			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
-			if (img != null && _layers.Count > 1)
-			{
-				for (int i = 1; i < _layers.Count; ++i)
-				{
-					var g = _layers[i];
-					var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
+        #endregion
 
-					if (layer != null)
-					{
-						var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
-						img.Blit(rect, layer, rect);
-					}
-				}
-			}
-			return img;
-		}
-#else
-		public BitmapSource RenderImageSource(ILUT lut)
-		{
-			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
-			if (img != null && _layers.Count > 1)
-			{
-				for (int i = 1; i < _layers.Count; ++i)
-				{
-					var g = _layers[i];
-					var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
+        #region Public Members
 
-					if (layer != null)
-					{
-						Array pixels = new int[g.ScaledWidth * g.ScaledHeight];
-						layer.CopyPixels(pixels, 4, 0);
-						img.WritePixels(new Int32Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight),
-										pixels, 4, 0);
-					}
-				}
-			}
-			return img;
-		}
+        /// <summary>
+        /// Add new graphic layer to the existing layers according to its Z Order
+        /// </summary>
+        /// <param name="layer">The layer graphic instance</param>
+        public void AddLayer(IGraphic layer)
+        {
+            _layers.Add(layer);
+            _layers.Sort(
+                delegate(IGraphic a, IGraphic b)
+                    {
+                        if (b.ZOrder > a.ZOrder) return 1;
+                        else if (a.ZOrder > b.ZOrder) return -1;
+                        else return 0;
+                    });
+        }
 
-		public Image RenderImage(ILUT lut) {
-			Image img = BackgroundLayer.RenderImage(lut);
-			if (_layers.Count > 1) {
-				using (Graphics graphics = Graphics.FromImage(img)) {
-					for (int i = 1; i < _layers.Count; i++) {
-						Image layer = _layers[i].RenderImage(null);
-						graphics.DrawImage(layer, _layers[i].ScaledOffsetX, _layers[i].ScaledOffsetY);
-					}
-				}
-			}
-			return img;
-		}
-#endif
-		#endregion
-	}
+        public void Reset()
+        {
+            foreach (IGraphic graphic in _layers) graphic.Reset();
+        }
+
+        public void Scale(double scale)
+        {
+            foreach (IGraphic graphic in _layers) graphic.Scale(scale);
+        }
+
+        public void BestFit(int width, int height)
+        {
+            foreach (IGraphic graphic in _layers) graphic.BestFit(width, height);
+        }
+
+        public void Rotate(int angle)
+        {
+            foreach (IGraphic graphic in _layers) graphic.Rotate(angle);
+        }
+
+        public void FlipX()
+        {
+            foreach (IGraphic graphic in _layers) graphic.FlipX();
+        }
+
+        public void FlipY()
+        {
+            foreach (IGraphic graphic in _layers) graphic.FlipY();
+        }
+
+        public void Transform(double scale, int rotation, bool flipx, bool flipy)
+        {
+            foreach (IGraphic graphic in _layers) graphic.Transform(scale, rotation, flipx, flipy);
+        }
+
+        public IImage RenderImage(ILUT lut)
+        {
+            var img = BackgroundLayer.RenderImage(lut);
+            if (_layers.Count > 1)
+            {
+                img.DrawGraphics(_layers.Skip(1));
+            }
+            return img;
+        }
+
+        #endregion
+    }
 }

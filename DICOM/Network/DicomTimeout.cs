@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network {
-	public enum DicomTimeout {
-		ACSE,
-		DIMSE,
-		Socket
-	}
+namespace Dicom.Network
+{
+    public enum DicomTimeout
+    {
+        ACSE,
+
+        DIMSE,
+
+        Socket
+    }
 }

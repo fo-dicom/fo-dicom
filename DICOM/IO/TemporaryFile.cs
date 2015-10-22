@@ -1,71 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO {
-	public class TemporaryFile : IDisposable {
-		private string _file;
+namespace Dicom.IO
+{
+    using System;
 
-		public TemporaryFile() {
-			_file = Create();
-		}
+    /// <summary>
+    /// Support class for creating a temporary file.
+    /// </summary>
+    public static class TemporaryFile
+    {
+        #region FIELDS
 
-		~TemporaryFile() {
-			TemporaryFileRemover.Delete(_file);
-		}
+        private static string storagePath;
 
-		public void Dispose() {
-			TemporaryFileRemover.Delete(_file);
-			GC.SuppressFinalize(this);
-		}
+        #endregion
 
-		public string Name {
-			get { return _file; }
-		}
+        #region PROPERTIES
 
-		#region Static
-		private static string _path = null;
-		public static string StoragePath {
-			get {
-				if (_path != null)
-					return _path;
-				return Path.GetTempPath();
-			}
-			set {
-				_path = value;
-				if (!Directory.Exists(_path))
-					Directory.CreateDirectory(_path);
-			}
-		}
+        /// <summary>
+        /// Gets or sets the directory location of the temporary files.
+        /// </summary>
+        public static string StoragePath
+        {
+            get
+            {
+                if (storagePath != null) return storagePath;
+                return IOManager.Path.GetTempDirectory();
+            }
+            set
+            {
+                storagePath = value;
+                if (storagePath != null)
+                {
+                    var directory = IOManager.CreateDirectoryReference(storagePath);
+                    if (!directory.Exists) directory.Create();
+                }
+            }
+        }
 
-		public static string Create() {
-			string path = null;
+        #endregion
 
-			if (_path != null) {
-				// create file in user specified path
-				path = Path.Combine(_path, Guid.NewGuid().ToString());
-				File.Create(path).Close();
-			} else {
-				// allow OS to create file in system temp path
-				path = Path.GetTempFileName();
-			}
+        #region METHODS
 
-			try {
-				// set temporary file attribute so that the file system
-				// will attempt to keep all of the data in memory
-				File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Temporary);
-			} catch {
-				// sometimes fails with invalid argument exception
-			}
+        /// <summary>
+        /// Creates a temporary file and returns its name.
+        /// </summary>
+        /// <returns>Name of the temporary file.</returns>
+        public static IFileReference Create()
+        {
+            IFileReference file;
 
-			return path;
-		}
-		#endregion
+            if (storagePath != null)
+            {
+                // create file in user specified path
+                var path = IOManager.Path.Combine(storagePath, Guid.NewGuid().ToString());
+                file = IOManager.CreateFileReference(path);
+                file.Create().Dispose();
+            }
+            else
+            {
+                // allow OS to create file in system temp path
+                file = IOManager.CreateFileReference(IOManager.Path.GetTempFileName());
+            }
+            file.IsTempFile = true;
 
-		public override string ToString() {
-			return String.Format("{0} [TEMP]", Name);
-		}
-	}
+            return file;
+        }
+
+        #endregion
+    }
 }

@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2015 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2015b">
+<dictionary version="2015c">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -130,6 +130,8 @@
     <tag group="0008" element="0092" keyword="ReferringPhysicianAddress" vr="ST" vm="1">Referring Physician's Address</tag>
     <tag group="0008" element="0094" keyword="ReferringPhysicianTelephoneNumbers" vr="SH" vm="1-n">Referring Physician's Telephone Numbers</tag>
     <tag group="0008" element="0096" keyword="ReferringPhysicianIdentificationSequence" vr="SQ" vm="1">Referring Physician Identification Sequence</tag>
+    <tag group="0008" element="009C" keyword="ConsultingPhysicianName" vr="PN" vm="1-n">Consulting Physician's Name</tag>
+    <tag group="0008" element="009D" keyword="ConsultingPhysicianIdentificationSequence" vr="SQ" vm="1">Consulting Physician Identification Sequence</tag>
     <tag group="0008" element="0100" keyword="CodeValue" vr="SH" vm="1">Code Value</tag>
     <tag group="0008" element="0101" keyword="ExtendedCodeValue" vr="LO" vm="1">Extended Code Value</tag>
     <tag group="0008" element="0102" keyword="CodingSchemeDesignator" vr="SH" vm="1">Coding Scheme Designator</tag>
@@ -154,6 +156,14 @@
     <tag group="0008" element="0120" keyword="URNCodeValue" vr="UR" vm="1">URN Code Value</tag>
     <tag group="0008" element="0121" keyword="EquivalentCodeSequence" vr="SQ" vm="1">Equivalent Code Sequence</tag>
     <tag group="0008" element="0201" keyword="TimezoneOffsetFromUTC" vr="SH" vm="1">Timezone Offset From UTC</tag>
+    <tag group="0008" element="0300" keyword="PrivateDataElementCharacteristicsSequence" vr="SQ" vm="1">Private Data Element Characteristics Sequence</tag>
+    <tag group="0008" element="0301" keyword="PrivateGroupReference" vr="US" vm="1">Private Group Reference</tag>
+    <tag group="0008" element="0302" keyword="PrivateCreatorReference" vr="LO" vm="1">Private Creator Reference</tag>
+    <tag group="0008" element="0303" keyword="BlockIdentifyingInformationStatus" vr="CS" vm="1">Block Identifying Information Status</tag>
+    <tag group="0008" element="0304" keyword="NonidentifyingPrivateElements" vr="US" vm="1-n">Nonidentifying Private Elements</tag>
+    <tag group="0008" element="0306" keyword="IdentifyingPrivateElements" vr="US" vm="1-n">Identifying Private Elements</tag>
+    <tag group="0008" element="0305" keyword="DeidentificationActionSequence" vr="SQ" vm="1">Deidentification Action Sequence</tag>
+    <tag group="0008" element="0307" keyword="DeidentificationAction" vr="CS" vm="1">Deidentification Action</tag>
     <tag group="0008" element="1000" keyword="NetworkID" vr="AE" vm="1" retired="true">Network ID</tag>
     <tag group="0008" element="1010" keyword="StationName" vr="SH" vm="1">Station Name</tag>
     <tag group="0008" element="1030" keyword="StudyDescription" vr="LO" vm="1">Study Description</tag>
@@ -296,6 +306,7 @@
     <tag group="0010" element="2150" keyword="CountryOfResidence" vr="LO" vm="1">Country of Residence</tag>
     <tag group="0010" element="2152" keyword="RegionOfResidence" vr="LO" vm="1">Region of Residence</tag>
     <tag group="0010" element="2154" keyword="PatientTelephoneNumbers" vr="SH" vm="1-n">Patient's Telephone Numbers</tag>
+    <tag group="0010" element="2155" keyword="PatientTelecomInformation" vr="LT" vm="1">Patient's Telecom Information</tag>
     <tag group="0010" element="2160" keyword="EthnicGroup" vr="SH" vm="1">Ethnic Group</tag>
     <tag group="0010" element="2180" keyword="Occupation" vr="SH" vm="1">Occupation</tag>
     <tag group="0010" element="21A0" keyword="SmokingStatus" vr="CS" vm="1">Smoking Status</tag>
@@ -1408,6 +1419,7 @@
     <tag group="0022" element="0020" keyword="StereoPairsSequence" vr="SQ" vm="1">Stereo Pairs Sequence</tag>
     <tag group="0022" element="0021" keyword="LeftImageSequence" vr="SQ" vm="1">Left Image Sequence</tag>
     <tag group="0022" element="0022" keyword="RightImageSequence" vr="SQ" vm="1">Right Image Sequence</tag>
+    <tag group="0022" element="0028" keyword="StereoPairsPresent" vr="CS" vm="1">Stereo Pairs Present</tag>
     <tag group="0022" element="0030" keyword="AxialLengthOfTheEye" vr="FL" vm="1">Axial Length of the Eye</tag>
     <tag group="0022" element="0031" keyword="OphthalmicFrameLocationSequence" vr="SQ" vm="1">Ophthalmic Frame Location Sequence</tag>
     <tag group="0022" element="0032" keyword="ReferenceCoordinates" vr="FL" vm="2-2n">Reference Coordinates</tag>
@@ -2072,6 +2084,7 @@
     <tag group="0040" element="1101" keyword="PersonIdentificationCodeSequence" vr="SQ" vm="1">Person Identification Code Sequence</tag>
     <tag group="0040" element="1102" keyword="PersonAddress" vr="ST" vm="1">Person's Address</tag>
     <tag group="0040" element="1103" keyword="PersonTelephoneNumbers" vr="LO" vm="1-n">Person's Telephone Numbers</tag>
+    <tag group="0040" element="1104" keyword="PersonTelecomInformation" vr="LT" vm="1">Person's Telecom Information</tag>
     <tag group="0040" element="1400" keyword="RequestedProcedureComments" vr="LT" vm="1">Requested Procedure Comments</tag>
     <tag group="0040" element="2001" keyword="ReasonForTheImagingServiceRequest" vr="LO" vm="1" retired="true">Reason for the Imaging Service Request</tag>
     <tag group="0040" element="2004" keyword="IssueDateOfImagingServiceRequest" vr="DA" vm="1">Issue Date of Imaging Service Request</tag>
@@ -2081,6 +2094,7 @@
     <tag group="0040" element="2008" keyword="OrderEnteredBy" vr="PN" vm="1">Order Entered By</tag>
     <tag group="0040" element="2009" keyword="OrderEntererLocation" vr="SH" vm="1">Order Enterer's Location</tag>
     <tag group="0040" element="2010" keyword="OrderCallbackPhoneNumber" vr="SH" vm="1">Order Callback Phone Number</tag>
+    <tag group="0040" element="2011" keyword="OrderCallbackTelecomInformation" vr="LT" vm="1">Order Callback Telecom Information</tag>
     <tag group="0040" element="2016" keyword="PlacerOrderNumberImagingServiceRequest" vr="LO" vm="1">Placer Order Number / Imaging Service Request</tag>
     <tag group="0040" element="2017" keyword="FillerOrderNumberImagingServiceRequest" vr="LO" vm="1">Filler Order Number / Imaging Service Request</tag>
     <tag group="0040" element="2400" keyword="ImagingServiceRequestComments" vr="LT" vm="1">Imaging Service Request Comments</tag>
@@ -2817,6 +2831,7 @@
     <tag group="0072" element="007A" keyword="SelectorUSValue" vr="US" vm="1-n">Selector US Value</tag>
     <tag group="0072" element="007C" keyword="SelectorSLValue" vr="SL" vm="1-n">Selector SL Value</tag>
     <tag group="0072" element="007E" keyword="SelectorSSValue" vr="SS" vm="1-n">Selector SS Value</tag>
+    <tag group="0072" element="007F" keyword="SelectorUIValue" vr="UI" vm="1-n">Selector UI Value</tag>
     <tag group="0072" element="0080" keyword="SelectorCodeSequenceValue" vr="SQ" vm="1">Selector Code Sequence Value</tag>
     <tag group="0072" element="0100" keyword="NumberOfScreens" vr="US" vm="1">Number of Screens</tag>
     <tag group="0072" element="0102" keyword="NominalScreenDefinitionSequence" vr="SQ" vm="1">Nominal Screen Definition Sequence</tag>
@@ -3744,6 +3759,9 @@
     <tag group="300C" element="0100" keyword="ReferencedRangeShifterNumber" vr="IS" vm="1">Referenced Range Shifter Number</tag>
     <tag group="300C" element="0102" keyword="ReferencedLateralSpreadingDeviceNumber" vr="IS" vm="1">Referenced Lateral Spreading Device Number</tag>
     <tag group="300C" element="0104" keyword="ReferencedRangeModulatorNumber" vr="IS" vm="1">Referenced Range Modulator Number</tag>
+    <tag group="300C" element="0111" keyword="OmittedBeamTaskSequence" vr="SQ" vm="1">Omitted Beam Task Sequence</tag>
+    <tag group="300C" element="0112" keyword="ReasonForOmission" vr="CS" vm="1">Reason for Omission</tag>
+    <tag group="300C" element="0113" keyword="ReasonForOmissionDescription" vr="LO" vm="1">Reason for Omission Description</tag>
     <tag group="300E" element="0002" keyword="ApprovalStatus" vr="CS" vm="1">Approval Status</tag>
     <tag group="300E" element="0004" keyword="ReviewDate" vr="DA" vm="1">Review Date</tag>
     <tag group="300E" element="0005" keyword="ReviewTime" vr="TM" vm="1">Review Time</tag>
@@ -3994,6 +4012,9 @@
     <uid uid="1.2.840.10008.1.2.4.101" keyword="MPEG2MainProfileHighLevel" type="Transfer Syntax">MPEG2 Main Profile @ High Level</uid>
     <uid uid="1.2.840.10008.1.2.4.102" keyword="MPEG4AVCH264HighProfileLevel41" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.1</uid>
     <uid uid="1.2.840.10008.1.2.4.103" keyword="MPEG4AVCH264BDCompatibleHighProfileLevel41" type="Transfer Syntax">MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</uid>
+    <uid uid="1.2.840.10008.1.2.4.104" keyword="MPEG4AVCH264HighProfileLevel42For2DVideo" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</uid>
+    <uid uid="1.2.840.10008.1.2.4.105" keyword="MPEG4AVCH264HighProfileLevel42For3DVideo" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</uid>
+    <uid uid="1.2.840.10008.1.2.4.106" keyword="MPEG4AVCH264StereoHighProfileLevel42" type="Transfer Syntax">MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</uid>
     <uid uid="1.2.840.10008.1.2.5" keyword="RLELossless" type="Transfer Syntax">RLE Lossless</uid>
     <uid uid="1.2.840.10008.1.2.6.1" keyword="RFC2557MIMEEncapsulation" type="Transfer Syntax">RFC 2557 MIME encapsulation</uid>
     <uid uid="1.2.840.10008.1.2.6.2" keyword="XMLEncoding" type="Transfer Syntax">XML Encoding</uid>
@@ -4180,6 +4201,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.22" keyword="EnhancedSRStorage" type="SOP Class">Enhanced SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.33" keyword="ComprehensiveSRStorage" type="SOP Class">Comprehensive SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.34" keyword="Comprehensive3DSRStorage" type="SOP Class">Comprehensive 3D SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.35" keyword="ExtensibleSRStorage" type="SOP Class">Extensible SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.40" keyword="ProcedureLogStorage" type="SOP Class">Procedure Log Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.50" keyword="MammographyCADSRStorage" type="SOP Class">Mammography CAD SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.59" keyword="KeyObjectSelectionDocumentStorage" type="SOP Class">Key Object Selection Document Storage</uid>
@@ -5233,11 +5255,38 @@
     <uid uid="1.2.840.10008.6.1.1020" keyword="TractographyAnatomicSites7710" type="Context Group Name">Tractography Anatomic Sites (7710)</uid>
     <uid uid="1.2.840.10008.6.1.1021" keyword="PrimaryAnatomicStructureForIntraOralRadiographySupernumeraryDentitionDesignationOfTeeth4025" type="Context Group Name">Primary Anatomic Structure for Intra-oral Radiography (Supernumerary Dentition - Designation of Teeth) (4025)</uid>
     <uid uid="1.2.840.10008.6.1.1022" keyword="PrimaryAnatomicStructureForIntraOralAndCraniofacialRadiographyTeeth4026" type="Context Group Name">Primary Anatomic Structure for Intra-oral and Craniofacial Radiography - Teeth (4026)</uid>
-    <uid uid="1.2.840.10008.6.1.1023" keyword="IEC6127DevicePositionParameters9401" type="Context Group Name">IEC6127 Device Position Parameters (9401)</uid>
-    <uid uid="1.2.840.10008.6.1.1024" keyword="IEC6127GantryPositionParameters9402" type="Context Group Name">IEC6127 Gantry Position Parameters (9402)</uid>
-    <uid uid="1.2.840.10008.6.1.1025" keyword="IEC6127PatientSupportPositionParameters9403" type="Context Group Name">IEC6127 Patient Support Position Parameters (9403)</uid>
+    <uid uid="1.2.840.10008.6.1.1023" keyword="IEC61217DevicePositionParameters9401" type="Context Group Name">IEC61217 Device Position Parameters (9401)</uid>
+    <uid uid="1.2.840.10008.6.1.1024" keyword="IEC61217GantryPositionParameters9402" type="Context Group Name">IEC61217 Gantry Position Parameters (9402)</uid>
+    <uid uid="1.2.840.10008.6.1.1025" keyword="IEC61217PatientSupportPositionParameters9403" type="Context Group Name">IEC61217 Patient Support Position Parameters (9403)</uid>
     <uid uid="1.2.840.10008.6.1.1026" keyword="ActionableFindingClassification7035" type="Context Group Name">Actionable Finding Classification (7035)</uid>
     <uid uid="1.2.840.10008.6.1.1027" keyword="ImageQualityAssessment7036" type="Context Group Name">Image Quality Assessment (7036)</uid>
     <uid uid="1.2.840.10008.6.1.1028" keyword="SummaryRadiationExposureQuantities10050" type="Context Group Name">Summary Radiation Exposure Quantities (10050)</uid>
     <uid uid="1.2.840.10008.6.1.1029" keyword="WideFieldOphthalmicPhotographyTransformationMethod4245" type="Context Group Name">Wide Field Ophthalmic Photography Transformation Method (4245)</uid>
+    <uid uid="1.2.840.10008.6.1.1030" keyword="PETUnits84" type="Context Group Name">PET Units (84)</uid>
+    <uid uid="1.2.840.10008.6.1.1031" keyword="ImplantMaterials7300" type="Context Group Name">Implant Materials (7300)</uid>
+    <uid uid="1.2.840.10008.6.1.1032" keyword="InterventionTypes7301" type="Context Group Name">Intervention Types (7301)</uid>
+    <uid uid="1.2.840.10008.6.1.1033" keyword="ImplantTemplatesViewOrientations7302" type="Context Group Name">Implant Templates View Orientations (7302)</uid>
+    <uid uid="1.2.840.10008.6.1.1034" keyword="ImplantTemplatesModifiedViewOrientations7303" type="Context Group Name">Implant Templates Modified View Orientations (7303)</uid>
+    <uid uid="1.2.840.10008.6.1.1035" keyword="ImplantTargetAnatomy7304" type="Context Group Name">Implant Target Anatomy (7304)</uid>
+    <uid uid="1.2.840.10008.6.1.1036" keyword="ImplantPlanningLandmarks7305" type="Context Group Name">Implant Planning Landmarks (7305)</uid>
+    <uid uid="1.2.840.10008.6.1.1037" keyword="HumanHipImplantPlanningLandmarks7306" type="Context Group Name">Human Hip Implant Planning Landmarks (7306)</uid>
+    <uid uid="1.2.840.10008.6.1.1038" keyword="ImplantComponentTypes7307" type="Context Group Name">Implant Component Types (7307)</uid>
+    <uid uid="1.2.840.10008.6.1.1039" keyword="HumanHipImplantComponentTypes7308" type="Context Group Name">Human Hip Implant Component Types (7308)</uid>
+    <uid uid="1.2.840.10008.6.1.1040" keyword="HumanTraumaImplantComponentTypes7309" type="Context Group Name">Human Trauma Implant Component Types (7309)</uid>
+    <uid uid="1.2.840.10008.6.1.1041" keyword="ImplantFixationMethod7310" type="Context Group Name">Implant Fixation Method (7310)</uid>
+    <uid uid="1.2.840.10008.6.1.1042" keyword="DeviceParticipatingRoles7445" type="Context Group Name">Device Participating Roles (7445)</uid>
+    <uid uid="1.2.840.10008.6.1.1043" keyword="ContainerTypes8101" type="Context Group Name">Container Types (8101)</uid>
+    <uid uid="1.2.840.10008.6.1.1044" keyword="ContainerComponentTypes8102" type="Context Group Name">Container Component Types (8102)</uid>
+    <uid uid="1.2.840.10008.6.1.1045" keyword="AnatomicPathologySpecimenTypes8103" type="Context Group Name">Anatomic Pathology Specimen Types (8103)</uid>
+    <uid uid="1.2.840.10008.6.1.1046" keyword="BreastTissueSpecimenTypes8104" type="Context Group Name">Breast Tissue Specimen Types (8104)</uid>
+    <uid uid="1.2.840.10008.6.1.1047" keyword="SpecimenCollectionProcedure8109" type="Context Group Name">Specimen Collection Procedure (8109)</uid>
+    <uid uid="1.2.840.10008.6.1.1048" keyword="SpecimenSamplingProcedure8110" type="Context Group Name">Specimen Sampling Procedure (8110)</uid>
+    <uid uid="1.2.840.10008.6.1.1049" keyword="SpecimenPreparationProcedure8111" type="Context Group Name">Specimen Preparation Procedure (8111)</uid>
+    <uid uid="1.2.840.10008.6.1.1050" keyword="SpecimenStains8112" type="Context Group Name">Specimen Stains (8112)</uid>
+    <uid uid="1.2.840.10008.6.1.1051" keyword="SpecimenPreparationSteps8113" type="Context Group Name">Specimen Preparation Steps (8113)</uid>
+    <uid uid="1.2.840.10008.6.1.1052" keyword="SpecimenFixatives8114" type="Context Group Name">Specimen Fixatives (8114)</uid>
+    <uid uid="1.2.840.10008.6.1.1053" keyword="SpecimenEmbeddingMedia8115" type="Context Group Name">Specimen Embedding Media (8115)</uid>
+    <uid uid="1.2.840.10008.6.1.1054" keyword="SourceOfProjectionXRayDoseInformation10020" type="Context Group Name">Source of Projection X-Ray Dose Information (10020)</uid>
+    <uid uid="1.2.840.10008.6.1.1055" keyword="SourceOfCTDoseInformation10021" type="Context Group Name">Source of CT Dose Information (10021)</uid>
+    <uid uid="1.2.840.10008.6.1.1056" keyword="RadiationDoseReferencePoints10025" type="Context Group Name">Radiation Dose Reference Points (10025)</uid>
 </dictionary>

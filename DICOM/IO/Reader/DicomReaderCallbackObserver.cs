@@ -1,58 +1,70 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 
-using Dicom.IO;
 using Dicom.IO.Buffer;
 
-namespace Dicom.IO.Reader {
-	public class DicomReaderCallbackObserver : IDicomReaderObserver {
-		private Stack<DicomReaderEventArgs> _stack;
-		private IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
+namespace Dicom.IO.Reader
+{
+    public class DicomReaderCallbackObserver : IDicomReaderObserver
+    {
+        private Stack<DicomReaderEventArgs> _stack;
 
-		public DicomReaderCallbackObserver() {
-			_stack = new Stack<DicomReaderEventArgs>();
-			_callbacks = new Dictionary<DicomTag, EventHandler<DicomReaderEventArgs>>();
-		}
+        private IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
 
-		public void Add(DicomTag tag, EventHandler<DicomReaderEventArgs> callback) {
-			_callbacks.Add(tag, callback);
-		}
+        public DicomReaderCallbackObserver()
+        {
+            _stack = new Stack<DicomReaderEventArgs>();
+            _callbacks = new Dictionary<DicomTag, EventHandler<DicomReaderEventArgs>>();
+        }
 
-		public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data) {
-			EventHandler<DicomReaderEventArgs> handler;
-			if (_callbacks.TryGetValue(tag, out handler))
-				handler(this, new DicomReaderEventArgs(source.Marker, tag, vr, data));
-		}
+        public void Add(DicomTag tag, EventHandler<DicomReaderEventArgs> callback)
+        {
+            _callbacks.Add(tag, callback);
+        }
 
-		public void OnBeginSequence(IByteSource source, DicomTag tag, uint length) {
-			_stack.Push(new DicomReaderEventArgs(source.Marker, tag, DicomVR.SQ, null));
-		}
+        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        {
+            EventHandler<DicomReaderEventArgs> handler;
+            if (_callbacks.TryGetValue(tag, out handler)) handler(this, new DicomReaderEventArgs(source.Marker, tag, vr, data));
+        }
 
-		public void OnBeginSequenceItem(IByteSource source, uint length) {
-		}
+        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        {
+            _stack.Push(new DicomReaderEventArgs(source.Marker, tag, DicomVR.SQ, null));
+        }
 
-		public void OnEndSequenceItem() {
-		}
+        public void OnBeginSequenceItem(IByteSource source, uint length)
+        {
+        }
 
-		public void OnEndSequence() {
-			DicomReaderEventArgs args = _stack.Pop();
-			EventHandler<DicomReaderEventArgs> handler;
-			if (_callbacks.TryGetValue(args.Tag, out handler))
-				handler(this, args);
-		}
+        public void OnEndSequenceItem()
+        {
+        }
 
-		public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr) {
-			_stack.Push(new DicomReaderEventArgs(source.Marker, tag, vr, null));
-		}
+        public void OnEndSequence()
+        {
+            DicomReaderEventArgs args = _stack.Pop();
+            EventHandler<DicomReaderEventArgs> handler;
+            if (_callbacks.TryGetValue(args.Tag, out handler)) handler(this, args);
+        }
 
-		public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data) {
-		}
+        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        {
+            _stack.Push(new DicomReaderEventArgs(source.Marker, tag, vr, null));
+        }
 
-		public void OnEndFragmentSequence() {
-			DicomReaderEventArgs args = _stack.Pop();
-			EventHandler<DicomReaderEventArgs> handler;
-			if (_callbacks.TryGetValue(args.Tag, out handler))
-				handler(this, args);
-		}
-	}
+        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
+        {
+        }
+
+        public void OnEndFragmentSequence()
+        {
+            DicomReaderEventArgs args = _stack.Pop();
+            EventHandler<DicomReaderEventArgs> handler;
+            if (_callbacks.TryGetValue(args.Tag, out handler)) handler(this, args);
+        }
+    }
 }

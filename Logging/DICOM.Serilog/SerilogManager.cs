@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Serilog;
 
 namespace Dicom.Log
 {
@@ -6,31 +9,34 @@ namespace Dicom.Log
     /// <summary>
     /// Directs fo-dicom's logging through Serilog
     /// </summary>
-    public class SerilogManager :LogManager{
+    public class SerilogManager : LogManager
+    {
         private readonly ILogger _serilogLogger;
 
         /// <summary>
         /// Instantiates fo-dicom Serilog logging relying on Serilog's Serilog.Log global static logger
         /// </summary>
-        public SerilogManager() {
+        public SerilogManager()
+        {
             _serilogLogger = null;
         }
 
         /// <summary>
         /// Instantiates fo-dicom Serilog logging facility, sending logs through the provided ILogger instance
         /// </summary>
-        /// <param name="serilogLogger"></param>
-        public SerilogManager(ILogger serilogLogger) {
+        /// <param name="serilogLogger">Specific Serilog logger to use.</param>
+        public SerilogManager(ILogger serilogLogger)
+        {
             _serilogLogger = serilogLogger;
         }
 
         /// <summary>
-        /// Returns a scoped instance of a Serilog logger with the fo-DICOM
-        /// property set to the given name
+        /// Get logger from the current log manager implementation.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public override Logger GetLogger(string name) {
+        /// <param name="name">Classifier name, typically namespace or type name.</param>
+        /// <returns>Logger from the current log manager implementation.</returns>
+        protected override Logger GetLoggerImpl(string name)
+        {
             var serilogLogger = (_serilogLogger ?? Serilog.Log.Logger).ForContext("fo-DICOM", name);
             return new SerilogLoggerAdapter(serilogLogger);
         }

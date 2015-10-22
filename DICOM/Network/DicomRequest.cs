@@ -1,36 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network {
-	public abstract class DicomRequest : DicomMessage {
-		protected DicomRequest(DicomDataset command) : base(command) {
-		}
+using System;
 
-		protected DicomRequest(DicomCommandField type, DicomUID affectedClassUid, DicomPriority priority) : base() {
-			Type = type;
-			SOPClassUID = affectedClassUid;
-			MessageID = GetNextMessageID();
-			Priority = priority;
-			Dataset = null;
-		}
+namespace Dicom.Network
+{
+    public abstract class DicomRequest : DicomMessage
+    {
+        protected DicomRequest(DicomDataset command)
+            : base(command)
+        {
+        }
 
-		public DicomPriority Priority {
-			get { return Command.Get<DicomPriority>(DicomTag.Priority); }
-			set { Command.Add(DicomTag.Priority, (ushort)value); }
-		}
+        protected DicomRequest(DicomCommandField type, DicomUID affectedClassUid, DicomPriority priority)
+            : base()
+        {
+            Type = type;
+            SOPClassUID = affectedClassUid;
+            MessageID = GetNextMessageID();
+            Priority = priority;
+            Dataset = null;
+        }
 
-		internal abstract void PostResponse(DicomService service, DicomResponse response);
+        public DicomPriority Priority
+        {
+            get
+            {
+                return Command.Get<DicomPriority>(DicomTag.Priority);
+            }
+            set
+            {
+                Command.Add(DicomTag.Priority, (ushort)value);
+            }
+        }
 
-		private volatile static ushort _messageId = 1;
-		private static object _lock = new object();
-		internal ushort GetNextMessageID() {
-			lock (_lock) {
-				if (_messageId == UInt16.MaxValue)
-					_messageId = 1;
-				return _messageId++;
-			}
-		}
-	}
+        internal abstract void PostResponse(DicomService service, DicomResponse response);
+
+        private static volatile ushort _messageId = 1;
+
+        private static object _lock = new object();
+
+        internal ushort GetNextMessageID()
+        {
+            lock (_lock)
+            {
+                if (_messageId == UInt16.MaxValue) _messageId = 1;
+                return _messageId++;
+            }
+        }
+    }
 }

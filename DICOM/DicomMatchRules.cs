@@ -1,405 +1,548 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Dicom {
-	public interface IDicomMatchRule {
-		bool Match(DicomDataset dataset);
-	}
+namespace Dicom
+{
+    public interface IDicomMatchRule
+    {
+        bool Match(DicomDataset dataset);
+    }
 
-	public enum DicomMatchOperator : byte {
-		/// <summary>All rules match</summary>
-		And,
+    public enum DicomMatchOperator : byte
+    {
+        /// <summary>All rules match</summary>
+        And,
 
-		/// <summary>Any rule matches</summary>
-		Or
-	}
+        /// <summary>Any rule matches</summary>
+        Or
+    }
 
-	public class DicomMatchRuleSet : IDicomMatchRule {
-		#region Private Members
-		private DicomMatchOperator _operator;
-		private IList<IDicomMatchRule> _rules;
-		#endregion
+    public class DicomMatchRuleSet : IDicomMatchRule
+    {
+        #region Private Members
 
-		#region Public Constructor
-		public DicomMatchRuleSet() {
-			_rules = new List<IDicomMatchRule>();
-			_operator = DicomMatchOperator.And;
-		}
+        private DicomMatchOperator _operator;
 
-		public DicomMatchRuleSet(DicomMatchOperator op) {
-			_rules = new List<IDicomMatchRule>();
-			_operator = op;
-		}
+        private IList<IDicomMatchRule> _rules;
 
-		public DicomMatchRuleSet(params IDicomMatchRule[] rules) {
-			_rules = new List<IDicomMatchRule>(rules);
-			_operator = DicomMatchOperator.And;
-		}
+        #endregion
 
-		public DicomMatchRuleSet(DicomMatchOperator op, params IDicomMatchRule[] rules) {
-			_rules = new List<IDicomMatchRule>(rules);
-			_operator = op;
-		}
-		#endregion
+        #region Public Constructor
 
-		#region Public Properties
-		public DicomMatchOperator Operator {
-			get { return _operator; }
-			set { _operator = value; }
-		}
-		#endregion
+        public DicomMatchRuleSet()
+        {
+            _rules = new List<IDicomMatchRule>();
+            _operator = DicomMatchOperator.And;
+        }
 
-		#region Public Methods
-		public void Add(IDicomMatchRule rule) {
-			_rules.Add(rule);
-		}
+        public DicomMatchRuleSet(DicomMatchOperator op)
+        {
+            _rules = new List<IDicomMatchRule>();
+            _operator = op;
+        }
 
-		public bool Match(DicomDataset dataset) {
-			if (_rules.Count == 0)
-				return true;
+        public DicomMatchRuleSet(params IDicomMatchRule[] rules)
+        {
+            _rules = new List<IDicomMatchRule>(rules);
+            _operator = DicomMatchOperator.And;
+        }
 
-			if (_operator == DicomMatchOperator.Or) {
-				foreach (var rule in _rules)
-					if (rule.Match(dataset))
-						return true;
+        public DicomMatchRuleSet(DicomMatchOperator op, params IDicomMatchRule[] rules)
+        {
+            _rules = new List<IDicomMatchRule>(rules);
+            _operator = op;
+        }
 
-				return false;
-			} else {
-				foreach (var rule in _rules)
-					if (!rule.Match(dataset))
-						return false;
+        #endregion
 
-				return true;
-			}
-		}
+        #region Public Properties
 
-		public override string ToString() {
-			var sb = new StringBuilder();
-			foreach (IDicomMatchRule rule in _rules) {
-				if (sb.Length > 0)
-					sb.Append("  ").Append(Operator.ToString().ToUpper()).Append(" ");
-				if (rule is DicomMatchRuleSet)
-					sb.Append("(").AppendLine(rule.ToString()).AppendLine(")");
-				else
-					sb.Append(rule.ToString());
-			}
-			return sb.ToString();
-		}
-		#endregion
-	}
+        public DicomMatchOperator Operator
+        {
+            get
+            {
+                return _operator;
+            }
+            set
+            {
+                _operator = value;
+            }
+        }
 
-	/// <summary>
-	/// Negates the return value of a match rule.
-	/// </summary>
-	public class NegateDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private IDicomMatchRule _rule;
-		#endregion
+        #endregion
 
-		#region Public Constructor
-		public NegateDicomMatchRule(IDicomMatchRule rule) {
-			_rule = rule;
-		}
-		#endregion
+        #region Public Methods
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			return !_rule.Match(dataset);
-		}
+        public void Add(IDicomMatchRule rule)
+        {
+            _rules.Add(rule);
+        }
 
-		public override string ToString() {
-			return String.Format("not {0}", _rule);
-		}
-		#endregion
-	}
+        public bool Match(DicomDataset dataset)
+        {
+            if (_rules.Count == 0) return true;
 
-	/// <summary>
-	/// Checks that a DICOM element exists.
-	/// </summary>
-	public class ExistsDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		#endregion
+            if (_operator == DicomMatchOperator.Or)
+            {
+                foreach (var rule in _rules) if (rule.Match(dataset)) return true;
 
-		#region Public Constructor
-		public ExistsDicomMatchRule(DicomTag tag) {
-			_tag = tag;
-		}
-		#endregion
+                return false;
+            }
+            else
+            {
+                foreach (var rule in _rules) if (!rule.Match(dataset)) return false;
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			return dataset.Contains(_tag);
-		}
+                return true;
+            }
+        }
 
-		public override string ToString() {
-			return String.Format("{0} exists", _tag);
-		}
-		#endregion
-	}
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (IDicomMatchRule rule in _rules)
+            {
+                if (sb.Length > 0) sb.Append("  ").Append(Operator.ToString().ToUpper()).Append(" ");
+                if (rule is DicomMatchRuleSet) sb.Append("(").AppendLine(rule.ToString()).AppendLine(")");
+                else sb.Append(rule.ToString());
+            }
+            return sb.ToString();
+        }
 
-	/// <summary>
-	/// Checks if a DICOM element exists and has a value.
-	/// </summary>
-	public class IsEmptyDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		#endregion
+        #endregion
+    }
 
-		#region Public Constructor
-		public IsEmptyDicomMatchRule(DicomTag tag) {
-			_tag = tag;
-		}
-		#endregion
+    /// <summary>
+    /// Negates the return value of a match rule.
+    /// </summary>
+    public class NegateDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			if (dataset.Contains(_tag)) {
-				var value = dataset.Get<string>(_tag, -1, String.Empty);
-				return String.IsNullOrEmpty(value);
-			}
-			return true;
-		}
+        private IDicomMatchRule _rule;
 
-		public override string ToString() {
-			return String.Format("{0} is empty", _tag);
-		}
-		#endregion
-	}
+        #endregion
 
-	/// <summary>
-	/// Compares a DICOM element value against a string.
-	/// </summary>
-	public class EqualsDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _value;
-		#endregion
+        #region Public Constructor
 
-		#region Public Constructor
-		public EqualsDicomMatchRule(DicomTag tag, string value) {
-			_tag = tag;
-			_value = value;
-		}
-		#endregion
+        public NegateDicomMatchRule(IDicomMatchRule rule)
+        {
+            _rule = rule;
+        }
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return _value == value;
-		}
+        #endregion
 
-		public override string ToString() {
-			return String.Format("{0} equals '{1}'", _tag, _value);
-		}
-		#endregion
-	}
+        #region Public Methods
 
-	/// <summary>
-	/// Checks if a DICOM element value starts with a string.
-	/// </summary>
-	public class StartsWithDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _value;
-		#endregion
+        public bool Match(DicomDataset dataset)
+        {
+            return !_rule.Match(dataset);
+        }
 
-		#region Public Constructor
-		public StartsWithDicomMatchRule(DicomTag tag, string value) {
-			_tag = tag;
-			_value = value;
-		}
-		#endregion
+        public override string ToString()
+        {
+            return String.Format("not {0}", _rule);
+        }
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return value.StartsWith(_value);
-		}
+        #endregion
+    }
 
-		public override string ToString() {
-			return String.Format("{0} starts with '{1}'", _tag, _value);
-		}
-		#endregion
-	}
+    /// <summary>
+    /// Checks that a DICOM element exists.
+    /// </summary>
+    public class ExistsDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
 
-	/// <summary>
-	/// Checks if a DICOM element value ends with a string.
-	/// </summary>
-	public class EndsWithDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _value;
-		#endregion
+        private DicomTag _tag;
 
-		#region Public Constructor
-		public EndsWithDicomMatchRule(DicomTag tag, string value) {
-			_tag = tag;
-			_value = value;
-		}
-		#endregion
+        #endregion
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return value.EndsWith(_value);
-		}
+        #region Public Constructor
 
-		public override string ToString() {
-			return String.Format("{0} ends with '{1}'", _tag, _value);
-		}
-		#endregion
-	}
+        public ExistsDicomMatchRule(DicomTag tag)
+        {
+            _tag = tag;
+        }
 
-	/// <summary>
-	/// Checks if a DICOM element value contains a string.
-	/// </summary>
-	public class ContainsDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _value;
-		#endregion
+        #endregion
 
-		#region Public Constructor
-		public ContainsDicomMatchRule(DicomTag tag, string value) {
-			_tag = tag;
-			_value = value;
-		}
-		#endregion
+        #region Public Methods
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return value.Contains(_value);
-		}
+        public bool Match(DicomDataset dataset)
+        {
+            return dataset.Contains(_tag);
+        }
 
-		public override string ToString() {
-			return String.Format("{0} contains '{1}'", _tag, _value);
-		}
-		#endregion
-	}
+        public override string ToString()
+        {
+            return String.Format("{0} exists", _tag);
+        }
 
-	/// <summary>
-	/// Matches a wildcard pattern against a DICOM element value.
-	/// </summary>
-	public class WildcardDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _pattern;
-		#endregion
+        #endregion
+    }
 
-		#region Public Constructor
-		public WildcardDicomMatchRule(DicomTag tag, string pattern) {
-			_tag = tag;
-			_pattern = pattern;
-		}
-		#endregion
+    /// <summary>
+    /// Checks if a DICOM element exists and has a value.
+    /// </summary>
+    public class IsEmptyDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return value.Wildcard(_pattern);
-		}
+        private DicomTag _tag;
 
-		public override string ToString() {
-			return String.Format("{0} wildcard match '{1}'", _tag, _pattern);
-		}
-		#endregion
-	}
+        #endregion
 
-	/// <summary>
-	/// Matches regular expression pattern against a DICOM element value.
-	/// </summary>
-	public class RegexDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string _pattern;
-		private Regex _regex;
-		#endregion
+        #region Public Constructor
 
-		#region Public Constructor
-		public RegexDicomMatchRule(DicomTag tag, string pattern) {
-			_tag = tag;
-			_pattern = pattern;
-			_regex = new Regex(_pattern, RegexOptions.Compiled);
-		}
-		#endregion
+        public IsEmptyDicomMatchRule(DicomTag tag)
+        {
+            _tag = tag;
+        }
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			return _regex.IsMatch(value);
-		}
+        #endregion
 
-		public override string ToString() {
-			return String.Format("{0} regex match '{1}'", _tag, _pattern);
-		}
-		#endregion
-	}
+        #region Public Methods
 
-	/// <summary>
-	/// Matches a DICOM element value against a set of strings.
-	/// </summary>
-	public class OneOfDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private DicomTag _tag;
-		private string[] _values;
-		#endregion
+        public bool Match(DicomDataset dataset)
+        {
+            if (dataset.Contains(_tag))
+            {
+                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                return String.IsNullOrEmpty(value);
+            }
+            return true;
+        }
 
-		#region Public Constructor
-		public OneOfDicomMatchRule(DicomTag tag, params string[] values) {
-			_tag = tag;
-			_values = values;
-		}
-		#endregion
+        public override string ToString()
+        {
+            return String.Format("{0} is empty", _tag);
+        }
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			var value = dataset.Get<string>(_tag, -1, String.Empty);
-			foreach (string v in _values)
-				if (v == value)
-					return true;
-			return false;
-		}
+        #endregion
+    }
 
-		public override string ToString() {
-			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat("{0} is one of ['", _tag);
-			for (int i = 0; i < _values.Length; i++) {
-				if (i > 0)
-					sb.Append("', '");
-				sb.Append(_values[i]);
-			}
-			sb.Append("']");
-			return sb.ToString();
-		}
-		#endregion
-	}
+    /// <summary>
+    /// Compares a DICOM element value against a string.
+    /// </summary>
+    public class EqualsDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
 
-	/// <summary>
-	/// Rule that always returns true or false.
-	/// </summary>
-	public class BoolDicomMatchRule : IDicomMatchRule {
-		#region Private Members
-		private bool _value;
-		#endregion
+        private DicomTag _tag;
 
-		#region Public Constructor
-		public BoolDicomMatchRule(bool value) {
-			_value = value;
-		}
-		#endregion
+        private string _value;
 
-		#region Public Methods
-		public bool Match(DicomDataset dataset) {
-			return _value;
-		}
+        #endregion
 
-		public override string ToString() {
-			return _value.ToString();
-		}
-		#endregion
-	}
+        #region Public Constructor
+
+        public EqualsDicomMatchRule(DicomTag tag, string value)
+        {
+            _tag = tag;
+            _value = value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return _value == value;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} equals '{1}'", _tag, _value);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Checks if a DICOM element value starts with a string.
+    /// </summary>
+    public class StartsWithDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private DicomTag _tag;
+
+        private string _value;
+
+        #endregion
+
+        #region Public Constructor
+
+        public StartsWithDicomMatchRule(DicomTag tag, string value)
+        {
+            _tag = tag;
+            _value = value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return value.StartsWith(_value);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} starts with '{1}'", _tag, _value);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Checks if a DICOM element value ends with a string.
+    /// </summary>
+    public class EndsWithDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private DicomTag _tag;
+
+        private string _value;
+
+        #endregion
+
+        #region Public Constructor
+
+        public EndsWithDicomMatchRule(DicomTag tag, string value)
+        {
+            _tag = tag;
+            _value = value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return value.EndsWith(_value);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} ends with '{1}'", _tag, _value);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Checks if a DICOM element value contains a string.
+    /// </summary>
+    public class ContainsDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private DicomTag _tag;
+
+        private string _value;
+
+        #endregion
+
+        #region Public Constructor
+
+        public ContainsDicomMatchRule(DicomTag tag, string value)
+        {
+            _tag = tag;
+            _value = value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return value.Contains(_value);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} contains '{1}'", _tag, _value);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Matches a wildcard pattern against a DICOM element value.
+    /// </summary>
+    public class WildcardDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private DicomTag _tag;
+
+        private string _pattern;
+
+        #endregion
+
+        #region Public Constructor
+
+        public WildcardDicomMatchRule(DicomTag tag, string pattern)
+        {
+            _tag = tag;
+            _pattern = pattern;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return value.Wildcard(_pattern);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} wildcard match '{1}'", _tag, _pattern);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Matches regular expression pattern against a DICOM element value.
+    /// </summary>
+    public class RegexDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private readonly DicomTag _tag;
+
+        private readonly string _pattern;
+
+        private readonly Regex _regex;
+
+        #endregion
+
+        #region Public Constructor
+
+        public RegexDicomMatchRule(DicomTag tag, string pattern)
+        {
+            _tag = tag;
+            _pattern = pattern;
+            _regex = new Regex(_pattern);
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            return _regex.IsMatch(value);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} regex match '{1}'", _tag, _pattern);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Matches a DICOM element value against a set of strings.
+    /// </summary>
+    public class OneOfDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private DicomTag _tag;
+
+        private string[] _values;
+
+        #endregion
+
+        #region Public Constructor
+
+        public OneOfDicomMatchRule(DicomTag tag, params string[] values)
+        {
+            _tag = tag;
+            _values = values;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            foreach (string v in _values) if (v == value) return true;
+            return false;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("{0} is one of ['", _tag);
+            for (int i = 0; i < _values.Length; i++)
+            {
+                if (i > 0) sb.Append("', '");
+                sb.Append(_values[i]);
+            }
+            sb.Append("']");
+            return sb.ToString();
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Rule that always returns true or false.
+    /// </summary>
+    public class BoolDicomMatchRule : IDicomMatchRule
+    {
+        #region Private Members
+
+        private bool _value;
+
+        #endregion
+
+        #region Public Constructor
+
+        public BoolDicomMatchRule(bool value)
+        {
+            _value = value;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool Match(DicomDataset dataset)
+        {
+            return _value;
+        }
+
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
+
+        #endregion
+    }
 }

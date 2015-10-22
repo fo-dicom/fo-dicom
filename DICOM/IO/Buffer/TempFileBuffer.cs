@@ -1,39 +1,92 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.IO;
 
-namespace Dicom.IO.Buffer {
-	public sealed class TempFileBuffer : IByteBuffer {
-		private TemporaryFile _file;
-		private uint _size;
+namespace Dicom.IO.Buffer
+{
+    /// <summary>
+    /// Temporary file-based byte buffer.
+    /// </summary>
+    public sealed class TempFileBuffer : IByteBuffer
+    {
+        #region FIELDS
 
-		public TempFileBuffer(byte[] data) {
-			_file = new TemporaryFile();
+        private readonly IFileReference file;
 
-			File.WriteAllBytes(_file.Name, data);
-			_size = (uint)data.Length;
-		}
+        #endregion
 
-		public bool IsMemory {
-			get { return false; }
-		}
+        #region CONSTRUCTORS
 
-		public uint Size {
-			get { return _size; }
-		}
+        /// <summary>
+        /// Initializes a <see cref="TempFileBuffer"/> object.
+        /// </summary>
+        /// <param name="data">Byte array subject to buffering.</param>
+        public TempFileBuffer(byte[] data)
+        {
+            this.file = TemporaryFile.Create();
+            this.Size = (uint)data.Length;
 
-		public byte[] Data {
-			get { return File.ReadAllBytes(_file.Name); }
-		}
+            using (var stream = this.file.OpenWrite())
+            {
+                stream.Write(data, 0, (int)this.Size);
+            }
+        }
 
-		public byte[] GetByteRange(int offset, int count) {
-			byte[] buffer = new byte[count];
+        #endregion
 
-			using (Stream fs = File.OpenRead(_file.Name)) {
-				fs.Seek(offset, SeekOrigin.Begin);
-				fs.Read(buffer, 0, count);
-			}
+        #region PROPERTIES
 
-			return buffer;
-		}
-	}
+        /// <summary>
+        /// Gets whether data is buffered in memory or not.
+        /// </summary>
+        public bool IsMemory
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the size of the buffered data.
+        /// </summary>
+        public uint Size { get; private set; }
+
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        public byte[] Data
+        {
+            get
+            {
+                return this.GetByteRange(0, (int)this.Size);
+            }
+        }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Gets a subset of the data.
+        /// </summary>
+        /// <param name="offset">Offset from beginning of data array.</param>
+        /// <param name="count">Number of bytes to return.</param>
+        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
+        public byte[] GetByteRange(int offset, int count)
+        {
+            var buffer = new byte[count];
+
+            using (var fs = this.file.OpenRead())
+            {
+                fs.Seek(offset, SeekOrigin.Begin);
+                fs.Read(buffer, 0, count);
+            }
+
+            return buffer;
+        }
+
+        #endregion
+    }
 }

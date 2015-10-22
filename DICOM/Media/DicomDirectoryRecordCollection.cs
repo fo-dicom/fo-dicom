@@ -1,107 +1,131 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Dicom.Media {
-	public class DicomDirectoryRecordCollection : IEnumerable<DicomDirectoryRecord> {
-		#region Properties and Attributes
-		private DicomDirectoryRecord _firstRecord;
-		#endregion
+namespace Dicom.Media
+{
+    public class DicomDirectoryRecordCollection : IEnumerable<DicomDirectoryRecord>
+    {
+        #region Properties and Attributes
 
-		#region Constructors
-		internal DicomDirectoryRecordCollection(DicomDirectoryRecord firstRecord) {
-			_firstRecord = firstRecord;
-		}
-		#endregion
+        private DicomDirectoryRecord _firstRecord;
 
-		#region Enumerator Class
+        #endregion
 
-		internal class DicomDirectoryRecordEnumerator : IEnumerator<DicomDirectoryRecord> {
-			#region Properties and Attributes
+        #region Constructors
 
-			private readonly DicomDirectoryRecord _head;
-			private DicomDirectoryRecord _current;
-			private bool _atEnd;
+        internal DicomDirectoryRecordCollection(DicomDirectoryRecord firstRecord)
+        {
+            _firstRecord = firstRecord;
+        }
 
-			#endregion
+        #endregion
 
-			#region Constructors
+        #region Enumerator Class
 
-			internal DicomDirectoryRecordEnumerator(DicomDirectoryRecord head) {
-				_head = head;
-			}
+        internal class DicomDirectoryRecordEnumerator : IEnumerator<DicomDirectoryRecord>
+        {
+            #region Properties and Attributes
 
-			#endregion
+            private readonly DicomDirectoryRecord _head;
 
-			#region IEnumerator<DirectoryRecordSequenceItem> Members
+            private DicomDirectoryRecord _current;
 
-			public DicomDirectoryRecord Current {
-				get { return _current; }
-			}
+            private bool _atEnd;
 
-			#endregion
+            #endregion
 
-			#region IDisposable Members
+            #region Constructors
 
-			public void Dispose() {
-				_current = null;
-			}
+            internal DicomDirectoryRecordEnumerator(DicomDirectoryRecord head)
+            {
+                _head = head;
+            }
 
-			#endregion
+            #endregion
 
-			#region IEnumerator Members
+            #region IEnumerator<DirectoryRecordSequenceItem> Members
 
-			object System.Collections.IEnumerator.Current {
-				get { return _current; }
-			}
+            public DicomDirectoryRecord Current
+            {
+                get
+                {
+                    return _current;
+                }
+            }
 
-			public bool MoveNext() {
-				if (_head == null)
-					return false;
+            #endregion
 
-				if (_atEnd)
-					return false;
+            #region IDisposable Members
 
-				if (_current == null) {
-					_current = _head;
-					return true;
-				}
+            public void Dispose()
+            {
+                _current = null;
+            }
 
-				if (_current.NextDirectoryRecord == null) {
-					_atEnd = true;
-					return false;
-				}
+            #endregion
 
-				_current = _current.NextDirectoryRecord;
+            #region IEnumerator Members
 
-				return true;
-			}
+            object System.Collections.IEnumerator.Current
+            {
+                get
+                {
+                    return _current;
+                }
+            }
 
-			public void Reset() {
-				_current = null;
-				_atEnd = false;
-			}
+            public bool MoveNext()
+            {
+                if (_head == null) return false;
 
-			#endregion
-		}
+                if (_atEnd) return false;
 
-		#endregion
+                if (_current == null)
+                {
+                    _current = _head;
+                    return true;
+                }
 
-		#region IEnumerable<DirectoryRecordSequenceItem> Members
+                if (_current.NextDirectoryRecord == null)
+                {
+                    _atEnd = true;
+                    return false;
+                }
 
-		public IEnumerator<DicomDirectoryRecord> GetEnumerator() {
-			return new DicomDirectoryRecordEnumerator(_firstRecord);
-		}
+                _current = _current.NextDirectoryRecord;
 
-		#endregion
+                return true;
+            }
 
-		#region IEnumerable Members
+            public void Reset()
+            {
+                _current = null;
+                _atEnd = false;
+            }
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			return GetEnumerator();
-		}
+            #endregion
+        }
 
-		#endregion
-	}
+        #endregion
+
+        #region IEnumerable<DirectoryRecordSequenceItem> Members
+
+        public IEnumerator<DicomDirectoryRecord> GetEnumerator()
+        {
+            return new DicomDirectoryRecordEnumerator(_firstRecord);
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
+    }
 }

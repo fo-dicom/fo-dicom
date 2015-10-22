@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.Platform</id>
+        <version>$version$</version>
+        <title>Fellow Oak DICOM Platform Libraries</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Platform specific libraries for fo-dicom.</description>
+        <language>en-US</language>
+        <dependencies>
+            <dependency id="fo-dicom.Core" version="$version$" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\DICOM.Native\Release\Dicom.Native.dll" target="build\net45" />
+        <file src="..\DICOM.Native\Release\Dicom.Native64.dll" target="build\net45" />
+        <file src="..\fo-dicom.targets" target="build\fo-dicom.Platform.targets" />
+        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
+        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
+        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
+    </files>
+</package>

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 
 namespace Dicom.Printing
 {
@@ -49,7 +49,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace Dicom.Printing
                 }
                 else
                 {
-                    throw new InvalidProgramException("No LUT sequence found, call CreateLutSequence first");
+                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace Dicom.Printing
                 throw new ArgumentNullException("dataset");
             }
             dataset.CopyTo(this);
-         
+
         }
 
         public void CreateLutSequence()

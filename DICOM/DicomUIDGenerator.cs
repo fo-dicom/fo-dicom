@@ -1,92 +1,112 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom {
-	public class DicomUIDGenerator {
-		private static volatile DicomUID _instanceRootUid = null;
-		private static DicomUID InstanceRootUID {
-			get {
-				if (_instanceRootUid == null) {
-					lock (GenerateUidLock) {
-						if (_instanceRootUid == null) {
-#if !SILVERLIGHT
-							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-							for (int i = 0; i < interfaces.Length; i++) {
-								if (NetworkInterface.LoopbackInterfaceIndex != i && interfaces[i].OperationalStatus == OperationalStatus.Up) {
-									string hex = interfaces[i].GetPhysicalAddress().ToString();
-									if (!String.IsNullOrEmpty(hex)) {
-										try {
-											long mac = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-											return DicomUID.Append(DicomImplementation.ClassUID, mac);
-										} catch {
-										}
-									}
-								}
-							}
-#endif
-							_instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
-						}
-					}
-				}
-				return _instanceRootUid;
-			}
-			set {
-				_instanceRootUid = value;
-			}
-		}
+namespace Dicom
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
 
-		private static long LastTicks = 0;
-		private static object GenerateUidLock = new object();
-		private static DateTime Y2K = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    using Dicom.Network;
 
-		private Dictionary<string, DicomUID> _uidMap = new Dictionary<string, DicomUID>();
+    /// <summary>
+    /// Class for generating DICOM UIDs.
+    /// </summary>
+    public class DicomUIDGenerator
+    {
+        #region FIELDS
 
-		public DicomUID Generate(DicomUID sourceUid = null) {
-			lock (GenerateUidLock) {
-				DicomUID destinationUid;
-				if (sourceUid != null && _uidMap.TryGetValue(sourceUid.UID, out destinationUid))
-					return destinationUid;
+        private static volatile DicomUID instanceRootUid = null;
 
-				long ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-				while (ticks == LastTicks) {
-					Thread.Sleep(1);
-					ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-				}
-				LastTicks = ticks;
+        private static long lastTicks = 0;
 
-				string str = ticks.ToString();
-				if (str.EndsWith("0000"))
-					str = str.Substring(0, str.Length - 4);
+        private static readonly object GenerateUidLock = new object();
 
-				StringBuilder uid = new StringBuilder();
-				uid.Append(InstanceRootUID.UID).Append('.').Append(str);
+        private static readonly DateTime Y2K = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-				destinationUid = new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
+        private readonly Dictionary<string, DicomUID> uidMap = new Dictionary<string, DicomUID>();
 
-				if (sourceUid != null)
-					_uidMap.Add(sourceUid.UID, destinationUid);
+        #endregion
 
-				return destinationUid;
-			}
-		}
+        #region PROPERTIES
 
-		public void RegenerateAll(DicomDataset dataset) {
-			foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray()) {
-				var uid = dataset.Get<DicomUID>(ui.Tag);
-				if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown)
-					dataset.Add(ui.Tag, Generate(uid));
-			}
+        private static DicomUID InstanceRootUID
+        {
+            get
+            {
+                if (instanceRootUid == null)
+                {
+                    lock (GenerateUidLock)
+                    {
+                        if (instanceRootUid == null)
+                        {
+                            DicomUID dicomUid;
+                            if (NetworkManager.TryGetNetworkIdentifier(out dicomUid)) return dicomUid;
 
-			foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>().ToArray()) {
-				foreach (var item in sq) {
-					RegenerateAll(item);
-				}
-			}
-		}
-	}
+                            instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
+                        }
+                    }
+                }
+                return instanceRootUid;
+            }
+        }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Generate a new DICOM UID.
+        /// </summary>
+        /// <param name="sourceUid">Source UID.</param>
+        /// <returns>Generated UID.</returns>
+        public DicomUID Generate(DicomUID sourceUid = null)
+        {
+            lock (GenerateUidLock)
+            {
+                DicomUID destinationUid;
+                if (sourceUid != null && this.uidMap.TryGetValue(sourceUid.UID, out destinationUid)) return destinationUid;
+
+                var ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
+                if (ticks == lastTicks) ++ticks;
+                lastTicks = ticks;
+
+                var str = ticks.ToString();
+                if (str.EndsWith("0000")) str = str.Substring(0, str.Length - 4);
+
+                var uid = new StringBuilder();
+                uid.Append(InstanceRootUID.UID).Append('.').Append(str);
+
+                destinationUid = new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
+
+                if (sourceUid != null) this.uidMap.Add(sourceUid.UID, destinationUid);
+
+                return destinationUid;
+            }
+        }
+
+        /// <summary>
+        /// Regenerate all UIDs in a DICOM dataset.
+        /// </summary>
+        /// <param name="dataset">Dataset in which UIDs should be regenerated.</param>
+        public void RegenerateAll(DicomDataset dataset)
+        {
+            foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray())
+            {
+                var uid = dataset.Get<DicomUID>(ui.Tag);
+                if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown) dataset.Add(ui.Tag, this.Generate(uid));
+            }
+
+            foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>().ToArray())
+            {
+                foreach (var item in sq)
+                {
+                    this.RegenerateAll(item);
+                }
+            }
+        }
+
+        #endregion
+    }
 }

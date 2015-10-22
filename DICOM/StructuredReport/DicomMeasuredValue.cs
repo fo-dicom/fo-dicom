@@ -1,34 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.StructuredReport {
-	public class DicomMeasuredValue : DicomDataset {
-		public DicomMeasuredValue(DicomDataset dataset) : base(dataset) {
-		}
+using System;
 
-		public DicomMeasuredValue(DicomSequence sequence) {
-			if (sequence.Items.Count == 0)
-				throw new DicomDataException("No measurement item found in sequence.");
-			Add(sequence.Items[0]);
-		}
+namespace Dicom.StructuredReport
+{
+    public class DicomMeasuredValue : DicomDataset
+    {
+        public DicomMeasuredValue(DicomDataset dataset)
+            : base(dataset)
+        {
+        }
 
-		public DicomMeasuredValue(decimal value, DicomCodeItem units) {
-			Add(DicomTag.NumericValue, value);
-			Add(new DicomSequence(DicomTag.MeasurementUnitsCodeSequence, units));
-		}
+        public DicomMeasuredValue(DicomSequence sequence)
+        {
+            if (sequence.Items.Count == 0) throw new DicomDataException("No measurement item found in sequence.");
+            Add(sequence.Items[0]);
+        }
 
-		public DicomCodeItem Code {
-			get { return Get<DicomCodeItem>(DicomTag.MeasurementUnitsCodeSequence); }
-		}
+        public DicomMeasuredValue(decimal value, DicomCodeItem units)
+        {
+            Add(DicomTag.NumericValue, value);
+            Add(new DicomSequence(DicomTag.MeasurementUnitsCodeSequence, units));
+        }
 
-		public decimal Value {
-			get { return Get<decimal>(DicomTag.NumericValue); }
-		}
+        public DicomCodeItem Code
+        {
+            get
+            {
+                return Get<DicomCodeItem>(DicomTag.MeasurementUnitsCodeSequence);
+            }
+        }
 
-		public override string ToString() {
-			return String.Format("{0} {1}", Value, Code.Value);
-		}
-	}
+        public decimal Value
+        {
+            get
+            {
+                return Get<decimal>(DicomTag.NumericValue);
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} {1}", Value, Code.Value);
+        }
+    }
 }

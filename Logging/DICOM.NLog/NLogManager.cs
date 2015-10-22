@@ -1,48 +1,86 @@
-﻿using System;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Log {
-	/// <summary>
-	/// LogManager for the NLog logging framework.
-	/// </summary>
-	/// <example>
-	/// LogManager.Default = new NLogManager();
-	/// </example>
-	public class NLogManager : LogManager {
-		public override Logger GetLogger(string name) {
-			return new NLogger(NLog.LogManager.GetLogger(name));
-		}
+namespace Dicom.Log
+{
+    /// <summary>
+    /// LogManager for the NLog logging framework.
+    /// </summary>
+    /// <example>
+    /// LogManager.SetImplementation(NLogManager.Instance);
+    /// </example>
+    public class NLogManager : LogManager
+    {
+        /// <summary>
+        /// Singleton instance of <see cref="NLogManager"/>.
+        /// </summary>
+        public static readonly LogManager Instance = new NLogManager();
 
-		private class NLogger : Logger {
-			private readonly NLog.Logger _logger;
+        /// <summary>
+        /// Initializes an instance of <see cref="NLogManager"/>.
+        /// </summary>
+        private NLogManager()
+        {
+        }
 
-			public NLogger(NLog.Logger logger) {
-				_logger = logger;
-			}
+        /// <summary>
+        /// Get logger from the current log manager implementation.
+        /// </summary>
+        /// <param name="name">Classifier name, typically namespace or type name.</param>
+        /// <returns>Logger from the current log manager implementation.</returns>
+        protected override Logger GetLoggerImpl(string name)
+        {
+            return new NLogger(NLog.LogManager.GetLogger(name));
+        }
 
-			public override void Log(LogLevel level, string msg, params object[] args) {
-			    var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
-                
-                switch (level) {
-				case LogLevel.Debug:
-                        _logger.Debug(ordinalFormattedMessage, args);
-					break;
-				case LogLevel.Info:
-                    _logger.Info(ordinalFormattedMessage, args);
-					break;
-				case LogLevel.Warning:
-                    _logger.Warn(ordinalFormattedMessage, args);
-					break;
-				case LogLevel.Error:
-                    _logger.Error(ordinalFormattedMessage, args);
-					break;
-				case LogLevel.Fatal:
-                    _logger.Fatal(ordinalFormattedMessage, args);
-					break;
-				default:
-                    _logger.Info(ordinalFormattedMessage, args);
-					break;
-				}
-			}
-		}
-	}
+        /// <summary>
+        /// Implementation of a NLog logger.
+        /// </summary>
+        private class NLogger : Logger
+        {
+            private readonly NLog.Logger logger;
+
+            /// <summary>
+            /// Initializes an instance of <see cref="NLogger"/>.
+            /// </summary>
+            /// <param name="logger"></param>
+            public NLogger(NLog.Logger logger)
+            {
+                this.logger = logger;
+            }
+
+            /// <summary>
+            /// Log a message to the logger.
+            /// </summary>
+            /// <param name="level">Log level.</param>
+            /// <param name="msg">Log message (format string).</param>
+            /// <param name="args">Log message arguments.</param>
+            public override void Log(LogLevel level, string msg, params object[] args)
+            {
+                var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
+
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        this.logger.Debug(ordinalFormattedMessage, args);
+                        break;
+                    case LogLevel.Info:
+                        this.logger.Info(ordinalFormattedMessage, args);
+                        break;
+                    case LogLevel.Warning:
+                        this.logger.Warn(ordinalFormattedMessage, args);
+                        break;
+                    case LogLevel.Error:
+                        this.logger.Error(ordinalFormattedMessage, args);
+                        break;
+                    case LogLevel.Fatal:
+                        this.logger.Fatal(ordinalFormattedMessage, args);
+                        break;
+                    default:
+                        this.logger.Info(ordinalFormattedMessage, args);
+                        break;
+                }
+            }
+        }
+    }
 }

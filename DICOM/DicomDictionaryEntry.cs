@@ -1,80 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom {
-	public sealed class DicomDictionaryEntry {
-		public DicomDictionaryEntry(DicomTag tag, string name, string keyword, DicomVM vm, bool retired, params DicomVR[] vrs) {
-			Tag = tag;
+using System;
 
-			if (String.IsNullOrWhiteSpace(name))
-				Name = Tag.ToString();
-			else
-				Name = name;
+namespace Dicom
+{
+    public sealed class DicomDictionaryEntry
+    {
+        public DicomDictionaryEntry(
+            DicomTag tag,
+            string name,
+            string keyword,
+            DicomVM vm,
+            bool retired,
+            params DicomVR[] vrs)
+        {
+            Tag = tag;
 
-			if (String.IsNullOrWhiteSpace(keyword))
-				Keyword = Name;
-			else
-				Keyword = keyword;
+            if (String.IsNullOrWhiteSpace(name)) Name = Tag.ToString();
+            else Name = name;
 
-			ValueMultiplicity = vm;
-			ValueRepresentations = vrs;
-			IsRetired = retired;
-		}
+            if (String.IsNullOrWhiteSpace(keyword)) Keyword = Name;
+            else Keyword = keyword;
 
-		public DicomDictionaryEntry(DicomMaskedTag tag, string name, string keyword, DicomVM vm, bool retired, params DicomVR[] vrs) {
-			Tag = tag.Tag;
-			MaskTag = tag;
+            ValueMultiplicity = vm;
+            ValueRepresentations = vrs;
+            IsRetired = retired;
+        }
 
-			if (String.IsNullOrWhiteSpace(name))
-				Name = Tag.ToString();
-			else
-				Name = name;
+        public DicomDictionaryEntry(
+            DicomMaskedTag tag,
+            string name,
+            string keyword,
+            DicomVM vm,
+            bool retired,
+            params DicomVR[] vrs)
+        {
+            Tag = tag.Tag;
+            MaskTag = tag;
 
-			if (String.IsNullOrWhiteSpace(keyword))
-				Keyword = Name;
-			else
-				Keyword = keyword;
+            if (String.IsNullOrWhiteSpace(name)) Name = Tag.ToString();
+            else Name = name;
 
-			ValueMultiplicity = vm;
-			ValueRepresentations = vrs;
-			IsRetired = retired;
-		}
+            if (String.IsNullOrWhiteSpace(keyword)) Keyword = Name;
+            else Keyword = keyword;
 
-		public DicomTag Tag {
-			get;
-			set;
-		}
+            ValueMultiplicity = vm;
+            ValueRepresentations = vrs;
+            IsRetired = retired;
+        }
 
-		public DicomMaskedTag MaskTag {
-			get;
-			private set;
-		}
+        public DicomTag Tag { get; set; }
 
-		public string Name {
-			get;
-			private set;
-		}
+        public DicomMaskedTag MaskTag { get; private set; }
 
-		public string Keyword {
-			get;
-			private set;
-		}
+        public string Name { get; private set; }
 
-		public DicomVR[] ValueRepresentations {
-			get;
-			private set;
-		}
+        public string Keyword { get; private set; }
 
-		public DicomVM ValueMultiplicity {
-			get;
-			private set;
-		}
+        public DicomVR[] ValueRepresentations { get; private set; }
 
-		public bool IsRetired {
-			get;
-			private set;
-		}
-	}
+        public DicomVM ValueMultiplicity { get; private set; }
+
+        public bool IsRetired { get; private set; }
+    }
 }

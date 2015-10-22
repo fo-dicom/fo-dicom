@@ -1,107 +1,190 @@
-﻿using System;
-using System.IO;
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+namespace Dicom.IO
+{
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
-namespace Dicom.IO {
-	public class FileByteTarget : IDisposable, IByteTarget {
-		private FileReference _file;
-		private Stream _stream;
-		private Endian _endian;
-		private BinaryWriter _writer;
-		private object _lock;
+    /// <summary>
+    /// Representation of a file byte target.
+    /// </summary>
+    public sealed class FileByteTarget : IDisposable, IByteTarget
+    {
+        private IFileReference _file;
 
-		public FileByteTarget(FileReference file) {
-			_file = file;
-			_stream = _file.OpenWrite();
-			_endian = Endian.LocalMachine;
-			_writer = EndianBinaryWriter.Create(_stream, _endian);
-			_lock = new object();
-		}
+        private Stream _stream;
 
-		public Endian Endian {
-			get { return _endian; }
-			set {
-				if (_endian != value) {
-					lock (_lock) {
-						_endian = value;
-						_writer = EndianBinaryWriter.Create(_stream, _endian);
-					}
-				}
-			}
-		}
+        private Endian _endian;
 
-		public long Position {
-			get { return _stream.Position; }
-		}
+        private BinaryWriter _writer;
 
-		public void Write(byte v) {
-			_writer.Write(v);
-		}
+        private readonly object _lock;
 
-		public void Write(short v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Initializes an instance of <see cref="FileByteTarget"/>.
+        /// </summary>
+        /// <param name="file"></param>
+        public FileByteTarget(IFileReference file)
+        {
+            _file = file;
+            _stream = _file.OpenWrite();
+            _endian = Endian.LocalMachine;
+            _writer = EndianBinaryWriter.Create(_stream, _endian);
+            _lock = new object();
+        }
 
-		public void Write(ushort v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Gets or sets the endianness of the byte target.
+        /// </summary>
+        public Endian Endian
+        {
+            get
+            {
+                return _endian;
+            }
+            set
+            {
+                if (_endian != value)
+                {
+                    lock (_lock)
+                    {
+                        _endian = value;
+                        _writer = EndianBinaryWriter.Create(_stream, _endian);
+                    }
+                }
+            }
+        }
 
-		public void Write(int v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Gets the current write position.
+        /// </summary>
+        public long Position
+        {
+            get
+            {
+                return _stream.Position;
+            }
+        }
 
-		public void Write(uint v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Write one <see cref="byte"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="byte"/> to write.</param>
+        public void Write(byte v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Write(long v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Write one <see cref="short"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="short"/> to write.</param>
+        public void Write(short v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Write(ulong v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Write one <see cref="ushort"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="ushort"/> to write.</param>
+        public void Write(ushort v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Write(float v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Write one <see cref="int"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="int"/> to write.</param>
+        public void Write(int v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Write(double v) {
-			_writer.Write(v);
-		}
+        /// <summary>
+        /// Write one <see cref="uint"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="uint"/> to write.</param>
+        public void Write(uint v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Write(byte[] buffer, uint offset = 0, uint count = uint.MaxValue, ByteTargetCallback callback = null, object state = null) {
-			if (count == uint.MaxValue)
-				count = (uint)buffer.Length - offset;
+        /// <summary>
+        /// Write one <see cref="long"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="long"/> to write.</param>
+        public void Write(long v)
+        {
+            _writer.Write(v);
+        }
 
-			if (callback != null)
-				_stream.BeginWrite(buffer, (int)offset, (int)count, OnEndWrite, new Tuple<ByteTargetCallback, object>(callback, state));
-			else
-				_stream.Write(buffer, (int)offset, (int)count);
-		}
-		private void OnEndWrite(IAsyncResult result) {
-			try {
-				_stream.EndWrite(result);
-			} catch {
-			} finally {
-				if (result.AsyncState != null) {
-					Tuple<ByteTargetCallback, object> state = result.AsyncState as Tuple<ByteTargetCallback, object>;
-					state.Item1(this, state.Item2);
-				}
-			}
-		}
+        /// <summary>
+        /// Write one <see cref="ulong"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="ulong"/> to write.</param>
+        public void Write(ulong v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Close() {
-			try {
-				_stream.Close();
-				_stream = null;
-			} catch {
-			}
-		}
+        /// <summary>
+        /// Write one <see cref="float"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="float"/> to write.</param>
+        public void Write(float v)
+        {
+            _writer.Write(v);
+        }
 
-		public void Dispose() {
-			Close();
-		}
-	}
+        /// <summary>
+        /// Write one <see cref="double"/> to target.
+        /// </summary>
+        /// <param name="v"><see cref="double"/> to write.</param>
+        public void Write(double v)
+        {
+            _writer.Write(v);
+        }
+
+        /// <summary>
+        /// Write array of <see cref="byte"/>s to target.
+        /// </summary>
+        /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
+        /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
+        /// <param name="count">Number of bytes to write to byte target.</param>
+        public void Write(byte[] buffer, uint offset, uint count)
+        {
+            _stream.Write(buffer, (int)offset, (int)count);
+        }
+
+        /// <summary>
+        /// Asynchronously write array of <see cref="byte"/>s to target.
+        /// </summary>
+        /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
+        /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
+        /// <param name="count">Number of bytes to write to byte target.</param>
+        /// <returns>Avaitable <see cref="Task"/>.</returns>
+        public Task WriteAsync(byte[] buffer, uint offset, uint count)
+        {
+            return _stream.WriteAsync(buffer, (int)offset, (int)count);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            try
+            {
+                _stream.Dispose();
+                _stream = null;
+            }
+            catch
+            {
+            }
+        }
+    }
 }
