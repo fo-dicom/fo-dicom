@@ -51,7 +51,6 @@ namespace Print_SCU
             stopwatch.Stop();
             Console.WriteLine();
             Console.WriteLine(stopwatch.Elapsed);
-            Console.Read();
         }
     }
 }
