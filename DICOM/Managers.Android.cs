@@ -22,7 +22,7 @@ namespace Dicom
             PlatformIOManagerImpl = DesktopIOManager.Instance;
             PlatformNetworkManagerImpl = DesktopNetworkManager.Instance;
             PlatformTranscoderManagerImpl = MonoTranscoderManager.Instance;
-            PlatformImageManagerImpl = IOSImageManager.Instance;
+            PlatformImageManagerImpl = AndroidImageManager.Instance;
         }
     }
 }

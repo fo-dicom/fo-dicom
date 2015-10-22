@@ -4,7 +4,6 @@
 namespace Dicom.Imaging.Codec
 {
     using System;
-    //using System.ComponentModel.Composition.Hosting;
     using System.IO;
     using System.Reflection;
 
@@ -59,42 +58,7 @@ namespace Dicom.Imaging.Codec
             if (search == null) search = "Dicom.Native*.dll";
 
             var log = LogManager.GetLogger("Dicom.Imaging.Codec");
-			log.Warn("Codec loading for Mono not yet implemented.");
-
-/*
-            log.Debug("Searching {path}\\{wildcard} for Dicom codecs", path, search);
-
-            var foundAnyCodecs = false;
-
-            DirectoryCatalog catalog;
-            try
-            {
-                catalog = new DirectoryCatalog(path, search);
-            }
-            catch (Exception ex)
-            {
-                log.Error(
-                    "Error encountered creating new DirectCatalog({path}, {search}) - {@exception}",
-                    path,
-                    search,
-                    ex);
-                throw;
-            }
-
-            var container = new CompositionContainer(catalog);
-            foreach (var lazy in container.GetExports<IDicomCodec>())
-            {
-                foundAnyCodecs = true;
-                var codec = lazy.Value;
-                log.Debug("Codec: {codecName}", codec.TransferSyntax.UID.Name);
-                Codecs[codec.TransferSyntax] = codec;
-            }
-
-            if (!foundAnyCodecs)
-            {
-                log.Warn("No Dicom codecs were found after searching {path}\\{wildcard}", path, search);
-            }
-*/
+            log.Warn("Codec loading for Mono not yet implemented.");
         }
 
         #endregion
