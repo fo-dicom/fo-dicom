@@ -33,7 +33,7 @@ namespace Dicom.Network
 
         private INetworkStream networkStream;
 
-        private bool abort;
+        private bool aborted;
 
         #endregion
 
@@ -204,12 +204,12 @@ namespace Dicom.Network
         /// <summary>
         /// Synchronously release association.
         /// </summary>
-        public void Release()
+        public void Release(int millisecondsTimeout = 10000)
         {
             try
             {
                 this.service._SendAssociationReleaseRequest();
-                this.completeNotifier.Task.Wait(10000);
+                this.completeNotifier.Task.Wait(millisecondsTimeout);
             }
             catch
             {
@@ -224,12 +224,12 @@ namespace Dicom.Network
         /// Asynchronously release association.
         /// </summary>
         /// <returns></returns>
-        public async Task ReleaseAsync()
+        public async Task ReleaseAsync(int millisecondsTimeout = 10000)
         {
             try
             {
                 this.service._SendAssociationReleaseRequest();
-                await Task.WhenAny(this.completeNotifier.Task, Task.Delay(10000)).ConfigureAwait(false);
+                await Task.WhenAny(this.completeNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
             }
             catch
             {
@@ -245,21 +245,26 @@ namespace Dicom.Network
         /// </summary>
         public void Abort()
         {
-            if (this.abort) return;
+            if (this.aborted) return;
 
-            try
+            if (this.associateNotifier != null) this.associateNotifier.TrySetResult(true);
+            if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
+
+            if (this.networkStream != null)
             {
-                this.abort = true;
-                this.networkStream.Dispose();
+                try
+                {
+                    this.networkStream.Dispose();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-            }
-            finally
-            {
-                this.networkStream = null;
-                if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
-            }
+
+            this.service = null;
+            this.networkStream = null;
+
+            this.aborted = true;
         }
 
         private void InitializeSend(Stream stream, string callingAe, string calledAe)
@@ -278,9 +283,10 @@ namespace Dicom.Network
                 assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
             }
 
-            this.service = new DicomServiceUser(this, stream, assoc, this.Options, this.Logger);
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
+
+            this.service = new DicomServiceUser(this, stream, assoc, this.Options, this.Logger);
         }
 
         private void FinalizeSend()
@@ -314,6 +320,8 @@ namespace Dicom.Network
 
             private readonly DicomClient client;
 
+            private bool isLingering;
+
             #endregion
 
             #region CONSTRUCTORS
@@ -327,6 +335,7 @@ namespace Dicom.Network
                 : base(stream, log)
             {
                 this.client = client;
+                this.isLingering = false;
                 if (options != null) this.Options = options;
                 this.SendAssociationRequest(association);
             }
@@ -348,6 +357,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
+                this.SetComplete();
                 throw new DicomAssociationRejectedException(result, source, reason);
             }
 
@@ -358,6 +368,7 @@ namespace Dicom.Network
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
+                this.SetComplete();
                 throw new DicomAssociationAbortedException(source, reason);
             }
 
@@ -368,7 +379,7 @@ namespace Dicom.Network
 
             protected override void OnSendQueueEmpty()
             {
-                Task.Run((Action)this.OnLingerTimeout);
+                this.OnLingerTimeout();
             }
 
             internal void _SendAssociationReleaseRequest()
@@ -384,22 +395,52 @@ namespace Dicom.Network
                     return;
                 }
 
-                Task.Run((Action)this.OnReleaseTimeout);
+                this.OnReleaseTimeout();
             }
 
             private async void OnLingerTimeout()
             {
-                await Task.Delay(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger).ConfigureAwait(false);
-                if (!this.IsSendQueueEmpty || !this.IsConnected) return;
+                if (this.isLingering) return;
 
-                await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
-                this.SetComplete();
+                this.isLingering = true;
+                var disconnected = await this.WaitForDisconnect(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger);
+                this.isLingering = false;
+
+                if (disconnected || !this.IsSendQueueEmpty) return;
+
+                this._SendAssociationReleaseRequest();
             }
 
             private async void OnReleaseTimeout()
             {
-                await Task.Delay(ReleaseTimeout).ConfigureAwait(false);
-                this.SetComplete();
+                if (!await this.WaitForDisconnect(ReleaseTimeout))
+                {
+                    this.SetComplete();
+                }
+            }
+
+            private async Task<bool> WaitForDisconnect(int millisecondsDelay)
+            {
+                try
+                {
+                    using (var cancellationSource = new CancellationTokenSource(millisecondsDelay))
+                    {
+                        do
+                        {
+                            if (!this.IsConnected)
+                            {
+                                this.SetComplete();
+                                return true;
+                            }
+                            await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
+                        }
+                        while (!cancellationSource.IsCancellationRequested);
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                }
+                return false;
             }
 
             private void SetComplete()

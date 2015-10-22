@@ -68,7 +68,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (client) ++actual; } });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
@@ -129,7 +129,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (client) ++actual; } });
                     var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                     await Task.WhenAny(task, Task.Delay(1000));
                 }
