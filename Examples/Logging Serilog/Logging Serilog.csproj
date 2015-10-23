@@ -38,19 +38,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Serilog.1.5.7\lib\net45\Serilog.dll</HintPath>
+      <HintPath>..\..\packages\Serilog.1.5.12\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Serilog.1.5.7\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <HintPath>..\..\packages\Serilog.1.5.12\lib\net45\Serilog.FullNetFx.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.Literate, Version=1.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Serilog.Sinks.Literate.1.1.0\lib\net45\Serilog.Sinks.Literate.dll</HintPath>
+      <HintPath>..\..\packages\Serilog.Sinks.Literate.1.2.0\lib\net45\Serilog.Sinks.Literate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.Seq, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Serilog.Sinks.Seq.1.5.15\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
+      <HintPath>..\..\packages\Serilog.Sinks.Seq.1.5.17\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
