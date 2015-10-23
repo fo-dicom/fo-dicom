@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-#if !__IOS__
+#if !__IOS__ && !__ANDROID__
 using System.Data.Odbc;
 #endif
 using System.Data.SqlClient;
@@ -137,7 +137,7 @@ namespace Dicom
             try
             {
                 if (_dbType == DatabaseType.MsSql) connection = new SqlConnection(_connectionString);
-#if !__IOS__
+#if !__IOS__ && !__ANDROID__
                 else if (_dbType == DatabaseType.Odbc) connection = new OdbcConnection(_connectionString);
 #endif
                 using (IDbCommand command = connection.CreateCommand())

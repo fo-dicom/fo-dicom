@@ -14,7 +14,7 @@ timeout /T 5
 @call "%VS120COMNTOOLS%VsDevCmd.bat"
 
 @cd ..
-@msbuild "DICOM.sln" /t:Rebuild /p:Configuration=Release;Platform="Any CPU"
+@msbuild "DICOM.Full.sln" /t:Rebuild /p:Configuration=Release;Platform="Any CPU"
 
 @goto end
 

@@ -9,7 +9,7 @@
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Platform specific libraries for fo-dicom.</description>
+        <description>.NET, Xamarin iOS and Xamarin Android specific support libraries for fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Core" version="$version$" />
@@ -21,6 +21,8 @@
         <file src="..\fo-dicom.targets" target="build\fo-dicom.Platform.targets" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
+        <file src="..\DICOM.Android\bin\Release\Dicom.Platform.dll" target="lib\MonoAndroid1" />
+        <file src="..\DICOM.Android\bin\Release\Dicom.Platform.pdb" target="lib\MonoAndroid1" />
         <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
         <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
     </files>
