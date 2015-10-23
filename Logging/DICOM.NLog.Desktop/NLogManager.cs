@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Log
 {
     /// <summary>
@@ -58,27 +60,38 @@ namespace Dicom.Log
             public override void Log(LogLevel level, string msg, params object[] args)
             {
                 var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
+                var nlogLevel = GetNLogLevel(level);
 
+                if (args.Length == 1 && args[0] is Exception)
+                {
+                    this.logger.Log(nlogLevel, (Exception)args[0], ordinalFormattedMessage);
+                }
+                else
+                {
+                    this.logger.Log(nlogLevel, ordinalFormattedMessage, args);
+                }
+            }
+
+            /// <summary>
+            /// Converts <see cref="LogLevel"/> enumeration to <see cref="NLog.LogLevel"/> equivalent.
+            /// </summary>
+            /// <param name="level"><see cref="LogLevel"/> enumeration subject to conversion.</param>
+            /// <returns><see cref="NLog.LogLevel"/> equivalent.</returns>
+            private static NLog.LogLevel GetNLogLevel(LogLevel level)
+            {
                 switch (level)
                 {
-                    case LogLevel.Debug:
-                        this.logger.Debug(ordinalFormattedMessage, args);
-                        break;
                     case LogLevel.Info:
-                        this.logger.Info(ordinalFormattedMessage, args);
-                        break;
+                        return NLog.LogLevel.Info;
                     case LogLevel.Warning:
-                        this.logger.Warn(ordinalFormattedMessage, args);
-                        break;
+                        return NLog.LogLevel.Warn;
                     case LogLevel.Error:
-                        this.logger.Error(ordinalFormattedMessage, args);
-                        break;
+                        return NLog.LogLevel.Error;
                     case LogLevel.Fatal:
-                        this.logger.Fatal(ordinalFormattedMessage, args);
-                        break;
+                        return NLog.LogLevel.Fatal;
+                    case LogLevel.Debug:
                     default:
-                        this.logger.Info(ordinalFormattedMessage, args);
-                        break;
+                        return NLog.LogLevel.Debug;
                 }
             }
         }
