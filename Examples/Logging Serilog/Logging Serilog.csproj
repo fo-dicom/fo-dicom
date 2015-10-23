@@ -78,9 +78,9 @@
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\logging\DICOM.Serilog\DICOM.Serilog.csproj">
-      <Project>{E3C3DF86-3B14-4E9E-8572-F3B6E147CF77}</Project>
-      <Name>DICOM.Serilog</Name>
+    <ProjectReference Include="..\..\Logging\DICOM.Serilog.Desktop\DICOM.Serilog.Desktop.csproj">
+      <Project>{e3c3df86-3b14-4e9e-8572-f3b6e147cf77}</Project>
+      <Name>DICOM.Serilog.Desktop</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
 #### v2.0.0 (Alpha 2, 10/23/2015)
+* MetroLog connector is Portable Class Library (#119 #120)
 * Fix of concurrency bug in DicomDictionary (#114 #115)
 * Xamarin Android platform library with imaging cabability (#113 #117)
 * Xamarin iOS platform library with imaging cabability (#111 #112)
