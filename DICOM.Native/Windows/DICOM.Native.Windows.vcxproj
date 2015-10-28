@@ -382,38 +382,38 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)$(Configuration)\</IntDir>
+    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
