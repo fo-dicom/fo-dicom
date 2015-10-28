@@ -7,8 +7,8 @@
     <ProjectGuid>{F3120AC1-B538-4A30-B4A8-835376737EF5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DICOM.Windows</RootNamespace>
-    <AssemblyName>DICOM.Windows</AssemblyName>
+    <RootNamespace>Dicom</RootNamespace>
+    <AssemblyName>Dicom.Platform</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+
 namespace Dicom.Imaging
 {
     using System.Collections.Generic;
-    using System.Runtime.InteropServices;
 
     using Windows.UI.Xaml.Media;
     using Windows.UI.Xaml.Media.Imaging;
@@ -37,8 +39,8 @@ namespace Dicom.Imaging
         /// <param name="pixels">Array of pixels.</param>
         public WindowsImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
         {
-            var bitmap = CreateBitmap(width, height, components, pixels.Data);
-            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
+            var buffer = CreateBuffer(ref width, ref height, components, flipX, flipY, rotation, pixels.Data);
+            this.image = Create(width, height, buffer);
         }
 
         #endregion
@@ -81,39 +83,125 @@ namespace Dicom.Imaging
             }*/
         }
 
-        private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)
+        private static byte[] CreateBuffer(
+            ref int width,
+            ref int height,
+            int components,
+            bool flipX,
+            bool flipY,
+            int rotation,
+            int[] data)
         {
-            return null;
-/*            var format = components == 4 ? PixelFormats.Bgra32 : PixelFormats.Bgr32;
-            var bitmap = new WriteableBitmap(width, height, DPI, DPI, format, null);
+            var processed = Rotate(ref width, ref height, rotation, data);
+            processed = Flip(width, height, flipX, flipY, processed);
 
-            // Reserve the back buffer for updates.
-            bitmap.Lock();
+            // TODO Consider to make use of "components"
+            var length = 4 * width * height;
+            var buffer = new byte[length];
 
-            Marshal.Copy(pixelData, 0, bitmap.BackBuffer, pixelData.Length);
-
-            // Specify the area of the bitmap that changed.
-            bitmap.AddDirtyRect(new Int32Rect(0, 0, width, height));
-
-            // Release the back buffer and make it available for display.
-            bitmap.Unlock();
-
-            return bitmap;*/
+            Buffer.BlockCopy(processed, 0, buffer, 0, length);
+            return buffer;
         }
 
-        private static WriteableBitmap ApplyFlipRotate(WriteableBitmap bitmap, bool flipX, bool flipY, int rotation)
+        private static int[] Rotate(ref int width, ref int height, int angle, int[] data)
         {
-            return null;
-/*            if (rotation == 0 && !flipX && !flipY)
+            int[] result;
+            angle %= 360;
+
+            var i = 0;
+            if (angle > 0 && angle <= 90)
             {
-                return bitmap;
+                result = new int[width * height];
+                for (var x = 0; x < width; x++)
+                {
+                    for (var y = height - 1; y >= 0; y--, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+                var tmp = width;
+                width = height;
+                height = tmp;
+            }
+            else if (angle > 90 && angle <= 180)
+            {
+                result = new int[width * height];
+                for (var y = height - 1; y >= 0; y--)
+                {
+                    for (var x = width - 1; x >= 0; x--, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+            }
+            else if (angle > 180 && angle <= 270)
+            {
+                result = new int[width * height];
+                for (var x = width - 1; x >= 0; x--)
+                {
+                    for (var y = 0; y < height; y++, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+                var tmp = width;
+                width = height;
+                height = tmp;
+            }
+            else
+            {
+                result = data;
+            }
+            return result;
+        }
+
+        private static int[] Flip(int w, int h, bool flipX, bool flipY, int[] p)
+        {
+            var i = 0;
+            int[] tmp, result;
+
+            if (flipX)
+            {
+                tmp = new int[w * h];
+                for (var y = h - 1; y >= 0; y--)
+                {
+                    for (var x = 0; x < w; x++, i++)
+                    {
+                        tmp[i] = p[y * w + x];
+                    }
+                }
+            }
+            else
+            {
+                tmp = p;
+            }
+            if (flipY)
+            {
+                result = new int[w * h];
+                for (var y = 0; y < h; y++)
+                {
+                    for (var x = w - 1; x >= 0; x--, i++)
+                    {
+                        result[i] = tmp[y * w + x];
+                    }
+                }
+            }
+            else
+            {
+                result = tmp;
             }
 
-            var rotFlipTransform = new TransformGroup();
-            rotFlipTransform.Children.Add(new RotateTransform(rotation));
-            rotFlipTransform.Children.Add(new ScaleTransform(flipX ? -1 : 1, flipY ? -1 : 1));
+            return result;
+        }
 
-            return new WriteableBitmap(new TransformedBitmap(bitmap, rotFlipTransform));*/
+        private static WriteableBitmap Create(int width, int height, byte[] buffer)
+        {
+            var bitmap = new WriteableBitmap(width, height);
+            using (var stream = bitmap.PixelBuffer.AsStream())
+            {
+                stream.Write(buffer, 0, buffer.Length);
+                return bitmap;
+            }
         }
 
         #endregion

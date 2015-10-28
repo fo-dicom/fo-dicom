@@ -8,6 +8,9 @@ namespace Dicom.Network
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
 
+    using Windows.Networking;
+    using Windows.Networking.Connectivity;
+
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="NetworkManager"/>.
     /// </summary>
@@ -50,8 +53,44 @@ namespace Dicom.Network
         {
             get
             {
-                return null;
-                //return Environment.MachineName;
+                // Want to store the hostname to send for push notifications to make
+                // the management UI better. Take the substring up to the first period
+                // of the first DomainName entry.
+                // Thanks to Jeff Wilcox and Matthijs Hoekstra
+                // Adapted from Q42.WinRT library at https://github.com/Q42/Q42.WinRT
+                var list = NetworkInformation.GetHostNames();
+                string name = null;
+                if (list.Count > 0)
+                {
+                    foreach (var entry in list)
+                    {
+                        if (entry.Type == HostNameType.DomainName)
+                        {
+                            var s = entry.CanonicalName;
+                            if (!string.IsNullOrEmpty(s))
+                            {
+                                // Domain-joined. Requires at least a one-character name.
+                                var j = s.IndexOf('.');
+
+                                if (j > 0)
+                                {
+                                    name = s.Substring(0, j);
+                                    break;
+                                }
+
+                                // Typical home machine.
+                                name = s;
+                            }
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "Unknown";
+                }
+
+                return name;
             }
         }
 

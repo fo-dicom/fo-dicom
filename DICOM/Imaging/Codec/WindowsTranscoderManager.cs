@@ -55,10 +55,10 @@ namespace Dicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         protected override void LoadCodecsImpl(string path, string search)
         {
-            var assembly = typeof (IDicomCodec).GetTypeInfo().Assembly;
+            var assembly = typeof(WindowsTranscoderManager).GetTypeInfo().Assembly;
             var types =
                 assembly.DefinedTypes.Where(
-                    ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof (IDicomCodec)));
+                    ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
 
             foreach (var ti in types)
             {
