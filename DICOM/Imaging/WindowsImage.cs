@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 namespace Dicom.Imaging
 {
     using System.Collections.Generic;
+    using System.IO;
 
     using Windows.UI.Xaml.Media;
     using Windows.UI.Xaml.Media.Imaging;
@@ -63,24 +64,25 @@ namespace Dicom.Imaging
         /// <param name="graphics">Graphics to draw.</param>
         public void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
-/*            foreach (var graphic in graphics)
+            var dstStride = 4 * this.image.PixelWidth;
+
+            using (var stream = this.image.PixelBuffer.AsStream())
             {
-                var layer = graphic.RenderImage(null).As<WriteableBitmap>();
+                foreach (var graphic in graphics)
+                {
+                    var layer = graphic.RenderImage(null).As<WriteableBitmap>();
+                    var srcStride = 4 * graphic.ScaledWidth;
 
-                var pixels = new int[graphic.ScaledWidth * graphic.ScaledHeight];
-                var stride = 4 * graphic.ScaledWidth;
-                layer.CopyPixels(pixels, stride, 0);
+                    var pixels = layer.PixelBuffer.ToArray();
 
-                this.image.WritePixels(
-                    new Int32Rect(
-                        graphic.ScaledOffsetX,
-                        graphic.ScaledOffsetY,
-                        graphic.ScaledWidth,
-                        graphic.ScaledHeight),
-                    pixels,
-                    stride,
-                    0);
-            }*/
+                    int srcOffs = 0, dstOffs = dstStride * graphic.ScaledOffsetY + 4 * graphic.ScaledOffsetX;
+                    for (var j = 0; j < graphic.ScaledHeight; ++j, srcOffs += srcStride, dstOffs += dstStride)
+                    {
+                        stream.Seek(dstOffs, SeekOrigin.Begin);
+                        stream.Write(pixels, srcOffs, graphic.ScaledWidth);
+                    }
+                }
+            }
         }
 
         private static byte[] CreateBuffer(
