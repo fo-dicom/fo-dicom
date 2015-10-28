@@ -4,6 +4,7 @@
 namespace Dicom.Network
 {
     using System;
+    using System.Globalization;
     using System.Net.Sockets;
 
     using Windows.Networking;
@@ -143,33 +144,29 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
+        /// Platform-specific implementation to attempt to obtain a unique network identifier.
         /// </summary>
         /// <param name="identifier">Unique network identifier, if found.</param>
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
         protected override bool TryGetNetworkIdentifierImpl(out DicomUID identifier)
         {
-            /*var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            for (var i = 0; i < interfaces.Length; i++)
+            var profile = NetworkInformation.GetInternetConnectionProfile();
+
+            if (profile != null)
             {
-                if (NetworkInterface.LoopbackInterfaceIndex == i
-                    || interfaces[i].OperationalStatus != OperationalStatus.Up) continue;
-
-                var hex = interfaces[i].GetPhysicalAddress().ToString();
-                if (string.IsNullOrEmpty(hex)) continue;
-
                 try
                 {
-                    var mac = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                    var hex = profile.NetworkAdapter.NetworkAdapterId.ToString("N").Substring(0, 12);
+                    var dec = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                     {
-                        identifier = DicomUID.Append(DicomImplementation.ClassUID, mac);
+                        identifier = DicomUID.Append(DicomImplementation.ClassUID, dec);
                         return true;
                     }
                 }
                 catch
                 {
                 }
-            }*/
+            }
 
             identifier = null;
             return false;
