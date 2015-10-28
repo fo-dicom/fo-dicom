@@ -5,33 +5,33 @@
     <Message Importance="high" Text="Change '$(MSBuildProjectName)' Platform Target Build Project Property from '$(PlatformTarget)' to either x86 or x64 to remove this message." />
   </Target>
   <Choose>
-    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' == 'x64'">
+    <When Condition="'$(PlatformTarget)' == 'x64'">
       <ItemGroup>
         <Reference Include="Dicom.Native64">
-          <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native64.dll</HintPath>
+          <HintPath>$(MSBuildThisFileDirectory)\Dicom.Native64.dll</HintPath>
         </Reference>
-        <None Include="$(MSBuildThisFileDirectory)\net45\Dicom.Native64.dll">
+        <None Include="$(MSBuildThisFileDirectory)\Dicom.Native64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
       </ItemGroup>
     </When>
-    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' == 'x86'">
+    <When Condition="'$(PlatformTarget)' == 'x86'">
       <ItemGroup>
         <Reference Include="Dicom.Native">
-          <HintPath>$(MSBuildThisFileDirectory)\net45\Dicom.Native.dll</HintPath>
+          <HintPath>$(MSBuildThisFileDirectory)\Dicom.Native.dll</HintPath>
         </Reference>
-        <None Include="$(MSBuildThisFileDirectory)\net45\Dicom.Native.dll">
+        <None Include="$(MSBuildThisFileDirectory)\Dicom.Native.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
       </ItemGroup>
     </When>
-    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5' And '$(PlatformTarget)' != 'x64' And '$(PlatformTarget)' != 'x86'">
+    <Otherwise>
       <PropertyGroup>
         <BuildDependsOn>
           $(BuildDependsOn);
           Warn-fo-dicom-platform
         </BuildDependsOn>
       </PropertyGroup>
-    </When>
+    </Otherwise>
   </Choose>
 </Project>
