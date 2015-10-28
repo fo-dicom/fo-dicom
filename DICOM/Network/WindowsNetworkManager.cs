@@ -4,8 +4,6 @@
 namespace Dicom.Network
 {
     using System;
-    using System.Globalization;
-    using System.Net.NetworkInformation;
     using System.Net.Sockets;
 
     using Windows.Networking;

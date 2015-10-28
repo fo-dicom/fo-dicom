@@ -4,11 +4,11 @@
 namespace Dicom.Network
 {
     using System;
+    using System.Globalization;
     using System.IO;
-    using System.Net.Security;
-    using System.Net.Sockets;
-    using System.Security.Authentication;
-//    using System.Security.Cryptography.X509Certificates;
+
+    using Windows.Networking;
+    using Windows.Networking.Sockets;
 
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="INetworkStream"/>.
@@ -19,7 +19,7 @@ namespace Dicom.Network
 
         private bool disposed = false;
 
-//        private readonly TcpClient tcpClient;
+        private readonly StreamSocket socket;
 
         private readonly Stream networkStream;
 
@@ -37,42 +37,35 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal WindowsNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-/*            this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
+            this.socket = new StreamSocket();
+            this.socket.Control.NoDelay = noDelay;
+            // TODO Update socket.Control.IgnorableServerCertificateErrors with all possible errors if ignoreSslPolicyErrors is true?
 
-            Stream stream = this.tcpClient.GetStream();
+            this.socket.ConnectAsync(
+                new HostName(host),
+                port.ToString(CultureInfo.InvariantCulture),
+                useTls ? SocketProtectionLevel.Tls10 : SocketProtectionLevel.PlainSocket).GetResults();
+
             if (useTls)
             {
-                var ssl = new SslStream(
-                    stream,
-                    false,
-                    (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || ignoreSslPolicyErrors);
-                ssl.AuthenticateAsClient(host);
-                stream = ssl;
+                this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host)).GetResults();
             }
 
-            this.networkStream = stream;*/
+            this.networkStream = this.socket.OutputStream.AsStreamForWrite();
         }
 
         /// <summary>
         /// Initializes a server instance of <see cref="WindowsNetworkStream"/>.
         /// </summary>
-        /// <param name="tcpClient">TCP client.</param>
-        /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <remarks>Ownership of <paramref name="tcpClient"/> remains with the caller, including responsibility for
-        /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="WindowsNetworkStream"/>
+        /// <param name="socket">TCP socket.</param>
+        /// <remarks>Ownership of <paramref name="socket"/> remains with the caller, including responsibility for
+        /// disposal. Therefore, a handle to <paramref name="socket"/> is <em>not</em> stored when <see cref="WindowsNetworkStream"/>
         /// is initialized with this server-side constructor.</remarks>
-/*        internal WindowsNetworkStream(TcpClient tcpClient, X509Certificate certificate)
+        internal WindowsNetworkStream(StreamSocket socket)
         {
-            Stream stream = tcpClient.GetStream();
-            if (certificate != null)
-            {
-                var ssl = new SslStream(stream, false);
-                ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls, false);
-                stream = ssl;
-            }
-
-            this.networkStream = stream;
-        }*/
+            this.networkStream = socket.InputStream.AsStreamForRead();
+            this.socket = null;
+        }
 
         /// <summary>
         /// Destrutor.
@@ -114,10 +107,10 @@ namespace Dicom.Network
         {
             if (this.disposed) return;
 
-/*            if (this.tcpClient != null)
+            if (this.socket != null)
             {
-                this.tcpClient.Close();
-            }*/
+                this.socket.Dispose();
+            }
 
             this.disposed = true;
         }

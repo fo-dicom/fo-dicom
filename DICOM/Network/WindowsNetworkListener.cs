@@ -3,9 +3,12 @@
 
 namespace Dicom.Network
 {
-    using System.Net;
-    using System.Net.Sockets;
-//    using System.Security.Cryptography.X509Certificates;
+    using System;
+    using System.Globalization;
+    using System.Threading;
+
+    using Windows.Networking.Sockets;
+    using Windows.Security.Cryptography.Certificates;
 
     /// <summary>
     /// Universal Windows Platform implementation of the <see cref="INetworkListener"/>.
@@ -14,9 +17,15 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-//        private readonly TcpListener listener;
+        private readonly string port;
 
-//        private X509Certificate certificate = null;
+        private ManualResetEventSlim handle;
+
+        private StreamSocketListener listener;
+
+        private StreamSocket socket;
+
+        private Certificate certificate = null;
 
         #endregion
 
@@ -28,7 +37,8 @@ namespace Dicom.Network
         /// <param name="port"></param>
         internal WindowsNetworkListener(int port)
         {
-//            this.listener = new TcpListener(IPAddress.Any, port);
+            this.port = port.ToString(CultureInfo.InvariantCulture);
+            this.handle = new ManualResetEventSlim(false);
         }
 
         #endregion
@@ -38,9 +48,14 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        public void Start()
+        public async void Start()
         {
-//            this.listener.Start();
+            this.listener = new StreamSocketListener();
+            this.listener.ConnectionReceived += this.OnConnectionReceived;
+
+            this.socket = null;
+            this.handle.Reset();
+            await this.listener.BindServiceNameAsync(this.port);
         }
 
         /// <summary>
@@ -48,7 +63,9 @@ namespace Dicom.Network
         /// </summary>
         public void Stop()
         {
-//            this.listener.Stop();
+            this.handle.Set();
+            this.listener.ConnectionReceived -= this.OnConnectionReceived;
+            this.listener.Dispose();
         }
 
         /// <summary>
@@ -59,13 +76,21 @@ namespace Dicom.Network
         /// <returns>Connected network stream.</returns>
         public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
         {
-            return null;
-/*            var tcpClient = this.listener.AcceptTcpClient();
-            tcpClient.NoDelay = noDelay;
+            this.handle.Wait();
+            this.socket.Control.NoDelay = noDelay;
 
-            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null) this.certificate = GetX509Certificate(certificateName);
+            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+            {
+                this.socket.Control.ClientCertificate = GetCertificate(certificateName);
+            }
 
-            return new DesktopNetworkStream(tcpClient, this.certificate);*/
+            return new WindowsNetworkStream(this.socket);
+        }
+
+        private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
+        {
+            this.socket = args.Socket;
+            this.handle.Set();
         }
 
         /// <summary>
@@ -73,13 +98,11 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name.</param>
         /// <returns>Certificate with the specified name.</returns>
-/*        private static X509Certificate GetX509Certificate(string certificateName)
+        private static Certificate GetCertificate(string certificateName)
         {
-            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-
-            store.Open(OpenFlags.ReadOnly);
-            var certs = store.Certificates.Find(X509FindType.FindBySubjectName, certificateName, false);
-            store.Close();
+            var certs =
+                CertificateStores.FindAllAsync(
+                    new CertificateQuery { FriendlyName = certificateName, StoreName = "MY" }).GetResults();
 
             if (certs.Count == 0)
             {
@@ -87,7 +110,7 @@ namespace Dicom.Network
             }
 
             return certs[0];
-        }*/
+        }
 
         #endregion
     }
