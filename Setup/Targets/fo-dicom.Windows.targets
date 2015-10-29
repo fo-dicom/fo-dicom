@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="PlatformCheck" BeforeTargets="InjectReference"
+    Condition=" ( ('$(Platform)' != 'x86') AND ('$(Platform)' != 'ARM') AND  ('$(Platform)' != 'x64') )">
+    <Error  Text="fo-dicom for UWP cannot be built for the '$(Platform)' 
+                     platform. You need to specify platform (x86 / x64 or ARM)." />
+  </Target>  
+  <Target Name="InjectReference" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup Condition=" '$(Platform)' == 'x86' or '$(Platform)' == 'x64' or '$(Platform)' == 'ARM'">
+      <Reference Include="Dicom.Imaging.Codec">
+        <HintPath>$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.winmd</HintPath>
+      </Reference>
+      <Reference Include="Dicom.Platform">
+        <HintPath>$(MSBuildThisFileDirectory)$(Platform)\Dicom.Platform.dll</HintPath>
+      </Reference>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.winmd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.pri">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.pdb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Platform.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Platform.pri">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Platform.pdb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+    </ItemGroup>
+  </Target>  
+</Project>

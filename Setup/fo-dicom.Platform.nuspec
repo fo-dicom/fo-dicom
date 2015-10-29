@@ -9,21 +9,65 @@
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>.NET, Xamarin iOS and Xamarin Android specific support libraries for fo-dicom.</description>
+        <description>.NET, UWP, Xamarin iOS and Xamarin Android specific support libraries for fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
+		  <group targetFramework="uap10.0"> 
+            <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.0.0" />
             <dependency id="fo-dicom.Core" version="$version$" />
+		  </group> 
+		  <group> 
+            <dependency id="fo-dicom.Core" version="$version$" />
+		  </group> 
         </dependencies>
+		<references> 
+		  <group targetFramework="uap10.0"> 
+			  <reference file="Dicom.Imaging.Codec.winmd" />
+			  <reference file="Dicom.Platform.dll" />
+		  </group> 
+		  <group>
+			  <reference file="Dicom.Platform.dll" />
+		  </group>
+		</references>
     </metadata>
     <files>
+        <file src="Targets\fo-dicom.Desktop.targets" target="build\net45\fo-dicom.Platform.targets" />
         <file src="..\DICOM.Native\Release\Dicom.Native.dll" target="build\net45" />
         <file src="..\DICOM.Native\Release\Dicom.Native64.dll" target="build\net45" />
-        <file src=".\fo-dicom.Desktop.targets" target="build\net45\fo-dicom.Platform.targets" />
+        <file src="Targets\fo-dicom.Windows.targets" target="build\uap10.0\fo-dicom.Platform.nuget.targets" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.winmd" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.pri" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.dll" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.pdb" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.dll" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pri" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pdb" target="build\uap10.0\x86" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x64\Release\Dicom.Imaging.Codec.winmd" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x64\Release\Dicom.Imaging.Codec.pri" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x64\Release\Dicom.Imaging.Codec.dll" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x64\Release\Dicom.Imaging.Codec.pdb" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.dll" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.pri" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.pdb" target="build\uap10.0\x64" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\ARM\Release\Dicom.Imaging.Codec.winmd" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\ARM\Release\Dicom.Imaging.Codec.pri" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\ARM\Release\Dicom.Imaging.Codec.dll" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\ARM\Release\Dicom.Imaging.Codec.pdb" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.dll" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.pri" target="build\uap10.0\ARM" />
+        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.pdb" target="build\uap10.0\ARM" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
         <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
         <file src="..\DICOM.Android\bin\Release\Dicom.Platform.dll" target="lib\MonoAndroid1" />
         <file src="..\DICOM.Android\bin\Release\Dicom.Platform.pdb" target="lib\MonoAndroid1" />
         <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
         <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.winmd" target="lib\uap10.0" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.pri" target="lib\uap10.0" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.dll" target="lib\uap10.0" />
+        <file src="..\DICOM.Native\Windows\bin\DICOM.Native.Windows\x86\Release\Dicom.Imaging.Codec.pdb" target="lib\uap10.0" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.dll" target="lib\uap10.0" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pri" target="lib\uap10.0" />
+        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pdb" target="lib\uap10.0" />
     </files>
 </package>
