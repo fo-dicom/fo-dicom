@@ -7,13 +7,19 @@
   <Target Name="InjectReference" BeforeTargets="ResolveAssemblyReferences">
     <ItemGroup Condition=" '$(Platform)' == 'x86' or '$(Platform)' == 'x64' or '$(Platform)' == 'ARM'">
       <Reference Include="Dicom.Imaging.Codec">
-        <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Dicom.Imaging.Codec.winmd</HintPath>
+        <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap\Dicom.Imaging.Codec.winmd</HintPath>
 		<IsWinMDFile>true</IsWinMDFile>
 		<Implementation>Dicom.Imaging.Codec.dll</Implementation>
       </Reference>
       <Reference Include="Dicom.Platform">
-        <HintPath>$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Platform)\lib\uap10.0\Dicom.Platform.dll</HintPath>
+        <HintPath>$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Platform)\lib\uap\Dicom.Platform.dll</HintPath>
       </Reference>
+      <None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Imaging.Codec.pdb">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Include="$(MSBuildThisFileDirectory)$(Platform)\Dicom.Platform.pdb">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
   </Target>  
 </Project>
