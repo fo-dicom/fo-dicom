@@ -19,13 +19,11 @@ namespace Dicom.Network
 
         private readonly string port;
 
-        private ManualResetEventSlim handle;
+        private readonly ManualResetEventSlim handle;
 
         private StreamSocketListener listener;
 
         private StreamSocket socket;
-
-        private Certificate certificate = null;
 
         #endregion
 
@@ -55,7 +53,7 @@ namespace Dicom.Network
 
             this.socket = null;
             this.handle.Reset();
-            await this.listener.BindServiceNameAsync(this.port);
+            await this.listener.BindServiceNameAsync(this.port).AsTask().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -63,9 +61,9 @@ namespace Dicom.Network
         /// </summary>
         public void Stop()
         {
-            this.handle.Set();
             this.listener.ConnectionReceived -= this.OnConnectionReceived;
             this.listener.Dispose();
+            this.handle.Set();
         }
 
         /// <summary>
@@ -77,14 +75,19 @@ namespace Dicom.Network
         public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
         {
             this.handle.Wait();
-            this.socket.Control.NoDelay = noDelay;
+            if (this.socket == null) return null;
 
-            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+            // TODO Control parameters appear to be inaccessible for setting here?
+            //this.socket.Control.NoDelay = noDelay;
+            if (!string.IsNullOrEmpty(certificateName) && this.socket.Control.ClientCertificate == null)
             {
-                this.socket.Control.ClientCertificate = GetCertificate(certificateName);
+                //this.socket.Control.ClientCertificate = GetCertificate(certificateName);
             }
 
-            return new WindowsNetworkStream(this.socket);
+            var networkStream = new WindowsNetworkStream(this.socket);
+            this.handle.Reset();
+
+            return networkStream;
         }
 
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)

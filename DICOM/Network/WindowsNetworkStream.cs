@@ -6,6 +6,7 @@ namespace Dicom.Network
     using System;
     using System.Globalization;
     using System.IO;
+    using System.Threading;
 
     using Windows.Networking;
     using Windows.Networking.Sockets;
@@ -21,7 +22,9 @@ namespace Dicom.Network
 
         private readonly StreamSocket socket;
 
-        private readonly Stream networkStream;
+        private Stream networkStream;
+
+        private readonly ManualResetEventSlim handle;
 
         #endregion
 
@@ -41,17 +44,8 @@ namespace Dicom.Network
             this.socket.Control.NoDelay = noDelay;
             // TODO Update socket.Control.IgnorableServerCertificateErrors with all possible errors if ignoreSslPolicyErrors is true?
 
-            this.socket.ConnectAsync(
-                new HostName(host),
-                port.ToString(CultureInfo.InvariantCulture),
-                useTls ? SocketProtectionLevel.Tls10 : SocketProtectionLevel.PlainSocket).GetResults();
-
-            if (useTls)
-            {
-                this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host)).GetResults();
-            }
-
-            this.networkStream = this.socket.OutputStream.AsStreamForWrite();
+            this.handle = new ManualResetEventSlim(false);
+            this.InitializeNetworkStream(host, port, useTls);
         }
 
         /// <summary>
@@ -65,6 +59,8 @@ namespace Dicom.Network
         {
             this.networkStream = socket.InputStream.AsStreamForRead();
             this.socket = null;
+
+            this.handle = new ManualResetEventSlim(true);
         }
 
         /// <summary>
@@ -85,6 +81,7 @@ namespace Dicom.Network
         /// <returns>Network stream as <see cref="Stream"/> object.</returns>
         public Stream AsStream()
         {
+            this.handle.Wait();
             return this.networkStream;
         }
 
@@ -113,6 +110,25 @@ namespace Dicom.Network
             }
 
             this.disposed = true;
+        }
+
+        private async void InitializeNetworkStream(string host, int port, bool useTls)
+        {
+            await
+                this.socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture))
+                    .AsTask()
+                    .ConfigureAwait(false);
+
+            if (useTls)
+            {
+                await
+                    this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host))
+                        .AsTask()
+                        .ConfigureAwait(false);
+            }
+
+            this.networkStream = this.socket.OutputStream.AsStreamForWrite();
+            this.handle.Set();
         }
 
         #endregion
