@@ -382,39 +382,51 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>bin\$(TargetName)\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(TargetName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
+    <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
+    <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
