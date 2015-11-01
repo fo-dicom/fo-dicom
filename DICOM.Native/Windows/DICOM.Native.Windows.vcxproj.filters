@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>a0acd5a0-9b4b-4d4f-b910-ac730d9e726a</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="OpenJPEG">
+      <UniqueIdentifier>{ddc83d34-e0ca-4875-a8ab-f2d0b347f8d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CharLS">
+      <UniqueIdentifier>{915980b1-8e3f-49bf-8dae-e915fc454aef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\OpenJPEG\bio.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\cidx_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\cio.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\dwt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\event.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\image.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\j2k.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\j2k_lib.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\jp2.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\jpt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\mct.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\mqc.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\openjpeg.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\phix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\pi.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\ppix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\raw.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\t1.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\t1_generate_luts.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\t2.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\tcd.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\tgt.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\thix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenJPEG\tpix_manager.c">
+      <Filter>OpenJPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\interface.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegls.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegmarkersegment.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegstreamreader.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CharLS\jpegstreamwriter.cpp">
+      <Filter>CharLS</Filter>
+    </ClCompile>
+    <ClCompile Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_8.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000Parameters.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegLsParameters.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegParameters.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.PixelData.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\OpenJPEG\bio.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\cidx_manager.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\cio.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\dwt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\event.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\fix.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\image.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\indexbox_manager.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\int.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\j2k.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\j2k_lib.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\jp2.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\jpt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\mct.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\mqc.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\openjpeg.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\opj_config.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\opj_includes.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\opj_malloc.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\pi.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\raw.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\t1.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\t1_luts.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\t2.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\tcd.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenJPEG\tgt.h">
+      <Filter>OpenJPEG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\charls.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\colortransform.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\context.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\contextrunmode.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\decoderstrategy.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\defaulttraits.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\encoderstrategy.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jlscodecfactory.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegimagedatasegment.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegmarkercode.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegmarkersegment.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegsegment.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegstreamreader.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\jpegstreamwriter.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\lookuptable.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\losslesstraits.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\processline.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\publictypes.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\scan.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CharLS\util.h">
+      <Filter>CharLS</Filter>
+    </ClInclude>
+    <ClInclude Include="Dicom.Imaging.Codec.ArrayCopy.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegLsParameters.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegParameters.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.PixelData.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Rle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dicom.Imaging.Codec.Jpeg.i" />
+  </ItemGroup>
+</Project>

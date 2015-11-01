@@ -21,3 +21,5 @@ DICOM/T4/part06.xml
 DICOM/T4/part07.xml
 DICOM/T4/part16.xml
 *.userprefs
+/.vs
+*.lock.json

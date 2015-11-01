@@ -45,15 +45,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Dicom.Native</TargetName>
-    <OutDir>$(ProjectDir)..\$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Dicom.Native</TargetName>
-    <OutDir>$(ProjectDir)..\$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
