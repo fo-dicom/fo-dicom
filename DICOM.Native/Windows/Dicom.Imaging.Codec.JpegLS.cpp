@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #include "CharLS/charls.h"
 
 #include "Dicom.Imaging.Codec.JpegLS.h"
