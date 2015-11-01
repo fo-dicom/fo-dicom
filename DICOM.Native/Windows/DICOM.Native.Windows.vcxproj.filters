@@ -100,7 +100,6 @@
     <ClCompile Include="..\CharLS\jpegstreamwriter.cpp">
       <Filter>CharLS</Filter>
     </ClCompile>
-    <ClCompile Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg_8.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg_12.cpp" />
     <ClCompile Include="Dicom.Imaging.Codec.Jpeg_16.cpp" />
@@ -252,7 +251,6 @@
       <Filter>CharLS</Filter>
     </ClInclude>
     <ClInclude Include="Dicom.Imaging.Codec.ArrayCopy.h" />
-    <ClInclude Include="Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
     <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000Parameters.h" />
