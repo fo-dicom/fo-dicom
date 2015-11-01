@@ -6,10 +6,7 @@ using System.Linq;
 namespace Dicom.Imaging.Codec
 {
     using System;
-    using System.IO;
     using System.Reflection;
-
-    using Dicom.Log;
 
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Universal Windows Platform applications.
