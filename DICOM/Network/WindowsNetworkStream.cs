@@ -6,6 +6,7 @@ namespace Dicom.Network
     using System;
     using System.Globalization;
     using System.IO;
+    using System.Runtime.InteropServices.WindowsRuntime;
     using System.Threading.Tasks;
 
     using Windows.Networking;
@@ -43,7 +44,9 @@ namespace Dicom.Network
             this.socket = new StreamSocket();
             this.canDisposeSocket = true;
 
+            this.socket.Control.KeepAlive = false;
             this.socket.Control.NoDelay = noDelay;
+
             if (ignoreSslPolicyErrors)
             {
                 foreach (var value in Enum.GetValues(typeof(ChainValidationResult)))
@@ -52,7 +55,7 @@ namespace Dicom.Network
                 }
             }
 
-            this.InitializeNetworkStream(host, port, useTls).Wait();
+            this.EstablishConnectionAsync(host, port, useTls).Wait();
         }
 
         /// <summary>
@@ -267,13 +270,19 @@ namespace Dicom.Network
             }
         }
 
-        private async Task InitializeNetworkStream(string host, int port, bool useTls)
+        private async Task EstablishConnectionAsync(string host, int port, bool useTls)
         {
-            await this.socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture));
+            await
+                this.socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture))
+                    .AsTask()
+                    .ConfigureAwait(false);
 
             if (useTls)
             {
-                await this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host));
+                await
+                    this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host))
+                        .AsTask()
+                        .ConfigureAwait(false);
             }
         }
 
@@ -285,10 +294,7 @@ namespace Dicom.Network
                 {
                     await reader.LoadAsync((uint)count);
                     var length = Math.Min((int)reader.UnconsumedBufferLength, count);
-                    var tmp = offset == 0 && length == count
-                                  ? buffer
-                                  : new ArraySegment<byte>(buffer, offset, length).Array;
-                    reader.ReadBytes(tmp);
+                    reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
                     reader.DetachStream();
                     return length;
                 }
