@@ -7,12 +7,15 @@ namespace Dicom.Network
     using System.Globalization;
     using System.IO;
     using System.Runtime.InteropServices.WindowsRuntime;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Windows.Networking;
     using Windows.Networking.Sockets;
     using Windows.Security.Cryptography.Certificates;
     using Windows.Storage.Streams;
+
+    using Dicom.IO;
 
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="INetworkStream"/>.
@@ -26,6 +29,8 @@ namespace Dicom.Network
         private readonly StreamSocket socket;
 
         private readonly bool canDisposeSocket;
+
+        private readonly bool isConnected;
 
         #endregion
 
@@ -44,7 +49,6 @@ namespace Dicom.Network
             this.socket = new StreamSocket();
             this.canDisposeSocket = true;
 
-            this.socket.Control.KeepAlive = false;
             this.socket.Control.NoDelay = noDelay;
 
             if (ignoreSslPolicyErrors)
@@ -55,7 +59,7 @@ namespace Dicom.Network
                 }
             }
 
-            this.EstablishConnectionAsync(host, port, useTls).Wait();
+            this.isConnected = this.EstablishConnectionAsync(host, port, useTls).Result;
         }
 
         /// <summary>
@@ -69,6 +73,7 @@ namespace Dicom.Network
         {
             this.socket = socket;
             this.canDisposeSocket = false;
+            this.isConnected = true;
         }
 
         /// <summary>
@@ -117,7 +122,10 @@ namespace Dicom.Network
         /// <filterpriority>2</filterpriority>
         public override async void Flush()
         {
-            await this.socket.OutputStream.FlushAsync();
+            if (this.isConnected)
+            {
+                await this.socket.OutputStream.FlushAsync().AsTask().ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -131,12 +139,43 @@ namespace Dicom.Network
         /// <param name="count">The maximum number of bytes to be read from the current stream. </param>
         /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         /// <filterpriority>1</filterpriority>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (!this.isConnected)
+            {
+                throw new DicomIoException("Cannot write; no socket connection is established.");
+            }
+
             return DoReadAsync(this.socket.InputStream, buffer, offset, count).Result;
+        }
+
+        /// <summary>
+        /// Asynchronously reads a sequence of bytes from the current stream, advances the position within the stream by the number of bytes read, and monitors cancellation requests.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of the <paramref name="count"/> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached. 
+        /// </returns>
+        /// <param name="buffer">The buffer to write the data into.</param>
+        /// <param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data from the stream.</param>
+        /// <param name="count">The maximum number of bytes to read.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception>
+        /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception>
+        /// <exception cref="T:System.InvalidOperationException">The stream is currently in use by a previous read operation. </exception>
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (!this.isConnected)
+            {
+                throw new DicomIoException("Cannot read; no socket connection is established.");
+            }
+
+            return DoReadAsync(this.socket.InputStream, buffer, offset, count);
         }
 
         /// <summary>
@@ -183,7 +222,37 @@ namespace Dicom.Network
         /// <filterpriority>1</filterpriority>
         public override void Write(byte[] buffer, int offset, int count)
         {
+            if (!this.isConnected)
+            {
+                throw new DicomIoException("Cannot write; no socket connection is established.");
+            }
+
             DoWriteAsync(this.socket.OutputStream, buffer, offset, count).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously writes a sequence of bytes to the current stream, advances the current position within this stream by the number of bytes written, and monitors cancellation requests.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous write operation.
+        /// </returns>
+        /// <param name="buffer">The buffer to write data from.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> from which to begin copying bytes to the stream.</param>
+        /// <param name="count">The maximum number of bytes to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception>
+        /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support writing.</exception><exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception>
+        /// <exception cref="T:System.InvalidOperationException">The stream is currently in use by a previous write operation. </exception>
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (!this.isConnected)
+            {
+                throw new DicomIoException("Cannot write; no socket connection is established.");
+            }
+
+            return DoWriteAsync(this.socket.OutputStream, buffer, offset, count);
         }
 
         /// <summary>
@@ -270,19 +339,28 @@ namespace Dicom.Network
             }
         }
 
-        private async Task EstablishConnectionAsync(string host, int port, bool useTls)
+        private async Task<bool> EstablishConnectionAsync(string host, int port, bool useTls)
         {
-            await
-                this.socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture))
-                    .AsTask()
-                    .ConfigureAwait(false);
-
-            if (useTls)
+            try
             {
                 await
-                    this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host))
+                    this.socket.ConnectAsync(new HostName(host), port.ToString(CultureInfo.InvariantCulture))
                         .AsTask()
                         .ConfigureAwait(false);
+
+                if (useTls)
+                {
+                    await
+                        this.socket.UpgradeToSslAsync(SocketProtectionLevel.Tls10, new HostName(host))
+                            .AsTask()
+                            .ConfigureAwait(false);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -292,7 +370,7 @@ namespace Dicom.Network
             {
                 using (var reader = new DataReader(stream))
                 {
-                    await reader.LoadAsync((uint)count);
+                    await reader.LoadAsync((uint)count).AsTask().ConfigureAwait(false);
                     var length = Math.Min((int)reader.UnconsumedBufferLength, count);
                     reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
                     reader.DetachStream();
@@ -311,9 +389,19 @@ namespace Dicom.Network
             {
                 using (var writer = new DataWriter(stream))
                 {
-                    var tmp = offset == 0 ? buffer : new ArraySegment<byte>(buffer, offset, count).Array;
+                    byte[] tmp;
+                    if (offset == 0)
+                    {
+                        tmp = buffer;
+                    }
+                    else
+                    {
+                        tmp = new byte[count];
+                        Array.Copy(buffer, offset, tmp, 0, count);
+                    }
+
                     writer.WriteBytes(tmp);
-                    await writer.StoreAsync();
+                    await writer.StoreAsync().AsTask().ConfigureAwait(false);
                     writer.DetachStream();
                 }
             }
