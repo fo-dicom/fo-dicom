@@ -70,15 +70,13 @@ namespace Dicom.Network
         /// Wait until a network stream is trying to connect, and return the accepted stream.
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
-        /// <param name="noDelay">No delay?</param>
+        /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
         /// <returns>Connected network stream.</returns>
         public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
         {
             this.handle.Wait();
             if (this.socket == null) return null;
 
-            // TODO Control parameters appear to be inaccessible for setting here?
-            //this.socket.Control.NoDelay = noDelay;
             if (!string.IsNullOrEmpty(certificateName) && this.socket.Control.ClientCertificate == null)
             {
                 //this.socket.Control.ClientCertificate = GetCertificate(certificateName);

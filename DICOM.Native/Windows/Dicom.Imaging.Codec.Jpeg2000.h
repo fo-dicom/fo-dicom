@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #ifndef __DICOM_IMAGING_CODEC_JPEG2000_H__
 #define __DICOM_IMAGING_CODEC_JPEG2000_H__
 

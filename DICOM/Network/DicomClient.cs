@@ -403,7 +403,10 @@ namespace Dicom.Network
                 if (this.isLingering) return;
 
                 this.isLingering = true;
-                var disconnected = await this.WaitForDisconnect(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger);
+                var disconnected =
+                    await
+                    this.WaitForDisconnect(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger)
+                        .ConfigureAwait(false);
                 this.isLingering = false;
 
                 if (disconnected || !this.IsSendQueueEmpty) return;
@@ -413,7 +416,7 @@ namespace Dicom.Network
 
             private async void OnReleaseTimeout()
             {
-                if (!await this.WaitForDisconnect(ReleaseTimeout))
+                if (!await this.WaitForDisconnect(ReleaseTimeout).ConfigureAwait(false))
                 {
                     this.SetComplete();
                 }

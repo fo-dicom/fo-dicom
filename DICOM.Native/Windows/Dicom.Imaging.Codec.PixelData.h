@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #ifndef __DICOM_IMAGING_CODEC_PIXELDATA_H__
 #define __DICOM_IMAGING_CODEC_PIXELDATA_H__
 

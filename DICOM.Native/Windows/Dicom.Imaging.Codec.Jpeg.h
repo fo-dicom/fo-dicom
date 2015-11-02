@@ -1,9 +1,11 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #ifndef __JPEGCODEC_H__
 #define __JPEGCODEC_H__
 
 #pragma once
 
-#include "Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h"
 #include "Dicom.Imaging.Codec.PixelData.h"
 #include "Dicom.Imaging.Codec.JpegParameters.h"
 

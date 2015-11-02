@@ -1,5 +1,7 @@
+// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 #include "Dicom.Imaging.Codec.Rle.h"
-#include "Dicom.Imaging.Codec.InMemoryRandomAccessStreamFactory.h"
 
 #include <algorithm>
 #include "ppltasks.h"
@@ -31,7 +33,7 @@ internal:
 		_length = 0;
 		_count = 0;
 		_offsets = ref new Array<unsigned int>(15);
-		_stream = InMemoryRandomAccessStreamFactory::Create();
+		_stream = ref new InMemoryRandomAccessStream();
 		_writer = ref new DataWriter(_stream);
 		_writer->ByteOrder = ByteOrder::LittleEndian;
 		_buffer = ref new Array<unsigned char>(132);
@@ -251,7 +253,7 @@ private:
 
 public:
 	RLEDecoder(const Array<unsigned char>^ data) {
-		IRandomAccessStream^ stream = InMemoryRandomAccessStreamFactory::Create();
+		IRandomAccessStream^ stream = ref new InMemoryRandomAccessStream();
 		DataWriter^ writer = ref new DataWriter(stream);
 		writer->ByteOrder = ByteOrder::LittleEndian;
 		writer->WriteBytes(data);

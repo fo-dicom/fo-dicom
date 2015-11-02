@@ -49,7 +49,7 @@ namespace IJGVERS {
 
     // callbacks for compress-destination-manager
     void initDestination(j_compress_ptr cinfo) {
-        MemoryBuffer = InMemoryRandomAccessStreamFactory::Create();
+        MemoryBuffer = ref new InMemoryRandomAccessStream();
         Writer = ref new DataWriter(MemoryBuffer);
         DataArray = ref new Array<unsigned char>(IJGE_BLOCKSIZE);
         cinfo->dest->next_output_byte = (unsigned char*)(void*)DataArray->begin();
