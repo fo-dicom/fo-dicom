@@ -148,14 +148,14 @@
     <Compile Include="..\DICOM\IO\DesktopDirectoryReference.cs">
       <Link>IO\DesktopDirectoryReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopFileReference.cs">
-      <Link>IO\DesktopFileReference.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\IO\DesktopIOManager.cs">
-      <Link>IO\DesktopIOManager.cs</Link>
-    </Compile>
     <Compile Include="..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\WindowsFileReference.cs">
+      <Link>IO\WindowsFileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\WindowsIOManager.cs">
+      <Link>IO\WindowsIOManager.cs</Link>
     </Compile>
     <Compile Include="..\DICOM\Managers.cs">
       <Link>Managers.cs</Link>

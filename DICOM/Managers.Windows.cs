@@ -19,7 +19,7 @@ namespace Dicom
         static Managers()
         {
             PlatformLogManagerImpl = null;
-            PlatformIOManagerImpl = DesktopIOManager.Instance;
+            PlatformIOManagerImpl = WindowsIOManager.Instance;
             PlatformNetworkManagerImpl = WindowsNetworkManager.Instance;
             PlatformTranscoderManagerImpl = WindowsTranscoderManager.Instance;
             PlatformImageManagerImpl = WindowsImageManager.Instance;
