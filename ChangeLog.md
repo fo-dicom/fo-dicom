@@ -1,4 +1,4 @@
-#### v2.0.0 (Alpha 2, 10/23/2015)
+#### v2.0.0 (Beta 1, 11/3/2015)
 * Universal Windows Platform library with networking, imaging and transcoding capability (#118 #124 #125 #126)
 * Improved exception reporting for NLog (#121 #122)
 * MetroLog connector is Portable Class Library (#119 #120)
