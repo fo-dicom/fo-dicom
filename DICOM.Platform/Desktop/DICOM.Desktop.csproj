@@ -33,7 +33,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -45,73 +45,73 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
+    <Compile Include="..\..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
       <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\DicomOverlayDataFactory.cs">
+    <Compile Include="..\..\DICOM\Imaging\DicomOverlayDataFactory.cs">
       <Link>Imaging\DicomOverlayDataFactory.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WinFormsImage.cs">
+    <Compile Include="..\..\DICOM\Imaging\WinFormsImage.cs">
       <Link>Imaging\WinFormsImage.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WinFormsImageManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\WinFormsImageManager.cs">
       <Link>Imaging\WinFormsImageManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WPFImage.cs">
+    <Compile Include="..\..\DICOM\Imaging\WPFImage.cs">
       <Link>Imaging\WPFImage.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WPFImageManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\WPFImageManager.cs">
       <Link>Imaging\WPFImageManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopDirectoryReference.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopDirectoryReference.cs">
       <Link>IO\DesktopDirectoryReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopFileReference.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopFileReference.cs">
       <Link>IO\DesktopFileReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopIOManager.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopIOManager.cs">
       <Link>IO\DesktopIOManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopPath.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Log\ConsoleExtensions.cs">
+    <Compile Include="..\..\DICOM\Log\ConsoleExtensions.cs">
       <Link>Log\ConsoleExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
+    <Compile Include="..\..\DICOM\Log\ConsoleLogger.cs">
       <Link>Log\ConsoleLogger.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.cs">
+    <Compile Include="..\..\DICOM\Managers.cs">
       <Link>Managers.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.Desktop.cs">
+    <Compile Include="..\..\DICOM\Managers.Desktop.cs">
       <Link>Managers.Desktop.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkListener.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkListener.cs">
       <Link>Network\DesktopNetworkListener.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkManager.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkManager.cs">
       <Link>Network\DesktopNetworkManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkStream.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkStream.cs">
       <Link>Network\DesktopNetworkStream.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Printing\FilmBoxExtensions.cs">
+    <Compile Include="..\..\DICOM\Printing\FilmBoxExtensions.cs">
       <Link>Printing\FilmBoxExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Printing\ImageBoxExtensions.cs">
+    <Compile Include="..\..\DICOM\Printing\ImageBoxExtensions.cs">
       <Link>Printing\ImageBoxExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>

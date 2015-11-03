@@ -146,6 +146,31 @@ namespace Dicom
         }
 
         /// <summary>
+        /// Asynchronously save DICOM file to stream.
+        /// </summary>
+        /// <param name="stream">Stream on which to save DICOM file.</param>
+        /// <returns>Awaitable task.</returns>
+        public async Task SaveAsync(Stream stream)
+        {
+            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
+            {
+                throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+            }
+
+            if (this.Format == DicomFileFormat.DICOM3NoFileMetaInfo)
+            {
+                // create file meta information from dataset
+                this.FileMetaInfo = new DicomFileMetaInformation(this.Dataset);
+            }
+
+            this.OnSave();
+
+            var target = new StreamByteTarget(stream);
+            var writer = new DicomFileWriter(DicomWriteOptions.Default);
+            await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
         /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize

@@ -87,100 +87,103 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
       <Link>Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
       <Link>Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegLossless14Codec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLossless14Codec.cs">
       <Link>Imaging\Codec\DicomJpegLossless14Codec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegLossless14SV1Codec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLossless14SV1Codec.cs">
       <Link>Imaging\Codec\DicomJpegLossless14SV1Codec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
       <Link>Imaging\Codec\DicomJpegLsLosslessCodec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
       <Link>Imaging\Codec\DicomJpegLsNearLosslessCodec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegNativeCodec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegNativeCodec.cs">
       <Link>Imaging\Codec\DicomJpegNativeCodec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.cs">
       <Link>Imaging\Codec\DicomJpegProcess1Codec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.cs">
       <Link>Imaging\Codec\DicomJpegProcess4Codec.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\DicomRleCodecImpl.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomRleCodecImpl.cs">
       <Link>Imaging\Codec\DicomRleCodecImpl.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\NativeJpeg2000ParametersExtensions.cs">
       <Link>Imaging\Codec\NativeJpeg2000ParametersExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\NativeJpegLsParametersExtensions.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\NativeJpegLsParametersExtensions.cs">
       <Link>Imaging\Codec\NativeJpegLsParametersExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\NativeJpegParametersExtensions.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\NativeJpegParametersExtensions.cs">
       <Link>Imaging\Codec\NativeJpegParametersExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\NativePixelDataExtensions.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\NativePixelDataExtensions.cs">
       <Link>Imaging\Codec\NativePixelDataExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\WindowsTranscoderManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\WindowsTranscoderManager.cs">
       <Link>Imaging\Codec\WindowsTranscoderManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WindowsImage.cs">
+    <Compile Include="..\..\DICOM\Imaging\WindowsImage.cs">
       <Link>Imaging\WindowsImage.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\WindowsImageManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\WindowsImageManager.cs">
       <Link>Imaging\WindowsImageManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopDirectoryReference.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopDirectoryReference.cs">
       <Link>IO\DesktopDirectoryReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopFileReference.cs">
-      <Link>IO\DesktopFileReference.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\IO\DesktopIOManager.cs">
-      <Link>IO\DesktopIOManager.cs</Link>
-    </Compile>
-    <Compile Include="..\DICOM\IO\DesktopPath.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.cs">
+    <Compile Include="..\..\DICOM\IO\WindowsFileReference.cs">
+      <Link>IO\WindowsFileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\WindowsIOManager.cs">
+      <Link>IO\WindowsIOManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Managers.cs">
       <Link>Managers.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.Windows.cs">
+    <Compile Include="..\..\DICOM\Managers.Windows.cs">
       <Link>Managers.Windows.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\WindowsNetworkListener.cs">
+    <Compile Include="..\..\DICOM\Network\WindowsNetworkListener.cs">
       <Link>Network\WindowsNetworkListener.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\WindowsNetworkManager.cs">
+    <Compile Include="..\..\DICOM\Network\WindowsNetworkManager.cs">
       <Link>Network\WindowsNetworkManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\WindowsNetworkStream.cs">
+    <Compile Include="..\..\DICOM\Network\WindowsNetworkStream.cs">
       <Link>Network\WindowsNetworkStream.cs</Link>
+    </Compile>
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Dicom.Platform.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM.Native\Windows\DICOM.Native.Windows.vcxproj">
+    <ProjectReference Include="..\..\DICOM.Native\Windows\DICOM.Native.Windows.vcxproj">
       <Project>{0a648368-9b9a-49bf-8c11-eba79f241b94}</Project>
       <Name>DICOM.Native.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
