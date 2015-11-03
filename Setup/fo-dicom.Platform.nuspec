@@ -20,34 +20,34 @@
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net45" />
         <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net45" />
 		<file src="Targets\fo-dicom.Windows.targets" target="build\uap\fo-dicom.Platform.targets" />
-        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
-        <file src="..\DICOM.Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
-        <file src="..\DICOM.Android\bin\Release\Dicom.Platform.dll" target="lib\MonoAndroid1" />
-        <file src="..\DICOM.Android\bin\Release\Dicom.Platform.pdb" target="lib\MonoAndroid1" />
-        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
-        <file src="..\DICOM.iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Platform.dll" target="lib\net45" />
+        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net45" />
+        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Platform.dll" target="lib\MonoAndroid1" />
+        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Platform.pdb" target="lib\MonoAndroid1" />
+        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.winmd" target="lib\uap" />
-        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.dll" target="lib\uap" />
-        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.dll" target="runtimes\win10-x86\lib\uap" />
-        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pdb" target="runtimes\win10-x86\native" />
-        <file src="..\DICOM.Windows\bin\x86\Release\Dicom.Platform.pri" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="runtimes\win10-x86\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.pdb" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.pri" target="runtimes\win10-x86\native" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-x86\native" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-x86\native" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-x86\native" />
-        <file src="..\DICOM.Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x86\native\Dicom.Platform\Properties" />
-        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.dll" target="runtimes\win10-x64\lib\uap" />
-        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.pdb" target="runtimes\win10-x64\native" />
-        <file src="..\DICOM.Windows\bin\x64\Release\Dicom.Platform.pri" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x86\native\Dicom.Platform\Properties" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.dll" target="runtimes\win10-x64\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.pdb" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.pri" target="runtimes\win10-x64\native" />
         <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-x64\native" />
         <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-x64\native" />
         <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-x64\native" />
-        <file src="..\DICOM.Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x64\native\Dicom.Platform\Properties" />
-        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.dll" target="runtimes\win10-arm\lib\uap" />
-        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.pdb" target="runtimes\win10-arm\native" />
-        <file src="..\DICOM.Windows\bin\ARM\Release\Dicom.Platform.pri" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x64\native\Dicom.Platform\Properties" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.dll" target="runtimes\win10-arm\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.pdb" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.pri" target="runtimes\win10-arm\native" />
         <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-arm\native" />
         <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-arm\native" />
         <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-arm\native" />
-        <file src="..\DICOM.Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-arm\native\Dicom.Platform\Properties" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-arm\native\Dicom.Platform\Properties" />
     </files>
 </package>
