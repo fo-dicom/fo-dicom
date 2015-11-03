@@ -37,61 +37,61 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\DICOM\DatabaseQueryTransformRule.cs">
+    <Compile Include="..\..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\Codec\MonoTranscoderManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\Codec\MonoTranscoderManager.cs">
       <Link>Imaging\Codec\MonoTranscoderManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\IOSImage.cs">
+    <Compile Include="..\..\DICOM\Imaging\IOSImage.cs">
       <Link>Imaging\IOSImage.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Imaging\IOSImageManager.cs">
+    <Compile Include="..\..\DICOM\Imaging\IOSImageManager.cs">
       <Link>Imaging\IOSImageManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopDirectoryReference.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopDirectoryReference.cs">
       <Link>IO\DesktopDirectoryReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopFileReference.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopFileReference.cs">
       <Link>IO\DesktopFileReference.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopIOManager.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopIOManager.cs">
       <Link>IO\DesktopIOManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\IO\DesktopPath.cs">
+    <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Log\ConsoleExtensions.cs">
+    <Compile Include="..\..\DICOM\Log\ConsoleExtensions.cs">
       <Link>Log\ConsoleExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Log\ConsoleLogger.cs">
+    <Compile Include="..\..\DICOM\Log\ConsoleLogger.cs">
       <Link>Log\ConsoleLogger.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.cs">
+    <Compile Include="..\..\DICOM\Managers.cs">
       <Link>Managers.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Managers.iOS.cs">
+    <Compile Include="..\..\DICOM\Managers.iOS.cs">
       <Link>Managers.iOS.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkListener.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkListener.cs">
       <Link>Network\DesktopNetworkListener.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkManager.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkManager.cs">
       <Link>Network\DesktopNetworkManager.cs</Link>
     </Compile>
-    <Compile Include="..\DICOM\Network\DesktopNetworkStream.cs">
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkStream.cs">
       <Link>Network\DesktopNetworkStream.cs</Link>
     </Compile>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM\DICOM.Core.csproj">
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
