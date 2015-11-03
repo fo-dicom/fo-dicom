@@ -111,7 +111,7 @@ namespace Dicom.IO
         /// <returns>Writeable stream to the opened file.</returns>
         public Stream OpenWrite()
         {
-            return OpenExistingAsync(this.Name, false, true).Result;
+            return OpenOrCreateAsync(this.Name).Result;
         }
 
         /// <summary>
@@ -224,6 +224,18 @@ namespace Dicom.IO
             }
 
             throw new ArgumentException("Return stream should be read, write or read/write");
+        }
+
+        private static async Task<Stream> OpenOrCreateAsync(string path)
+        {
+            var folder = await GetFolderAsync(path).ConfigureAwait(false);
+
+            var fileName = Path.GetFileName(path);
+            var file =
+                await
+                folder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists).AsTask().ConfigureAwait(false);
+
+            return await file.OpenStreamForWriteAsync().ConfigureAwait(false);
         }
 
         private static async Task DeleteAsync(string path)
