@@ -10,10 +10,10 @@
 
 ### Features
 * Core functionality in Portable Class Library (PCL)
-* Targets .NET 4.5 and higher, Xamarin iOS, Xamarin Android, and Mono
+* Targets .NET 4.5 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, and Mono
 * DICOM dictionary version 2015c
 * High-performance, fully asynchronous `async`/`await` API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (.NET only)
+* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (.NET and UWP only)
 * Supports very large datasets with content loading on demand
 * Image rendering
 
@@ -22,10 +22,10 @@ Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/pack
 
 Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and 
 [Dicom.Platform](https://www.nuget.org/packages/fo-dicom.Platform/). *Dicom.Core* is the PCL library with core functionality, *Dicom.Legacy* is a PCL library with obsolete asynchronous API methods, and *Dicom.Platform* contains
-the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
+the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Universal Windows Platform, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
 
 *fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/), 
-[log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/).
+[log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/). The *MetroLog* connector is a Portable Class Library, whereas the other logging connectors are .NET dedicated libraries.
 
 ### v2.0 Breaking Change
 Due to the split into a core Portable Class Library and platform-specific support libraries, manager classes must be initiated before *fo-dicom* can be used in an application. Initialization should be performed using one of the `Dicom.Managers.Setup` overloads, e.g.
@@ -44,7 +44,7 @@ Several log managers are available on .NET, for example `ConsoleLogManager.Insta
 
 To configure both the log and image managers, use the `Dicom.Managers.Setup(LogManager, ImageManager)` overload.
 
-On *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one image manager available, and this manager is pre-selected in the `Dicom.Managers.Setup` call.
+On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one image manager available, and this manager is pre-selected in the `Dicom.Managers.Setup` call.
 
 ### Examples
 
