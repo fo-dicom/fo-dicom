@@ -133,7 +133,7 @@ namespace Dicom.Network
             var socketEx = exception as SocketException;
             if (socketEx != null)
             {
-                errorCode = socketEx.HResult;
+                errorCode = (int)socketEx.SocketErrorCode;
                 errorDescriptor = socketEx.SocketErrorCode.ToString();
                 return true;
             }
