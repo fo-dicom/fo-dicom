@@ -972,7 +972,7 @@ namespace Dicom.IO.Reader
                     var bytes = source.GetBytes(2);
                     var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                     DicomVR dummy;
-                    if (DicomVR.TryParse(vr, out dummy)) return isExplicitVR;
+                    if (DicomVR.TryParse(vr, out dummy)) return !isExplicitVR;
                     // unable to parse VR
                     if (isExplicitVR) return true;
                 }
