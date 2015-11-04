@@ -2,8 +2,8 @@
 
 # Fellow Oak DICOM
 
-[![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -13,7 +13,7 @@
 * Targets .NET 4.5 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, and Mono
 * DICOM dictionary version 2015c
 * High-performance, fully asynchronous `async`/`await` API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (.NET and UWP only)
+* (.NET and UWP only) JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
 * Supports very large datasets with content loading on demand
 * Image rendering
 
@@ -22,7 +22,7 @@ Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/pack
 
 Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and 
 [Dicom.Platform](https://www.nuget.org/packages/fo-dicom.Platform/). *Dicom.Core* is the PCL library with core functionality, *Dicom.Legacy* is a PCL library with obsolete asynchronous API methods, and *Dicom.Platform* contains
-the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Universal Windows Platform, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
+the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Universal Windows Platform*, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
 
 *fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/), 
 [log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/). The *MetroLog* connector is a Portable Class Library, whereas the other logging connectors are .NET dedicated libraries.
@@ -115,8 +115,8 @@ await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
-* [Anders Gustafsson](https://github.com/anders9ustafsson) (Cureos AB)
-* [Hesham Desouky](https://github.com/hdesouky) (Nebras Technology)
+* [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
+* [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Ian Yates](http://github.com/IanYates)
 * [Chris Horn](https://github.com/GMZ)
 * [Mahesh Dubey](https://github.com/mdubey82)

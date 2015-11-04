@@ -48,6 +48,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Dicom.Core">
+      <HintPath>..\..\packages\fo-dicom.Core.2.0.0-beta1\lib\portable-net45+netcore45+wpa81\Dicom.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
@@ -104,6 +107,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -114,11 +118,7 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
-      <Project>{A661D347-CF7D-4F36-8101-0544AE85EEEC}</Project>
-      <Name>DICOM.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DICOM.Mono\DICOM.Mono.csproj">
+    <ProjectReference Include="..\..\DICOM.Platform\Mono\DICOM.Mono.csproj">
       <Project>{0E451E9D-3F37-46C1-98D3-3090743061CF}</Project>
       <Name>DICOM.Mono</Name>
     </ProjectReference>
