@@ -74,13 +74,13 @@ namespace Dicom.Network
         /// <returns>Connected network stream.</returns>
         public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
         {
+            if (!string.IsNullOrWhiteSpace(certificateName))
+            {
+                throw new NotSupportedException("Authenticated server connections not supported on Windows Universal Platform.");
+            }
+
             this.handle.Wait();
             if (this.socket == null) return null;
-
-            if (!string.IsNullOrEmpty(certificateName) && this.socket.Control.ClientCertificate == null)
-            {
-                //this.socket.Control.ClientCertificate = GetCertificate(certificateName);
-            }
 
             var networkStream = new WindowsNetworkStream(this.socket);
             this.handle.Reset();
@@ -92,25 +92,6 @@ namespace Dicom.Network
         {
             this.socket = args.Socket;
             this.handle.Set();
-        }
-
-        /// <summary>
-        /// Get X509 certificate from the certificate store.
-        /// </summary>
-        /// <param name="certificateName">Certificate name.</param>
-        /// <returns>Certificate with the specified name.</returns>
-        private static Certificate GetCertificate(string certificateName)
-        {
-            var certs =
-                CertificateStores.FindAllAsync(
-                    new CertificateQuery { FriendlyName = certificateName, StoreName = "MY" }).GetResults();
-
-            if (certs.Count == 0)
-            {
-                throw new DicomNetworkException("Unable to find certificate for " + certificateName);
-            }
-
-            return certs[0];
         }
 
         #endregion
