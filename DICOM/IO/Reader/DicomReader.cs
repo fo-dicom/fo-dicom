@@ -879,7 +879,6 @@ namespace Dicom.IO.Reader
                         this.observer.OnEndFragmentSequence();
                         this.fragmentItem = 0;
                         this.ResetState();
-                        this.ParseDataset(source);
                         return false;
                     }
 

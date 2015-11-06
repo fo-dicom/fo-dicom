@@ -1,4 +1,5 @@
 #### v2.0.0 (Beta 2, 11/XX/2015)
+* Parse error when encapsulated pixel data appears inside sequence item (#133 #134)
 * Universal Windows Platform library with networking, imaging and transcoding capability (#118 #124 #125 #126 #132)
 * Improved exception reporting for NLog (#121 #122)
 * MetroLog connector is Portable Class Library (#119 #120)
