@@ -76,6 +76,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH133.cs" />
+    <Compile Include="Bugs\GH064.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
@@ -155,6 +156,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\DICOMDIR">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH064.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH133.dcm">
