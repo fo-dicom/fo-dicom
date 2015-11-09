@@ -1,4 +1,5 @@
-#### v2.0.0 (Beta 2, 11/6/2015)
+#### v2.0.0 (Release Candidate 1, mm/dd/2015)
+* Handle simultaneous use of explicit sequence length and sequence delimiation item (#64 #135)
 * Parse error when encapsulated pixel data appears inside sequence item (#133 #134)
 * Universal Windows Platform library with networking, imaging and transcoding capability (#118 #124 #125 #126 #132)
 * Improved exception reporting for NLog (#121 #122)
