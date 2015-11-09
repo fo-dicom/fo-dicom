@@ -743,6 +743,13 @@ namespace Dicom.IO.Reader
 
                     if (this._tag == DicomTag.SequenceDelimitationItem)
                     {
+                        // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
+                        if (source.HasReachedMilestone())
+                        {
+                            this.ResetState();
+                            return true;
+                        }
+
                         // end of sequence
                         this.observer.OnEndSequence();
                         if (this.badPrivateSequence)
