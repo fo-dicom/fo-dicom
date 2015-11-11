@@ -345,10 +345,9 @@ namespace Dicom.Network
             #region METHODS
 
             public void OnReceiveAssociationAccept(DicomAssociation association)
-            {}
+            {
                 foreach (DicomPresentationContext ctx in this.client.AdditionalPresentationContexts)
                 {
-
                     var resultItem = from DicomPresentationContext in association.PresentationContexts
                               where DicomPresentationContext.AbstractSyntax == ctx.AbstractSyntax
                               select new { Result = DicomPresentationContext.Result, Transfer = DicomPresentationContext.AcceptedTransferSyntax };
