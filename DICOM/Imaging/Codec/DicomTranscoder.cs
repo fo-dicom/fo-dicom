@@ -271,10 +271,14 @@ namespace Dicom.Imaging.Codec
             {
                 var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
 
-                // don't run conversion on non-embedded overlays
+                // don't run conversion on non-embedded overlays; overlay considered embedded if Overlay Data tag
+                // exists or if Overlay Bits Allocated is larger than 1.
                 if (output.Contains(dataTag)) continue;
 
-                output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
+                var bitsAllocTag = new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element);
+                if (output.Get(bitsAllocTag, (ushort)0) > 1) continue;
+
+                output.Add(bitsAllocTag, (ushort)1);
                 output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
 
                 var data = overlay.Data;
