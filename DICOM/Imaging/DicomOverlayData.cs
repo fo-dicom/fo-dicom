@@ -346,8 +346,8 @@ namespace Dicom.Imaging
                 // (1,1) indicates top left pixel of image
                 int ox = Math.Max(0, OriginX - 1);
                 int oy = Math.Max(0, OriginY - 1);
-                int ow = Rows - (pixels.Width - Rows - ox);
-                int oh = Columns - (pixels.Height - Columns - oy);
+                int ow = Columns;
+                int oh = Rows;
 
                 var frame = pixels.GetFrame(0);
 
@@ -355,15 +355,20 @@ namespace Dicom.Imaging
                 bits.Capacity = Rows * Columns;
                 int mask = 1 << BitPosition;
 
-                if (pixels.BitsAllocated == 8)
+                // Sanity check: do not collect overlay data if Overlay Bit Position is NOT greater than main image High Bit. (#110)
+                if (this.BitPosition <= pixels.HighBit)
+                {
+                    // Do nothing
+                }
+                else if (pixels.BitsAllocated == 8)
                 {
                     var data = IO.ByteConverter.ToArray<byte>(frame);
 
-                    for (int y = oy; y < oh; y++)
+                    for (int y = 0; y < oh; y++)
                     {
-                        int n = (y * pixels.Width) + ox;
-                        int i = (y - oy) * Columns;
-                        for (int x = ox; x < ow; x++)
+                        int n = (y + oy) * pixels.Width + ox;
+                        int i = y * Columns;
+                        for (int x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;
@@ -376,11 +381,11 @@ namespace Dicom.Imaging
                     // we don't really care if the pixel data is signed or not
                     var data = IO.ByteConverter.ToArray<ushort>(frame);
 
-                    for (int y = oy; y < oh; y++)
+                    for (int y = 0; y < oh; y++)
                     {
-                        int n = (y * pixels.Width) + ox;
-                        int i = (y - oy) * Columns;
-                        for (int x = ox; x < ow; x++)
+                        int n = (y + oy) * pixels.Width + ox;
+                        int i = y * Columns;
+                        for (int x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;
