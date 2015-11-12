@@ -267,11 +267,6 @@ namespace Dicom.Imaging.Codec
         {
             var overlays = DicomOverlayData.FromDataset(input.InternalTransferSyntax.IsEncapsulated ? output : input);
 
-            // Overlay counter to use if overlay bit position is zero (#110)
-            var fallbackBitPosition = output.Contains(DicomTag.HighBit)
-                                          ? (ushort)(output.Get<ushort>(DicomTag.HighBit) + 1)
-                                          : (ushort)0;
-
             foreach (var overlay in overlays)
             {
                 var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
@@ -282,13 +277,6 @@ namespace Dicom.Imaging.Codec
                 // If embedded overlay, Overlay Bits Allocated should equal Bits Allocated (#110).
                 var bitsAlloc = output.Get(DicomTag.BitsAllocated, (ushort)0);
                 output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
-
-                // If Overlay Bit Position is zero (#110), use fallback bit position
-                var bitPosTag = new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element);
-                if (output.Get(bitPosTag, (ushort)0) == 0 && fallbackBitPosition < bitsAlloc)
-                {
-                    output.Add(bitPosTag, fallbackBitPosition++);
-                }
 
                 var data = overlay.Data;
                 if (output.InternalTransferSyntax.IsExplicitVR) output.Add(new DicomOtherByte(dataTag, data));

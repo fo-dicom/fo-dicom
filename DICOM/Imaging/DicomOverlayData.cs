@@ -355,7 +355,12 @@ namespace Dicom.Imaging
                 bits.Capacity = Rows * Columns;
                 int mask = 1 << BitPosition;
 
-                if (pixels.BitsAllocated == 8)
+                // Sanity check: do not collect overlay data if Overlay Bit Position is NOT greater than main image High Bit. (#110)
+                if (this.BitPosition <= pixels.HighBit)
+                {
+                    // Do nothing
+                }
+                else if (pixels.BitsAllocated == 8)
                 {
                     var data = IO.ByteConverter.ToArray<byte>(frame);
 
