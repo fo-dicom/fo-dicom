@@ -268,7 +268,9 @@ namespace Dicom.Imaging.Codec
             var overlays = DicomOverlayData.FromDataset(input.InternalTransferSyntax.IsEncapsulated ? output : input);
 
             // Overlay counter to use if overlay bit position is zero (#110)
-            var fallbackBitPosition = output.Get(DicomTag.BitsStored, (ushort)0);
+            var fallbackBitPosition = output.Contains(DicomTag.HighBit)
+                                          ? (ushort)(output.Get<ushort>(DicomTag.HighBit) + 1)
+                                          : (ushort)0;
 
             foreach (var overlay in overlays)
             {

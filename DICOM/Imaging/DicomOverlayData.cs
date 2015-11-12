@@ -346,8 +346,8 @@ namespace Dicom.Imaging
                 // (1,1) indicates top left pixel of image
                 int ox = Math.Max(0, OriginX - 1);
                 int oy = Math.Max(0, OriginY - 1);
-                int ow = Columns - (pixels.Width - Columns - ox);
-                int oh = Rows - (pixels.Height - Rows - oy);
+                int ow = Columns;
+                int oh = Rows;
 
                 var frame = pixels.GetFrame(0);
 
@@ -359,11 +359,11 @@ namespace Dicom.Imaging
                 {
                     var data = IO.ByteConverter.ToArray<byte>(frame);
 
-                    for (int y = oy; y < oh; y++)
+                    for (int y = 0; y < oh; y++)
                     {
-                        int n = (y * pixels.Width) + ox;
-                        int i = (y - oy) * Columns;
-                        for (int x = ox; x < ow; x++)
+                        int n = (y + oy) * pixels.Width + ox;
+                        int i = y * Columns;
+                        for (int x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;
@@ -376,11 +376,11 @@ namespace Dicom.Imaging
                     // we don't really care if the pixel data is signed or not
                     var data = IO.ByteConverter.ToArray<ushort>(frame);
 
-                    for (int y = oy; y < oh; y++)
+                    for (int y = 0; y < oh; y++)
                     {
-                        int n = (y * pixels.Width) + ox;
-                        int i = (y - oy) * Columns;
-                        for (int x = ox; x < ow; x++)
+                        int n = (y + oy) * pixels.Width + ox;
+                        int i = y * Columns;
+                        for (int x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;
