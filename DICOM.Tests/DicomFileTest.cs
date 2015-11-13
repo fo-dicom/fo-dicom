@@ -3,6 +3,7 @@
 
 namespace Dicom
 {
+    using System;
     using System.IO;
     using System.IO.MemoryMappedFiles;
     using System.Threading.Tasks;
@@ -150,6 +151,38 @@ namespace Dicom
         {
             var validHeader = DicomFile.HasValidHeader(@".\Test Data\CT1_J2KI");
             Assert.True(validHeader);
+        }
+
+        [Fact]
+        public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
+        {
+            Func<DicomTag, int, bool> criterion = (tag, depth) => tag.CompareTo(DicomTag.OperatorsName) >= 0;
+            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
+        }
+
+        [Fact]
+        public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
+        {
+            Func<DicomTag, int, bool> criterion = (tag, depth) => tag.CompareTo(DicomTag.OperatorsName) > 0;
+            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
+        }
+
+        [Fact]
+        public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
+        {
+            Func<DicomTag, int, bool> criterion = (tag, depth) => tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
+        }
+
+        [Fact]
+        public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
+        {
+            Func<DicomTag, int, bool> criterion = (tag, depth) => depth == 0 && tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
 
         #endregion
