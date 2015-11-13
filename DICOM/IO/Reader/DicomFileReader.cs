@@ -75,13 +75,15 @@ namespace Dicom.IO.Reader
         /// <param name="source">Byte source to read.</param>
         /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
         /// <param name="dataset">Reader observer for dataset.</param>
+        /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Reader result.</returns>
         public DicomReaderResult Read(
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
-            IDicomReaderObserver dataset)
+            IDicomReaderObserver dataset,
+            Func<DicomTag, int, bool> stop = null)
         {
-            var parse = Parse(source, fileMetaInfo, dataset);
+            var parse = Parse(source, fileMetaInfo, dataset, stop);
             lock (this.locker)
             {
                 this.fileFormat = parse.Item2;
@@ -96,13 +98,15 @@ namespace Dicom.IO.Reader
         /// <param name="source">Byte source to read.</param>
         /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
         /// <param name="dataset">Reader observer for dataset.</param>
+        /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable reader result.</returns>
         public async Task<DicomReaderResult> ReadAsync(
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
-            IDicomReaderObserver dataset)
+            IDicomReaderObserver dataset,
+            Func<DicomTag, int, bool> stop = null)
         {
-            var parse = await ParseAsync(source, fileMetaInfo, dataset).ConfigureAwait(false);
+            var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
             lock (this.locker)
             {
                 this.fileFormat = parse.Item2;
@@ -114,7 +118,8 @@ namespace Dicom.IO.Reader
         private static Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax> Parse(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
-            IDicomReaderObserver datasetObserver)
+            IDicomReaderObserver datasetObserver,
+            Func<DicomTag, int, bool> stop)
         {
             if (!source.Require(132))
             {
@@ -130,6 +135,7 @@ namespace Dicom.IO.Reader
                 source,
                 fileMetasetInfoObserver,
                 datasetObserver,
+                stop,
                 ref syntax,
                 ref fileFormat);
 
@@ -139,7 +145,8 @@ namespace Dicom.IO.Reader
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> ParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
-            IDicomReaderObserver datasetObserver)
+            IDicomReaderObserver datasetObserver,
+            Func<DicomTag, int, bool> stop)
         {
             if (!source.Require(132))
             {
@@ -153,7 +160,7 @@ namespace Dicom.IO.Reader
 
             return
                 await
-                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, syntax, fileFormat).ConfigureAwait(false);
+                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, stop, syntax, fileFormat).ConfigureAwait(false);
         }
 
         private static void Preprocess(
@@ -244,6 +251,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
+            Func<DicomTag, int, bool> stop,
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
@@ -282,7 +290,7 @@ namespace Dicom.IO.Reader
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
             {
-                result = reader.Read(source, new DicomReaderMultiObserver(obs, datasetObserver));
+                result = reader.Read(source, new DicomReaderMultiObserver(obs, datasetObserver), stop);
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
             }
             else
@@ -301,7 +309,7 @@ namespace Dicom.IO.Reader
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
-                result = reader.Read(source, datasetObserver);
+                result = reader.Read(source, datasetObserver, stop);
             }
 
             return result;
@@ -311,6 +319,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
+            Func<DicomTag, int, bool> stop,
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {
@@ -351,7 +360,7 @@ namespace Dicom.IO.Reader
             {
                 result =
                     await
-                    reader.ReadAsync(source, new DicomReaderMultiObserver(obs, datasetObserver)).ConfigureAwait(false);
+                    reader.ReadAsync(source, new DicomReaderMultiObserver(obs, datasetObserver), stop).ConfigureAwait(false);
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
             }
             else
@@ -374,7 +383,7 @@ namespace Dicom.IO.Reader
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
-                result = await reader.ReadAsync(source, datasetObserver).ConfigureAwait(false);
+                result = await reader.ReadAsync(source, datasetObserver, stop).ConfigureAwait(false);
             }
 
             return Tuple.Create(result, fileFormat, syntax);
