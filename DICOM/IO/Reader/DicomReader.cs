@@ -3,6 +3,7 @@
 
 namespace Dicom.IO.Reader
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -57,9 +58,9 @@ namespace Dicom.IO.Reader
         /// </summary>
         /// <param name="source">Byte source to read.</param>
         /// <param name="observer">Reader observer.</param>
-        /// <param name="stop">Tag at which to stop.</param>
+        /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null)
+        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, int, bool> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
             return worker.DoWork(source);
@@ -70,9 +71,9 @@ namespace Dicom.IO.Reader
         /// </summary>
         /// <param name="source">Byte source to read.</param>
         /// <param name="observer">Reader observer.</param>
-        /// <param name="stop">Tag at which to stop.</param>
+        /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null)
+        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, int, bool> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
             return worker.DoWorkAsync(source);
@@ -110,13 +111,15 @@ namespace Dicom.IO.Reader
 
             private readonly IDicomReaderObserver observer;
 
-            private readonly DicomTag stop;
+            private readonly Func<DicomTag, int, bool> stop;
 
             private readonly DicomDictionary dictionary;
 
             private readonly Dictionary<uint, string> _private;
 
             private bool isExplicitVR;
+
+            private int sequenceDepth;
 
             private ParseState _state;
 
@@ -147,7 +150,7 @@ namespace Dicom.IO.Reader
             /// </summary>
             internal DicomReaderWorker(
                 IDicomReaderObserver observer,
-                DicomTag stop,
+                Func<DicomTag, int, bool> stop,
                 DicomDictionary dictionary,
                 bool isExplicitVR,
                 Dictionary<uint, string> @private)
@@ -275,7 +278,7 @@ namespace Dicom.IO.Reader
                         this._tag = this._entry.Tag; // Use dictionary tag
                     }
 
-                    if (this.stop != null && this._tag.CompareTo(this.stop) >= 0)
+                    if (this.stop != null && this.stop(this._tag, this.sequenceDepth))
                     {
                         this.result = DicomReaderResult.Stopped;
                         return false;
@@ -784,7 +787,9 @@ namespace Dicom.IO.Reader
                     this.observer.OnBeginSequenceItem(source, this.length);
 
                     this.ResetState();
+                    ++this.sequenceDepth;
                     this.ParseDataset(source);
+                    --this.sequenceDepth;
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();

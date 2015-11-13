@@ -16,6 +16,9 @@ namespace Dicom.IO.Reader
 
         private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
+        private static readonly Func<DicomTag, int, bool> FileMetaInfoStopCriterion =
+            (tag, depth) => tag.CompareTo(FileMetaInfoStopTag) >= 0;
+
         private DicomFileFormat fileFormat;
 
         private DicomTransferSyntax syntax;
@@ -284,7 +287,7 @@ namespace Dicom.IO.Reader
             }
             else
             {
-                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), FileMetaInfoStopTag)
+                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), FileMetaInfoStopCriterion)
                     != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
@@ -358,7 +361,7 @@ namespace Dicom.IO.Reader
                     reader.ReadAsync(
                         source,
                         new DicomReaderMultiObserver(obs, fileMetasetInfoObserver),
-                        FileMetaInfoStopTag).ConfigureAwait(false) != DicomReaderResult.Stopped)
+                        FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }
