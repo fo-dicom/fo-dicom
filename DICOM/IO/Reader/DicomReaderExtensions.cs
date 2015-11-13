@@ -17,7 +17,7 @@ namespace Dicom.IO.Reader
         /// <param name="this"><see cref="DicomReader"/> object performing the read operation.</param>
         /// <param name="source">Byte source to read.</param>
         /// <param name="observer">Reader observer.</param>
-        /// <param name="stop">Tag at which to stop.</param>
+        /// <param name="stop">Criterion at which to stop.</param>
         /// <param name="callback">Asynchronous callback.</param>
         /// <param name="state">Asynchronous state.</param>
         /// <returns>Asynchronous result handle to be managed by <see cref="EndRead"/>.</returns>
@@ -26,7 +26,7 @@ namespace Dicom.IO.Reader
             this DicomReader @this,
             IByteSource source,
             IDicomReaderObserver observer,
-            DicomTag stop,
+            Func<DicomTag, int, bool> stop,
             AsyncCallback callback,
             object state)
         {
