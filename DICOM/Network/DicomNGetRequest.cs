@@ -12,10 +12,8 @@ namespace Dicom.Network
 
         public DicomNGetRequest(
             DicomUID requestedClassUid,
-            DicomUID requestedInstanceUid,
-            DicomTag[] attributes,
-            DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.NGetRequest, requestedClassUid, priority)
+            DicomUID requestedInstanceUid)
+            : base(DicomCommandField.NGetRequest, requestedClassUid)
         {
             SOPInstanceUID = requestedInstanceUid;
         }

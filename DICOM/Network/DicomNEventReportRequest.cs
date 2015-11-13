@@ -15,9 +15,8 @@ namespace Dicom.Network
         public DicomNEventReportRequest(
             DicomUID affectedClassUid,
             DicomUID affectedInstanceUid,
-            ushort eventTypeId,
-            DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.NEventReportRequest, affectedClassUid, priority)
+            ushort eventTypeId)
+            : base(DicomCommandField.NEventReportRequest, affectedClassUid)
         {
             SOPInstanceUID = affectedInstanceUid;
             EventTypeID = eventTypeId;

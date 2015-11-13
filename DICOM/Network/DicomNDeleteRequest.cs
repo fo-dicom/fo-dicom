@@ -12,9 +12,8 @@ namespace Dicom.Network
 
         public DicomNDeleteRequest(
             DicomUID requestedClassUid,
-            DicomUID requestedInstanceUid,
-            DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.NDeleteRequest, requestedClassUid, priority)
+            DicomUID requestedInstanceUid)
+            : base(DicomCommandField.NDeleteRequest, requestedClassUid)
         {
             SOPInstanceUID = requestedInstanceUid;
         }

@@ -12,26 +12,13 @@ namespace Dicom.Network
         {
         }
 
-        protected DicomRequest(DicomCommandField type, DicomUID affectedClassUid, DicomPriority priority)
+        protected DicomRequest(DicomCommandField type, DicomUID affectedClassUid)
             : base()
         {
             Type = type;
             SOPClassUID = affectedClassUid;
             MessageID = GetNextMessageID();
-            Priority = priority;
             Dataset = null;
-        }
-
-        public DicomPriority Priority
-        {
-            get
-            {
-                return Command.Get<DicomPriority>(DicomTag.Priority);
-            }
-            set
-            {
-                Command.Add(DicomTag.Priority, (ushort)value);
-            }
         }
 
         internal abstract void PostResponse(DicomService service, DicomResponse response);

@@ -10,8 +10,8 @@ namespace Dicom.Network
         {
         }
 
-        public DicomCEchoRequest(DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.CEchoRequest, DicomUID.Verification, priority)
+        public DicomCEchoRequest()
+            : base(DicomCommandField.CEchoRequest, DicomUID.Verification)
         {
         }
 

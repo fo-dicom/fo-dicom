@@ -12,10 +12,8 @@ namespace Dicom.Network
 
         public DicomNCreateRequest(
             DicomUID affectedClassUid,
-            DicomUID affectedInstanceUid,
-            ushort eventTypeId,
-            DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.NCreateRequest, affectedClassUid, priority)
+            DicomUID affectedInstanceUid)
+            : base(DicomCommandField.NCreateRequest, affectedClassUid)
         {
             SOPInstanceUID = affectedInstanceUid;
         }
