@@ -3,6 +3,8 @@
 
 namespace Dicom.IO.Reader
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Possible DICOM reader results.
     /// </summary>
@@ -45,6 +47,11 @@ namespace Dicom.IO.Reader
         bool IsExplicitVR { get; set; }
 
         /// <summary>
+        /// Gets or sets the DICOM dictionary to be used by the reader.
+        /// </summary>
+        DicomDictionary Dictionary { get; set; }
+
+        /// <summary>
         /// Perform DICOM reading of a byte source.
         /// </summary>
         /// <param name="source">Byte source to read.</param>
@@ -52,5 +59,14 @@ namespace Dicom.IO.Reader
         /// <param name="stop">Tag at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
         DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null);
+
+        /// <summary>
+        /// Asynchronously perform DICOM reading of a byte source.
+        /// </summary>
+        /// <param name="source">Byte source to read.</param>
+        /// <param name="observer">Reader observer.</param>
+        /// <param name="stop">Tag at which to stop.</param>
+        /// <returns>Awaitable reader resulting status.</returns>
+        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, DicomTag stop = null);
     }
 }

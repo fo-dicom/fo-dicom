@@ -44,7 +44,7 @@ namespace Dicom.IO.Reader
         public bool IsExplicitVR { get; set; }
 
         /// <summary>
-        /// Gets or sets the DICOM dictionary to be used by the reader..
+        /// Gets or sets the DICOM dictionary to be used by the reader.
         /// </summary>
         public DicomDictionary Dictionary { get; set; }
 
