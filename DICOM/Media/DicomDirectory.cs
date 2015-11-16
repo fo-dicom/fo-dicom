@@ -179,8 +179,9 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="fileName">File name.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -206,7 +207,8 @@ namespace Dicom.Media
                     var result = reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomReaderMultiObserver(datasetObserver, dirObserver));
+                        new DicomReaderMultiObserver(datasetObserver, dirObserver),
+                        stop);
 
                     if (result == DicomReaderResult.Error)
                     {
@@ -244,8 +246,9 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="fileName">File name.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
+        /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -273,7 +276,8 @@ namespace Dicom.Media
                         reader.ReadAsync(
                             source,
                             new DicomDatasetReaderObserver(df.FileMetaInfo),
-                            new DicomReaderMultiObserver(datasetObserver, dirObserver)).ConfigureAwait(false);
+                            new DicomReaderMultiObserver(datasetObserver, dirObserver),
+                            stop).ConfigureAwait(false);
 
                     if (result == DicomReaderResult.Error)
                     {
