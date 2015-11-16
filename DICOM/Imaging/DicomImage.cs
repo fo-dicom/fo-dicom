@@ -169,6 +169,12 @@ namespace Dicom.Imaging
                 {
                     _renderOptions.ColorMap = value;
                 }
+                else
+                {
+                    throw new DicomImagingException(
+                        "Grayscale color map not applicable for photometric interpretation: {0}",
+                        this.Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation));
+                }
             }
         }
 
