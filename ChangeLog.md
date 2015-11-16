@@ -21,7 +21,7 @@
 * Provide NullLogger for disabled logging (#89 #91)
 * Improved NuGet installation procedure for codec assemblies (#87 #88 #123)
 * DICOM Dump can ignore private dictionary (#84)
-* API for applying color LUT on grayscale image (#79 #81)
+* API for applying color LUT on grayscale image (#79 #81 #146 #147)
 * Log4Net connector and NuGet package (#76 #77)
 * JPEG, JPEG-LS and JPEG2000 source code updated to latest applicable version (#74 #75)
 * Reverted memory mapped file implementation for image loading (#71 #72 #73)
