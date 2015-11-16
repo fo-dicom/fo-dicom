@@ -16,8 +16,8 @@ namespace Dicom.IO.Reader
 
         private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private static readonly Func<DicomTag, int, bool> FileMetaInfoStopCriterion =
-            (tag, depth) => tag.CompareTo(FileMetaInfoStopTag) >= 0;
+        private static readonly Func<DicomTag, object, bool> FileMetaInfoStopCriterion =
+            (tag, state) => tag.CompareTo(FileMetaInfoStopTag) >= 0;
 
         private DicomFileFormat fileFormat;
 
@@ -81,7 +81,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
-            Func<DicomTag, int, bool> stop = null)
+            Func<DicomTag, object, bool> stop = null)
         {
             var parse = Parse(source, fileMetaInfo, dataset, stop);
             lock (this.locker)
@@ -104,7 +104,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
-            Func<DicomTag, int, bool> stop = null)
+            Func<DicomTag, object, bool> stop = null)
         {
             var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
             lock (this.locker)
@@ -119,7 +119,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<DicomTag, int, bool> stop)
+            Func<DicomTag, object, bool> stop)
         {
             if (!source.Require(132))
             {
@@ -146,7 +146,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<DicomTag, int, bool> stop)
+            Func<DicomTag, object, bool> stop)
         {
             if (!source.Require(132))
             {
@@ -251,7 +251,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<DicomTag, int, bool> stop,
+            Func<DicomTag, object, bool> stop,
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
@@ -319,7 +319,7 @@ namespace Dicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<DicomTag, int, bool> stop,
+            Func<DicomTag, object, bool> stop,
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {

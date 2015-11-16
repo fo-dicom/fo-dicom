@@ -191,7 +191,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>DicomFile instance</returns>
-        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<DicomTag, int, bool> stop = null)
+        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -245,7 +245,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
-        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<DicomTag, int, bool> stop = null)
+        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -300,7 +300,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<DicomTag, int, bool> stop = null)
+        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -357,7 +357,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<DicomTag, int, bool> stop = null)
+        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {

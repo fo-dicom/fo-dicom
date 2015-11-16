@@ -59,7 +59,7 @@ namespace Dicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, int, bool> stop = null);
+        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, object, bool> stop = null);
 
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
@@ -68,6 +68,6 @@ namespace Dicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, int, bool> stop = null);
+        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, object, bool> stop = null);
     }
 }
