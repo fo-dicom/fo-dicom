@@ -75,6 +75,17 @@ namespace Dicom.Network
         /// </summary>
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
 
+        /// <summary>
+        /// Gets whether send functionality is activated or not.
+        /// </summary>
+        public bool CanSend
+        {
+            get
+            {
+                return this.requests.Count > 0 || this.AdditionalPresentationContexts.Count > 0;
+            }
+        }
+
         #endregion
 
         #region METHODS
@@ -113,7 +124,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if ((this.requests.Count == 0)&&(this.AdditionalPresentationContexts.Count==0)) return;
+            if (!this.CanSend) return;
 
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
@@ -136,7 +147,7 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (this.requests.Count == 0) return;
+            if (!this.CanSend) return;
 
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
@@ -156,7 +167,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(Stream stream, string callingAe, string calledAe)
         {
-            if (this.requests.Count == 0) return;
+            if (!this.CanSend) return;
 
             this.InitializeSend(stream, callingAe, calledAe);
             this.completeNotifier.Task.Wait();
@@ -172,7 +183,7 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         public async Task SendAsync(Stream stream, string callingAe, string calledAe)
         {
-            if (this.requests.Count == 0) return;
+            if (!this.CanSend) return;
 
             this.InitializeSend(stream, callingAe, calledAe);
             await this.completeNotifier.Task.ConfigureAwait(false);
@@ -346,34 +357,27 @@ namespace Dicom.Network
 
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
-                foreach (DicomPresentationContext ctx in this.client.AdditionalPresentationContexts)
+                foreach (var ctx in this.client.AdditionalPresentationContexts)
                 {
-                    var resultItem = from DicomPresentationContext in association.PresentationContexts
-                              where DicomPresentationContext.AbstractSyntax == ctx.AbstractSyntax
-                              select new { Result = DicomPresentationContext.Result, Transfer = DicomPresentationContext.AcceptedTransferSyntax };
-
-                    foreach (var item in resultItem)
-                        ctx.SetResult(item.Result, item.Transfer);
+                    foreach (
+                        var item in
+                            association.PresentationContexts.Where(pc => pc.AbstractSyntax == ctx.AbstractSyntax))
+                    {
+                        ctx.SetResult(item.Result, item.AcceptedTransferSyntax);
+                    }
                 }
 
                 this.client.associateNotifier.TrySetResult(true);
 
-                if (client.requests.Count == 0)
-                {
-                    this.SendAssociationReleaseRequest();
-                }
-                else
+                if (this.client.requests.Count > 0)
                 {
                     foreach (var request in this.client.requests) this.SendRequest(request);
                     this.client.requests.Clear();
                 }
-                
-
-             
-                
-                
-
-           
+                else
+                {
+                    this._SendAssociationReleaseRequest();
+                }
             }
 
             public void OnReceiveAssociationReject(

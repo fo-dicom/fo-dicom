@@ -53,9 +53,7 @@ namespace ConsoleTest
 
                 foreach (DicomPresentationContext ctr in client.AdditionalPresentationContexts)
                 {
-
-                    Console.WriteLine("PresentationContext: " + ctr.AbstractSyntax + " Result: " + ctr.Result.ToString());
-
+                    Console.WriteLine("PresentationContext: " + ctr.AbstractSyntax + " Result: " + ctr.Result);
                 }
 
                 var samplesDir = Path.Combine(
