@@ -113,7 +113,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (this.requests.Count == 0) return;
+            if ((this.requests.Count == 0)&&(this.AdditionalPresentationContexts.Count==0)) return;
 
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
@@ -346,10 +346,34 @@ namespace Dicom.Network
 
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
+                foreach (DicomPresentationContext ctx in this.client.AdditionalPresentationContexts)
+                {
+                    var resultItem = from DicomPresentationContext in association.PresentationContexts
+                              where DicomPresentationContext.AbstractSyntax == ctx.AbstractSyntax
+                              select new { Result = DicomPresentationContext.Result, Transfer = DicomPresentationContext.AcceptedTransferSyntax };
+
+                    foreach (var item in resultItem)
+                        ctx.SetResult(item.Result, item.Transfer);
+                }
+
                 this.client.associateNotifier.TrySetResult(true);
 
-                foreach (var request in this.client.requests) this.SendRequest(request);
-                this.client.requests.Clear();
+                if (client.requests.Count == 0)
+                {
+                    this.SendAssociationReleaseRequest();
+                }
+                else
+                {
+                    foreach (var request in this.client.requests) this.SendRequest(request);
+                    this.client.requests.Clear();
+                }
+                
+
+             
+                
+                
+
+           
             }
 
             public void OnReceiveAssociationReject(
