@@ -15,9 +15,8 @@ namespace Dicom.Network
         public DicomNActionRequest(
             DicomUID requestedClassUid,
             DicomUID requestedInstanceUid,
-            ushort actionTypeId,
-            DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.NActionRequest, requestedClassUid, priority)
+            ushort actionTypeId)
+            : base(DicomCommandField.NActionRequest, requestedClassUid)
         {
             SOPInstanceUID = requestedInstanceUid;
             ActionTypeID = actionTypeId;

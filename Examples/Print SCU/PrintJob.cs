@@ -164,7 +164,7 @@ namespace Print_SCU
         {
             var dicomClient = new DicomClient();
             dicomClient.AddRequest(
-                new DicomNCreateRequest(FilmSession.SOPClassUID, FilmSession.SOPInstanceUID, 0)
+                new DicomNCreateRequest(FilmSession.SOPClassUID, FilmSession.SOPInstanceUID)
                     {
                         Dataset = FilmSession
                     });
@@ -175,7 +175,7 @@ namespace Print_SCU
 
                 var imageBoxRequests = new List<DicomNSetRequest>();
 
-                var filmBoxRequest = new DicomNCreateRequest(FilmBox.SOPClassUID, filmbox.SOPInstanceUID, 0)
+                var filmBoxRequest = new DicomNCreateRequest(FilmBox.SOPClassUID, filmbox.SOPInstanceUID)
                                          {
                                              Dataset
                                                  =

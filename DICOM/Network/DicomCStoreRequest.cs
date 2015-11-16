@@ -30,7 +30,7 @@ namespace Dicom.Network
     /// client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
     /// </code>
     /// </example>
-    public class DicomCStoreRequest : DicomRequest
+    public class DicomCStoreRequest : DicomPriorityRequest
     {
         /// <summary>
         /// Constructor for DICOM C-Store request received from SCU.

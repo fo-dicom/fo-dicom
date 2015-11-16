@@ -5,7 +5,7 @@ using System;
 
 namespace Dicom.Network
 {
-    public class DicomCFindRequest : DicomRequest
+    public class DicomCFindRequest : DicomPriorityRequest
     {
         public DicomCFindRequest(DicomDataset command)
             : base(command)

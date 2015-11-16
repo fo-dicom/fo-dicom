@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomCMoveRequest : DicomRequest
+    public class DicomCMoveRequest : DicomPriorityRequest
     {
         public DicomCMoveRequest(DicomDataset command)
             : base(command)
