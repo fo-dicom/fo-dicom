@@ -198,10 +198,8 @@ namespace Dicom.Imaging
         {
             if (frame != CurrentFrame || _pixelData == null) Load(Dataset, frame);
 
-            var graphic = new ImageGraphic(_pixelData);
-
-            try
-            {
+            using (var graphic = new ImageGraphic(_pixelData))
+            {   
                 if (ShowOverlays)
                 {
                     foreach (var overlay in _overlays)
@@ -220,13 +218,6 @@ namespace Dicom.Imaging
                 }
 
                 return graphic.RenderImage(this._pipeline.LUT);
-            }
-            finally
-            {
-                if (graphic != null)
-                {
-                    graphic.Dispose();
-                }
             }
         }
 

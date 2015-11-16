@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using Dicom.Log;
+
 namespace Dicom.Imaging
 {
     using System.Collections.Generic;
@@ -13,11 +16,14 @@ namespace Dicom.Imaging
     /// <summary>
     /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Image"/>.
     /// </summary>
-    public sealed class WinFormsImage : IImage
+    public sealed class WinFormsImage : IImage, IDisposable
     {
         #region FIELDS
 
-        private readonly Image image;
+        private PinnedIntArray pixelsCopy;
+        private Bitmap image;
+        private bool disposed;
+        private readonly Logger logger;
 
         #endregion
 
@@ -35,10 +41,15 @@ namespace Dicom.Imaging
         /// <param name="pixels">Array of pixels.</param>
         public WinFormsImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
         {
+            this.disposed = false;
+            this.logger = LogManager.GetLogger("DICOM.Imaging.WinFormsImage");
+
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
             var stride = GetStride(width, format);
 
-            this.image = new Bitmap(width, height, stride, format, pixels.Pointer);
+            //copy pixels and pass the copy to the bitmap
+            this.pixelsCopy = new PinnedIntArray(pixels.Data);
+            this.image = new Bitmap(width, height, stride, format, this.pixelsCopy.Pointer);
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
@@ -58,6 +69,10 @@ namespace Dicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public T As<T>()
         {
+            if (typeof(T) != typeof(Bitmap) || typeof(T) != typeof(Image))
+            {
+                throw new DicomImagingException("WinFormsImage cannot return images in format other than Bitmap or Image");
+            }
             return (T)(object)this.image;
         }
 
@@ -71,7 +86,7 @@ namespace Dicom.Imaging
             {
                 foreach (var graphic in graphics)
                 {
-                    var layer = graphic.RenderImage(null).As<Image>();
+                    var layer = graphic.RenderImage(null).As<Bitmap>();
                     g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
                 }
             }
@@ -145,5 +160,23 @@ namespace Dicom.Imaging
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if (this.image != null)
+            {
+                var i = this.image;
+                this.image = null;
+                i.Dispose();
+            }
+            if (this.pixelsCopy != null)
+            {
+                var pc = this.pixelsCopy;
+                this.pixelsCopy = null;
+                pc.Dispose();
+            }
+        }
+
+        
     }
 }
