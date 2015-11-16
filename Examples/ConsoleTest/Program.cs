@@ -51,6 +51,11 @@ namespace ConsoleTest
                 client.AddRequest(new DicomCStoreRequest(@"Z:\test2.dcm"));
                 client.Send("127.0.0.1", 104, false, "SCU", "ANY-SCP");
 
+                foreach (DicomPresentationContext ctr in client.AdditionalPresentationContexts)
+                {
+                    Console.WriteLine("PresentationContext: " + ctr.AbstractSyntax + " Result: " + ctr.Result);
+                }
+
                 var samplesDir = Path.Combine(
                     Path.GetPathRoot(Environment.CurrentDirectory),
                     "Development",
