@@ -41,8 +41,7 @@ namespace Dicom.Imaging
         public WinFormsImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
         {
             this.disposed = false;
-            this.logger = LogManager.GetLogger("DICOM.Imaging.WinFormsImage");
-
+            
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
             var stride = GetStride(width, format);
 
