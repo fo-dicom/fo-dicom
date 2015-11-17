@@ -26,7 +26,7 @@ namespace Dicom.IO.Reader
             this DicomReader @this,
             IByteSource source,
             IDicomReaderObserver observer,
-            Func<DicomTag, object, bool> stop,
+            Func<ParseState, bool> stop,
             AsyncCallback callback,
             object state)
         {

@@ -181,7 +181,7 @@ namespace Dicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {
@@ -248,7 +248,7 @@ namespace Dicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<DicomTag, object, bool> stop = null)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
         {
             if (fallbackEncoding == null)
             {

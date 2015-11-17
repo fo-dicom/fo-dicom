@@ -156,7 +156,7 @@ namespace Dicom
         [Fact]
         public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
         {
-            Func<DicomTag, object, bool> criterion = (tag, state) => tag.CompareTo(DicomTag.OperatorsName) >= 0;
+            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
         }
@@ -164,7 +164,7 @@ namespace Dicom
         [Fact]
         public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
         {
-            Func<DicomTag, object, bool> criterion = (tag, state) => tag.CompareTo(DicomTag.OperatorsName) > 0;
+            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
         }
@@ -172,7 +172,7 @@ namespace Dicom
         [Fact]
         public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
         {
-            Func<DicomTag, object, bool> criterion = (tag, state) => tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
@@ -180,7 +180,7 @@ namespace Dicom
         [Fact]
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
-            Func<DicomTag, object, bool> criterion = (tag, depth) => (int)depth == 0 && tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            Func<ParseState, bool> criterion = state => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
         }

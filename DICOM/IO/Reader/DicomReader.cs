@@ -60,7 +60,7 @@ namespace Dicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, object, bool> stop = null)
+        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
             return worker.DoWork(source);
@@ -73,7 +73,7 @@ namespace Dicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<DicomTag, object, bool> stop = null)
+        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
             return worker.DoWorkAsync(source);
@@ -111,7 +111,7 @@ namespace Dicom.IO.Reader
 
             private readonly IDicomReaderObserver observer;
 
-            private readonly Func<DicomTag, object, bool> stop;
+            private readonly Func<ParseState, bool> stop;
 
             private readonly DicomDictionary dictionary;
 
@@ -150,7 +150,7 @@ namespace Dicom.IO.Reader
             /// </summary>
             internal DicomReaderWorker(
                 IDicomReaderObserver observer,
-                Func<DicomTag, object, bool> stop,
+                Func<ParseState, bool> stop,
                 DicomDictionary dictionary,
                 bool isExplicitVR,
                 Dictionary<uint, string> @private)
@@ -278,7 +278,8 @@ namespace Dicom.IO.Reader
                         this._tag = this._entry.Tag; // Use dictionary tag
                     }
 
-                    if (this.stop != null && this.stop(this._tag, this.sequenceDepth))
+                    if (this.stop != null
+                        && this.stop(new ParseState { Tag = this._tag, SequenceDepth = this.sequenceDepth }))
                     {
                         this.result = DicomReaderResult.Stopped;
                         return false;
