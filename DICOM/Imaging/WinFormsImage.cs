@@ -16,14 +16,13 @@ namespace Dicom.Imaging
     /// <summary>
     /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Image"/>.
     /// </summary>
-    public sealed class WinFormsImage : IImage, IDisposable
+    public sealed class WinFormsImage : IImage
     {
         #region FIELDS
 
         private PinnedIntArray pixelsCopy;
         private Bitmap image;
         private bool disposed;
-        private readonly Logger logger;
 
         #endregion
 
@@ -69,7 +68,7 @@ namespace Dicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public T As<T>()
         {
-            if (typeof(T) != typeof(Bitmap) || typeof(T) != typeof(Image))
+            if (!typeof(T).IsAssignableFrom(typeof(Bitmap)))
             {
                 throw new DicomImagingException("WinFormsImage cannot return images in format other than Bitmap or Image");
             }
@@ -86,7 +85,7 @@ namespace Dicom.Imaging
             {
                 foreach (var graphic in graphics)
                 {
-                    var layer = graphic.RenderImage(null).As<Bitmap>();
+                    var layer = graphic.RenderImage(null).As<Image>();
                     g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
                 }
             }
