@@ -89,9 +89,9 @@ namespace Dicom.IO.Reader
         private class DicomReaderWorker
         {
             /// <summary>
-            /// Available parse states.
+            /// Available parse stages.
             /// </summary>
-            private enum ParseState
+            private enum ParseStage
             {
                 Tag,
 
@@ -121,7 +121,7 @@ namespace Dicom.IO.Reader
 
             private int sequenceDepth;
 
-            private ParseState _state;
+            private ParseStage parseStage;
 
             private DicomTag _tag;
 
@@ -243,7 +243,7 @@ namespace Dicom.IO.Reader
 
             private bool ParseTag(IByteSource source)
             {
-                if (this._state == ParseState.Tag)
+                if (this.parseStage == ParseStage.Tag)
                 {
                     source.Mark();
 
@@ -284,20 +284,20 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    this._state = ParseState.VR;
+                    this.parseStage = ParseStage.VR;
                 }
                 return true;
             }
 
             private bool ParseVR(IByteSource source)
             {
-                while (this._state == ParseState.VR)
+                while (this.parseStage == ParseStage.VR)
                 {
                     if (this._tag == DicomTag.Item || this._tag == DicomTag.ItemDelimitationItem
                         || this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         this._vr = DicomVR.NONE;
-                        this._state = ParseState.Length;
+                        this.parseStage = ParseStage.Length;
                         break;
                     }
 
@@ -344,7 +344,7 @@ namespace Dicom.IO.Reader
                         this._vr = DicomVR.UN;
                     }
 
-                    this._state = ParseState.Length;
+                    this.parseStage = ParseStage.Length;
 
                     if (this._vr == DicomVR.UN)
                     {
@@ -373,7 +373,7 @@ namespace Dicom.IO.Reader
 
             private bool ParseLength(IByteSource source)
             {
-                while (this._state == ParseState.Length)
+                while (this.parseStage == ParseStage.Length)
                 {
                     if (this._tag == DicomTag.Item || this._tag == DicomTag.ItemDelimitationItem
                         || this._tag == DicomTag.SequenceDelimitationItem)
@@ -386,7 +386,7 @@ namespace Dicom.IO.Reader
 
                         this.length = source.GetUInt32();
 
-                        this._state = ParseState.Value;
+                        this.parseStage = ParseStage.Value;
                         break;
                     }
 
@@ -447,14 +447,14 @@ namespace Dicom.IO.Reader
                         }
                     }
 
-                    this._state = ParseState.Value;
+                    this.parseStage = ParseStage.Value;
                 }
                 return true;
             }
 
             private bool ParseValue(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     // check dictionary for VR after reading length to handle 16-bit lengths
                     // check before reading value to handle SQ elements
@@ -502,7 +502,7 @@ namespace Dicom.IO.Reader
                     {
                         // start of sequence
                         this.observer.OnBeginSequence(source, this._tag, this.length);
-                        this._state = ParseState.Tag;
+                        this.parseStage = ParseStage.Tag;
                         if (this.length != UndefinedLength)
                         {
                             this._implicit = false;
@@ -522,14 +522,14 @@ namespace Dicom.IO.Reader
                             return true;
                         }
 
-                        this._state = ParseState.Value;
+                        this.parseStage = ParseStage.Value;
                         this._vr = parsedVR;
                     }
 
                     if (this.length == UndefinedLength)
                     {
                         this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
-                        this._state = ParseState.Tag;
+                        this.parseStage = ParseStage.Tag;
                         this.ParseFragmentSequence(source);
                         return true;
                     }
@@ -569,7 +569,7 @@ namespace Dicom.IO.Reader
 
             private async Task<bool> ParseValueAsync(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     // check dictionary for VR after reading length to handle 16-bit lengths
                     // check before reading value to handle SQ elements
@@ -617,7 +617,7 @@ namespace Dicom.IO.Reader
                     {
                         // start of sequence
                         this.observer.OnBeginSequence(source, this._tag, this.length);
-                        this._state = ParseState.Tag;
+                        this.parseStage = ParseStage.Tag;
                         if (this.length != UndefinedLength)
                         {
                             this._implicit = false;
@@ -637,14 +637,14 @@ namespace Dicom.IO.Reader
                             return true;
                         }
 
-                        this._state = ParseState.Value;
+                        this.parseStage = ParseStage.Value;
                         this._vr = parsedVR;
                     }
 
                     if (this.length == UndefinedLength)
                     {
                         this.observer.OnBeginFragmentSequence(source, this._tag, this._vr);
-                        this._state = ParseState.Tag;
+                        this.parseStage = ParseStage.Tag;
                         await this.ParseFragmentSequenceAsync(source).ConfigureAwait(false);
                         return true;
                     }
@@ -710,7 +710,7 @@ namespace Dicom.IO.Reader
 
             private bool ParseItemSequenceTag(IByteSource source)
             {
-                if (this._state == ParseState.Tag)
+                if (this.parseStage == ParseStage.Tag)
                 {
                     source.Mark();
 
@@ -764,14 +764,14 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    this._state = ParseState.Value;
+                    this.parseStage = ParseStage.Value;
                 }
                 return true;
             }
 
             private bool ParseItemSequenceValue(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     if (this.length != UndefinedLength)
                     {
@@ -799,7 +799,7 @@ namespace Dicom.IO.Reader
 
             private async Task<bool> ParseItemSequenceValueAsync(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     if (this.length != UndefinedLength)
                     {
@@ -863,7 +863,7 @@ namespace Dicom.IO.Reader
 
             private bool ParseFragmentSequenceTag(IByteSource source)
             {
-                if (this._state == ParseState.Tag)
+                if (this.parseStage == ParseStage.Tag)
                 {
                     source.Mark();
 
@@ -895,14 +895,14 @@ namespace Dicom.IO.Reader
                     }
 
                     this.fragmentItem++;
-                    this._state = ParseState.Value;
+                    this.parseStage = ParseStage.Value;
                 }
                 return true;
             }
 
             private bool ParseFragmentSequenceValue(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     if (!source.Require(this.length))
                     {
@@ -914,14 +914,14 @@ namespace Dicom.IO.Reader
                     buffer = EndianByteBuffer.Create(buffer, source.Endian, this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
                     this.observer.OnFragmentSequenceItem(source, buffer);
 
-                    this._state = ParseState.Tag;
+                    this.parseStage = ParseStage.Tag;
                 }
                 return true;
             }
 
             private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source)
             {
-                if (this._state == ParseState.Value)
+                if (this.parseStage == ParseStage.Value)
                 {
                     if (!source.Require(this.length))
                     {
@@ -933,14 +933,14 @@ namespace Dicom.IO.Reader
                     buffer = EndianByteBuffer.Create(buffer, source.Endian, this.fragmentItem == 1 ? 4 : this._vr.UnitSize);
                     this.observer.OnFragmentSequenceItem(source, buffer);
 
-                    this._state = ParseState.Tag;
+                    this.parseStage = ParseStage.Tag;
                 }
                 return true;
             }
 
             private void ResetState()
             {
-                this._state = ParseState.Tag;
+                this.parseStage = ParseStage.Tag;
                 this._tag = null;
                 this._entry = null;
                 this._vr = null;
