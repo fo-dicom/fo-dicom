@@ -21,7 +21,15 @@ namespace Dicom.Imaging
 
         private const int DPI = 96;
 
-        private readonly WriteableBitmap image;
+        private readonly int width;
+
+        private readonly int height;
+
+        private WriteableBitmap image;
+
+        private PinnedIntArray pixels;
+
+        private bool disposed;
 
         #endregion
 
@@ -32,15 +40,40 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        public WPFImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        internal WPFImage(int width, int height)
+            : this(width, height, new PinnedIntArray(width * height), null)
         {
-            var bitmap = CreateBitmap(width, height, components, pixels.Data);
-            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="WPFImage"/> object.
+        /// </summary>
+        /// <param name="width">Image width.</param>
+        /// <param name="height">Image height.</param>
+        /// <param name="pixels">Array of pixels.</param>
+        /// <param name="image">Writeable bitmap image.</param>
+        private WPFImage(int width, int height, PinnedIntArray pixels, WriteableBitmap image)
+        {
+            this.width = width;
+            this.height = height;
+            this.pixels = pixels;
+            this.image = image;
+            this.disposed = false;
+        }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the array of pixels associated with the image.
+        /// </summary>
+        public PinnedIntArray Pixels
+        {
+            get
+            {
+                return this.pixels;
+            }
         }
 
         #endregion
@@ -54,11 +87,24 @@ namespace Dicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public T As<T>()
         {
-            if (!typeof (T).IsAssignableFrom(typeof(WriteableBitmap)))
+            if (!typeof(T).IsAssignableFrom(typeof(WriteableBitmap)))
             {
                 throw new DicomImagingException("WPFImage cannot return images in format other than WriteableBitmap");
             }
             return (T)(object)this.image;
+        }
+
+        /// <summary>
+        /// Renders the image given the specified parameters.
+        /// </summary>
+        /// <param name="components">Number of components.</param>
+        /// <param name="flipX">Flip image in X direction?</param>
+        /// <param name="flipY">Flip image in Y direction?</param>
+        /// <param name="rotation">Image rotation.</param>
+        public void Render(int components, bool flipX, bool flipY, int rotation)
+        {
+            var bitmap = CreateBitmap(this.width, this.height, components, this.pixels.Data);
+            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
         }
 
         /// <summary>
@@ -71,9 +117,9 @@ namespace Dicom.Imaging
             {
                 var layer = graphic.RenderImage(null).As<WriteableBitmap>();
 
-                var pixels = new int[graphic.ScaledWidth * graphic.ScaledHeight];
+                var overlay = new int[graphic.ScaledWidth * graphic.ScaledHeight];
                 var stride = 4 * graphic.ScaledWidth;
-                layer.CopyPixels(pixels, stride, 0);
+                layer.CopyPixels(overlay, stride, 0);
 
                 this.image.WritePixels(
                     new Int32Rect(
@@ -81,10 +127,41 @@ namespace Dicom.Imaging
                         graphic.ScaledOffsetY,
                         graphic.ScaledWidth,
                         graphic.ScaledHeight),
-                    pixels,
+                    overlay,
                     stride,
                     0);
             }
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the image.
+        /// </summary>
+        /// <returns>Deep copy of this image.</returns>
+        public IImage Clone()
+        {
+            return new WPFImage(
+                this.width,
+                this.height,
+                new PinnedIntArray(this.pixels.Data),
+                this.image == null ? null : new WriteableBitmap(this.image));
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (this.disposed) return;
+
+            this.image = null;
+
+            if (this.pixels != null)
+            {
+                this.pixels.Dispose();
+                this.pixels = null;
+            }
+
+            this.disposed = true;
         }
 
         private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)
@@ -121,10 +198,5 @@ namespace Dicom.Imaging
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            //nothing to dispose
-        }
     }
 }

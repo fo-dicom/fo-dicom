@@ -22,7 +22,7 @@ namespace Dicom.Imaging.Render
 
         protected PinnedIntArray _pixels;
 
-        protected IImage _bitmap;
+        protected IImage image;
 
         protected double _scaleFactor;
 
@@ -225,12 +225,12 @@ namespace Dicom.Imaging.Render
             if (Math.Abs(scale - _scaleFactor) <= Double.Epsilon) return;
 
             _scaleFactor = scale;
-            if (_bitmap != null)
+            if (this.image != null)
             {
                 _scaledData = null;
                 _pixels.Dispose();
                 _pixels = null;
-                _bitmap = null;
+                this.image = null;
             }
 
             foreach (var overlay in _overlays)
@@ -287,9 +287,9 @@ namespace Dicom.Imaging.Render
 
         public IImage RenderImage(ILUT lut)
         {
-            var render = _bitmap == null;
+            var render = this.image == null;
 
-            if (_applyLut && lut != null && !lut.IsValid)
+            if (this._applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
                 render = true;
@@ -297,19 +297,20 @@ namespace Dicom.Imaging.Render
 
             if (render)
             {
-                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+                this.image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
 
-                ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+                var pixels = this.image.Pixels.Data;
+                this.ScaledData.Render(this._applyLut ? lut : null, pixels);
 
-                foreach (var overlay in _overlays)
+                foreach (var overlay in this._overlays)
                 {
-                    overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+                    overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
                 }
 
-                _bitmap = ImageManager.CreateImage(ScaledData.Width, ScaledData.Height, Components, _flipX, _flipY, _rotation, _pixels);
+                this.image.Render(this.Components, this._flipX, this._flipY, this._rotation);
             }
 
-            return _bitmap;
+            return this.image;
         }
 
         #endregion

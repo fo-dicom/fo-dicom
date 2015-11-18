@@ -3,8 +3,6 @@
 
 namespace Dicom.Imaging
 {
-    using Dicom.IO;
-
     /// <summary>
     /// Manager for creation of image objects.
     /// </summary>
@@ -35,15 +33,10 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
         /// <returns><see cref="IImage"/> object.</returns>
-        public static IImage CreateImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        public static IImage CreateImage(int width, int height)
         {
-            return implementation.CreateImageImpl(width, height, components, flipX, flipY, rotation, pixels);
+            return implementation.CreateImageImpl(width, height);
         }
 
         /// <summary>
@@ -51,13 +44,8 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
         /// <returns><see cref="IImage"/> object using the current implementation.</returns>
-        protected abstract IImage CreateImageImpl(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels);
+        protected abstract IImage CreateImageImpl(int width, int height);
 
         #endregion
     }

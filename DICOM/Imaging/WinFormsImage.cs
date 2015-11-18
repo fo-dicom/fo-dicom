@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using Dicom.Log;
-
 namespace Dicom.Imaging
 {
     using System.Collections.Generic;
@@ -20,8 +17,14 @@ namespace Dicom.Imaging
     {
         #region FIELDS
 
-        private PinnedIntArray pixelsCopy;
+        private readonly int width;
+
+        private readonly int height;
+
+        private PinnedIntArray pixels;
+
         private Bitmap image;
+
         private bool disposed;
 
         #endregion
@@ -33,32 +36,41 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        public WinFormsImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        internal WinFormsImage(int width, int height)
+            : this(width, height, new PinnedIntArray(width * height), null)
         {
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="WinFormsImage"/> object.
+        /// </summary>
+        /// <param name="width">Image width.</param>
+        /// <param name="height">Image height.</param>
+        /// <param name="pixels">Pixel array.</param>
+        /// <param name="image">Bitmap image.</param>
+        private WinFormsImage(int width, int height, PinnedIntArray pixels, Bitmap image)
+        {
+            this.width = width;
+            this.height = height;
+            this.pixels = pixels;
+            this.image = image;
             this.disposed = false;
-            
-            var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
-            var stride = GetStride(width, format);
-
-            //copy pixels and pass the copy to the bitmap
-            this.pixelsCopy = new PinnedIntArray(pixels.Data);
-            this.image = new Bitmap(width, height, stride, format, this.pixelsCopy.Pointer);
-
-            var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
-            if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
-            {
-                this.image.RotateFlip(rotateFlipType);
-            }
         }
 
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Gets the array of pixels associated with the image.
+        /// </summary>
+        public PinnedIntArray Pixels
+        {
+            get
+            {
+                return this.pixels;
+            }
+        }
 
         /// <summary>
         /// Cast <see cref="IImage"/> object to specific (real image) type.
@@ -71,7 +83,29 @@ namespace Dicom.Imaging
             {
                 throw new DicomImagingException("WinFormsImage cannot return images in format other than Bitmap or Image");
             }
+
             return (T)(object)this.image;
+        }
+
+        /// <summary>
+        /// Renders the image given the specified parameters.
+        /// </summary>
+        /// <param name="components">Number of components.</param>
+        /// <param name="flipX">Flip image in X direction?</param>
+        /// <param name="flipY">Flip image in Y direction?</param>
+        /// <param name="rotation">Image rotation.</param>
+        public void Render(int components, bool flipX, bool flipY, int rotation)
+        {
+            var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
+            var stride = GetStride(this.width, format);
+
+            this.image = new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer);
+
+            var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
+            if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
+            {
+                this.image.RotateFlip(rotateFlipType);
+            }
         }
 
         /// <summary>
@@ -88,6 +122,41 @@ namespace Dicom.Imaging
                     g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the image.
+        /// </summary>
+        /// <returns>Deep copy of this image.</returns>
+        public IImage Clone()
+        {
+            return new WinFormsImage(
+                this.width,
+                this.height,
+                new PinnedIntArray(this.pixels.Data),
+                this.image == null ? null : new Bitmap(this.image));
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (this.disposed) return;
+
+            if (this.image != null)
+            {
+                this.image.Dispose();
+                this.image = null;
+            }
+
+            if (this.pixels != null)
+            {
+                this.pixels.Dispose();
+                this.pixels = null;
+            }
+
+            this.disposed = true;
         }
 
         private static int GetStride(int width, PixelFormat format)
@@ -158,23 +227,5 @@ namespace Dicom.Imaging
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            if (this.image != null)
-            {
-                var i = this.image;
-                this.image = null;
-                i.Dispose();
-            }
-            if (this.pixelsCopy != null)
-            {
-                var pc = this.pixelsCopy;
-                this.pixelsCopy = null;
-                pc.Dispose();
-            }
-        }
-
-        
     }
 }
