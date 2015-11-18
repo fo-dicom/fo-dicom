@@ -27,24 +27,17 @@ the support libraries required to run *fo-dicom* on specific target platforms. A
 *fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/), 
 [log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/). The *MetroLog* connector is a Portable Class Library, whereas the other logging connectors are .NET dedicated libraries.
 
-### v2.0 Breaking Change
-Due to the split into a core Portable Class Library and platform-specific support libraries, manager classes must be initiated before *fo-dicom* can be used in an application. Initialization should be performed using one of the `Dicom.Managers.Setup` overloads, e.g.
+### v2.0 Breaking Changes
+Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
 
-    Dicom.Managers.Setup();
+    ImageManager.SetImplementation(WPFImageManager.Instance);
 
-In a .NET application, initialization may additionally require selection of the appropriate log and image managers. Available image managers are `WinFormsImageManager.Instance` and `WPFImageManager.Instance`:
+By default, logging defaults to the no-op `NullLogerManager`. On .NET, several log managers are available and can be enabled like this:
 
-    Dicom.Managers.Setup(WinFormsImageManager.Instance);  // or ...
-    Dicom.Managers.Setup(WPFImageManager.Instance);
+    LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
+    LogManager.SetImplementation(NLogManager.Instance);        // or ...
 
-Several log managers are available on .NET, for example `ConsoleLogManager.Instance` and `NLogManager.Instance`:
-
-    Dicom.Managers.Setup(ConsoleLogManager.Instance);  // or ...
-    Dicom.Managers.Setup(NLogManager.Instance);        // or ...
-
-To configure both the log and image managers, use the `Dicom.Managers.Setup(LogManager, ImageManager)` overload.
-
-On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one image manager available, and this manager is pre-selected in the `Dicom.Managers.Setup` call.
+On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
 
 ### Examples
 
@@ -116,8 +109,8 @@ await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
 * [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
-* [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Ian Yates](http://github.com/IanYates)
+* [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Chris Horn](https://github.com/GMZ)
 * [Mahesh Dubey](https://github.com/mdubey82)
 * [Alexander Saratow](https://github.com/swalex)

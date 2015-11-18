@@ -1,4 +1,5 @@
-#### v2.0.0 (Release Candidate 1, mm/dd/2015)
+#### v2.0.0 (Beta 3, mm/dd/2015)
+* Initialize managers automatically via reflection (#148 #149)
 * Message Command Field Priority invalid for C-ECHO and all DIMSE-N Requests (#141 #143)
 * Overlay data error corrections (#110 #138 #140)
 * Report status for additional presentation contexts (#137 #139)
