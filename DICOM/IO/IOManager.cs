@@ -16,6 +16,18 @@ namespace Dicom.IO
 
         #endregion
 
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes the single platform specific I/O manager.
+        /// </summary>
+        static IOManager()
+        {
+            SetImplementation(Setup.GetSinglePlatformInstance<IOManager>());
+        }
+
+        #endregion
+
         #region PROPERTIES
 
         /// <summary>

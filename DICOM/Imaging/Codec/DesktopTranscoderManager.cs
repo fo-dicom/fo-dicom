@@ -37,7 +37,7 @@ namespace Dicom.Imaging.Codec
         /// <summary>
         /// Initializes an instance of <see cref="DesktopTranscoderManager"/>.
         /// </summary>
-        private DesktopTranscoderManager()
+        public DesktopTranscoderManager()
         {
             this.LoadCodecsImpl(null, null);
         }

@@ -29,13 +29,6 @@ namespace Dicom.IO
             Instance = new WindowsIOManager();
         }
 
-        /// <summary>
-        /// Initializes a <see cref="WindowsIOManager"/> object.
-        /// </summary>
-        private WindowsIOManager()
-        {
-        }
-
         #endregion
 
         #region METHODS

@@ -17,7 +17,7 @@ namespace Dicom.Imaging.Codec
         #region FIELDS
 
         /// <summary>
-        /// Singleton instance of the <see cref="DesktopTranscoderManager"/>.
+        /// Singleton instance of the <see cref="MonoTranscoderManager"/>.
         /// </summary>
         public static readonly TranscoderManager Instance;
 
@@ -36,7 +36,7 @@ namespace Dicom.Imaging.Codec
         /// <summary>
         /// Initializes an instance of <see cref="MonoTranscoderManager"/>.
         /// </summary>
-        private MonoTranscoderManager()
+        public MonoTranscoderManager()
         {
             this.LoadCodecsImpl(null, null);
         }

@@ -25,6 +25,18 @@ namespace Dicom.Imaging.Codec
 
         #endregion
 
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes the single platform-specific transcode manager.
+        /// </summary>
+        static TranscoderManager()
+        {
+            SetImplementation(Setup.GetSinglePlatformInstance<TranscoderManager>());
+        }
+
+        #endregion
+
         #region METHODS
 
         /// <summary>

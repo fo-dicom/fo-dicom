@@ -35,7 +35,7 @@ namespace Dicom.Imaging.Codec
         /// <summary>
         /// Initializes an instance of <see cref="WindowsTranscoderManager"/>.
         /// </summary>
-        private WindowsTranscoderManager()
+        public WindowsTranscoderManager()
         {
             this.LoadCodecsImpl(null, null);
         }
