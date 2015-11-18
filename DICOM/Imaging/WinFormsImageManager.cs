@@ -29,11 +29,19 @@ namespace Dicom.Imaging
             Instance = new WinFormsImageManager();
         }
 
+        #endregion
+
+        #region PROPERTIES
+
         /// <summary>
-        /// Initializes a <see cref="WinFormsImageManager"/> object.
+        /// Gets whether or not this type is classified as a default manager.
         /// </summary>
-        private WinFormsImageManager()
+        public override bool IsDefault
         {
+            get
+            {
+                return true;
+            }
         }
 
         #endregion

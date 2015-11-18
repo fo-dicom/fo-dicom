@@ -29,11 +29,19 @@ namespace Dicom.Imaging
             Instance = new IOSImageManager();
         }
 
+        #endregion
+
+        #region PROPERTIES
+
         /// <summary>
-        /// Initializes a <see cref="IOSImageManager"/> object.
+        /// Gets whether or not this type is classified as a default manager.
         /// </summary>
-        private IOSImageManager()
+        public override bool IsDefault
         {
+            get
+            {
+                return true;
+            }
         }
 
         #endregion

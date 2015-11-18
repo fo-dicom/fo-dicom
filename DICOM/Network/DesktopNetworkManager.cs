@@ -32,13 +32,6 @@ namespace Dicom.Network
             Instance = new DesktopNetworkManager();
         }
 
-        /// <summary>
-        /// Initializes an instance of <see cref="DesktopNetworkManager"/>.
-        /// </summary>
-        private DesktopNetworkManager()
-        {
-        }
-
         #endregion
 
         #region PROPERTIES

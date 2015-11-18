@@ -49,12 +49,6 @@
     <Compile Include="..\..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Managers.cs">
-      <Link>Managers.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Managers.Mono.cs">
-      <Link>Managers.Mono.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\Imaging\DicomOverlayDataFactory.cs">
       <Link>Imaging\DicomOverlayDataFactory.cs</Link>
     </Compile>

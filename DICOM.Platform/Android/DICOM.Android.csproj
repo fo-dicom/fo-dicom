@@ -80,12 +80,6 @@
     <Compile Include="..\..\DICOM\Log\ConsoleLogger.cs">
       <Link>Log\ConsoleLogger.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Managers.Android.cs">
-      <Link>Managers.Android.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Managers.cs">
-      <Link>Managers.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\Network\DesktopNetworkListener.cs">
       <Link>Network\DesktopNetworkListener.cs</Link>
     </Compile>

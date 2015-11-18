@@ -157,12 +157,6 @@
     <Compile Include="..\..\DICOM\IO\WindowsIOManager.cs">
       <Link>IO\WindowsIOManager.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Managers.cs">
-      <Link>Managers.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Managers.Windows.cs">
-      <Link>Managers.Windows.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\Network\WindowsNetworkListener.cs">
       <Link>Network\WindowsNetworkListener.cs</Link>
     </Compile>

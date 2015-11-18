@@ -29,11 +29,19 @@ namespace Dicom.Imaging
             Instance = new AndroidImageManager();
         }
 
+        #endregion
+
+        #region PROPERTIES
+
         /// <summary>
-        /// Initializes a <see cref="AndroidImageManager"/> object.
+        /// Gets whether or not this type is classified as a default manager.
         /// </summary>
-        private AndroidImageManager()
+        public override bool IsDefault
         {
+            get
+            {
+                return true;
+            }
         }
 
         #endregion

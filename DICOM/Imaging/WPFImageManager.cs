@@ -29,11 +29,19 @@ namespace Dicom.Imaging
             Instance = new WPFImageManager();
         }
 
+        #endregion
+
+        #region PROPERTIES
+
         /// <summary>
-        /// Initializes a <see cref="WPFImageManager"/> object.
+        /// Gets whether or not this type is classified as a default manager.
         /// </summary>
-        private WPFImageManager()
+        public override bool IsDefault
         {
+            get
+            {
+                return false;
+            }
         }
 
         #endregion

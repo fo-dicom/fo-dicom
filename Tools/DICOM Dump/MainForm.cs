@@ -26,9 +26,6 @@ namespace Dicom.Dump
 
         protected override void OnLoad(EventArgs e)
         {
-            // Initialize managers.
-            Managers.Setup(WinFormsImageManager.Instance);
-
             DicomDictionary.LoadInternalDictionaries(ModifierKeys != Keys.Shift);
 
             var args = Environment.GetCommandLineArgs();

@@ -19,6 +19,18 @@ namespace Dicom.Network
 
         #endregion
 
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes the single platform-specific network manager.
+        /// </summary>
+        static NetworkManager()
+        {
+            SetImplementation(Setup.GetSinglePlatformInstance<NetworkManager>());
+        }
+
+        #endregion
+
         #region PROPERTIES
 
         /// <summary>

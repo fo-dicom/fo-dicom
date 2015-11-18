@@ -29,13 +29,6 @@ namespace Dicom.IO
             Instance = new DesktopIOManager();
         }
 
-        /// <summary>
-        /// Initializes a <see cref="DesktopIOManager"/> object.
-        /// </summary>
-        private DesktopIOManager()
-        {
-        }
-
         #endregion
 
         #region METHODS

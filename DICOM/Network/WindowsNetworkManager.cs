@@ -34,13 +34,6 @@ namespace Dicom.Network
             Instance = new WindowsNetworkManager();
         }
 
-        /// <summary>
-        /// Initializes an instance of <see cref="WindowsNetworkManager"/>.
-        /// </summary>
-        private WindowsNetworkManager()
-        {
-        }
-
         #endregion
 
         #region PROPERTIES
