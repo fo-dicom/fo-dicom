@@ -8,7 +8,7 @@ namespace Dicom.Imaging
     /// <summary>
     /// Manager for creation of image objects.
     /// </summary>
-    public abstract class ImageManager
+    public abstract class ImageManager : IClassifiedManager
     {
         #region FIELDS
 
@@ -16,6 +16,27 @@ namespace Dicom.Imaging
         /// Image manager implementation.
         /// </summary>
         private static ImageManager implementation;
+
+        #endregion
+
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Static constructor to identify the default manager setting.
+        /// </summary>
+        static ImageManager()
+        {
+            SetImplementation(Setup.GetDefaultPlatformInstance<ImageManager>());
+        }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets whether or not this type is classified as a default manager.
+        /// </summary>
+        public abstract bool IsDefault { get; }
 
         #endregion
 

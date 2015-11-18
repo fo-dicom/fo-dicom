@@ -69,6 +69,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IClassifiedManager.cs" />
     <Compile Include="Imaging\Codec\IDicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\TranscoderManager.cs" />
     <Compile Include="Imaging\IImage.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Printing\ImageBox.cs" />
     <Compile Include="Printing\PresentationLut.cs" />
     <Compile Include="Properties\AssemblyInfo.Core.cs" />
+    <Compile Include="Setup.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="StructuredReport\DicomCodeItem.cs" />
     <Compile Include="StructuredReport\DicomContentItem.cs" />
