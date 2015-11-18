@@ -54,6 +54,10 @@ namespace Dicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public T As<T>()
         {
+            if (!typeof (T).IsAssignableFrom(typeof(WriteableBitmap)))
+            {
+                throw new DicomImagingException("WPFImage cannot return images in format other than WriteableBitmap");
+            }
             return (T)(object)this.image;
         }
 
@@ -117,5 +121,10 @@ namespace Dicom.Imaging
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            //nothing to dispose
+        }
     }
 }

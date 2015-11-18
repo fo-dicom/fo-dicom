@@ -30,6 +30,16 @@ namespace Dicom.Imaging
             }
         }
 
+        public void RenderImage_WinFormsManager_AsReturnsBitmap()
+        {
+            lock (this.@lock)
+            {
+                ImageManager.SetImplementation(WinFormsImageManager.Instance);
+                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
+                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+            }
+        }
+
         [Fact]
         public void RenderImage_WPFManager_AsReturnsImageSource()
         {
