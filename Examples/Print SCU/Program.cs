@@ -14,8 +14,8 @@ namespace Print_SCU
     {
         private static void Main(string[] args)
         {
-            // Initialize managers.
-            Managers.Setup(ConsoleLogManager.Instance, WinFormsImageManager.Instance);
+            // Initialize log manager.
+            LogManager.SetImplementation(ConsoleLogManager.Instance);
 
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();

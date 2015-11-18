@@ -20,8 +20,8 @@ namespace ConsoleTest
         {
             try
             {
-                // Initialize managers.
-                Managers.Setup(NLogManager.Instance, WinFormsImageManager.Instance);
+                // Initialize log manager.
+                LogManager.SetImplementation(NLogManager.Instance);
 
                 DicomException.OnException += delegate(object sender, DicomExceptionEventArgs ea)
                     {
