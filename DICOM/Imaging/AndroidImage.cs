@@ -11,6 +11,23 @@ namespace Dicom.Imaging
     using Dicom.IO;
 
     /// <summary>
+    /// Convenience class for non-generic access to <see cref="AndroidImage"/> image objects.
+    /// </summary>
+    public static class AndroidImageExtensions
+    {
+        /// <summary>
+        /// Convenience method to access Android <see cref="IImage"/> instance as Android <see cref="Bitmap"/>.
+        /// The returned <see cref="Bitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="Bitmap"/> contents of <paramref name="image"/>.</returns>
+        public static Bitmap AsBitmap(this IImage image)
+        {
+            return image.As<Bitmap>();
+        }
+    }
+
+    /// <summary>
     /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Bitmap"/>.
     /// </summary>
     public sealed class AndroidImage : ImageDisposableBase<Bitmap>

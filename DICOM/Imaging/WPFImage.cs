@@ -13,6 +13,23 @@ namespace Dicom.Imaging
     using Dicom.IO;
 
     /// <summary>
+    /// Convenience class for non-generic access to <see cref="WPFImage"/> image objects.
+    /// </summary>
+    public static class WPFImageExtensions
+    {
+        /// <summary>
+        /// Convenience method to access WPF <see cref="IImage"/> instance as WPF <see cref="WriteableBitmap"/>.
+        /// The returned <see cref="WriteableBitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="WriteableBitmap"/> contents of <paramref name="image"/>.</returns>
+        public static WriteableBitmap AsWriteableBitmap(this IImage image)
+        {
+            return image.As<WriteableBitmap>();
+        }
+    }
+
+    /// <summary>
     /// <see cref="IImage"/> implementation of a WPF <see cref="ImageSource"/>.
     /// </summary>
     public sealed class WPFImage : ImageBase<WriteableBitmap>

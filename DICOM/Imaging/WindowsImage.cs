@@ -15,6 +15,23 @@ namespace Dicom.Imaging
     using Dicom.IO;
 
     /// <summary>
+    /// Convenience class for non-generic access to <see cref="WindowsImage"/> image objects.
+    /// </summary>
+    public static class WindowsImageExtensions
+    {
+        /// <summary>
+        /// Convenience method to access UWP <see cref="IImage"/> instance as UWP <see cref="WriteableBitmap"/>.
+        /// The returned <see cref="WriteableBitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="WriteableBitmap"/> contents of <paramref name="image"/>.</returns>
+        public static WriteableBitmap AsWriteableBitmap(this IImage image)
+        {
+            return image.As<WriteableBitmap>();
+        }
+    }
+
+    /// <summary>
     /// <see cref="IImage"/> implementation of a Universal Windows Platform <see cref="WriteableBitmap"/>.
     /// </summary>
     public sealed class WindowsImage : ImageBase<WriteableBitmap>

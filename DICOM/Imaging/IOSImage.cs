@@ -16,6 +16,43 @@ namespace Dicom.Imaging
     using UIKit;
 
     /// <summary>
+    /// Convenience class for non-generic access to <see cref="IOSImage"/> image objects.
+    /// </summary>
+    public static class IOSImageExtensions
+    {
+        /// <summary>
+        /// Convenience method to access iOS <see cref="IImage"/> instance as <see cref="CGImage"/>.
+        /// The returned <see cref="CGImage"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="CGImage"/> contents of <paramref name="image"/>.</returns>
+        public static CGImage AsCGImage(this IImage image)
+        {
+            return image.As<CGImage>();
+        }
+
+        /// <summary>
+        /// Convenience method to access iOS <see cref="IImage"/> instance as <see cref="CIImage"/>.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="CIImage"/> contents of <paramref name="image"/>.</returns>
+        public static CIImage AsCIImage(this IImage image)
+        {
+            return image.As<CIImage>();
+        }
+
+        /// <summary>
+        /// Convenience method to access iOS <see cref="IImage"/> instance as <see cref="UIImage"/>.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="UIImage"/> contents of <paramref name="image"/>.</returns>
+        public static UIImage AsUIImage(this IImage image)
+        {
+            return image.As<UIImage>();
+        }
+    }
+
+    /// <summary>
     /// <see cref="IImage"/> implementation of a Windows Forms <see cref="CGImage"/>.
     /// </summary>
     public sealed class IOSImage : ImageDisposableBase<CGImage>
