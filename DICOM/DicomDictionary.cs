@@ -163,7 +163,7 @@ namespace Dicom
         {
             get
             {
-                if (_default == null) LoadInternalDictionaries();
+                LoadInternalDictionaries();
                 return _default;
             }
             set
