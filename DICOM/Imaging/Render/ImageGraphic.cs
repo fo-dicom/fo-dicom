@@ -7,20 +7,17 @@ namespace Dicom.Imaging.Render
     using System.Collections.Generic;
 
     using Dicom.Imaging.LUT;
-    using Dicom.IO;
 
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>
-    public class ImageGraphic : IGraphic, IDisposable
+    public class ImageGraphic : IGraphic
     {
         #region Protected Members
 
         protected IPixelData _originalData;
 
         protected IPixelData _scaledData;
-
-        protected PinnedIntArray _pixels;
 
         protected IImage image;
 
@@ -193,11 +190,6 @@ namespace Dicom.Imaging.Render
             _overlays = new List<OverlayGraphic>();
         }
 
-        ~ImageGraphic()
-        {
-            Dispose(false);
-        }
-
         #endregion
 
         #region Public Members
@@ -228,8 +220,6 @@ namespace Dicom.Imaging.Render
             if (this.image != null)
             {
                 _scaledData = null;
-                _pixels.Dispose();
-                _pixels = null;
                 this.image = null;
             }
 
@@ -311,25 +301,6 @@ namespace Dicom.Imaging.Render
             }
 
             return this.image;
-        }
-
-        #endregion
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_pixels != null)
-            {
-                _pixels.Dispose();
-                _pixels = null;
-            }
         }
 
         #endregion
