@@ -110,6 +110,9 @@ namespace Dicom
 
         public static void LoadInternalDictionaries(bool loadPrivateDictionary = true)
         {
+            // "Cheap" unlocked preliminary check (#151).
+            if (_default != null) return;
+
             lock (_lock)
             {
                 if (_default == null)
