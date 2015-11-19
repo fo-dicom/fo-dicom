@@ -19,14 +19,16 @@ namespace Dicom.Imaging
         [Fact]
         public void As_BitmapSource_ReturnsBitmapSource()
         {
-            var image = new WPFImage(100, 100, 3, false, false, 0, new PinnedIntArray(100 * 100));
+            var image = new WPFImage(100, 100);
+            image.Render(3, false, false, 0);
             Assert.IsAssignableFrom<BitmapSource>(image.As<BitmapSource>());
         }
 
         [Fact]
         public void As_Bitmap_Throws()
         {
-            var image = new WPFImage(100, 100, 3, false, false, 0, new PinnedIntArray(100 * 100));
+            var image = new WPFImage(100, 100);
+            image.Render(3, false, false, 0);
             Assert.Throws(typeof(DicomImagingException), () => image.As<Bitmap>());
         }
 

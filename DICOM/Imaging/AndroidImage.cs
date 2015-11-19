@@ -13,22 +13,8 @@ namespace Dicom.Imaging
     /// <summary>
     /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Bitmap"/>.
     /// </summary>
-    public sealed class AndroidImage : IImage
+    public sealed class AndroidImage : ImageDisposableBase<Bitmap>
     {
-        #region FIELDS
-
-        private readonly int width;
-
-        private readonly int height;
-
-        private PinnedIntArray pixels;
-
-        private Bitmap image;
-
-        private bool disposed;
-
-        #endregion
-
         #region CONSTRUCTORS
 
         /// <summary>
@@ -37,7 +23,7 @@ namespace Dicom.Imaging
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
         public AndroidImage(int width, int height)
-            : this(width, height, new PinnedIntArray(width * height), null)
+            : base(width, height, new PinnedIntArray(width * height), null)
         {
         }
 
@@ -49,42 +35,13 @@ namespace Dicom.Imaging
         /// <param name="pixels">Array of pixels.</param>
         /// <param name="image">Bitmap image.</param>
         private AndroidImage(int width, int height, PinnedIntArray pixels, Bitmap image)
+            : base(width, height, pixels, image)
         {
-            this.width = width;
-            this.height = height;
-            this.pixels = pixels;
-            this.image = image;
-            this.disposed = false;
-        }
-
-        #endregion
-
-        #region PROPERTIES
-
-        /// <summary>
-        /// Gets the array of pixels associated with the image.
-        /// </summary>
-        public PinnedIntArray Pixels
-        {
-            get
-            {
-                return this.pixels;
-            }
         }
 
         #endregion
 
         #region METHODS
-
-        /// <summary>
-        /// Cast <see cref="IImage"/> object to specific (real image) type.
-        /// </summary>
-        /// <typeparam name="T">Real image type to cast to.</typeparam>
-        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
-        public T As<T>()
-        {
-            return (T)(object)this.image;
-        }
 
         /// <summary>
         /// Renders the image given the specified parameters.
@@ -93,7 +50,7 @@ namespace Dicom.Imaging
         /// <param name="flipX">Flip image in X direction?</param>
         /// <param name="flipY">Flip image in Y direction?</param>
         /// <param name="rotation">Image rotation.</param>
-        public void Render(int components, bool flipX, bool flipY, int rotation)
+        public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             if (flipX || flipY || (rotation % 360) != 0)
             {
@@ -122,7 +79,7 @@ namespace Dicom.Imaging
         /// Draw graphics onto existing image.
         /// </summary>
         /// <param name="graphics">Graphics to draw.</param>
-        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             using (var canvas = new Canvas(this.image))
             {
@@ -138,35 +95,13 @@ namespace Dicom.Imaging
         /// Creates a deep copy of the image.
         /// </summary>
         /// <returns>Deep copy of this image.</returns>
-        public IImage Clone()
+        public override IImage Clone()
         {
             return new AndroidImage(
                 this.width,
                 this.height,
                 new PinnedIntArray(this.pixels.Data),
                 this.image == null ? null : Bitmap.CreateBitmap(this.image));
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (this.disposed) return;
-
-            if (this.image != null)
-            {
-                this.image.Dispose();
-                this.image = null;
-            }
-
-            if (this.pixels != null)
-            {
-                this.pixels.Dispose();
-                this.pixels = null;
-            }
-
-            this.disposed = true;
         }
 
         #endregion

@@ -15,21 +15,11 @@ namespace Dicom.Imaging
     /// <summary>
     /// <see cref="IImage"/> implementation of a WPF <see cref="ImageSource"/>.
     /// </summary>
-    public sealed class WPFImage : IImage
+    public sealed class WPFImage : ImageBase<WriteableBitmap>
     {
         #region FIELDS
 
-        private const int DPI = 96;
-
-        private readonly int width;
-
-        private readonly int height;
-
-        private WriteableBitmap image;
-
-        private PinnedIntArray pixels;
-
-        private bool disposed;
+        private const double DPI = 96;
 
         #endregion
 
@@ -40,8 +30,8 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        internal WPFImage(int width, int height)
-            : this(width, height, new PinnedIntArray(width * height), null)
+        public WPFImage(int width, int height)
+            : base(width, height, new PinnedIntArray(width * height), null)
         {
         }
 
@@ -53,46 +43,13 @@ namespace Dicom.Imaging
         /// <param name="pixels">Array of pixels.</param>
         /// <param name="image">Writeable bitmap image.</param>
         private WPFImage(int width, int height, PinnedIntArray pixels, WriteableBitmap image)
+            : base(width, height, pixels, image)
         {
-            this.width = width;
-            this.height = height;
-            this.pixels = pixels;
-            this.image = image;
-            this.disposed = false;
-        }
-
-        #endregion
-
-        #region PROPERTIES
-
-        /// <summary>
-        /// Gets the array of pixels associated with the image.
-        /// </summary>
-        public PinnedIntArray Pixels
-        {
-            get
-            {
-                return this.pixels;
-            }
         }
 
         #endregion
 
         #region METHODS
-
-        /// <summary>
-        /// Cast <see cref="IImage"/> object to specific (real image) type.
-        /// </summary>
-        /// <typeparam name="T">Real image type to cast to.</typeparam>
-        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
-        public T As<T>()
-        {
-            if (!typeof(T).IsAssignableFrom(typeof(WriteableBitmap)))
-            {
-                throw new DicomImagingException("WPFImage cannot return images in format other than WriteableBitmap");
-            }
-            return (T)(object)this.image;
-        }
 
         /// <summary>
         /// Renders the image given the specified parameters.
@@ -101,7 +58,7 @@ namespace Dicom.Imaging
         /// <param name="flipX">Flip image in X direction?</param>
         /// <param name="flipY">Flip image in Y direction?</param>
         /// <param name="rotation">Image rotation.</param>
-        public void Render(int components, bool flipX, bool flipY, int rotation)
+        public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var bitmap = CreateBitmap(this.width, this.height, components, this.pixels.Data);
             this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
@@ -111,7 +68,7 @@ namespace Dicom.Imaging
         /// Draw graphics onto existing image.
         /// </summary>
         /// <param name="graphics">Graphics to draw.</param>
-        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             foreach (var graphic in graphics)
             {
@@ -137,31 +94,13 @@ namespace Dicom.Imaging
         /// Creates a deep copy of the image.
         /// </summary>
         /// <returns>Deep copy of this image.</returns>
-        public IImage Clone()
+        public override IImage Clone()
         {
             return new WPFImage(
                 this.width,
                 this.height,
                 new PinnedIntArray(this.pixels.Data),
                 this.image == null ? null : new WriteableBitmap(this.image));
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (this.disposed) return;
-
-            this.image = null;
-
-            if (this.pixels != null)
-            {
-                this.pixels.Dispose();
-                this.pixels = null;
-            }
-
-            this.disposed = true;
         }
 
         private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)

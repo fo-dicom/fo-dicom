@@ -24,7 +24,8 @@ namespace Dicom.Imaging
             lock (@lock)
             {
                 ImageManager.SetImplementation(WinFormsImageManager.Instance);
-                var image = ImageManager.CreateImage(100, 100, 4, false, false, 0, new PinnedIntArray(100 * 100));
+                var image = ImageManager.CreateImage(100, 100);
+                image.Render(4, false, false, 0);
                 Assert.IsType<WinFormsImage>(image);
             }
         }
@@ -35,7 +36,8 @@ namespace Dicom.Imaging
             lock (@lock)
             {
                 ImageManager.SetImplementation(WPFImageManager.Instance);
-                var image = ImageManager.CreateImage(100, 100, 4, false, false, 0, new PinnedIntArray(100 * 100));
+                var image = ImageManager.CreateImage(100, 100);
+                image.Render(4, false, false, 0);
                 Assert.IsType<WPFImage>(image);
             }
         }

@@ -72,6 +72,8 @@
     <Compile Include="Imaging\Codec\IDicomTranscoder.cs" />
     <Compile Include="Imaging\Codec\TranscoderManager.cs" />
     <Compile Include="Imaging\IImage.cs" />
+    <Compile Include="Imaging\ImageBase.cs" />
+    <Compile Include="Imaging\ImageDisposableBase.cs" />
     <Compile Include="Imaging\ImageManager.cs" />
     <Compile Include="Imaging\Mathematics\RectF.cs" />
     <Compile Include="DicomDataException.cs" />
