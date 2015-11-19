@@ -15,7 +15,7 @@
 * Network abstraction layer (#86 #106)
 * Transcoder abstraction layer (#102 #105)
 * Synchronized LogManager API with other managers (#103 #104)
-* Image abstraction layer (#83 #85 #92 #101)
+* Image abstraction layer (#83 #85 #92 #101 #144 #145 #150)
 * I/O abstraction layer (#69 #78 #97 #100)
 * Provide Task Asynchronous Pattern (async/await) for file I/O and network operations (#65 #90 #96 #98 #99 #107 #116 #130 #131)
 * Provide NullLogger for disabled logging (#89 #91)
