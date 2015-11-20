@@ -20,7 +20,7 @@ namespace Dicom.Network
         [Fact]
         public void Send_SingleRequest_Recognized()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var counter = 0;
@@ -42,7 +42,7 @@ namespace Dicom.Network
         [InlineData(100)]
         public void Send_MultipleRequests_AllRecognized(int expected)
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -60,7 +60,7 @@ namespace Dicom.Network
         [InlineData(20)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -79,7 +79,7 @@ namespace Dicom.Network
         [Fact]
         public async Task SendAsync_SingleRequest_Recognized()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var counter = 0;
@@ -102,7 +102,7 @@ namespace Dicom.Network
         [InlineData(100)]
         public async Task SendAsync_MultipleRequests_AllRecognized(int expected)
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -121,7 +121,7 @@ namespace Dicom.Network
         [InlineData(20)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -141,7 +141,7 @@ namespace Dicom.Network
         [Fact]
         public void BeginSend_SingleRequest_Recognized()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var counter = 0;
@@ -163,7 +163,7 @@ namespace Dicom.Network
         [InlineData(100)]
         public void BeginSend_MultipleRequests_AllRecognized(int expected)
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -180,7 +180,7 @@ namespace Dicom.Network
         [Fact]
         public void WaitForAssociation_WithinTimeout_ReturnsTrue()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
@@ -196,7 +196,7 @@ namespace Dicom.Network
         [Fact]
         public void WaitForAssociation_TooShortTimeout_ReturnsFalse()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
@@ -212,7 +212,7 @@ namespace Dicom.Network
         [Fact]
         public async Task WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
@@ -228,7 +228,7 @@ namespace Dicom.Network
         [Fact]
         public async Task WaitForAssociationAsync_TooShortTimeout_ReturnsFalse()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
@@ -244,7 +244,7 @@ namespace Dicom.Network
         [Fact]
         public void Release_AfterAssociation_SendIsCompleted()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
@@ -264,7 +264,7 @@ namespace Dicom.Network
         [Fact]
         public async Task ReleaseAsync_AfterAssociation_SendIsCompleted()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
