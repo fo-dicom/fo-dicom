@@ -16,7 +16,7 @@ namespace Dicom.Network
         {
             LogManager.SetImplementation(new StringLogManager());
 
-            const int port = 12345;
+            int port = Ports.GetNext();
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var client = new DicomClient();

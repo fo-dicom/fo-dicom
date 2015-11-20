@@ -19,7 +19,7 @@ namespace Dicom.Network
         [Fact]
         public void Send_SingleRequest_DataSufficientlyTransported()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
@@ -46,7 +46,7 @@ namespace Dicom.Network
         [Fact]
         public async Task SendAsync_SingleRequest_DataSufficientlyTransported()
         {
-            const int port = 11112;
+            int port = Ports.GetNext();
             using (new DicomServer<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
