@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Imaging
 {
     using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace Dicom.Imaging
     /// <summary>
     /// Image interface.
     /// </summary>
-    public interface IImage
+    public interface IImage: IDisposable
     {
         #region METHODS
 

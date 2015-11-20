@@ -27,7 +27,7 @@ namespace Dicom.Imaging
         public void As_ImageSource_Throws()
         {
             var image = new WinFormsImage(100, 100, 3, false, false, 0, new PinnedIntArray(100 * 100));
-            Assert.Throws(typeof(InvalidCastException), () => image.As<ImageSource>());
+            Assert.Throws(typeof(DicomImagingException), () => image.As<ImageSource>());
         }
 
         #endregion
