@@ -19,8 +19,6 @@ namespace Dicom.Imaging.Render
 
         protected IPixelData _scaledData;
 
-        protected IImage image;
-
         protected double _scaleFactor;
 
         protected int _rotation;
@@ -217,11 +215,7 @@ namespace Dicom.Imaging.Render
             if (Math.Abs(scale - _scaleFactor) <= Double.Epsilon) return;
 
             _scaleFactor = scale;
-            if (this.image != null)
-            {
-                _scaledData = null;
-                this.image = null;
-            }
+            _scaledData = null;
 
             foreach (var overlay in _overlays)
             {
@@ -277,30 +271,24 @@ namespace Dicom.Imaging.Render
 
         public IImage RenderImage(ILUT lut)
         {
-            var render = this.image == null;
-
             if (this._applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
-                render = true;
             }
 
-            if (render)
+            var image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
+
+            var pixels = image.Pixels.Data;
+            this.ScaledData.Render(this._applyLut ? lut : null, pixels);
+
+            foreach (var overlay in this._overlays)
             {
-                this.image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
-
-                var pixels = this.image.Pixels.Data;
-                this.ScaledData.Render(this._applyLut ? lut : null, pixels);
-
-                foreach (var overlay in this._overlays)
-                {
-                    overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
-                }
-
-                this.image.Render(this.Components, this._flipX, this._flipY, this._rotation);
+                overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
             }
 
-            return this.image;
+            image.Render(this.Components, this._flipX, this._flipY, this._rotation);
+
+            return image;
         }
 
         #endregion
