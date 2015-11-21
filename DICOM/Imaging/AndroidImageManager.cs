@@ -53,15 +53,10 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
         /// <returns><see cref="IImage"/> object using the current implementation.</returns>
-        protected override IImage CreateImageImpl(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        protected override IImage CreateImageImpl(int width, int height)
         {
-            return new AndroidImage(width, height, components, flipX, flipY, rotation, pixels);
+            return new AndroidImage(width, height);
         }
 
         #endregion

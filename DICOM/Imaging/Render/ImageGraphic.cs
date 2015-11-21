@@ -7,22 +7,17 @@ namespace Dicom.Imaging.Render
     using System.Collections.Generic;
 
     using Dicom.Imaging.LUT;
-    using Dicom.IO;
 
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>
-    public class ImageGraphic : IGraphic, IDisposable
+    public class ImageGraphic : IGraphic
     {
         #region Protected Members
 
         protected IPixelData _originalData;
 
         protected IPixelData _scaledData;
-
-        protected PinnedIntArray _pixels;
-
-        protected IImage _bitmap;
 
         protected double _scaleFactor;
 
@@ -193,11 +188,6 @@ namespace Dicom.Imaging.Render
             _overlays = new List<OverlayGraphic>();
         }
 
-        ~ImageGraphic()
-        {
-            Dispose(false);
-        }
-
         #endregion
 
         #region Public Members
@@ -225,13 +215,7 @@ namespace Dicom.Imaging.Render
             if (Math.Abs(scale - _scaleFactor) <= Double.Epsilon) return;
 
             _scaleFactor = scale;
-            if (_bitmap != null)
-            {
-                _scaledData = null;
-                _pixels.Dispose();
-                _pixels = null;
-                _bitmap = null;
-            }
+            _scaledData = null;
 
             foreach (var overlay in _overlays)
             {
@@ -287,48 +271,24 @@ namespace Dicom.Imaging.Render
 
         public IImage RenderImage(ILUT lut)
         {
-            var render = _bitmap == null;
-
-            if (_applyLut && lut != null && !lut.IsValid)
+            if (this._applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
-                render = true;
             }
 
-            if (render)
+            var image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
+
+            var pixels = image.Pixels.Data;
+            this.ScaledData.Render(this._applyLut ? lut : null, pixels);
+
+            foreach (var overlay in this._overlays)
             {
-                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
-
-                ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
-
-                foreach (var overlay in _overlays)
-                {
-                    overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
-                }
-
-                _bitmap = ImageManager.CreateImage(ScaledData.Width, ScaledData.Height, Components, _flipX, _flipY, _rotation, _pixels);
+                overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
             }
 
-            return _bitmap;
-        }
+            image.Render(this.Components, this._flipX, this._flipY, this._rotation);
 
-        #endregion
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_pixels != null)
-            {
-                _pixels.Dispose();
-                _pixels = null;
-            }
+            return image;
         }
 
         #endregion

@@ -206,34 +206,24 @@ namespace Dicom.Imaging
 
             var graphic = new ImageGraphic(_pixelData);
 
-            try
+            if (ShowOverlays)
             {
-                if (ShowOverlays)
+                foreach (var overlay in _overlays)
                 {
-                    foreach (var overlay in _overlays)
-                    {
-                        if ((frame + 1) < overlay.OriginFrame
-                            || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1)) continue;
+                    if ((frame + 1) < overlay.OriginFrame
+                        || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1)) continue;
 
-                        var og = new OverlayGraphic(
-                            PixelDataFactory.Create(overlay),
-                            overlay.OriginX - 1,
-                            overlay.OriginY - 1,
-                            OverlayColor);
-                        graphic.AddOverlay(og);
-                        og.Scale(this._scale);
-                    }
-                }
-
-                return graphic.RenderImage(this._pipeline.LUT);
-            }
-            finally
-            {
-                if (graphic != null)
-                {
-                    graphic.Dispose();
+                    var og = new OverlayGraphic(
+                        PixelDataFactory.Create(overlay),
+                        overlay.OriginX - 1,
+                        overlay.OriginY - 1,
+                        OverlayColor);
+                    graphic.AddOverlay(og);
+                    og.Scale(this._scale);
                 }
             }
+
+            return graphic.RenderImage(this._pipeline.LUT);
         }
 
         /// <summary>

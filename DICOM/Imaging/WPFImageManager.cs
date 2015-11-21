@@ -59,9 +59,9 @@ namespace Dicom.Imaging
         /// <param name="rotation">Image rotation.</param>
         /// <param name="pixels">Array of pixels.</param>
         /// <returns><see cref="IImage"/> object using the current implementation.</returns>
-        protected override IImage CreateImageImpl(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        protected override IImage CreateImageImpl(int width, int height)
         {
-            return new WPFImage(width, height, components, flipX, flipY, rotation, pixels);
+            return new WPFImage(width, height);
         }
 
         #endregion

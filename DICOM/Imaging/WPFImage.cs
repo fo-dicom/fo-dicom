@@ -13,15 +13,30 @@ namespace Dicom.Imaging
     using Dicom.IO;
 
     /// <summary>
+    /// Convenience class for non-generic access to <see cref="WPFImage"/> image objects.
+    /// </summary>
+    public static class WPFImageExtensions
+    {
+        /// <summary>
+        /// Convenience method to access WPF <see cref="IImage"/> instance as WPF <see cref="WriteableBitmap"/>.
+        /// The returned <see cref="WriteableBitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="WriteableBitmap"/> contents of <paramref name="image"/>.</returns>
+        public static WriteableBitmap AsWriteableBitmap(this IImage image)
+        {
+            return image.As<WriteableBitmap>();
+        }
+    }
+
+    /// <summary>
     /// <see cref="IImage"/> implementation of a WPF <see cref="ImageSource"/>.
     /// </summary>
-    public sealed class WPFImage : IImage
+    public sealed class WPFImage : ImageBase<WriteableBitmap>
     {
         #region FIELDS
 
-        private const int DPI = 96;
-
-        private readonly WriteableBitmap image;
+        private const double DPI = 96;
 
         #endregion
 
@@ -32,15 +47,21 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        public WPFImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        public WPFImage(int width, int height)
+            : base(width, height, new PinnedIntArray(width * height), null)
         {
-            var bitmap = CreateBitmap(width, height, components, pixels.Data);
-            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="WPFImage"/> object.
+        /// </summary>
+        /// <param name="width">Image width.</param>
+        /// <param name="height">Image height.</param>
+        /// <param name="pixels">Array of pixels.</param>
+        /// <param name="image">Writeable bitmap image.</param>
+        private WPFImage(int width, int height, PinnedIntArray pixels, WriteableBitmap image)
+            : base(width, height, pixels, image)
+        {
         }
 
         #endregion
@@ -48,28 +69,31 @@ namespace Dicom.Imaging
         #region METHODS
 
         /// <summary>
-        /// Cast <see cref="IImage"/> object to specific (real image) type.
+        /// Renders the image given the specified parameters.
         /// </summary>
-        /// <typeparam name="T">Real image type to cast to.</typeparam>
-        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
-        public T As<T>()
+        /// <param name="components">Number of components.</param>
+        /// <param name="flipX">Flip image in X direction?</param>
+        /// <param name="flipY">Flip image in Y direction?</param>
+        /// <param name="rotation">Image rotation.</param>
+        public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
-            return (T)(object)this.image;
+            var bitmap = CreateBitmap(this.width, this.height, components, this.pixels.Data);
+            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
         }
 
         /// <summary>
         /// Draw graphics onto existing image.
         /// </summary>
         /// <param name="graphics">Graphics to draw.</param>
-        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             foreach (var graphic in graphics)
             {
                 var layer = graphic.RenderImage(null).As<WriteableBitmap>();
 
-                var pixels = new int[graphic.ScaledWidth * graphic.ScaledHeight];
+                var overlay = new int[graphic.ScaledWidth * graphic.ScaledHeight];
                 var stride = 4 * graphic.ScaledWidth;
-                layer.CopyPixels(pixels, stride, 0);
+                layer.CopyPixels(overlay, stride, 0);
 
                 this.image.WritePixels(
                     new Int32Rect(
@@ -77,10 +101,23 @@ namespace Dicom.Imaging
                         graphic.ScaledOffsetY,
                         graphic.ScaledWidth,
                         graphic.ScaledHeight),
-                    pixels,
+                    overlay,
                     stride,
                     0);
             }
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the image.
+        /// </summary>
+        /// <returns>Deep copy of this image.</returns>
+        public override IImage Clone()
+        {
+            return new WPFImage(
+                this.width,
+                this.height,
+                new PinnedIntArray(this.pixels.Data),
+                this.image == null ? null : new WriteableBitmap(this.image));
         }
 
         private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)

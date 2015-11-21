@@ -19,15 +19,17 @@ namespace Dicom.Imaging
         [Fact]
         public void As_Image_ReturnsImage()
         {
-            var image = new WinFormsImage(100, 100, 3, false, false, 0, new PinnedIntArray(100 * 100));
+            var image = new WinFormsImage(100, 100);
+            image.Render(3, false, false, 0);
             Assert.IsAssignableFrom<Image>(image.As<Image>());
         }
 
         [Fact]
         public void As_ImageSource_Throws()
         {
-            var image = new WinFormsImage(100, 100, 3, false, false, 0, new PinnedIntArray(100 * 100));
-            Assert.Throws(typeof(InvalidCastException), () => image.As<ImageSource>());
+            var image = new WinFormsImage(100, 100);
+            image.Render(3, false, false, 0);
+            Assert.Throws(typeof(DicomImagingException), () => image.As<ImageSource>());
         }
 
         #endregion

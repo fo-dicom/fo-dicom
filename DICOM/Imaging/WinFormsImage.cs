@@ -11,16 +11,27 @@ namespace Dicom.Imaging
     using Dicom.IO;
 
     /// <summary>
-    /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Image"/>.
+    /// Convenience class for non-generic access to <see cref="WinFormsImage"/> image objects.
     /// </summary>
-    public sealed class WinFormsImage : IImage
+    public static class WinFormsImageExtensions
     {
-        #region FIELDS
+        /// <summary>
+        /// Convenience method to access WinForms <see cref="IImage"/> instance as WinForms <see cref="Bitmap"/>.
+        /// The returned <see cref="Bitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="image"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="Bitmap"/> contents of <paramref name="image"/>.</returns>
+        public static Bitmap AsBitmap(this IImage image)
+        {
+            return image.As<Bitmap>();
+        }
+    }
 
-        private readonly Image image;
-
-        #endregion
-
+    /// <summary>
+    /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Bitmap"/>.
+    /// </summary>
+    public sealed class WinFormsImage : ImageDisposableBase<Bitmap>
+    {
         #region CONSTRUCTORS
 
         /// <summary>
@@ -28,17 +39,40 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
+        public WinFormsImage(int width, int height)
+            : base(width, height, new PinnedIntArray(width * height), null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="WinFormsImage"/> object.
+        /// </summary>
+        /// <param name="width">Image width.</param>
+        /// <param name="height">Image height.</param>
+        /// <param name="pixels">Pixel array.</param>
+        /// <param name="image">Bitmap image.</param>
+        private WinFormsImage(int width, int height, PinnedIntArray pixels, Bitmap image)
+            : base(width, height, pixels, image)
+        {
+        }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Renders the image given the specified parameters.
+        /// </summary>
         /// <param name="components">Number of components.</param>
         /// <param name="flipX">Flip image in X direction?</param>
         /// <param name="flipY">Flip image in Y direction?</param>
         /// <param name="rotation">Image rotation.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        public WinFormsImage(int width, int height, int components, bool flipX, bool flipY, int rotation, PinnedIntArray pixels)
+        public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
-            var stride = GetStride(width, format);
+            var stride = GetStride(this.width, format);
 
-            this.image = new Bitmap(width, height, stride, format, pixels.Pointer);
+            this.image = new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer);
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
@@ -47,25 +81,11 @@ namespace Dicom.Imaging
             }
         }
 
-        #endregion
-
-        #region METHODS
-
-        /// <summary>
-        /// Cast <see cref="IImage"/> object to specific (real image) type.
-        /// </summary>
-        /// <typeparam name="T">Real image type to cast to.</typeparam>
-        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
-        public T As<T>()
-        {
-            return (T)(object)this.image;
-        }
-
         /// <summary>
         /// Draw graphics onto existing image.
         /// </summary>
         /// <param name="graphics">Graphics to draw.</param>
-        public void DrawGraphics(IEnumerable<IGraphic> graphics)
+        public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             using (var g = Graphics.FromImage(this.image))
             {
@@ -75,6 +95,19 @@ namespace Dicom.Imaging
                     g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the image.
+        /// </summary>
+        /// <returns>Deep copy of this image.</returns>
+        public override IImage Clone()
+        {
+            return new WinFormsImage(
+                this.width,
+                this.height,
+                new PinnedIntArray(this.pixels.Data),
+                this.image == null ? null : new Bitmap(this.image));
         }
 
         private static int GetStride(int width, PixelFormat format)
