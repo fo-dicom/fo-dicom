@@ -76,6 +76,9 @@ namespace Dicom.Network {
 
 		public void AddRequest(DicomRequest request) {
 			if (_service != null && _service.IsConnected) {
+                //zssure:2015-04-14,try to conform whether AddRequest and Send uses the same one client
+                LogManager.Default.GetLogger("Dicom.Network").Info("zssure debug at 20150414,the DicomRequest object is {0},DicomServiceUser is{1}", request.GetHashCode(), _service.GetHashCode());
+                //zssure:2015-04-14,end
 				_service.SendRequest(request);
 				if (_service._timer != null)
 					_service._timer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -89,6 +92,9 @@ namespace Dicom.Network {
 
 		public IAsyncResult BeginSend(string host, int port, bool useTls, string callingAe, string calledAe, AsyncCallback callback, object state) {
 			_client = new TcpClient(host, port);
+            //zssure:2015-04-14,try to conform whether AddRequest and Send uses the same one client
+            LogManager.Default.GetLogger("Dicom.Network").Info("zssure debug at 20150414,the TcpClient object is {0},HashCode{1}", _client.ToString(),_client.GetHashCode()); 
+            //zssure:2015-04-14,end
 
 			if (Options != null)
 				_client.NoDelay = Options.TcpNoDelay;
@@ -120,7 +126,9 @@ namespace Dicom.Network {
 				assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
 
 			_service = new DicomServiceUser(this, stream, assoc, Logger);
-
+            //zssure:2015-04-14,try to conform whether AddRequest and Send uses the same one client
+            LogManager.Default.GetLogger("Dicom.Network").Info("zssure debug at 20150414,the DicomServiceUser object is {0}，HashCode{1}", _service.ToString(),_service.GetHashCode());
+            //zssure:2015-04-14,end
 			_assoc = new ManualResetEventSlim(false);
 
 			_async = new EventAsyncResult(callback, state);
@@ -224,8 +232,14 @@ namespace Dicom.Network {
 				_client._assoc.Set();
 				_client._assoc = null;
 
-				foreach (var request in _client._requests)
-					SendRequest(request);
+                foreach (var request in _client._requests)
+                {
+                    //zssure:2015-04-14,try to conform whether AddRequest and Send uses the same one client
+                    LogManager.Default.GetLogger("Dicom.Network").Info("zssure debug at 20150414,the DicomRequest object is {0},the DicomClient is{1},the DicomServiceUser is {2}", request.GetHashCode(), _client.GetHashCode(),this.GetHashCode());
+                    //zssure:2015-04-14,end
+
+                    SendRequest(request);
+                }
 				_client._requests.Clear();
 			}
 

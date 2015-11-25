@@ -100,10 +100,16 @@ namespace Dicom.Network {
 			_isConnected = false;
 			try { _network.Close(); } catch { }
 
-			if (errorCode > 0)
-				Logger.Error("Connection closed with error: {0}", errorCode);
-			else
-				Logger.Error("Connection closed");
+            if (errorCode > 0)
+                Logger.Error("Connection closed with error: {0}", errorCode);
+            else
+            {
+                Logger.Error("Connection closed");
+                //zssure:2015-04-14,try to conform whether AddRequest and Send uses the same one client
+                LogManager.Default.GetLogger("Dicom.Network").Info("zssure debug at DicomService CloseConnection 20150414,the DicomService object is {0}", this.GetHashCode());
+                //zssure:2015-04-14,end
+
+            }
 
 			if (this is IDicomServiceProvider)
 				(this as IDicomServiceProvider).OnConnectionClosed(errorCode);
@@ -786,6 +792,9 @@ namespace Dicom.Network {
 					msg.Dataset = msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
 			}
 
+            //zssure:2015-04-14，try to confirm whether AddRequest and Send should be together.
+            Logger.Info("zssure 2015-04-14,the DicomService is {0},HashCode {1}", this.ToString(), this.GetHashCode());
+            //zssure:2015-04-14,end
 			Logger.Info("{0} -> {1}", LogID, msg.ToString(Options.LogDimseDatasets));
 
 			dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);

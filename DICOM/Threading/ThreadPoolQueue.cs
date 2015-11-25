@@ -128,13 +128,13 @@ namespace Dicom.Threading {
 				if (!_groups.TryGetValue(groupKey, out group))
 					return;
 			}
-
 			lock (group.Lock) {
 				if (group.Executing)
 					return;
 
 				if (group.Items.Count == 0 && !group.Key.Equals(DefaultGroup)) {
 					_groups.Remove(groupKey);
+                    System.Console.WriteLine("Remove WorkGroup Key is {0}", group.Key);
 					return;
 				}
 
@@ -159,6 +159,7 @@ namespace Dicom.Threading {
 
 					if (!empty)
 						item = group.Items.Dequeue();
+                    System.Console.WriteLine("WorkGroup Key is {0}", group.Key);
 				}
 
 				if (empty) {
@@ -178,8 +179,11 @@ namespace Dicom.Threading {
 							group.Executing = false;
 
 							lock (_lock) {
-								if (!group.Key.Equals(DefaultGroup))
-									_groups.Remove(group.Key);
+                                if (!group.Key.Equals(DefaultGroup))
+                                {
+                                    _groups.Remove(group.Key);
+                                    System.Console.WriteLine("Remove WorkGroup Key is {0}", group.Key);
+                                }
 
 								return;
 							}
