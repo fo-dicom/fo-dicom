@@ -258,7 +258,7 @@ namespace Dicom.Network
         {
             if (this.aborted) return;
 
-            if (this.associateNotifier != null) this.associateNotifier.TrySetResult(true);
+            if (this.associateNotifier != null) this.associateNotifier.TrySetResult(false);
             if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
 
             if (this.networkStream != null)
