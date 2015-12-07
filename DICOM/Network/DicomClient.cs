@@ -197,7 +197,8 @@ namespace Dicom.Network
         /// <returns>True if association is established, false otherwise.</returns>
         public bool WaitForAssociation(int millisecondsTimeout = 5000)
         {
-            return this.associateNotifier != null && this.associateNotifier.Task.Wait(millisecondsTimeout);
+            return this.associateNotifier != null && this.associateNotifier.Task.Wait(millisecondsTimeout)
+                   && this.associateNotifier.Task.Result;
         }
 
         /// <summary>
@@ -209,7 +210,7 @@ namespace Dicom.Network
         {
             if (this.associateNotifier == null) return false;
             var task = await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
-            return task is Task<bool>;
+            return task is Task<bool> && ((Task<bool>)task).Result;
         }
 
         /// <summary>
@@ -258,7 +259,10 @@ namespace Dicom.Network
         {
             if (this.aborted) return;
 
-            if (this.associateNotifier != null) this.associateNotifier.TrySetResult(true);
+            if (this.associateNotifier != null && !this.associateNotifier.Task.IsCompleted)
+            {
+                this.associateNotifier.TrySetResult(false);
+            }
             if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
 
             if (this.networkStream != null)
@@ -302,7 +306,10 @@ namespace Dicom.Network
 
         private void FinalizeSend()
         {
-            this.associateNotifier.TrySetResult(true);
+            if (!this.associateNotifier.Task.IsCompleted)
+            {
+                this.associateNotifier.TrySetResult(true);
+            }
 
             if (this.networkStream != null)
             {

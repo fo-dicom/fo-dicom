@@ -210,6 +210,23 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void WaitForAssociation_Aborted_ReturnsFalse()
+        {
+            int port = Ports.GetNext();
+            using (new DicomServer<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                client.Abort();
+                var actual = client.WaitForAssociation(500);
+
+                Assert.Equal(false, actual);
+            }
+        }
+
+        [Fact]
         public async Task WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
         {
             int port = Ports.GetNext();
@@ -237,6 +254,23 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(1);
                 task.Wait(10000);
+                Assert.Equal(false, actual);
+            }
+        }
+
+        [Fact]
+        public async Task WaitForAssociationAsync_Aborted_ReturnsFalse()
+        {
+            int port = Ports.GetNext();
+            using (new DicomServer<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Abort();
+
+                var actual = await client.WaitForAssociationAsync(500);
+
                 Assert.Equal(false, actual);
             }
         }
