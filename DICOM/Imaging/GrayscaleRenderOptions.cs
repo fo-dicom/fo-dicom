@@ -110,7 +110,7 @@ namespace Dicom.Imaging
 
             if (dataset.Contains(DicomTag.SmallestImagePixelValue) && dataset.Contains(DicomTag.LargestImagePixelValue)
                 && dataset.Get<int>(DicomTag.SmallestImagePixelValue)
-                <= dataset.Get<int>(DicomTag.LargestImagePixelValue))
+                < dataset.Get<int>(DicomTag.LargestImagePixelValue))
             {
                 //If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
                 //WindowWidth and WindowCenter
@@ -160,7 +160,7 @@ namespace Dicom.Imaging
             int smallValue = dataset.Get<int>(DicomTag.SmallestImagePixelValue);
             int largeValue = dataset.Get<int>(DicomTag.LargestImagePixelValue);
 
-            if (smallValue > largeValue)
+            if (smallValue >= largeValue)
             {
                 throw new DicomImagingException(
                     string.Format("Smallest Image Pixel Value ({0}) > Largest Value ({1})", smallValue, largeValue));
