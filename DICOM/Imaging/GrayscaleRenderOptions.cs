@@ -101,14 +101,16 @@ namespace Dicom.Imaging
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset)
         {
-            if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) != 0.0)
+            if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) >= 1.0
+                && dataset.Contains(DicomTag.WindowCenter))
             {
                 //If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 return FromWindowLevel(dataset);
             }
 
-            if (dataset.Contains(DicomTag.SmallestImagePixelValue)
-                && dataset.Contains(DicomTag.LargestImagePixelValue))
+            if (dataset.Contains(DicomTag.SmallestImagePixelValue) && dataset.Contains(DicomTag.LargestImagePixelValue)
+                && dataset.Get<int>(DicomTag.SmallestImagePixelValue)
+                <= dataset.Get<int>(DicomTag.LargestImagePixelValue))
             {
                 //If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
                 //WindowWidth and WindowCenter
@@ -155,14 +157,17 @@ namespace Dicom.Imaging
             options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
             options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
 
-            int smallValue = dataset.Get<int>(DicomTag.SmallestImagePixelValue, 0);
-            int largeValue = dataset.Get<int>(DicomTag.LargestImagePixelValue, 0);
+            int smallValue = dataset.Get<int>(DicomTag.SmallestImagePixelValue);
+            int largeValue = dataset.Get<int>(DicomTag.LargestImagePixelValue);
 
-            if (smallValue != 0 || largeValue != 0)
+            if (smallValue > largeValue)
             {
-                options.WindowWidth = Math.Abs(largeValue - smallValue);
-                options.WindowCenter = (largeValue + smallValue) / 2.0;
+                throw new DicomImagingException(
+                    string.Format("Smallest Image Pixel Value ({0}) > Largest Value ({1})", smallValue, largeValue));
             }
+
+            options.WindowWidth = Math.Abs(largeValue - smallValue);
+            options.WindowCenter = (largeValue + smallValue) / 2.0;
 
             options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
