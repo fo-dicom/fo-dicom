@@ -117,6 +117,7 @@
     <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
+    <Compile Include="Network\DicomServerTest.cs" />
     <Compile Include="Network\DicomServiceTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />

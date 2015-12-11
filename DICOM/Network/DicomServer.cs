@@ -22,6 +22,10 @@ namespace Dicom.Network
 
         private bool disposed = false;
 
+        private readonly Task listenTask;
+
+        private readonly CancellationTokenSource cancellationSource;
+
         private readonly List<T> clients = new List<T>();
 
         #endregion
@@ -40,9 +44,17 @@ namespace Dicom.Network
             this.Options = options;
             this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
 
+            this.cancellationSource = new CancellationTokenSource();
+
             Task.Factory.StartNew(
+                this.OnTimerTick,
+                this.cancellationSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            this.listenTask = Task.Factory.StartNew(
                 () => this.Listen(port, certificateName),
-                CancellationToken.None,
+                this.cancellationSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
         }
@@ -61,9 +73,42 @@ namespace Dicom.Network
         /// </summary>
         public DicomServiceOptions Options { get; private set; }
 
+        /// <summary>
+        /// Gets whether the server is actively listening for client connections.
+        /// </summary>
+        public bool IsListening
+        {
+            get
+            {
+                return !this.listenTask.IsCompleted;
+            }
+        }
+
+        /// <summary>
+        /// Gets the exception that was thrown if the server failed to listen.
+        /// </summary>
+        public Exception Exception
+        {
+            get
+            {
+                return this.listenTask.IsFaulted ? this.listenTask.Exception.InnerException : null;
+            }
+        }
+
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Stop server from further listening.
+        /// </summary>
+        public void Stop()
+        {
+            if (!this.cancellationSource.IsCancellationRequested)
+            {
+                this.cancellationSource.Cancel(true);
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,6 +124,14 @@ namespace Dicom.Network
         /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
+            if (this.disposed) return;
+
+            if (disposing)
+            {
+                this.Stop();
+                this.cancellationSource.Dispose();
+            }
+
             this.disposed = true;
         }
 
@@ -99,63 +152,51 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         private void Listen(int port, string certificateName)
         {
-            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
-
             try
             {
-                using (var cancellationSource = new CancellationTokenSource())
+                var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
+
+                var listener = NetworkManager.CreateNetworkListener(port);
+                listener.Start();
+
+                while (!this.cancellationSource.IsCancellationRequested)
                 {
-                    var token = cancellationSource.Token;
-                    Task.Run(() => this.OnTimerTick(token), token);
+                    var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
 
-                    var listener = NetworkManager.CreateNetworkListener(port);
-                    listener.Start();
-                    do
-                    {
-                        try
-                        {
-                            var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
+                    var scp = this.CreateScp(networkStream.AsStream());
+                    if (this.Options != null) scp.Options = this.Options;
 
-                            var scp = this.CreateScp(networkStream.AsStream());
-                            if (this.Options != null) scp.Options = this.Options;
+                    this.clients.Add(scp);
+                }
 
-                            this.clients.Add(scp);
-                        }
-                        catch (Exception e)
-                        {
-                            this.Logger.Error("Exception accepting client {@error}", e);
-                        }
-                    }
-                    while (!this.disposed);
-
-                    if (listener != null)
-                    {
-                        listener.Stop();
-                    }
-
-                    cancellationSource.Cancel();
+                if (listener != null)
+                {
+                    listener.Stop();
                 }
             }
-            catch (TaskCanceledException)
+            catch (Exception e)
             {
+                this.Logger.Error("Exception listening for clients, {@error}", e);
+                this.Stop();
+                throw;
             }
         }
 
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        /// <param name="token">Cancellation token.</param>
-        private async void OnTimerTick(CancellationToken token)
+        private async void OnTimerTick()
         {
-            while (!token.IsCancellationRequested)
+            while (!this.cancellationSource.IsCancellationRequested)
             {
                 try
                 {
-                    await Task.Delay(1000, token).ConfigureAwait(false);
+                    await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
                     this.clients.RemoveAll(client => !client.IsConnected);
                 }
-                catch
+                catch (Exception e)
                 {
+                    this.Logger.Warn("Exception removing disconnected clients, {@error}", e);
                 }
             }
         }
