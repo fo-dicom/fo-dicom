@@ -130,6 +130,7 @@ namespace Dicom.Network
             {
                 this.Stop();
                 this.cancellationSource.Dispose();
+                this.clients.Clear();
             }
 
             this.disposed = true;
