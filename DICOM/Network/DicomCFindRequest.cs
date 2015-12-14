@@ -79,7 +79,6 @@ namespace Dicom.Network
             dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.ModalitiesInStudy, modalitiesInStudy);
-            dimse.Dataset.Add(DicomTag.Modality, modalitiesInStudy);
             dimse.Dataset.Add(DicomTag.StudyID, studyId);
             dimse.Dataset.Add(DicomTag.AccessionNumber, accession);
             dimse.Dataset.Add(DicomTag.StudyDate, studyDateTime);
