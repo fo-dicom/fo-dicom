@@ -6,6 +6,7 @@ namespace Dicom.Network
     using System;
     using System.Globalization;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Windows.Networking.Sockets;
     using Windows.Security.Cryptography.Certificates;
@@ -30,9 +31,9 @@ namespace Dicom.Network
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="WindowsNetworkListener"/>.
+        /// Initializes a new instance of the <see cref="WindowsNetworkListener"/> class. 
         /// </summary>
-        /// <param name="port"></param>
+        /// <param name="port">TCP/IP port to listen to.</param>
         internal WindowsNetworkListener(int port)
         {
             this.port = port.ToString(CultureInfo.InvariantCulture);
@@ -46,7 +47,8 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        public async void Start()
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        public async Task StartAsync()
         {
             this.listener = new StreamSocketListener();
             this.listener.ConnectionReceived += this.OnConnectionReceived;

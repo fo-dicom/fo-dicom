@@ -3,6 +3,8 @@
 
 namespace Dicom.Network
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Interface for listening to network stream connections.
     /// </summary>
@@ -11,7 +13,8 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        void Start();
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        Task StartAsync();
 
         /// <summary>
         /// Stop listening.

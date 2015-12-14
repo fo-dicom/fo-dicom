@@ -6,6 +6,7 @@ namespace Dicom.Network
     using System.Net;
     using System.Net.Sockets;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// .NET implementation of the <see cref="INetworkListener"/>.
@@ -23,9 +24,11 @@ namespace Dicom.Network
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="DesktopNetworkListener"/>.
+        /// Initializes a new instance of the <see cref="DesktopNetworkListener"/> class. 
         /// </summary>
-        /// <param name="port"></param>
+        /// <param name="port">
+        /// TCP/IP port to listen to.
+        /// </param>
         internal DesktopNetworkListener(int port)
         {
             this.listener = new TcpListener(IPAddress.Any, port);
@@ -38,9 +41,11 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        public void Start()
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        public Task StartAsync()
         {
             this.listener.Start();
+            return Task.FromResult(0);
         }
 
         /// <summary>

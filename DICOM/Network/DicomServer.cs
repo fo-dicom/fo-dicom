@@ -43,6 +43,7 @@ namespace Dicom.Network
         {
             this.Options = options;
             this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
+            this.Exception = null;
 
             this.cancellationSource = new CancellationTokenSource();
 
@@ -87,13 +88,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the exception that was thrown if the server failed to listen.
         /// </summary>
-        public Exception Exception
-        {
-            get
-            {
-                return this.listenTask.IsFaulted ? this.listenTask.Exception.InnerException : null;
-            }
-        }
+        public Exception Exception { get; private set; }
 
         #endregion
 
@@ -151,14 +146,14 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        private void Listen(int port, string certificateName)
+        private async void Listen(int port, string certificateName)
         {
             try
             {
                 var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
 
                 var listener = NetworkManager.CreateNetworkListener(port);
-                listener.Start();
+                await listener.StartAsync().ConfigureAwait(false);
 
                 while (!this.cancellationSource.IsCancellationRequested)
                 {
@@ -178,8 +173,9 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 this.Logger.Error("Exception listening for clients, {@error}", e);
+
                 this.Stop();
-                throw;
+                this.Exception = e;
             }
         }
 
