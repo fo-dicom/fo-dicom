@@ -20,7 +20,7 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private bool disposed = false;
+        private bool disposed;
 
         private readonly int port;
 
@@ -28,7 +28,7 @@ namespace Dicom.Network
 
         private readonly CancellationTokenSource cancellationSource;
 
-        private readonly List<T> clients = new List<T>();
+        private readonly List<T> clients;
 
         #endregion
 
@@ -45,13 +45,13 @@ namespace Dicom.Network
         {
             this.port = port;
             this.certificateName = certificateName;
+            this.cancellationSource = new CancellationTokenSource();
+            this.clients = new List<T>();
 
             this.Options = options;
             this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
             this.IsListening = false;
             this.Exception = null;
-
-            this.cancellationSource = new CancellationTokenSource();
 
             Task.Factory.StartNew(
                 this.OnTimerTickAsync,
@@ -64,6 +64,8 @@ namespace Dicom.Network
                 this.cancellationSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            this.disposed = false;
         }
 
         #endregion
@@ -101,7 +103,7 @@ namespace Dicom.Network
         {
             if (!this.cancellationSource.IsCancellationRequested)
             {
-                this.cancellationSource.Cancel(true);
+                this.cancellationSource.Cancel();
             }
         }
 
@@ -160,18 +162,30 @@ namespace Dicom.Network
                 while (!this.cancellationSource.IsCancellationRequested)
                 {
                     var networkStream =
-                        await listener.AcceptNetworkStreamAsync(this.certificateName, noDelay).ConfigureAwait(false);
+                        await
+                        listener.AcceptNetworkStreamAsync(this.certificateName, noDelay, this.cancellationSource.Token)
+                            .ConfigureAwait(false);
 
-                    var scp = this.CreateScp(networkStream.AsStream());
-                    if (this.Options != null)
+                    if (networkStream != null)
                     {
-                        scp.Options = this.Options;
-                    }
+                        var scp = this.CreateScp(networkStream.AsStream());
+                        if (this.Options != null)
+                        {
+                            scp.Options = this.Options;
+                        }
 
-                    this.clients.Add(scp);
+                        this.clients.Add(scp);
+                    }
                 }
 
                 listener.Stop();
+                this.IsListening = false;
+                this.Exception = null;
+            }
+            catch (OperationCanceledException)
+            {
+                this.Logger.Info("Listening manually terminated");
+
                 this.IsListening = false;
                 this.Exception = null;
             }
@@ -196,6 +210,10 @@ namespace Dicom.Network
                 {
                     await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
                     this.clients.RemoveAll(client => !client.IsConnected);
+                }
+                catch (OperationCanceledException)
+                {
+                    this.Logger.Info("Disconnected client cleanup manually terminated.");
                 }
                 catch (Exception e)
                 {

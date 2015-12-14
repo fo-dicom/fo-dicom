@@ -3,6 +3,7 @@
 
 namespace Dicom.Network
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -26,7 +27,8 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
     }
 }

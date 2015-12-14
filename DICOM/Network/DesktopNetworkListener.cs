@@ -6,6 +6,7 @@ namespace Dicom.Network
     using System.Net;
     using System.Net.Sockets;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -61,18 +62,39 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        public async Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay)
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(
+            string certificateName,
+            bool noDelay,
+            CancellationToken token)
         {
-            var tcpClient = await this.listener.AcceptTcpClientAsync().ConfigureAwait(false);
-            tcpClient.NoDelay = noDelay;
-
-            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+            try
             {
-                this.certificate = GetX509Certificate(certificateName);
-            }
+                var awaiter =
+                    await
+                    Task.WhenAny(this.listener.AcceptTcpClientAsync(), Task.Delay(-1, token)).ConfigureAwait(false);
 
-            return new DesktopNetworkStream(tcpClient, this.certificate);
+                var tcpClientTask = awaiter as Task<TcpClient>;
+                if (tcpClientTask != null)
+                {
+                    var tcpClient = tcpClientTask.Result;
+                    tcpClient.NoDelay = noDelay;
+
+                    if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+                    {
+                        this.certificate = GetX509Certificate(certificateName);
+                    }
+
+                    return new DesktopNetworkStream(tcpClient, this.certificate);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>

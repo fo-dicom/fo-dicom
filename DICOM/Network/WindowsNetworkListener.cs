@@ -72,8 +72,12 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        public Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay)
+        public Task<INetworkStream> AcceptNetworkStreamAsync(
+            string certificateName,
+            bool noDelay,
+            CancellationToken token)
         {
             if (!string.IsNullOrWhiteSpace(certificateName))
             {
@@ -81,8 +85,17 @@ namespace Dicom.Network
                     "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
-            this.handle.Wait();
-            INetworkStream networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
+            INetworkStream networkStream;
+            try
+            {
+                this.handle.Wait(token);
+                networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
+            }
+            catch (OperationCanceledException)
+            {
+                networkStream = null;
+            }
+
             this.handle.Reset();
 
             return Task.FromResult(networkStream);
