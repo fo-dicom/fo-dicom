@@ -62,6 +62,8 @@ namespace Dicom.Network
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
+            var @lock = new object();
+
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -69,7 +71,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { ++actual; } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
@@ -124,6 +126,8 @@ namespace Dicom.Network
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
+            var @lock = new object();
+
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -131,7 +135,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { ++actual; } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
                     var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                     await Task.WhenAny(task, Task.Delay(1000));
                 }
