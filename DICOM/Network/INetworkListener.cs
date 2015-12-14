@@ -27,6 +27,6 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
         /// <returns>Connected network stream.</returns>
-        INetworkStream AcceptNetworkStream(string certificateName, bool noDelay);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay);
     }
 }

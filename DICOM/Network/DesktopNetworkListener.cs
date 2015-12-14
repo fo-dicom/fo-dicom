@@ -62,12 +62,15 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
         /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay)
         {
-            var tcpClient = this.listener.AcceptTcpClient();
+            var tcpClient = await this.listener.AcceptTcpClientAsync().ConfigureAwait(false);
             tcpClient.NoDelay = noDelay;
 
-            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null) this.certificate = GetX509Certificate(certificateName);
+            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+            {
+                this.certificate = GetX509Certificate(certificateName);
+            }
 
             return new DesktopNetworkStream(tcpClient, this.certificate);
         }

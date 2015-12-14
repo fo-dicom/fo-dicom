@@ -9,7 +9,6 @@ namespace Dicom.Network
     using System.Threading.Tasks;
 
     using Windows.Networking.Sockets;
-    using Windows.Security.Cryptography.Certificates;
 
     /// <summary>
     /// Universal Windows Platform implementation of the <see cref="INetworkListener"/>.
@@ -74,22 +73,27 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
         /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
+        public Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay)
         {
             if (!string.IsNullOrWhiteSpace(certificateName))
             {
-                throw new NotSupportedException("Authenticated server connections not supported on Windows Universal Platform.");
+                throw new NotSupportedException(
+                    "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
             this.handle.Wait();
-            if (this.socket == null) return null;
-
-            var networkStream = new WindowsNetworkStream(this.socket);
+            INetworkStream networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
             this.handle.Reset();
 
-            return networkStream;
+            return Task.FromResult(networkStream);
         }
 
+        /// <summary>
+        /// Event handler when connection received.
+        /// </summary>
+        /// <param name="sender">The sender, more specifically the listener object.</param>
+        /// <param name="args">The connection received arguments; 
+        /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             this.socket = args.Socket;
