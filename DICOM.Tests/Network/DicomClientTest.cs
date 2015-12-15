@@ -37,9 +37,9 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(2)]
-        [InlineData(5)]
         [InlineData(20)]
         [InlineData(100)]
+        [InlineData(1000)]
         public void Send_MultipleRequests_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
@@ -58,9 +58,12 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
+        [InlineData(200)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
+            var @lock = new object();
+
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -68,7 +71,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (client) ++actual; } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
@@ -97,9 +100,9 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(2)]
-        [InlineData(5)]
         [InlineData(20)]
         [InlineData(100)]
+        [InlineData(1000)]
         public async Task SendAsync_MultipleRequests_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
@@ -119,9 +122,12 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
+        [InlineData(200)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
+            var @lock = new object();
+
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
@@ -129,7 +135,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (client) ++actual; } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
                     var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                     await Task.WhenAny(task, Task.Delay(1000));
                 }

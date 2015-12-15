@@ -20,13 +20,15 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private bool disposed = false;
+        private bool disposed;
 
-        private readonly Task listenTask;
+        private readonly int port;
+
+        private readonly string certificateName;
 
         private readonly CancellationTokenSource cancellationSource;
 
-        private readonly List<T> clients = new List<T>();
+        private readonly List<T> clients;
 
         #endregion
 
@@ -41,22 +43,29 @@ namespace Dicom.Network
         /// <param name="logger">Logger.</param>
         public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Logger logger = null)
         {
+            this.port = port;
+            this.certificateName = certificateName;
+            this.cancellationSource = new CancellationTokenSource();
+            this.clients = new List<T>();
+
             this.Options = options;
             this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
-
-            this.cancellationSource = new CancellationTokenSource();
+            this.IsListening = false;
+            this.Exception = null;
 
             Task.Factory.StartNew(
-                this.OnTimerTick,
+                this.OnTimerTickAsync,
                 this.cancellationSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
 
-            this.listenTask = Task.Factory.StartNew(
-                () => this.Listen(port, certificateName),
+            Task.Factory.StartNew(
+                this.ListenAsync,
                 this.cancellationSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            this.disposed = false;
         }
 
         #endregion
@@ -74,26 +83,14 @@ namespace Dicom.Network
         public DicomServiceOptions Options { get; private set; }
 
         /// <summary>
-        /// Gets whether the server is actively listening for client connections.
+        /// Gets a value indicating whether the server is actively listening for client connections.
         /// </summary>
-        public bool IsListening
-        {
-            get
-            {
-                return !this.listenTask.IsCompleted;
-            }
-        }
+        public bool IsListening { get; private set; }
 
         /// <summary>
         /// Gets the exception that was thrown if the server failed to listen.
         /// </summary>
-        public Exception Exception
-        {
-            get
-            {
-                return this.listenTask.IsFaulted ? this.listenTask.Exception.InnerException : null;
-            }
-        }
+        public Exception Exception { get; private set; }
 
         #endregion
 
@@ -106,7 +103,7 @@ namespace Dicom.Network
         {
             if (!this.cancellationSource.IsCancellationRequested)
             {
-                this.cancellationSource.Cancel(true);
+                this.cancellationSource.Cancel();
             }
         }
 
@@ -124,7 +121,10 @@ namespace Dicom.Network
         /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposed) return;
+            if (this.disposed)
+            {
+                return;
+            }
 
             if (disposing)
             {
@@ -147,46 +147,62 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Listen indefinitely for network connections on the specified <paramref name="port"/>.
+        /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        private void Listen(int port, string certificateName)
+        private async void ListenAsync()
         {
             try
             {
                 var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
 
-                var listener = NetworkManager.CreateNetworkListener(port);
-                listener.Start();
+                var listener = NetworkManager.CreateNetworkListener(this.port);
+                await listener.StartAsync().ConfigureAwait(false);
+                this.IsListening = true;
 
                 while (!this.cancellationSource.IsCancellationRequested)
                 {
-                    var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
+                    var networkStream =
+                        await
+                        listener.AcceptNetworkStreamAsync(this.certificateName, noDelay, this.cancellationSource.Token)
+                            .ConfigureAwait(false);
 
-                    var scp = this.CreateScp(networkStream.AsStream());
-                    if (this.Options != null) scp.Options = this.Options;
+                    if (networkStream != null)
+                    {
+                        var scp = this.CreateScp(networkStream.AsStream());
+                        if (this.Options != null)
+                        {
+                            scp.Options = this.Options;
+                        }
 
-                    this.clients.Add(scp);
+                        this.clients.Add(scp);
+                    }
                 }
 
-                if (listener != null)
-                {
-                    listener.Stop();
-                }
+                listener.Stop();
+                this.IsListening = false;
+                this.Exception = null;
+            }
+            catch (OperationCanceledException)
+            {
+                this.Logger.Info("Listening manually terminated");
+
+                this.IsListening = false;
+                this.Exception = null;
             }
             catch (Exception e)
             {
                 this.Logger.Error("Exception listening for clients, {@error}", e);
+
                 this.Stop();
-                throw;
+                this.IsListening = false;
+                this.Exception = e;
             }
         }
 
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        private async void OnTimerTick()
+        private async void OnTimerTickAsync()
         {
             while (!this.cancellationSource.IsCancellationRequested)
             {
@@ -194,6 +210,10 @@ namespace Dicom.Network
                 {
                     await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
                     this.clients.RemoveAll(client => !client.IsConnected);
+                }
+                catch (OperationCanceledException)
+                {
+                    this.Logger.Info("Disconnected client cleanup manually terminated.");
                 }
                 catch (Exception e)
                 {

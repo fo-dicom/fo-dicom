@@ -14,7 +14,7 @@
 * Xamarin Android platform library with imaging cabability (#113 #117)
 * Xamarin iOS platform library with imaging cabability (#111 #112)
 * Portable Core and platform-specific assemblies, including basic Mono implementation (#13 #93 #94 #60 #109)
-* Network abstraction layer (#86 #106 #156 #159 #160)
+* Network abstraction layer (#86 #106 #156 #159 #160 #157 #164 #158 #165)
 * Transcoder abstraction layer (#102 #105)
 * Synchronized LogManager API with other managers (#103 #104)
 * Image abstraction layer (#83 #85 #92 #101 #144 #145 #150)

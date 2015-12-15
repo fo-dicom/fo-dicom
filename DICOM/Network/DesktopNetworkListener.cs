@@ -6,6 +6,8 @@ namespace Dicom.Network
     using System.Net;
     using System.Net.Sockets;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// .NET implementation of the <see cref="INetworkListener"/>.
@@ -23,9 +25,11 @@ namespace Dicom.Network
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="DesktopNetworkListener"/>.
+        /// Initializes a new instance of the <see cref="DesktopNetworkListener"/> class. 
         /// </summary>
-        /// <param name="port"></param>
+        /// <param name="port">
+        /// TCP/IP port to listen to.
+        /// </param>
         internal DesktopNetworkListener(int port)
         {
             this.listener = new TcpListener(IPAddress.Any, port);
@@ -38,9 +42,11 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        public void Start()
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        public Task StartAsync()
         {
             this.listener.Start();
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -56,15 +62,39 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(
+            string certificateName,
+            bool noDelay,
+            CancellationToken token)
         {
-            var tcpClient = this.listener.AcceptTcpClient();
-            tcpClient.NoDelay = noDelay;
+            try
+            {
+                var awaiter =
+                    await
+                    Task.WhenAny(this.listener.AcceptTcpClientAsync(), Task.Delay(-1, token)).ConfigureAwait(false);
 
-            if (!string.IsNullOrEmpty(certificateName) && this.certificate == null) this.certificate = GetX509Certificate(certificateName);
+                var tcpClientTask = awaiter as Task<TcpClient>;
+                if (tcpClientTask != null)
+                {
+                    var tcpClient = tcpClientTask.Result;
+                    tcpClient.NoDelay = noDelay;
 
-            return new DesktopNetworkStream(tcpClient, this.certificate);
+                    if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+                    {
+                        this.certificate = GetX509Certificate(certificateName);
+                    }
+
+                    return new DesktopNetworkStream(tcpClient, this.certificate);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
