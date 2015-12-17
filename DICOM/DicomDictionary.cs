@@ -104,21 +104,24 @@ namespace Dicom
 
         #region Properties
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         private static DicomDictionary _default;
 
-        public static void LoadInternalDictionaries(bool loadPrivateDictionary = true)
+        public static DicomDictionary EnsureDefaultDictionariesLoaded(bool loadPrivateDictionary = true)
         {
-            // "Cheap" unlocked preliminary check (#151).
-            if (_default != null) return;
+            // short-circuit if already initialised (#151).
+            if (_default != null)
+            {
+                return _default;
+            }
 
             lock (_lock)
             {
                 if (_default == null)
                 {
-                    _default = new DicomDictionary();
-                    _default.Add(
+                    var dict  = new DicomDictionary();
+                    dict.Add(
                         new DicomDictionaryEntry(
                             DicomMaskedTag.Parse("xxxx", "0000"),
                             "Group Length",
@@ -131,7 +134,7 @@ namespace Dicom
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                         var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
                         var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                        var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                        var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                         reader.Process();
                     }
                     catch (Exception e)
@@ -148,7 +151,7 @@ namespace Dicom
                             var stream =
                                 assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
                             var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                            var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                             reader.Process();
                         }
                         catch (Exception e)
@@ -158,7 +161,10 @@ namespace Dicom
                                 e);
                         }
                     }
+
+                    _default = dict;
                 }
+                return _default;
             }
         }
 
@@ -166,12 +172,14 @@ namespace Dicom
         {
             get
             {
-                LoadInternalDictionaries();
-                return _default;
+                return EnsureDefaultDictionariesLoaded();
             }
             set
             {
-                lock (_lock) _default = value;
+                lock (_lock)
+                {
+                    _default = value;
+                }
             }
         }
 
