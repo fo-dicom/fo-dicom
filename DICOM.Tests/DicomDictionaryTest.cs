@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing.Drawing2D;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Dicom
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using Xunit;
 
