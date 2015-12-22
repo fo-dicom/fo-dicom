@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Dicom
 {

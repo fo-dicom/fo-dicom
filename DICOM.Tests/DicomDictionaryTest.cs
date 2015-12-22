@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom
 {
     using System.Collections.Generic;
@@ -11,7 +13,7 @@ namespace Dicom
     using Xunit;
 
     [Collection("General")]
-    public class DicomDictionaryTest
+    public class DicomDictionaryTest: IDisposable
     {
         #region Unit tests
 
@@ -57,78 +59,103 @@ namespace Dicom
         [Fact]
         public void Throws_If_Already_Loaded()
         {
-            var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
-            Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+            this.testDomain.DoCallBack(() =>
+            {
+                var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+                Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+            });
         }
 
         [Fact]
         public void Throw_If_Already_Loaded_Implicitly_Via_Getter()
         {
-            var dict = DicomDictionary.Default;
-            Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+            this.testDomain.DoCallBack(() =>
+            {
+                var dict = DicomDictionary.Default;
+                Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+            });
         }
 
         [Fact]
-        public async Task Ensure_MultiThreaded_Init_Runs_Once()
+        public void Ensure_MultiThreaded_Init_Runs_Once()
         {
-            var release = new ManualResetEvent(initialState: false);
-
-            var multipleSimultaneousCallsToDefaultTask = Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() =>
+            this.testDomain.DoCallBack(() =>
             {
-                release.WaitOne();
-                return DicomDictionary.Default;
-            })));
+                var release = new ManualResetEvent(initialState: false);
 
-            release.Set();
+                var multipleSimultaneousCallsToDefaultTask =
+                    Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() =>
+                    {
+                        release.WaitOne();
+                        return DicomDictionary.Default;
+                    })));
 
-            var multipleSimultaneousCallsToDefault = await multipleSimultaneousCallsToDefaultTask;
+                release.Set();
 
-            var firstResolvedDict = multipleSimultaneousCallsToDefault.First();
-            Assert.All(multipleSimultaneousCallsToDefault, dicomDict=>Assert.Equal(dicomDict, firstResolvedDict));
+                var multipleSimultaneousCallsToDefault = multipleSimultaneousCallsToDefaultTask.Result;
+
+                var firstResolvedDict = multipleSimultaneousCallsToDefault.First();
+                Assert.All(multipleSimultaneousCallsToDefault, dicomDict => Assert.Equal(dicomDict, firstResolvedDict));
+            });
         }
 
 
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Including_Private()
         {
-            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
-            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
-            DicomDictionary.EnsureDefaultDictionariesLoaded();
+            this.testDomain.DoCallBack(() =>
+            {
+                DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+                DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+                DicomDictionary.EnsureDefaultDictionariesLoaded();
+            });
         }
 
 
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Excluding_Private()
         {
-            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
-            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
-            DicomDictionary.EnsureDefaultDictionariesLoaded();
+            this.testDomain.DoCallBack(() =>
+            {
+                DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+                DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+                DicomDictionary.EnsureDefaultDictionariesLoaded();
+            });
         }
 
 
         [Fact]
         public void Throws_If_EnsureLoaded_Called_With_And_Without_Private()
         {
-            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
-            Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(false));
+            this.testDomain.DoCallBack(() =>
+            {
+                DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+                Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(false));
+            });
         }
 
 
         [Fact]
         public void Throws_If_EnsureLoaded_Called_Without_And_With_Private()
         {
-            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
-            Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
+            this.testDomain.DoCallBack(() =>
+            {
+                DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+                Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
+            });
         }
 
         [Fact]
         public void EnsureLoaded_Assumes_Loading_Private_Dictionary_Data_By_Default()
         {
-            var dict = DicomDictionary.EnsureDefaultDictionariesLoaded();
-            var secondEnsurCall = DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: true);
-            Assert.Equal(dict, secondEnsurCall);
-            Assert.Throws<DicomDataException>(
-                () => DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: false));
+            this.testDomain.DoCallBack(() =>
+            {
+                var dict = DicomDictionary.EnsureDefaultDictionariesLoaded();
+                var secondEnsurCall = DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: true);
+                Assert.Equal(dict, secondEnsurCall);
+                Assert.Throws<DicomDataException>(
+                    () => DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: false));
+            });
         }
 
         #endregion
@@ -149,6 +176,30 @@ namespace Dicom
             }
         }
 
+        #endregion
+
+        #region appDomain Stuff
+
+        private static int index = 0;
+        private readonly AppDomain testDomain;
+
+        public void Dispose()
+        {
+
+            if (testDomain != null)
+            {
+                System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Unloading.", testDomain.FriendlyName));
+                AppDomain.Unload(testDomain);
+            }
+        }
+
+        public DicomDictionaryTest()
+        {
+            var name = string.Concat("DicomDictionary test appdomain #", ++index);
+            testDomain = AppDomain.CreateDomain(name, AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation);
+            System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Created.", testDomain.FriendlyName));
+
+        }
         #endregion
     }
 }
