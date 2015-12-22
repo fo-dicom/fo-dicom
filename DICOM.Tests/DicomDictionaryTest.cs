@@ -55,7 +55,7 @@ namespace Dicom
         }
 
         [Fact]
-        public void Throw_If_Already_Loaded()
+        public void Throws_If_Already_Loaded()
         {
             var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
             Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
@@ -87,6 +87,49 @@ namespace Dicom
             Assert.All(multipleSimultaneousCallsToDefault, dicomDict=>Assert.Equal(dicomDict, firstResolvedDict));
         }
 
+
+        [Fact]
+        public void Can_Call_EnsureLoaded_Multiple_Times_Including_Private()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+            DicomDictionary.EnsureDefaultDictionariesLoaded();
+        }
+
+
+        [Fact]
+        public void Can_Call_EnsureLoaded_Multiple_Times_Excluding_Private()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+            DicomDictionary.EnsureDefaultDictionariesLoaded();
+        }
+
+
+        [Fact]
+        public void Throws_If_EnsureLoaded_Called_With_And_Without_Private()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded(true);
+            Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(false));
+        }
+
+
+        [Fact]
+        public void Throws_If_EnsureLoaded_Called_Without_And_With_Private()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+            Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
+        }
+
+        [Fact]
+        public void EnsureLoaded_Assumes_Loading_Private_Dictionary_Data_By_Default()
+        {
+            var dict = DicomDictionary.EnsureDefaultDictionariesLoaded();
+            var secondEnsurCall = DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: true);
+            Assert.Equal(dict, secondEnsurCall);
+            Assert.Throws<DicomDataException>(
+                () => DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: false));
+        }
 
         #endregion
 
