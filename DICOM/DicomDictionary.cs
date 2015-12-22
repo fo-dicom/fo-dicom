@@ -178,6 +178,10 @@ namespace Dicom
             {
                 lock (_lock)
                 {
+                    if (_default != null)
+                    {
+                        throw new DicomDataException("Cannot set Default DicomDictionary as it has already been initialised");
+                    }
                     _default = value;
                 }
             }

@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2012-2015 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Drawing.Drawing2D;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Dicom
 {
     using System.Collections.Generic;
@@ -51,6 +55,40 @@ namespace Dicom
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Throw_If_Already_Loaded()
+        {
+            var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+            Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+        }
+
+        [Fact]
+        public void Throw_If_Already_Loaded_Implicitly_Via_Getter()
+        {
+            var dict = DicomDictionary.Default;
+            Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
+        }
+
+        [Fact]
+        public async Task Ensure_MultiThreaded_Init_Runs_Once()
+        {
+            var release = new ManualResetEvent(initialState: false);
+
+            var multipleSimultaneousCallsToDefaultTask = Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() =>
+            {
+                release.WaitOne();
+                return DicomDictionary.Default;
+            })));
+
+            release.Set();
+
+            var multipleSimultaneousCallsToDefault = await multipleSimultaneousCallsToDefaultTask;
+
+            var firstResolvedDict = multipleSimultaneousCallsToDefault.First();
+            Assert.All(multipleSimultaneousCallsToDefault, dicomDict=>Assert.Equal(dicomDict, firstResolvedDict));
+        }
+
 
         #endregion
 
