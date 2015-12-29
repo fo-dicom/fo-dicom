@@ -26,7 +26,10 @@ namespace Dicom.Dump
 
         protected override void OnLoad(EventArgs e)
         {
-            DicomDictionary.EnsureDefaultDictionariesLoaded(ModifierKeys != Keys.Shift);
+			DicomDictionary.LoadInternalDictionaries ();
+            
+			// commented the following line since method doesn't exist on beta3 package
+			//DicomDictionary.EnsureDefaultDictionariesLoaded(ModifierKeys != Keys.Shift);
 
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
