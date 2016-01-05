@@ -234,9 +234,18 @@ namespace Dicom.Network
             await this.SendNextPDUAsync().ConfigureAwait(false);
         }
 
-        private void CloseConnection(Exception exception)
+        private async void CloseConnection(Exception exception)
         {
             if (!_isConnected) return;
+
+            if (exception == null)
+            {
+                await Task.Delay((this.Options ?? DicomServiceOptions.Default).ThreadPoolLinger);
+                lock (this._lock)
+                {
+                    if (this._pduQueue.Count > 0 || this._msgQueue.Count > 0 || this._pending.Count > 0) return;
+                }
+            }
 
             _isConnected = false;
             try
