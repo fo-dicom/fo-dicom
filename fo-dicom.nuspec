@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>fo-dicom-raysearch</id>
-        <version>1.0.38</version>
+        <version>1.0.49</version>
         <title>Fellow Oak DICOM for .NET</title>
         <authors>Colby Dillion</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>

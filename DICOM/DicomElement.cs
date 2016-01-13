@@ -9,9 +9,12 @@ using Dicom.IO;
 using Dicom.IO.Buffer;
 
 using Dicom.Imaging.Mathematics;
+using System.Diagnostics;
 
 namespace Dicom {
-	public abstract class DicomElement : DicomItem {
+
+	[DebuggerDisplay("Tag: {Tag.ToString()}, VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
+  public abstract class DicomElement : DicomItem {
 		protected DicomElement(DicomTag tag, IByteBuffer data) : base(tag) {
 			this.Buffer = data;
 		}
