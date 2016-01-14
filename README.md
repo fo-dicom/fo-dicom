@@ -60,7 +60,9 @@ await file.SaveAsync(@"output.dcm");  // Alt 2
 #### Render Image to JPEG
 ```csharp
 var image = new DicomImage(@"test.dcm");
-image.RenderImage().Save(@"test.jpg");
+image.RenderImage().AsBitmap().Save(@"test.jpg");                     // Windows Forms
+image.RenderImage().AsUIImage().AsJPEG().Save(@"test.jpg", true);     // iOS
+
 ```
 
 #### C-Store SCU

@@ -1,4 +1,4 @@
-#### v2.0.0 (Release Candidate, 1/5/2016)
+#### v2.0.0 (1/14/2016)
 * Removed Modality Dicom Tag in Study Request (#166)
 * Checking for valid Window Center and Window Width values before using in GrayscaleRenderOptions (#161 #163)
 * Initialize managers automatically via reflection (#148 #149)

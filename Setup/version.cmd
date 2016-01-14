@@ -1,1 +1,1 @@
-set version=2.0.0-rc
+set version=2.0.0
