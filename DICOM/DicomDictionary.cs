@@ -41,6 +41,7 @@ namespace Dicom
                 DicomVR.LO,
                 DicomVR.LT,
                 DicomVR.OB,
+                DicomVR.OD,
                 DicomVR.OF,
                 DicomVR.OW,
                 DicomVR.PN,
@@ -50,8 +51,10 @@ namespace Dicom
                 DicomVR.SS,
                 DicomVR.ST,
                 DicomVR.TM,
+                DicomVR.UC,
                 DicomVR.UI,
                 DicomVR.UL,
+                DicomVR.UR,
                 DicomVR.US,
                 DicomVR.UT);
 
