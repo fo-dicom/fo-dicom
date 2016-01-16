@@ -100,6 +100,7 @@
     <Compile Include="Imaging\Mathematics\Histogram.cs" />
     <Compile Include="Imaging\Mathematics\MovingAverage.cs" />
     <Compile Include="Imaging\Render\ImageGraphic.cs" />
+    <Compile Include="IO\Buffer\BulkUriByteBuffer.cs" />
     <Compile Include="IO\IDirectoryReference.cs" />
     <Compile Include="IO\IFileReference.cs" />
     <Compile Include="IO\IOManager.cs" />

@@ -83,6 +83,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Serilog.Desktop", "Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Desktop", "DICOM.Platform\Desktop\DICOM.Desktop.csproj", "{59B38770-D2E7-40B9-8D27-A20691F1CAA9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{A3F3827E-70AB-4683-BE7E-6B90931FE835}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Json", "Serialization\DICOM.Json\DICOM.Json.csproj", "{849A140B-EF3E-4367-90BC-9F9383DC1481}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +185,10 @@ Global
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{849A140B-EF3E-4367-90BC-9F9383DC1481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{849A140B-EF3E-4367-90BC-9F9383DC1481}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{849A140B-EF3E-4367-90BC-9F9383DC1481}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{849A140B-EF3E-4367-90BC-9F9383DC1481}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +216,7 @@ Global
 		{89075100-3F00-44FB-A1CC-F77C10A59667} = {479C8BA1-3659-4EBD-AB6B-651FC1CF43FA}
 		{E3C3DF86-3B14-4E9E-8572-F3B6E147CF77} = {479C8BA1-3659-4EBD-AB6B-651FC1CF43FA}
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9} = {97271825-84EF-4DD0-922F-9B84E629C388}
+		{849A140B-EF3E-4367-90BC-9F9383DC1481} = {A3F3827E-70AB-4683-BE7E-6B90931FE835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True

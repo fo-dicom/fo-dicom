@@ -41,6 +41,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -124,6 +129,7 @@
     <Compile Include="Network\Ports.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\JsonDicomConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DICOM.Native\x64\DICOM.Native64.vcxproj">
@@ -145,6 +151,10 @@
     <ProjectReference Include="..\DICOM\DICOM.Legacy.csproj">
       <Project>{a3550fe3-1cb5-4760-8670-9c8afe0925a3}</Project>
       <Name>DICOM.Legacy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Serialization\DICOM.Json\DICOM.Json.csproj">
+      <Project>{849A140B-EF3E-4367-90BC-9F9383DC1481}</Project>
+      <Name>DICOM.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
