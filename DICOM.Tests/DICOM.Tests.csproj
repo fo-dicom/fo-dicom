@@ -88,6 +88,7 @@
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
     <Compile Include="Imaging\Mathematics\RectFTest.cs" />
+    <Compile Include="Imaging\Render\PixelDataTest.cs" />
     <Compile Include="Imaging\SpatialTransformTest.cs" />
     <Compile Include="Imaging\WinFormsImageTest.cs" />
     <Compile Include="Imaging\WPFImageTest.cs" />
