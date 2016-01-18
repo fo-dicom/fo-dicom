@@ -45,6 +45,8 @@ namespace Dicom.IO.Buffer
 
         private Endian _endian;
 
+        private int milestonesCount;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -154,6 +156,17 @@ namespace Dicom.IO.Buffer
             get
             {
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current milestones level count.
+        /// </summary>
+        public int MilestonesCount
+        {
+            get
+            {
+                return this.milestonesCount;
             }
         }
 

@@ -45,6 +45,11 @@ namespace Dicom.IO
         bool CanRewind { get; }
 
         /// <summary>
+        /// Gets the current milestones level count.
+        /// </summary>
+        int MilestonesCount { get; }
+
+        /// <summary>
         /// Gets one byte from the current position and moves to subsequent position.
         /// </summary>
         /// <returns>Single byte.</returns>

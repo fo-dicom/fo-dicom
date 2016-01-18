@@ -748,7 +748,7 @@ namespace Dicom.IO.Reader
                     if (this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
-                        if (source.HasReachedMilestone())
+                        if (source.HasReachedMilestone() && source.MilestonesCount >= this.sequenceDepth)
                         {
                             this.ResetState();
                             return true;
