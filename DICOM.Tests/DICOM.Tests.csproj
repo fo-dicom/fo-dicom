@@ -167,10 +167,10 @@
     <None Include="Test Data\GH133.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test Data\GH178A.dcm">
+    <None Include="Test Data\GH178.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test Data\GH178B.dcm">
+    <None Include="Test Data\GH184.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\minimumdict.xml.gz">

@@ -9,8 +9,8 @@ namespace Dicom.Bugs
     public class GH178
     {
         [Theory]
-        [InlineData(@".\Test Data\GH178A.dcm")]
-        [InlineData(@".\Test Data\GH178B.dcm")]
+        [InlineData(@".\Test Data\GH178.dcm")]
+        [InlineData(@".\Test Data\GH184.dcm")]
         public void DicomFile_Open_DoesNotThrow(string fileName)
         {
             var e = Record.Exception(() => DicomFile.Open(fileName));
