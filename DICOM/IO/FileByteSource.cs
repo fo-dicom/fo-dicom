@@ -34,6 +34,8 @@ namespace Dicom.IO
 
         private bool disposed;
 
+        private int milestonesCount;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -124,6 +126,17 @@ namespace Dicom.IO
             get
             {
                 return _stream.CanSeek;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current milestones level count.
+        /// </summary>
+        public int MilestonesCount
+        {
+            get
+            {
+                return this.milestonesCount;
             }
         }
 
