@@ -5,6 +5,7 @@ namespace Dicom.Bugs
 {
     using Xunit;
 
+    [Collection("General")]
     public class GH178
     {
         [Theory]
