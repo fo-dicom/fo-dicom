@@ -128,6 +128,17 @@ namespace Dicom.IO
         }
 
         /// <summary>
+        /// Gets the milestone levels count.
+        /// </summary>
+        public int MilestonesCount
+        {
+            get
+            {
+                return this._milestones.Count;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the size of what is considered a large object.
         /// </summary>
         public int LargeObjectSize { get; set; }
