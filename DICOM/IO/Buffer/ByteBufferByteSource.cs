@@ -157,6 +157,17 @@ namespace Dicom.IO.Buffer
             }
         }
 
+        /// <summary>
+        /// Gets the milestone levels count.
+        /// </summary>
+        public int MilestonesCount
+        {
+            get
+            {
+                return this._milestones.Count;
+            }
+        }
+
         #endregion
 
         #region METHODS
