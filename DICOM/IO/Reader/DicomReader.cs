@@ -429,6 +429,15 @@ namespace Dicom.IO.Reader
 
                             source.Skip(2);
                             this.length = source.GetUInt32();
+
+                            // CP-246 (#177) handling
+                            // assume that Undefined Length in explicit datasets with VR UN are sequences 
+                            // According to CP-246 the sequence shall be handled as ILE, but this will be handled later...
+                            // in the current code this needs to be restricted to privates 
+                            if (this.length == UndefinedLength && this._vr == DicomVR.UN && this._tag.IsPrivate)
+                            {
+                                this._vr = DicomVR.SQ;
+                            }
                         }
                     }
                     else
@@ -514,7 +523,25 @@ namespace Dicom.IO.Reader
                             this._implicit = true;
                         }
                         var last = source.Position;
+
+                        // Conformance with CP-246 (#177)
+                        var needtoChangeEndian = false;
+                        if (parsedVR == DicomVR.UN && !this._tag.IsPrivate)
+                        {
+                            this._implicit = true;
+                            needtoChangeEndian = source.Endian == Endian.Big;
+                        }
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Little;
+                        }
+
                         this.ParseItemSequence(source);
+
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Big;
+                        }
 
                         // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
                         // Fix reading of SQ with parsed VR of UN
@@ -629,7 +656,25 @@ namespace Dicom.IO.Reader
                             this._implicit = true;
                         }
                         var last = source.Position;
+
+                        // Conformance with CP-246 (#177)
+                        var needtoChangeEndian = false;
+                        if (parsedVR == DicomVR.UN && !this._tag.IsPrivate)
+                        {
+                            this._implicit = true;
+                            needtoChangeEndian = source.Endian == Endian.Big;
+                        }
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Little;
+                        }
+
                         await this.ParseItemSequenceAsync(source).ConfigureAwait(false);
+
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Big;
+                        }
 
                         // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
                         // Fix reading of SQ with parsed VR of UN
