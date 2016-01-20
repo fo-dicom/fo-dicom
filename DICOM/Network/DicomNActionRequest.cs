@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace Dicom.Network {
+	using Newtonsoft.Json.Schema;
+
 	public class DicomNActionRequest : DicomRequest {
 		public DicomNActionRequest(DicomDataset command) : base(command) {
 		}

@@ -731,11 +731,12 @@ namespace Dicom.Network {
 
 			DicomPresentationContext pc = null;
 			if (msg is DicomCStoreRequest) {
-				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
+				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AbstractSyntaxUID && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
 				if (pc == null)
-					pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
-			} else {
-				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+					pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AbstractSyntaxUID);
+			}
+			else {
+				pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.AbstractSyntaxUID);
 			}
 
 			if (pc == null) {

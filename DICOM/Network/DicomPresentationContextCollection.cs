@@ -44,7 +44,7 @@ namespace Dicom.Network {
 			if (request is DicomCStoreRequest) {
 				var cstore = request as DicomCStoreRequest;
 
-				var pcs = _pc.Values.Where(x => x.AbstractSyntax == request.SOPClassUID);
+				var pcs = _pc.Values.Where(x => x.AbstractSyntax == request.AbstractSyntaxUID);
 				if (cstore.TransferSyntax == DicomTransferSyntax.ImplicitVRLittleEndian)
 					pcs = pcs.Where(x => x.GetTransferSyntaxes().Contains(DicomTransferSyntax.ImplicitVRLittleEndian));
 				else
@@ -59,13 +59,13 @@ namespace Dicom.Network {
 						tx.AddRange(cstore.AdditionalTransferSyntaxes);
 					tx.Add(DicomTransferSyntax.ExplicitVRLittleEndian);
 					tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
-					
-					Add(cstore.SOPClassUID, tx.ToArray());
+
+					Add(cstore.AbstractSyntaxUID, tx.ToArray());
 				}
 			} else {
-				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
+				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.AbstractSyntaxUID);
 				if (pc == null)
-					Add(request.SOPClassUID, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
+					Add(request.AbstractSyntaxUID, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
 			}
 		}
 

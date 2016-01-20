@@ -13,6 +13,7 @@ namespace Dicom.Network {
 			SOPClassUID = request.SOPClassUID;
 			RequestMessageID = request.MessageID;
 			Status = status;
+			abstractSyntaxUID = request.abstractSyntaxUID;
 		}
 
 		public ushort RequestMessageID {

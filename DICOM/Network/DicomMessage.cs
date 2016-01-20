@@ -16,6 +16,8 @@ namespace Dicom.Network {
 			Command = command;
 		}
 
+		protected internal DicomUID abstractSyntaxUID;
+
 		public DicomCommandField Type {
 			get { return Command.Get<DicomCommandField>(DicomTag.CommandField); }
 			set { Command.Add(DicomTag.CommandField, (ushort)value); }
@@ -46,6 +48,22 @@ namespace Dicom.Network {
 					Command.Add(DicomTag.AffectedSOPClassUID, value);
 					break;
 				}
+			}
+		}
+
+		public DicomUID AbstractSyntaxUID
+		{
+			get
+			{
+				if (abstractSyntaxUID == null)
+				{
+					return SOPClassUID;
+				}
+				return abstractSyntaxUID;
+			}
+			set
+			{
+				abstractSyntaxUID = value;
 			}
 		}
 
