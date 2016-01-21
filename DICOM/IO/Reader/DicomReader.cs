@@ -313,7 +313,15 @@ namespace Dicom.IO.Reader
                         source.Mark();
                         var bytes = source.GetBytes(2);
                         var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                        if (!DicomVR.TryParse(vr, out this._vr))
+
+                        if (string.IsNullOrWhiteSpace(vr))
+                        {
+                            if (this._entry != null)
+                            {
+                                this._vr = this._entry.ValueRepresentations.FirstOrDefault();
+                            }
+                        }
+                        else if (!DicomVR.TryParse(vr, out this._vr))
                         {
                             // unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
                             this._vr = DicomVR.Implicit;

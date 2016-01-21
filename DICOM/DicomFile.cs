@@ -44,6 +44,7 @@ namespace Dicom
             FileMetaInfo = new DicomFileMetaInformation();
             Dataset = new DicomDataset();
             Format = DicomFileFormat.DICOM3;
+            IsPartial = false;
         }
 
         public DicomFile(DicomDataset dataset)
@@ -51,6 +52,7 @@ namespace Dicom
             Dataset = dataset;
             FileMetaInfo = new DicomFileMetaInformation(Dataset);
             Format = DicomFileFormat.DICOM3;
+            IsPartial = false;
         }
 
         #endregion
@@ -76,6 +78,11 @@ namespace Dicom
         /// Gets the DICOM dataset of the file.
         /// </summary>
         public DicomDataset Dataset { get; protected set; }
+
+        /// <summary>
+        /// Gets whether the parsing of the file ended prematurely.
+        /// </summary>
+        public bool IsPartial { get; protected set; }
 
         #endregion
 
@@ -226,14 +233,21 @@ namespace Dicom
                 using (var source = new FileByteSource(df.File))
                 {
                     var reader = new DicomFileReader();
-                    if (reader.Read(
+                    var result = reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
                         new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                        stop) == DicomReaderResult.Error)
+                        stop);
+
+                    if (result == DicomReaderResult.Processing)
+                    {
+                        throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                    }
+                    if (result == DicomReaderResult.Error)
                     {
                         return null;
                     }
+                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                     df.Format = reader.FileFormat;
 
@@ -278,14 +292,21 @@ namespace Dicom
                 var source = new StreamByteSource(stream);
 
                 var reader = new DicomFileReader();
-                if (reader.Read(
+                var result = reader.Read(
                     source,
                     new DicomDatasetReaderObserver(df.FileMetaInfo),
                     new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                    stop) == DicomReaderResult.Error)
+                    stop);
+
+                if (result == DicomReaderResult.Processing)
+                {
+                    throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                }
+                if (result == DicomReaderResult.Error)
                 {
                     return null;
                 }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                 df.Format = reader.FileFormat;
 
@@ -343,10 +364,15 @@ namespace Dicom
                             new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                             stop).ConfigureAwait(false);
 
+                    if (result == DicomReaderResult.Processing)
+                    {
+                        throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                    }
                     if (result == DicomReaderResult.Error)
                     {
                         return null;
                     }
+                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                     df.Format = reader.FileFormat;
                     df.Dataset.InternalTransferSyntax = reader.Syntax;
@@ -398,10 +424,15 @@ namespace Dicom
                         new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                         stop).ConfigureAwait(false);
 
+                if (result == DicomReaderResult.Processing)
+                {
+                    throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                }
                 if (result == DicomReaderResult.Error)
                 {
                     return null;
                 }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                 df.Format = reader.FileFormat;
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
@@ -470,13 +501,20 @@ namespace Dicom
                 using (var source = new FileByteSource(file))
                 {
                     DicomFileReader reader = new DicomFileReader();
-                    if (reader.Read(
+                    var result = reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding)) == DicomReaderResult.Error)
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
+
+                    if (result == DicomReaderResult.Processing)
+                    {
+                        throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                    }
+                    if (result == DicomReaderResult.Error)
                     {
                         return null;
                     }
+                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                     df.Format = reader.FileFormat;
 
