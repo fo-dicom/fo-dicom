@@ -56,7 +56,7 @@ namespace Dicom.IO.Buffer
             byte[] data = new byte[count];
             for (; pos < Buffers.Count && count > 0; pos++)
             {
-                int remain = (int)Buffers[pos].Size - offset;
+                int remain = Math.Min((int)Buffers[pos].Size - offset, count);
 
                 if (Buffers[pos].IsMemory)
                 {
