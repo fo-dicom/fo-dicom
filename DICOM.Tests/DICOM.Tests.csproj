@@ -78,6 +78,7 @@
     <Compile Include="Bugs\GH133.cs" />
     <Compile Include="Bugs\GH064.cs" />
     <Compile Include="Bugs\GH177.cs" />
+    <Compile Include="Bugs\GH179.cs" />
     <Compile Include="Bugs\GH178.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
@@ -175,6 +176,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH178.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH179.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH184.dcm">
