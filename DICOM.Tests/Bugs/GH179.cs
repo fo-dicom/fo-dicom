@@ -9,12 +9,21 @@ namespace Dicom.Bugs
     public class GH179
     {
         [Theory]
-        [InlineData(@".\Test Data\GH179.dcm")]
+        [InlineData(@".\Test Data\GH179A.dcm")]
         public void DicomFile_Contains_CommentsOnRadiationDoseIncluded(string fileName)
         {
             var file = DicomFile.Open(fileName);
             var actual = file.Dataset.Contains(DicomTag.CommentsOnRadiationDose);
             Assert.True(actual);
+        }
+
+        [Theory]
+        [InlineData(@".\Test Data\GH179B.dcm")]
+        public void DicomFile_Open_PartialDatasetAvailable(string fileName)
+        {
+            var file = DicomFile.Open(fileName);
+            Assert.True(file.Dataset != null);
+            Assert.True(file.IsPartial);
         }
     }
 }
