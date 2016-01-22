@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Dicom {
 
-	[DebuggerDisplay("Tag: {Tag.ToString()}, VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
+	[DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
   public abstract class DicomElement : DicomItem {
 		protected DicomElement(DicomTag tag, IByteBuffer data) : base(tag) {
 			this.Buffer = data;
