@@ -56,7 +56,7 @@ namespace Dicom.Network
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Needs further attention")]
         [InlineData(20)]
         [InlineData(200)]
         public void Send_MultipleTimes_AllRecognized(int expected)
@@ -120,7 +120,7 @@ namespace Dicom.Network
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Needs further attention")]
         [InlineData(20)]
         [InlineData(200)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
