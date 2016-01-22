@@ -118,6 +118,7 @@ await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 * [Alexander Saratow](https://github.com/swalex)
 * [Justin Wake](https://github.com/jwake)
 * [Ryan Melena](https://github.com/RyanMelenaNoesis)
+* [Rickard Holmberg](https://github.com/rickardraysearch)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
 * [captainstark](https://github.com/captainstark)

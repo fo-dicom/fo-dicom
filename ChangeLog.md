@@ -1,3 +1,11 @@
+#### v2.0.1 (1/22/2016)
+* DICOM CP-246 not handled correctly in DicomReader (#177 #192)
+* Fix for #64 breaks parsing of valid datasets (#178 #184 #194)
+* Invalid VR in explicit dataset leads to 'silent' stop (#179 #196)
+* DicomDictionary.UnknownTag missing new VRs OD, UC and UR (#183 #185)
+* DicomPixelData.Create is broken for signed pixel data with BitsAllocated != BitsStored (#187 #189)
+* CompositeByteBuffer ArgumentException (#195 #198)
+
 #### v2.0.0 (1/14/2016)
 * Removed Modality Dicom Tag in Study Request (#166)
 * Checking for valid Window Center and Window Width values before using in GrayscaleRenderOptions (#161 #163)
