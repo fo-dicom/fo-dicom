@@ -17,7 +17,7 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.dll" target="lib\net45" />
-        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.pdb" target="lib\net45" />
+        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.dll" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.pdb" target="lib\portable-net45+netcore45+wpa81" />
     </files>
 </package>
