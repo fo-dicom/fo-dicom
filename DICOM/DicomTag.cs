@@ -33,6 +33,16 @@ namespace Dicom
             PrivateCreator = privateCreator;
         }
 
+        public static implicit operator DicomTag(uint tag)
+        {
+            return new DicomTag((ushort)((tag >> 16) & 0xffff), (ushort)(tag & 0xffff));
+        }
+
+        public static explicit operator uint(DicomTag tag)
+        {
+            return (uint)(tag.Group << 16) | tag.Element;
+        }
+
         public ushort Group { get; private set; }
 
         public ushort Element { get; private set; }
