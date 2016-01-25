@@ -1,8 +1,12 @@
-﻿namespace Dicom.Serialization
+﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace Dicom.Serialization
 {
     using System;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
     using System.Text;
 
@@ -75,11 +79,11 @@
             Assert.Equal("1", (string)obj["00200032"].Value[0]);
             Assert.Equal("13", (string)obj["00200032"].Value[1]);
             Assert.Equal("0", (string)obj["00200032"].Value[2]);
+            
             // Would be nice, but Json.NET mangles the parsed json. Verify string instead:
             // Assert.Equal("-0", (string)obj["00200032"].Value[3]);
             Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000E+00]}}");
         }
-
 
         /// <summary>
         /// Tests that empty strings serialize to null, and not "", per PS3.18, F.2.5 "DICOM JSON Model Null Values"
@@ -122,9 +126,9 @@
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IByteBuffer>(DicomTag.PixelData);
-            Assert.True(buffer is BulkUriByteBuffer);
-            Assert.Equal("http://www.example.com/testdicom.dcm", ((BulkUriByteBuffer)buffer).BulkDataUri);
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.PixelData);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
 
         /// <summary>
@@ -161,10 +165,21 @@
         public void BulkDataRoundTrip()
         {
             var target = new DicomDataset
-        {
-            new DicomOtherWord(DicomTag.PixelData, new BulkUriByteBuffer("http://www.example.com/bulk.dcm"))
-        };
+            {
+                new DicomOtherWord(DicomTag.PixelData, new BulkDataUriByteBuffer("http://www.example.com/bulk.dcm"))
+            };
             VerifyJsonTripleTrip(target);
+        }
+
+        private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
+        {
+            var request = WebRequest.Create(bulkData.BulkDataUri);
+            using (var response = request.GetResponse())
+            using (var responseStream = response.GetResponseStream())
+            {
+                bulkData.Data = new byte[response.ContentLength];
+                responseStream.Read(bulkData.Data, 0, (int)response.ContentLength);
+            }
         }
 
         /// <summary>
@@ -175,12 +190,10 @@
         {
             File.WriteAllText("test.txt", "xxx!");
             var path = Path.GetFullPath("test.txt");
-            var bulkData = new BulkUriByteBuffer("file:" + path);
+            var bulkData = new BulkDataUriByteBuffer("file:" + path);
 
             Assert.Throws<InvalidOperationException>(() => bulkData.Data);
             Assert.Throws<InvalidOperationException>(() => bulkData.Size);
-
-            bulkData.GetData();
 
             var target = new DicomDataset { new DicomOtherWord(DicomTag.PixelData, bulkData) };
             var json = JsonConvert.SerializeObject(target, Formatting.Indented, new JsonDicomConverter());
@@ -189,7 +202,8 @@
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
             Assert.Equal(json, json2);
 
-            ((BulkUriByteBuffer)reconstituated.Get<IByteBuffer>(DicomTag.PixelData)).GetData();
+            DownloadBulkData(reconstituated.Get<BulkDataUriByteBuffer>(DicomTag.PixelData));
+            DownloadBulkData(bulkData);
 
             Assert.True(ValueEquals(target, reconstituated));
 
@@ -258,11 +272,11 @@
             {
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
             }
-            else if (a is BulkUriByteBuffer)
+            else if (a is IBulkDataUriByteBuffer)
             {
-                var buffer = b as BulkUriByteBuffer;
+                var buffer = b as IBulkDataUriByteBuffer;
                 if (buffer != null)
-                    return ((BulkUriByteBuffer)a).BulkDataUri == buffer.BulkDataUri;
+                    return ((IBulkDataUriByteBuffer)a).BulkDataUri == buffer.BulkDataUri;
                 else
                     return false;
             }

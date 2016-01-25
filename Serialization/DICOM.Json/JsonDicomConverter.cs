@@ -78,6 +78,16 @@ namespace Dicom.Serialization
 
     #endregion
 
+    /// <summary>
+    /// Create an instance of a IBulkDataUriByteBuffer. Override this method to use a different IBulkDataUriByteBuffer implementation in applications.
+    /// </summary>
+    /// <param name="bulkDataUri">The URI of a bulk data element as defined in <see cref="http://dicom.nema.org/medical/dicom/current/output/chtml/part19/chapter_A.html#table_A.1.5-2">Table A.1.5-2 in PS3.19</see>.</param>
+    /// <returns>An instance of a Bulk URI Byte buffer.</returns>
+    protected virtual IBulkDataUriByteBuffer CreateBulkDataUriByteBuffer(string bulkDataUri)
+    {
+      return new BulkDataUriByteBuffer(bulkDataUri);
+    }
+
     #region Utilities
 
     private static DicomTag ParseTag(string tagstr)
@@ -349,7 +359,7 @@ namespace Dicom.Serialization
 
     private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
     {
-      var buffer = elem.Buffer as BulkUriByteBuffer;
+      var buffer = elem.Buffer as IBulkDataUriByteBuffer;
       if (buffer != null)
       {
         writer.WritePropertyName("BulkDataURI");
@@ -616,11 +626,11 @@ namespace Dicom.Serialization
       return data;
     }
 
-    private static IByteBuffer ReadJsonBulkDataUri(JsonReader reader)
+    private IBulkDataUriByteBuffer ReadJsonBulkDataUri(JsonReader reader)
     {
       reader.Read();
       if (reader.TokenType != JsonToken.String) throw new JsonReaderException("Malformed DICOM json");
-      var data = new BulkUriByteBuffer((string)reader.Value);
+      var data = CreateBulkDataUriByteBuffer((string)reader.Value);
       reader.Read();
       return data;
     }
