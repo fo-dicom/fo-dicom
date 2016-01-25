@@ -125,6 +125,7 @@ await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 * [lste](https://github.com/lste)
 * [0xLigety](https://github.com/0xLigety)
 * [Thunderstriker](https://github.com/Thunderstriker)
+* [Ed55](https://github.com/Ed55)
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
