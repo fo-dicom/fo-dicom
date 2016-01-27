@@ -593,7 +593,7 @@ namespace Dicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray())
+            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
@@ -789,7 +789,7 @@ namespace Dicom
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray())
+            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
