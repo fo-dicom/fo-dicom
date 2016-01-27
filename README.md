@@ -108,6 +108,10 @@ client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
 await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
+### Sample applications
+There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
+that were previously included in the *Examples* sub-folder of the VS solutions.
+
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
 * [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
