@@ -4,6 +4,9 @@
 namespace Dicom
 {
     using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading;
 
     using Dicom.IO.Buffer;
 
@@ -83,6 +86,26 @@ namespace Dicom
             Assert.Equal(2, actual.Length);
             Assert.Equal("Bar^Foo", actual[1]);
         }
+
+        [Fact]
+        public void DicomDecimalString_WorksInCommaCulture()
+        {
+          var currentCulture = Thread.CurrentThread.CurrentCulture;
+          try
+          {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
+
+            var decimals = new[] { 0.1m, 1e10m, -1m, 0, 3.141592656m };
+            var element = new DicomDecimalString(DicomTag.CumulativeMetersetWeight, decimals);
+            Assert.Equal(decimals, element.Get<decimal[]>());
+            Assert.Equal(decimals.Select(x => (double)x), element.Get<double[]>());
+          }
+          finally
+          {
+            Thread.CurrentThread.CurrentCulture = currentCulture;
+          }
+        }
+
 
         #endregion
     }
