@@ -703,18 +703,23 @@ namespace Dicom
             {
                 if (_formats == null)
                 {
-                    _formats = new string[11];
-                    _formats[0] = "yyyyMMddHHmmsszzz";
-                    _formats[1] = "yyyyMMddHHmmsszz";
-                    _formats[2] = "yyyyMMddHHmmssz";
-                    _formats[3] = "yyyyMMddHHmmss.fff";
-                    _formats[4] = "yyyyMMddHHmmss.ff";
-                    _formats[5] = "yyyyMMddHHmmss.f";
-                    _formats[6] = "yyyyMMddHHmmss";
-                    _formats[7] = "yyyyMMddHHmm";
-                    _formats[8] = "yyyyMMdd";
-                    _formats[9] = "yyyy.MM.dd";
-                    _formats[10] = "yyyy/MM/dd";
+                    _formats = new[]
+                    {
+                        "yyyyMMddHHmmsszzz",
+                        "yyyyMMddHHmmsszz",
+                        "yyyyMMddHHmmssz",
+                        "yyyyMMddHHmmss.ffffff",
+                        "yyyyMMddHHmmss.fffff",
+                        "yyyyMMddHHmmss.ffff",
+                        "yyyyMMddHHmmss.fff",
+                        "yyyyMMddHHmmss.ff",
+                        "yyyyMMddHHmmss.f",
+                        "yyyyMMddHHmmss",
+                        "yyyyMMddHHmm",
+                        "yyyyMMdd",
+                        "yyyy.MM.dd",
+                        "yyyy/MM/dd"
+                    };
                 }
                 return _formats;
             }
