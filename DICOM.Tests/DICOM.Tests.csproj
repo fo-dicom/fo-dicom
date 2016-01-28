@@ -163,7 +163,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Test Data\GH195.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
