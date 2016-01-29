@@ -27,3 +27,4 @@ timeout /T 5
 @goto end
 
 :end
+pause
