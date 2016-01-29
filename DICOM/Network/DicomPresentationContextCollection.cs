@@ -73,12 +73,28 @@ namespace Dicom.Network
             }
             else
             {
-                var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
-                if (pc == null)
-                    Add(
-                        request.SOPClassUID,
-                        DicomTransferSyntax.ExplicitVRLittleEndian,
-                        DicomTransferSyntax.ImplicitVRLittleEndian);
+                if (request.PresentationContext != null)
+                {
+                    var pc =
+                        _pc.Values.FirstOrDefault(
+                            x =>
+                                x.AbstractSyntax == request.PresentationContext.AbstractSyntax &&
+                                request.PresentationContext.GetTransferSyntaxes().All(y => x.GetTransferSyntaxes().Contains(y)));
+
+                    if (pc == null)
+                        Add(
+                            request.PresentationContext.AbstractSyntax,
+                            request.PresentationContext.GetTransferSyntaxes().ToArray());
+                }
+                else
+                {
+                    var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
+                    if (pc == null)
+                        Add(
+                            request.SOPClassUID,
+                            DicomTransferSyntax.ExplicitVRLittleEndian,
+                            DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
             }
         }
 
