@@ -82,9 +82,12 @@ namespace Dicom.Network
                                 request.PresentationContext.GetTransferSyntaxes().All(y => x.GetTransferSyntaxes().Contains(y)));
 
                     if (pc == null)
-                        Add(
-                            request.PresentationContext.AbstractSyntax,
-                            request.PresentationContext.GetTransferSyntaxes().ToArray());
+                    {
+                        var transferSyntaxes = request.PresentationContext.GetTransferSyntaxes().ToArray();
+                        if (!transferSyntaxes.Any())
+                            transferSyntaxes = new[] { DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian };
+                        Add(request.PresentationContext.AbstractSyntax, transferSyntaxes);
+                    }
                 }
                 else
                 {
