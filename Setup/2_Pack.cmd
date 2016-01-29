@@ -28,4 +28,6 @@ echo Creating packages...
 
 forfiles /m fo-dicom*.nuspec /c "cmd /c nuget.exe pack @File -Version %version% -OutputDirectory %output%"
 
+pause
+
 :eof

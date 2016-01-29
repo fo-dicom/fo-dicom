@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.Universal</id>
+        <version>$version$</version>
+        <title>Fellow Oak DICOM Universal Windows Platform Libraries</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Universal Windows Platform specific support libraries for fo-dicom.</description>
+        <language>en-US</language>
+        <dependencies>
+			<dependency id="fo-dicom.Core" version="$version$" />
+        </dependencies>
+    </metadata>
+    <files>
+		<file src="Targets\fo-dicom.Windows.targets" target="build\uap\fo-dicom.Platform.targets" />
+        <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.winmd" target="lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="runtimes\win10-x86\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.pdb" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.pri" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-x86\native" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x86\native\Dicom.Platform\Properties" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.dll" target="runtimes\win10-x64\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.pdb" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Platform\Windows\bin\x64\Release\Dicom.Platform.pri" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-x64\native" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-x64\native\Dicom.Platform\Properties" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.dll" target="runtimes\win10-arm\lib\uap" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.pdb" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Platform\Windows\bin\ARM\Release\Dicom.Platform.pri" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.dll" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pdb" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Native\bin\ARM\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.pri" target="runtimes\win10-arm\native" />
+        <file src="..\DICOM.Platform\Windows\Properties\Dicom.Platform.rd.xml" target="runtimes\win10-arm\native\Dicom.Platform\Properties" />
+    </files>
+</package>

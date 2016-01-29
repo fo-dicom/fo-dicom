@@ -125,9 +125,9 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Rickard Holmberg](https://github.com/rickardraysearch)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
+* [Johannes Liegert](https://github.com/0xLigety)
 * [captainstark](https://github.com/captainstark)
 * [lste](https://github.com/lste)
-* [0xLigety](https://github.com/0xLigety)
 * [Thunderstriker](https://github.com/Thunderstriker)
 * [Ed55](https://github.com/Ed55)
 
