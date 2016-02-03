@@ -55,6 +55,16 @@ namespace Dicom.Network
         public int MaxAsyncOpsPerformed { get; set; }
 
         /// <summary>
+        /// Gets the remote host.
+        /// </summary>
+        public string RemoteHost { get; internal set; }
+
+        /// <summary>
+        /// Gets the remote port.
+        /// </summary>
+        public int RemotePort { get; internal set; }
+
+        /// <summary>
         /// Gets the remote implementation class UID.
         /// </summary>
         public DicomUID RemoteImplementationClassUID { get; internal set; }
@@ -69,6 +79,9 @@ namespace Dicom.Network
         /// </summary>
         public uint MaximumPDULength { get; internal set; }
 
+        /// <summary>
+        /// Gets the supported presentation contexts.
+        /// </summary>
         public DicomPresentationContextCollection PresentationContexts { get; private set; }
 
         /// <summary>
@@ -83,6 +96,8 @@ namespace Dicom.Network
             var sb = new StringBuilder();
             sb.AppendFormat("Calling AE Title:       {0}\n", CallingAE);
             sb.AppendFormat("Called AE Title:        {0}\n", CalledAE);
+            sb.AppendFormat("Remote host:            {0}\n", RemoteHost);
+            sb.AppendFormat("Remote port:            {0}\n", RemotePort);
             sb.AppendFormat(
                 "Implementation Class:   {0}\n",
                 this.RemoteImplementationClassUID ?? DicomImplementation.ClassUID);

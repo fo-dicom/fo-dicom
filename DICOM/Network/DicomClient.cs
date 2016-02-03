@@ -130,7 +130,15 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
-            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = host,
+                RemotePort = port
+            };
+            this.InitializeSend(this.networkStream.AsStream(), assoc);
 
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
@@ -153,7 +161,15 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
-            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = host,
+                RemotePort = port
+            };
+            this.InitializeSend(this.networkStream.AsStream(), assoc);
 
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
@@ -169,7 +185,13 @@ namespace Dicom.Network
         {
             if (!this.CanSend) return;
 
-            this.InitializeSend(stream, callingAe, calledAe);
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed
+            };
+            this.InitializeSend(stream, assoc);
+
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
         }
@@ -185,7 +207,13 @@ namespace Dicom.Network
         {
             if (!this.CanSend) return;
 
-            this.InitializeSend(stream, callingAe, calledAe);
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed
+            };
+            this.InitializeSend(stream, assoc);
+
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
         }
@@ -282,26 +310,21 @@ namespace Dicom.Network
             this.aborted = true;
         }
 
-        private void InitializeSend(Stream stream, string callingAe, string calledAe)
+        private void InitializeSend(Stream stream, DicomAssociation association)
         {
-            var assoc = new DicomAssociation(callingAe, calledAe)
-                            {
-                                MaxAsyncOpsInvoked = this.asyncInvoked,
-                                MaxAsyncOpsPerformed = this.asyncPerformed
-                            };
             foreach (var request in this.requests)
             {
-                assoc.PresentationContexts.AddFromRequest(request);
+                association.PresentationContexts.AddFromRequest(request);
             }
             foreach (var context in this.AdditionalPresentationContexts)
             {
-                assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
+                association.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
             }
 
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
 
-            this.service = new DicomServiceUser(this, stream, assoc, this.Options, this.Logger);
+            this.service = new DicomServiceUser(this, stream, association, this.Options, this.Logger);
         }
 
         private void FinalizeSend()
