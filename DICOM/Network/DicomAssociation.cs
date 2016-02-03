@@ -30,7 +30,7 @@ namespace Dicom.Network
 
         public int MaxAsyncOpsPerformed { get; set; }
 
-        public DicomUID RemoteImplemetationClassUID { get; internal set; }
+        public DicomUID RemoteImplementationClassUID { get; internal set; }
 
         public string RemoteImplementationVersion { get; internal set; }
 
@@ -45,7 +45,7 @@ namespace Dicom.Network
             sb.AppendFormat("Called AE Title:        {0}\n", CalledAE);
             sb.AppendFormat(
                 "Implementation Class:   {0}\n",
-                RemoteImplemetationClassUID ?? DicomImplementation.ClassUID);
+                this.RemoteImplementationClassUID ?? DicomImplementation.ClassUID);
             sb.AppendFormat("Implementation Version: {0}\n", RemoteImplementationVersion ?? DicomImplementation.Version);
             sb.AppendFormat("Maximum PDU Length:     {0}\n", MaximumPDULength);
             sb.AppendFormat("Async Ops Invoked:      {0}\n", MaxAsyncOpsInvoked);

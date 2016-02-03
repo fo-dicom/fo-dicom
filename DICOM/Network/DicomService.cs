@@ -475,7 +475,7 @@ namespace Dicom.Network
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID =
                                     _dimse.Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
-                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplemetationClassUID;
+                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID;
                                 file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
