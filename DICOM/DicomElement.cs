@@ -5,6 +5,7 @@ namespace Dicom
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -13,6 +14,7 @@ namespace Dicom
     using Dicom.IO;
     using Dicom.IO.Buffer;
 
+    [DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
     public abstract class DicomElement : DicomItem
     {
         protected DicomElement(DicomTag tag, IByteBuffer data)
