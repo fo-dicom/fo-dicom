@@ -78,7 +78,15 @@ namespace Dicom
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
             DicomItem item = null;
-            if (!_items.TryGetValue(tag, out item)) return defaultValue;
+            if (!_items.TryGetValue(tag, out item))
+            {
+              if (defaultValue is ValueType && Nullable.GetUnderlyingType(typeof(T)) == null)
+              {
+                throw new ArgumentException(String.Format("Value is null. Cannot convert {0} to null.", typeof(T)));
+              }
+
+              return defaultValue;
+            }
 
             if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
 

@@ -7,6 +7,8 @@ namespace Dicom
     using System.Collections.Generic;
     using System.Linq;
 
+    using Dicom.IO;
+
     using Xunit;
 
     [Collection("General")]
@@ -91,6 +93,20 @@ namespace Dicom
             var data = dataset.Get<string[]>(tag);
             Assert.Equal(4, data.Length);
             Assert.Equal("Desouky^Hesham", data[2]);
+        }
+
+        [Fact]
+        public void Read_empty_tag()
+        {
+          var dataset = new DicomDataset();
+          try
+          {
+            dataset.Get<int>(DicomTag.MetersetRate);
+          }
+          catch (ArgumentException e)
+          {
+            Assert.True(e.Message.Contains("Value is null. Cannot convert"));
+          }
         }
 
         [Theory]
