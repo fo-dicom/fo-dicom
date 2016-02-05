@@ -413,6 +413,7 @@ namespace Dicom.Network {
 								if (DicomMessage.IsRequest(_dimse.Type))
 									ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 								else
+                                    //ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 									_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, _dimse);
 								_dimse = null;
 								return;
@@ -471,6 +472,7 @@ namespace Dicom.Network {
 							if (DicomMessage.IsRequest(_dimse.Type))
 								ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 							else
+                                //ThreadPool.QueueUserWorkItem(PerformDimseCallback, _dimse);
 								_processQueue.Queue((_dimse as DicomResponse).RequestMessageID, PerformDimseCallback, _dimse);
 							_dimse = null;
 						}
