@@ -66,12 +66,21 @@ namespace Dicom
 
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
-          DicomItem item = null;
-          if (!_items.TryGetValue(tag, out item))
-          {
-            return defaultValue;
-          }
-          return Get<T>(tag, n);
+            DicomItem item = null;
+            if (!_items.TryGetValue(tag, out item))
+            {
+                return defaultValue;
+            }
+            if (item.GetType().GetTypeInfo().IsSubclassOf(typeof(DicomElement)))
+            {
+                var element = (DicomElement)item;
+                if (n >= element.Count || element.Count == 0)
+                {
+                    return defaultValue;
+                }                
+            }
+
+            return Get<T>(tag, n);
         }
 
         public T Get<T>(DicomTag tag, T defaultValue)
