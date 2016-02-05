@@ -71,7 +71,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return Dataset.Get<int>(DicomTag.NumberOfFrames, 0, 1);
+                return Dataset.Get<ushort>(DicomTag.NumberOfFrames, 0, 1);
             }
             set
             {
