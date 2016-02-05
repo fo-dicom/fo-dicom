@@ -64,10 +64,14 @@ namespace Dicom
             }
         }
 
-
-        public T Get<T>(DicomTag tag, int n = 0)
+        public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
-            return Get<T>(tag, n, default(T));
+          DicomItem item = null;
+          if (!_items.TryGetValue(tag, out item))
+          {
+            return defaultValue;
+          }
+          return Get<T>(tag, n);
         }
 
         public T Get<T>(DicomTag tag, T defaultValue)
@@ -75,17 +79,17 @@ namespace Dicom
             return Get<T>(tag, 0, defaultValue);
         }
 
-        public T Get<T>(DicomTag tag, int n, T defaultValue)
+        public T Get<T>(DicomTag tag, int n = 0)
         {
             DicomItem item = null;
             if (!_items.TryGetValue(tag, out item))
             {
-              if (defaultValue is ValueType && Nullable.GetUnderlyingType(typeof(T)) == null)
+              if (default(T) != null)
               {
                 throw new ArgumentException(String.Format("Value is null. Cannot convert {0} to null.", typeof(T)));
               }
 
-              return defaultValue;
+              return default(T);
             }
 
             if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
@@ -101,8 +105,16 @@ namespace Dicom
                 if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) return (T)(object)element.Buffer;
 
                 if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
+                
+                if (n >= element.Count || element.Count == 0)
+                {
+                  if (typeof(T).GetTypeInfo().IsValueType)
+                  {
+                      throw new ArgumentException(String.Format("No value found. Cannot convert {0} to null.", typeof(T)));
+                  }
 
-                if (n >= element.Count || element.Count == 0) return defaultValue;
+                  return default(T);
+                }
 
                 return (T)(object)element.Get<T>(n);
             }
