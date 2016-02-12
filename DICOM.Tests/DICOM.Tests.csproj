@@ -86,6 +86,7 @@
     <Compile Include="Bugs\GH195.cs" />
     <Compile Include="Bugs\GH179.cs" />
     <Compile Include="Bugs\GH178.cs" />
+    <Compile Include="Bugs\GH220.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
@@ -165,6 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\GH220.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\GH195.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
