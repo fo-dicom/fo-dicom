@@ -1,3 +1,6 @@
+#### v2.0.2 (TBD)
+* "Index was outside the bounds of the array" in PrecalculatedLUT indexer (#219 #221)
+
 #### v2.0.1 (1/22/2016)
 * DICOM CP-246 not handled correctly in DicomReader (#177 #192)
 * Fix for #64 breaks parsing of valid datasets (#178 #184 #194)
