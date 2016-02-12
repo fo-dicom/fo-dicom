@@ -500,7 +500,7 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate && this.length > 0)
                     {
                         if (!IsPrivateSequence(source))
                         {
@@ -633,7 +633,7 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate && this.length > 0)
                     {
                         if (!IsPrivateSequence(source))
                         {
