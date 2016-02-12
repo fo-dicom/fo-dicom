@@ -66,7 +66,7 @@ namespace Dicom.Imaging.LUT
                 {
                     int p = value + _offset;
                     if (p < 0) return _table[0];
-                    if (p >= _table.Length) p = _table[_table.Length - 1];
+                    if (p >= _table.Length) return _table[_table.Length - 1];
                     return _table[p];
                 }
             }
