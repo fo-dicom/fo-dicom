@@ -81,6 +81,7 @@
     <Compile Include="Bugs\GH195.cs" />
     <Compile Include="Bugs\GH179.cs" />
     <Compile Include="Bugs\GH178.cs" />
+    <Compile Include="Bugs\GH223.cs" />
     <Compile Include="Bugs\GH220.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
@@ -194,6 +195,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH184.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH223.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\minimumdict.xml.gz">
