@@ -1,4 +1,4 @@
-#### v2.0.2 (TBD)
+#### v2.0.2 (2/15/2016)
 * "Index was outside the bounds of the array" in PrecalculatedLUT indexer (#219 #221)
 * DicomReader reads past end of file if empty private sequence is last attribute in dataset (#220 #222)
 * DicomReader reads past end of file if first private sequence item is zero length (#223 #224)
