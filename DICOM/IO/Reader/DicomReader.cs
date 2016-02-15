@@ -1027,9 +1027,11 @@ namespace Dicom.IO.Reader
 
                 try
                 {
-                    source.GetUInt16(); // group
-                    source.GetUInt16(); // element
-                    source.GetUInt32(); // length
+                    // Skip "item" tags; continue skipping until length is non-zero (#223)
+                    while (new DicomTag(source.GetUInt16(), source.GetUInt16()) == DicomTag.Item    // group, element
+                           & source.GetUInt32() == 0)   // length (using & instead of && enforces RHS to be evaluated regardless of LHS)
+                    {
+                    }
 
                     source.GetUInt16(); // group
                     source.GetUInt16(); // element
