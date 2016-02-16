@@ -10,12 +10,12 @@ namespace Dicom.Network
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Dicom.IO;
+
     using Windows.Networking;
     using Windows.Networking.Sockets;
     using Windows.Security.Cryptography.Certificates;
     using Windows.Storage.Streams;
-
-    using Dicom.IO;
 
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="INetworkStream"/>.
