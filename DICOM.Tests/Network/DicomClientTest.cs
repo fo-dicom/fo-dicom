@@ -360,7 +360,7 @@ namespace Dicom.Network
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
             public MockCEchoProvider(INetworkStream stream, Logger log)
-                : base(stream, log)
+                : base(stream, DicomEncoding.Default, log)
             {
             }
 

@@ -105,7 +105,7 @@ namespace Dicom.Network
                 };
 
             public SimpleCStoreProvider(INetworkStream stream, Logger log)
-                : base(stream, log)
+                : base(stream, DicomEncoding.Default, log)
             {
             }
 

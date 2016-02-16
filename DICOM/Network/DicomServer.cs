@@ -5,6 +5,7 @@ namespace Dicom.Network
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -25,9 +26,12 @@ namespace Dicom.Network
 
         private readonly string certificateName;
 
+        private readonly Encoding fallbackEncoding;
+
         private readonly CancellationTokenSource cancellationSource;
 
         private readonly List<T> clients;
+
 
         #endregion
 
@@ -39,11 +43,13 @@ namespace Dicom.Network
         /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger.</param>
-        public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Logger logger = null)
+        public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Encoding fallbackEncoding = null, Logger logger = null)
         {
             this.port = port;
             this.certificateName = certificateName;
+            this.fallbackEncoding = fallbackEncoding;
             this.cancellationSource = new CancellationTokenSource();
             this.clients = new List<T>();
 
@@ -142,7 +148,7 @@ namespace Dicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            return (T)Activator.CreateInstance(typeof(T), stream, this.Logger);
+            return (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
         }
 
         /// <summary>

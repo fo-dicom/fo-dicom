@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Text;
+
 namespace Dicom.Network
 {
     using System;
@@ -58,6 +60,11 @@ namespace Dicom.Network
         /// Gets or sets time in milliseconds to keep connection alive for additional requests.
         /// </summary>
         public int Linger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fallback encoding.
+        /// </summary>
+        public Encoding FallbackEncoding { get; set; }
 
         /// <summary>
         /// Gets or sets logger that is passed to the underlying <see cref="DicomService"/> implementation.
@@ -323,7 +330,7 @@ namespace Dicom.Network
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
 
-            this.service = new DicomServiceUser(this, stream, association, this.Options, this.Logger);
+            this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);
         }
 
         private void FinalizeSend()
@@ -371,8 +378,9 @@ namespace Dicom.Network
                 INetworkStream stream,
                 DicomAssociation association,
                 DicomServiceOptions options,
+                Encoding fallbackEncoding,
                 Logger log)
-                : base(stream, log)
+                : base(stream, fallbackEncoding, log)
             {
                 this.client = client;
                 this.isLingering = false;

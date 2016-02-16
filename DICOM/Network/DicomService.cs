@@ -57,25 +57,10 @@ namespace Dicom.Network
         /// Initializes a new instance of the <see cref="DicomService"/> class.
         /// </summary>
         /// <param name="stream">Network stream.</param>
-        /// <param name="log">Logger</param>
-        protected DicomService(INetworkStream stream, Logger log)
-            : this(stream, DicomEncoding.Default, log)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DicomService"/> class.
-        /// </summary>
-        /// <param name="stream">Network stream.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="log">Logger</param>
         protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
         {
-            if (fallbackEncoding == null)
-            {
-                throw new ArgumentNullException("fallbackEncoding");
-            }
-
             _network = stream;
             _lock = new object();
             _pduQueue = new Queue<PDU>();
@@ -83,7 +68,7 @@ namespace Dicom.Network
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
             _isConnected = true;
-            _fallbackEncoding = fallbackEncoding;
+            _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = DicomServiceOptions.Default;
 
