@@ -25,7 +25,7 @@ namespace Dicom.Network
         [Obsolete]
         public static IAsyncResult BeginSend(
             this DicomClient @this,
-            Stream stream,
+            INetworkStream stream,
             string callingAe,
             string calledAe,
             AsyncCallback callback,

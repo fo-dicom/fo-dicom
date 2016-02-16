@@ -10,7 +10,7 @@ namespace Dicom.Network
 {
     public class DicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
     {
-        public DicomCEchoProvider(Stream stream, Logger log)
+        public DicomCEchoProvider(INetworkStream stream, Logger log)
             : base(stream, log)
         {
         }

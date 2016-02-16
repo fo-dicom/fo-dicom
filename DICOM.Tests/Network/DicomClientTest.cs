@@ -327,7 +327,7 @@ namespace Dicom.Network
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockCEchoProvider(Stream stream, Logger log)
+            public MockCEchoProvider(INetworkStream stream, Logger log)
                 : base(stream, log)
             {
             }

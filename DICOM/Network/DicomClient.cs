@@ -138,7 +138,7 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream.AsStream(), assoc);
+            this.InitializeSend(this.networkStream, assoc);
 
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
@@ -169,7 +169,7 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream.AsStream(), assoc);
+            this.InitializeSend(this.networkStream, assoc);
 
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
@@ -181,7 +181,7 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(Stream stream, string callingAe, string calledAe)
+        public void Send(INetworkStream stream, string callingAe, string calledAe)
         {
             if (!this.CanSend) return;
 
@@ -203,7 +203,7 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(Stream stream, string callingAe, string calledAe)
+        public async Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
         {
             if (!this.CanSend) return;
 
@@ -310,7 +310,7 @@ namespace Dicom.Network
             this.aborted = true;
         }
 
-        private void InitializeSend(Stream stream, DicomAssociation association)
+        private void InitializeSend(INetworkStream stream, DicomAssociation association)
         {
             foreach (var request in this.requests)
             {
@@ -369,7 +369,7 @@ namespace Dicom.Network
 
             internal DicomServiceUser(
                 DicomClient client,
-                Stream stream,
+                INetworkStream stream,
                 DicomAssociation association,
                 DicomServiceOptions options,
                 Logger log)

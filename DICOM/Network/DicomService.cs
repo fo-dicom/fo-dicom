@@ -23,7 +23,7 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly Stream _network;
+        private readonly INetworkStream _network;
 
         private readonly object _lock;
 
@@ -58,7 +58,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="stream">Network stream.</param>
         /// <param name="log">Logger</param>
-        protected DicomService(Stream stream, Logger log)
+        protected DicomService(INetworkStream stream, Logger log)
             : this(stream, DicomEncoding.Default, log)
         {
         }
@@ -69,7 +69,7 @@ namespace Dicom.Network
         /// <param name="stream">Network stream.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="log">Logger</param>
-        protected DicomService(Stream stream, Encoding fallbackEncoding, Logger log)
+        protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
         {
             if (fallbackEncoding == null)
             {
@@ -269,11 +269,13 @@ namespace Dicom.Network
             {
                 while (this.IsConnected)
                 {
+                    var stream = this._network.AsStream();
+
                     // Read PDU header
                     _readLength = 6;
 
                     var buffer = new byte[6];
-                    var count = await this._network.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
 
                     do
                     {
@@ -289,8 +291,7 @@ namespace Dicom.Network
                         {
                             count =
                                 await
-                                this._network.ReadAsync(buffer, 6 - this._readLength, this._readLength)
-                                    .ConfigureAwait(false);
+                                stream.ReadAsync(buffer, 6 - this._readLength, this._readLength).ConfigureAwait(false);
                         }
                     }
                     while (this._readLength > 0);
@@ -302,7 +303,7 @@ namespace Dicom.Network
 
                     Array.Resize(ref buffer, length + 6);
 
-                    count = await this._network.ReadAsync(buffer, 6, length).ConfigureAwait(false);
+                    count = await stream.ReadAsync(buffer, 6, length).ConfigureAwait(false);
 
                     // Read PDU
                     do
@@ -319,7 +320,7 @@ namespace Dicom.Network
                         {
                             count =
                                 await
-                                this._network.ReadAsync(buffer, buffer.Length - this._readLength, this._readLength)
+                                stream.ReadAsync(buffer, buffer.Length - this._readLength, this._readLength)
                                     .ConfigureAwait(false);
                         }
                     }
@@ -331,7 +332,11 @@ namespace Dicom.Network
                     {
                         case 0x01:
                             {
-                                Association = new DicomAssociation();
+                                Association = new DicomAssociation
+                                                  {
+                                                      RemoteHost = this._network.Host,
+                                                      RemotePort = this._network.Port
+                                                  };
                                 var pdu = new AAssociateRQ(Association);
                                 pdu.Read(raw);
                                 LogID = Association.CallingAE;
@@ -785,7 +790,7 @@ namespace Dicom.Network
 
                 try
                 {
-                    await this._network.WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
+                    await this._network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {

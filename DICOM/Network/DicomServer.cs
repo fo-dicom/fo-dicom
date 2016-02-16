@@ -141,7 +141,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="stream">Network stream.</param>
         /// <returns>An instance of the DICOM service class.</returns>
-        protected virtual T CreateScp(Stream stream)
+        protected virtual T CreateScp(INetworkStream stream)
         {
             return (T)Activator.CreateInstance(typeof(T), stream, this.Logger);
         }
@@ -168,7 +168,7 @@ namespace Dicom.Network
 
                     if (networkStream != null)
                     {
-                        var scp = this.CreateScp(networkStream.AsStream());
+                        var scp = this.CreateScp(networkStream);
                         if (this.Options != null)
                         {
                             scp.Options = this.Options;

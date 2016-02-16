@@ -104,7 +104,7 @@ namespace Dicom.Network
                     DicomTransferSyntax.ImplicitVRLittleEndian
                 };
 
-            public SimpleCStoreProvider(Stream stream, Logger log)
+            public SimpleCStoreProvider(INetworkStream stream, Logger log)
                 : base(stream, log)
             {
             }
