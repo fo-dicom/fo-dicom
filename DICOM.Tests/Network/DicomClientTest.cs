@@ -4,7 +4,6 @@
 namespace Dicom.Network
 {
     using System;
-    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -15,6 +14,24 @@ namespace Dicom.Network
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTest
     {
+        #region Fields
+
+        private static string remoteHost;
+
+        private static int remotePort;
+
+        #endregion
+
+        #region Constructors
+
+        public DicomClientTest()
+        {
+            remoteHost = null;
+            remotePort = 0;
+        }
+
+        #endregion
+
         #region Unit tests
 
         [Fact]
@@ -321,6 +338,21 @@ namespace Dicom.Network
             }
         }
 
+        [Fact]
+        public void Send_RecordAssociationData_AssociationContainsHostAndPort()
+        {
+            int port = Ports.GetNext();
+            using (new DicomServer<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.NotNull(remoteHost);
+                Assert.NotEqual(port, remotePort);
+            }
+        }
+
         #endregion
 
         #region Support classes
@@ -335,6 +367,8 @@ namespace Dicom.Network
             public void OnReceiveAssociationRequest(DicomAssociation association)
             {
                 Thread.Sleep(1000);
+                DicomClientTest.remoteHost = association.RemoteHost;
+                DicomClientTest.remotePort = association.RemotePort;
                 this.SendAssociationAccept(association);
             }
 
