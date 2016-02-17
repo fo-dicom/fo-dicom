@@ -108,7 +108,7 @@ namespace Dicom
         }
 
         [Fact]
-        public void Get_IntWithoutArgument_ShouldThrowIfTagNonExisting()
+        public void Get_IntWithoutArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
             var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate));
@@ -116,7 +116,7 @@ namespace Dicom
         }
 
         [Fact]
-        public void Get_IntWithIntArgument_ShouldThrowIfTagNonExisting()
+        public void Get_IntWithIntArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
             var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate, 20));
@@ -124,10 +124,32 @@ namespace Dicom
         }
 
         [Fact]
-        public void Get_NonGenericWithIntArgument_ShouldNotThrowIfTagNonExisting()
+        public void Get_NonGenericWithIntArgumentTagNonExisting_ShouldNotThrow()
         {
             var dataset = new DicomDataset();
             var e = Record.Exception(() => Assert.Equal(20, dataset.Get(DicomTag.MetersetRate, 20)));
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void Get_IntOutsideRange_ShouldThrow()
+        {
+            var tag = DicomTag.SelectorISValue;
+            var dataset = new DicomDataset();
+            dataset.Add(tag, 3, 4, 5);
+
+            var e = Record.Exception(() => dataset.Get<int>(tag, 10));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_NonGenericIntArgumentEmptyElement_ShouldNotThrow()
+        {
+            var tag = DicomTag.SelectorISValue;
+            var dataset = new DicomDataset();
+            dataset.Add(tag, new int[0]);
+
+            var e = Record.Exception(() => Assert.Equal(10, dataset.Get(tag, 10)));
             Assert.Null(e);
         }
 
