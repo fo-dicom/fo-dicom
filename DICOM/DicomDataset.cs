@@ -67,51 +67,22 @@ namespace Dicom
 
         public T Get<T>(DicomTag tag, int n = 0)
         {
-            return Get<T>(tag, n, default(T));
+            return Get<T>(tag, n, false, default(T));
+        }
+
+        public int Get(DicomTag tag, int defaultValue)
+        {
+            return Get<int>(tag, 0, true, defaultValue);
         }
 
         public T Get<T>(DicomTag tag, T defaultValue)
         {
-            return Get<T>(tag, 0, defaultValue);
+            return Get<T>(tag, 0, true, defaultValue);
         }
 
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
-            DicomItem item = null;
-            if (!_items.TryGetValue(tag, out item)) return defaultValue;
-
-            if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
-
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomItem))) return (T)(object)item;
-
-            if (typeof(T) == typeof(DicomVR)) return (T)(object)item.ValueRepresentation;
-
-            if (item.GetType().GetTypeInfo().IsSubclassOf(typeof(DicomElement)))
-            {
-                DicomElement element = (DicomElement)item;
-
-                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) return (T)(object)element.Buffer;
-
-                if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
-
-                if (n >= element.Count || element.Count == 0) return defaultValue;
-
-                return (T)(object)element.Get<T>(n);
-            }
-
-            if (item.GetType() == typeof(DicomSequence))
-            {
-                if (typeof(T) == typeof(DicomCodeItem)) return (T)(object)new DicomCodeItem((DicomSequence)item);
-
-                if (typeof(T) == typeof(DicomMeasuredValue)) return (T)(object)new DicomMeasuredValue((DicomSequence)item);
-
-                if (typeof(T) == typeof(DicomReferencedSOP)) return (T)(object)new DicomReferencedSOP((DicomSequence)item);
-            }
-
-            throw new DicomDataException(
-                "Unable to get a value type of {0} from DICOM item of type {1}",
-                typeof(T),
-                item.GetType());
+            return Get<T>(tag, n, true, defaultValue);
         }
 
         /// <summary>
@@ -504,6 +475,53 @@ namespace Dicom
         public override string ToString()
         {
             return String.Format("DICOM Dataset [{0} items]", _items.Count);
+        }
+
+        private T Get<T>(DicomTag tag, int n, bool useDefault, T defaultValue)
+        {
+            DicomItem item = null;
+            if (!_items.TryGetValue(tag, out item))
+            {
+                if (useDefault) return defaultValue;
+                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+            }
+
+            if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
+
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomItem))) return (T)(object)item;
+
+            if (typeof(T) == typeof(DicomVR)) return (T)(object)item.ValueRepresentation;
+
+            if (item.GetType().GetTypeInfo().IsSubclassOf(typeof(DicomElement)))
+            {
+                DicomElement element = (DicomElement)item;
+
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) return (T)(object)element.Buffer;
+
+                if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
+
+                if (n >= element.Count || element.Count == 0)
+                {
+                    if (useDefault) return defaultValue;
+                    throw new DicomDataException("Element empty or index: {0} exceeds element count: {1}", n, element.Count);
+                }
+
+                return (T)(object)element.Get<T>(n);
+            }
+
+            if (item.GetType() == typeof(DicomSequence))
+            {
+                if (typeof(T) == typeof(DicomCodeItem)) return (T)(object)new DicomCodeItem((DicomSequence)item);
+
+                if (typeof(T) == typeof(DicomMeasuredValue)) return (T)(object)new DicomMeasuredValue((DicomSequence)item);
+
+                if (typeof(T) == typeof(DicomReferencedSOP)) return (T)(object)new DicomReferencedSOP((DicomSequence)item);
+            }
+
+            throw new DicomDataException(
+                "Unable to get a value type of {0} from DICOM item of type {1}",
+                typeof(T),
+                item.GetType());
         }
     }
 }
