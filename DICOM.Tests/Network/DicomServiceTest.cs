@@ -5,6 +5,7 @@ namespace Dicom.Network
 {
     using System;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
 
     using Dicom.Log;
@@ -104,8 +105,8 @@ namespace Dicom.Network
                     DicomTransferSyntax.ImplicitVRLittleEndian
                 };
 
-            public SimpleCStoreProvider(INetworkStream stream, Logger log)
-                : base(stream, DicomEncoding.Default, log)
+            public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
             {
             }
 

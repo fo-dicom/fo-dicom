@@ -4,6 +4,7 @@
 namespace Dicom.Network
 {
     using System;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -359,8 +360,8 @@ namespace Dicom.Network
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockCEchoProvider(INetworkStream stream, Logger log)
-                : base(stream, DicomEncoding.Default, log)
+            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
             {
             }
 
