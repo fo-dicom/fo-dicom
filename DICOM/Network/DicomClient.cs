@@ -194,7 +194,9 @@ namespace Dicom.Network
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
                 MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = stream.Host,
+                RemotePort = stream.Port
             };
             this.InitializeSend(stream, assoc);
 
@@ -216,7 +218,9 @@ namespace Dicom.Network
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
                 MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = stream.Host,
+                RemotePort = stream.Port
             };
             this.InitializeSend(stream, assoc);
 
