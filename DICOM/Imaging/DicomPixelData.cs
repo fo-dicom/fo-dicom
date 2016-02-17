@@ -177,7 +177,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return Dataset.Get<PlanarConfiguration>(DicomTag.PlanarConfiguration);
+                return Dataset.Get(DicomTag.PlanarConfiguration, PlanarConfiguration.Interleaved);
             }
             set
             {
@@ -192,7 +192,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null);
             }
             set
             {
