@@ -350,6 +350,7 @@ namespace Dicom.Network
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 Assert.NotNull(remoteHost);
+                Assert.True(remotePort > 0);
                 Assert.NotEqual(port, remotePort);
             }
         }
