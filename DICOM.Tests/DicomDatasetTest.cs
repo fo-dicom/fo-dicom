@@ -107,6 +107,30 @@ namespace Dicom
             Assert.Equal(values.Last(), data.Last());
         }
 
+        [Fact]
+        public void Get_IntWithoutArgument_ShouldThrowIfTagNonExisting()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_IntWithIntArgument_ShouldThrowIfTagNonExisting()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate, 20));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_NonGenericWithIntArgument_ShouldNotThrowIfTagNonExisting()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => Assert.Equal(20, dataset.Get(DicomTag.MetersetRate, 20)));
+            Assert.Null(e);
+        }
+
         #endregion
 
         #region Support data
