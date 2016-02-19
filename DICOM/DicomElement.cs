@@ -333,7 +333,19 @@ namespace Dicom
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), typeof(T));
+                Type t = typeof(T);
+                if (Nullable.GetUnderlyingType(t) != null)
+                {
+                  t = Nullable.GetUnderlyingType(t);
+                }
+
+                if (t.GetTypeInfo().IsEnum)
+                {
+                  var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
+                  return (T)Enum.Parse(t, s, true);
+                }
+
+                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), t);
             }
 
             throw new InvalidCastException(
@@ -859,7 +871,13 @@ namespace Dicom
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(_values[item], typeof(T));
+                var t = typeof(T);
+                if (Nullable.GetUnderlyingType(t) != null)
+                {
+                  t = Nullable.GetUnderlyingType(t);
+                }
+
+                return (T)Convert.ChangeType(_values[item], t);
             }
 
             return base.Get<T>(item);
