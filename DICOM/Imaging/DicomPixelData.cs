@@ -192,7 +192,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null);
+                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
             }
             set
             {

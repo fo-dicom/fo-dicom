@@ -282,7 +282,7 @@ namespace Dicom.Imaging
         /// <returns>Color map associated with the identified Photometric Interpretation.</returns>
         private static Color32[] GetColorMap(DicomDataset dataset)
         {
-            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null)
+            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
                    == PhotometricInterpretation.Monochrome1
                        ? ColorTable.Monochrome1
                        : ColorTable.Monochrome2;

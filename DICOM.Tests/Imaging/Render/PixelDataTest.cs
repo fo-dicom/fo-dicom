@@ -136,13 +136,14 @@ namespace Dicom.Imaging.Render
       return PixelDataFactory.Create(
         DicomPixelData.Create(new DicomDataset
         {
+          { DicomTag.PhotometricInterpretation, PhotometricInterpretation.Monochrome1.Value },
           { DicomTag.BitsAllocated, bitsAllocated },
           { DicomTag.BitsStored, bitsStored },
           { DicomTag.HighBit, highBit },
           { DicomTag.PixelData, data.SelectMany(getBytes).ToArray() },
           { DicomTag.PixelRepresentation, pixelRepresentation },
           { DicomTag.Columns, (ushort)1 },
-          { DicomTag.Rows, (ushort)data.Length },
+          { DicomTag.Rows, (ushort)data.Length }
         }),
         0);
     }
