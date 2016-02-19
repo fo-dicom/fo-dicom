@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Text;
+
 namespace Dicom.Network
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -59,6 +60,11 @@ namespace Dicom.Network
         /// Gets or sets time in milliseconds to keep connection alive for additional requests.
         /// </summary>
         public int Linger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fallback encoding.
+        /// </summary>
+        public Encoding FallbackEncoding { get; set; }
 
         /// <summary>
         /// Gets or sets logger that is passed to the underlying <see cref="DicomService"/> implementation.
@@ -130,7 +136,15 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
-            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = host,
+                RemotePort = port
+            };
+            this.InitializeSend(this.networkStream, assoc);
 
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
@@ -153,7 +167,15 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
-            this.InitializeSend(this.networkStream.AsStream(), callingAe, calledAe);
+
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = host,
+                RemotePort = port
+            };
+            this.InitializeSend(this.networkStream, assoc);
 
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
@@ -165,11 +187,19 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(Stream stream, string callingAe, string calledAe)
+        public void Send(INetworkStream stream, string callingAe, string calledAe)
         {
             if (!this.CanSend) return;
 
-            this.InitializeSend(stream, callingAe, calledAe);
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = stream.Host,
+                RemotePort = stream.Port
+            };
+            this.InitializeSend(stream, assoc);
+
             this.completeNotifier.Task.Wait();
             this.FinalizeSend();
         }
@@ -181,11 +211,19 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(Stream stream, string callingAe, string calledAe)
+        public async Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
         {
             if (!this.CanSend) return;
 
-            this.InitializeSend(stream, callingAe, calledAe);
+            var assoc = new DicomAssociation(callingAe, calledAe)
+            {
+                MaxAsyncOpsInvoked = this.asyncInvoked,
+                MaxAsyncOpsPerformed = this.asyncPerformed,
+                RemoteHost = stream.Host,
+                RemotePort = stream.Port
+            };
+            this.InitializeSend(stream, assoc);
+
             await this.completeNotifier.Task.ConfigureAwait(false);
             this.FinalizeSend();
         }
@@ -282,26 +320,21 @@ namespace Dicom.Network
             this.aborted = true;
         }
 
-        private void InitializeSend(Stream stream, string callingAe, string calledAe)
+        private void InitializeSend(INetworkStream stream, DicomAssociation association)
         {
-            var assoc = new DicomAssociation(callingAe, calledAe)
-                            {
-                                MaxAsyncOpsInvoked = this.asyncInvoked,
-                                MaxAsyncOpsPerformed = this.asyncPerformed
-                            };
             foreach (var request in this.requests)
             {
-                assoc.PresentationContexts.AddFromRequest(request);
+                association.PresentationContexts.AddFromRequest(request);
             }
             foreach (var context in this.AdditionalPresentationContexts)
             {
-                assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
+                association.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
             }
 
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
 
-            this.service = new DicomServiceUser(this, stream, assoc, this.Options, this.Logger);
+            this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);
         }
 
         private void FinalizeSend()
@@ -346,11 +379,12 @@ namespace Dicom.Network
 
             internal DicomServiceUser(
                 DicomClient client,
-                Stream stream,
+                INetworkStream stream,
                 DicomAssociation association,
                 DicomServiceOptions options,
+                Encoding fallbackEncoding,
                 Logger log)
-                : base(stream, log)
+                : base(stream, fallbackEncoding, log)
             {
                 this.client = client;
                 this.isLingering = false;
