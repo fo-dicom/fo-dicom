@@ -106,6 +106,79 @@ namespace Dicom
           }
         }
 
+        [Fact]
+        public void DicomValueElement_HasData_GetNullableReturnsDefinedNullable()
+        {
+            const ushort expected = 1;
+            var element = new DicomUnsignedShort(DicomTag.ALinesPerFrame, expected);
+            var actual = element.Get<ushort?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomValueElement_HasData_GetNullableEnumReturnsDefinedNullableEnum()
+        {
+            const MockEnum expected = MockEnum.Two;
+            var element = new DicomSignedLong(DicomTag.ReferencePixelX0, (int)expected);
+            var actual = element.Get<MockEnum?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomIntegerString_HasData_GetNullableReturnsDefinedNullable()
+        {
+            const double expected = -30.0;
+            var element = new DicomIntegerString(DicomTag.EchoPeakPosition, (int)expected);
+            var actual = element.Get<double?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomIntegerString_HasData_GetNullableEnumReturnsDefinedNullableEnum()
+        {
+            const MockEnum expected = MockEnum.One;
+            var element = new DicomIntegerString(DicomTag.NumberOfBeams, (int)expected);
+            var actual = element.Get<MockEnum?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomDecimalString_HasData_GetNullableReturnsDefinedNullable()
+        {
+            const int expected = -30;
+            var element = new DicomDecimalString(DicomTag.ChannelOffset, expected);
+            var actual = element.Get<int?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomCodeString_HasData_GetNullableEnumReturnsDefinedNullableEnum()
+        {
+            const MockEnum expected = MockEnum.Zero;
+            var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
+            var actual = element.Get<MockEnum?>().Value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomCodeString_HasData_GetEnumReturnsDefinedEnum()
+        {
+            const MockEnum expected = MockEnum.Zero;
+            var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
+            var actual = element.Get<MockEnum>();
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Support types
+
+        private enum MockEnum
+        {
+            Zero,
+            One,
+            Two
+        }
 
         #endregion
     }

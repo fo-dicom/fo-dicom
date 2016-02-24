@@ -153,6 +153,17 @@ namespace Dicom
             Assert.Null(e);
         }
 
+        [Fact]
+        public void Get_NullableReturnType_ReturnsDefinedValue()
+        {
+            var tag = DicomTag.SelectorULValue;
+            const uint expected = 100u;
+            var dataset = new DicomDataset { { tag, expected } };
+
+            var actual = dataset.Get<uint?>(tag).Value;
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Support data
