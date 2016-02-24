@@ -12,18 +12,28 @@ namespace Dicom
 {
     using System.Reflection;
 
+    /// <summary>
+    /// A collection of <see cref="DicomItem">DICOM items</see>.
+    /// </summary>
     public class DicomDataset : IEnumerable<DicomItem>
     {
         private IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
         public DicomDataset()
         {
             _items = new SortedDictionary<DicomTag, DicomItem>();
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
+        /// <param name="items">A collection of DICOM items.</param>
         public DicomDataset(params DicomItem[] items)
             : this()
         {
@@ -33,6 +43,10 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
+        /// <param name="items">A collection of DICOM items.</param>
         public DicomDataset(IEnumerable<DicomItem> items)
             : this()
         {
@@ -42,7 +56,7 @@ namespace Dicom
             }
         }
 
-        /// <summary>DICOM transfer syntax of this dataset.</summary>
+        /// <summary>Gets the DICOM transfer syntax of this dataset.</summary>
         public DicomTransferSyntax InternalTransferSyntax
         {
             get
@@ -64,22 +78,54 @@ namespace Dicom
             }
         }
 
-
+        /// <summary>
+        /// Gets the item or element value of the specified <paramref name="tag"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of the return value.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="n">Item index (for multi-valued elements).</param>
+        /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified 
+        /// <paramref name="n">item index</paramref> is out-of-range.</exception>
         public T Get<T>(DicomTag tag, int n = 0)
         {
             return Get<T>(tag, n, false, default(T));
         }
 
+        /// <summary>
+        /// Gets the integer element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
+        /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the element corresponding to <paramref name="tag"/> cannot be converted to an integer.</exception>
         public int Get(DicomTag tag, int defaultValue)
         {
             return Get<int>(tag, 0, true, defaultValue);
         }
 
+        /// <summary>
+        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of the return value.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
+        /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
+        /// <remarks>In code, consider to use this method with implicit type specification, since <typeparamref name="T"/> can be inferred from
+        /// <paramref name="defaultValue"/>, e.g. prefer <code>dataset.Get(tag, "Default")</code> over <code>dataset.Get&lt;string&gt;(tag, "Default")</code>.</remarks>
         public T Get<T>(DicomTag tag, T defaultValue)
         {
             return Get<T>(tag, 0, true, defaultValue);
         }
 
+        /// <summary>
+        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of the return value.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="n">Item index (for multi-valued elements).</param>
+        /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
+        /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
             return Get<T>(tag, n, true, defaultValue);
@@ -121,6 +167,11 @@ namespace Dicom
             return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
         }
 
+        /// <summary>
+        /// Add a collection of DICOM items to the dataset (replace existing).
+        /// </summary>
+        /// <param name="items">Collection of DICOM items to add.</param>
+        /// <returns>The dataset instance.</returns>
         public DicomDataset Add(params DicomItem[] items)
         {
             if (items != null)
@@ -137,6 +188,11 @@ namespace Dicom
             return this;
         }
 
+        /// <summary>
+        /// Add a collection of DICOM items to the dataset (replace existing).
+        /// </summary>
+        /// <param name="items">Collection of DICOM items to add.</param>
+        /// <returns>The dataset instance.</returns>
         public DicomDataset Add(IEnumerable<DicomItem> items)
         {
             if (items != null)
@@ -153,6 +209,13 @@ namespace Dicom
             return this;
         }
 
+        /// <summary>
+        /// Add single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>. Replace existing item.
+        /// </summary>
+        /// <typeparam name="T">Type of added values.</typeparam>
+        /// <param name="tag">DICOM tag of the added item.</param>
+        /// <param name="values">Values of the added item.</param>
+        /// <returns>The dataset instance.</returns>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
             var entry = DicomDictionary.Default[tag];
@@ -472,11 +535,27 @@ namespace Dicom
             return _items.Values.GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return String.Format("DICOM Dataset [{0} items]", _items.Count);
         }
 
+        /// <summary>
+        /// Gets the item or element value of the specified <paramref name="tag"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of the return value.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="n">Item index (for multi-valued elements).</param>
+        /// <param name="useDefault">Indicates whether to use default value (true) or throw (false) if <paramref name="tag"/> is not contained in dataset.</param>
+        /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset and <paramref name="useDefault"/> is true.</param>
+        /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         private T Get<T>(DicomTag tag, int n, bool useDefault, T defaultValue)
         {
             DicomItem item = null;
