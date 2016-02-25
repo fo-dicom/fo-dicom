@@ -647,7 +647,8 @@ namespace Dicom
 
                 if (t == typeof(decimal)) return (T)(object)_values;
 
-                var tmp = _values.Select(x => Convert.ChangeType(x, t));
+                var tu = Nullable.GetUnderlyingType(t) ?? t;
+                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
 
                 if (t == typeof(object)) return (T)(object)tmp.ToArray();
                 if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
@@ -868,12 +869,38 @@ namespace Dicom
                 return (T)(object)_values[item];
             }
 
-            if (typeof(T) == typeof(int[]) || typeof(T) == typeof(object[]))
+            if (typeof(T).GetTypeInfo().IsArray)
             {
-                return (T)(object)_values;
-            }
+                var t = typeof(T).GetElementType();
 
-            if (typeof(T).GetTypeInfo().IsValueType)
+                if (t == typeof(int)) return (T)(object)_values;
+
+                var tu = Nullable.GetUnderlyingType(t) ?? t;
+                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
+
+                if (t == typeof(object)) return (T)(object)tmp.ToArray();
+                if (t == typeof(decimal)) return (T)(object)tmp.Cast<decimal>().ToArray();
+                if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
+                if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
+                if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
+                if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
+                if (t == typeof(byte)) return (T)(object)tmp.Cast<byte>().ToArray();
+                if (t == typeof(ulong)) return (T)(object)tmp.Cast<ulong>().ToArray();
+                if (t == typeof(uint)) return (T)(object)tmp.Cast<uint>().ToArray();
+                if (t == typeof(ushort)) return (T)(object)tmp.Cast<ushort>().ToArray();
+                if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
+                if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
+                if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
+                if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
+                if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
+                if (t == typeof(byte?)) return (T)(object)tmp.Cast<byte?>().ToArray();
+                if (t == typeof(ulong?)) return (T)(object)tmp.Cast<ulong?>().ToArray();
+                if (t == typeof(uint?)) return (T)(object)tmp.Cast<uint?>().ToArray();
+                if (t == typeof(ushort?)) return (T)(object)tmp.Cast<ushort?>().ToArray();
+            }
+            else if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
