@@ -121,6 +121,8 @@ namespace Dicom
                     return DicomVR.OD;
                 case "OF":
                     return DicomVR.OF;
+                case "OL":
+                    return DicomVR.OL;
                 case "OW":
                     return DicomVR.OW;
                 case "PN":
@@ -417,6 +419,22 @@ namespace Dicom
                                                     ValueType = typeof(float[])
                                                 };
 
+        /// <summary>Other Long</summary>
+        public static readonly DicomVR OL = new DicomVR
+                                                {
+                                                    Code = "OL",
+                                                    Name = "Other Long",
+                                                    IsString = false,
+                                                    IsStringEncoded = false,
+                                                    Is16bitLength = false,
+                                                    IsMultiValue = true,
+                                                    PaddingValue = PadZero,
+                                                    MaximumLength = 0,
+                                                    UnitSize = 4,
+                                                    ByteSwap = 4,
+                                                    ValueType = typeof(uint[])
+                                                };
+
         /// <summary>Other Word</summary>
         public static readonly DicomVR OW = new DicomVR
                                                 {
@@ -430,7 +448,7 @@ namespace Dicom
                                                     MaximumLength = 0,
                                                     UnitSize = 2,
                                                     ByteSwap = 2,
-                                                    ValueType = typeof(ushort)
+                                                    ValueType = typeof(ushort[])
                                                 };
 
         /// <summary>Person Name</summary>

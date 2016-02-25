@@ -1090,6 +1090,36 @@ namespace Dicom
         #endregion
     }
 
+    /// <summary>Other Long (OL)</summary>
+    public class DicomOtherLong : DicomValueElement<uint>
+    {
+        #region Public Constructors
+
+        public DicomOtherLong(DicomTag tag, params uint[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomOtherLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.OL;
+            }
+        }
+
+        #endregion
+    }
+
     /// <summary>Other Double (OD)</summary>
     public class DicomOtherDouble : DicomValueElement<double>
     {

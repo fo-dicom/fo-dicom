@@ -332,6 +332,12 @@ namespace Dicom
                 if (typeof(T) == typeof(float)) return Add(new DicomOtherFloat(tag, values.Cast<float>().ToArray()));
             }
 
+            if (vr == DicomVR.OL)
+            {
+                if (values == null) return Add(new DicomOtherLong(tag, EmptyBuffer.Value));
+                if (typeof(T) == typeof(uint)) return Add(new DicomOtherLong(tag, values.Cast<uint>().ToArray()));
+            }
+
             if (vr == DicomVR.OW)
             {
                 if (values == null) return Add(new DicomOtherWord(tag, EmptyBuffer.Value));
