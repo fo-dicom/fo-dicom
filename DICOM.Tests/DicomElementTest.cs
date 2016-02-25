@@ -268,7 +268,7 @@ namespace Dicom
         [Fact]
         public void DicomDecimalString_GetNullableLongArray_ReturnsArray()
         {
-            this.TestDicomDecimalStringGetArray<long>();
+            this.TestDicomDecimalStringGetArray<long?>();
         }
 
         [Fact]
@@ -364,7 +364,7 @@ namespace Dicom
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
             var actual = element.Get<T>(1);
-            Assert.Equal((T)Convert.ChangeType(expected, typeof(T)), actual);
+            Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
         public void TestDicomDecimalStringGetArray<T>()
@@ -372,7 +372,7 @@ namespace Dicom
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
             var actual = element.Get<T[]>();
-            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, typeof(T))), actual);
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
         public void TestDicomIntegerStringGetItem<T>()
@@ -388,7 +388,7 @@ namespace Dicom
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContours, expected);
             var actual = element.Get<T[]>();
-            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, typeof(T))), actual);
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
         #endregion
