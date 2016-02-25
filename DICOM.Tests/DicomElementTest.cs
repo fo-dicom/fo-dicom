@@ -283,6 +283,78 @@ namespace Dicom
             this.TestDicomDecimalStringGetArray<object>();
         }
 
+        [Fact]
+        public void DicomIntegerString_GetDecimal_ReturnsValue()
+        {
+            this.TestDicomIntegerStringGetItem<decimal>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetString_ReturnsValue()
+        {
+            this.TestDicomIntegerStringGetItem<string>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetNullableUnsignedLong_ReturnsValue()
+        {
+            this.TestDicomIntegerStringGetItem<ulong?>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetSingle_ReturnsValue()
+        {
+            this.TestDicomIntegerStringGetItem<float>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetObject_ReturnsValue()
+        {
+            this.TestDicomIntegerStringGetItem<object>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetIntArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<int>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetLongArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<long>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetUnsignedShortArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<ushort>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetNullableDoubleArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<double?>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetSingleArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<float>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetDecimalArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<decimal>();
+        }
+
+        [Fact]
+        public void DicomIntegerString_GetObjectArray_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArray<object>();
+        }
+
         #endregion
 
         #region Support methods
@@ -299,6 +371,22 @@ namespace Dicom
         {
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
+            var actual = element.Get<T[]>();
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, typeof(T))), actual);
+        }
+
+        public void TestDicomIntegerStringGetItem<T>()
+        {
+            var expected = 45;
+            var element = new DicomIntegerString(DicomTag.AttachedContours, 35, expected, 55);
+            var actual = element.Get<T>(1);
+            Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
+        }
+
+        public void TestDicomIntegerStringGetArray<T>()
+        {
+            var expected = new[] { 35, 45, 55 };
+            var element = new DicomIntegerString(DicomTag.AttachedContours, expected);
             var actual = element.Get<T[]>();
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, typeof(T))), actual);
         }
