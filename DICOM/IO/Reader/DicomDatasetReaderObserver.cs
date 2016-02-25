@@ -89,6 +89,9 @@ namespace Dicom.IO.Reader
                 case "OF":
                     element = new DicomOtherFloat(tag, data);
                     break;
+                case "OL":
+                    element = new DicomOtherLong(tag, data);
+                    break;
                 case "OW":
                     element = new DicomOtherWord(tag, data);
                     break;

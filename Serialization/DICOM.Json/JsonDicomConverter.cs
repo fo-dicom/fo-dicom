@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System.Globalization;
 using Dicom.IO.Buffer;
 using Newtonsoft.Json;
 using System;
@@ -187,6 +190,9 @@ namespace Dicom.Serialization
                 case "OF":
                     item = new DicomOtherFloat(tag, (IByteBuffer)data);
                     break;
+                case "OL":
+                    item = new DicomOtherLong(tag, (IByteBuffer)data);
+                    break;
                 case "OW":
                     item = new DicomOtherWord(tag, (IByteBuffer)data);
                     break;
@@ -259,6 +265,7 @@ namespace Dicom.Serialization
                 case "OB":
                 case "OD":
                 case "OF":
+                case "OL":
                 case "OW":
                 case "UN":
                     WriteJsonOther(writer, (DicomElement)item);
@@ -482,6 +489,7 @@ namespace Dicom.Serialization
                 case "OB":
                 case "OD":
                 case "OF":
+                case "OL":
                 case "OW":
                 case "UN":
                     data = ReadJsonOX(reader);

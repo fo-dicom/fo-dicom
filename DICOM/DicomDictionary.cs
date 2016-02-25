@@ -43,6 +43,7 @@ namespace Dicom
                 DicomVR.OB,
                 DicomVR.OD,
                 DicomVR.OF,
+                DicomVR.OL,
                 DicomVR.OW,
                 DicomVR.PN,
                 DicomVR.SH,
