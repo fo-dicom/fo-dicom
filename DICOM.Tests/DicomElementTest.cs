@@ -266,6 +266,12 @@ namespace Dicom
         }
 
         [Fact]
+        public void DicomDecimalString_GetNullableLongArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<long>();
+        }
+
+        [Fact]
         public void DicomDecimalString_GetStringArray_ReturnsArray()
         {
             this.TestDicomDecimalStringGetArray<string>();
