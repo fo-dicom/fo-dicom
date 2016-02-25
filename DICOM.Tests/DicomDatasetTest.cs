@@ -107,6 +107,63 @@ namespace Dicom
             Assert.Equal(values.Last(), data.Last());
         }
 
+        [Fact]
+        public void Get_IntWithoutArgumentTagNonExisting_ShouldThrow()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_IntWithIntArgumentTagNonExisting_ShouldThrow()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate, 20));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_NonGenericWithIntArgumentTagNonExisting_ShouldNotThrow()
+        {
+            var dataset = new DicomDataset();
+            var e = Record.Exception(() => Assert.Equal(20, dataset.Get(DicomTag.MetersetRate, 20)));
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void Get_IntOutsideRange_ShouldThrow()
+        {
+            var tag = DicomTag.SelectorISValue;
+            var dataset = new DicomDataset();
+            dataset.Add(tag, 3, 4, 5);
+
+            var e = Record.Exception(() => dataset.Get<int>(tag, 10));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Get_NonGenericIntArgumentEmptyElement_ShouldNotThrow()
+        {
+            var tag = DicomTag.SelectorISValue;
+            var dataset = new DicomDataset();
+            dataset.Add(tag, new int[0]);
+
+            var e = Record.Exception(() => Assert.Equal(10, dataset.Get(tag, 10)));
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void Get_NullableReturnType_ReturnsDefinedValue()
+        {
+            var tag = DicomTag.SelectorULValue;
+            const uint expected = 100u;
+            var dataset = new DicomDataset { { tag, expected } };
+
+            var actual = dataset.Get<uint?>(tag).Value;
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Support data

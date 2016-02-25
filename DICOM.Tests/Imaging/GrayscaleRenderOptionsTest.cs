@@ -40,6 +40,7 @@ namespace Dicom.Imaging
             string voiLutFunction)
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
                 new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, pixelRepresentation),
@@ -68,6 +69,7 @@ namespace Dicom.Imaging
             string voiLutFunction)
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
                 new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, pixelRepresentation),
@@ -98,6 +100,7 @@ namespace Dicom.Imaging
             double expectedWindowCenter)
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
                 new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, 1),
@@ -127,6 +130,7 @@ namespace Dicom.Imaging
             double expectedWindowCenter)
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
                 new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, 1),
@@ -157,6 +161,7 @@ namespace Dicom.Imaging
             double expectedWindowCenter)
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
                 new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, 0),
@@ -176,6 +181,7 @@ namespace Dicom.Imaging
         public void FromImagePixelValueTags_SmallestGreaterThanLargest_Throws()
         {
             var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, 8),
                 new DicomUnsignedShort(DicomTag.BitsStored, 8),
                 new DicomUnsignedShort(DicomTag.PixelRepresentation, 0),

@@ -209,7 +209,7 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get<ushort>(DicomTag.MaxDensity, 0);
+                return this.Get<ushort>(DicomTag.MaxDensity, (ushort)0);
             }
             set
             {
@@ -226,7 +226,7 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get<ushort>(DicomTag.MinDensity, 0);
+                return this.Get<ushort>(DicomTag.MinDensity, (ushort)0);
             }
             set
             {
@@ -383,7 +383,7 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get<ushort>(DicomTag.Illumination, 0);
+                return this.Get<ushort>(DicomTag.Illumination, (ushort)0);
             }
             set
             {
@@ -399,7 +399,7 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get<ushort>(DicomTag.ReflectedAmbientLight, 0);
+                return this.Get<ushort>(DicomTag.ReflectedAmbientLight, (ushort)0);
             }
             set
             {

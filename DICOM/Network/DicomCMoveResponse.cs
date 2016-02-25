@@ -22,7 +22,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfRemainingSuboperations, 0);
+                return Command.Get<ushort>(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
             }
             set
             {
@@ -34,7 +34,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfCompletedSuboperations, 0);
+                return Command.Get<ushort>(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
             }
             set
             {
@@ -46,7 +46,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfWarningSuboperations, 0);
+                return Command.Get<ushort>(DicomTag.NumberOfWarningSuboperations, (ushort)0);
             }
             set
             {
@@ -58,7 +58,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfFailedSuboperations, 0);
+                return Command.Get<ushort>(DicomTag.NumberOfFailedSuboperations, (ushort)0);
             }
             set
             {
