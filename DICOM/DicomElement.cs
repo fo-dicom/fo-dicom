@@ -641,21 +641,39 @@ namespace Dicom
                         .ToArray();
             }
 
-            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object))
+            if (typeof(T).GetTypeInfo().IsArray)
             {
-                return (T)(object)_values[Math.Max(item, 0)];
+                var t = typeof(T).GetElementType();
+
+                if (t == typeof(decimal)) return (T)(object)_values;
+
+                var tmp = _values.Select(x => Convert.ChangeType(x, t));
+
+                if (t == typeof(object)) return (T)(object)tmp.ToArray();
+                if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
+                if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
+                if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
+                if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
+                if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
+                if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
+                if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
+                if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
+                if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
+
+                return base.Get<T>(item);
             }
 
-            if (typeof(T) == typeof(decimal[]) || typeof(T) == typeof(object[]))
+            if (item == -1) item = 0;
+            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
             {
-                return (T)(object)_values;
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                return (T)Convert.ChangeType(_values[item], t);
             }
-
-            if (typeof(T) == typeof(double)) return (T)(object)Convert.ToDouble(_values[Math.Max(item, 0)]);
-
-            if (typeof(T) == typeof(double[])) return (T)(object)_values.Select(x => Convert.ToDouble(x)).ToArray();
-
-            return base.Get<T>(item);
         }
 
         #endregion
