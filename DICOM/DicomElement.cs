@@ -661,19 +661,19 @@ namespace Dicom
                 if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
                 if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
                 if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
-
-                return base.Get<T>(item);
             }
-
-            if (item == -1) item = 0;
-            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
+            else if (typeof(T).GetTypeInfo().IsValueType || typeof(T) == typeof(object))
             {
+                if (item == -1) item = 0;
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
                 return (T)Convert.ChangeType(_values[item], t);
             }
+
+            return base.Get<T>(item);
         }
 
         #endregion
