@@ -109,6 +109,15 @@ namespace Dicom
         }
 
         [Fact]
+        public void DicomValueElement_GetEnum_ReturnsEnum()
+        {
+            const MockEnum expected = MockEnum.One;
+            var element = new DicomSignedShort(DicomTag.ALinesPerFrame, (short)expected);
+            var actual = element.Get<MockEnum>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void DicomValueElement_HasData_GetNullableReturnsDefinedNullable()
         {
             const ushort expected = 1;
