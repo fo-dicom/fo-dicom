@@ -173,6 +173,7 @@ namespace Dicom
                 yield return new object[] { DicomTag.TherapyDescriptionRETIRED };
                 yield return new object[] { DicomTag.DICOMMediaRetrievalSequence };
                 yield return new object[] { DicomTag.ConsultingPhysicianIdentificationSequence }; // 2015c
+                yield return new object[] { DicomTag.TrackPointIndexList }; // 2016a
             }
         }
 
