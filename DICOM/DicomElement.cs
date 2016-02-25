@@ -160,9 +160,13 @@ namespace Dicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)_values;
 
+            if (item == -1) item = 0;
+            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
             if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(_values[item]);
 
-            if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), _values[item], true);
+            var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+            if (t.GetTypeInfo().IsEnum) return (T)Enum.Parse(t, _values[item], true);
 
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
