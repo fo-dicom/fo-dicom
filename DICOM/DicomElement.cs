@@ -855,18 +855,19 @@ namespace Dicom
                 return (T)(object)_values;
             }
 
-            if (typeof(T).GetTypeInfo().IsEnum)
-            {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
-                return (T)(object)_values[item];
-            }
-
             if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(_values[item], typeof(T));
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                if (t.GetTypeInfo().IsEnum)
+                {
+                    return (T)Enum.ToObject(t, _values[item]);
+                }
+
+                return (T)Convert.ChangeType(_values[item], t);
             }
 
             return base.Get<T>(item);
