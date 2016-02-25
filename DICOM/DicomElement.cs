@@ -321,19 +321,20 @@ namespace Dicom
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
             }
 
-            if (typeof(T).GetTypeInfo().IsEnum)
-            {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
-                var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
-                return (T)Enum.Parse(typeof(T), s, true);
-            }
-
             if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), typeof(T));
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                if (t.GetTypeInfo().IsEnum)
+                {
+                    var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
+                    return (T)Enum.Parse(t, s, true);
+                }
+
+                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), t);
             }
 
             throw new InvalidCastException(
