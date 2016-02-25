@@ -833,6 +833,12 @@ namespace Dicom
             // no need to parse values if returning string(s)
             if (typeof(T) == typeof(string) || typeof(T) == typeof(string[])) return base.Get<T>(item);
 
+            // Normalize item argument if necessary (#231)
+            if (item == -1)
+            {
+                item = 0;
+            }
+
             if (_values == null)
             {
                 _values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
@@ -840,7 +846,7 @@ namespace Dicom
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))
             {
-                return (T)(object)_values[Math.Max(item, 0)];
+                return (T)(object)_values[item];
             }
 
             if (typeof(T) == typeof(int[]) || typeof(T) == typeof(object[]))
