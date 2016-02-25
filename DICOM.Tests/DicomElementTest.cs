@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Security.RightsManagement;
+
 namespace Dicom
 {
     using System;
@@ -165,6 +167,33 @@ namespace Dicom
         {
             const MockEnum expected = MockEnum.Zero;
             var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
+            var actual = element.Get<MockEnum>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact(DisplayName = "GH-231")]
+        public void DicomIntegerString_GetIntegerDefaultArgument_ShouldReturnFirstValue()
+        {
+            const int expected = 5;
+            var element = new DicomIntegerString(DicomTag.AcquisitionTerminationConditionData, expected, 4, 3);
+            var actual = element.Get<int>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact(DisplayName = "GH-231")]
+        public void DicomIntegerString_GetDecimalDefaultArgument_ShouldReturnFirstValue()
+        {
+            const decimal expected = 5m;
+            var element = new DicomIntegerString(DicomTag.AcquisitionTerminationConditionData, (int)expected, 4, 3);
+            var actual = element.Get<decimal>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact(DisplayName = "GH-231")]
+        public void DicomIntegerString_GetEnumDefaultArgument_ShouldReturnFirstValue()
+        {
+            const MockEnum expected = MockEnum.Two;
+            var element = new DicomIntegerString(DicomTag.AcquisitionTerminationConditionData, (int)expected, 4, 3);
             var actual = element.Get<MockEnum>();
             Assert.Equal(expected, actual);
         }
