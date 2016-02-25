@@ -205,6 +205,98 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void DicomDecimalString_GetDecimal_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<decimal>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetDouble_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<double>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetSingle_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<float>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetLong_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<long>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetString_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<string>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetObject_ReturnsValue()
+        {
+            this.TestDicomDecimalStringGetItem<object>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetDecimalArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<decimal>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetDoubleArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<double>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetSingleArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<float>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetLongArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<long>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetStringArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<string>();
+        }
+
+        [Fact]
+        public void DicomDecimalString_GetObjectArray_ReturnsArray()
+        {
+            this.TestDicomDecimalStringGetArray<object>();
+        }
+
+        #endregion
+
+        #region Support methods
+
+        public void TestDicomDecimalStringGetItem<T>()
+        {
+            var expected = 45.0m;
+            var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
+            var actual = element.Get<T>(1);
+            Assert.Equal((T)Convert.ChangeType(expected, typeof(T)), actual);
+        }
+
+        public void TestDicomDecimalStringGetArray<T>()
+        {
+            var expected = new[] { 35.0m, 45.0m, 55.0m };
+            var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
+            var actual = element.Get<T[]>();
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, typeof(T))), actual);
+        }
+
         #endregion
 
         #region Support types
