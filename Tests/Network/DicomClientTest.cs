@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+using Xunit.Abstractions;
+
 namespace Dicom.Network
 {
     using System;
@@ -15,6 +18,8 @@ namespace Dicom.Network
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTest
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
         #region Fields
 
         private static string remoteHost;
@@ -25,8 +30,9 @@ namespace Dicom.Network
 
         #region Constructors
 
-        public DicomClientTest()
+        public DicomClientTest(ITestOutputHelper testOutputHelper)
         {
+            this._testOutputHelper = testOutputHelper;
             remoteHost = null;
             remotePort = 0;
         }
@@ -141,22 +147,86 @@ namespace Dicom.Network
         [Theory]
         [InlineData(20)]
         [InlineData(200)]
+        //[InlineData(1000)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
-            var @lock = new object();
-
-            using (new DicomServer<DicomCEchoProvider>(port))
+            
+            using (var server = new DicomServer<DicomCEchoProvider>(
+                port, 
+                options: new DicomServiceOptions()
+                {
+                    //LogDataPDUs = true, LogDimseDatasets = true
+                }, 
+                logger: new TestOutputHelperLogger(_testOutputHelper)))
             {
+                await Task.Delay(500);
+                Assert.True(server.IsListening, "Server is not listening");
+
                 var actual = 0;
 
                 var client = new DicomClient();
-                for (var i = 0; i < expected; ++i)
+                for (var i = 0; i < expected; i++)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
-                    var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                    await Task.WhenAny(task, Task.Delay(1000));
+                    client.AddRequest(new DicomCEchoRequest()
+                    {
+                        OnResponseReceived = (req, res) =>
+                        {
+                            this._testOutputHelper.WriteLine("Response #{0}", i);
+                            Interlocked.Add(ref actual, 1);
+                        }
+                    });
+                    this._testOutputHelper.WriteLine("Sending #{0}", i);
+                    await Task.WhenAny(
+                        client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP"),
+                        Task.Delay(1000)
+                        );
+                    this._testOutputHelper.WriteLine("Sent (or timed out) #{0}", i);
                 }
+                
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [InlineData(20)]
+        [InlineData(200)]
+        public async Task SendAsync_MultipleTimesParallel_AllRecognized(int expected)
+        {
+            int port = Ports.GetNext();
+            
+            using (var server = new DicomServer<DicomCEchoProvider>(
+                port,
+                options: new DicomServiceOptions()
+                {
+                    //LogDataPDUs = true, LogDimseDatasets = true
+                },
+                logger: new TestOutputHelperLogger(_testOutputHelper)))
+            {
+                await Task.Delay(500);
+                Assert.True(server.IsListening, "Server is not listening");
+
+                var actual = 0;
+
+                var requests = Enumerable.Range(0, expected).Select(async requestIndex =>
+                {
+                    var client = new DicomClient();
+                    client.AddRequest(new DicomCEchoRequest()
+                    {
+                        OnResponseReceived = (req, res) =>
+                        {
+                            this._testOutputHelper.WriteLine("Response #{0}", requestIndex);
+                            Interlocked.Add(ref actual, 1);
+                        }
+                    });
+
+                    this._testOutputHelper.WriteLine("Sending #{0}", requestIndex);
+                    var sendTask = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                    await Task.WhenAny(sendTask, Task.Delay(1000));
+                    this._testOutputHelper.WriteLine("Sent (or timed out) #{0}", requestIndex);
+                }).ToList();
+                await Task.WhenAll(requests);
+                
 
                 Assert.Equal(expected, actual);
             }
