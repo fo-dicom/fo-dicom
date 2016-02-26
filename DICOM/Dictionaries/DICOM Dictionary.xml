@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (c) 2012-2015 fo-dicom contributors.        -->
+<!-- Copyright (c) 2012-2016 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2015c">
+<dictionary version="2016a">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -115,6 +115,7 @@
     <tag group="0008" element="0052" keyword="QueryRetrieveLevel" vr="CS" vm="1">Query/Retrieve Level</tag>
     <tag group="0008" element="0053" keyword="QueryRetrieveView" vr="CS" vm="1">Query/Retrieve View</tag>
     <tag group="0008" element="0054" keyword="RetrieveAETitle" vr="AE" vm="1-n">Retrieve AE Title</tag>
+    <tag group="0008" element="0055" keyword="StationAETitle" vr="AE" vm="1">Station  AE Title</tag>
     <tag group="0008" element="0056" keyword="InstanceAvailability" vr="CS" vm="1">Instance Availability</tag>
     <tag group="0008" element="0058" keyword="FailedSOPInstanceUIDList" vr="UI" vm="1-n">Failed SOP Instance UID List</tag>
     <tag group="0008" element="0060" keyword="Modality" vr="CS" vm="1">Modality</tag>
@@ -210,6 +211,7 @@
     <tag group="0008" element="1197" keyword="FailureReason" vr="US" vm="1">Failure Reason</tag>
     <tag group="0008" element="1198" keyword="FailedSOPSequence" vr="SQ" vm="1">Failed SOP Sequence</tag>
     <tag group="0008" element="1199" keyword="ReferencedSOPSequence" vr="SQ" vm="1">Referenced SOP Sequence</tag>
+    <tag group="0008" element="119A" keyword="OtherFailuresSequence" vr="SQ" vm="1">Other Failures Sequence</tag>
     <tag group="0008" element="1200" keyword="StudiesContainingOtherReferencedInstancesSequence" vr="SQ" vm="1">Studies Containing Other Referenced Instances Sequence</tag>
     <tag group="0008" element="1250" keyword="RelatedSeriesSequence" vr="SQ" vm="1">Related Series Sequence</tag>
     <tag group="0008" element="2110" keyword="LossyImageCompressionRetired" vr="CS" vm="1" retired="true">Lossy Image Compression (Retired)</tag>
@@ -278,6 +280,9 @@
     <tag group="0010" element="0021" keyword="IssuerOfPatientID" vr="LO" vm="1">Issuer of Patient ID</tag>
     <tag group="0010" element="0022" keyword="TypeOfPatientID" vr="CS" vm="1">Type of Patient ID</tag>
     <tag group="0010" element="0024" keyword="IssuerOfPatientIDQualifiersSequence" vr="SQ" vm="1">Issuer of Patient ID Qualifiers Sequence</tag>
+    <tag group="0010" element="0026" keyword="SourcePatientGroupIdentificationSequence" vr="SQ" vm="1">Source Patient Group Identification Sequence</tag>
+    <tag group="0010" element="0027" keyword="GroupOfPatientsIdentificationSequence" vr="SQ" vm="1">Group of Patients Identification Sequence</tag>
+    <tag group="0010" element="0028" keyword="SubjectRelativePositionInImage" vr="US" vm="3">Subject Relative Position in Image</tag>
     <tag group="0010" element="0030" keyword="PatientBirthDate" vr="DA" vm="1">Patient's Birth Date</tag>
     <tag group="0010" element="0032" keyword="PatientBirthTime" vr="TM" vm="1">Patient's Birth Time</tag>
     <tag group="0010" element="0040" keyword="PatientSex" vr="CS" vm="1">Patient's Sex</tag>
@@ -286,6 +291,14 @@
     <tag group="0010" element="0102" keyword="PatientPrimaryLanguageModifierCodeSequence" vr="SQ" vm="1">Patient's Primary Language Modifier Code Sequence</tag>
     <tag group="0010" element="0200" keyword="QualityControlSubject" vr="CS" vm="1">Quality Control Subject</tag>
     <tag group="0010" element="0201" keyword="QualityControlSubjectTypeCodeSequence" vr="SQ" vm="1">Quality Control Subject Type Code Sequence</tag>
+    <tag group="0010" element="0212" keyword="StrainDescription" vr="UC" vm="1">Strain Description</tag>
+    <tag group="0010" element="0213" keyword="StrainNomenclature" vr="LO" vm="1">Strain Nomenclature</tag>
+    <tag group="0010" element="0214" keyword="StrainStockNumber" vr="LO" vm="1">Strain Stock Number</tag>
+    <tag group="0010" element="0215" keyword="StrainSourceRegistryCodeSequence" vr="SQ" vm="1">Strain Source Registry Code Sequence</tag>
+    <tag group="0010" element="0216" keyword="StrainStockSequence" vr="SQ" vm="1">Strain Stock Sequence</tag>
+    <tag group="0010" element="0217" keyword="StrainSource" vr="LO" vm="1">Strain Source</tag>
+    <tag group="0010" element="0218" keyword="StrainAdditionalInformation" vr="UT" vm="1">Strain Additional Information</tag>
+    <tag group="0010" element="0219" keyword="StrainCodeSequence" vr="SQ" vm="1">Strain Code Sequence</tag>
     <tag group="0010" element="1000" keyword="OtherPatientIDs" vr="LO" vm="1-n">Other Patient IDs</tag>
     <tag group="0010" element="1001" keyword="OtherPatientNames" vr="PN" vm="1-n">Other Patient Names</tag>
     <tag group="0010" element="1002" keyword="OtherPatientIDsSequence" vr="SQ" vm="1">Other Patient IDs Sequence</tag>
@@ -348,21 +361,30 @@
     <tag group="0012" element="0083" keyword="ConsentForClinicalTrialUseSequence" vr="SQ" vm="1">Consent for Clinical Trial Use Sequence</tag>
     <tag group="0012" element="0084" keyword="DistributionType" vr="CS" vm="1">Distribution Type</tag>
     <tag group="0012" element="0085" keyword="ConsentForDistributionFlag" vr="CS" vm="1">Consent for Distribution Flag</tag>
-    <tag group="0014" element="0023" keyword="CADFileFormat" vr="ST" vm="1-n" retired="true">CAD File Format</tag>
-    <tag group="0014" element="0024" keyword="ComponentReferenceSystem" vr="ST" vm="1-n" retired="true">Component Reference System</tag>
-    <tag group="0014" element="0025" keyword="ComponentManufacturingProcedure" vr="ST" vm="1-n">Component Manufacturing Procedure</tag>
-    <tag group="0014" element="0028" keyword="ComponentManufacturer" vr="ST" vm="1-n">Component Manufacturer</tag>
+    <tag group="0014" element="0023" keyword="CADFileFormat" vr="ST" vm="1" retired="true">CAD File Format</tag>
+    <tag group="0014" element="0024" keyword="ComponentReferenceSystem" vr="ST" vm="1" retired="true">Component Reference System</tag>
+    <tag group="0014" element="0025" keyword="ComponentManufacturingProcedure" vr="ST" vm="1">Component Manufacturing Procedure</tag>
+    <tag group="0014" element="0028" keyword="ComponentManufacturer" vr="ST" vm="1">Component Manufacturer</tag>
     <tag group="0014" element="0030" keyword="MaterialThickness" vr="DS" vm="1-n">Material Thickness</tag>
     <tag group="0014" element="0032" keyword="MaterialPipeDiameter" vr="DS" vm="1-n">Material Pipe Diameter</tag>
     <tag group="0014" element="0034" keyword="MaterialIsolationDiameter" vr="DS" vm="1-n">Material Isolation Diameter</tag>
-    <tag group="0014" element="0042" keyword="MaterialGrade" vr="ST" vm="1-n">Material Grade</tag>
-    <tag group="0014" element="0044" keyword="MaterialPropertiesDescription" vr="ST" vm="1-n">Material Properties Description</tag>
-    <tag group="0014" element="0045" keyword="MaterialPropertiesFileFormatRetired" vr="ST" vm="1-n" retired="true">Material Properties File Format (Retired)</tag>
+    <tag group="0014" element="0042" keyword="MaterialGrade" vr="ST" vm="1">Material Grade</tag>
+    <tag group="0014" element="0044" keyword="MaterialPropertiesDescription" vr="ST" vm="1">Material Properties Description</tag>
+    <tag group="0014" element="0045" keyword="MaterialPropertiesFileFormatRetired" vr="ST" vm="1" retired="true">Material Properties File Format (Retired)</tag>
     <tag group="0014" element="0046" keyword="MaterialNotes" vr="LT" vm="1">Material Notes</tag>
     <tag group="0014" element="0050" keyword="ComponentShape" vr="CS" vm="1">Component Shape</tag>
     <tag group="0014" element="0052" keyword="CurvatureType" vr="CS" vm="1">Curvature Type</tag>
     <tag group="0014" element="0054" keyword="OuterDiameter" vr="DS" vm="1">Outer Diameter</tag>
     <tag group="0014" element="0056" keyword="InnerDiameter" vr="DS" vm="1">Inner Diameter</tag>
+    <tag group="0014" element="0100" keyword="ComponentWelderIDs" vr="LO" vm="1-n">Component Welder IDs</tag>
+    <tag group="0014" element="0101" keyword="SecondaryApprovalStatus" vr="CS" vm="1">Secondary Approval Status</tag>
+    <tag group="0014" element="0102" keyword="SecondaryReviewDate" vr="DA" vm="1">Secondary Review Date</tag>
+    <tag group="0014" element="0103" keyword="SecondaryReviewTime" vr="TM" vm="1">Secondary Review Time</tag>
+    <tag group="0014" element="0104" keyword="SecondaryReviewerName" vr="PN" vm="1">Secondary Reviewer Name</tag>
+    <tag group="0014" element="0105" keyword="RepairID" vr="ST" vm="1">Repair ID</tag>
+    <tag group="0014" element="0106" keyword="MultipleComponentApprovalSequence" vr="SQ" vm="1">Multiple Component Approval Sequence</tag>
+    <tag group="0014" element="0107" keyword="OtherApprovalStatus" vr="CS" vm="1-n">Other Approval Status</tag>
+    <tag group="0014" element="0108" keyword="OtherSecondaryApprovalStatus" vr="CS" vm="1-n">Other Secondary Approval Status</tag>
     <tag group="0014" element="1010" keyword="ActualEnvironmentalConditions" vr="ST" vm="1">Actual Environmental Conditions</tag>
     <tag group="0014" element="1020" keyword="ExpiryDate" vr="DA" vm="1">Expiry Date</tag>
     <tag group="0014" element="1040" keyword="EnvironmentalConditions" vr="ST" vm="1">Environmental Conditions</tag>
@@ -718,6 +740,7 @@
     <tag group="0018" element="1315" keyword="VariableFlipAngleFlag" vr="CS" vm="1">Variable Flip Angle Flag</tag>
     <tag group="0018" element="1316" keyword="SAR" vr="DS" vm="1">SAR</tag>
     <tag group="0018" element="1318" keyword="dBdt" vr="DS" vm="1">dB/dt</tag>
+    <tag group="0018" element="1320" keyword="B1rms" vr="FL" vm="1">B1rms</tag>
     <tag group="0018" element="1400" keyword="AcquisitionDeviceProcessingDescription" vr="LO" vm="1">Acquisition Device Processing Description</tag>
     <tag group="0018" element="1401" keyword="AcquisitionDeviceProcessingCode" vr="LO" vm="1">Acquisition Device Processing Code</tag>
     <tag group="0018" element="1402" keyword="CassetteOrientation" vr="CS" vm="1">Cassette Orientation</tag>
@@ -1206,6 +1229,10 @@
     <tag group="0018" element="9605" keyword="DiffusionBValueYY" vr="FD" vm="1">Diffusion b-value YY</tag>
     <tag group="0018" element="9606" keyword="DiffusionBValueYZ" vr="FD" vm="1">Diffusion b-value YZ</tag>
     <tag group="0018" element="9607" keyword="DiffusionBValueZZ" vr="FD" vm="1">Diffusion b-value ZZ</tag>
+    <tag group="0018" element="9621" keyword="FunctionalMRSequence" vr="SQ" vm="1">Functional MR Sequence</tag>
+    <tag group="0018" element="9622" keyword="FunctionalSettlingPhaseFramesPresent" vr="CS" vm="1">Functional Settling Phase Frames Present</tag>
+    <tag group="0018" element="9623" keyword="FunctionalSyncPulse" vr="DT" vm="1">Functional Sync Pulse</tag>
+    <tag group="0018" element="9624" keyword="SettlingPhaseFrame" vr="CS" vm="1">Settling Phase Frame</tag>
     <tag group="0018" element="9701" keyword="DecayCorrectionDateTime" vr="DT" vm="1">Decay Correction DateTime</tag>
     <tag group="0018" element="9715" keyword="StartDensityThreshold" vr="FD" vm="1">Start Density Threshold</tag>
     <tag group="0018" element="9716" keyword="StartRelativeDensityDifferenceThreshold" vr="FD" vm="1">Start Relative Density Difference Threshold</tag>
@@ -1526,7 +1553,7 @@
     <tag group="0022" element="1518" keyword="TwoDimensionalToThreeDimensionalMapSequence" vr="SQ" vm="1">Two Dimensional to Three Dimensional Map Sequence</tag>
     <tag group="0022" element="1525" keyword="WideFieldOphthalmicPhotographyQualityRatingSequence" vr="SQ" vm="1">Wide Field Ophthalmic Photography Quality Rating Sequence</tag>
     <tag group="0022" element="1526" keyword="WideFieldOphthalmicPhotographyQualityThresholdSequence" vr="SQ" vm="1">Wide Field Ophthalmic Photography Quality Threshold Sequence</tag>
-    <tag group="0022" element="1527" keyword="WideFieldOphthalmicPhotographyThresholdQualityRating" vr="FL" vm="1">Wide Field Ophthalmic Photography  Threshold Quality Rating</tag>
+    <tag group="0022" element="1527" keyword="WideFieldOphthalmicPhotographyThresholdQualityRating" vr="FL" vm="1">Wide Field Ophthalmic Photography Threshold Quality Rating</tag>
     <tag group="0022" element="1528" keyword="XCoordinatesCenterPixelViewAngle" vr="FL" vm="1">X Coordinates Center Pixel View Angle</tag>
     <tag group="0022" element="1529" keyword="YCoordinatesCenterPixelViewAngle" vr="FL" vm="1">Y Coordinates Center Pixel View Angle</tag>
     <tag group="0022" element="1530" keyword="NumberOfMapPoints" vr="UL" vm="1">Number of Map Points</tag>
@@ -1751,6 +1778,7 @@
     <tag group="0028" element="1221" keyword="SegmentedRedPaletteColorLookupTableData" vr="OW" vm="1">Segmented Red Palette Color Lookup Table Data</tag>
     <tag group="0028" element="1222" keyword="SegmentedGreenPaletteColorLookupTableData" vr="OW" vm="1">Segmented Green Palette Color Lookup Table Data</tag>
     <tag group="0028" element="1223" keyword="SegmentedBluePaletteColorLookupTableData" vr="OW" vm="1">Segmented Blue Palette Color Lookup Table Data</tag>
+    <tag group="0028" element="1224" keyword="SegmentedAlphaPaletteColorLookupTableData" vr="OW" vm="1">Segmented Alpha Palette Color Lookup Table Data</tag>
     <tag group="0028" element="1300" keyword="BreastImplantPresent" vr="CS" vm="1">Breast Implant Present</tag>
     <tag group="0028" element="1350" keyword="PartialView" vr="CS" vm="1">Partial View</tag>
     <tag group="0028" element="1351" keyword="PartialViewDescription" vr="ST" vm="1">Partial View Description</tag>
@@ -1771,6 +1799,7 @@
     <tag group="0028" element="140F" keyword="RGBLUTTransferFunction" vr="CS" vm="1">RGB LUT Transfer Function</tag>
     <tag group="0028" element="1410" keyword="AlphaLUTTransferFunction" vr="CS" vm="1">Alpha LUT Transfer Function</tag>
     <tag group="0028" element="2000" keyword="ICCProfile" vr="OB" vm="1">ICC Profile</tag>
+    <tag group="0028" element="2002" keyword="ColorSpace" vr="CS" vm="1">Color Space</tag>
     <tag group="0028" element="2110" keyword="LossyImageCompression" vr="CS" vm="1">Lossy Image Compression</tag>
     <tag group="0028" element="2112" keyword="LossyImageCompressionRatio" vr="DS" vm="1-n">Lossy Image Compression Ratio</tag>
     <tag group="0028" element="2114" keyword="LossyImageCompressionMethod" vr="CS" vm="1-n">Lossy Image Compression Method</tag>
@@ -2135,6 +2164,11 @@
     <tag group="0040" element="4050" keyword="PerformedProcedureStepStartDateTime" vr="DT" vm="1">Performed Procedure Step Start DateTime</tag>
     <tag group="0040" element="4051" keyword="PerformedProcedureStepEndDateTime" vr="DT" vm="1">Performed Procedure Step End DateTime</tag>
     <tag group="0040" element="4052" keyword="ProcedureStepCancellationDateTime" vr="DT" vm="1">Procedure Step Cancellation DateTime</tag>
+    <tag group="0040" element="4070" keyword="OutputDestinationSequence" vr="SQ" vm="1">Output Destination Sequence</tag>
+    <tag group="0040" element="4071" keyword="DICOMStorageSequence" vr="SQ" vm="1">DICOM Storage Sequence</tag>
+    <tag group="0040" element="4072" keyword="STOWRSStorageSequence" vr="SQ" vm="1">STOW-RS Storage Sequence</tag>
+    <tag group="0040" element="4073" keyword="StorageURL" vr="UR" vm="1">Storage URL</tag>
+    <tag group="0040" element="4074" keyword="XDSStorageSequence" vr="SQ" vm="1">XDS Storage Sequence</tag>
     <tag group="0040" element="8302" keyword="EntranceDoseInmGy" vr="DS" vm="1">Entrance Dose in mGy</tag>
     <tag group="0040" element="9092" keyword="ParametricMapFrameTypeSequence" vr="SQ" vm="1">Parametric Map Frame Type Sequence</tag>
     <tag group="0040" element="9094" keyword="ReferencedImageRealWorldValueMappingSequence" vr="SQ" vm="1">Referenced Image Real World Value Mapping Sequence</tag>
@@ -2143,6 +2177,8 @@
     <tag group="0040" element="9210" keyword="LUTLabel" vr="SH" vm="1">LUT Label</tag>
     <tag group="0040" element="9211" keyword="RealWorldValueLastValueMapped" vr="US/SS" vm="1">Real World Value Last Value Mapped</tag>
     <tag group="0040" element="9212" keyword="RealWorldValueLUTData" vr="FD" vm="1-n">Real World Value LUT Data</tag>
+    <tag group="0040" element="9213" keyword="DoubleFloatRealWorldValueLastValueMapped" vr="FD" vm="1">Double Float Real World Value Last Value Mapped</tag>
+    <tag group="0040" element="9214" keyword="DoubleFloatRealWorldValueFirstValueMapped" vr="FD" vm="1">Double Float Real World Value First Value Mapped</tag>
     <tag group="0040" element="9216" keyword="RealWorldValueFirstValueMapped" vr="US/SS" vm="1">Real World Value First Value Mapped</tag>
     <tag group="0040" element="9220" keyword="QuantityDefinitionSequence" vr="SQ" vm="1">Quantity Definition Sequence</tag>
     <tag group="0040" element="9224" keyword="RealWorldValueIntercept" vr="FD" vm="1">Real World Value Intercept</tag>
@@ -2553,6 +2589,8 @@
     <tag group="0062" element="0010" keyword="SegmentationFractionalType" vr="CS" vm="1">Segmentation Fractional Type</tag>
     <tag group="0062" element="0011" keyword="SegmentedPropertyTypeModifierCodeSequence" vr="SQ" vm="1">Segmented Property Type Modifier Code Sequence</tag>
     <tag group="0062" element="0012" keyword="UsedSegmentsSequence" vr="SQ" vm="1">Used Segments Sequence</tag>
+    <tag group="0062" element="0020" keyword="TrackingID" vr="UT" vm="1">Tracking ID</tag>
+    <tag group="0062" element="0021" keyword="TrackingUID" vr="UI" vm="1">Tracking UID</tag>
     <tag group="0064" element="0002" keyword="DeformableRegistrationSequence" vr="SQ" vm="1">Deformable Registration Sequence</tag>
     <tag group="0064" element="0003" keyword="SourceFrameOfReferenceUID" vr="UI" vm="1">Source Frame of Reference UID</tag>
     <tag group="0064" element="0005" keyword="DeformableRegistrationGridSequence" vr="SQ" vm="1">Deformable Registration Grid Sequence</tag>
@@ -2587,13 +2625,13 @@
     <tag group="0066" element="001F" keyword="VectorDimensionality" vr="US" vm="1">Vector Dimensionality</tag>
     <tag group="0066" element="0020" keyword="VectorAccuracy" vr="FL" vm="1-n">Vector Accuracy</tag>
     <tag group="0066" element="0021" keyword="VectorCoordinateData" vr="OF" vm="1">Vector Coordinate Data</tag>
-    <tag group="0066" element="0023" keyword="TrianglePointIndexList" vr="OW" vm="1">Triangle Point Index List</tag>
-    <tag group="0066" element="0024" keyword="EdgePointIndexList" vr="OW" vm="1">Edge Point Index List</tag>
-    <tag group="0066" element="0025" keyword="VertexPointIndexList" vr="OW" vm="1">Vertex Point Index List</tag>
+    <tag group="0066" element="0023" keyword="TrianglePointIndexList" vr="OW" vm="1" retired="true">Triangle Point Index List</tag>
+    <tag group="0066" element="0024" keyword="EdgePointIndexList" vr="OW" vm="1" retired="true">Edge Point Index List</tag>
+    <tag group="0066" element="0025" keyword="VertexPointIndexList" vr="OW" vm="1" retired="true">Vertex Point Index List</tag>
     <tag group="0066" element="0026" keyword="TriangleStripSequence" vr="SQ" vm="1">Triangle Strip Sequence</tag>
     <tag group="0066" element="0027" keyword="TriangleFanSequence" vr="SQ" vm="1">Triangle Fan Sequence</tag>
     <tag group="0066" element="0028" keyword="LineSequence" vr="SQ" vm="1">Line Sequence</tag>
-    <tag group="0066" element="0029" keyword="PrimitivePointIndexList" vr="OW" vm="1">Primitive Point Index List</tag>
+    <tag group="0066" element="0029" keyword="PrimitivePointIndexList" vr="OW" vm="1" retired="true">Primitive Point Index List</tag>
     <tag group="0066" element="002A" keyword="SurfaceCount" vr="UL" vm="1">Surface Count</tag>
     <tag group="0066" element="002B" keyword="ReferencedSurfaceSequence" vr="SQ" vm="1">Referenced Surface Sequence</tag>
     <tag group="0066" element="002C" keyword="ReferencedSurfaceNumber" vr="UL" vm="1">Referenced Surface Number</tag>
@@ -2608,10 +2646,26 @@
     <tag group="0066" element="0036" keyword="AlgorithmName" vr="LO" vm="1">Algorithm Name</tag>
     <tag group="0066" element="0037" keyword="RecommendedPointRadius" vr="FL" vm="1">Recommended Point Radius</tag>
     <tag group="0066" element="0038" keyword="RecommendedLineThickness" vr="FL" vm="1">Recommended Line Thickness</tag>
-    <tag group="0066" element="0040" keyword="LongPrimitivePointIndexList" vr="UL" vm="1-n">Long Primitive Point Index List</tag>
-    <tag group="0066" element="0041" keyword="LongTrianglePointIndexList" vr="UL" vm="3-3n">Long Triangle Point Index List</tag>
-    <tag group="0066" element="0042" keyword="LongEdgePointIndexList" vr="UL" vm="2-2n">Long Edge Point Index List</tag>
-    <tag group="0066" element="0043" keyword="LongVertexPointIndexList" vr="UL" vm="1-n">Long Vertex Point Index List</tag>
+    <tag group="0066" element="0040" keyword="LongPrimitivePointIndexList" vr="OL" vm="1">Long Primitive Point Index List</tag>
+    <tag group="0066" element="0041" keyword="LongTrianglePointIndexList" vr="OL" vm="1">Long Triangle Point Index List</tag>
+    <tag group="0066" element="0042" keyword="LongEdgePointIndexList" vr="OL" vm="1">Long Edge Point Index List</tag>
+    <tag group="0066" element="0043" keyword="LongVertexPointIndexList" vr="OL" vm="1">Long Vertex Point Index List</tag>
+    <tag group="0066" element="0101" keyword="TrackSetSequence" vr="SQ" vm="1">Track Set Sequence</tag>
+    <tag group="0066" element="0102" keyword="TrackSequence" vr="SQ" vm="1">Track Sequence</tag>
+    <tag group="0066" element="0103" keyword="RecommendedDisplayCIELabValueList" vr="OW" vm="1">Recommended Display CIELab Value List</tag>
+    <tag group="0066" element="0104" keyword="TrackingAlgorithmIdentificationSequence" vr="SQ" vm="1">Tracking Algorithm Identification Sequence</tag>
+    <tag group="0066" element="0105" keyword="TrackSetNumber" vr="UL" vm="1">Track Set Number</tag>
+    <tag group="0066" element="0106" keyword="TrackSetLabel" vr="LO" vm="1">Track Set Label</tag>
+    <tag group="0066" element="0107" keyword="TrackSetDescription" vr="UT" vm="1">Track Set Description</tag>
+    <tag group="0066" element="0108" keyword="TrackSetAnatomicalTypeCodeSequence" vr="SQ" vm="1">Track Set Anatomical Type Code Sequence</tag>
+    <tag group="0066" element="0121" keyword="MeasurementsSequence" vr="SQ" vm="1">Measurements Sequence</tag>
+    <tag group="0066" element="0124" keyword="TrackSetStatisticsSequence" vr="SQ" vm="1">Track Set Statistics Sequence</tag>
+    <tag group="0066" element="0125" keyword="FloatingPointValues" vr="OF" vm="1">Floating Point Values</tag>
+    <tag group="0066" element="0129" keyword="TrackPointIndexList" vr="OL" vm="1">Track Point Index List</tag>
+    <tag group="0066" element="0130" keyword="TrackStatisticsSequence" vr="SQ" vm="1">Track Statistics Sequence</tag>
+    <tag group="0066" element="0132" keyword="MeasurementValuesSequence" vr="SQ" vm="1">Measurement Values Sequence</tag>
+    <tag group="0066" element="0133" keyword="DiffusionAcquisitionCodeSequence" vr="SQ" vm="1">Diffusion Acquisition Code Sequence</tag>
+    <tag group="0066" element="0134" keyword="DiffusionModelCodeSequence" vr="SQ" vm="1">Diffusion Model Code Sequence</tag>
     <tag group="0068" element="6210" keyword="ImplantSize" vr="LO" vm="1">Implant Size</tag>
     <tag group="0068" element="6221" keyword="ImplantTemplateVersion" vr="LO" vm="1">Implant Template Version</tag>
     <tag group="0068" element="6222" keyword="ReplacedImplantTemplateSequence" vr="SQ" vm="1">Replaced Implant Template Sequence</tag>
@@ -2772,6 +2826,7 @@
     <tag group="0070" element="0308" keyword="RegistrationSequence" vr="SQ" vm="1">Registration Sequence</tag>
     <tag group="0070" element="0309" keyword="MatrixRegistrationSequence" vr="SQ" vm="1">Matrix Registration Sequence</tag>
     <tag group="0070" element="030A" keyword="MatrixSequence" vr="SQ" vm="1">Matrix Sequence</tag>
+    <tag group="0070" element="030B" keyword="FrameOfReferenceToDisplayedCoordinateSystemTransformationMatrix" vr="FD" vm="16">Frame of Reference to Displayed Coordinate System Transformation Matrix</tag>
     <tag group="0070" element="030C" keyword="FrameOfReferenceTransformationMatrixType" vr="CS" vm="1">Frame of Reference Transformation Matrix Type</tag>
     <tag group="0070" element="030D" keyword="RegistrationTypeCodeSequence" vr="SQ" vm="1">Registration Type Code Sequence</tag>
     <tag group="0070" element="030F" keyword="FiducialDescription" vr="ST" vm="1">Fiducial Description</tag>
@@ -2788,6 +2843,52 @@
     <tag group="0070" element="0403" keyword="RelativeOpacity" vr="FL" vm="1">Relative Opacity</tag>
     <tag group="0070" element="0404" keyword="ReferencedSpatialRegistrationSequence" vr="SQ" vm="1">Referenced Spatial Registration Sequence</tag>
     <tag group="0070" element="0405" keyword="BlendingPosition" vr="CS" vm="1">Blending Position</tag>
+    <tag group="0070" element="1101" keyword="PresentationDisplayCollectionUID" vr="UI" vm="1">Presentation Display Collection UID</tag>
+    <tag group="0070" element="1102" keyword="PresentationSequenceCollectionUID" vr="UI" vm="1">Presentation Sequence Collection UID</tag>
+    <tag group="0070" element="1103" keyword="PresentationSequencePositionIndex" vr="US" vm="1">Presentation Sequence Position Index</tag>
+    <tag group="0070" element="1104" keyword="RenderedImageReferenceSequence" vr="SQ" vm="1">Rendered Image Reference Sequence</tag>
+    <tag group="0070" element="1201" keyword="VolumetricPresentationStateInputSequence" vr="SQ" vm="1">Volumetric Presentation State Input Sequence</tag>
+    <tag group="0070" element="1202" keyword="PresentationInputType" vr="CS" vm="1">Presentation Input Type</tag>
+    <tag group="0070" element="1203" keyword="InputSequencePositionIndex" vr="US" vm="1">Input Sequence Position Index</tag>
+    <tag group="0070" element="1204" keyword="Crop" vr="CS" vm="1">Crop</tag>
+    <tag group="0070" element="1205" keyword="CroppingSpecificationIndex" vr="US" vm="1-n">Cropping Specification Index</tag>
+    <tag group="0070" element="1206" keyword="CompositingMethod" vr="CS" vm="1">Compositing Method</tag>
+    <tag group="0070" element="1207" keyword="VolumetricPresentationInputNumber" vr="US" vm="1">Volumetric Presentation Input Number</tag>
+    <tag group="0070" element="1208" keyword="ImageVolumeGeometry" vr="CS" vm="1">Image Volume Geometry</tag>
+    <tag group="0070" element="1301" keyword="VolumeCroppingSequence" vr="SQ" vm="1">Volume Cropping Sequence</tag>
+    <tag group="0070" element="1302" keyword="VolumeCroppingMethod" vr="CS" vm="1">Volume Cropping Method</tag>
+    <tag group="0070" element="1303" keyword="BoundingBoxCrop" vr="FD" vm="6">Bounding Box Crop</tag>
+    <tag group="0070" element="1304" keyword="ObliqueCroppingPlaneSequence" vr="SQ" vm="1">Oblique Cropping Plane Sequence</tag>
+    <tag group="0070" element="1305" keyword="Plane" vr="FD" vm="4">Plane</tag>
+    <tag group="0070" element="1306" keyword="PlaneNormal" vr="FD" vm="3">Plane Normal</tag>
+    <tag group="0070" element="1309" keyword="CroppingSpecificationNumber" vr="US" vm="1">Cropping Specification Number</tag>
+    <tag group="0070" element="1501" keyword="MultiPlanarReconstructionStyle" vr="CS" vm="1">Multi-Planar Reconstruction Style</tag>
+    <tag group="0070" element="1502" keyword="MPRThicknessType" vr="CS" vm="1">MPR Thickness Type</tag>
+    <tag group="0070" element="1503" keyword="MPRSlabThickness" vr="FD" vm="1">MPR Slab Thickness</tag>
+    <tag group="0070" element="1505" keyword="MPRTopLeftHandCorner" vr="FD" vm="3">MPR Top Left Hand Corner</tag>
+    <tag group="0070" element="1507" keyword="MPRViewWidthDirection" vr="FD" vm="3">MPR View Width Direction</tag>
+    <tag group="0070" element="1508" keyword="MPRViewWidth" vr="FD" vm="1">MPR View Width</tag>
+    <tag group="0070" element="150C" keyword="NumberOfVolumetricCurvePoints" vr="UL" vm="1">Number of Volumetric Curve Points</tag>
+    <tag group="0070" element="150D" keyword="VolumetricCurvePoints" vr="OD" vm="1">Volumetric Curve Points</tag>
+    <tag group="0070" element="1511" keyword="MPRViewHeightDirection" vr="FD" vm="3">MPR View Height Direction</tag>
+    <tag group="0070" element="1512" keyword="MPRViewHeight" vr="FD" vm="1">MPR View Height</tag>
+    <tag group="0070" element="1801" keyword="PresentationStateClassificationComponentSequence" vr="SQ" vm="1">Presentation State Classification Component Sequence</tag>
+    <tag group="0070" element="1802" keyword="ComponentType" vr="CS" vm="1">Component Type</tag>
+    <tag group="0070" element="1803" keyword="ComponentInputSequence" vr="SQ" vm="1">Component Input Sequence</tag>
+    <tag group="0070" element="1804" keyword="VolumetricPresentationInputIndex" vr="US" vm="1">Volumetric Presentation Input Index</tag>
+    <tag group="0070" element="1805" keyword="PresentationStateCompositorComponentSequence" vr="SQ" vm="1">Presentation State Compositor Component Sequence</tag>
+    <tag group="0070" element="1806" keyword="WeightingTransferFunctionSequence" vr="SQ" vm="1">Weighting Transfer Function Sequence</tag>
+    <tag group="0070" element="1807" keyword="WeightingLookupTableDescriptor" vr="US" vm="3">Weighting Lookup Table Descriptor</tag>
+    <tag group="0070" element="1808" keyword="WeightingLookupTableData" vr="OB" vm="1">Weighting Lookup Table Data</tag>
+    <tag group="0070" element="1901" keyword="VolumetricAnnotationSequence" vr="SQ" vm="1">Volumetric Annotation Sequence</tag>
+    <tag group="0070" element="1903" keyword="ReferencedStructuredContextSequence" vr="SQ" vm="1">Referenced Structured Context Sequence</tag>
+    <tag group="0070" element="1904" keyword="ReferencedContentItem" vr="UI" vm="1">Referenced Content Item</tag>
+    <tag group="0070" element="1905" keyword="VolumetricPresentationInputAnnotationSequence" vr="SQ" vm="1">Volumetric Presentation Input Annotation Sequence</tag>
+    <tag group="0070" element="1907" keyword="AnnotationClipping" vr="CS" vm="1">Annotation Clipping</tag>
+    <tag group="0070" element="1A01" keyword="PresentationAnimationStyle" vr="CS" vm="1">Presentation Animation Style</tag>
+    <tag group="0070" element="1A03" keyword="RecommendedAnimationRate" vr="FD" vm="1">Recommended Animation Rate</tag>
+    <tag group="0070" element="1A04" keyword="AnimationCurveSequence" vr="SQ" vm="1">Animation Curve Sequence</tag>
+    <tag group="0070" element="1A05" keyword="AnimationStepSize" vr="FD" vm="1">Animation Step Size</tag>
     <tag group="0072" element="0002" keyword="HangingProtocolName" vr="SH" vm="1">Hanging Protocol Name</tag>
     <tag group="0072" element="0004" keyword="HangingProtocolDescription" vr="LO" vm="1">Hanging Protocol Description</tag>
     <tag group="0072" element="0006" keyword="HangingProtocolLevel" vr="CS" vm="1">Hanging Protocol Level</tag>
@@ -2955,6 +3056,20 @@
     <tag group="0074" element="1324" keyword="BeamOrderIndex" vr="UL" vm="1">Beam Order Index</tag>
     <tag group="0074" element="1338" keyword="DoubleExposureMeterset" vr="FD" vm="1">Double Exposure Meterset</tag>
     <tag group="0074" element="133A" keyword="DoubleExposureFieldDelta" vr="FD" vm="4">Double Exposure Field Delta</tag>
+    <tag group="0074" element="1401" keyword="BrachyTaskSequence" vr="SQ" vm="1">Brachy Task Sequence</tag>
+    <tag group="0074" element="1402" keyword="ContinuationStartTotalReferenceAirKerma" vr="DS" vm="1">Continuation Start Total Reference Air Kerma</tag>
+    <tag group="0074" element="1403" keyword="ContinuationEndTotalReferenceAirKerma" vr="DS" vm="1">Continuation End Total Reference Air Kerma</tag>
+    <tag group="0074" element="1404" keyword="ContinuationPulseNumber" vr="IS" vm="1">Continuation Pulse Number</tag>
+    <tag group="0074" element="1405" keyword="ChannelDeliveryOrderSequence" vr="SQ" vm="1">Channel Delivery Order Sequence</tag>
+    <tag group="0074" element="1406" keyword="ReferencedChannelNumber" vr="IS" vm="1">Referenced Channel Number</tag>
+    <tag group="0074" element="1407" keyword="StartCumulativeTimeWeight" vr="DS" vm="1">Start Cumulative Time Weight</tag>
+    <tag group="0074" element="1408" keyword="EndCumulativeTimeWeight" vr="DS" vm="1">End Cumulative Time Weight</tag>
+    <tag group="0074" element="1409" keyword="OmittedChannelSequence" vr="SQ" vm="1">Omitted Channel Sequence</tag>
+    <tag group="0074" element="140A" keyword="ReasonForChannelOmission" vr="CS" vm="1">Reason for Channel Omission</tag>
+    <tag group="0074" element="140B" keyword="ReasonForChannelOmissionDescription" vr="LO" vm="1">Reason for Channel Omission Description</tag>
+    <tag group="0074" element="140C" keyword="ChannelDeliveryOrderIndex" vr="IS" vm="1">Channel Delivery Order Index</tag>
+    <tag group="0074" element="140D" keyword="ChannelDeliveryContinuationSequence" vr="SQ" vm="1">Channel Delivery Continuation Sequence</tag>
+    <tag group="0074" element="140E" keyword="OmittedApplicationSetupSequence" vr="SQ" vm="1">Omitted Application Setup Sequence</tag>
     <tag group="0076" element="0001" keyword="ImplantAssemblyTemplateName" vr="LO" vm="1">Implant Assembly Template Name</tag>
     <tag group="0076" element="0003" keyword="ImplantAssemblyTemplateIssuer" vr="LO" vm="1">Implant Assembly Template Issuer</tag>
     <tag group="0076" element="0006" keyword="ImplantAssemblyTemplateVersion" vr="LO" vm="1">Implant Assembly Template Version</tag>
@@ -3132,7 +3247,7 @@
     <tag group="2100" element="0040" keyword="CreationDate" vr="DA" vm="1">Creation Date</tag>
     <tag group="2100" element="0050" keyword="CreationTime" vr="TM" vm="1">Creation Time</tag>
     <tag group="2100" element="0070" keyword="Originator" vr="AE" vm="1">Originator</tag>
-    <tag group="2100" element="0140" keyword="DestinationAE" vr="AE" vm="1" retired="true">Destination AE</tag>
+    <tag group="2100" element="0140" keyword="DestinationAE" vr="AE" vm="1">Destination AE</tag>
     <tag group="2100" element="0160" keyword="OwnerID" vr="SH" vm="1">Owner ID</tag>
     <tag group="2100" element="0170" keyword="NumberOfFilms" vr="IS" vm="1">Number of Films</tag>
     <tag group="2100" element="0500" keyword="ReferencedPrintJobSequencePullStoredPrint" vr="SQ" vm="1" retired="true">Referenced Print Job Sequence (Pull Stored Print)</tag>
@@ -3427,6 +3542,9 @@
     <tag group="300A" element="008D" keyword="AverageBeamDosePointDepth" vr="FL" vm="1">Average Beam Dose Point Depth</tag>
     <tag group="300A" element="008E" keyword="AverageBeamDosePointEquivalentDepth" vr="FL" vm="1">Average Beam Dose Point Equivalent Depth</tag>
     <tag group="300A" element="008F" keyword="AverageBeamDosePointSSD" vr="FL" vm="1">Average Beam Dose Point SSD</tag>
+    <tag group="300A" element="0090" keyword="BeamDoseType" vr="CS" vm="1">Beam Dose Type</tag>
+    <tag group="300A" element="0091" keyword="AlternateBeamDose" vr="DS" vm="1">Alternate Beam Dose</tag>
+    <tag group="300A" element="0092" keyword="AlternateBeamDoseType" vr="CS" vm="1">Alternate Beam Dose Type</tag>
     <tag group="300A" element="00A0" keyword="NumberOfBrachyApplicationSetups" vr="IS" vm="1">Number of Brachy Application Setups</tag>
     <tag group="300A" element="00A2" keyword="BrachyApplicationSetupDoseSpecificationPoint" vr="DS" vm="3">Brachy Application Setup Dose Specification Point</tag>
     <tag group="300A" element="00A4" keyword="BrachyApplicationSetupDose" vr="DS" vm="1">Brachy Application Setup Dose</tag>
@@ -3529,7 +3647,7 @@
     <tag group="300A" element="012C" keyword="IsocenterPosition" vr="DS" vm="3">Isocenter Position</tag>
     <tag group="300A" element="012E" keyword="SurfaceEntryPoint" vr="DS" vm="3">Surface Entry Point</tag>
     <tag group="300A" element="0130" keyword="SourceToSurfaceDistance" vr="DS" vm="1">Source to Surface Distance</tag>
-    <tag group="300A" element="0131" keyword="AverageBeamDosePointSourceToExternalContourSurfaceDistance" vr="FL" vm="1">Average Beam Dose Point Source to External Contour Surface Distance</tag>
+    <tag group="300A" element="0131" keyword="AverageBeamDosePointSourceToExternalContourDistance" vr="FL" vm="1">Average Beam Dose Point Source to External Contour Distance</tag>
     <tag group="300A" element="0132" keyword="SourceToExternalContourDistance" vr="FL" vm="1">Source to External Contour Distance</tag>
     <tag group="300A" element="0133" keyword="ExternalContourEntryPoint" vr="FL" vm="3">External Contour Entry Point</tag>
     <tag group="300A" element="0134" keyword="CumulativeMetersetWeight" vr="DS" vm="1">Cumulative Meterset Weight</tag>
@@ -3648,6 +3766,7 @@
     <tag group="300A" element="0304" keyword="RadiationAtomicNumber" vr="IS" vm="1">Radiation Atomic Number</tag>
     <tag group="300A" element="0306" keyword="RadiationChargeState" vr="SS" vm="1">Radiation Charge State</tag>
     <tag group="300A" element="0308" keyword="ScanMode" vr="CS" vm="1">Scan Mode</tag>
+    <tag group="300A" element="0309" keyword="ModulatedScanModeType" vr="CS" vm="1">Modulated Scan Mode Type</tag>
     <tag group="300A" element="030A" keyword="VirtualSourceAxisDistances" vr="FL" vm="2">Virtual Source-Axis Distances</tag>
     <tag group="300A" element="030C" keyword="SnoutSequence" vr="SQ" vm="1">Snout Sequence</tag>
     <tag group="300A" element="030D" keyword="SnoutPosition" vr="FL" vm="1">Snout Position</tag>
@@ -3675,6 +3794,7 @@
     <tag group="300A" element="0350" keyword="PatientSupportType" vr="CS" vm="1">Patient Support Type</tag>
     <tag group="300A" element="0352" keyword="PatientSupportID" vr="SH" vm="1">Patient Support ID</tag>
     <tag group="300A" element="0354" keyword="PatientSupportAccessoryCode" vr="LO" vm="1">Patient Support Accessory Code</tag>
+    <tag group="300A" element="0355" keyword="TrayAccessoryCode" vr="LO" vm="1">Tray Accessory Code</tag>
     <tag group="300A" element="0356" keyword="FixationLightAzimuthalAngle" vr="FL" vm="1">Fixation Light Azimuthal Angle</tag>
     <tag group="300A" element="0358" keyword="FixationLightPolarAngle" vr="FL" vm="1">Fixation Light Polar Angle</tag>
     <tag group="300A" element="035A" keyword="MetersetRate" vr="FL" vm="1">Meterset Rate</tag>
@@ -3728,6 +3848,18 @@
     <tag group="300A" element="0451" keyword="DeviceMotionExecutionMode" vr="CS" vm="1">Device Motion Execution Mode</tag>
     <tag group="300A" element="0452" keyword="DeviceMotionObservationMode" vr="CS" vm="1">Device Motion Observation Mode</tag>
     <tag group="300A" element="0453" keyword="DeviceMotionParameterCodeSequence" vr="SQ" vm="1">Device Motion Parameter Code Sequence</tag>
+    <tag group="300A" element="0501" keyword="DistalDepthFraction" vr="FL" vm="1">Distal Depth Fraction</tag>
+    <tag group="300A" element="0502" keyword="DistalDepth" vr="FL" vm="1">Distal Depth</tag>
+    <tag group="300A" element="0503" keyword="NominalRangeModulationFractions" vr="FL" vm="2">Nominal Range Modulation Fractions</tag>
+    <tag group="300A" element="0504" keyword="NominalRangeModulatedRegionDepths" vr="FL" vm="2">Nominal Range Modulated Region Depths</tag>
+    <tag group="300A" element="0505" keyword="DepthDoseParametersSequence" vr="SQ" vm="1">Depth Dose Parameters Sequence</tag>
+    <tag group="300A" element="0506" keyword="DeliveredDepthDoseParametersSequence" vr="SQ" vm="1">Delivered Depth Dose Parameters Sequence</tag>
+    <tag group="300A" element="0507" keyword="DeliveredDistalDepthFraction" vr="FL" vm="1">Delivered Distal Depth Fraction</tag>
+    <tag group="300A" element="0508" keyword="DeliveredDistalDepth" vr="FL" vm="1">Delivered Distal Depth</tag>
+    <tag group="300A" element="0509" keyword="DeliveredNominalRangeModulationFractions" vr="FL" vm="2">Delivered Nominal Range Modulation Fractions</tag>
+    <tag group="300A" element="0510" keyword="DeliveredNominalRangeModulatedRegionDepths" vr="FL" vm="2">Delivered Nominal Range Modulated Region Depths</tag>
+    <tag group="300A" element="0511" keyword="DeliveredReferenceDoseDefinition" vr="CS" vm="1">Delivered Reference Dose Definition</tag>
+    <tag group="300A" element="0512" keyword="ReferenceDoseDefinition" vr="CS" vm="1">Reference Dose Definition</tag>
     <tag group="300C" element="0002" keyword="ReferencedRTPlanSequence" vr="SQ" vm="1">Referenced RT Plan Sequence</tag>
     <tag group="300C" element="0004" keyword="ReferencedBeamSequence" vr="SQ" vm="1">Referenced Beam Sequence</tag>
     <tag group="300C" element="0006" keyword="ReferencedBeamNumber" vr="IS" vm="1">Referenced Beam Number</tag>
@@ -4044,6 +4176,7 @@
     <uid uid="1.2.840.10008.1.5.3" keyword="HotMetalBlueColorPaletteSOPInstance" type="Well-known SOP Instance">Hot Metal Blue Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.4" keyword="PET20StepColorPaletteSOPInstance" type="Well-known SOP Instance">PET 20 Step Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.9" keyword="BasicStudyContentNotificationSOPClass" type="SOP Class" retired="true">Basic Study Content Notification SOP Class (Retired)</uid>
+    <uid uid="1.2.840.10008.1.20" keyword="Papyrus3ImplicitVRLittleEndian" type="Transfer Syntax" retired="true">Papyrus 3 Implicit VR Little Endian (Retired)</uid>
     <uid uid="1.2.840.10008.1.20.1" keyword="StorageCommitmentPushModelSOPClass" type="SOP Class">Storage Commitment Push Model SOP Class</uid>
     <uid uid="1.2.840.10008.1.20.1.1" keyword="StorageCommitmentPushModelSOPInstance" type="Well-known SOP Instance">Storage Commitment Push Model SOP Instance</uid>
     <uid uid="1.2.840.10008.1.20.2" keyword="StorageCommitmentPullModelSOPClass" type="SOP Class" retired="true">Storage Commitment Pull Model SOP Class (Retired)</uid>
@@ -4054,6 +4187,11 @@
     <uid uid="1.2.840.10008.1.42.1" keyword="SubstanceAdministrationLoggingSOPInstance" type="Well-known SOP Instance">Substance Administration Logging SOP Instance</uid>
     <uid uid="1.2.840.10008.2.6.1" keyword="DICOMUIDRegistry" type="DICOM UIDs as a Coding Scheme">DICOM UID Registry</uid>
     <uid uid="1.2.840.10008.2.16.4" keyword="DICOMControlledTerminology" type="Coding Scheme">DICOM Controlled Terminology</uid>
+    <uid uid="1.2.840.10008.2.16.5" keyword="AdultMouseAnatomyOntology" type="Coding Scheme">Adult Mouse Anatomy Ontology</uid>
+    <uid uid="1.2.840.10008.2.16.6" keyword="UberonOntology" type="Coding Scheme">Uberon Ontology</uid>
+    <uid uid="1.2.840.10008.2.16.7" keyword="IntegratedTaxonomicInformationSystemITISTaxonomicSerialNumberTSN" type="Coding Scheme">Integrated Taxonomic Information System (ITIS) Taxonomic Serial Number (TSN)</uid>
+    <uid uid="1.2.840.10008.2.16.8" keyword="MouseGenomeInitiativeMGI" type="Coding Scheme">Mouse Genome Initiative (MGI)</uid>
+    <uid uid="1.2.840.10008.2.16.9" keyword="PubChemCompoundCID" type="Coding Scheme">PubChem Compound CID</uid>
     <uid uid="1.2.840.10008.3.1.1.1" keyword="DICOMApplicationContextName" type="Application Context Name">DICOM Application Context Name</uid>
     <uid uid="1.2.840.10008.3.1.2.1.1" keyword="DetachedPatientManagementSOPClass" type="SOP Class" retired="true">Detached Patient Management SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.3.1.2.1.4" keyword="DetachedPatientManagementMetaSOPClass" type="Meta SOP Class" retired="true">Detached Patient Management Meta SOP Class (Retired)</uid>
@@ -4142,11 +4280,14 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.11.3" keyword="PseudoColorSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Pseudo-Color Softcopy Presentation State Storage SOP Class</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.4" keyword="BlendingSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Blending Softcopy Presentation State Storage SOP Class</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.5" keyword="XAXRFGrayscaleSoftcopyPresentationStateStorage" type="SOP Class">XA/XRF Grayscale Softcopy Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.6" keyword="GrayscalePlanarMPRVolumetricPresentationStateStorage" type="SOP Class">Grayscale Planar MPR Volumetric Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.7" keyword="CompositingPlanarMPRVolumetricPresentationStateStorage" type="SOP Class">Compositing Planar MPR Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1" keyword="XRayAngiographicImageStorage" type="SOP Class">X-Ray Angiographic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1.1" keyword="EnhancedXAImageStorage" type="SOP Class">Enhanced XA Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.2" keyword="XRayRadiofluoroscopicImageStorage" type="SOP Class">X-Ray Radiofluoroscopic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.2.1" keyword="EnhancedXRFImageStorage" type="SOP Class">Enhanced XRF Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.3" keyword="XRayAngiographicBiPlaneImageStorage" type="SOP Class" retired="true">X-Ray Angiographic Bi-Plane Image Storage (Retired)</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.12.77" keyword="UID_1_2_840_10008_5_1_4_1_1_12_77" type="SOP Class" retired="true">(Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.13.1.1" keyword="XRay3DAngiographicImageStorage" type="SOP Class">X-Ray 3D Angiographic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.13.1.2" keyword="XRay3DCraniofacialImageStorage" type="SOP Class">X-Ray 3D Craniofacial Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.13.1.3" keyword="BreastTomosynthesisImageStorage" type="SOP Class">Breast Tomosynthesis Image Storage</uid>
@@ -4156,12 +4297,14 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.14.2" keyword="IntravascularOpticalCoherenceTomographyImageStorageForProcessing" type="SOP Class">Intravascular Optical Coherence Tomography Image Storage - For Processing</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.20" keyword="NuclearMedicineImageStorage" type="SOP Class">Nuclear Medicine Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.30" keyword="ParametricMapStorage" type="SOP Class">Parametric Map Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.40" keyword="UID_1_2_840_10008_5_1_4_1_1_40" type="SOP Class" retired="true">(Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66" keyword="RawDataStorage" type="SOP Class">Raw Data Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66.1" keyword="SpatialRegistrationStorage" type="SOP Class">Spatial Registration Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66.2" keyword="SpatialFiducialsStorage" type="SOP Class">Spatial Fiducials Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66.3" keyword="DeformableSpatialRegistrationStorage" type="SOP Class">Deformable Spatial Registration Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66.4" keyword="SegmentationStorage" type="SOP Class">Segmentation Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.66.5" keyword="SurfaceSegmentationStorage" type="SOP Class">Surface Segmentation Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.66.6" keyword="TractographyResultsStorage" type="SOP Class">Tractography Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.67" keyword="RealWorldValueMappingStorage" type="SOP Class">Real World Value Mapping Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.68.1" keyword="SurfaceScanMeshStorage" type="SOP Class">Surface Scan Mesh Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.68.2" keyword="SurfaceScanPointCloudStorage" type="SOP Class">Surface Scan Point Cloud Storage</uid>
@@ -4210,6 +4353,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.68" keyword="RadiopharmaceuticalRadiationDoseSRStorage" type="SOP Class">Radiopharmaceutical Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.69" keyword="ColonCADSRStorage" type="SOP Class">Colon CAD SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.70" keyword="ImplantationPlanSRStorage" type="SOP Class">Implantation Plan SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.71" keyword="AcquisitionContextSRStorage" type="SOP Class">Acquisition Context SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.128" keyword="PositronEmissionTomographyImageStorage" type="SOP Class">Positron Emission Tomography Image Storage</uid>
@@ -4271,6 +4415,7 @@
     <uid uid="1.2.840.10008.5.1.4.34.7" keyword="RTBeamsDeliveryInstructionStorage" type="SOP Class">RT Beams Delivery Instruction Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.34.8" keyword="RTConventionalMachineVerification" type="SOP Class">RT Conventional Machine Verification</uid>
     <uid uid="1.2.840.10008.5.1.4.34.9" keyword="RTIonMachineVerification" type="SOP Class">RT Ion Machine Verification</uid>
+    <uid uid="1.2.840.10008.5.1.4.34.10" keyword="RTBrachyApplicationSetupDeliveryInstructionStorage" type="SOP Class">RT Brachy Application Setup Delivery Instruction Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.37.1" keyword="GeneralRelevantPatientInformationQuery" type="SOP Class">General Relevant Patient Information Query</uid>
     <uid uid="1.2.840.10008.5.1.4.37.2" keyword="BreastImagingRelevantPatientInformationQuery" type="SOP Class">Breast Imaging Relevant Patient Information Query</uid>
     <uid uid="1.2.840.10008.5.1.4.37.3" keyword="CardiacRelevantPatientInformationQuery" type="SOP Class">Cardiac Relevant Patient Information Query</uid>
@@ -4856,7 +5001,7 @@
     <uid uid="1.2.840.10008.6.1.515" keyword="FamilyMember7451" type="Context Group Name">Family Member (7451)</uid>
     <uid uid="1.2.840.10008.6.1.516" keyword="OrganizationalRoles7452" type="Context Group Name">Organizational Roles (7452)</uid>
     <uid uid="1.2.840.10008.6.1.517" keyword="PerformingRoles7453" type="Context Group Name">Performing Roles (7453)</uid>
-    <uid uid="1.2.840.10008.6.1.518" keyword="Species7454" type="Context Group Name">Species (7454)</uid>
+    <uid uid="1.2.840.10008.6.1.518" keyword="AnimalTaxonomicRankValues7454" type="Context Group Name">Animal Taxonomic Rank Values (7454)</uid>
     <uid uid="1.2.840.10008.6.1.519" keyword="Sex7455" type="Context Group Name">Sex (7455)</uid>
     <uid uid="1.2.840.10008.6.1.520" keyword="UnitsOfMeasureForAge7456" type="Context Group Name">Units of Measure for Age (7456)</uid>
     <uid uid="1.2.840.10008.6.1.521" keyword="UnitsOfLinearMeasurement7460" type="Context Group Name">Units of Linear Measurement (7460)</uid>
@@ -5289,4 +5434,61 @@
     <uid uid="1.2.840.10008.6.1.1054" keyword="SourceOfProjectionXRayDoseInformation10020" type="Context Group Name">Source of Projection X-Ray Dose Information (10020)</uid>
     <uid uid="1.2.840.10008.6.1.1055" keyword="SourceOfCTDoseInformation10021" type="Context Group Name">Source of CT Dose Information (10021)</uid>
     <uid uid="1.2.840.10008.6.1.1056" keyword="RadiationDoseReferencePoints10025" type="Context Group Name">Radiation Dose Reference Points (10025)</uid>
+    <uid uid="1.2.840.10008.6.1.1057" keyword="VolumetricViewDescription501" type="Context Group Name">Volumetric View Description (501)</uid>
+    <uid uid="1.2.840.10008.6.1.1058" keyword="VolumetricViewModifier502" type="Context Group Name">Volumetric View Modifier (502)</uid>
+    <uid uid="1.2.840.10008.6.1.1059" keyword="DiffusionAcquisitionValueTypes7260" type="Context Group Name">Diffusion Acquisition Value Types (7260)</uid>
+    <uid uid="1.2.840.10008.6.1.1060" keyword="DiffusionModelValueTypes7261" type="Context Group Name">Diffusion Model Value Types (7261)</uid>
+    <uid uid="1.2.840.10008.6.1.1061" keyword="DiffusionTractographyAlgorithmFamilies7262" type="Context Group Name">Diffusion Tractography Algorithm Families (7262)</uid>
+    <uid uid="1.2.840.10008.6.1.1062" keyword="DiffusionTractographyMeasurementTypes7263" type="Context Group Name">Diffusion Tractography Measurement Types (7263)</uid>
+    <uid uid="1.2.840.10008.6.1.1063" keyword="ResearchAnimalSourceRegistries7490" type="Context Group Name">Research Animal Source Registries (7490)</uid>
+    <uid uid="1.2.840.10008.6.1.1064" keyword="YesNoOnly231" type="Context Group Name">Yes-No Only (231)</uid>
+    <uid uid="1.2.840.10008.6.1.1065" keyword="BiosafetyLevels601" type="Context Group Name">Biosafety Levels (601)</uid>
+    <uid uid="1.2.840.10008.6.1.1066" keyword="BiosafetyControlReasons602" type="Context Group Name">Biosafety Control Reasons (602)</uid>
+    <uid uid="1.2.840.10008.6.1.1067" keyword="SexMaleFemaleOrBoth7457" type="Context Group Name">Sex - Male Female or Both (7457)</uid>
+    <uid uid="1.2.840.10008.6.1.1068" keyword="AnimalRoomTypes603" type="Context Group Name">Animal Room Types (603)</uid>
+    <uid uid="1.2.840.10008.6.1.1069" keyword="DeviceReuse604" type="Context Group Name">Device Reuse (604)</uid>
+    <uid uid="1.2.840.10008.6.1.1070" keyword="AnimalBeddingMaterial605" type="Context Group Name">Animal Bedding Material (605)</uid>
+    <uid uid="1.2.840.10008.6.1.1071" keyword="AnimalShelterTypes606" type="Context Group Name">Animal Shelter Types (606)</uid>
+    <uid uid="1.2.840.10008.6.1.1072" keyword="AnimalFeedTypes607" type="Context Group Name">Animal Feed Types (607)</uid>
+    <uid uid="1.2.840.10008.6.1.1073" keyword="AnimalFeedSources608" type="Context Group Name">Animal Feed Sources (608)</uid>
+    <uid uid="1.2.840.10008.6.1.1074" keyword="AnimalFeedingMethods609" type="Context Group Name">Animal Feeding Methods (609)</uid>
+    <uid uid="1.2.840.10008.6.1.1075" keyword="WaterTypes610" type="Context Group Name">Water Types (610)</uid>
+    <uid uid="1.2.840.10008.6.1.1076" keyword="AnesthesiaCategoryCodeTypeForSmallAnimalAnesthesia611" type="Context Group Name">Anesthesia Category Code Type for Small Animal Anesthesia (611)</uid>
+    <uid uid="1.2.840.10008.6.1.1077" keyword="AnesthesiaCategoryCodeTypeFromAnesthesiaQualityInitiativeAQI612" type="Context Group Name">Anesthesia Category Code Type from Anesthesia Quality Initiative (AQI) (612)</uid>
+    <uid uid="1.2.840.10008.6.1.1078" keyword="AnesthesiaInductionCodeTypeForSmallAnimalAnesthesia613" type="Context Group Name">Anesthesia Induction Code Type for Small Animal Anesthesia (613)</uid>
+    <uid uid="1.2.840.10008.6.1.1079" keyword="AnesthesiaInductionCodeTypeFromAnesthesiaQualityInitiativeAQI614" type="Context Group Name">Anesthesia Induction Code Type from Anesthesia Quality Initiative (AQI) (614)</uid>
+    <uid uid="1.2.840.10008.6.1.1080" keyword="AnesthesiaMaintenanceCodeTypeForSmallAnimalAnesthesia615" type="Context Group Name">Anesthesia Maintenance Code Type for Small Animal Anesthesia (615)</uid>
+    <uid uid="1.2.840.10008.6.1.1081" keyword="AnesthesiaMaintenanceCodeTypeFromAnesthesiaQualityInitiativeAQI616" type="Context Group Name">Anesthesia Maintenance Code Type from Anesthesia Quality Initiative (AQI) (616)</uid>
+    <uid uid="1.2.840.10008.6.1.1082" keyword="AirwayManagementMethodCodeTypeForSmallAnimalAnesthesia617" type="Context Group Name">Airway Management Method Code Type for Small Animal Anesthesia (617)</uid>
+    <uid uid="1.2.840.10008.6.1.1083" keyword="AirwayManagementMethodCodeTypeFromAnesthesiaQualityInitiativeAQI618" type="Context Group Name">Airway Management Method Code Type from Anesthesia Quality Initiative (AQI) (618)</uid>
+    <uid uid="1.2.840.10008.6.1.1084" keyword="AirwayManagementSubMethodCodeTypeForSmallAnimalAnesthesia619" type="Context Group Name">Airway Management Sub-Method Code Type for Small Animal Anesthesia (619)</uid>
+    <uid uid="1.2.840.10008.6.1.1085" keyword="AirwayManagementSubMethodCodeTypeFromAnesthesiaQualityInitiativeAQI620" type="Context Group Name">Airway Management Sub-Method Code Type from Anesthesia Quality Initiative (AQI) (620)</uid>
+    <uid uid="1.2.840.10008.6.1.1086" keyword="MedicationTypeCodeTypeForSmallAnimalAnesthesia621" type="Context Group Name">Medication Type Code Type for Small Animal Anesthesia (621)</uid>
+    <uid uid="1.2.840.10008.6.1.1087" keyword="MedicationTypeCodeTypeFromAnesthesiaQualityInitiativeAQI622" type="Context Group Name">Medication Type Code Type from Anesthesia Quality Initiative (AQI) (622)</uid>
+    <uid uid="1.2.840.10008.6.1.1088" keyword="MedicationForSmallAnimalAnesthesia623" type="Context Group Name">Medication for Small Animal Anesthesia (623)</uid>
+    <uid uid="1.2.840.10008.6.1.1089" keyword="InhalationalAnesthesiaAgentsForSmallAnimalAnesthesia624" type="Context Group Name">Inhalational Anesthesia Agents for Small Animal Anesthesia (624)</uid>
+    <uid uid="1.2.840.10008.6.1.1090" keyword="InjectableAnesthesiaAgentsForSmallAnimalAnesthesia625" type="Context Group Name">Injectable Anesthesia Agents for Small Animal Anesthesia (625)</uid>
+    <uid uid="1.2.840.10008.6.1.1091" keyword="PremedicationAgentsForSmallAnimalAnesthesia626" type="Context Group Name">Premedication Agents for Small Animal Anesthesia (626)</uid>
+    <uid uid="1.2.840.10008.6.1.1092" keyword="NeuromuscularBlockingAgentsForSmallAnimalAnesthesia627" type="Context Group Name">Neuromuscular Blocking Agents for Small Animal Anesthesia (627)</uid>
+    <uid uid="1.2.840.10008.6.1.1093" keyword="AncillaryMedicationsForSmallAnimalAnesthesia628" type="Context Group Name">Ancillary Medications for Small Animal Anesthesia (628)</uid>
+    <uid uid="1.2.840.10008.6.1.1094" keyword="CarrierGasesForSmallAnimalAnesthesia629" type="Context Group Name">Carrier Gases for Small Animal Anesthesia (629)</uid>
+    <uid uid="1.2.840.10008.6.1.1095" keyword="LocalAnestheticsForSmallAnimalAnesthesia630" type="Context Group Name">Local Anesthetics for Small Animal Anesthesia (630)</uid>
+    <uid uid="1.2.840.10008.6.1.1096" keyword="PhaseOfProcedureRequiringAnesthesia631" type="Context Group Name">Phase of Procedure Requiring Anesthesia (631)</uid>
+    <uid uid="1.2.840.10008.6.1.1097" keyword="PhaseOfSurgicalProcedureRequiringAnesthesia632" type="Context Group Name">Phase of Surgical Procedure Requiring Anesthesia (632)</uid>
+    <uid uid="1.2.840.10008.6.1.1098" keyword="PhaseOfImagingProcedureRequiringAnesthesia633" type="Context Group Name">Phase of Imaging Procedure Requiring Anesthesia (633)</uid>
+    <uid uid="1.2.840.10008.6.1.1099" keyword="PhaseOfAnimalHandling634" type="Context Group Name">Phase of Animal Handling (634)</uid>
+    <uid uid="1.2.840.10008.6.1.1100" keyword="HeatingMethod635" type="Context Group Name">Heating Method (635)</uid>
+    <uid uid="1.2.840.10008.6.1.1101" keyword="TemperatureSensorDeviceComponentTypeForSmallAnimalProcedures636" type="Context Group Name">Temperature Sensor Device Component Type for Small Animal Procedures (636)</uid>
+    <uid uid="1.2.840.10008.6.1.1102" keyword="ExogenousSubstanceTypes637" type="Context Group Name">Exogenous Substance Types (637)</uid>
+    <uid uid="1.2.840.10008.6.1.1103" keyword="ExogenousSubstance638" type="Context Group Name">Exogenous Substance (638)</uid>
+    <uid uid="1.2.840.10008.6.1.1104" keyword="TumorGraftHistologicType639" type="Context Group Name">Tumor Graft Histologic Type (639)</uid>
+    <uid uid="1.2.840.10008.6.1.1105" keyword="Fibrils640" type="Context Group Name">Fibrils (640)</uid>
+    <uid uid="1.2.840.10008.6.1.1106" keyword="Viruses641" type="Context Group Name">Viruses (641)</uid>
+    <uid uid="1.2.840.10008.6.1.1107" keyword="Cytokines642" type="Context Group Name">Cytokines (642)</uid>
+    <uid uid="1.2.840.10008.6.1.1108" keyword="Toxins643" type="Context Group Name">Toxins (643)</uid>
+    <uid uid="1.2.840.10008.6.1.1109" keyword="ExogenousSubstanceAdministrationSites644" type="Context Group Name">Exogenous Substance Administration Sites (644)</uid>
+    <uid uid="1.2.840.10008.6.1.1110" keyword="ExogenousSubstanceTissueOfOrigin645" type="Context Group Name">Exogenous Substance Tissue of Origin (645)</uid>
+    <uid uid="1.2.840.10008.6.1.1111" keyword="PreclinicalSmallAnimalImagingProcedures646" type="Context Group Name">Preclinical Small Animal Imaging Procedures (646)</uid>
+    <uid uid="1.2.840.10008.6.1.1112" keyword="PositionReferenceIndicatorForFrameOfReference647" type="Context Group Name">Position Reference Indicator for Frame of Reference (647)</uid>
+    <uid uid="1.2.840.10008.6.1.1113" keyword="PresentAbsentOnly241" type="Context Group Name">Present-Absent Only (241)</uid>
 </dictionary>

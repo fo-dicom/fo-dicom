@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -124,6 +124,17 @@ namespace Dicom.IO
             get
             {
                 return _stream.CanSeek;
+            }
+        }
+
+        /// <summary>
+        /// Gets the milestone levels count.
+        /// </summary>
+        public int MilestonesCount
+        {
+            get
+            {
+                return this._milestones.Count;
             }
         }
 

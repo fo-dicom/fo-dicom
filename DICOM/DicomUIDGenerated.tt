@@ -1,6 +1,6 @@
 ﻿<#@ include file="T4/dictionarymethods.t4" #>
 <#@ output extension=".cs" #>
-// Copyright (c) 2012-2015 fo-dicom contributors.
+// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -20,7 +20,7 @@ namespace Dicom
     foreach (var kv in uids)
     {
         var uid = kv.Value;
-        var keyword = ToUidKeyword(uid.Item2, uid.Item4);
+        var keyword = ToUidKeyword(uid.Item1, uid.Item2, uid.Item4);
 #>
             _uids.Add(DicomUID.<#= keyword #>.UID, DicomUID.<#= keyword #>);
 <#
@@ -36,7 +36,7 @@ namespace Dicom
         var type = ToDicomUidTypeString(uid.Item3);
 #>
         ///<summary><#= uid.Item3 #>: <#= description #></summary>
-        public readonly static DicomUID <#= ToUidKeyword(uid.Item2, uid.Item4) #> = new DicomUID("<#= uid.Item1 #>", "<#= uid.Item2 #>", DicomUidType.<#= type #>, <#= uid.Item4.ToString().ToLower() #>);
+        public readonly static DicomUID <#= ToUidKeyword(uid.Item1, uid.Item2, uid.Item4) #> = new DicomUID("<#= uid.Item1 #>", "<#= uid.Item2 #>", DicomUidType.<#= type #>, <#= uid.Item4.ToString().ToLower() #>);
 
 <#
     }

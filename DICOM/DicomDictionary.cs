@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Concurrent;
@@ -41,7 +41,9 @@ namespace Dicom
                 DicomVR.LO,
                 DicomVR.LT,
                 DicomVR.OB,
+                DicomVR.OD,
                 DicomVR.OF,
+                DicomVR.OL,
                 DicomVR.OW,
                 DicomVR.PN,
                 DicomVR.SH,
@@ -50,8 +52,10 @@ namespace Dicom
                 DicomVR.SS,
                 DicomVR.ST,
                 DicomVR.TM,
+                DicomVR.UC,
                 DicomVR.UI,
                 DicomVR.UL,
+                DicomVR.UR,
                 DicomVR.US,
                 DicomVR.UT);
 
@@ -104,21 +108,38 @@ namespace Dicom
 
         #region Properties
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         private static DicomDictionary _default;
+        private static bool _defaultIncludesPrivate;
 
-        public static void LoadInternalDictionaries(bool loadPrivateDictionary = true)
+        /// <summary>
+        /// Ensures the default DICOM dictionaries are loaded
+        /// Safe to call multiple times but will throw an exception if inconsistent values for loadPrivateDictionary are provided over multiple calls
+        /// </summary>
+        /// <param name="loadPrivateDictionary">Leave null (default value) if unconcerned.  Set true to search for resource streams named "Dicom.Dictionaries.Private Dictionary.xml.gz" in referenced assemblies</param>
+        /// <returns></returns>
+        public static DicomDictionary EnsureDefaultDictionariesLoaded(bool? loadPrivateDictionary = null)
         {
-            // "Cheap" unlocked preliminary check (#151).
-            if (_default != null) return;
+            // short-circuit if already initialised (#151).
+            if (_default != null)
+            {
+                if (loadPrivateDictionary.HasValue && _defaultIncludesPrivate != loadPrivateDictionary.Value)
+                {
+                    throw new DicomDataException("Default DICOM dictionary already loaded " +
+                                                 (_defaultIncludesPrivate ? "with" : "without") +
+                                                 "private dictionary and the current request to ensure the default dictionary is loaded requests that private dictionary " +
+                                                 (loadPrivateDictionary.Value ? "is" : "is not") + " loaded");
+                }
+                return _default;
+            }
 
             lock (_lock)
             {
                 if (_default == null)
                 {
-                    _default = new DicomDictionary();
-                    _default.Add(
+                    var dict = new DicomDictionary();
+                    dict.Add(
                         new DicomDictionaryEntry(
                             DicomMaskedTag.Parse("xxxx", "0000"),
                             "Group Length",
@@ -128,10 +149,10 @@ namespace Dicom
                             DicomVR.UL));
                     try
                     {
-                        var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
+                        var assembly = typeof (DicomDictionary).GetTypeInfo().Assembly;
                         var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
                         var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                        var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                        var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                         reader.Process();
                     }
                     catch (Exception e)
@@ -140,15 +161,15 @@ namespace Dicom
                             "Unable to load DICOM dictionary from resources.\n\n" + e.Message,
                             e);
                     }
-                    if (loadPrivateDictionary)
+                    if (loadPrivateDictionary.GetValueOrDefault(true))
                     {
                         try
                         {
-                            var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
+                            var assembly = typeof (DicomDictionary).GetTypeInfo().Assembly;
                             var stream =
                                 assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
                             var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                            var reader = new DicomDictionaryReader(_default, DicomDictionaryFormat.XML, gzip);
+                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                             reader.Process();
                         }
                         catch (Exception e)
@@ -158,7 +179,25 @@ namespace Dicom
                                 e);
                         }
                     }
+
+                    _defaultIncludesPrivate = loadPrivateDictionary.GetValueOrDefault(true);
+                    _default = dict;
                 }
+                else
+                {
+                    //ensure the race wasn't for two different "load private dictionary" states
+                    if (loadPrivateDictionary.HasValue && _defaultIncludesPrivate != loadPrivateDictionary)
+                    {
+                        throw new DicomDataException("Default DICOM dictionary already loaded " +
+                                                     (_defaultIncludesPrivate ? "with" : "without") +
+                                                     "private dictionary and the current request to ensure the default dictionary is loaded requests that private dictionary " +
+                                                     (loadPrivateDictionary.Value ? "is" : "is not") + " loaded");
+                    }
+                    return _default;
+                }
+
+                //race is complete
+                return _default;
             }
         }
 
@@ -166,12 +205,19 @@ namespace Dicom
         {
             get
             {
-                LoadInternalDictionaries();
-                return _default;
+                return EnsureDefaultDictionariesLoaded(loadPrivateDictionary: null);
             }
             set
             {
-                lock (_lock) _default = value;
+                lock (_lock)
+                {
+                    if (_default != null)
+                    {
+                        throw new DicomDataException(
+                            "Cannot set Default DicomDictionary as it has already been initialised");
+                    }
+                    _default = value;
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -143,7 +143,7 @@ namespace Dicom
                 ushort e = ushort.Parse(element.ToLower().Replace('x', '0'), NumberStyles.HexNumber);
                 tag.Tag = new DicomTag(g, e);
 
-                string mask = group + element;
+                string mask = (group + element).ToLowerInvariant();
                 mask =
                     mask.Replace('0', 'f')
                         .Replace('1', 'f')

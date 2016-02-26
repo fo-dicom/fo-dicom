@@ -315,7 +315,7 @@ private static string ToVrAttribute(string vr)
 	return vr == "NONE" ? string.Empty : string.Format(" vr=\"{0}\"", vr);
 }
 
-private static string ToUidKeyword(string description)
+private static string ToUidKeyword(string uid, string description)
 {
 	// "Retired", "Process" and "Image Compression" should not be part of UID keywords, so strip.
 	// Keyword cannot start with a digit, so convert known digit-starter with corresponding text.
@@ -324,6 +324,9 @@ private static string ToUidKeyword(string description)
 
 	// Text in description after : should not be included in keyword
 	if (raw.Contains(':')) raw = raw.Substring(0, raw.IndexOf(':'));
+
+	// If raw keyword is empty, return UID based keyword.
+	if (raw.Length == 0) return "UID_" + uid.Replace('.', '_');
 
 	// Check each individual character in remains of description. Letter following - or whitespace
 	// should be upper case. Only letters and digits should be included in keyword.
@@ -358,9 +361,9 @@ private static string ToUidKeyword(string description)
 	return ret;
 }
 
-private static string ToUidKeyword(string description, bool isRetired)
+private static string ToUidKeyword(string uid, string description, bool isRetired)
 {
-	return ToUidKeyword(description) + (isRetired ? "RETIRED" : string.Empty);
+	return ToUidKeyword(uid, description) + (isRetired ? "RETIRED" : string.Empty);
 }
 
 // When description may be used in XML comments, convert ampersand to control character

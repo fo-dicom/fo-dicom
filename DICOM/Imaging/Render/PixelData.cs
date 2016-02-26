@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -109,7 +109,8 @@ namespace Dicom.Imaging.Render
             else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
                      || pi == PhotometricInterpretation.PaletteColor)
             {
-                if (pixelData.BitsAllocated <= 8) return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+                if (pixelData.BitsAllocated == 8 && pixelData.HighBit == 7 && pixelData.BitsStored == 8)
+                    return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
                 else if (pixelData.BitsAllocated <= 16)
                 {
                     if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
@@ -412,9 +413,12 @@ namespace Dicom.Imaging.Render
 
             if (bitDepth.BitsStored != 16)
             {
-                int sign = 1 << bitDepth.HighBit;
-                int mask = (UInt16.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
-
+                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
+                // shifts in the loop below just replaces the top shift bits by the sign bit.
+                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
+                // should also be discarded.
+                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
+                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
                 Parallel.For(
                     0,
                     _height,
@@ -422,9 +426,10 @@ namespace Dicom.Imaging.Render
                         {
                             for (int i = _width * y, e = i + _width; i < e; i++)
                             {
-                                short d = shortData[i];
-                                if ((d & sign) != 0) shortData[i] = (short)-(((-d) & mask) + 1);
-                                else shortData[i] = (short)(d & mask);
+                                // Remove masked high and low bits by shifting them out of the data type,
+                                // getting the sign correct using arithmetic (sign-extending) right shift.
+                                var d = (short)(shortData[i] << shiftLeft);
+                                shortData[i] = (short)(d >> shiftRight);
                             }
                         });
             }
@@ -588,7 +593,12 @@ namespace Dicom.Imaging.Render
 
             if (bitDepth.BitsStored != 16)
             {
-                int mask = (1 << (bitDepth.HighBit + 1)) - 1;
+                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
+                // shifts in the loop below just zeroes the top shift bits.
+                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
+                // should also be discarded.
+                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
+                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
                 Parallel.For(
                     0,
@@ -597,7 +607,9 @@ namespace Dicom.Imaging.Render
                         {
                             for (int i = _width * y, e = i + _width; i < e; i++)
                             {
-                                ushortData[i] = (ushort)(ushortData[i] & mask);
+                                // Remove masked high and low bits by shifting them out of the data type. 
+                                var d = (ushort)(ushortData[i] << shiftLeft);
+                                ushortData[i] = (ushort)(d >> shiftRight);
                             }
                         });
             }
@@ -755,9 +767,12 @@ namespace Dicom.Imaging.Render
 
             var intData = Dicom.IO.ByteConverter.ToArray<int>(data);
 
-            int sign = 1 << bitDepth.HighBit;
-            uint mask = (UInt32.MaxValue >> (bitDepth.BitsAllocated - bitDepth.BitsStored));
-
+            // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
+            // shifts in the loop below just replaces the top shift bits by the sign bit.
+            // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
+            // should also be discarded.
+            int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
+            int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
             Parallel.For(
                 0,
                 _height,
@@ -765,11 +780,12 @@ namespace Dicom.Imaging.Render
                     {
                         for (int i = _width * y, e = i + _width; i < e; i++)
                         {
-                            int d = intData[i];
-                            if ((d & sign) != 0) intData[i] = (int)-(((-d) & mask) + 1);
-                            else intData[i] = (int)(d & mask);
-                        }
-                    });
+                            // Remove masked high and low bits by shifting them out of the data type,
+                            // getting the sign correct using arithmetic (sign-extending) right shift.
+                            var d = intData[i] << shiftLeft;
+                            intData[i] = d >> shiftRight;
+                    }
+                });
 
             _data = intData;
         }
@@ -916,7 +932,12 @@ namespace Dicom.Imaging.Render
 
             if (bitDepth.BitsStored != 32)
             {
-                int mask = (1 << (bitDepth.HighBit + 1)) - 1;
+                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
+                // shifts in the loop below just zeroes the top shift bits.
+                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
+                // should also be discarded.
+                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
+                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
                 Parallel.For(
                     0,
@@ -925,7 +946,9 @@ namespace Dicom.Imaging.Render
                         {
                             for (int i = _width * y, e = i + _width; i < e; i++)
                             {
-                                uintData[i] = (uint)(uintData[i] & mask);
+                                // Remove masked high and low bits by shifting them out of the data type. 
+                                var d = (uint)(uintData[i] << shiftLeft);
+                                uintData[i] = (uint)(d >> shiftRight);
                             }
                         });
             }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -586,7 +586,7 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x52)
                         {
-                            _assoc.RemoteImplemetationClassUID =
+                            _assoc.RemoteImplementationClassUID =
                                 new DicomUID(
                                     raw.ReadString("Implementation Class UID", ul),
                                     "Implementation Class UID",
@@ -812,7 +812,7 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x52)
                         {
-                            _assoc.RemoteImplemetationClassUID =
+                            _assoc.RemoteImplementationClassUID =
                                 DicomUID.Parse(raw.ReadString("Implementation Class UID", ul));
                         }
                         else if (ut == 0x53)

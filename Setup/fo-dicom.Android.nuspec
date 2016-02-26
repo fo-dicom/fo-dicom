@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.Android</id>
+        <version>$version$</version>
+        <title>Fellow Oak DICOM Android Libraries</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Xamarin Android specific support libraries for fo-dicom.</description>
+        <language>en-US</language>
+        <dependencies>
+			<dependency id="fo-dicom.Core" version="$version$" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Platform.dll" target="lib\MonoAndroid1" />
+        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Platform.pdb" target="lib\MonoAndroid1" />
+    </files>
+</package>

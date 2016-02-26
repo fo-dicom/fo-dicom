@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO
@@ -43,6 +43,11 @@ namespace Dicom.IO
         /// Gets whether its possible to rewind the source.
         /// </summary>
         bool CanRewind { get; }
+
+        /// <summary>
+        /// Gets the milestone levels count.
+        /// </summary>
+        int MilestonesCount { get; }
 
         /// <summary>
         /// Gets one byte from the current position and moves to subsequent position.

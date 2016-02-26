@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -20,9 +20,18 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private bool disposed = false;
+        private bool disposed;
 
-        private readonly List<T> clients = new List<T>();
+        private readonly int port;
+
+        private readonly string certificateName;
+
+        private readonly Encoding fallbackEncoding;
+
+        private readonly CancellationTokenSource cancellationSource;
+
+        private readonly List<T> clients;
+
 
         #endregion
 
@@ -34,17 +43,34 @@ namespace Dicom.Network
         /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger.</param>
-        public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Logger logger = null)
+        public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Encoding fallbackEncoding = null, Logger logger = null)
         {
+            this.port = port;
+            this.certificateName = certificateName;
+            this.fallbackEncoding = fallbackEncoding;
+            this.cancellationSource = new CancellationTokenSource();
+            this.clients = new List<T>();
+
             this.Options = options;
             this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
+            this.IsListening = false;
+            this.Exception = null;
 
             Task.Factory.StartNew(
-                () => this.Listen(port, certificateName),
-                CancellationToken.None,
+                this.OnTimerTickAsync,
+                this.cancellationSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            Task.Factory.StartNew(
+                this.ListenAsync,
+                this.cancellationSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            this.disposed = false;
         }
 
         #endregion
@@ -61,9 +87,30 @@ namespace Dicom.Network
         /// </summary>
         public DicomServiceOptions Options { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the server is actively listening for client connections.
+        /// </summary>
+        public bool IsListening { get; private set; }
+
+        /// <summary>
+        /// Gets the exception that was thrown if the server failed to listen.
+        /// </summary>
+        public Exception Exception { get; private set; }
+
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Stop server from further listening.
+        /// </summary>
+        public void Stop()
+        {
+            if (!this.cancellationSource.IsCancellationRequested)
+            {
+                this.cancellationSource.Cancel();
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,6 +126,18 @@ namespace Dicom.Network
         /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                this.Stop();
+                this.cancellationSource.Dispose();
+                this.clients.Clear();
+            }
+
             this.disposed = true;
         }
 
@@ -87,75 +146,83 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="stream">Network stream.</param>
         /// <returns>An instance of the DICOM service class.</returns>
-        protected virtual T CreateScp(Stream stream)
+        protected virtual T CreateScp(INetworkStream stream)
         {
-            return (T)Activator.CreateInstance(typeof(T), stream, this.Logger);
+            return (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
         }
 
         /// <summary>
-        /// Listen indefinitely for network connections on the specified <paramref name="port"/>.
+        /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        private void Listen(int port, string certificateName)
+        private async void ListenAsync()
         {
-            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
-
             try
             {
-                using (var cancellationSource = new CancellationTokenSource())
+                var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
+
+                var listener = NetworkManager.CreateNetworkListener(this.port);
+                await listener.StartAsync().ConfigureAwait(false);
+                this.IsListening = true;
+
+                while (!this.cancellationSource.IsCancellationRequested)
                 {
-                    var token = cancellationSource.Token;
-                    Task.Run(() => this.OnTimerTick(token), token);
+                    var networkStream =
+                        await
+                        listener.AcceptNetworkStreamAsync(this.certificateName, noDelay, this.cancellationSource.Token)
+                            .ConfigureAwait(false);
 
-                    var listener = NetworkManager.CreateNetworkListener(port);
-                    listener.Start();
-                    do
+                    if (networkStream != null)
                     {
-                        try
+                        var scp = this.CreateScp(networkStream);
+                        if (this.Options != null)
                         {
-                            var networkStream = listener.AcceptNetworkStream(certificateName, noDelay);
-
-                            var scp = this.CreateScp(networkStream.AsStream());
-                            if (this.Options != null) scp.Options = this.Options;
-
-                            this.clients.Add(scp);
+                            scp.Options = this.Options;
                         }
-                        catch (Exception e)
-                        {
-                            this.Logger.Error("Exception accepting client {@error}", e);
-                        }
-                    }
-                    while (!this.disposed);
 
-                    if (listener != null)
-                    {
-                        listener.Stop();
+                        this.clients.Add(scp);
                     }
-
-                    cancellationSource.Cancel();
                 }
+
+                listener.Stop();
+                this.IsListening = false;
+                this.Exception = null;
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
+                this.Logger.Info("Listening manually terminated");
+
+                this.IsListening = false;
+                this.Exception = null;
+            }
+            catch (Exception e)
+            {
+                this.Logger.Error("Exception listening for clients, {@error}", e);
+
+                this.Stop();
+                this.IsListening = false;
+                this.Exception = e;
             }
         }
 
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        /// <param name="token">Cancellation token.</param>
-        private async void OnTimerTick(CancellationToken token)
+        private async void OnTimerTickAsync()
         {
-            while (!token.IsCancellationRequested)
+            while (!this.cancellationSource.IsCancellationRequested)
             {
                 try
                 {
-                    await Task.Delay(1000, token).ConfigureAwait(false);
+                    await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
                     this.clients.RemoveAll(client => !client.IsConnected);
                 }
-                catch
+                catch (OperationCanceledException)
                 {
+                    this.Logger.Info("Disconnected client cleanup manually terminated.");
+                }
+                catch (Exception e)
+                {
+                    this.Logger.Warn("Exception removing disconnected clients, {@error}", e);
                 }
             }
         }

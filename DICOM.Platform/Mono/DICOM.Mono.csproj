@@ -37,9 +37,6 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Dicom.Core">
-      <HintPath>..\..\packages\fo-dicom.Core.2.0.0-beta1\lib\portable-net45+netcore45+wpa81\Dicom.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,6 +102,9 @@
     <Folder Include="Imaging\Codec\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+      <Project>{A661D347-CF7D-4F36-8101-0544AE85EEEC}</Project>
+      <Name>DICOM.Core</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

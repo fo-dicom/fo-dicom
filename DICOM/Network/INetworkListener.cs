@@ -1,8 +1,11 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Interface for listening to network stream connections.
     /// </summary>
@@ -11,7 +14,8 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        void Start();
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        Task StartAsync();
 
         /// <summary>
         /// Stop listening.
@@ -23,7 +27,8 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        INetworkStream AcceptNetworkStream(string certificateName, bool noDelay);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
     }
 }

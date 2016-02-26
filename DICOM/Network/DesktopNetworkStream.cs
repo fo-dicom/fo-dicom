@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
     using System;
     using System.IO;
+    using System.Net;
     using System.Net.Security;
     using System.Net.Sockets;
     using System.Security.Authentication;
@@ -37,6 +38,8 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
+            this.Host = host;
+            this.Port = port;
             this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
 
             Stream stream = this.tcpClient.GetStream();
@@ -63,6 +66,9 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {
+            this.Host = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+            this.Port = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
             {
@@ -81,6 +87,20 @@ namespace Dicom.Network
         {
             this.Dispose(false);
         }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the host of the network stream.
+        /// </summary>
+        public string Host { get; }
+
+        /// <summary>
+        /// Gets the port of the network stream.
+        /// </summary>
+        public int Port { get; }
 
         #endregion
 

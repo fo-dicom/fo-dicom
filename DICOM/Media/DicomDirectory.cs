@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Media
@@ -210,10 +210,15 @@ namespace Dicom.Media
                         new DicomReaderMultiObserver(datasetObserver, dirObserver),
                         stop);
 
+                    if (result == DicomReaderResult.Processing)
+                    {
+                        throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                    }
                     if (result == DicomReaderResult.Error)
                     {
                         return null;
                     }
+                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                     df.Format = reader.FileFormat;
 
@@ -279,10 +284,15 @@ namespace Dicom.Media
                             new DicomReaderMultiObserver(datasetObserver, dirObserver),
                             stop).ConfigureAwait(false);
 
+                    if (result == DicomReaderResult.Processing)
+                    {
+                        throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                    }
                     if (result == DicomReaderResult.Error)
                     {
                         return null;
                     }
+                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
 
                     df.Format = reader.FileFormat;
 

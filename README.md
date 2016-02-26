@@ -2,7 +2,7 @@
 
 # Fellow Oak DICOM
 
-[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[//]: # ( [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/) )
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
@@ -60,7 +60,9 @@ await file.SaveAsync(@"output.dcm");  // Alt 2
 #### Render Image to JPEG
 ```csharp
 var image = new DicomImage(@"test.dcm");
-image.RenderImage().Save(@"test.jpg");
+image.RenderImage().AsBitmap().Save(@"test.jpg");                     // Windows Forms
+image.RenderImage().AsUIImage().AsJPEG().Save(@"test.jpg", true);     // iOS
+
 ```
 
 #### C-Store SCU
@@ -106,6 +108,10 @@ client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
 await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
+### Sample applications
+There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
+that were previously included in the *Examples* sub-folder of the VS solutions.
+
 ### Contributors
 * [Colby Dillion](https://github.com/rcd)
 * [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
@@ -116,12 +122,15 @@ await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
 * [Alexander Saratow](https://github.com/swalex)
 * [Justin Wake](https://github.com/jwake)
 * [Ryan Melena](https://github.com/RyanMelenaNoesis)
+* [Rickard Holmberg](https://github.com/rickardraysearch)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
+* [Johannes Liegert](https://github.com/0xLigety)
+* [Håkan MacLean](https://github.com/MacL3an)
 * [captainstark](https://github.com/captainstark)
 * [lste](https://github.com/lste)
-* [0xLigety](https://github.com/0xLigety)
 * [Thunderstriker](https://github.com/Thunderstriker)
+* [Ed55](https://github.com/Ed55)
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.

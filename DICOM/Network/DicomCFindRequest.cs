@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -79,7 +79,6 @@ namespace Dicom.Network
             dimse.Dataset.Add(DicomTag.PatientBirthDate, String.Empty);
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.ModalitiesInStudy, modalitiesInStudy);
-            dimse.Dataset.Add(DicomTag.Modality, modalitiesInStudy);
             dimse.Dataset.Add(DicomTag.StudyID, studyId);
             dimse.Dataset.Add(DicomTag.AccessionNumber, accession);
             dimse.Dataset.Add(DicomTag.StudyDate, studyDateTime);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -88,6 +88,9 @@ namespace Dicom.IO.Reader
                     break;
                 case "OF":
                     element = new DicomOtherFloat(tag, data);
+                    break;
+                case "OL":
+                    element = new DicomOtherLong(tag, data);
                     break;
                 case "OW":
                     element = new DicomOtherWord(tag, data);

@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -13,6 +14,7 @@ namespace Dicom
     using Dicom.IO;
     using Dicom.IO.Buffer;
 
+    [DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
     public abstract class DicomElement : DicomItem
     {
         protected DicomElement(DicomTag tag, IByteBuffer data)
@@ -158,9 +160,13 @@ namespace Dicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)_values;
 
+            if (item == -1) item = 0;
+            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
             if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(_values[item]);
 
-            if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), _values[item], true);
+            var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+            if (t.GetTypeInfo().IsEnum) return (T)Enum.Parse(t, _values[item], true);
 
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
@@ -319,19 +325,20 @@ namespace Dicom
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
             }
 
-            if (typeof(T).GetTypeInfo().IsEnum)
-            {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
-                var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
-                return (T)Enum.Parse(typeof(T), s, true);
-            }
-
             if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), typeof(T));
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                if (t.GetTypeInfo().IsEnum)
+                {
+                    var s = ByteConverter.Get<Tv>(Buffer, item).ToString();
+                    return (T)Enum.Parse(t, s, true);
+                }
+
+                return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), t);
             }
 
             throw new InvalidCastException(
@@ -593,7 +600,7 @@ namespace Dicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray())
+            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
@@ -638,19 +645,38 @@ namespace Dicom
                         .ToArray();
             }
 
-            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(object))
+            if (typeof(T).GetTypeInfo().IsArray)
             {
-                return (T)(object)_values[Math.Max(item, 0)];
-            }
+                var t = typeof(T).GetElementType();
 
-            if (typeof(T) == typeof(decimal[]) || typeof(T) == typeof(object[]))
+                if (t == typeof(decimal)) return (T)(object)_values;
+
+                var tu = Nullable.GetUnderlyingType(t) ?? t;
+                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
+
+                if (t == typeof(object)) return (T)(object)tmp.ToArray();
+                if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
+                if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
+                if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
+                if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
+                if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
+                if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
+                if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
+                if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
+                if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
+            }
+            else if (typeof(T).GetTypeInfo().IsValueType || typeof(T) == typeof(object))
             {
-                return (T)(object)_values;
+                if (item == -1) item = 0;
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                return (T)Convert.ChangeType(_values[item], t);
             }
-
-            if (typeof(T) == typeof(double)) return (T)(object)Convert.ToDouble(_values[Math.Max(item, 0)]);
-
-            if (typeof(T) == typeof(double[])) return (T)(object)_values.Select(x => Convert.ToDouble(x)).ToArray();
 
             return base.Get<T>(item);
         }
@@ -703,18 +729,23 @@ namespace Dicom
             {
                 if (_formats == null)
                 {
-                    _formats = new string[11];
-                    _formats[0] = "yyyyMMddHHmmsszzz";
-                    _formats[1] = "yyyyMMddHHmmsszz";
-                    _formats[2] = "yyyyMMddHHmmssz";
-                    _formats[3] = "yyyyMMddHHmmss.fff";
-                    _formats[4] = "yyyyMMddHHmmss.ff";
-                    _formats[5] = "yyyyMMddHHmmss.f";
-                    _formats[6] = "yyyyMMddHHmmss";
-                    _formats[7] = "yyyyMMddHHmm";
-                    _formats[8] = "yyyyMMdd";
-                    _formats[9] = "yyyy.MM.dd";
-                    _formats[10] = "yyyy/MM/dd";
+                    _formats = new[]
+                    {
+                        "yyyyMMddHHmmsszzz",
+                        "yyyyMMddHHmmsszz",
+                        "yyyyMMddHHmmssz",
+                        "yyyyMMddHHmmss.ffffff",
+                        "yyyyMMddHHmmss.fffff",
+                        "yyyyMMddHHmmss.ffff",
+                        "yyyyMMddHHmmss.fff",
+                        "yyyyMMddHHmmss.ff",
+                        "yyyyMMddHHmmss.f",
+                        "yyyyMMddHHmmss",
+                        "yyyyMMddHHmm",
+                        "yyyyMMdd",
+                        "yyyy.MM.dd",
+                        "yyyy/MM/dd"
+                    };
                 }
                 return _formats;
             }
@@ -789,7 +820,7 @@ namespace Dicom
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString()).ToArray())
+            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
@@ -826,6 +857,12 @@ namespace Dicom
             // no need to parse values if returning string(s)
             if (typeof(T) == typeof(string) || typeof(T) == typeof(string[])) return base.Get<T>(item);
 
+            // Normalize item argument if necessary (#231)
+            if (item == -1)
+            {
+                item = 0;
+            }
+
             if (_values == null)
             {
                 _values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
@@ -833,26 +870,53 @@ namespace Dicom
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))
             {
-                return (T)(object)_values[Math.Max(item, 0)];
-            }
-
-            if (typeof(T) == typeof(int[]) || typeof(T) == typeof(object[]))
-            {
-                return (T)(object)_values;
-            }
-
-            if (typeof(T).GetTypeInfo().IsEnum)
-            {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
                 return (T)(object)_values[item];
             }
 
-            if (typeof(T).GetTypeInfo().IsValueType)
+            if (typeof(T).GetTypeInfo().IsArray)
+            {
+                var t = typeof(T).GetElementType();
+
+                if (t == typeof(int)) return (T)(object)_values;
+
+                var tu = Nullable.GetUnderlyingType(t) ?? t;
+                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
+
+                if (t == typeof(object)) return (T)(object)tmp.ToArray();
+                if (t == typeof(decimal)) return (T)(object)tmp.Cast<decimal>().ToArray();
+                if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
+                if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
+                if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
+                if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
+                if (t == typeof(byte)) return (T)(object)tmp.Cast<byte>().ToArray();
+                if (t == typeof(ulong)) return (T)(object)tmp.Cast<ulong>().ToArray();
+                if (t == typeof(uint)) return (T)(object)tmp.Cast<uint>().ToArray();
+                if (t == typeof(ushort)) return (T)(object)tmp.Cast<ushort>().ToArray();
+                if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
+                if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
+                if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
+                if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
+                if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
+                if (t == typeof(byte?)) return (T)(object)tmp.Cast<byte?>().ToArray();
+                if (t == typeof(ulong?)) return (T)(object)tmp.Cast<ulong?>().ToArray();
+                if (t == typeof(uint?)) return (T)(object)tmp.Cast<uint?>().ToArray();
+                if (t == typeof(ushort?)) return (T)(object)tmp.Cast<ushort?>().ToArray();
+            }
+            else if (typeof(T).GetTypeInfo().IsValueType)
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-                return (T)Convert.ChangeType(_values[item], typeof(T));
+                // If nullable, need to apply conversions on underlying type (#212)
+                var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+                if (t.GetTypeInfo().IsEnum)
+                {
+                    return (T)Enum.ToObject(t, _values[item]);
+                }
+
+                return (T)Convert.ChangeType(_values[item], t);
             }
 
             return base.Get<T>(item);
@@ -1020,6 +1084,36 @@ namespace Dicom
             get
             {
                 return DicomVR.OW;
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>Other Long (OL)</summary>
+    public class DicomOtherLong : DicomValueElement<uint>
+    {
+        #region Public Constructors
+
+        public DicomOtherLong(DicomTag tag, params uint[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomOtherLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.OL;
             }
         }
 

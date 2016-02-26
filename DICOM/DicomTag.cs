@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -31,6 +31,16 @@ namespace Dicom
             Group = group;
             Element = element;
             PrivateCreator = privateCreator;
+        }
+
+        public static implicit operator DicomTag(uint tag)
+        {
+            return new DicomTag((ushort)((tag >> 16) & 0xffff), (ushort)(tag & 0xffff));
+        }
+
+        public static explicit operator uint(DicomTag tag)
+        {
+            return (uint)(tag.Group << 16) | tag.Element;
         }
 
         public ushort Group { get; private set; }

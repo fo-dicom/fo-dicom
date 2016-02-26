@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dicom</RootNamespace>
     <AssemblyName>DICOM [Unit Tests]</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile />
@@ -41,6 +41,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -77,6 +82,12 @@
     </Compile>
     <Compile Include="Bugs\GH133.cs" />
     <Compile Include="Bugs\GH064.cs" />
+    <Compile Include="Bugs\GH177.cs" />
+    <Compile Include="Bugs\GH195.cs" />
+    <Compile Include="Bugs\GH179.cs" />
+    <Compile Include="Bugs\GH178.cs" />
+    <Compile Include="Bugs\GH223.cs" />
+    <Compile Include="Bugs\GH220.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
@@ -87,7 +98,9 @@
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
+    <Compile Include="Imaging\LUT\PrecalculatedLUTTest.cs" />
     <Compile Include="Imaging\Mathematics\RectFTest.cs" />
+    <Compile Include="Imaging\Render\PixelDataTest.cs" />
     <Compile Include="Imaging\SpatialTransformTest.cs" />
     <Compile Include="Imaging\WinFormsImageTest.cs" />
     <Compile Include="Imaging\WPFImageTest.cs" />
@@ -117,12 +130,14 @@
     <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
+    <Compile Include="Network\DicomServerTest.cs" />
     <Compile Include="Network\DicomServiceTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Network\Ports.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\JsonDicomConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DICOM.Native\x64\DICOM.Native64.vcxproj">
@@ -145,10 +160,19 @@
       <Project>{a3550fe3-1cb5-4760-8670-9c8afe0925a3}</Project>
       <Name>DICOM.Legacy</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Serialization\DICOM.Json\DICOM.Json.csproj">
+      <Project>{849A140B-EF3E-4367-90BC-9F9383DC1481}</Project>
+      <Name>DICOM.Json</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Test Data\GH220.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH195.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\CT-MONO2-16-ankle">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -158,10 +182,31 @@
     <None Include="Test Data\DICOMDIR">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test Data\GH177_D_CLUNIE_CT1_IVRLE_BigEndian_ELE_undefinded_length.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\GH064.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH133.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH178.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH179B.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH179A.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH184.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH223.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\minimumdict.xml.gz">

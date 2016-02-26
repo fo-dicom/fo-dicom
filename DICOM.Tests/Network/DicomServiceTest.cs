@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
     using System;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
 
     using Dicom.Log;
@@ -104,8 +105,8 @@ namespace Dicom.Network
                     DicomTransferSyntax.ImplicitVRLittleEndian
                 };
 
-            public SimpleCStoreProvider(Stream stream, Logger log)
-                : base(stream, log)
+            public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
             {
             }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Reader
@@ -313,7 +313,15 @@ namespace Dicom.IO.Reader
                         source.Mark();
                         var bytes = source.GetBytes(2);
                         var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                        if (!DicomVR.TryParse(vr, out this._vr))
+
+                        if (string.IsNullOrWhiteSpace(vr))
+                        {
+                            if (this._entry != null)
+                            {
+                                this._vr = this._entry.ValueRepresentations.FirstOrDefault();
+                            }
+                        }
+                        else if (!DicomVR.TryParse(vr, out this._vr))
                         {
                             // unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
                             this._vr = DicomVR.Implicit;
@@ -429,6 +437,15 @@ namespace Dicom.IO.Reader
 
                             source.Skip(2);
                             this.length = source.GetUInt32();
+
+                            // CP-246 (#177) handling
+                            // assume that Undefined Length in explicit datasets with VR UN are sequences 
+                            // According to CP-246 the sequence shall be handled as ILE, but this will be handled later...
+                            // in the current code this needs to be restricted to privates 
+                            if (this.length == UndefinedLength && this._vr == DicomVR.UN && this._tag.IsPrivate)
+                            {
+                                this._vr = DicomVR.SQ;
+                            }
                         }
                     }
                     else
@@ -483,7 +500,7 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate && this.length > 0)
                     {
                         if (!IsPrivateSequence(source))
                         {
@@ -514,7 +531,25 @@ namespace Dicom.IO.Reader
                             this._implicit = true;
                         }
                         var last = source.Position;
+
+                        // Conformance with CP-246 (#177)
+                        var needtoChangeEndian = false;
+                        if (parsedVR == DicomVR.UN && !this._tag.IsPrivate)
+                        {
+                            this._implicit = true;
+                            needtoChangeEndian = source.Endian == Endian.Big;
+                        }
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Little;
+                        }
+
                         this.ParseItemSequence(source);
+
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Big;
+                        }
 
                         // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
                         // Fix reading of SQ with parsed VR of UN
@@ -598,7 +633,7 @@ namespace Dicom.IO.Reader
                         return false;
                     }
 
-                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate)
+                    while (this._vr == DicomVR.SQ && this._tag.IsPrivate && this.length > 0)
                     {
                         if (!IsPrivateSequence(source))
                         {
@@ -629,7 +664,25 @@ namespace Dicom.IO.Reader
                             this._implicit = true;
                         }
                         var last = source.Position;
+
+                        // Conformance with CP-246 (#177)
+                        var needtoChangeEndian = false;
+                        if (parsedVR == DicomVR.UN && !this._tag.IsPrivate)
+                        {
+                            this._implicit = true;
+                            needtoChangeEndian = source.Endian == Endian.Big;
+                        }
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Little;
+                        }
+
                         await this.ParseItemSequenceAsync(source).ConfigureAwait(false);
+
+                        if (needtoChangeEndian)
+                        {
+                            source.Endian = Endian.Big;
+                        }
 
                         // Aeric Sylvan - https://github.com/rcd/fo-dicom/issues/62#issuecomment-46248073
                         // Fix reading of SQ with parsed VR of UN
@@ -748,7 +801,7 @@ namespace Dicom.IO.Reader
                     if (this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
-                        if (source.HasReachedMilestone())
+                        if (source.HasReachedMilestone() && source.MilestonesCount > this.sequenceDepth)
                         {
                             this.ResetState();
                             return true;
@@ -974,9 +1027,11 @@ namespace Dicom.IO.Reader
 
                 try
                 {
-                    source.GetUInt16(); // group
-                    source.GetUInt16(); // element
-                    source.GetUInt32(); // length
+                    // Skip "item" tags; continue skipping until length is non-zero (#223)
+                    while (new DicomTag(source.GetUInt16(), source.GetUInt16()) == DicomTag.Item    // group, element
+                           & source.GetUInt32() == 0)   // length (using & instead of && enforces RHS to be evaluated regardless of LHS)
+                    {
+                    }
 
                     source.GetUInt16(); // group
                     source.GetUInt16(); // element

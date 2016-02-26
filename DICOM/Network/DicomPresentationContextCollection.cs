@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -73,12 +73,31 @@ namespace Dicom.Network
             }
             else
             {
-                var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
-                if (pc == null)
-                    Add(
-                        request.SOPClassUID,
-                        DicomTransferSyntax.ExplicitVRLittleEndian,
-                        DicomTransferSyntax.ImplicitVRLittleEndian);
+                if (request.PresentationContext != null)
+                {
+                    var pc =
+                        _pc.Values.FirstOrDefault(
+                            x =>
+                                x.AbstractSyntax == request.PresentationContext.AbstractSyntax &&
+                                request.PresentationContext.GetTransferSyntaxes().All(y => x.GetTransferSyntaxes().Contains(y)));
+
+                    if (pc == null)
+                    {
+                        var transferSyntaxes = request.PresentationContext.GetTransferSyntaxes().ToArray();
+                        if (!transferSyntaxes.Any())
+                            transferSyntaxes = new[] { DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian };
+                        Add(request.PresentationContext.AbstractSyntax, transferSyntaxes);
+                    }
+                }
+                else
+                {
+                    var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
+                    if (pc == null)
+                        Add(
+                            request.SOPClassUID,
+                            DicomTransferSyntax.ExplicitVRLittleEndian,
+                            DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
             }
         }
 

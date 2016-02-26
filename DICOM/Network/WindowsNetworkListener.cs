@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -6,9 +6,9 @@ namespace Dicom.Network
     using System;
     using System.Globalization;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Windows.Networking.Sockets;
-    using Windows.Security.Cryptography.Certificates;
 
     /// <summary>
     /// Universal Windows Platform implementation of the <see cref="INetworkListener"/>.
@@ -30,9 +30,9 @@ namespace Dicom.Network
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="WindowsNetworkListener"/>.
+        /// Initializes a new instance of the <see cref="WindowsNetworkListener"/> class. 
         /// </summary>
-        /// <param name="port"></param>
+        /// <param name="port">TCP/IP port to listen to.</param>
         internal WindowsNetworkListener(int port)
         {
             this.port = port.ToString(CultureInfo.InvariantCulture);
@@ -46,7 +46,8 @@ namespace Dicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        public async void Start()
+        /// <returns>An await:able <see cref="Task"/>.</returns>
+        public async Task StartAsync()
         {
             this.listener = new StreamSocketListener();
             this.listener.ConnectionReceived += this.OnConnectionReceived;
@@ -71,23 +72,41 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
+        /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
+        public Task<INetworkStream> AcceptNetworkStreamAsync(
+            string certificateName,
+            bool noDelay,
+            CancellationToken token)
         {
             if (!string.IsNullOrWhiteSpace(certificateName))
             {
-                throw new NotSupportedException("Authenticated server connections not supported on Windows Universal Platform.");
+                throw new NotSupportedException(
+                    "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
-            this.handle.Wait();
-            if (this.socket == null) return null;
+            INetworkStream networkStream;
+            try
+            {
+                this.handle.Wait(token);
+                networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
+            }
+            catch (OperationCanceledException)
+            {
+                networkStream = null;
+            }
 
-            var networkStream = new WindowsNetworkStream(this.socket);
             this.handle.Reset();
 
-            return networkStream;
+            return Task.FromResult(networkStream);
         }
 
+        /// <summary>
+        /// Event handler when connection received.
+        /// </summary>
+        /// <param name="sender">The sender, more specifically the listener object.</param>
+        /// <param name="args">The connection received arguments; 
+        /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             this.socket = args.Socket;

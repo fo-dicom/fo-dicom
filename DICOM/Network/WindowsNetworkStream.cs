@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2015 fo-dicom contributors.
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -10,12 +10,12 @@ namespace Dicom.Network
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Dicom.IO;
+
     using Windows.Networking;
     using Windows.Networking.Sockets;
     using Windows.Security.Cryptography.Certificates;
     using Windows.Storage.Streams;
-
-    using Dicom.IO;
 
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="INetworkStream"/>.
@@ -46,6 +46,8 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal WindowsNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
+            this.Host = host;
+            this.Port = port;
             this.socket = new StreamSocket();
             this.canDisposeSocket = true;
 
@@ -71,6 +73,8 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal WindowsNetworkStream(StreamSocket socket)
         {
+            this.Host = socket.Information.RemoteAddress.DisplayName;
+            this.Port = int.Parse(socket.Information.RemotePort, CultureInfo.InvariantCulture);
             this.socket = socket;
             this.canDisposeSocket = false;
             this.isConnected = true;
@@ -83,6 +87,20 @@ namespace Dicom.Network
         {
             this.Dispose(false);
         }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the host of the network stream.
+        /// </summary>
+        public string Host { get; }
+
+        /// <summary>
+        /// Gets the port of the network stream.
+        /// </summary>
+        public int Port { get; }
 
         #endregion
 
