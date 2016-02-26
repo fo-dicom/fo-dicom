@@ -42,6 +42,15 @@ namespace Dicom.Media
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
+        {
+            var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
+            var expected = dir.FileMetaInfo.Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
+            var actual = dir.MediaStorageSOPInstanceUID.UID;
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
     }
 }
