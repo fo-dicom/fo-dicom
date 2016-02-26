@@ -3,6 +3,7 @@
 
 namespace Dicom.Media
 {
+    using System.IO;
     using System.Threading.Tasks;
 
     using Xunit;
@@ -40,6 +41,41 @@ namespace Dicom.Media
             var expected = DicomUID.MediaStorageDirectoryStorage.UID;
             var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
+        {
+            var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
+            var expected = dir.FileMetaInfo.Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
+            var actual = dir.MediaStorageSOPInstanceUID.UID;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Open_DicomDirStream_Succeeds()
+        {
+            using (var stream = File.OpenRead(@".\Test Data\DICOMDIR"))
+            {
+                DicomDirectory dir = DicomDirectory.Open(stream);
+
+                var expected = DicomUID.MediaStorageDirectoryStorage.UID;
+                var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public async Task OpenAsync_DicomDirStream_Succeeds()
+        {
+            using (var stream = File.OpenRead(@".\Test Data\DICOMDIR"))
+            {
+                DicomDirectory dir = await DicomDirectory.OpenAsync(stream);
+
+                var expected = DicomUID.MediaStorageDirectoryStorage.UID;
+                var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
+                Assert.Equal(expected, actual);
+            }
         }
 
         #endregion
