@@ -30,6 +30,7 @@ namespace Dicom.Network
 
         private readonly CancellationTokenSource cancellationSource;
 
+        private readonly object clientsLock = new object();
         private readonly List<T> clients;
 
 
@@ -133,12 +134,15 @@ namespace Dicom.Network
 
             if (disposing)
             {
+                this.disposed = true;
+
                 this.Stop();
                 this.cancellationSource.Dispose();
-                this.clients.Clear();
+                lock (this.clientsLock)
+                {
+                    this.clients.Clear();
+                }
             }
-
-            this.disposed = true;
         }
 
         /// <summary>
@@ -173,13 +177,17 @@ namespace Dicom.Network
 
                     if (networkStream != null)
                     {
+                        Logger.Debug("New network stream received {host}:{port}", networkStream.Host, networkStream.Port);
                         var scp = this.CreateScp(networkStream);
                         if (this.Options != null)
                         {
                             scp.Options = this.Options;
                         }
 
-                        this.clients.Add(scp);
+                        lock (this.clientsLock)
+                        {
+                            this.clients.Add(scp);
+                        }
                     }
                 }
 
@@ -214,7 +222,10 @@ namespace Dicom.Network
                 try
                 {
                     await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
-                    this.clients.RemoveAll(client => !client.IsConnected);
+                    lock (this.clientsLock)
+                    {
+                        this.clients.RemoveAll(client => !client.IsConnected);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
