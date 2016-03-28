@@ -508,7 +508,12 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            pdu.WriteLength16();
+			foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+			{
+				exNeg.Write(pdu);
+			}
+
+			pdu.WriteLength16();
 
             return pdu;
         }
@@ -614,7 +619,11 @@ namespace Dicom.Network
                                     raw.ReadByte();		// SCP role
                                     */
                         }
-                        else
+						else if (ut == 0x56)
+						{
+							_assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
+						}
+						else
                         {
                             //Debug.Log.Error("Unhandled user item: 0x{0:x2} ({1} + 4 bytes)", ut, ul);
                             raw.SkipBytes("Unhandled User Item", ul);

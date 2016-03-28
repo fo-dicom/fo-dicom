@@ -230,6 +230,7 @@
     <Compile Include="Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="Imaging\Mathematics\Matrix.cs" />
     <Compile Include="Imaging\Mathematics\Point2.cs" />
+    <Compile Include="Network\DicomExtendedNegotiation.cs" />
     <Compile Include="Network\DicomPriorityRequest.cs" />
     <Compile Include="Network\IDicomNServiceProvider.cs" />
     <Compile Include="Network\DicomNDeleteRequest.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Network\INetworkStream.cs" />
     <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="Network\PDU.cs" />
+    <Compile Include="Network\StudyRootQueryRetrieveInfo.cs" />
     <Compile Include="Printing\FilmBox.cs" />
     <Compile Include="Printing\FilmSession.cs" />
     <Compile Include="Printing\ImageBox.cs" />
