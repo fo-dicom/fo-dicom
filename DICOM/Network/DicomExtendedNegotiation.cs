@@ -45,17 +45,20 @@ namespace Dicom.Network
 
 		public void Write(RawPDU pdu)
 		{
-			pdu.Write("Item-Type", (byte)0x56);
-			pdu.Write("Reserved", (byte)0x00);
+			if (null != SubItem)
+			{
+				pdu.Write("Item-Type", (byte)0x56);
+				pdu.Write("Reserved", (byte)0x00);
 
-			pdu.MarkLength16("Item-Length");
+				pdu.MarkLength16("Item-Length");
 
-			pdu.Write("SOP Class UID Length", (ushort)(SopClassUid.UID.Length));
-			pdu.Write("SOP Class UID", SopClassUid.UID);
+				pdu.Write("SOP Class UID Length", (ushort)(SopClassUid.UID.Length));
+				pdu.Write("SOP Class UID", SopClassUid.UID);
 
-			SubItem.Write(pdu);
+				SubItem.Write(pdu);
 
-			pdu.WriteLength16();
+				pdu.WriteLength16();
+			}
 		}
 
 		public static DicomExtendedNegotiation Create(RawPDU raw, ushort length)
