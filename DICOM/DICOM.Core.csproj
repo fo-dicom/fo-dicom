@@ -282,6 +282,7 @@
     <Compile Include="Network\INetworkStream.cs" />
     <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="Network\PDU.cs" />
+    <Compile Include="Network\RootQueryRetrieveInfoMove.cs" />
     <Compile Include="Network\StudyRootQueryRetrieveInfo.cs" />
     <Compile Include="Printing\FilmBox.cs" />
     <Compile Include="Printing\FilmSession.cs" />

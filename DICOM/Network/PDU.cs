@@ -738,7 +738,12 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            pdu.WriteLength16();
+			foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+			{
+				exNeg.Write(pdu);
+			}
+
+			pdu.WriteLength16();
 
             return pdu;
         }
@@ -833,7 +838,11 @@ namespace Dicom.Network
                         {
                             _assoc.RemoteImplementationVersion = raw.ReadString("Implementation Version", ul);
                         }
-                        else
+						else if (ut == 0x56)
+						{
+							_assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
+						}
+						else
                         {
                             raw.SkipBytes("User Item Value", (int)ul);
                         }

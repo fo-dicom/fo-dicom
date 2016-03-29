@@ -11,7 +11,7 @@ namespace Dicom.Network
 		void Write(RawPDU pdu);
 	}
 
-	public delegate IExtendedNegotiationSubItem CreateIExtendedNegotiationSubItemDelegate(RawPDU raw, out int bytesRead);
+	public delegate IExtendedNegotiationSubItem CreateIExtendedNegotiationSubItemDelegate(RawPDU raw, int itemSize, out int bytesRead);
 
 	public class DicomExtendedNegotiation
 	{
@@ -23,7 +23,10 @@ namespace Dicom.Network
 
 		static DicomExtendedNegotiation()
 		{
-			AddSubItemCreator(DicomUID.StudyRootQueryRetrieveInformationModelFIND, StudyRootQueryRetrieveInfo.Create);
+			AddSubItemCreator(DicomUID.StudyRootQueryRetrieveInformationModelFIND, RootQueryRetrieveInfoFind.Create);
+			AddSubItemCreator(DicomUID.PatientRootQueryRetrieveInformationModelFIND, RootQueryRetrieveInfoFind.Create);
+			AddSubItemCreator(DicomUID.StudyRootQueryRetrieveInformationModelMOVE, RootQueryRetrieveInfoMove.Create);
+			AddSubItemCreator(DicomUID.PatientRootQueryRetrieveInformationModelMOVE, RootQueryRetrieveInfoMove.Create);
 		}
 
 		public static void AddSubItemCreator(DicomUID uid, CreateIExtendedNegotiationSubItemDelegate creator)
@@ -64,12 +67,13 @@ namespace Dicom.Network
 			IExtendedNegotiationSubItem subItem = null;
 			int subItemSize = 0;
 
+			int remaining = length - uidLen - 2;
 			if (subItemCreators.ContainsKey(uid))
 			{
-				subItem = subItemCreators[uid](raw, out subItemSize);
+				subItem = subItemCreators[uid](raw, remaining, out subItemSize);
 			}
 
-			int remaining = length - uidLen - subItemSize - 2;
+			remaining -= subItemSize;
 			if (remaining > 0)
 			{
 				raw.SkipBytes("Unread bytes", remaining);
