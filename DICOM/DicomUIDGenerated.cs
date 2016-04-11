@@ -257,6 +257,7 @@ namespace Dicom
             _uids.Add(DicomUID.ColonCADSRStorage.UID, DicomUID.ColonCADSRStorage);
             _uids.Add(DicomUID.ImplantationPlanSRStorage.UID, DicomUID.ImplantationPlanSRStorage);
             _uids.Add(DicomUID.AcquisitionContextSRStorage.UID, DicomUID.AcquisitionContextSRStorage);
+            _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
             _uids.Add(DicomUID.PositronEmissionTomographyImageStorage.UID, DicomUID.PositronEmissionTomographyImageStorage);
@@ -1394,6 +1395,11 @@ namespace Dicom
             _uids.Add(DicomUID.PreclinicalSmallAnimalImagingProcedures646.UID, DicomUID.PreclinicalSmallAnimalImagingProcedures646);
             _uids.Add(DicomUID.PositionReferenceIndicatorForFrameOfReference647.UID, DicomUID.PositionReferenceIndicatorForFrameOfReference647);
             _uids.Add(DicomUID.PresentAbsentOnly241.UID, DicomUID.PresentAbsentOnly241);
+            _uids.Add(DicomUID.WaterEquivalentDiameterMethod10024.UID, DicomUID.WaterEquivalentDiameterMethod10024);
+            _uids.Add(DicomUID.RadiotherapyPurposesOfReference7022.UID, DicomUID.RadiotherapyPurposesOfReference7022);
+            _uids.Add(DicomUID.ContentAssessmentTypes701.UID, DicomUID.ContentAssessmentTypes701);
+            _uids.Add(DicomUID.RTContentAssessmentTypes702.UID, DicomUID.RTContentAssessmentTypes702);
+            _uids.Add(DicomUID.BasisOfAssessment703.UID, DicomUID.BasisOfAssessment703);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2130,6 +2136,9 @@ namespace Dicom
 
         ///<summary>SOP Class: Acquisition Context SR Storage</summary>
         public readonly static DicomUID AcquisitionContextSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.71", "Acquisition Context SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Content Assessment Results Storage</summary>
+        public readonly static DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Encapsulated PDF Storage</summary>
         public readonly static DicomUID EncapsulatedPDFStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.1", "Encapsulated PDF Storage", DicomUidType.SOPClass, false);
@@ -5541,6 +5550,21 @@ namespace Dicom
 
         ///<summary>Context Group Name: Present-Absent Only (241)</summary>
         public readonly static DicomUID PresentAbsentOnly241 = new DicomUID("1.2.840.10008.6.1.1113", "Present-Absent Only (241)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Water Equivalent Diameter Method (10024)</summary>
+        public readonly static DicomUID WaterEquivalentDiameterMethod10024 = new DicomUID("1.2.840.10008.6.1.1114", "Water Equivalent Diameter Method (10024)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Purposes of Reference (7022)</summary>
+        public readonly static DicomUID RadiotherapyPurposesOfReference7022 = new DicomUID("1.2.840.10008.6.1.1115", "Radiotherapy Purposes of Reference (7022)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Content Assessment Types (701)</summary>
+        public readonly static DicomUID ContentAssessmentTypes701 = new DicomUID("1.2.840.10008.6.1.1116", "Content Assessment Types (701)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Content Assessment Types (702)</summary>
+        public readonly static DicomUID RTContentAssessmentTypes702 = new DicomUID("1.2.840.10008.6.1.1117", "RT Content Assessment Types (702)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Basis of Assessment (703)</summary>
+        public readonly static DicomUID BasisOfAssessment703 = new DicomUID("1.2.840.10008.6.1.1118", "Basis of Assessment (703)", DicomUidType.ContextGroupName, false);
 
     }
 }

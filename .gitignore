@@ -24,3 +24,4 @@ DICOM/T4/part16.xml
 /.vs
 *.lock.json
 *.VC.opendb
+*.db

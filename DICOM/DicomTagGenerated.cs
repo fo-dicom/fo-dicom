@@ -848,6 +848,15 @@ namespace Dicom
         ///<summary>(0010,0032) VR=TM VM=1 Patient's Birth Time</summary>
         public readonly static DicomTag PatientBirthTime = new DicomTag(0x0010, 0x0032);
 
+        ///<summary>(0010,0033) VR=LO VM=1 Patient's Birth Date in Alternative Calendar</summary>
+        public readonly static DicomTag PatientBirthDateInAlternativeCalendar = new DicomTag(0x0010, 0x0033);
+
+        ///<summary>(0010,0034) VR=LO VM=1 Patient's Death Date in Alternative Calendar</summary>
+        public readonly static DicomTag PatientDeathDateInAlternativeCalendar = new DicomTag(0x0010, 0x0034);
+
+        ///<summary>(0010,0035) VR=CS VM=1 Patient's Alternative Calendar</summary>
+        public readonly static DicomTag PatientAlternativeCalendar = new DicomTag(0x0010, 0x0035);
+
         ///<summary>(0010,0040) VR=CS VM=1 Patient's Sex</summary>
         public readonly static DicomTag PatientSex = new DicomTag(0x0010, 0x0040);
 
@@ -2185,6 +2194,12 @@ namespace Dicom
 
         ///<summary>(0018,1261) VR=LO VM=1 Phosphor Type</summary>
         public readonly static DicomTag PhosphorType = new DicomTag(0x0018, 0x1261);
+
+        ///<summary>(0018,1271) VR=FD VM=1 Water Equivalent Diameter</summary>
+        public readonly static DicomTag WaterEquivalentDiameter = new DicomTag(0x0018, 0x1271);
+
+        ///<summary>(0018,1272) VR=SQ VM=1 Water Equivalent Diameter Calculation Method Code Sequence</summary>
+        public readonly static DicomTag WaterEquivalentDiameterCalculationMethodCodeSequence = new DicomTag(0x0018, 0x1272);
 
         ///<summary>(0018,1300) VR=DS VM=1 Scan Velocity</summary>
         public readonly static DicomTag ScanVelocity = new DicomTag(0x0018, 0x1300);
@@ -8741,38 +8756,77 @@ namespace Dicom
         ///<summary>(0072,0056) VR=LO VM=1 Selector Attribute Private Creator</summary>
         public readonly static DicomTag SelectorAttributePrivateCreator = new DicomTag(0x0072, 0x0056);
 
+        ///<summary>(0072,005E) VR=AE VM=1-n Selector AE Value</summary>
+        public readonly static DicomTag SelectorAEValue = new DicomTag(0x0072, 0x005E);
+
+        ///<summary>(0072,005F) VR=AS VM=1-n Selector AS Value</summary>
+        public readonly static DicomTag SelectorASValue = new DicomTag(0x0072, 0x005F);
+
         ///<summary>(0072,0060) VR=AT VM=1-n Selector AT Value</summary>
         public readonly static DicomTag SelectorATValue = new DicomTag(0x0072, 0x0060);
+
+        ///<summary>(0072,0061) VR=DA VM=1-n Selector DA Value</summary>
+        public readonly static DicomTag SelectorDAValue = new DicomTag(0x0072, 0x0061);
 
         ///<summary>(0072,0062) VR=CS VM=1-n Selector CS Value</summary>
         public readonly static DicomTag SelectorCSValue = new DicomTag(0x0072, 0x0062);
 
+        ///<summary>(0072,0063) VR=DT VM=1-n Selector DT Value</summary>
+        public readonly static DicomTag SelectorDTValue = new DicomTag(0x0072, 0x0063);
+
         ///<summary>(0072,0064) VR=IS VM=1-n Selector IS Value</summary>
         public readonly static DicomTag SelectorISValue = new DicomTag(0x0072, 0x0064);
+
+        ///<summary>(0072,0065) VR=OB VM=1 Selector OB Value</summary>
+        public readonly static DicomTag SelectorOBValue = new DicomTag(0x0072, 0x0065);
 
         ///<summary>(0072,0066) VR=LO VM=1-n Selector LO Value</summary>
         public readonly static DicomTag SelectorLOValue = new DicomTag(0x0072, 0x0066);
 
+        ///<summary>(0072,0067) VR=OF VM=1 Selector OF Value</summary>
+        public readonly static DicomTag SelectorOFValue = new DicomTag(0x0072, 0x0067);
+
         ///<summary>(0072,0068) VR=LT VM=1 Selector LT Value</summary>
         public readonly static DicomTag SelectorLTValue = new DicomTag(0x0072, 0x0068);
+
+        ///<summary>(0072,0069) VR=OW VM=1 Selector OW Value</summary>
+        public readonly static DicomTag SelectorOWValue = new DicomTag(0x0072, 0x0069);
 
         ///<summary>(0072,006A) VR=PN VM=1-n Selector PN Value</summary>
         public readonly static DicomTag SelectorPNValue = new DicomTag(0x0072, 0x006A);
 
+        ///<summary>(0072,006B) VR=TM VM=1-n Selector TM Value</summary>
+        public readonly static DicomTag SelectorTMValue = new DicomTag(0x0072, 0x006B);
+
         ///<summary>(0072,006C) VR=SH VM=1-n Selector SH Value</summary>
         public readonly static DicomTag SelectorSHValue = new DicomTag(0x0072, 0x006C);
+
+        ///<summary>(0072,006D) VR=UN VM=1 Selector UN Value</summary>
+        public readonly static DicomTag SelectorUNValue = new DicomTag(0x0072, 0x006D);
 
         ///<summary>(0072,006E) VR=ST VM=1 Selector ST Value</summary>
         public readonly static DicomTag SelectorSTValue = new DicomTag(0x0072, 0x006E);
 
+        ///<summary>(0072,006F) VR=UC VM=1-n Selector UC Value</summary>
+        public readonly static DicomTag SelectorUCValue = new DicomTag(0x0072, 0x006F);
+
         ///<summary>(0072,0070) VR=UT VM=1 Selector UT Value</summary>
         public readonly static DicomTag SelectorUTValue = new DicomTag(0x0072, 0x0070);
+
+        ///<summary>(0072,0071) VR=UR VM=1 Selector UR Value</summary>
+        public readonly static DicomTag SelectorURValue = new DicomTag(0x0072, 0x0071);
 
         ///<summary>(0072,0072) VR=DS VM=1-n Selector DS Value</summary>
         public readonly static DicomTag SelectorDSValue = new DicomTag(0x0072, 0x0072);
 
+        ///<summary>(0072,0073) VR=OD VM=1 Selector OD Value</summary>
+        public readonly static DicomTag SelectorODValue = new DicomTag(0x0072, 0x0073);
+
         ///<summary>(0072,0074) VR=FD VM=1-n Selector FD Value</summary>
         public readonly static DicomTag SelectorFDValue = new DicomTag(0x0072, 0x0074);
+
+        ///<summary>(0072,0075) VR=OL VM=1 Selector OL Value</summary>
+        public readonly static DicomTag SelectorOLValue = new DicomTag(0x0072, 0x0075);
 
         ///<summary>(0072,0076) VR=FL VM=1-n Selector FL Value</summary>
         public readonly static DicomTag SelectorFLValue = new DicomTag(0x0072, 0x0076);
@@ -9364,6 +9418,75 @@ namespace Dicom
 
         ///<summary>(0080,0013) VR=SQ VM=1 Referenced Surface Data Sequence</summary>
         public readonly static DicomTag ReferencedSurfaceDataSequence = new DicomTag(0x0080, 0x0013);
+
+        ///<summary>(0082,0001) VR=CS VM=1 Assessment Summary</summary>
+        public readonly static DicomTag AssessmentSummary = new DicomTag(0x0082, 0x0001);
+
+        ///<summary>(0082,0003) VR=UT VM=1 Assessment Summary Description</summary>
+        public readonly static DicomTag AssessmentSummaryDescription = new DicomTag(0x0082, 0x0003);
+
+        ///<summary>(0082,0004) VR=SQ VM=1 Assessed SOP Instance Sequence</summary>
+        public readonly static DicomTag AssessedSOPInstanceSequence = new DicomTag(0x0082, 0x0004);
+
+        ///<summary>(0082,0005) VR=SQ VM=1 Referenced Comparison SOP Instance Sequence</summary>
+        public readonly static DicomTag ReferencedComparisonSOPInstanceSequence = new DicomTag(0x0082, 0x0005);
+
+        ///<summary>(0082,0006) VR=UL VM=1 Number of Assessment Observations</summary>
+        public readonly static DicomTag NumberOfAssessmentObservations = new DicomTag(0x0082, 0x0006);
+
+        ///<summary>(0082,0007) VR=SQ VM=1 Assessment Observations Sequence</summary>
+        public readonly static DicomTag AssessmentObservationsSequence = new DicomTag(0x0082, 0x0007);
+
+        ///<summary>(0082,0008) VR=CS VM=1 Observation Significance</summary>
+        public readonly static DicomTag ObservationSignificance = new DicomTag(0x0082, 0x0008);
+
+        ///<summary>(0082,000A) VR=UT VM=1 Observation Description</summary>
+        public readonly static DicomTag ObservationDescription = new DicomTag(0x0082, 0x000A);
+
+        ///<summary>(0082,000C) VR=SQ VM=1 Structured Constraint Observation Sequence</summary>
+        public readonly static DicomTag StructuredContraintObservationSequence = new DicomTag(0x0082, 0x000C);
+
+        ///<summary>(0082,0010) VR=SQ VM=1 Assessed Attribute Value Sequence</summary>
+        public readonly static DicomTag AssessedAttributeValueSequence = new DicomTag(0x0082, 0x0010);
+
+        ///<summary>(0082,0016) VR=LO VM=1 Assessment Set ID</summary>
+        public readonly static DicomTag AssessmentSetID = new DicomTag(0x0082, 0x0016);
+
+        ///<summary>(0082,0017) VR=SQ VM=1 Assessment Requester Sequence</summary>
+        public readonly static DicomTag AssessmentRequesterSequence = new DicomTag(0x0082, 0x0017);
+
+        ///<summary>(0082,0018) VR=LO VM=1 Selector Attribute Name</summary>
+        public readonly static DicomTag SelectorAttributeName = new DicomTag(0x0082, 0x0018);
+
+        ///<summary>(0082,0019) VR=LO VM=1 Selector Attribute Keyword</summary>
+        public readonly static DicomTag SelectorAttributeKeyword = new DicomTag(0x0082, 0x0019);
+
+        ///<summary>(0082,0021) VR=SQ VM=1 Assessment Type Code Sequence</summary>
+        public readonly static DicomTag AssessmentTypeCodeSequence = new DicomTag(0x0082, 0x0021);
+
+        ///<summary>(0082,0022) VR=SQ VM=1 Observation Basis Code Sequence</summary>
+        public readonly static DicomTag ObservationBasisCodeSequence = new DicomTag(0x0082, 0x0022);
+
+        ///<summary>(0082,0023) VR=LO VM=1 Assessment Label</summary>
+        public readonly static DicomTag AssessmentLabel = new DicomTag(0x0082, 0x0023);
+
+        ///<summary>(0082,0032) VR=CS VM=1 Constraint Type</summary>
+        public readonly static DicomTag ConstraintType = new DicomTag(0x0082, 0x0032);
+
+        ///<summary>(0082,0033) VR=UT VM=1 Specification Selection Guidance</summary>
+        public readonly static DicomTag SpecificationSelectionGuidance = new DicomTag(0x0082, 0x0033);
+
+        ///<summary>(0082,0034) VR=SQ VM=1 Constraint Value Sequence</summary>
+        public readonly static DicomTag ConstraintValueSequence = new DicomTag(0x0082, 0x0034);
+
+        ///<summary>(0082,0035) VR=SQ VM=1 Recommended Default Value Sequence</summary>
+        public readonly static DicomTag RecommendedDefaultValueSequence = new DicomTag(0x0082, 0x0035);
+
+        ///<summary>(0082,0036) VR=CS VM=1 Constraint Violation Significance</summary>
+        public readonly static DicomTag ConstraintViolationSignificance = new DicomTag(0x0082, 0x0036);
+
+        ///<summary>(0082,0037) VR=UT VM=1 Constraint Violation Condition</summary>
+        public readonly static DicomTag ConstraintViolationCondition = new DicomTag(0x0082, 0x0037);
 
         ///<summary>(0088,0130) VR=SH VM=1 Storage Media File-set ID</summary>
         public readonly static DicomTag StorageMediaFileSetID = new DicomTag(0x0088, 0x0130);
@@ -10969,6 +11092,24 @@ namespace Dicom
 
         ///<summary>(300A,014E) VR=FL VM=1 Gantry Pitch Angle Tolerance</summary>
         public readonly static DicomTag GantryPitchAngleTolerance = new DicomTag(0x300A, 0x014E);
+
+        ///<summary>(300A,0150) VR=CS VM=1 Fixation Eye</summary>
+        public readonly static DicomTag FixationEye = new DicomTag(0x300A, 0x0150);
+
+        ///<summary>(300A,0151) VR=DS VM=1 Chair Head Frame Position</summary>
+        public readonly static DicomTag ChairHeadFramePosition = new DicomTag(0x300A, 0x0151);
+
+        ///<summary>(300A,0152) VR=DS VM=1 Head Fixation Angle Tolerance</summary>
+        public readonly static DicomTag HeadFixationAngleTolerance = new DicomTag(0x300A, 0x0152);
+
+        ///<summary>(300A,0153) VR=DS VM=1 Chair Head Frame Position Tolerance</summary>
+        public readonly static DicomTag ChairHeadFramePositionTolerance = new DicomTag(0x300A, 0x0153);
+
+        ///<summary>(300A,0154) VR=DS VM=1 Fixation Light Azimuthal Angle Tolerance</summary>
+        public readonly static DicomTag FixationLightAzimuthalAngleTolerance = new DicomTag(0x300A, 0x0154);
+
+        ///<summary>(300A,0155) VR=DS VM=1 Fixation Light Polar Angle Tolerance</summary>
+        public readonly static DicomTag FixationLightPolarAngleTolerance = new DicomTag(0x300A, 0x0155);
 
         ///<summary>(300A,0180) VR=SQ VM=1 Patient Setup Sequence</summary>
         public readonly static DicomTag PatientSetupSequence = new DicomTag(0x300A, 0x0180);

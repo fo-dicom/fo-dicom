@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2016 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2016a">
+<dictionary version="2016b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -285,6 +285,9 @@
     <tag group="0010" element="0028" keyword="SubjectRelativePositionInImage" vr="US" vm="3">Subject Relative Position in Image</tag>
     <tag group="0010" element="0030" keyword="PatientBirthDate" vr="DA" vm="1">Patient's Birth Date</tag>
     <tag group="0010" element="0032" keyword="PatientBirthTime" vr="TM" vm="1">Patient's Birth Time</tag>
+    <tag group="0010" element="0033" keyword="PatientBirthDateInAlternativeCalendar" vr="LO" vm="1">Patient's Birth Date in Alternative Calendar</tag>
+    <tag group="0010" element="0034" keyword="PatientDeathDateInAlternativeCalendar" vr="LO" vm="1">Patient's Death Date in Alternative Calendar</tag>
+    <tag group="0010" element="0035" keyword="PatientAlternativeCalendar" vr="CS" vm="1">Patient's Alternative Calendar</tag>
     <tag group="0010" element="0040" keyword="PatientSex" vr="CS" vm="1">Patient's Sex</tag>
     <tag group="0010" element="0050" keyword="PatientInsurancePlanCodeSequence" vr="SQ" vm="1">Patient's Insurance Plan Code Sequence</tag>
     <tag group="0010" element="0101" keyword="PatientPrimaryLanguageCodeSequence" vr="SQ" vm="1">Patient's Primary Language Code Sequence</tag>
@@ -731,6 +734,8 @@
     <tag group="0018" element="1251" keyword="TransmitCoilName" vr="SH" vm="1">Transmit Coil Name</tag>
     <tag group="0018" element="1260" keyword="PlateType" vr="SH" vm="1">Plate Type</tag>
     <tag group="0018" element="1261" keyword="PhosphorType" vr="LO" vm="1">Phosphor Type</tag>
+    <tag group="0018" element="1271" keyword="WaterEquivalentDiameter" vr="FD" vm="1">Water Equivalent Diameter</tag>
+    <tag group="0018" element="1272" keyword="WaterEquivalentDiameterCalculationMethodCodeSequence" vr="SQ" vm="1">Water Equivalent Diameter Calculation Method Code Sequence</tag>
     <tag group="0018" element="1300" keyword="ScanVelocity" vr="DS" vm="1">Scan Velocity</tag>
     <tag group="0018" element="1301" keyword="WholeBodyTechnique" vr="CS" vm="1-n">Whole Body Technique</tag>
     <tag group="0018" element="1302" keyword="ScanLength" vr="IS" vm="1">Scan Length</tag>
@@ -2916,17 +2921,30 @@
     <tag group="0072" element="0052" keyword="SelectorSequencePointer" vr="AT" vm="1-n">Selector Sequence Pointer</tag>
     <tag group="0072" element="0054" keyword="SelectorSequencePointerPrivateCreator" vr="LO" vm="1-n">Selector Sequence Pointer Private Creator</tag>
     <tag group="0072" element="0056" keyword="SelectorAttributePrivateCreator" vr="LO" vm="1">Selector Attribute Private Creator</tag>
+    <tag group="0072" element="005E" keyword="SelectorAEValue" vr="AE" vm="1-n">Selector AE Value</tag>
+    <tag group="0072" element="005F" keyword="SelectorASValue" vr="AS" vm="1-n">Selector AS Value</tag>
     <tag group="0072" element="0060" keyword="SelectorATValue" vr="AT" vm="1-n">Selector AT Value</tag>
+    <tag group="0072" element="0061" keyword="SelectorDAValue" vr="DA" vm="1-n">Selector DA Value</tag>
     <tag group="0072" element="0062" keyword="SelectorCSValue" vr="CS" vm="1-n">Selector CS Value</tag>
+    <tag group="0072" element="0063" keyword="SelectorDTValue" vr="DT" vm="1-n">Selector DT Value</tag>
     <tag group="0072" element="0064" keyword="SelectorISValue" vr="IS" vm="1-n">Selector IS Value</tag>
+    <tag group="0072" element="0065" keyword="SelectorOBValue" vr="OB" vm="1">Selector OB Value</tag>
     <tag group="0072" element="0066" keyword="SelectorLOValue" vr="LO" vm="1-n">Selector LO Value</tag>
+    <tag group="0072" element="0067" keyword="SelectorOFValue" vr="OF" vm="1">Selector OF Value</tag>
     <tag group="0072" element="0068" keyword="SelectorLTValue" vr="LT" vm="1">Selector LT Value</tag>
+    <tag group="0072" element="0069" keyword="SelectorOWValue" vr="OW" vm="1">Selector OW Value</tag>
     <tag group="0072" element="006A" keyword="SelectorPNValue" vr="PN" vm="1-n">Selector PN Value</tag>
+    <tag group="0072" element="006B" keyword="SelectorTMValue" vr="TM" vm="1-n">Selector TM Value</tag>
     <tag group="0072" element="006C" keyword="SelectorSHValue" vr="SH" vm="1-n">Selector SH Value</tag>
+    <tag group="0072" element="006D" keyword="SelectorUNValue" vr="UN" vm="1">Selector UN Value</tag>
     <tag group="0072" element="006E" keyword="SelectorSTValue" vr="ST" vm="1">Selector ST Value</tag>
+    <tag group="0072" element="006F" keyword="SelectorUCValue" vr="UC" vm="1-n">Selector UC Value</tag>
     <tag group="0072" element="0070" keyword="SelectorUTValue" vr="UT" vm="1">Selector UT Value</tag>
+    <tag group="0072" element="0071" keyword="SelectorURValue" vr="UR" vm="1">Selector UR Value</tag>
     <tag group="0072" element="0072" keyword="SelectorDSValue" vr="DS" vm="1-n">Selector DS Value</tag>
+    <tag group="0072" element="0073" keyword="SelectorODValue" vr="OD" vm="1">Selector OD Value</tag>
     <tag group="0072" element="0074" keyword="SelectorFDValue" vr="FD" vm="1-n">Selector FD Value</tag>
+    <tag group="0072" element="0075" keyword="SelectorOLValue" vr="OL" vm="1">Selector OL Value</tag>
     <tag group="0072" element="0076" keyword="SelectorFLValue" vr="FL" vm="1-n">Selector FL Value</tag>
     <tag group="0072" element="0078" keyword="SelectorULValue" vr="UL" vm="1-n">Selector UL Value</tag>
     <tag group="0072" element="007A" keyword="SelectorUSValue" vr="US" vm="1-n">Selector US Value</tag>
@@ -3124,6 +3142,29 @@
     <tag group="0080" element="0011" keyword="VValueData" vr="OF" vm="1-n">V Value Data</tag>
     <tag group="0080" element="0012" keyword="ReferencedTextureSequence" vr="SQ" vm="1">Referenced Texture Sequence</tag>
     <tag group="0080" element="0013" keyword="ReferencedSurfaceDataSequence" vr="SQ" vm="1">Referenced Surface Data Sequence</tag>
+    <tag group="0082" element="0001" keyword="AssessmentSummary" vr="CS" vm="1">Assessment Summary</tag>
+    <tag group="0082" element="0003" keyword="AssessmentSummaryDescription" vr="UT" vm="1">Assessment Summary Description</tag>
+    <tag group="0082" element="0004" keyword="AssessedSOPInstanceSequence" vr="SQ" vm="1">Assessed SOP Instance Sequence</tag>
+    <tag group="0082" element="0005" keyword="ReferencedComparisonSOPInstanceSequence" vr="SQ" vm="1">Referenced Comparison SOP Instance Sequence</tag>
+    <tag group="0082" element="0006" keyword="NumberOfAssessmentObservations" vr="UL" vm="1">Number of Assessment Observations</tag>
+    <tag group="0082" element="0007" keyword="AssessmentObservationsSequence" vr="SQ" vm="1">Assessment Observations Sequence</tag>
+    <tag group="0082" element="0008" keyword="ObservationSignificance" vr="CS" vm="1">Observation Significance</tag>
+    <tag group="0082" element="000A" keyword="ObservationDescription" vr="UT" vm="1">Observation Description</tag>
+    <tag group="0082" element="000C" keyword="StructuredContraintObservationSequence" vr="SQ" vm="1">Structured Constraint Observation Sequence</tag>
+    <tag group="0082" element="0010" keyword="AssessedAttributeValueSequence" vr="SQ" vm="1">Assessed Attribute Value Sequence</tag>
+    <tag group="0082" element="0016" keyword="AssessmentSetID" vr="LO" vm="1">Assessment Set ID</tag>
+    <tag group="0082" element="0017" keyword="AssessmentRequesterSequence" vr="SQ" vm="1">Assessment Requester Sequence</tag>
+    <tag group="0082" element="0018" keyword="SelectorAttributeName" vr="LO" vm="1">Selector Attribute Name</tag>
+    <tag group="0082" element="0019" keyword="SelectorAttributeKeyword" vr="LO" vm="1">Selector Attribute Keyword</tag>
+    <tag group="0082" element="0021" keyword="AssessmentTypeCodeSequence" vr="SQ" vm="1">Assessment Type Code Sequence</tag>
+    <tag group="0082" element="0022" keyword="ObservationBasisCodeSequence" vr="SQ" vm="1">Observation Basis Code Sequence</tag>
+    <tag group="0082" element="0023" keyword="AssessmentLabel" vr="LO" vm="1">Assessment Label</tag>
+    <tag group="0082" element="0032" keyword="ConstraintType" vr="CS" vm="1">Constraint Type</tag>
+    <tag group="0082" element="0033" keyword="SpecificationSelectionGuidance" vr="UT" vm="1">Specification Selection Guidance</tag>
+    <tag group="0082" element="0034" keyword="ConstraintValueSequence" vr="SQ" vm="1">Constraint Value Sequence</tag>
+    <tag group="0082" element="0035" keyword="RecommendedDefaultValueSequence" vr="SQ" vm="1">Recommended Default Value Sequence</tag>
+    <tag group="0082" element="0036" keyword="ConstraintViolationSignificance" vr="CS" vm="1">Constraint Violation Significance</tag>
+    <tag group="0082" element="0037" keyword="ConstraintViolationCondition" vr="UT" vm="1">Constraint Violation Condition</tag>
     <tag group="0088" element="0130" keyword="StorageMediaFileSetID" vr="SH" vm="1">Storage Media File-set ID</tag>
     <tag group="0088" element="0140" keyword="StorageMediaFileSetUID" vr="UI" vm="1">Storage Media File-set UID</tag>
     <tag group="0088" element="0200" keyword="IconImageSequence" vr="SQ" vm="1">Icon Image Sequence</tag>
@@ -3659,6 +3700,12 @@
     <tag group="300A" element="014A" keyword="GantryPitchAngle" vr="FL" vm="1">Gantry Pitch Angle</tag>
     <tag group="300A" element="014C" keyword="GantryPitchRotationDirection" vr="CS" vm="1">Gantry Pitch Rotation Direction</tag>
     <tag group="300A" element="014E" keyword="GantryPitchAngleTolerance" vr="FL" vm="1">Gantry Pitch Angle Tolerance</tag>
+    <tag group="300A" element="0150" keyword="FixationEye" vr="CS" vm="1">Fixation Eye</tag>
+    <tag group="300A" element="0151" keyword="ChairHeadFramePosition" vr="DS" vm="1">Chair Head Frame Position</tag>
+    <tag group="300A" element="0152" keyword="HeadFixationAngleTolerance" vr="DS" vm="1">Head Fixation Angle Tolerance</tag>
+    <tag group="300A" element="0153" keyword="ChairHeadFramePositionTolerance" vr="DS" vm="1">Chair Head Frame Position Tolerance</tag>
+    <tag group="300A" element="0154" keyword="FixationLightAzimuthalAngleTolerance" vr="DS" vm="1">Fixation Light Azimuthal Angle Tolerance</tag>
+    <tag group="300A" element="0155" keyword="FixationLightPolarAngleTolerance" vr="DS" vm="1">Fixation Light Polar Angle Tolerance</tag>
     <tag group="300A" element="0180" keyword="PatientSetupSequence" vr="SQ" vm="1">Patient Setup Sequence</tag>
     <tag group="300A" element="0182" keyword="PatientSetupNumber" vr="IS" vm="1">Patient Setup Number</tag>
     <tag group="300A" element="0183" keyword="PatientSetupLabel" vr="LO" vm="1">Patient Setup Label</tag>
@@ -4354,6 +4401,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.69" keyword="ColonCADSRStorage" type="SOP Class">Colon CAD SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.70" keyword="ImplantationPlanSRStorage" type="SOP Class">Implantation Plan SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.71" keyword="AcquisitionContextSRStorage" type="SOP Class">Acquisition Context SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.128" keyword="PositronEmissionTomographyImageStorage" type="SOP Class">Positron Emission Tomography Image Storage</uid>
@@ -5491,4 +5539,9 @@
     <uid uid="1.2.840.10008.6.1.1111" keyword="PreclinicalSmallAnimalImagingProcedures646" type="Context Group Name">Preclinical Small Animal Imaging Procedures (646)</uid>
     <uid uid="1.2.840.10008.6.1.1112" keyword="PositionReferenceIndicatorForFrameOfReference647" type="Context Group Name">Position Reference Indicator for Frame of Reference (647)</uid>
     <uid uid="1.2.840.10008.6.1.1113" keyword="PresentAbsentOnly241" type="Context Group Name">Present-Absent Only (241)</uid>
+    <uid uid="1.2.840.10008.6.1.1114" keyword="WaterEquivalentDiameterMethod10024" type="Context Group Name">Water Equivalent Diameter Method (10024)</uid>
+    <uid uid="1.2.840.10008.6.1.1115" keyword="RadiotherapyPurposesOfReference7022" type="Context Group Name">Radiotherapy Purposes of Reference (7022)</uid>
+    <uid uid="1.2.840.10008.6.1.1116" keyword="ContentAssessmentTypes701" type="Context Group Name">Content Assessment Types (701)</uid>
+    <uid uid="1.2.840.10008.6.1.1117" keyword="RTContentAssessmentTypes702" type="Context Group Name">RT Content Assessment Types (702)</uid>
+    <uid uid="1.2.840.10008.6.1.1118" keyword="BasisOfAssessment703" type="Context Group Name">Basis of Assessment (703)</uid>
 </dictionary>
