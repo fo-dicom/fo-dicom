@@ -170,7 +170,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\Dicom.Platform.rd.xml" />
+    <EmbeddedResource Include="Properties\Dicom.Platform.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DICOM.Native\Windows\DICOM.Native.Windows.vcxproj">
