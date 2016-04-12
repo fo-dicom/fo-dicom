@@ -21,6 +21,9 @@ namespace Dicom.Log
         /// </summary>
         private Log4NetManager()
         {
+            // Perform dummy logging to ensure that [XmlConfigurator] attribute can be sufficiently employed (#244)
+            var dummy = log4net.LogManager.Exists(string.Empty);
+            dummy?.Warn("Unexpectedly found empty string logger");
         }
 
         /// <summary>
