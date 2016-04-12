@@ -125,7 +125,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
@@ -155,7 +155,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
@@ -426,8 +426,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                this.SetComplete();
-                throw new DicomAssociationRejectedException(result, source, reason);
+                this.SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
             public void OnReceiveAssociationReleaseResponse()
@@ -437,8 +436,7 @@ namespace Dicom.Network
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                this.SetComplete();
-                throw new DicomAssociationAbortedException(source, reason);
+                this.SetComplete(new DicomAssociationAbortedException(source, reason));
             }
 
             public void OnConnectionClosed(Exception exception)
@@ -515,11 +513,18 @@ namespace Dicom.Network
                 return false;
             }
 
-            private void SetComplete()
+            private void SetComplete(Exception ex = null)
             {
                 if (this.client.completeNotifier != null)
                 {
-                    this.client.completeNotifier.TrySetResult(true);
+                    if (ex == null)
+                    {
+                        this.client.completeNotifier.TrySetResult(true);
+                    }
+                    else
+                    {
+                        this.client.completeNotifier.TrySetException(ex);
+                    }
                 }
             }
 
