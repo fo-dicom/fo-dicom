@@ -144,10 +144,8 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream, assoc);
 
-            this.completeNotifier.Task.Wait();
-            this.FinalizeSend();
+            this.DoSend(this.networkStream, assoc);
         }
 
         /// <summary>
@@ -159,9 +157,9 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
+        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!this.CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
@@ -175,10 +173,8 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream, assoc);
 
-            await this.completeNotifier.Task.ConfigureAwait(false);
-            this.FinalizeSend();
+            return this.DoSendAsync(this.networkStream, assoc);
         }
 
         /// <summary>
@@ -198,10 +194,8 @@ namespace Dicom.Network
                 RemoteHost = stream.Host,
                 RemotePort = stream.Port
             };
-            this.InitializeSend(stream, assoc);
 
-            this.completeNotifier.Task.Wait();
-            this.FinalizeSend();
+            this.DoSend(stream, assoc);
         }
 
         /// <summary>
@@ -211,9 +205,9 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
+        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!this.CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
@@ -222,10 +216,8 @@ namespace Dicom.Network
                 RemoteHost = stream.Host,
                 RemotePort = stream.Port
             };
-            this.InitializeSend(stream, assoc);
 
-            await this.completeNotifier.Task.ConfigureAwait(false);
-            this.FinalizeSend();
+            return this.DoSendAsync(stream, assoc);
         }
 
         /// <summary>
@@ -318,6 +310,33 @@ namespace Dicom.Network
             this.networkStream = null;
 
             this.aborted = true;
+        }
+
+        private void DoSend(INetworkStream stream, DicomAssociation assoc)
+        {
+            try
+            {
+                this.InitializeSend(stream, assoc);
+                this.completeNotifier.Task.Wait();
+            }
+            catch (AggregateException ae)
+            {
+                foreach (var e in ae.Flatten().InnerExceptions)
+                {
+                    throw e;
+                }
+            }
+            finally
+            {
+                this.FinalizeSend();
+            }
+        }
+
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
+        {
+            this.InitializeSend(stream, assoc);
+            await this.completeNotifier.Task.ConfigureAwait(false);
+            this.FinalizeSend();
         }
 
         private void InitializeSend(INetworkStream stream, DicomAssociation association)
