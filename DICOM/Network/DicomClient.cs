@@ -320,10 +320,7 @@ namespace Dicom.Network
             }
             catch (AggregateException ae)
             {
-                foreach (var e in ae.Flatten().InnerExceptions)
-                {
-                    throw e;
-                }
+                throw ae.Flatten().InnerExceptions.First();
             }
             finally
             {
