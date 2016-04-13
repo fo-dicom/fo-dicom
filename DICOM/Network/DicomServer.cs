@@ -278,6 +278,8 @@ namespace Dicom.Network
 
         private static readonly HashSet<IDicomServer> Servers = new HashSet<IDicomServer>(DicomServerPortComparer.Default);
 
+        private static readonly object locker = new object();
+
         #endregion
 
         #region METHODS
@@ -305,7 +307,10 @@ namespace Dicom.Network
             }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            return new DicomServer<T>(port, certificateName, options, fallbackEncoding, logger);
+            lock (locker)
+            {
+                return new DicomServer<T>(port, certificateName, options, fallbackEncoding, logger);
+            }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
@@ -336,7 +341,10 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be added, false otherwise.</returns>
         internal static bool Add(IDicomServer server)
         {
-            return Servers.Add(server);
+            lock (locker)
+            {
+                return Servers.Add(server);
+            }
         }
 
         /// <summary>
@@ -346,7 +354,10 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
         internal static bool Remove(IDicomServer server)
         {
-            return Servers.Remove(server);
+            lock (locker)
+            {
+                return Servers.Remove(server);
+            }
         }
 
         #endregion
