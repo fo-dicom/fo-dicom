@@ -5,6 +5,7 @@ namespace Dicom.Network
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,17 +13,15 @@ namespace Dicom.Network
     using Dicom.Log;
 
     /// <summary>
-    /// DICOM server class.
+    /// Representation of a DICOM server.
     /// </summary>
     /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
-    public class DicomServer<T> : IDisposable
+    public class DicomServer<T> : IDicomServer
         where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
 
         private bool disposed;
-
-        private readonly int port;
 
         private readonly string certificateName;
 
@@ -31,7 +30,6 @@ namespace Dicom.Network
         private readonly CancellationTokenSource cancellationSource;
 
         private readonly List<T> clients;
-
 
         #endregion
 
@@ -44,10 +42,16 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         /// <param name="options">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
-        /// <param name="logger">Logger.</param>
-        public DicomServer(int port, string certificateName = null, DicomServiceOptions options = null, Encoding fallbackEncoding = null, Logger logger = null)
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        [Obsolete("Use DicomServer.Create to instantiate DICOM server object")]
+        public DicomServer(
+            int port,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null)
         {
-            this.port = port;
+            this.Port = port;
             this.certificateName = certificateName;
             this.fallbackEncoding = fallbackEncoding;
             this.cancellationSource = new CancellationTokenSource();
@@ -71,6 +75,7 @@ namespace Dicom.Network
                 TaskScheduler.Default);
 
             this.disposed = false;
+            this.Register();
         }
 
         #endregion
@@ -78,14 +83,19 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <summary>
+        /// Gets the port to which the server is listening.
+        /// </summary>
+        public int Port { get; }
+
+        /// <summary>
         /// Gets the logger used by <see cref="DicomServer{T}"/>
         /// </summary>
-        public Logger Logger { get; private set; }
+        public Logger Logger { get; }
 
         /// <summary>
         /// Gets the options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
-        public DicomServiceOptions Options { get; private set; }
+        public DicomServiceOptions Options { get; }
 
         /// <summary>
         /// Gets a value indicating whether the server is actively listening for client connections.
@@ -138,7 +148,36 @@ namespace Dicom.Network
                 this.clients.Clear();
             }
 
+            this.Unregister();
             this.disposed = true;
+        }
+
+        /// <summary>
+        /// Register this server to list of registered servers.
+        /// </summary>
+        protected void Register()
+        {
+            var added = DicomServer.Add(this);
+            if (!added)
+            {
+                this.Logger.Warn(
+                    "Could not register DICOM server on port {0}, probably because another server is already registered on the same port.",
+                    this.Port);
+            }
+        }
+
+        /// <summary>
+        /// Unregister this server from list of registered servers.
+        /// </summary>
+        protected void Unregister()
+        {
+            var removed = DicomServer.Remove(this);
+            if (!removed)
+            {
+                this.Logger.Warn(
+                    "Could not unregister DICOM server on port {0}, either because registration failed or because server has already been unregistered once.",
+                    this.Port);
+            }
         }
 
         /// <summary>
@@ -158,9 +197,9 @@ namespace Dicom.Network
         {
             try
             {
-                var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
+                var noDelay = this.Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
-                var listener = NetworkManager.CreateNetworkListener(this.port);
+                var listener = NetworkManager.CreateNetworkListener(this.Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 this.IsListening = true;
 
@@ -224,6 +263,119 @@ namespace Dicom.Network
                 {
                     this.Logger.Warn("Exception removing disconnected clients, {@error}", e);
                 }
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Support class for managing multiple DICOM server instances.
+    /// </summary>
+    public static class DicomServer
+    {
+        #region FIELDS
+
+        private static readonly HashSet<IDicomServer> Servers = new HashSet<IDicomServer>(DicomServerPortComparer.Default);
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        public static IDicomServer Create<T>(
+            int port,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider
+        {
+            if (Servers.Any(server => server.Port == port))
+            {
+                throw new DicomNetworkException("There is already a DICOM server registered on port {0}", port);
+            }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            return new DicomServer<T>(port, certificateName, options, fallbackEncoding, logger);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        /// <summary>
+        /// Gets DICOM server instance registered to <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which DICOM server is requested.</param>
+        /// <returns>Registered DICOM server for <paramref name="port"/>.</returns>
+        public static IDicomServer GetInstance(int port)
+        {
+            return Servers.SingleOrDefault(server => server.Port == port);
+        }
+
+        /// <summary>
+        /// Gets an indicator of whether a DICOM server is registered and listening on the specified <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which listening status is requested.</param>
+        /// <returns>True if DICOM server on <paramref name="port"/> is registered and listening, false otherwise.</returns>
+        public static bool IsListening(int port)
+        {
+            return GetInstance(port)?.IsListening ?? false;
+        }
+
+        /// <summary>
+        /// Adds a DICOM server to the list of registered servers.
+        /// </summary>
+        /// <param name="server">Server to add.</param>
+        /// <returns>True if <paramref name="server"/> could be added, false otherwise.</returns>
+        internal static bool Add(IDicomServer server)
+        {
+            return Servers.Add(server);
+        }
+
+        /// <summary>
+        /// Removes a DICOM server from the list of registered servers.
+        /// </summary>
+        /// <param name="server">Server to remove.</param>
+        /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
+        internal static bool Remove(IDicomServer server)
+        {
+            return Servers.Remove(server);
+        }
+
+        #endregion
+
+        #region INNER TYPES
+
+        /// <summary>
+        /// Equality comparer implementation with respect to <see cref="IDicomServer"/> <see cref="IDicomServer.Port">port number</see>.
+        /// </summary>
+        private class DicomServerPortComparer : IEqualityComparer<IDicomServer>
+        {
+            public static readonly IEqualityComparer<IDicomServer> Default = new DicomServerPortComparer();
+
+            private DicomServerPortComparer()
+            {
+            }
+
+            public bool Equals(IDicomServer x, IDicomServer y)
+            {
+                return x != null && y != null && x.Port == y.Port;
+            }
+
+            public int GetHashCode(IDicomServer obj)
+            {
+                if (obj == null)
+                {
+                    throw new ArgumentNullException(nameof(obj));
+                }
+                return obj.Port;
             }
         }
 

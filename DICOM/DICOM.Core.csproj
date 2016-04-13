@@ -275,6 +275,7 @@
     <Compile Include="Network\DicomResponse.cs" />
     <Compile Include="Network\IDicomCEchoProvider.cs" />
     <Compile Include="Network\IDicomCStoreProvider.cs" />
+    <Compile Include="Network\IDicomServer.cs" />
     <Compile Include="Network\IDicomServiceProvider.cs" />
     <Compile Include="Network\IDicomServiceUser.cs" />
     <Compile Include="Network\INetworkListener.cs" />

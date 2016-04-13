@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+
 namespace Dicom.Network
 {
+    using System.Linq;
     using System.Net.Sockets;
     using System.Threading;
 
@@ -46,6 +48,112 @@ namespace Dicom.Network
             Thread.Sleep(500);
 
             Assert.False(server.IsListening);
+        }
+
+        [Fact]
+        public void Create_GetInstanceSamePort_ReturnsInstance()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var server = DicomServer.GetInstance(port);
+                Assert.Equal(port, server.Port);
+            }
+        }
+
+        [Fact]
+        public void Create_GetInstanceSamePortAfterDisposal_ReturnsNull()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port)) { }
+
+            var server = DicomServer.GetInstance(port);
+            Assert.Null(server);
+        }
+
+        [Fact]
+        public void Create_GetInstanceDifferentPort_ReturnsNull()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var server = DicomServer.GetInstance(Ports.GetNext());
+                Assert.Null(server);
+            }
+        }
+
+        [Fact]
+        public void Create_MultipleInstancesSamePort_Throws()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var e = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port));
+                Assert.IsType<DicomNetworkException>(e);
+            }
+        }
+
+        [Fact]
+        public void Create_MultipleInstancesDifferentPorts_AllRegistered()
+        {
+            var ports = new int[20].Select(i => Ports.GetNext()).ToArray();
+
+            foreach (var port in ports)
+            {
+                DicomServer.Create<DicomCEchoProvider>(port);
+            }
+
+            foreach (var port in ports)
+            {
+                Assert.Equal(port, DicomServer.GetInstance(port).Port);
+            }
+
+            foreach (var port in ports)
+            {
+                DicomServer.GetInstance(port).Dispose();
+            }
+        }
+
+        [Fact]
+        public void IsListening_DicomServerRunningOnPort_ReturnsTrue()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) Thread.Sleep(10);
+                Assert.True(DicomServer.IsListening(port));
+            }
+        }
+
+        [Fact]
+        public void IsListening_DicomServerStoppedOnPort_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                server.Stop();
+                Thread.Sleep(500);
+
+                Assert.NotNull(DicomServer.GetInstance(port));
+                Assert.False(DicomServer.IsListening(port));
+            }
+        }
+
+        [Fact]
+        public void IsListening_DicomServerNotInitializedOnPort_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                Assert.False(DicomServer.IsListening(Ports.GetNext()));
+            }
         }
     }
 }
