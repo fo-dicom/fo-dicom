@@ -355,6 +355,35 @@ namespace Dicom.Network
             }
         }
 
+        [Fact]
+        public void Send_RejectedAssociation_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (new DicomServer<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "INVALID"));
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_RejectedAssociation_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (new DicomServer<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var exception =
+                    await
+                    Record.ExceptionAsync(() => client.SendAsync("127.0.0.1", port, false, "SCU", "INVALID"))
+                        .ConfigureAwait(false);
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
         #endregion
 
         #region Support classes
@@ -368,10 +397,20 @@ namespace Dicom.Network
 
             public void OnReceiveAssociationRequest(DicomAssociation association)
             {
-                Thread.Sleep(1000);
-                DicomClientTest.remoteHost = association.RemoteHost;
-                DicomClientTest.remotePort = association.RemotePort;
-                this.SendAssociationAccept(association);
+                if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
+                {
+                    Thread.Sleep(1000);
+                    DicomClientTest.remoteHost = association.RemoteHost;
+                    DicomClientTest.remotePort = association.RemotePort;
+                    this.SendAssociationAccept(association);
+                }
+                else
+                {
+                    this.SendAssociationReject(
+                        DicomRejectResult.Permanent,
+                        DicomRejectSource.ServiceUser,
+                        DicomRejectReason.CalledAENotRecognized);
+                }
             }
 
             public void OnReceiveAssociationReleaseRequest()

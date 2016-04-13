@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Text;
-
 namespace Dicom.Network
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -125,7 +124,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
@@ -144,10 +143,8 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream, assoc);
 
-            this.completeNotifier.Task.Wait();
-            this.FinalizeSend();
+            this.DoSend(this.networkStream, assoc);
         }
 
         /// <summary>
@@ -155,13 +152,13 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">Treu if TLS security should be enabled, false otherwise.</param>
+        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
+        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!this.CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
@@ -175,10 +172,8 @@ namespace Dicom.Network
                 RemoteHost = host,
                 RemotePort = port
             };
-            this.InitializeSend(this.networkStream, assoc);
 
-            await this.completeNotifier.Task.ConfigureAwait(false);
-            this.FinalizeSend();
+            return this.DoSendAsync(this.networkStream, assoc);
         }
 
         /// <summary>
@@ -198,10 +193,8 @@ namespace Dicom.Network
                 RemoteHost = stream.Host,
                 RemotePort = stream.Port
             };
-            this.InitializeSend(stream, assoc);
 
-            this.completeNotifier.Task.Wait();
-            this.FinalizeSend();
+            this.DoSend(stream, assoc);
         }
 
         /// <summary>
@@ -211,9 +204,9 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
+        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!this.CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
@@ -222,10 +215,8 @@ namespace Dicom.Network
                 RemoteHost = stream.Host,
                 RemotePort = stream.Port
             };
-            this.InitializeSend(stream, assoc);
 
-            await this.completeNotifier.Task.ConfigureAwait(false);
-            this.FinalizeSend();
+            return this.DoSendAsync(stream, assoc);
         }
 
         /// <summary>
@@ -318,6 +309,30 @@ namespace Dicom.Network
             this.networkStream = null;
 
             this.aborted = true;
+        }
+
+        private void DoSend(INetworkStream stream, DicomAssociation assoc)
+        {
+            try
+            {
+                this.InitializeSend(stream, assoc);
+                this.completeNotifier.Task.Wait();
+            }
+            catch (AggregateException ae)
+            {
+                throw ae.Flatten().InnerException;
+            }
+            finally
+            {
+                this.FinalizeSend();
+            }
+        }
+
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
+        {
+            this.InitializeSend(stream, assoc);
+            await this.completeNotifier.Task.ConfigureAwait(false);
+            this.FinalizeSend();
         }
 
         private void InitializeSend(INetworkStream stream, DicomAssociation association)
@@ -426,8 +441,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                this.SetComplete();
-                throw new DicomAssociationRejectedException(result, source, reason);
+                this.SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
             public void OnReceiveAssociationReleaseResponse()
@@ -437,8 +451,7 @@ namespace Dicom.Network
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                this.SetComplete();
-                throw new DicomAssociationAbortedException(source, reason);
+                this.SetComplete(new DicomAssociationAbortedException(source, reason));
             }
 
             public void OnConnectionClosed(Exception exception)
@@ -515,11 +528,18 @@ namespace Dicom.Network
                 return false;
             }
 
-            private void SetComplete()
+            private void SetComplete(Exception ex = null)
             {
                 if (this.client.completeNotifier != null)
                 {
-                    this.client.completeNotifier.TrySetResult(true);
+                    if (ex == null)
+                    {
+                        this.client.completeNotifier.TrySetResult(true);
+                    }
+                    else
+                    {
+                        this.client.completeNotifier.TrySetException(ex);
+                    }
                 }
             }
 
