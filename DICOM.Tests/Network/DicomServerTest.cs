@@ -74,6 +74,26 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void Create_TwiceOnSamePortWithDisposalInBetween_DoesNotThrow()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+            }
+
+            var e = Record.Exception(
+                () =>
+                    {
+                        using (DicomServer.Create<DicomCEchoProvider>(port))
+                        {
+                            Assert.NotNull(DicomServer.GetInstance(port));
+                        }
+                    });
+            Assert.Null(e);
+        }
+
+        [Fact]
         public void Create_GetInstanceDifferentPort_ReturnsNull()
         {
             var port = Ports.GetNext();
