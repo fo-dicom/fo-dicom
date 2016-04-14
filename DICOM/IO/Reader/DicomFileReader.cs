@@ -5,7 +5,10 @@ namespace Dicom.IO.Reader
 {
     using System;
     using System.Text;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Class for reading DICOM file objects.
@@ -92,6 +95,7 @@ namespace Dicom.IO.Reader
             return parse.Item1;
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously read DICOM file object.
         /// </summary>
@@ -114,6 +118,7 @@ namespace Dicom.IO.Reader
             }
             return parse.Item1;
         }
+#endif
 
         private static Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax> Parse(
             IByteSource source,
@@ -142,6 +147,7 @@ namespace Dicom.IO.Reader
             return Tuple.Create(result, fileFormat, syntax);
         }
 
+#if !UNITY_5
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> ParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -162,6 +168,7 @@ namespace Dicom.IO.Reader
                 await
                 DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, stop, syntax, fileFormat).ConfigureAwait(false);
         }
+#endif
 
         private static void Preprocess(
             IByteSource source,
@@ -315,6 +322,7 @@ namespace Dicom.IO.Reader
             return result;
         }
 
+#if !UNITY_5
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> DoParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -388,6 +396,7 @@ namespace Dicom.IO.Reader
 
             return Tuple.Create(result, fileFormat, syntax);
         }
+#endif
 
         private static void UpdateFileFormatAndSyntax(
             string code,
@@ -412,6 +421,6 @@ namespace Dicom.IO.Reader
             }
         }
 
-        #endregion
+#endregion
     }
 }

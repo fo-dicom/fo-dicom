@@ -7,11 +7,13 @@ namespace Dicom.IO.Reader
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
 
-    using Dicom.IO.Buffer;
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
 
     using Dicom.Imaging.Mathematics;
+    using Dicom.IO.Buffer;
 
     /// <summary>
     /// DICOM reader implementation.
@@ -66,6 +68,7 @@ namespace Dicom.IO.Reader
             return worker.DoWork(source);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>
@@ -78,7 +81,7 @@ namespace Dicom.IO.Reader
             var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
             return worker.DoWorkAsync(source);
         }
-
+#endif
         #endregion
 
         #region INNER TYPES
@@ -179,6 +182,7 @@ namespace Dicom.IO.Reader
                 return this.result;
             }
 
+#if !UNITY_5
             /// <summary>
             /// Asynchronously read the byte source.
             /// </summary>
@@ -190,6 +194,7 @@ namespace Dicom.IO.Reader
                 await this.ParseDatasetAsync(source).ConfigureAwait(false);
                 return this.result;
             }
+#endif
 
             private void ParseDataset(IByteSource source)
             {
@@ -216,6 +221,7 @@ namespace Dicom.IO.Reader
                 this.result = DicomReaderResult.Success;
             }
 
+#if !UNITY_5
             private async Task ParseDatasetAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -240,6 +246,7 @@ namespace Dicom.IO.Reader
                 // end of processing
                 this.result = DicomReaderResult.Success;
             }
+#endif
 
             private bool ParseTag(IByteSource source)
             {
@@ -603,6 +610,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
+#if !UNITY_5
             private async Task<bool> ParseValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)
@@ -735,6 +743,7 @@ namespace Dicom.IO.Reader
                 }
                 return true;
             }
+#endif
 
             private void ParseItemSequence(IByteSource source)
             {
@@ -749,6 +758,7 @@ namespace Dicom.IO.Reader
                 this.ParseItemSequencePostProcess(source);
             }
 
+#if !UNITY_5
             private async Task ParseItemSequenceAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -761,6 +771,7 @@ namespace Dicom.IO.Reader
 
                 this.ParseItemSequencePostProcess(source);
             }
+#endif
 
             private bool ParseItemSequenceTag(IByteSource source)
             {
@@ -851,6 +862,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
+#if !UNITY_5
             private async Task<bool> ParseItemSequenceValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)
@@ -876,6 +888,7 @@ namespace Dicom.IO.Reader
                 }
                 return true;
             }
+#endif
 
             private void ParseItemSequencePostProcess(IByteSource source)
             {
@@ -904,6 +917,7 @@ namespace Dicom.IO.Reader
                 }
             }
 
+#if !UNITY_5
             private async Task ParseFragmentSequenceAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -914,6 +928,7 @@ namespace Dicom.IO.Reader
                     if (!await this.ParseFragmentSequenceValueAsync(source).ConfigureAwait(false)) return;
                 }
             }
+#endif
 
             private bool ParseFragmentSequenceTag(IByteSource source)
             {
@@ -973,6 +988,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
+#if !UNITY_5
             private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)
@@ -991,6 +1007,7 @@ namespace Dicom.IO.Reader
                 }
                 return true;
             }
+#endif
 
             private void ResetState()
             {

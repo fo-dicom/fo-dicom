@@ -6,7 +6,10 @@ namespace Dicom
     using System;
     using System.IO;
     using System.Text;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     using Dicom.IO;
     using Dicom.IO.Reader;
@@ -35,7 +38,7 @@ namespace Dicom
     /// <summary>
     /// Representation of one DICOM file.
     /// </summary>
-    public partial class DicomFile
+    public class DicomFile
     {
         #region CONSTRUCTORS
 
@@ -142,6 +145,7 @@ namespace Dicom
             writer.Write(target, FileMetaInfo, Dataset);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Save to file asynchronously.
         /// </summary>
@@ -196,6 +200,7 @@ namespace Dicom
             var writer = new DicomFileWriter(DicomWriteOptions.Default);
             await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
         }
+#endif
 
         /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
@@ -320,6 +325,7 @@ namespace Dicom
             }
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
@@ -444,6 +450,7 @@ namespace Dicom
                 throw new DicomFileException(df, e.Message, e);
             }
         }
+#endif
 
         /// <summary>
         /// Test if file has a valid preamble and DICOM 3.0 header.

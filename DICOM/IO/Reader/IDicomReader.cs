@@ -4,7 +4,10 @@
 namespace Dicom.IO.Reader
 {
     using System;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Possible DICOM reader results.
@@ -61,6 +64,7 @@ namespace Dicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>
@@ -69,5 +73,6 @@ namespace Dicom.IO.Reader
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
         Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
+#endif
     }
 }

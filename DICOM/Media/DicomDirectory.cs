@@ -5,7 +5,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+#if !UNITY_5
 using System.Threading.Tasks;
+#endif
 
 using Dicom.IO;
 using Dicom.IO.Reader;
@@ -229,6 +232,7 @@ namespace Dicom.Media
             }
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously read DICOM Directory.
         /// </summary>
@@ -331,6 +335,7 @@ namespace Dicom.Media
                 throw new DicomFileException(df, e.Message, e);
             }
         }
+#endif
 
         /// <summary>
         /// Method to call before performing the actual saving.
