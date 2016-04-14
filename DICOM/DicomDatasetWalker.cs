@@ -6,11 +6,11 @@ namespace Dicom
     using System;
     using System.Collections.Generic;
 
-    using Dicom.IO.Buffer;
-
 #if !UNITY_5
     using System.Threading.Tasks;
 #endif
+
+    using Dicom.IO.Buffer;
 
     /// <summary>
     /// Interface for traversing a DICOM dataset.
