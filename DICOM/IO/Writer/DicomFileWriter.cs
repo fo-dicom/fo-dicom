@@ -3,7 +3,9 @@
 
 namespace Dicom.IO.Writer
 {
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Writer for DICOM Part 10 objects.
@@ -44,6 +46,7 @@ namespace Dicom.IO.Writer
             WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this.options);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Write DICOM Part 10 object to <paramref name="target"/> asynchronously.
         /// </summary>
@@ -57,6 +60,7 @@ namespace Dicom.IO.Writer
             await WriteFileMetaInfoAsync(target, fileMetaInfo, this.options).ConfigureAwait(false);
             await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this.options).ConfigureAwait(false);
         }
+#endif
 
         /// <summary>
         /// Write DICOM file preamble.
@@ -73,6 +77,7 @@ namespace Dicom.IO.Writer
             target.Write(preamble, 0, 132);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Write DICOM file preamble.
         /// </summary>
@@ -87,6 +92,7 @@ namespace Dicom.IO.Writer
 
             return target.WriteAsync(preamble, 0, 132);
         }
+#endif
 
         /// <summary>
         /// Write DICOM file meta information.
@@ -107,6 +113,7 @@ namespace Dicom.IO.Writer
             walker.Walk(writer);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Write DICOM file meta information.
         /// </summary>
@@ -125,6 +132,7 @@ namespace Dicom.IO.Writer
             var walker = new DicomDatasetWalker(fileMetaInfo);
             return walker.WalkAsync(writer);
         }
+#endif
 
         /// <summary>
         /// Write DICOM dataset.
@@ -146,6 +154,7 @@ namespace Dicom.IO.Writer
             walker.Walk(writer);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Write DICOM dataset.
         /// </summary>
@@ -165,6 +174,7 @@ namespace Dicom.IO.Writer
             var walker = new DicomDatasetWalker(dataset);
             return walker.WalkAsync(writer);
         }
+#endif
 
         /// <summary>
         /// If necessary, update dataset syntax and group lengths.
@@ -194,6 +204,6 @@ namespace Dicom.IO.Writer
             }
         }
 
-        #endregion
+#endregion
     }
 }
