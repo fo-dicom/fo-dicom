@@ -1,18 +1,20 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections;
-using System.Threading.Tasks;
-
-using Dicom.IO.Buffer;
-
-using Dicom.Imaging.Algorithms;
-using Dicom.Imaging.LUT;
-using Dicom.Imaging.Mathematics;
-
 namespace Dicom.Imaging.Render
 {
+    using System;
+    using System.Collections;
+
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
+
+    using Dicom.Imaging.Algorithms;
+    using Dicom.Imaging.LUT;
+    using Dicom.Imaging.Mathematics;
+    using Dicom.IO.Buffer;
+
     /// <summary>
     /// Pixel data interface implemented by various pixel format classes
     /// </summary>
@@ -190,7 +192,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class GrayscalePixelDataU8 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private int _width;
 
@@ -198,9 +200,9 @@ namespace Dicom.Imaging.Render
 
         private readonly byte[] _data;
  
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public GrayscalePixelDataU8(int width, int height, IByteBuffer data)
         {
@@ -217,9 +219,9 @@ namespace Dicom.Imaging.Render
         }
 
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -253,9 +255,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -293,29 +295,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -331,7 +341,7 @@ namespace Dicom.Imaging.Render
             return histogram;
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -339,16 +349,16 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class SingleBitPixelData : GrayscalePixelDataU8
     {
-        #region Public Constructor
+#region Public Constructor
 
         public SingleBitPixelData(int width, int height, IByteBuffer data)
             : base(width, height, ExpandBits(width, height, data.Data))
         {
         }
 
-        #endregion
+#endregion
 
-        #region Static Methods
+#region Static Methods
 
         private const byte One = 1;
 
@@ -365,9 +375,9 @@ namespace Dicom.Imaging.Render
             return output;
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public override Histogram GetHistogram(int channel)
         {
@@ -381,7 +391,7 @@ namespace Dicom.Imaging.Render
             return histogram;
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -389,7 +399,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class GrayscalePixelDataS16 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private BitDepth _bits;
 
@@ -399,9 +409,9 @@ namespace Dicom.Imaging.Render
 
         private readonly short[] _data;
  
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public GrayscalePixelDataS16(int width, int height, BitDepth bitDepth, IByteBuffer data)
         {
@@ -419,19 +429,23 @@ namespace Dicom.Imaging.Render
                 // should also be discarded.
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type,
-                                // getting the sign correct using arithmetic (sign-extending) right shift.
-                                var d = (short)(shortData[i] << shiftLeft);
-                                shortData[i] = (short)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type,
+                        // getting the sign correct using arithmetic (sign-extending) right shift.
+                        var d = (short)(shortData[i] << shiftLeft);
+                        shortData[i] = (short)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = shortData;
@@ -444,9 +458,9 @@ namespace Dicom.Imaging.Render
             _data = data;
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -480,9 +494,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -521,30 +535,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -561,7 +582,7 @@ namespace Dicom.Imaging.Render
             return histogram;
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -569,7 +590,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class GrayscalePixelDataU16 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private BitDepth _bits;
 
@@ -579,9 +600,9 @@ namespace Dicom.Imaging.Render
 
         private readonly ushort[] _data;
 
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public GrayscalePixelDataU16(int width, int height, BitDepth bitDepth, IByteBuffer data)
         {
@@ -600,18 +621,22 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type. 
-                                var d = (ushort)(ushortData[i] << shiftLeft);
-                                ushortData[i] = (ushort)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type. 
+                        var d = (ushort)(ushortData[i] << shiftLeft);
+                        ushortData[i] = (ushort)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = ushortData;
@@ -624,9 +649,9 @@ namespace Dicom.Imaging.Render
             _data = data;
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -660,9 +685,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -702,29 +727,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -740,7 +773,7 @@ namespace Dicom.Imaging.Render
             return histogram;
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -748,7 +781,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class GrayscalePixelDataS32 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private int _width;
 
@@ -756,9 +789,9 @@ namespace Dicom.Imaging.Render
 
         private int[] _data; 
 
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public GrayscalePixelDataS32(int width, int height, BitDepth bitDepth, IByteBuffer data)
         {
@@ -773,19 +806,23 @@ namespace Dicom.Imaging.Render
             // should also be discarded.
             int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
             int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-            Parallel.For(
-                0,
-                _height,
-                y =>
-                    {
-                        for (int i = _width * y, e = i + _width; i < e; i++)
-                        {
-                            // Remove masked high and low bits by shifting them out of the data type,
-                            // getting the sign correct using arithmetic (sign-extending) right shift.
-                            var d = intData[i] << shiftLeft;
-                            intData[i] = d >> shiftRight;
-                    }
-                });
+#if UNITY_5
+            for (var y = 0; y < _height; ++y)
+#else
+            Parallel.For(0, _height, y =>
+#endif
+            {
+                for (int i = _width * y, e = i + _width; i < e; i++)
+                {
+                    // Remove masked high and low bits by shifting them out of the data type,
+                    // getting the sign correct using arithmetic (sign-extending) right shift.
+                    var d = intData[i] << shiftLeft;
+                    intData[i] = d >> shiftRight;
+                }
+            }
+#if !UNITY_5
+            );
+#endif
 
             _data = intData;
         }
@@ -797,9 +834,9 @@ namespace Dicom.Imaging.Render
             _data = data;
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -833,9 +870,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -872,29 +909,37 @@ namespace Dicom.Imaging.Render
 
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -903,7 +948,7 @@ namespace Dicom.Imaging.Render
             throw new NotSupportedException("Histograms are not supported for signed 32-bit images.");
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -911,7 +956,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class GrayscalePixelDataU32 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private int _width;
 
@@ -919,9 +964,9 @@ namespace Dicom.Imaging.Render
 
         private uint[] _data;
  
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public GrayscalePixelDataU32(int width, int height, BitDepth bitDepth, IByteBuffer data)
         {
@@ -939,18 +984,22 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type. 
-                                var d = (uint)(uintData[i] << shiftLeft);
-                                uintData[i] = (uint)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type. 
+                        var d = (uint)(uintData[i] << shiftLeft);
+                        uintData[i] = (uint)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = uintData;
@@ -963,9 +1012,9 @@ namespace Dicom.Imaging.Render
             _data = data;
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -999,9 +1048,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -1037,29 +1086,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = (int)data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = (int)data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[(int)data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[(int)data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -1068,7 +1125,7 @@ namespace Dicom.Imaging.Render
             throw new NotSupportedException("Histograms are not supported for unsigned 32-bit images.");
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -1076,7 +1133,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class ColorPixelData24 : IPixelData
     {
-        #region Private Members
+#region Private Members
 
         private int _width;
 
@@ -1084,9 +1141,9 @@ namespace Dicom.Imaging.Render
 
         private readonly byte[] _data;
 
-        #endregion
+#endregion
 
-        #region Public Constructor
+#region Public Constructor
 
         public ColorPixelData24(int width, int height, IByteBuffer data)
         {
@@ -1102,9 +1159,9 @@ namespace Dicom.Imaging.Render
             _data = data;
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public int Width
         {
@@ -1138,9 +1195,9 @@ namespace Dicom.Imaging.Render
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public DicomRange<double> GetMinMax(int padding)
         {
@@ -1169,29 +1226,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                            {
-                                output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                    {
+                        output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                            {
-                                output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                    {
+                        output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -1211,6 +1276,6 @@ namespace Dicom.Imaging.Render
             return histogram;
         }
 
-        #endregion
+#endregion
     }
 }
