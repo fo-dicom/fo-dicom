@@ -1,21 +1,20 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-#if !UNITY_5
-using System.Threading.Tasks;
-#endif
-
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-
 namespace Dicom.Media
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+
+    #if !UNITY_5
+    using System.Threading.Tasks;
+    #endif
+
+    using Dicom.IO;
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
 
     /// <summary>
     /// Class for managing DICOM directory objects.
