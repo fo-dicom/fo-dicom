@@ -3,7 +3,9 @@
 
 namespace Dicom.IO
 {
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Callback delegate for asynchronous <see cref="IByteTarget"/> operations.
@@ -89,6 +91,7 @@ namespace Dicom.IO
         /// <param name="count">Number of bytes to write to byte target.</param>
         void Write(byte[] buffer, uint offset, uint count);
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -97,5 +100,6 @@ namespace Dicom.IO
         /// <param name="count">Number of bytes to write to byte target.</param>
         /// <returns>Avaitable <see cref="Task"/>.</returns>
         Task WriteAsync(byte[] buffer, uint offset, uint count);
+#endif
     }
 }

@@ -1,18 +1,20 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-
 namespace Dicom.Media
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+
+    #if !UNITY_5
+    using System.Threading.Tasks;
+    #endif
+
+    using Dicom.IO;
+    using Dicom.IO.Reader;
+    using Dicom.IO.Writer;
 
     /// <summary>
     /// Class for managing DICOM directory objects.
@@ -229,6 +231,7 @@ namespace Dicom.Media
             }
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously read DICOM Directory.
         /// </summary>
@@ -331,6 +334,7 @@ namespace Dicom.Media
                 throw new DicomFileException(df, e.Message, e);
             }
         }
+#endif
 
         /// <summary>
         /// Method to call before performing the actual saving.

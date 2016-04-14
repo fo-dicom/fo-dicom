@@ -1,11 +1,14 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Threading.Tasks;
-
 namespace Dicom.Imaging.Render
 {
+    using System;
+
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
+
     /// <summary>
     /// The Overlay Graphic which render overlay over pixel data
     /// </summary>
@@ -69,22 +72,26 @@ namespace Dicom.Imaging.Render
             int ox = (int)(_offsetX * _scale);
             int oy = (int)(_offsetY * _scale);
 
-            Parallel.For(
-                0,
-                _scaledData.Height,
-                y =>
+#if UNITY_5
+            for (var y = 0; y < _scaledData.Height; ++y)
+#else
+                Parallel.For(0, _scaledData.Height, y =>
+#endif
+            {
+                if ((oy + y) >= height) return;
+                for (int i = _scaledData.Width * y, e = i + _scaledData.Width, x = 0; i < e; i++, x++)
+                {
+                    if (data[i] > 0)
                     {
-                        if ((oy + y) >= height) return;
-                        for (int i = _scaledData.Width * y, e = i + _scaledData.Width, x = 0; i < e; i++, x++)
-                        {
-                            if (data[i] > 0)
-                            {
-                                if ((ox + x) >= width) break;
-                                int p = (oy * width) + ox + i;
-                                pixels[p] = _color;
-                            }
-                        }
-                    });
+                        if ((ox + x) >= width) break;
+                        int p = (oy * width) + ox + i;
+                        pixels[p] = _color;
+                    }
+                }
+            }
+#if !UNITY_5
+            );
+#endif
         }
 
         #endregion

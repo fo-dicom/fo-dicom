@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-
 namespace Dicom.IO.Buffer
 {
+    using System;
+    using System.Collections.Generic;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Byte source for reading in form of byte buffer.
@@ -331,6 +333,7 @@ namespace Dicom.IO.Buffer
             return new MemoryByteBuffer(GetBytes((int)count));
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously gets a byte buffer of specified length from the current position and moves to subsequent position.
         /// </summary>
@@ -340,6 +343,7 @@ namespace Dicom.IO.Buffer
         {
             return Task.FromResult(this.GetBuffer(count));
         }
+#endif
 
         /// <summary>
         /// Skip position <see cref="count"/> number of bytes.

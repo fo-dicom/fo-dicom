@@ -1,14 +1,16 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-
-using Dicom.IO.Buffer;
-
 namespace Dicom
 {
+    using System;
+    using System.Collections.Generic;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
+
+    using Dicom.IO.Buffer;
 
     /// <summary>
     /// Interface for traversing a DICOM dataset.
@@ -27,12 +29,14 @@ namespace Dicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnElement(DicomElement element);
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
         /// <param name="element">Element to traverse.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         Task<bool> OnElementAsync(DicomElement element);
+#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -74,12 +78,14 @@ namespace Dicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnFragmentItem(IByteBuffer item);
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
         /// <param name="item">Buffer containing the fragment item.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         Task<bool> OnFragmentItemAsync(IByteBuffer item);
+#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.
@@ -221,6 +227,7 @@ namespace Dicom
                 DoWalk(walker, items);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Perform an asynchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
         /// </summary>
@@ -233,6 +240,7 @@ namespace Dicom
 
             return DoWalkAsync(walker, items);
         }
+#endif
 
         /// <summary>
         /// Populate the <paramref name="items"/> queue.
@@ -337,6 +345,7 @@ namespace Dicom
             }
         }
 
+#if !UNITY_5
         /// <summary>
         /// Perform an asynchronous dataset walk.
         /// </summary>
@@ -401,6 +410,7 @@ namespace Dicom
                 }
             }
         }
+#endif
 
         #endregion
     }

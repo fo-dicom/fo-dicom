@@ -1,14 +1,16 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
-using Dicom.IO.Buffer;
-
 namespace Dicom.Log
 {
+    using System;
+    using System.Text;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
+
+    using Dicom.IO.Buffer;
 
     /// <summary>
     /// DICOM dataset walker for logging.
@@ -108,6 +110,7 @@ namespace Dicom.Log
             return true;
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -117,6 +120,7 @@ namespace Dicom.Log
         {
             return Task.FromResult(this.OnElement(element));
         }
+#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -196,6 +200,7 @@ namespace Dicom.Log
             return true;
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
@@ -205,6 +210,7 @@ namespace Dicom.Log
         {
             return Task.FromResult(this.OnFragmentItem(item));
         }
+#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.

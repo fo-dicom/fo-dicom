@@ -1,18 +1,20 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections;
-using System.Threading.Tasks;
-
-using Dicom.IO.Buffer;
-
-using Dicom.Imaging.Algorithms;
-using Dicom.Imaging.LUT;
-using Dicom.Imaging.Mathematics;
-
 namespace Dicom.Imaging.Render
 {
+    using System;
+    using System.Collections;
+
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
+
+    using Dicom.Imaging.Algorithms;
+    using Dicom.Imaging.LUT;
+    using Dicom.Imaging.Mathematics;
+    using Dicom.IO.Buffer;
+
     /// <summary>
     /// Pixel data interface implemented by various pixel format classes
     /// </summary>
@@ -293,29 +295,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -419,19 +429,23 @@ namespace Dicom.Imaging.Render
                 // should also be discarded.
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type,
-                                // getting the sign correct using arithmetic (sign-extending) right shift.
-                                var d = (short)(shortData[i] << shiftLeft);
-                                shortData[i] = (short)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type,
+                        // getting the sign correct using arithmetic (sign-extending) right shift.
+                        var d = (short)(shortData[i] << shiftLeft);
+                        shortData[i] = (short)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = shortData;
@@ -521,30 +535,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -600,18 +621,22 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type. 
-                                var d = (ushort)(ushortData[i] << shiftLeft);
-                                ushortData[i] = (ushort)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type. 
+                        var d = (ushort)(ushortData[i] << shiftLeft);
+                        ushortData[i] = (ushort)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = ushortData;
@@ -702,29 +727,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -773,19 +806,23 @@ namespace Dicom.Imaging.Render
             // should also be discarded.
             int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
             int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-            Parallel.For(
-                0,
-                _height,
-                y =>
-                    {
-                        for (int i = _width * y, e = i + _width; i < e; i++)
-                        {
-                            // Remove masked high and low bits by shifting them out of the data type,
-                            // getting the sign correct using arithmetic (sign-extending) right shift.
-                            var d = intData[i] << shiftLeft;
-                            intData[i] = d >> shiftRight;
-                    }
-                });
+#if UNITY_5
+            for (var y = 0; y < _height; ++y)
+#else
+            Parallel.For(0, _height, y =>
+#endif
+            {
+                for (int i = _width * y, e = i + _width; i < e; i++)
+                {
+                    // Remove masked high and low bits by shifting them out of the data type,
+                    // getting the sign correct using arithmetic (sign-extending) right shift.
+                    var d = intData[i] << shiftLeft;
+                    intData[i] = d >> shiftRight;
+                }
+            }
+#if !UNITY_5
+            );
+#endif
 
             _data = intData;
         }
@@ -872,29 +909,37 @@ namespace Dicom.Imaging.Render
 
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -939,18 +984,22 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-                Parallel.For(
-                    0,
-                    _height,
-                    y =>
-                        {
-                            for (int i = _width * y, e = i + _width; i < e; i++)
-                            {
-                                // Remove masked high and low bits by shifting them out of the data type. 
-                                var d = (uint)(uintData[i] << shiftLeft);
-                                uintData[i] = (uint)(d >> shiftRight);
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < _height; ++y)
+#else
+                Parallel.For(0, _height, y =>
+#endif
+                {
+                    for (int i = _width * y, e = i + _width; i < e; i++)
+                    {
+                        // Remove masked high and low bits by shifting them out of the data type. 
+                        var d = (uint)(uintData[i] << shiftLeft);
+                        uintData[i] = (uint)(d >> shiftRight);
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
 
             _data = uintData;
@@ -1037,29 +1086,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = (int)data[i];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = (int)data[i];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width; i < e; i++)
-                            {
-                                output[i] = lut[(int)data[i]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width; i < e; i++)
+                    {
+                        output[i] = lut[(int)data[i]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 
@@ -1169,29 +1226,37 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                            {
-                                output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                    {
+                        output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
             else
             {
-                Parallel.For(
-                    0,
-                    Height,
-                    y =>
-                        {
-                            for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
-                            {
-                                output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
-                            }
-                        });
+#if UNITY_5
+                for (var y = 0; y < Height; ++y)
+#else
+                Parallel.For(0, Height, y =>
+#endif
+                {
+                    for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
+                    {
+                        output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                    }
+                }
+#if !UNITY_5
+                );
+#endif
             }
         }
 

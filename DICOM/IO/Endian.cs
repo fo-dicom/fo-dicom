@@ -1,13 +1,15 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Dicom.IO
 {
+    using System;
+    using System.IO;
+    using System.Text;
+
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
 
     #region Endian
 
@@ -174,22 +176,38 @@ namespace Dicom.IO
 
         public static void Swap(short[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(ushort[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(int[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(uint[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap<T>(T[] values)
