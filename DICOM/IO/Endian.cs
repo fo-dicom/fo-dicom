@@ -1,13 +1,15 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Dicom.IO
 {
+    using System;
+    using System.IO;
+    using System.Text;
+
+#if !UNITY_5
+    using System.Threading.Tasks;
+#endif
 
     #region Endian
 
@@ -174,22 +176,38 @@ namespace Dicom.IO
 
         public static void Swap(short[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(ushort[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(int[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap(uint[] values)
         {
+#if UNITY_5
+            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
+#else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
+#endif
         }
 
         public static void Swap<T>(T[] values)
@@ -202,21 +220,21 @@ namespace Dicom.IO
         }
     }
 
-    #endregion
+#endregion
 
-    #region EndianBinaryReader
+#region EndianBinaryReader
 
     public class EndianBinaryReader : BinaryReader
     {
-        #region Private Members
+#region Private Members
 
         private bool SwapBytes = false;
 
         private byte[] InternalBuffer = new byte[8];
 
-        #endregion
+#endregion
 
-        #region Public Constructors
+#region Public Constructors
 
         public EndianBinaryReader(Stream input)
             : base(input)
@@ -299,9 +317,9 @@ namespace Dicom.IO
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public Endian Endian
         {
@@ -348,9 +366,9 @@ namespace Dicom.IO
             }
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         private byte[] ReadBytesInternal(int count)
         {
@@ -371,9 +389,9 @@ namespace Dicom.IO
             return Buffer;
         }
 
-        #endregion
+#endregion
 
-        #region BinaryReader Overrides
+#region BinaryReader Overrides
 
         public override short ReadInt16()
         {
@@ -449,22 +467,22 @@ namespace Dicom.IO
             return base.ReadUInt64();
         }
 
-        #endregion
+#endregion
     }
 
-    #endregion
+#endregion
 
-    #region EndianBinaryWriter
+#region EndianBinaryWriter
 
     public class EndianBinaryWriter : BinaryWriter
     {
-        #region Private Members
+#region Private Members
 
         private bool SwapBytes = false;
 
-        #endregion
+#endregion
 
-        #region Public Constructors
+#region Public Constructors
 
         public EndianBinaryWriter(Stream output)
             : base(output)
@@ -547,9 +565,9 @@ namespace Dicom.IO
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public Endian Endian
         {
@@ -577,9 +595,9 @@ namespace Dicom.IO
             }
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         private void WriteInternal(byte[] Buffer)
         {
@@ -590,9 +608,9 @@ namespace Dicom.IO
             base.Write(Buffer);
         }
 
-        #endregion
+#endregion
 
-        #region BinaryWriter Overrides
+#region BinaryWriter Overrides
 
         public override void Write(double value)
         {
@@ -698,8 +716,8 @@ namespace Dicom.IO
             }
         }
 
-        #endregion
+#endregion
     }
 
-    #endregion
+#endregion
 }
