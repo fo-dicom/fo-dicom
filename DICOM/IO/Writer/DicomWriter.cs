@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Generic;
-
-using Dicom.IO.Buffer;
-
 namespace Dicom.IO.Writer
 {
+    using System.Collections.Generic;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
+
+    using Dicom.IO.Buffer;
 
     /// <summary>
     /// DICOM object writer.
@@ -87,6 +89,7 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -118,6 +121,7 @@ namespace Dicom.IO.Writer
 
             return true;
         }
+#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -231,6 +235,7 @@ namespace Dicom.IO.Writer
             return true;
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
@@ -258,6 +263,7 @@ namespace Dicom.IO.Writer
 
             return true;
         }
+#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.

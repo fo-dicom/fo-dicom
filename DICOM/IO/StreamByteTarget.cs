@@ -4,7 +4,10 @@
 namespace Dicom.IO
 {
     using System.IO;
+
+#if !UNITY_5
     using System.Threading.Tasks;
+#endif
 
     /// <summary>
     /// Representation of a stream byte target.
@@ -156,6 +159,7 @@ namespace Dicom.IO
             _stream.Write(buffer, (int)offset, (int)count);
         }
 
+#if !UNITY_5
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -167,5 +171,6 @@ namespace Dicom.IO
         {
             return _stream.WriteAsync(buffer, (int)offset, (int)count);
         }
+#endif
     }
 }
