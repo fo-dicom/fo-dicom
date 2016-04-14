@@ -421,6 +421,6 @@ namespace Dicom.IO.Reader
             }
         }
 
-#endregion
+        #endregion
     }
 }

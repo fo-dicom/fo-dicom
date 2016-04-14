@@ -94,6 +94,6 @@ namespace Dicom.Imaging.Render
 #endif
         }
 
-#endregion
+        #endregion
     }
 }

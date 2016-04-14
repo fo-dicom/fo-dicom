@@ -204,6 +204,6 @@ namespace Dicom.IO.Writer
             }
         }
 
-#endregion
+        #endregion
     }
 }
