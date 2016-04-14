@@ -1,0 +1,53 @@
+﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace Dicom.Network
+{
+    using System;
+
+    using Dicom.Log;
+
+    /// <summary>
+    /// Interface representing a DICOM server instance.
+    /// </summary>
+    public interface IDicomServer : IDisposable
+    {
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the port to which the server is listening.
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
+        /// Gets the logger used by <see cref="DicomServer{T}"/>
+        /// </summary>
+        Logger Logger { get; }
+
+        /// <summary>
+        /// Gets the options to control behavior of <see cref="DicomService"/> base class.
+        /// </summary>
+        DicomServiceOptions Options { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the server is actively listening for client connections.
+        /// </summary>
+        bool IsListening { get; }
+
+        /// <summary>
+        /// Gets the exception that was thrown if the server failed to listen.
+        /// </summary>
+        Exception Exception { get; }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Stop server from further listening.
+        /// </summary>
+        void Stop();
+
+        #endregion
+    }
+}
