@@ -124,7 +124,8 @@ namespace Dicom.Network
 
             foreach (var port in ports)
             {
-                DicomServer.Create<DicomCEchoProvider>(port);
+                var server = DicomServer.Create<DicomCEchoProvider>(port);
+                while (!server.IsListening) Thread.Sleep(10);
             }
 
             foreach (var port in ports)
