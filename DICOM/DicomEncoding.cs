@@ -25,7 +25,7 @@ namespace Dicom
         /// <returns>DICOM encoding.</returns>
         public static Encoding GetEncoding(string charset)
         {
-            if (string.IsNullOrEmpty(charset.Trim())) return Default;
+            if (string.IsNullOrEmpty(charset?.Trim())) return Default;
 
             switch (charset.Trim())
             {

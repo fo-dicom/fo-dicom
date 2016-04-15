@@ -17,10 +17,10 @@ namespace Dicom
         {
             Tag = tag;
 
-            if (string.IsNullOrEmpty(name.Trim())) Name = Tag.ToString();
+            if (string.IsNullOrEmpty(name?.Trim())) Name = Tag.ToString();
             else Name = name;
 
-            if (string.IsNullOrEmpty(keyword.Trim())) Keyword = Name;
+            if (string.IsNullOrEmpty(keyword?.Trim())) Keyword = Name;
             else Keyword = keyword;
 
             ValueMultiplicity = vm;
@@ -39,10 +39,10 @@ namespace Dicom
             Tag = tag.Tag;
             MaskTag = tag;
 
-            if (string.IsNullOrEmpty(name.Trim())) Name = Tag.ToString();
+            if (string.IsNullOrEmpty(name?.Trim())) Name = Tag.ToString();
             else Name = name;
 
-            if (string.IsNullOrEmpty(keyword.Trim())) Keyword = Name;
+            if (string.IsNullOrEmpty(keyword?.Trim())) Keyword = Name;
             else Keyword = keyword;
 
             ValueMultiplicity = vm;

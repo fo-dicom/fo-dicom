@@ -50,7 +50,7 @@ namespace Dicom.Media
             }
             set
             {
-                if (!string.IsNullOrEmpty(value.Trim()))
+                if (!string.IsNullOrEmpty(value?.Trim()))
                 {
                     Dataset.Add(DicomTag.FileSetID, value);
                 }
