@@ -8,7 +8,7 @@ namespace Dicom.IO.Reader
     using System.Linq;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -68,7 +68,7 @@ namespace Dicom.IO.Reader
             return worker.DoWork(source);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>
@@ -182,7 +182,7 @@ namespace Dicom.IO.Reader
                 return this.result;
             }
 
-#if !UNITY_5
+#if !NET35
             /// <summary>
             /// Asynchronously read the byte source.
             /// </summary>
@@ -221,7 +221,7 @@ namespace Dicom.IO.Reader
                 this.result = DicomReaderResult.Success;
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task ParseDatasetAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -610,7 +610,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task<bool> ParseValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)
@@ -758,7 +758,7 @@ namespace Dicom.IO.Reader
                 this.ParseItemSequencePostProcess(source);
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task ParseItemSequenceAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -862,7 +862,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task<bool> ParseItemSequenceValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)
@@ -917,7 +917,7 @@ namespace Dicom.IO.Reader
                 }
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task ParseFragmentSequenceAsync(IByteSource source)
             {
                 this.result = DicomReaderResult.Processing;
@@ -988,7 +988,7 @@ namespace Dicom.IO.Reader
                 return true;
             }
 
-#if !UNITY_5
+#if !NET35
             private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source)
             {
                 if (this.parseStage == ParseStage.Value)

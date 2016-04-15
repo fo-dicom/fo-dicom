@@ -6,7 +6,7 @@ namespace Dicom.Log
     using System;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -110,7 +110,7 @@ namespace Dicom.Log
             return true;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -200,7 +200,7 @@ namespace Dicom.Log
             return true;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>

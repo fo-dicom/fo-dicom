@@ -5,7 +5,7 @@ namespace Dicom.IO.Writer
 {
     using System.Collections.Generic;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -89,7 +89,7 @@ namespace Dicom.IO.Writer
             return true;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -235,7 +235,7 @@ namespace Dicom.IO.Writer
             return true;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>

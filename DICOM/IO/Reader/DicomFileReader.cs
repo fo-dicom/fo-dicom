@@ -6,7 +6,7 @@ namespace Dicom.IO.Reader
     using System;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -95,7 +95,7 @@ namespace Dicom.IO.Reader
             return parse.Item1;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously read DICOM file object.
         /// </summary>
@@ -147,7 +147,7 @@ namespace Dicom.IO.Reader
             return Tuple.Create(result, fileFormat, syntax);
         }
 
-#if !UNITY_5
+#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> ParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -322,7 +322,7 @@ namespace Dicom.IO.Reader
             return result;
         }
 
-#if !UNITY_5
+#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> DoParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,

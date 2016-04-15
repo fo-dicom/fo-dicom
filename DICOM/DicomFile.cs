@@ -7,7 +7,7 @@ namespace Dicom
     using System.IO;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -145,7 +145,7 @@ namespace Dicom
             writer.Write(target, FileMetaInfo, Dataset);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Save to file asynchronously.
         /// </summary>
@@ -325,7 +325,7 @@ namespace Dicom
             }
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements

@@ -7,7 +7,7 @@ namespace Dicom.IO
     using System.IO;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -176,7 +176,7 @@ namespace Dicom.IO
 
         public static void Swap(short[] values)
         {
-#if UNITY_5
+#if NET35
             for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
 #else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
@@ -185,7 +185,7 @@ namespace Dicom.IO
 
         public static void Swap(ushort[] values)
         {
-#if UNITY_5
+#if NET35
             for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
 #else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
@@ -194,7 +194,7 @@ namespace Dicom.IO
 
         public static void Swap(int[] values)
         {
-#if UNITY_5
+#if NET35
             for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
 #else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });
@@ -203,7 +203,7 @@ namespace Dicom.IO
 
         public static void Swap(uint[] values)
         {
-#if UNITY_5
+#if NET35
             for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
 #else
             Parallel.For(0, values.Length, (i) => { values[i] = Swap(values[i]); });

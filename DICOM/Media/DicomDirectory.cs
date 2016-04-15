@@ -8,7 +8,7 @@ namespace Dicom.Media
     using System.Linq;
     using System.Text;
 
-    #if !UNITY_5
+    #if !NET35
     using System.Threading.Tasks;
     #endif
 
@@ -231,7 +231,7 @@ namespace Dicom.Media
             }
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously read DICOM Directory.
         /// </summary>

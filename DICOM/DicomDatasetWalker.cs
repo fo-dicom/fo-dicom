@@ -6,7 +6,7 @@ namespace Dicom
     using System;
     using System.Collections.Generic;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -29,7 +29,7 @@ namespace Dicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnElement(DicomElement element);
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -78,7 +78,7 @@ namespace Dicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnFragmentItem(IByteBuffer item);
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
@@ -227,7 +227,7 @@ namespace Dicom
                 DoWalk(walker, items);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Perform an asynchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
         /// </summary>
@@ -345,7 +345,7 @@ namespace Dicom
             }
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Perform an asynchronous dataset walk.
         /// </summary>

@@ -6,7 +6,7 @@ namespace Dicom.IO
     using System.Collections.Generic;
     using System.IO;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -251,7 +251,7 @@ namespace Dicom.IO
             return buffer;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously gets a byte buffer of specified length from the current position and moves to subsequent position.
         /// </summary>

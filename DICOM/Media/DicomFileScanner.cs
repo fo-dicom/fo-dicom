@@ -3,7 +3,7 @@
 
 namespace Dicom.Media
 {
-#if UNITY_5
+#if NET35
     using System.Threading;
 #else
     using System.Threading.Tasks;
@@ -101,7 +101,7 @@ namespace Dicom.Media
         {
             _stop = false;
             _count = 0;
-#if UNITY_5
+#if NET35
             ThreadPool.QueueUserWorkItem(this.ScanProc, directory);
 #else
             Task.Run(() => this.ScanProc(directory));
@@ -117,7 +117,7 @@ namespace Dicom.Media
 
         #region Private Methods
 
-#if UNITY_5
+#if NET35
         private void ScanProc(object directory)
         {
             ScanDirectory((string)directory);
