@@ -115,7 +115,7 @@ namespace Dicom.IO
                         {
                             this.running = true;
 #if NET35
-                            ThreadPool.QueueUserWorkItem(this.DeleteAll);
+                            this.DeleteAll();
 #else
                             Task.Run((Action)this.DeleteAll);
 #endif
@@ -129,7 +129,7 @@ namespace Dicom.IO
         /// Event handler for repeated file removal attempts.
         /// </summary>
 #if NET35
-        private void DeleteAll(object dummy)
+        private void DeleteAll()
 #else
         private async void DeleteAll()
 #endif
@@ -158,9 +158,7 @@ namespace Dicom.IO
                     }
                 }
 
-#if NET35
-                Thread.Sleep(1000);
-#else
+#if !NET35
                 await Task.Delay(1000).ConfigureAwait(false);
 #endif
             }
