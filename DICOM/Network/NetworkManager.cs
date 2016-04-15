@@ -62,6 +62,7 @@ namespace Dicom.Network
             implementation = impl;
         }
 
+#if !NET35
         /// <summary>
         /// Create a network listener object.
         /// </summary>
@@ -85,6 +86,7 @@ namespace Dicom.Network
         {
             return implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
+#endif
 
         /// <summary>
         /// Checks whether specified <paramref name="exception"/> represents a socket exception.
@@ -108,6 +110,7 @@ namespace Dicom.Network
             return implementation.TryGetNetworkIdentifierImpl(out identifier);
         }
 
+#if !NET35
         /// <summary>
         /// Platform-specific implementation to create a network listener object.
         /// </summary>
@@ -125,6 +128,7 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <returns>Network stream implementation.</returns>
         protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors);
+#endif
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
