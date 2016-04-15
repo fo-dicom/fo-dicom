@@ -112,9 +112,9 @@
       <Project>{da47442a-8b75-43ef-8562-5f21acc8d898}</Project>
       <Name>DICOM.Core.Unity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platform\DICOM.Desktop.Unity.csproj">
+    <ProjectReference Include="..\Platform\DICOM.Unity.csproj">
       <Project>{e51c520c-dcbc-472d-ab81-ddfa29a704de}</Project>
-      <Name>DICOM.Desktop.Unity</Name>
+      <Name>DICOM.Unity</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

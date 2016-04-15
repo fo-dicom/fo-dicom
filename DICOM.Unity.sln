@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Core.Unity", "Unity\Core\DICOM.Core.Unity.csproj", "{DA47442A-8B75-43EF-8562-5F21ACC8D898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Desktop.Unity", "Unity\Platform\DICOM.Desktop.Unity.csproj", "{E51C520C-DCBC-472D-AB81-DDFA29A704DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Unity", "Unity\Platform\DICOM.Unity.csproj", "{E51C520C-DCBC-472D-AB81-DDFA29A704DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM Dump.Unity", "Unity\DICOM Dump\DICOM Dump.Unity.csproj", "{E3352BD4-8737-4A07-97FE-CAB932C8DD7E}"
 EndProject
