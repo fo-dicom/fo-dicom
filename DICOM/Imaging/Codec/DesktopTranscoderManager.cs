@@ -4,7 +4,13 @@
 namespace Dicom.Imaging.Codec
 {
     using System;
+
+#if NET35
+    using System.Linq;
+#else
     using System.ComponentModel.Composition.Hosting;
+#endif
+
     using System.IO;
     using System.Reflection;
 
@@ -63,6 +69,31 @@ namespace Dicom.Imaging.Codec
 
             var foundAnyCodecs = false;
 
+#if NET35
+            var assemblyPaths = Directory.GetFiles(path, search);
+
+            foreach (var assemblyPath in assemblyPaths)
+            {
+                try
+                {
+                    var assembly = Assembly.LoadFile(assemblyPath);
+
+                    var types = assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(IDicomCodec)));
+                    var codecs = types.Select(t => (IDicomCodec)Activator.CreateInstance(t));
+
+                    foreach (var codec in codecs)
+                    {
+                        foundAnyCodecs = true;
+                        log.Debug("Codec: {codecName}", codec.TransferSyntax.UID.Name);
+                        Codecs[codec.TransferSyntax] = codec;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Warn("Could not load assembly '{path}' due to '{message}'", assemblyPath, ex.Message);
+                }
+            }
+#else
             DirectoryCatalog catalog;
             try
             {
@@ -86,6 +117,7 @@ namespace Dicom.Imaging.Codec
                 log.Debug("Codec: {codecName}", codec.TransferSyntax.UID.Name);
                 Codecs[codec.TransferSyntax] = codec;
             }
+#endif
 
             if (!foundAnyCodecs)
             {

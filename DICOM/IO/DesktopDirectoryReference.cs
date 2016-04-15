@@ -70,7 +70,7 @@ namespace Dicom.IO
         /// <returns>File names of the files in the current directory.</returns>
         public IEnumerable<string> EnumerateFileNames(string searchPattern = null)
         {
-            return string.IsNullOrWhiteSpace(searchPattern)
+            return string.IsNullOrEmpty(searchPattern?.Trim())
                        ? this.directoryInfo.GetFiles().Select(fi => fi.FullName)
                        : this.directoryInfo.GetFiles(searchPattern).Select(fi => fi.FullName);
         }
