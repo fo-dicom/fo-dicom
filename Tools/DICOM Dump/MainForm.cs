@@ -1,19 +1,23 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Windows.Forms;
-
-using Dicom.Imaging;
-using Dicom.Imaging.Codec;
-using Dicom.IO.Buffer;
-
 namespace Dicom.Dump
 {
+    using System;
+    using System.ComponentModel;
     using System.Drawing;
+    using System.IO;
+
+#if !NET35
     using System.Threading.Tasks;
+#endif
+
+    using System.Windows.Forms;
+
+    using Dicom.Imaging;
+    using Dicom.Imaging.Codec;
+    using Dicom.IO.Buffer;
+
 
     public partial class MainForm : Form
     {
@@ -208,10 +212,12 @@ namespace Dicom.Dump
                 return true;
             }
 
+#if !NET35
             public Task<bool> OnElementAsync(DicomElement element)
             {
                 return Task.FromResult(this.OnElement(element));
             }
+#endif
 
             public bool OnBeginSequence(DicomSequence sequence)
             {
@@ -271,10 +277,12 @@ namespace Dicom.Dump
                 return true;
             }
 
+#if !NET35
             public Task<bool> OnFragmentItemAsync(IByteBuffer item)
             {
                 return Task.FromResult(this.OnFragmentItem(item));
             }
+#endif
 
             public bool OnEndFragment()
             {
