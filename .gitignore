@@ -25,3 +25,4 @@ DICOM/T4/part16.xml
 *.lock.json
 *.VC.opendb
 *.db
+*.DotSettings

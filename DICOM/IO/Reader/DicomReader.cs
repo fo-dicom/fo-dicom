@@ -321,7 +321,7 @@ namespace Dicom.IO.Reader
                         var bytes = source.GetBytes(2);
                         var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 
-                        if (string.IsNullOrWhiteSpace(vr))
+                        if (string.IsNullOrEmpty(vr.Trim()))
                         {
                             if (this._entry != null)
                             {
