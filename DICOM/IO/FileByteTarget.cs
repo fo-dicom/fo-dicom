@@ -6,7 +6,7 @@ namespace Dicom.IO
     using System;
     using System.IO;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -163,7 +163,7 @@ namespace Dicom.IO
             _stream.Write(buffer, (int)offset, (int)count);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>

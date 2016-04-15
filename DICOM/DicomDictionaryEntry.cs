@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom
 {
+    using System;
+
     public sealed class DicomDictionaryEntry
     {
         public DicomDictionaryEntry(
@@ -17,10 +17,10 @@ namespace Dicom
         {
             Tag = tag;
 
-            if (String.IsNullOrWhiteSpace(name)) Name = Tag.ToString();
+            if (string.IsNullOrEmpty(name?.Trim())) Name = Tag.ToString();
             else Name = name;
 
-            if (String.IsNullOrWhiteSpace(keyword)) Keyword = Name;
+            if (string.IsNullOrEmpty(keyword?.Trim())) Keyword = Name;
             else Keyword = keyword;
 
             ValueMultiplicity = vm;
@@ -39,10 +39,10 @@ namespace Dicom
             Tag = tag.Tag;
             MaskTag = tag;
 
-            if (String.IsNullOrWhiteSpace(name)) Name = Tag.ToString();
+            if (string.IsNullOrEmpty(name?.Trim())) Name = Tag.ToString();
             else Name = name;
 
-            if (String.IsNullOrWhiteSpace(keyword)) Keyword = Name;
+            if (string.IsNullOrEmpty(keyword?.Trim())) Keyword = Name;
             else Keyword = keyword;
 
             ValueMultiplicity = vm;

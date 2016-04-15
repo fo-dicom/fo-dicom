@@ -6,7 +6,7 @@ namespace Dicom.IO
     using System;
     using System.Collections.Generic;
 
-#if UNITY_5
+#if NET35
     using System.Threading;
 #else
     using System.Threading.Tasks;
@@ -114,8 +114,8 @@ namespace Dicom.IO
                         if (!this.running)
                         {
                             this.running = true;
-#if UNITY_5
-                            ThreadPool.QueueUserWorkItem(this.DeleteAll);
+#if NET35
+                            this.DeleteAll();
 #else
                             Task.Run((Action)this.DeleteAll);
 #endif
@@ -128,8 +128,8 @@ namespace Dicom.IO
         /// <summary>
         /// Event handler for repeated file removal attempts.
         /// </summary>
-#if UNITY_5
-        private void DeleteAll(object dummy)
+#if NET35
+        private void DeleteAll()
 #else
         private async void DeleteAll()
 #endif
@@ -158,9 +158,7 @@ namespace Dicom.IO
                     }
                 }
 
-#if UNITY_5
-                Thread.Sleep(1000);
-#else
+#if !NET35
                 await Task.Delay(1000).ConfigureAwait(false);
 #endif
             }

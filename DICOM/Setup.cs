@@ -33,8 +33,13 @@ namespace Dicom
             try
             {
                 var assembly = Assembly.Load(new AssemblyName(platformAssemblyName));
+#if NET35
+                var type = assembly.GetTypes().Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var instance = (T)Activator.CreateInstance(type);
+#else
                 var type = assembly.DefinedTypes.Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = (T)Activator.CreateInstance(type.AsType());
+#endif
 
                 return instance;
             }
@@ -56,9 +61,13 @@ namespace Dicom
             try
             {
                 var assembly = Assembly.Load(new AssemblyName(platformAssemblyName));
+#if NET35
+                var types = assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var instance = types.Select(t => (T)Activator.CreateInstance(t)).Single(obj => obj.IsDefault);
+#else
                 var types = assembly.DefinedTypes.Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = types.Select(t => (T)Activator.CreateInstance(t.AsType())).Single(obj => obj.IsDefault);
-
+#endif
                 return instance;
             }
             catch (Exception)

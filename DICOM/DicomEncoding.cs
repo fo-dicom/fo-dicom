@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
 namespace Dicom
 {
+    using System;
+    using System.Text;
+
     using Dicom.IO;
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace Dicom
         /// <returns>DICOM encoding.</returns>
         public static Encoding GetEncoding(string charset)
         {
-            if (String.IsNullOrWhiteSpace(charset)) return Default;
+            if (string.IsNullOrEmpty(charset?.Trim())) return Default;
 
             switch (charset.Trim())
             {

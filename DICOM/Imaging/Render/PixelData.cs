@@ -6,7 +6,7 @@ namespace Dicom.Imaging.Render
     using System;
     using System.Collections;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -295,7 +295,7 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -306,13 +306,13 @@ namespace Dicom.Imaging.Render
                         output[i] = data[i];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -323,7 +323,7 @@ namespace Dicom.Imaging.Render
                         output[i] = lut[data[i]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -429,7 +429,7 @@ namespace Dicom.Imaging.Render
                 // should also be discarded.
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < _height; ++y)
 #else
                 Parallel.For(0, _height, y =>
@@ -443,7 +443,7 @@ namespace Dicom.Imaging.Render
                         shortData[i] = (short)(d >> shiftRight);
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -535,7 +535,7 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -546,13 +546,13 @@ namespace Dicom.Imaging.Render
                         output[i] = data[i];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -563,7 +563,7 @@ namespace Dicom.Imaging.Render
                         output[i] = lut[data[i]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -621,7 +621,7 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < _height; ++y)
 #else
                 Parallel.For(0, _height, y =>
@@ -634,7 +634,7 @@ namespace Dicom.Imaging.Render
                         ushortData[i] = (ushort)(d >> shiftRight);
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -727,7 +727,7 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -738,13 +738,13 @@ namespace Dicom.Imaging.Render
                         output[i] = data[i];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -755,7 +755,7 @@ namespace Dicom.Imaging.Render
                         output[i] = lut[data[i]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -806,7 +806,7 @@ namespace Dicom.Imaging.Render
             // should also be discarded.
             int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
             int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-#if UNITY_5
+#if NET35
             for (var y = 0; y < _height; ++y)
 #else
             Parallel.For(0, _height, y =>
@@ -820,7 +820,7 @@ namespace Dicom.Imaging.Render
                     intData[i] = d >> shiftRight;
                 }
             }
-#if !UNITY_5
+#if !NET35
             );
 #endif
 
@@ -909,7 +909,7 @@ namespace Dicom.Imaging.Render
 
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -920,13 +920,13 @@ namespace Dicom.Imaging.Render
                         output[i] = data[i];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -937,7 +937,7 @@ namespace Dicom.Imaging.Render
                         output[i] = lut[data[i]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -984,7 +984,7 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < _height; ++y)
 #else
                 Parallel.For(0, _height, y =>
@@ -997,7 +997,7 @@ namespace Dicom.Imaging.Render
                         uintData[i] = (uint)(d >> shiftRight);
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -1086,7 +1086,7 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -1097,13 +1097,13 @@ namespace Dicom.Imaging.Render
                         output[i] = (int)data[i];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -1114,7 +1114,7 @@ namespace Dicom.Imaging.Render
                         output[i] = lut[(int)data[i]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -1226,7 +1226,7 @@ namespace Dicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -1237,13 +1237,13 @@ namespace Dicom.Imaging.Render
                         output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
             else
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
@@ -1254,7 +1254,7 @@ namespace Dicom.Imaging.Render
                         output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }

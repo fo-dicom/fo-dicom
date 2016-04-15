@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.IO
 {
     using System.IO;
@@ -78,7 +80,22 @@ namespace Dicom.IO
         /// <returns>The combined paths.</returns>
         public string Combine(params string[] paths)
         {
+            if (paths == null)
+            {
+                throw new ArgumentNullException(nameof(paths));
+            }
+
+#if NET35
+            var combined = string.Empty;
+            foreach (var path in paths)
+            {
+                combined = Path.Combine(combined, path);
+            }
+
+            return combined;
+#else
             return Path.Combine(paths);
+#endif
         }
 
         #endregion

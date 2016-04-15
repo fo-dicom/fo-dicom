@@ -6,7 +6,7 @@ namespace Dicom.IO.Reader
     using System;
     using System.Text;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -15,6 +15,34 @@ namespace Dicom.IO.Reader
     /// </summary>
     public class DicomFileReader
     {
+        #region INNER TYPES
+
+        private class ParseResult
+        {
+            #region CONSTRUCTORS
+
+            public ParseResult(DicomReaderResult result, DicomFileFormat format, DicomTransferSyntax syntax)
+            {
+                this.Result = result;
+                this.Format = format;
+                this.Syntax = syntax;
+            }
+
+            #endregion
+
+            #region PROPERTIES
+
+            public DicomReaderResult Result { get; }
+
+            public DicomFileFormat Format { get; }
+
+            public DicomTransferSyntax Syntax { get; }
+
+            #endregion
+        }
+
+        #endregion
+
         #region FIELDS
 
         private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
@@ -89,13 +117,14 @@ namespace Dicom.IO.Reader
             var parse = Parse(source, fileMetaInfo, dataset, stop);
             lock (this.locker)
             {
-                this.fileFormat = parse.Item2;
-                this.syntax = parse.Item3;
+                this.fileFormat = parse.Format;
+                this.syntax = parse.Syntax;
             }
-            return parse.Item1;
+
+            return parse.Result;
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously read DICOM file object.
         /// </summary>
@@ -120,7 +149,7 @@ namespace Dicom.IO.Reader
         }
 #endif
 
-        private static Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax> Parse(
+        private static ParseResult Parse(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
@@ -128,7 +157,7 @@ namespace Dicom.IO.Reader
         {
             if (!source.Require(132))
             {
-                return Tuple.Create(DicomReaderResult.Error, DicomFileFormat.Unknown, (DicomTransferSyntax)null);
+                return new ParseResult(DicomReaderResult.Error, DicomFileFormat.Unknown, null);
             }
 
             var fileFormat = DicomFileFormat.Unknown;
@@ -144,10 +173,10 @@ namespace Dicom.IO.Reader
                 ref syntax,
                 ref fileFormat);
 
-            return Tuple.Create(result, fileFormat, syntax);
+            return new ParseResult(result, fileFormat, syntax);
         }
 
-#if !UNITY_5
+#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> ParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -322,7 +351,7 @@ namespace Dicom.IO.Reader
             return result;
         }
 
-#if !UNITY_5
+#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> DoParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,

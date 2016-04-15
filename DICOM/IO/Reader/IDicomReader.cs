@@ -5,7 +5,7 @@ namespace Dicom.IO.Reader
 {
     using System;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -64,7 +64,7 @@ namespace Dicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>

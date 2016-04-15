@@ -5,7 +5,7 @@ namespace Dicom.Imaging.Render
 {
     using System;
 
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -72,7 +72,7 @@ namespace Dicom.Imaging.Render
             int ox = (int)(_offsetX * _scale);
             int oy = (int)(_offsetY * _scale);
 
-#if UNITY_5
+#if NET35
             for (var y = 0; y < _scaledData.Height; ++y)
 #else
                 Parallel.For(0, _scaledData.Height, y =>
@@ -89,7 +89,7 @@ namespace Dicom.Imaging.Render
                     }
                 }
             }
-#if !UNITY_5
+#if !NET35
             );
 #endif
         }

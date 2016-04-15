@@ -3,7 +3,7 @@
 
 namespace Dicom.IO
 {
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -91,7 +91,7 @@ namespace Dicom.IO
         /// <param name="count">Number of bytes to write to byte target.</param>
         void Write(byte[] buffer, uint offset, uint count);
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>

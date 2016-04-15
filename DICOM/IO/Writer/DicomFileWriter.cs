@@ -3,7 +3,7 @@
 
 namespace Dicom.IO.Writer
 {
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -46,7 +46,7 @@ namespace Dicom.IO.Writer
             WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this.options);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Write DICOM Part 10 object to <paramref name="target"/> asynchronously.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Dicom.IO.Writer
             target.Write(preamble, 0, 132);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Write DICOM file preamble.
         /// </summary>
@@ -113,7 +113,7 @@ namespace Dicom.IO.Writer
             walker.Walk(writer);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Write DICOM file meta information.
         /// </summary>
@@ -154,7 +154,7 @@ namespace Dicom.IO.Writer
             walker.Walk(writer);
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Write DICOM dataset.
         /// </summary>

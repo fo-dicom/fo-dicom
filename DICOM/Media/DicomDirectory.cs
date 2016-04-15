@@ -8,7 +8,7 @@ namespace Dicom.Media
     using System.Linq;
     using System.Text;
 
-    #if !UNITY_5
+    #if !NET35
     using System.Threading.Tasks;
     #endif
 
@@ -50,7 +50,7 @@ namespace Dicom.Media
             }
             set
             {
-                if (!string.IsNullOrWhiteSpace(value))
+                if (!string.IsNullOrEmpty(value?.Trim()))
                 {
                     Dataset.Add(DicomTag.FileSetID, value);
                 }
@@ -231,7 +231,7 @@ namespace Dicom.Media
             }
         }
 
-#if !UNITY_5
+#if !NET35
         /// <summary>
         /// Asynchronously read DICOM Directory.
         /// </summary>
@@ -641,7 +641,7 @@ namespace Dicom.Media
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("Cannot find tag {0} for record type {1}", tag, recordType);
+                    System.Diagnostics.Debug.WriteLine($"Cannot find tag {tag} for record type {recordType}");
                 }
             }
 

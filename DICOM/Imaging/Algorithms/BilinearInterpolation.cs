@@ -3,7 +3,7 @@
 
 namespace Dicom.Imaging.Algorithms
 {
-#if !UNITY_5
+#if !NET35
     using System.Threading.Tasks;
 #endif
 
@@ -26,7 +26,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -61,7 +61,7 @@ namespace Dicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -86,7 +86,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -121,7 +121,7 @@ namespace Dicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -146,7 +146,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -181,7 +181,7 @@ namespace Dicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -206,7 +206,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -241,7 +241,7 @@ namespace Dicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -266,7 +266,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -301,7 +301,7 @@ namespace Dicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -326,7 +326,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -383,7 +383,7 @@ namespace Dicom.Imaging.Algorithms
                         x2++;
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }
@@ -408,7 +408,7 @@ namespace Dicom.Imaging.Algorithms
 
             unchecked
             {
-#if UNITY_5
+#if NET35
                 for (var y = 0; y < outputHeight; ++y)
 #else
                 Parallel.For(0, outputHeight, y =>
@@ -470,7 +470,7 @@ namespace Dicom.Imaging.Algorithms
                         ox2++;
                     }
                 }
-#if !UNITY_5
+#if !NET35
                 );
 #endif
             }

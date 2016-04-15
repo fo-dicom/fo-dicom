@@ -1,11 +1,10 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Concurrent;
-
 namespace Dicom
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO.Compression;
     using System.Linq;
@@ -149,7 +148,7 @@ namespace Dicom
                             DicomVR.UL));
                     try
                     {
-                        var assembly = typeof (DicomDictionary).GetTypeInfo().Assembly;
+                        var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                         var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
                         var gzip = new GZipStream(stream, CompressionMode.Decompress);
                         var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
@@ -165,7 +164,7 @@ namespace Dicom
                     {
                         try
                         {
-                            var assembly = typeof (DicomDictionary).GetTypeInfo().Assembly;
+                            var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                             var stream =
                                 assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
                             var gzip = new GZipStream(stream, CompressionMode.Decompress);

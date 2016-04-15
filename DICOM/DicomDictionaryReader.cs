@@ -37,7 +37,15 @@ namespace Dicom
         {
             DicomDictionary dict = _dict;
 
-            XDocument xdoc = XDocument.Load(_stream);
+#if NET35
+            XDocument xdoc;
+            using (var reader = new StreamReader(_stream))
+            {
+                xdoc = XDocument.Load(reader);
+            }
+#else
+            var xdoc = XDocument.Load(_stream);
+#endif
 
             IEnumerable<XElement> xdicts;
 
