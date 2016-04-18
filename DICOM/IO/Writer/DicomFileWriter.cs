@@ -3,6 +3,9 @@
 
 namespace Dicom.IO.Writer
 {
+    using System.IO;
+    using System.IO.Compression;
+
 #if !NET35
     using System.Threading.Tasks;
 #endif
@@ -149,6 +152,34 @@ namespace Dicom.IO.Writer
         {
             UpdateDatasetGroupLengths(syntax, dataset, options);
 
+            if (syntax.IsDeflate)
+            {
+                using (var uncompressed = new MemoryStream())
+                {
+                    var temp = new StreamByteTarget(uncompressed);
+                    WalkDataset(temp, syntax, dataset, options);
+
+                    uncompressed.Seek(0, SeekOrigin.Begin);
+                    using (var compressed = new MemoryStream())
+                    using (var compressor = new DeflateStream(compressed, CompressionMode.Compress))
+                    {
+                        uncompressed.CopyTo(compressor);
+                        target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
+                    }
+                }
+            }
+            else
+            {
+                WalkDataset(target, syntax, dataset, options);
+            }
+        }
+
+        private static void WalkDataset(
+            IByteTarget target,
+            DicomTransferSyntax syntax,
+            DicomDataset dataset,
+            DicomWriteOptions options)
+        {
             var writer = new DicomWriter(syntax, options, target);
             var walker = new DicomDatasetWalker(dataset);
             walker.Walk(writer);
@@ -162,7 +193,7 @@ namespace Dicom.IO.Writer
         /// <param name="syntax">Transfer syntax applicable to dataset.</param>
         /// <param name="dataset">Dataset.</param>
         /// <param name="options">Writer options.</param>
-        private static Task WriteDatasetAsync(
+        private static async Task WriteDatasetAsync(
             IByteTarget target,
             DicomTransferSyntax syntax,
             DicomDataset dataset,
@@ -170,6 +201,35 @@ namespace Dicom.IO.Writer
         {
             UpdateDatasetGroupLengths(syntax, dataset, options);
 
+
+            if (syntax.IsDeflate)
+            {
+                using (var uncompressed = new MemoryStream())
+                {
+                    var temp = new StreamByteTarget(uncompressed);
+                    await WalkDatasetAsync(temp, syntax, dataset, options).ConfigureAwait(false);
+
+                    uncompressed.Seek(0, SeekOrigin.Begin);
+                    using (var compressed = new MemoryStream())
+                    using (var compressor = new DeflateStream(compressed, CompressionMode.Compress))
+                    {
+                        uncompressed.CopyTo(compressor);
+                        target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
+                    }
+                }
+            }
+            else
+            {
+                await WalkDatasetAsync(target, syntax, dataset, options).ConfigureAwait(false);
+            }
+        }
+
+        private static Task WalkDatasetAsync(
+            IByteTarget target,
+            DicomTransferSyntax syntax,
+            DicomDataset dataset,
+            DicomWriteOptions options)
+        {
             var writer = new DicomWriter(syntax, options, target);
             var walker = new DicomDatasetWalker(dataset);
             return walker.WalkAsync(writer);
