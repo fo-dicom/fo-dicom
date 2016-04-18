@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.IO;
+using System.IO.Compression;
+
 namespace Dicom.IO.Reader
 {
     using System;
@@ -46,6 +49,8 @@ namespace Dicom.IO.Reader
         /// </summary>
         public bool IsExplicitVR { get; set; }
 
+        public bool IsDeflated { get; set; }
+
         /// <summary>
         /// Gets or sets the DICOM dictionary to be used by the reader.
         /// </summary>
@@ -64,7 +69,7 @@ namespace Dicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
+            var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this.IsDeflated, this._private);
             return worker.DoWork(source);
         }
 
@@ -78,7 +83,7 @@ namespace Dicom.IO.Reader
         /// <returns>Awaitable reader resulting status.</returns>
         public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this._private);
+            var worker = new DicomReaderWorker(observer, stop, this.Dictionary, this.IsExplicitVR, this.IsDeflated, this._private);
             return worker.DoWorkAsync(source);
         }
 #endif
@@ -122,6 +127,8 @@ namespace Dicom.IO.Reader
 
             private bool isExplicitVR;
 
+            private bool isDeflated;
+
             private int sequenceDepth;
 
             private ParseStage parseStage;
@@ -156,12 +163,14 @@ namespace Dicom.IO.Reader
                 Func<ParseState, bool> stop,
                 DicomDictionary dictionary,
                 bool isExplicitVR,
+                bool isDeflated,
                 Dictionary<uint, string> @private)
             {
                 this.observer = observer;
                 this.stop = stop;
                 this.dictionary = dictionary;
                 this.isExplicitVR = isExplicitVR;
+                this.isDeflated = isDeflated;
                 this._private = @private;
                 this.locker = new object();
             }
@@ -198,6 +207,11 @@ namespace Dicom.IO.Reader
 
             private void ParseDataset(IByteSource source)
             {
+                if (this.isDeflated)
+                {
+                    source = this.Decompress(source);
+                }
+
                 this.result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && this.result == DicomReaderResult.Processing)
@@ -224,6 +238,11 @@ namespace Dicom.IO.Reader
 #if !NET35
             private async Task ParseDatasetAsync(IByteSource source)
             {
+                if (this.isDeflated)
+                {
+                    source = this.Decompress(source);
+                }
+
                 this.result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && this.result == DicomReaderResult.Processing)
@@ -247,6 +266,28 @@ namespace Dicom.IO.Reader
                 this.result = DicomReaderResult.Success;
             }
 #endif
+
+            private IByteSource Decompress(IByteSource source)
+            {
+                using (var compressed = new MemoryStream())
+                {
+                    // It is implicitly assumed that the rest of the byte source is compressed.
+                    while (!source.IsEOF)
+                    {
+                        compressed.WriteByte(source.GetUInt8());
+                    }
+
+                    compressed.Seek(0, SeekOrigin.Begin);
+
+                    using (var decompressor = new DeflateStream(compressed, CompressionMode.Decompress))
+                    {
+                        var decompressed = new MemoryStream();
+                        decompressor.CopyTo(decompressed);
+                        decompressed.Seek(0, SeekOrigin.Begin);
+                        return new StreamByteSource(decompressed);
+                    }
+                }
+            }
 
             private bool ParseTag(IByteSource source)
             {

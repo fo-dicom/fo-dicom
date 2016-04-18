@@ -50,6 +50,8 @@ namespace Dicom.IO.Reader
         /// </summary>
         bool IsExplicitVR { get; set; }
 
+        bool IsDeflated { get; set; }
+
         /// <summary>
         /// Gets or sets the DICOM dictionary to be used by the reader.
         /// </summary>

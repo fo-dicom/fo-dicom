@@ -321,7 +321,7 @@ namespace Dicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR };
+            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -345,6 +345,7 @@ namespace Dicom.IO.Reader
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
+                reader.IsDeflated = syntax.IsDeflate;
                 result = reader.Read(source, datasetObserver, stop);
             }
 
@@ -390,7 +391,7 @@ namespace Dicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR };
+            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -420,6 +421,7 @@ namespace Dicom.IO.Reader
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
+                reader.IsDeflated = syntax.IsDeflate;
                 result = await reader.ReadAsync(source, datasetObserver, stop).ConfigureAwait(false);
             }
 
