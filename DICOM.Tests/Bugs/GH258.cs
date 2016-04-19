@@ -1,36 +1,29 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
-using Dicom.Log;
-
-using NLog.Config;
-using NLog.Targets;
-
-using Xunit;
+using Dicom.Helpers;
 
 namespace Dicom.Bugs
 {
+    using System;
+
+    using Dicom.Log;
+
+    using Xunit;
+
     public class GH258
     {
         [Fact]
         public void Log_ExceptionInFormattedString_DisplaysExceptionMessage()
         {
+            var name = nameof(GH258) + "A";
             LogManager.SetImplementation(NLogManager.Instance);
+            var target = NLogHelper.AssignMemoryTarget(name, @"${message}");
 
-            var config = new LoggingConfiguration();
+            var logger = LogManager.GetLogger(name);
+            logger.Debug("Message: {0} {1}", new NullReferenceException(), target.Name);
 
-            var target = new MemoryTarget { Layout = @"${message}" };
-            config.AddTarget("Memory", target);
-            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, target));
-
-            NLog.LogManager.Configuration = config;
-
-            var logger = LogManager.GetLogger("Test");
-            logger.Debug("Message: {0}", new NullReferenceException());
-
-            var expected = $"Message: {new NullReferenceException().Message}";
+            var expected = $"Message: {new NullReferenceException()} {target.Name}";
             var actual = target.Logs[0];
             Assert.Equal(expected, actual);
         }
@@ -38,17 +31,12 @@ namespace Dicom.Bugs
         [Fact]
         public void Log_ExceptionNotInFormattedString_ExceptionLoggedNotIncludedInMessage()
         {
+            var name = nameof(GH258) + "B";
+
             LogManager.SetImplementation(NLogManager.Instance);
+            var target = NLogHelper.AssignMemoryTarget(name, @"${exception} ${message}");
 
-            var config = new LoggingConfiguration();
-
-            var target = new MemoryTarget { Layout = @"${exception} ${message}" };
-            config.AddTarget("Memory", target);
-            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, target));
-
-            NLog.LogManager.Configuration = config;
-
-            var logger = LogManager.GetLogger("Test");
+            var logger = LogManager.GetLogger(name);
             logger.Debug("Message but no exception", new NullReferenceException());
 
             var expected = $"{new NullReferenceException().Message} Message but no exception";

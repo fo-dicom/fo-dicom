@@ -8,25 +8,30 @@ namespace Dicom.Network
 
     using Xunit;
 
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection("Network")]
+    [Trait("Category", "Network")]
     public class DicomCEchoProviderTest
     {
         [Fact]
         public void Send_FromDicomClient_DoesNotDeadlock()
         {
-            LogManager.SetImplementation(new StringLogManager());
+            LogManager.SetImplementation(NLogManager.Instance);
+            var target = NLogHelper.AssignMemoryTarget(
+                nameof(DicomCEchoProviderTest),
+                @"${message}",
+                NLog.LogLevel.Trace);
 
-            int port = Ports.GetNext();
-            using (new DicomServer<DicomCEchoProvider>(port))
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var client = new DicomClient();
                 for (var i = 0; i < 10; i++)
+                {
                     client.AddRequest(new DicomCEchoRequest());
+                }
 
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                
-                var log = LogManager.GetLogger(null).ToString();
-                Assert.True(log.Length > 0);
+                Assert.True(target.Logs.Count > 0);
             }
         }
     }
