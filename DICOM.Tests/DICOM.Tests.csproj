@@ -80,6 +80,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Bugs\GH227.cs" />
     <Compile Include="Bugs\GH133.cs" />
     <Compile Include="Bugs\GH064.cs" />
     <Compile Include="Bugs\GH177.cs" />
@@ -207,6 +208,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH223.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH227.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\minimumdict.xml.gz">
