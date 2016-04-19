@@ -62,9 +62,9 @@ namespace Dicom.Log
                 var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
                 var nlogLevel = GetNLogLevel(level);
 
-                if (args.Length == 1 && args[0] is Exception)
+                if (args.Length >= 1 && args[0] is Exception)
                 {
-                    this.logger.Log(nlogLevel, (Exception)args[0], ordinalFormattedMessage);
+                    this.logger.Log(nlogLevel, (Exception)args[0], ordinalFormattedMessage, args);
                 }
                 else
                 {
