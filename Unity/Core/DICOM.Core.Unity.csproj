@@ -575,6 +575,7 @@
     </Compile>
     <Compile Include="Compatibility\BinaryReaderExtensions.cs" />
     <Compile Include="Compatibility\ConcurrentDictionary.cs" />
+    <Compile Include="Compatibility\StreamExtensions.cs" />
     <Compile Include="Compatibility\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
