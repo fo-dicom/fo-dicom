@@ -321,7 +321,7 @@ namespace Dicom
             using (var fs = IOManager.CreateFileReference(file).OpenRead())
             {
                 var s = fs;
-#if NET35
+#if !NET35
                 if (file.EndsWith(".gz"))
                 {
                     s = new GZipStream(s, CompressionMode.Decompress);
