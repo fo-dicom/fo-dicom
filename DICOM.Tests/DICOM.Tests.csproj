@@ -46,6 +46,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.1.2\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -89,6 +93,7 @@
     <Compile Include="Bugs\GH178.cs" />
     <Compile Include="Bugs\GH223.cs" />
     <Compile Include="Bugs\GH220.cs" />
+    <Compile Include="Bugs\GH258.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
@@ -160,6 +165,10 @@
     <ProjectReference Include="..\DICOM\DICOM.Legacy.csproj">
       <Project>{a3550fe3-1cb5-4760-8670-9c8afe0925a3}</Project>
       <Name>DICOM.Legacy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Logging\DICOM.NLog.Desktop\DICOM.NLog.Desktop.csproj">
+      <Project>{89075100-3f00-44fb-a1cc-f77c10a59667}</Project>
+      <Name>DICOM.NLog.Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Serialization\DICOM.Json\DICOM.Json.csproj">
       <Project>{849A140B-EF3E-4367-90BC-9F9383DC1481}</Project>
