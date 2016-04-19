@@ -208,7 +208,11 @@ namespace Dicom.IO.Reader
             {
                 if (this.isDeflated)
                 {
+#if NET35
+                    throw new NotSupportedException("Deflated datasets not supported in Unity.");
+#else
                     source = this.Decompress(source);
+#endif
                 }
 
                 this.result = DicomReaderResult.Processing;
@@ -264,7 +268,6 @@ namespace Dicom.IO.Reader
                 // end of processing
                 this.result = DicomReaderResult.Success;
             }
-#endif
 
             private IByteSource Decompress(IByteSource source)
             {
@@ -287,6 +290,7 @@ namespace Dicom.IO.Reader
                     }
                 }
             }
+#endif
 
             private bool ParseTag(IByteSource source)
             {
@@ -1108,9 +1112,9 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-            #endregion
+#endregion
         }
 
-        #endregion
+#endregion
     }
 }

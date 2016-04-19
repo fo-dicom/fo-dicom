@@ -140,6 +140,117 @@ namespace Dicom.Imaging
             this.disposed = true;
         }
 
+        protected static byte[] ToBytes(
+            ref int width,
+            ref int height,
+            int components,
+            bool flipX,
+            bool flipY,
+            int rotation,
+            int[] data)
+        {
+            var processed = Rotate(ref width, ref height, rotation, data);
+            processed = Flip(width, height, flipX, flipY, processed);
+
+            // TODO Consider to make use of "components"
+            var length = 4 * width * height;
+            var bytes = new byte[length];
+
+            Buffer.BlockCopy(processed, 0, bytes, 0, length);
+            return bytes;
+        }
+
+        private static int[] Rotate(ref int width, ref int height, int angle, int[] data)
+        {
+            int[] result;
+            angle %= 360;
+
+            var i = 0;
+            if (angle > 0 && angle <= 90)
+            {
+                result = new int[width * height];
+                for (var x = 0; x < width; x++)
+                {
+                    for (var y = height - 1; y >= 0; y--, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+                var tmp = width;
+                width = height;
+                height = tmp;
+            }
+            else if (angle > 90 && angle <= 180)
+            {
+                result = new int[width * height];
+                for (var y = height - 1; y >= 0; y--)
+                {
+                    for (var x = width - 1; x >= 0; x--, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+            }
+            else if (angle > 180 && angle <= 270)
+            {
+                result = new int[width * height];
+                for (var x = width - 1; x >= 0; x--)
+                {
+                    for (var y = 0; y < height; y++, i++)
+                    {
+                        result[i] = data[y * width + x];
+                    }
+                }
+                var tmp = width;
+                width = height;
+                height = tmp;
+            }
+            else
+            {
+                result = data;
+            }
+            return result;
+        }
+
+        private static int[] Flip(int w, int h, bool flipX, bool flipY, int[] p)
+        {
+            var i = 0;
+            int[] tmp, result;
+
+            if (flipX)
+            {
+                tmp = new int[w * h];
+                for (var y = 0; y < h; y++)
+                {
+                    for (var x = w - 1; x >= 0; x--, i++)
+                    {
+                        tmp[i] = p[y * w + x];
+                    }
+                }
+            }
+            else
+            {
+                tmp = p;
+            }
+            if (flipY)
+            {
+                result = new int[w * h];
+                for (var y = h - 1; y >= 0; y--)
+                {
+                    for (var x = 0; x < w; x++, i++)
+                    {
+                        result[i] = tmp[y * w + x];
+                    }
+                }
+            }
+            else
+            {
+                result = tmp;
+            }
+
+            return result;
+        }
+
         #endregion
     }
 }

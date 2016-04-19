@@ -149,9 +149,14 @@ namespace Dicom
                     try
                     {
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
+#if NET35
+                        var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml");
+                        var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, stream);
+#else
                         var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
                         var gzip = new GZipStream(stream, CompressionMode.Decompress);
                         var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+#endif
                         reader.Process();
                     }
                     catch (Exception e)
@@ -165,10 +170,15 @@ namespace Dicom
                         try
                         {
                             var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
+#if NET35
+                            var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml");
+                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, stream);
+#else
                             var stream =
                                 assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
                             var gzip = new GZipStream(stream, CompressionMode.Decompress);
                             var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+#endif
                             reader.Process();
                         }
                         catch (Exception e)
@@ -311,11 +321,12 @@ namespace Dicom
             using (var fs = IOManager.CreateFileReference(file).OpenRead())
             {
                 var s = fs;
+#if NET35
                 if (file.EndsWith(".gz"))
                 {
                     s = new GZipStream(s, CompressionMode.Decompress);
                 }
-
+#endif
                 var reader = new DicomDictionaryReader(this, format, s);
                 reader.Process();
             }

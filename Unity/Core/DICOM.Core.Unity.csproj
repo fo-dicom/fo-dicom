@@ -52,15 +52,15 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DICOM Dictionary.xml</LastGenOutput>
     </Content>
-    <Content Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml">
+    <EmbeddedResource Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml">
       <Link>Dictionaries\DICOM Dictionary.xml</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DICOM Dictionary.tt</DependentUpon>
-    </Content>
-    <Content Include="..\..\DICOM\Dictionaries\Private Dictionary.xml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\DICOM\Dictionaries\Private Dictionary.xml">
       <Link>Dictionaries\Private Dictionary.xml</Link>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\DICOM\DicomDataException.cs">
@@ -579,12 +579,12 @@
     <Compile Include="Compatibility\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
+    <None Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
       <Link>Dictionaries\DICOM Dictionary.xml.gz</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\DICOM\Dictionaries\Private Dictionary.xml.gz">
+    </None>
+    <None Include="..\..\DICOM\Dictionaries\Private Dictionary.xml.gz">
       <Link>Dictionaries\Private Dictionary.xml.gz</Link>
-    </EmbeddedResource>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\DICOM\T4\dictionarymethods.t4">
