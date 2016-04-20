@@ -63,6 +63,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\DICOM\Compatibility\BinaryReaderExtensions.cs">
+      <Link>Compatibility\BinaryReaderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\ConcurrentDictionary.cs">
+      <Link>Compatibility\ConcurrentDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\StreamExtensions.cs">
+      <Link>Compatibility\StreamExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\TypeExtensions.cs">
+      <Link>Compatibility\TypeExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\DicomDataException.cs">
       <Link>DicomDataException.cs</Link>
     </Compile>
@@ -573,10 +585,6 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Compatibility\BinaryReaderExtensions.cs" />
-    <Compile Include="Compatibility\ConcurrentDictionary.cs" />
-    <Compile Include="Compatibility\StreamExtensions.cs" />
-    <Compile Include="Compatibility\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">

@@ -43,6 +43,9 @@
     <Compile Include="..\..\DICOM.Platform\Desktop\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\DirectoryInfoExtensions.cs">
+      <Link>Compatibility\DirectoryInfoExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
       <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
@@ -70,7 +73,6 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Compatibility\DirectoryInfoExtensions.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
