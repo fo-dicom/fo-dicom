@@ -4,6 +4,7 @@
 namespace Dicom
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
@@ -15,9 +16,9 @@ namespace Dicom
         #region FIELDS
 
         /// <summary>
-        /// Name of the fo-dicom platform-specific assembly.
+        /// Potential names of the fo-dicom platform-specific assemblies.
         /// </summary>
-        private const string platformAssemblyName = "Dicom.Platform";
+        private static readonly string[] PlatformAssemblyNames = { "Dicom.Platform", "Dicom.Platform.Imaging" };
 
         #endregion
 
@@ -32,12 +33,16 @@ namespace Dicom
         {
             try
             {
-                var assembly = Assembly.Load(new AssemblyName(platformAssemblyName));
+                var assemblies = GetPlatformAssemblies();
 #if NET35
-                var type = assembly.GetTypes().Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var type =
+                    assemblies.SelectMany(assembly => assembly.GetTypes())
+                        .Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = (T)Activator.CreateInstance(type);
 #else
-                var type = assembly.DefinedTypes.Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var type =
+                    assemblies.SelectMany(assembly => assembly.DefinedTypes)
+                        .Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = (T)Activator.CreateInstance(type.AsType());
 #endif
 
@@ -60,12 +65,16 @@ namespace Dicom
         {
             try
             {
-                var assembly = Assembly.Load(new AssemblyName(platformAssemblyName));
+                var assemblies = GetPlatformAssemblies();
 #if NET35
-                var types = assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var types =
+                    assemblies.SelectMany(assembly => assembly.GetTypes())
+                        .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = types.Select(t => (T)Activator.CreateInstance(t)).Single(obj => obj.IsDefault);
 #else
-                var types = assembly.DefinedTypes.Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+                var types =
+                    assemblies.SelectMany(assembly => assembly.DefinedTypes)
+                        .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = types.Select(t => (T)Activator.CreateInstance(t.AsType())).Single(obj => obj.IsDefault);
 #endif
                 return instance;
@@ -74,6 +83,22 @@ namespace Dicom
             {
                 return null;
             }
+        }
+
+        private static IEnumerable<Assembly> GetPlatformAssemblies()
+        {
+            return PlatformAssemblyNames.Select(
+                name =>
+                    {
+                        try
+                        {
+                            return Assembly.Load(new AssemblyName(name));
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+                    }).Where(assembly => assembly != null);
         }
     }
 }
