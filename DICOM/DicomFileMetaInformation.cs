@@ -90,7 +90,7 @@ namespace Dicom
         {
             get
             {
-                return Get<string>(DicomTag.ImplementationVersionName);
+                return Get<string>(DicomTag.ImplementationVersionName, null);
             }
             set
             {
@@ -102,7 +102,7 @@ namespace Dicom
         {
             get
             {
-                return Get<string>(DicomTag.SourceApplicationEntityTitle);
+                return Get<string>(DicomTag.SourceApplicationEntityTitle, null);
             }
             set
             {

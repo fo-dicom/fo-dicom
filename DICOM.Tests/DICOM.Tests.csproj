@@ -97,6 +97,7 @@
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="DicomFileMetaInformationTests.cs" />
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
