@@ -69,9 +69,6 @@
     <Compile Include="..\..\DICOM\Compatibility\ConcurrentDictionary.cs">
       <Link>Compatibility\ConcurrentDictionary.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Compatibility\StreamExtensions.cs">
-      <Link>Compatibility\StreamExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\Compatibility\TypeExtensions.cs">
       <Link>Compatibility\TypeExtensions.cs</Link>
     </Compile>

@@ -1112,9 +1112,9 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-#endregion
+            #endregion
         }
 
-#endregion
+        #endregion
     }
 }
