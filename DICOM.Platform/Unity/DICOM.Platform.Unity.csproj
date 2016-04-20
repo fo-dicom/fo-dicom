@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DAD59F79-409D-400B-B1B3-8B7CDB98AA5A}</ProjectGuid>
+    <ProjectGuid>{E51C520C-DCBC-472D-AB81-DDFA29A704DE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dicom.Log</RootNamespace>
-    <AssemblyName>Dicom.NLog</AssemblyName>
+    <RootNamespace>Dicom</RootNamespace>
+    <AssemblyName>Dicom.Platform</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -25,42 +25,56 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.2.3\lib\net35\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Logging\DICOM.NLog.Desktop\NLogManager.cs">
-      <Link>NLogManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Logging\DICOM.NLog.Desktop\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\DICOM.Core.Unity.csproj">
+    <ProjectReference Include="..\..\DICOM\Unity\DICOM.Core.Unity.csproj">
       <Project>{da47442a-8b75-43ef-8562-5f21acc8d898}</Project>
       <Name>DICOM.Core.Unity</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="..\..\DICOM.Platform\Desktop\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\DirectoryInfoExtensions.cs">
+      <Link>Compatibility\DirectoryInfoExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
+      <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopDirectoryReference.cs">
+      <Link>IO\DesktopDirectoryReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopFileReference.cs">
+      <Link>IO\DesktopFileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopIOManager.cs">
+      <Link>IO\DesktopIOManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
+      <Link>IO\DesktopPath.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Log\ConsoleExtensions.cs">
+      <Link>Log\ConsoleExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Log\ConsoleLogger.cs">
+      <Link>Log\ConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkManager.cs">
+      <Link>Network\DesktopNetworkManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
