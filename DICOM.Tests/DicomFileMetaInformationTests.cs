@@ -8,6 +8,19 @@ namespace Dicom
     public class DicomFileMetaInformationTests
     {
         [Fact]
+        public void ImplementationVersionName_GetterWhenAttributeIncluded_ReturnsValue()
+        {
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                        new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3")));
+
+            var exception = Record.Exception(() => { Assert.NotNull(metaInfo.ImplementationVersionName); });
+            Assert.Null(exception);
+        }
+
+        [Fact]
         public void ImplementationVersionName_GetterWhenAttributeMissing_ReturnsNull()
         {
             var metaInfo =
@@ -18,6 +31,19 @@ namespace Dicom
             metaInfo.Remove(DicomTag.ImplementationVersionName);
 
             var exception = Record.Exception(() => { Assert.Null(metaInfo.ImplementationVersionName); });
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void SourceApplicationEntityTitle_GetterWhenAttributeIncluded_ReturnsValue()
+        {
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                        new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3")));
+
+            var exception = Record.Exception(() => { Assert.NotNull(metaInfo.SourceApplicationEntityTitle); });
             Assert.Null(exception);
         }
 
