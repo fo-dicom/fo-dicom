@@ -675,7 +675,7 @@
     <tag group="0018" element="1150" keyword="ExposureTime" vr="IS" vm="1">Exposure Time</tag>
     <tag group="0018" element="1151" keyword="XRayTubeCurrent" vr="IS" vm="1">X-Ray Tube Current</tag>
     <tag group="0018" element="1152" keyword="Exposure" vr="IS" vm="1">Exposure</tag>
-    <tag group="0018" element="1153" keyword="ExposureInuAs" vr="IS" vm="1">Exposure in As</tag>
+    <tag group="0018" element="1153" keyword="ExposureInuAs" vr="IS" vm="1">Exposure in µAs</tag>
     <tag group="0018" element="1154" keyword="AveragePulseWidth" vr="DS" vm="1">Average Pulse Width</tag>
     <tag group="0018" element="1155" keyword="RadiationSetting" vr="CS" vm="1">Radiation Setting</tag>
     <tag group="0018" element="1156" keyword="RectificationType" vr="CS" vm="1">Rectification Type</tag>
@@ -896,8 +896,8 @@
     <tag group="0018" element="7062" keyword="ExposureControlModeDescription" vr="LT" vm="1">Exposure Control Mode Description</tag>
     <tag group="0018" element="7064" keyword="ExposureStatus" vr="CS" vm="1">Exposure Status</tag>
     <tag group="0018" element="7065" keyword="PhototimerSetting" vr="DS" vm="1">Phototimer Setting</tag>
-    <tag group="0018" element="8150" keyword="ExposureTimeInuS" vr="DS" vm="1">Exposure Time in S</tag>
-    <tag group="0018" element="8151" keyword="XRayTubeCurrentInuA" vr="DS" vm="1">X-Ray Tube Current in A</tag>
+    <tag group="0018" element="8150" keyword="ExposureTimeInuS" vr="DS" vm="1">Exposure Time in µS</tag>
+    <tag group="0018" element="8151" keyword="XRayTubeCurrentInuA" vr="DS" vm="1">X-Ray Tube Current in µA</tag>
     <tag group="0018" element="9004" keyword="ContentQualification" vr="CS" vm="1">Content Qualification</tag>
     <tag group="0018" element="9005" keyword="PulseSequenceName" vr="SH" vm="1">Pulse Sequence Name</tag>
     <tag group="0018" element="9006" keyword="MRImagingModifierSequence" vr="SQ" vm="1">MR Imaging Modifier Sequence</tag>
