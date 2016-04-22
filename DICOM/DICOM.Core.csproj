@@ -140,7 +140,6 @@
     <Compile Include="DicomVM.cs" />
     <Compile Include="DicomVR.cs" />
     <Compile Include="DicomException.cs" />
-    <Compile Include="Extensions\DicomUID.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="Imaging\BitDepth.cs" />
     <Compile Include="Imaging\Codec\DicomCodecException.cs" />

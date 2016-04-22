@@ -183,9 +183,6 @@
     <Compile Include="..\..\DICOM\DicomVR.cs">
       <Link>DicomVR.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Extensions\DicomUID.cs">
-      <Link>Extensions\DicomUID.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\IClassifiedManager.cs">
       <Link>IClassifiedManager.cs</Link>
     </Compile>

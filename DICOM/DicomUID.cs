@@ -58,6 +58,8 @@ namespace Dicom
 
     public sealed partial class DicomUID : DicomParseable
     {
+        public static string RootUID { get; set; }
+
         private string _uid;
 
         private string _name;
@@ -104,6 +106,18 @@ namespace Dicom
             {
                 return _retired;
             }
+        }
+
+        public static DicomUID Generate(string name)
+        {
+            if (string.IsNullOrEmpty(RootUID))
+            {
+                RootUID = "1.2.826.0.1.3680043.2.1343.1";
+            }
+
+            var uid = $"{RootUID}.{DateTime.UtcNow}.{DateTime.UtcNow.Ticks}";
+
+            return new DicomUID(uid, name, DicomUidType.SOPInstance);
         }
 
         public static DicomUID Generate()
