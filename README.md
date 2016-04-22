@@ -11,31 +11,33 @@
 ### Features
 * Core functionality in Portable Class Library (PCL)
 * Targets .NET 4.5 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, and Mono
-* DICOM dictionary version 2015c
+* DICOM dictionary version 2016b
 * High-performance, fully asynchronous `async`/`await` API
 * (.NET and UWP only) JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
 * Supports very large datasets with content loading on demand
 * Image rendering
+* JSON support
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package contains all assemblies required to consume *fo-dicom* in a .NET application.
 
-Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and 
+Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and
 [Dicom.Platform](https://www.nuget.org/packages/fo-dicom.Platform/). *Dicom.Core* is the PCL library with core functionality, *Dicom.Legacy* is a PCL library with obsolete asynchronous API methods, and *Dicom.Platform* contains
 the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Universal Windows Platform*, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
+Starting with *fo-dicom* version 2.1.0, there are also separate platform packages for *Windows Desktop*, *Universal Windows Platform*, Xamarin iOS* and *Xamarin Android*.
 
-*fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/), 
+*fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/),
 [log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/). The *MetroLog* connector is a Portable Class Library, whereas the other logging connectors are .NET dedicated libraries.
 
 ### v2.0 Breaking Changes
 Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
 
-    ImageManager.SetImplementation(WPFImageManager.Instance);
+ImageManager.SetImplementation(WPFImageManager.Instance);
 
 By default, logging defaults to the no-op `NullLogerManager`. On .NET, several log managers are available and can be enabled like this:
 
-    LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
-    LogManager.SetImplementation(NLogManager.Instance);        // or ...
+LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
+LogManager.SetImplementation(NLogManager.Instance);        // or ...
 
 On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
 
@@ -113,8 +115,8 @@ There are a number of simple sample applications that use *fo-dicom* available i
 that were previously included in the *Examples* sub-folder of the VS solutions.
 
 ### Contributors
-* [Colby Dillion](https://github.com/rcd)
 * [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
+* [Colby Dillion](https://github.com/rcd)
 * [Ian Yates](http://github.com/IanYates)
 * [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Chris Horn](https://github.com/GMZ)
@@ -131,6 +133,7 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [lste](https://github.com/lste)
 * [Thunderstriker](https://github.com/Thunderstriker)
 * [Ed55](https://github.com/Ed55)
+* [zcr01](https://github.com/zcr01)
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
