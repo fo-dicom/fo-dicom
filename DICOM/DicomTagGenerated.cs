@@ -2093,7 +2093,7 @@ namespace Dicom
         ///<summary>(0018,1152) VR=IS VM=1 Exposure</summary>
         public readonly static DicomTag Exposure = new DicomTag(0x0018, 0x1152);
 
-        ///<summary>(0018,1153) VR=IS VM=1 Exposure in As</summary>
+        ///<summary>(0018,1153) VR=IS VM=1 Exposure in µAs</summary>
         public readonly static DicomTag ExposureInuAs = new DicomTag(0x0018, 0x1153);
 
         ///<summary>(0018,1154) VR=DS VM=1 Average Pulse Width</summary>
@@ -2765,10 +2765,10 @@ namespace Dicom
         ///<summary>(0018,7065) VR=DS VM=1 Phototimer Setting</summary>
         public readonly static DicomTag PhototimerSetting = new DicomTag(0x0018, 0x7065);
 
-        ///<summary>(0018,8150) VR=DS VM=1 Exposure Time in S</summary>
+        ///<summary>(0018,8150) VR=DS VM=1 Exposure Time in µS</summary>
         public readonly static DicomTag ExposureTimeInuS = new DicomTag(0x0018, 0x8150);
 
-        ///<summary>(0018,8151) VR=DS VM=1 X-Ray Tube Current in A</summary>
+        ///<summary>(0018,8151) VR=DS VM=1 X-Ray Tube Current in µA</summary>
         public readonly static DicomTag XRayTubeCurrentInuA = new DicomTag(0x0018, 0x8151);
 
         ///<summary>(0018,9004) VR=CS VM=1 Content Qualification</summary>

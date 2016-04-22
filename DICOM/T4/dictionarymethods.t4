@@ -181,7 +181,7 @@ private static Tuple<string, string, string, string, string, string, bool> GetTa
 	// If no description is provided (list[2] empty) ignore this entire <tr> node
 	var list = item.SelectNodes("./d:td/d:para", manager)
 					.OfType<XmlNode>()
-					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u007F]", string.Empty))
+					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u00FF]", string.Empty))
 					.ToList();
 	if (list.Count < 5 || string.IsNullOrWhiteSpace(list[2])) return null;
 
@@ -255,7 +255,7 @@ private static Tuple<string, string, string, bool> GetUidData(XmlNode item, XmlN
 	// If no UID type is provided (list[2] empty) ignore this entire <tr> node
 	var list = item.SelectNodes("./d:td/d:para", manager)
 					.OfType<XmlNode>()
-					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u007F]", string.Empty))
+					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u00FF]", string.Empty))
 					.ToList();
 	if (list.Count < 4 || string.IsNullOrWhiteSpace(list[2])) return null;
 
@@ -280,7 +280,7 @@ private static Tuple<string, string, string, bool> GetContextGroupNameData(XmlNo
 	// and isolating the corresponding attribute value in the string
 	// (Ideally, this parsing should have been done via the XML API, but for some reason the
 	// "targetptr" attribute value is incorrectly assigned on some (all?) VS 2013 installations.)
-	var olinkXml = Regex.Replace(list[1].InnerXml, @"[^\u0020-\u007F]", string.Empty);
+	var olinkXml = Regex.Replace(list[1].InnerXml, @"[^\u0020-\u00FF]", string.Empty);
 	var startIdx = olinkXml.IndexOf("targetptr=") + 11;
 	var length = olinkXml.IndexOf('"', startIdx) - startIdx;
 	var reference = olinkXml.Substring(startIdx, length);
