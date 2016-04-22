@@ -3,12 +3,13 @@
 
 namespace Dicom.Network
 {
-    using System.Text;
+	using System.Collections.Generic;
+	using System.Text;
 
-    /// <summary>
-    /// Representation of a DICOM association.
-    /// </summary>
-    public sealed class DicomAssociation
+	/// <summary>
+	/// Representation of a DICOM association.
+	/// </summary>
+	public sealed class DicomAssociation
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomAssociation"/> class. 
@@ -18,7 +19,8 @@ namespace Dicom.Network
             PresentationContexts = new DicomPresentationContextCollection();
             MaxAsyncOpsInvoked = 1;
             MaxAsyncOpsPerformed = 1;
-        }
+			ExtendedNegotiations = new List<DicomExtendedNegotiation>();
+		}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomAssociation"/> class.
@@ -32,7 +34,7 @@ namespace Dicom.Network
             CallingAE = callingAe;
             CalledAE = calledAe;
             MaximumPDULength = maxPduLength;
-        }
+		}
 
         /// <summary>
         /// Gets the calling application entity.
@@ -84,14 +86,19 @@ namespace Dicom.Network
         /// </summary>
         public DicomPresentationContextCollection PresentationContexts { get; private set; }
 
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>
-        /// A string that represents the current object.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
-        public override string ToString()
+		/// <summary>
+		/// Gets supported extended negotiations
+		/// </summary>
+		public List<DicomExtendedNegotiation> ExtendedNegotiations { get; private set; }
+
+		/// <summary>
+		/// Returns a string that represents the current object.
+		/// </summary>
+		/// <returns>
+		/// A string that represents the current object.
+		/// </returns>
+		/// <filterpriority>2</filterpriority>
+		public override string ToString()
         {
             var sb = new StringBuilder();
             sb.AppendFormat("Calling AE Title:       {0}\n", CallingAE);
@@ -120,7 +127,17 @@ namespace Dicom.Network
                     sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
                 }
             }
-            sb.Length = sb.Length - 1;
+
+			if (ExtendedNegotiations.Count > 0)
+			{
+				sb.AppendFormat("Extended Negotiations: {0}\n", ExtendedNegotiations.Count);
+				foreach (DicomExtendedNegotiation exNeg in ExtendedNegotiations)
+				{
+					sb.AppendFormat("  Extended Negotiation: {0}\n", exNeg.SopClassUid);
+				}
+			}
+
+			sb.Length = sb.Length - 1;
             return sb.ToString();
         }
     }
