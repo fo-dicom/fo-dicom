@@ -96,6 +96,8 @@
     <Compile Include="Bugs\GH258.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
+    <Compile Include="DicomDateRangeTest.cs" />
+    <Compile Include="DicomDateTimeTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
     <Compile Include="DicomFileMetaInformationTests.cs" />
     <Compile Include="DicomParseableTest.cs" />
