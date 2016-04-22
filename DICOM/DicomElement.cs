@@ -175,34 +175,85 @@ namespace Dicom
 
     public abstract class DicomDateElement : DicomMultiStringElement
     {
+        #region FIELDS
+
+        private static readonly CultureInfo DicomDateElementFormat = CultureInfo.InvariantCulture;
+
+        private static readonly DateTimeStyles DicomDateElementStyle = DateTimeStyles.NoCurrentDateDefault;
+
+        private DateTime[] _values = null;
+
+        #endregion
+
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a <see cref="DicomDateElement"/> instance.
+        /// </summary>
+        /// <param name="tag">DICOM tag.</param>
+        /// <param name="dateFormats">Supported date/time formats.</param>
+        /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params DateTime[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(dateFormats[0])).ToArray())
+            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
         {
             DateFormats = dateFormats;
         }
 
+        /// <summary>
+        /// Initializes a <see cref="DicomDateElement"/> instance.
+        /// </summary>
+        /// <param name="tag">DICOM tag.</param>
+        /// <param name="dateFormats">Supported date/time formats.</param>
+        /// <param name="range">Date/time range.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, DicomDateRange range)
-            : base(tag, DicomEncoding.Default, range.ToString(dateFormats[0]))
+            : base(tag, DicomEncoding.Default, range.ToString(dateFormats[0]).Replace(":", string.Empty))
         {
             DateFormats = dateFormats;
         }
 
+        /// <summary>
+        /// Initializes a <see cref="DicomDateElement"/> instance.
+        /// </summary>
+        /// <param name="tag">DICOM tag.</param>
+        /// <param name="dateFormats">Supported date/time formats.</param>
+        /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params string[] values)
             : base(tag, DicomEncoding.Default, String.Join("\\", values))
         {
             DateFormats = dateFormats;
         }
 
+        /// <summary>
+        /// Initializes a <see cref="DicomDateElement"/> instance.
+        /// </summary>
+        /// <param name="tag">DICOM tag.</param>
+        /// <param name="dateFormats">Supported date/time formats.</param>
+        /// <param name="buffer">Byte buffer from which to read values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, IByteBuffer buffer)
             : base(tag, DicomEncoding.Default, buffer)
         {
             DateFormats = dateFormats;
         }
 
-        protected string[] DateFormats { get; private set; }
+        #endregion
 
-        private DateTime[] _values = null;
+        #region PROPERTIES
 
+        /// <summary>
+        /// Supported date formats.
+        /// </summary>
+        protected string[] DateFormats { get; }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Get element value(s).
+        /// </summary>
+        /// <typeparam name="T">Return value type.</typeparam>
+        /// <param name="item">Item index, if applicable.</param>
+        /// <returns>Value(s) of type <typeparamref name="T"/>, at position <paramref name="item"/> if applicable.</returns>
         public override T Get<T>(int item = -1)
         {
             // no need to parse DateTime values if returning string(s)
@@ -218,22 +269,22 @@ namespace Dicom
                         range.Minimum = DateTime.ParseExact(
                             vals[0],
                             DateFormats,
-                            CultureInfo.CurrentCulture,
-                            DateTimeStyles.NoCurrentDateDefault);
+                            DicomDateElementFormat,
+                            DicomDateElementStyle);
                     if (!String.IsNullOrEmpty(vals[1]))
                         range.Maximum = DateTime.ParseExact(
                             vals[1],
                             DateFormats,
-                            CultureInfo.CurrentCulture,
-                            DateTimeStyles.NoCurrentDateDefault);
+                            DicomDateElementFormat,
+                            DicomDateElementStyle);
                 }
                 else if (vals.Length == 1)
                 {
                     range.Minimum = DateTime.ParseExact(
                         vals[0],
                         DateFormats,
-                        CultureInfo.CurrentCulture,
-                        DateTimeStyles.NoCurrentDateDefault);
+                        DicomDateElementFormat,
+                        DicomDateElementStyle);
                     range.Maximum = range.Minimum.AddDays(1).AddMilliseconds(-1);
                 }
                 return (T)(object)range;
@@ -250,8 +301,8 @@ namespace Dicom
                         _values[i] = DateTime.ParseExact(
                             vals[i],
                             DateFormats,
-                            CultureInfo.CurrentCulture,
-                            DateTimeStyles.NoCurrentDateDefault);
+                            DicomDateElementFormat,
+                            DicomDateElementStyle);
                 }
             }
 
@@ -271,6 +322,8 @@ namespace Dicom
 
             return base.Get<T>(item);
         }
+
+        #endregion
     }
 
     public abstract class DicomValueElement<Tv> : DicomElement
