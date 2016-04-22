@@ -508,6 +508,11 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
+            foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+            {
+                exNeg.Write(pdu);
+            }
+
             pdu.WriteLength16();
 
             return pdu;
@@ -613,6 +618,10 @@ namespace Dicom.Network
                                     raw.ReadByte();		// SCU role
                                     raw.ReadByte();		// SCP role
                                     */
+                        }
+                        else if (ut == 0x56)
+                        {
+                            _assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
                         }
                         else
                         {
@@ -729,6 +738,11 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
+            foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+            {
+                exNeg.Write(pdu);
+            }
+
             pdu.WriteLength16();
 
             return pdu;
@@ -823,6 +837,10 @@ namespace Dicom.Network
                         else if (ut == 0x55)
                         {
                             _assoc.RemoteImplementationVersion = raw.ReadString("Implementation Version", ul);
+                        }
+                        else if (ut == 0x56)
+                        {
+                            _assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
                         }
                         else
                         {

@@ -3,6 +3,7 @@
 
 namespace Dicom.Network
 {
+    using System.Collections.Generic;
     using System.Text;
 
     /// <summary>
@@ -18,6 +19,7 @@ namespace Dicom.Network
             PresentationContexts = new DicomPresentationContextCollection();
             MaxAsyncOpsInvoked = 1;
             MaxAsyncOpsPerformed = 1;
+            ExtendedNegotiations = new List<DicomExtendedNegotiation>();
         }
 
         /// <summary>
@@ -85,6 +87,11 @@ namespace Dicom.Network
         public DicomPresentationContextCollection PresentationContexts { get; private set; }
 
         /// <summary>
+        /// Gets supported extended negotiations
+        /// </summary>
+        public List<DicomExtendedNegotiation> ExtendedNegotiations { get; private set; }
+
+        /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>
@@ -120,6 +127,16 @@ namespace Dicom.Network
                     sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
                 }
             }
+
+            if (ExtendedNegotiations.Count > 0)
+            {
+                sb.AppendFormat("Extended Negotiations: {0}\n", ExtendedNegotiations.Count);
+                foreach (DicomExtendedNegotiation exNeg in ExtendedNegotiations)
+                {
+                    sb.AppendFormat("  Extended Negotiation: {0}\n", exNeg.SopClassUid);
+                }
+            }
+
             sb.Length = sb.Length - 1;
             return sb.ToString();
         }
