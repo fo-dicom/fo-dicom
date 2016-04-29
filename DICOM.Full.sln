@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}"
 EndProject
@@ -443,6 +443,9 @@ Global
 		{322DD2FF-C0B7-4CBF-BE95-F0032FD94E02} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{F3120AC1-B538-4A30-B4A8-835376737EF5} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{849A140B-EF3E-4367-90BC-9F9383DC1481} = {A3F3827E-70AB-4683-BE7E-6B90931FE835}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True

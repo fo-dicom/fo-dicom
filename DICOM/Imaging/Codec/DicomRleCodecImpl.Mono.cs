@@ -1,14 +1,16 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.IO;
 
 using Dicom.IO;
-using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging.Codec
 {
+    using System;
+
+    using Dicom.IO.Buffer;
+
     /// <summary>
     /// Implementation of the RLE codec for Mono based platforms.
     /// </summary>
@@ -21,7 +23,55 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-            throw new NotImplementedException();
+            var pixelCount = oldPixelData.Width * oldPixelData.Height;
+            var numberOfSegments = oldPixelData.BytesAllocated * oldPixelData.SamplesPerPixel;
+
+            for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
+            {
+                var frameData = oldPixelData.GetFrame(frame);
+
+                var encoder = new RLEEncoder();
+
+                for (var s = 0; s < numberOfSegments; s++)
+                {
+                    encoder.NextSegment();
+
+                    var sample = s / oldPixelData.BytesAllocated;
+                    var sabyte = s % oldPixelData.BytesAllocated;
+
+                    int pos;
+                    int offset;
+
+                    if (newPixelData.PlanarConfiguration == PlanarConfiguration.Interleaved)
+                    {
+                        pos = sample * oldPixelData.BytesAllocated;
+                        offset = numberOfSegments;
+                    }
+                    else
+                    {
+                        pos = sample * oldPixelData.BytesAllocated * pixelCount;
+                        offset = oldPixelData.BytesAllocated;
+                    }
+
+                    pos += oldPixelData.BytesAllocated - sabyte - 1;
+
+                    for (var p = 0; p < pixelCount; p++)
+                    {
+                        if (pos >= frameData.Size)
+                        {
+                            throw new InvalidOperationException("Read position is past end of frame buffer");
+                        }
+                        encoder.Encode(frameData.Data[pos]);
+                        pos += offset;
+                    }
+                    encoder.Flush();
+                }
+
+                encoder.MakeEvenLength();
+
+                var data = encoder.GetBuffer();
+                newPixelData.AddFrame(data);
+            }
         }
 
         public override void Decode(
@@ -82,6 +132,219 @@ namespace Dicom.Imaging.Codec
 
         #region INNER TYPES
 
+        private class RLEEncoder
+        {
+            #region FIELDS
+
+            private int _count;
+
+            private readonly int[] _offsets;
+
+            private readonly Stream _stream;
+
+            private readonly IByteTarget _writer;
+
+            private readonly byte[] _buffer;
+
+            private int _prevByte;
+
+            private int _repeatCount;
+
+            private int _bufferPos;
+
+            #endregion
+
+            #region CONSTRUCTORS
+
+            internal RLEEncoder()
+            {
+                this.Length = 0;
+                _count = 0;
+                _offsets = new int[15];
+                _stream = new MemoryStream();
+                _writer = new StreamByteTarget(_stream) { Endian = Endian.Little };
+                _buffer = new byte[132];
+
+                // Write header
+                AppendUInt32((uint)_count);
+                for (var i = 0; i < 15; i++) AppendUInt32((uint)_offsets[i]);
+
+                _prevByte = -1;
+                _repeatCount = 0;
+                _bufferPos = 0;
+            }
+
+            #endregion
+
+            #region PROPERTIES
+
+            internal long Length { get; private set; }
+
+            #endregion
+
+            #region METHODS
+
+            internal IByteBuffer GetBuffer()
+            {
+                Flush();
+
+                // Re-write header
+                _stream.Seek(0, SeekOrigin.Begin);
+                _writer.Write((uint)_count);
+                for (var i = 0; i < 15; i++)
+                {
+                    this._writer.Write((uint)_offsets[i]);
+                }
+
+                return new StreamByteBuffer(_stream, 0, (uint)Length);
+            }
+
+            internal void NextSegment()
+            {
+                Flush();
+                if ((this.Length & 1) == 1)
+                {
+                    this.AppendByte(0x00);
+                }
+                _offsets[_count++] = (int)this.Length;
+            }
+
+            internal void Encode(byte b)
+            {
+                if (b == _prevByte)
+                {
+                    _repeatCount++;
+
+                    if (_repeatCount > 2 && _bufferPos > 0)
+                    {
+                        // We're starting a run, flush out the buffer
+                        while (_bufferPos > 0)
+                        {
+                            var count = Math.Min(128, _bufferPos);
+                            AppendByte((byte)(count - 1));
+                            MoveBuffer(count);
+                        }
+                    }
+                    else if (_repeatCount > 128)
+                    {
+                        var count = Math.Min(_repeatCount, 128);
+                        AppendByte((byte)(257 - count));
+                        AppendByte((byte)_prevByte);
+                        _repeatCount -= count;
+                    }
+                }
+                else
+                {
+                    switch (_repeatCount)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            {
+                                _buffer[_bufferPos++] = (byte)_prevByte;
+                                break;
+                            }
+                        case 2:
+                            {
+                                _buffer[_bufferPos++] = (byte)_prevByte;
+                                _buffer[_bufferPos++] = (byte)_prevByte;
+                                break;
+                            }
+                        default:
+                            {
+                                while (_repeatCount > 0)
+                                {
+                                    var count = Math.Min(_repeatCount, 128);
+                                    AppendByte((byte)(257 - count));
+                                    AppendByte((byte)_prevByte);
+                                    _repeatCount -= count;
+                                }
+                                break;
+                            }
+                    }
+
+                    while (_bufferPos > 128)
+                    {
+                        var count = Math.Min(128, _bufferPos);
+                        AppendByte((byte)(count - 1));
+                        MoveBuffer(count);
+                    }
+
+                    _prevByte = b;
+                    _repeatCount = 1;
+                }
+            }
+
+            internal void MakeEvenLength()
+            {
+                if ((this.Length & 1) == 1) AppendByte(0x00);
+            }
+
+            internal void Flush()
+            {
+                if (_repeatCount < 2)
+                {
+                    while (_repeatCount > 0)
+                    {
+                        _buffer[_bufferPos++] = (byte)_prevByte;
+                        _repeatCount--;
+                    }
+                }
+
+                while (_bufferPos > 0)
+                {
+                    var count = Math.Min(128, _bufferPos);
+                    AppendByte((byte)(count - 1));
+                    MoveBuffer(count);
+                }
+
+                if (_repeatCount >= 2)
+                {
+                    while (_repeatCount > 0)
+                    {
+                        var count = Math.Min(_repeatCount, 128);
+                        AppendByte((byte)(257 - count));
+                        AppendByte((byte)_prevByte);
+                        _repeatCount -= count;
+                    }
+                }
+
+                _prevByte = -1;
+                _repeatCount = 0;
+                _bufferPos = 0;
+            }
+
+            private void MoveBuffer(int count)
+            {
+                AppendBytes(_buffer, 0, count);
+                for (int i = count, n = 0; i < _bufferPos; i++, n++)
+                {
+                    _buffer[n] = _buffer[i];
+                }
+                _bufferPos = _bufferPos - count;
+            }
+
+            private void AppendBytes(byte[] bytes, int offset, int count)
+            {
+                _writer.Write(bytes, (uint)offset, (uint)count);
+                this.Length += count;
+            }
+
+            private void AppendByte(byte value)
+            {
+                _writer.Write(value);
+                ++this.Length;
+            }
+
+            private void AppendUInt32(uint value)
+            {
+                _writer.Write(value);
+                this.Length += 4;
+            }
+
+            #endregion
+        }
+
         private class RLEDecoder
         {
             #region FIELDS
@@ -96,15 +359,14 @@ namespace Dicom.Imaging.Codec
 
             internal RLEDecoder(IByteBuffer data)
             {
-                var source = new ByteBufferByteSource(data);
-                //source.Mark();
+                var source = new ByteBufferByteSource(data) { Endian = Endian.Little };
                 this.NumberOfSegments = source.GetInt32();
+
                 this.offsets = new int[15];
                 for (var i = 0; i < 15; ++i)
                 {
                     this.offsets[i] = source.GetInt32();
                 }
-                //source.Rewind();
 
                 this.data = data.Data;
             }
@@ -126,13 +388,13 @@ namespace Dicom.Imaging.Codec
                     throw new ArgumentOutOfRangeException("Segment number out of range");
                 }
 
-                int offset = this.GetSegmentOffset(segment);
-                int length = this.GetSegmentLength(segment);
+                var offset = this.GetSegmentOffset(segment);
+                var length = this.GetSegmentLength(segment);
 
-                this.Decode(buffer, start, sampleOffset, this.data, offset, length);
+                Decode(buffer, start, sampleOffset, this.data, offset, length);
             }
 
-            private void Decode(IByteBuffer buffer, int start, int sampleOffset, byte[] rleData, int offset, int count)
+            private static void Decode(IByteBuffer buffer, int start, int sampleOffset, byte[] rleData, int offset, int count)
             {
                 var pos = start;
                 var end = offset + count;
@@ -140,7 +402,7 @@ namespace Dicom.Imaging.Codec
 
                 for (var i = offset; i < end && pos < bufferLength;)
                 {
-                    char control = (char)rleData[i++];
+                    var control = (sbyte)rleData[i++];
 
                     if (control >= 0)
                     {
@@ -157,7 +419,7 @@ namespace Dicom.Imaging.Codec
 
                         if (sampleOffset == 1)
                         {
-                            for (int j = 0; j < length; ++j, ++i, ++pos)
+                            for (var j = 0; j < length; ++j, ++i, ++pos)
                             {
                                 buffer.Data[pos] = rleData[i];
                             }
