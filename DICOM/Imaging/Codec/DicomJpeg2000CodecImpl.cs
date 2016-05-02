@@ -1,14 +1,16 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
-using Dicom.Imaging;
-using Dicom.Imaging.Codec;
-using Dicom.IO.Buffer;
-
 namespace Dicom
 {
+    using System;
+
+    using CSJ2K;
+    using CSJ2K.j2k.util;
+
+    using Dicom.Imaging;
+    using Dicom.Imaging.Codec;
+    using Dicom.IO.Buffer;
 
     internal static class DicomJpeg2000CodecImpl
     {
@@ -262,12 +264,21 @@ namespace Dicom
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
 
             if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct) newPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
+            {
+                newPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+            }
 
             if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422) newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
+                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422)
+            {
+                newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
+            }
 
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull) newPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
+            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull)
+            {
+                newPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
+            }
 
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
@@ -282,56 +293,29 @@ namespace Dicom
 
                 if (image == null) throw new InvalidOperationException("Error in JPEG 2000 code stream!");
 
-                for (int c = 0; c < image.numcomps; c++)
+                for (var c = 0; c < image.NumberOfComponents; c++)
                 {
-                    var comp = image.comps[c];
+                    var comp = image.GetComponent(c);
 
                     var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
-                    var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : image.numcomps;
+                    var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
+                                     ? 1
+                                     : image.NumberOfComponents;
 
                     if (newPixelData.BytesAllocated == 1)
                     {
-                        if (comp.sgnd)
+                        for (var p = 0; p < pixelCount; p++)
                         {
-                            var sign = (byte)(1 << newPixelData.HighBit);
-                            var mask = (byte)(0xFF ^ sign);
-                            for (var p = 0; p < pixelCount; p++)
-                            {
-                                var i = comp.data[p];
-                                destArray[pos] = i < 0 ? (byte)((i & mask) | sign) : (byte)(i & mask);
-                                pos += offset;
-                            }
-                        }
-                        else
-                        {
-                            for (int p = 0; p < pixelCount; p++)
-                            {
-                                destArray[pos] = (byte)comp.data[p];
-                                pos += offset;
-                            }
+                            destArray[pos] = comp[p];
+                            pos += offset;
                         }
                     }
                     else if (newPixelData.BytesAllocated == 2)
                     {
-                        var sign = (ushort)(1 << newPixelData.HighBit);
-                        var mask = (ushort)(0xFFFF ^ sign);
-                        var destData16 = (ushort[])destArray;
-                        if (comp.sgnd)
+                        for (var p = 0; p < pixelCount; p++)
                         {
-                            for (var p = 0; p < pixelCount; p++)
-                            {
-                                var i = comp.data[p];
-                                destData16[pos] = i < 0 ? (ushort)((i & mask) | sign) : (ushort)(i & mask);
-                                pos += offset;
-                            }
-                        }
-                        else
-                        {
-                            for (int p = 0; p < pixelCount; p++)
-                            {
-                                destData16[pos] = (ushort)comp.data[p];
-                                pos += offset;
-                            }
+                            destArray[2 * pos] = comp[p];
+                            pos += offset;
                         }
                     }
                     else
@@ -347,7 +331,7 @@ namespace Dicom
 
         private static ParameterList ToParameterList(DicomJpeg2000Params parameters)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }
