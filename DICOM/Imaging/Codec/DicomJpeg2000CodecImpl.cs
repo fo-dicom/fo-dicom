@@ -329,9 +329,23 @@ namespace Dicom
             }
         }
 
-        private static ParameterList ToParameterList(DicomJpeg2000Params parameters)
+        private static ParameterList ToParameterList(DicomJpeg2000Params parameters, bool decoder = true)
         {
-            return null;
+            // These JPEG2000 codec parameters are not translated: EncodeSignedPixelValuesAsUnsigned, RateLevels, 
+            // UpdatePhotometricInterpretation
+            var list =
+                new ParameterList(
+                    decoder
+                        ? J2kImage.GetDefaultDecoderParameterList(null)
+                        : J2kImage.GetDefaultEncoderParameterList(null))
+                    {
+                        ["Mct"] = parameters.AllowMCT ? "on" : "off",
+                        ["lossless"] = parameters.Irreversible ? "off" : "on",
+                        ["verbose"] = parameters.IsVerbose ? "on" : "off",
+                        ["rate"] = parameters.Rate.ToString()
+                    };
+
+            return list;
         }
     }
 }
