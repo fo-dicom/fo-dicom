@@ -42,37 +42,13 @@ namespace Dicom
 
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
 
-            /*            for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
+            for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
                 var frameData = oldPixelData.GetFrame(frame);
 
-                opj_image_cmptparm_t cmptparm[3];
-                opj_cparameters_t eparams; // compression parameters
-                opj_event_mgr_t event_mgr; // event manager
-                opj_cinfo_t* cinfo = NULL; // handle to a compressor
-                opj_image_t* image = NULL;
-                opj_cio_t* cio = NULL;
+                if (newPixelData.IsLossy && jparams.Irreversible) eparams.irreversible = 1;
 
-                memset(&event_mgr, 0, sizeof(opj_event_mgr_t));
-                event_mgr.error_handler = opj_error_callback;
-                if (jparams.IsVerbose)
-                {
-                    event_mgr.warning_handler = opj_warning_callback;
-                    event_mgr.info_handler = opj_info_callback;
-                }
-
-                cinfo = opj_create_compress(CODEC_J2K);
-
-                opj_set_event_mgr((opj_common_ptr)cinfo, &event_mgr, NULL);
-
-                opj_set_default_encoder_parameters(&eparams);
-                eparams.cp_disto_alloc = 1;
-
-                if (newPixelData.TransferSyntaxIsLossy && jparams.Irreversible) eparams.irreversible = 1;
-
-                unsigned
-                int r = 0;
-                for (; r < jparams.RateLevels.Length; r++)
+                for (uint r = 0; r < jparams.RateLevels.Length; r++)
                 {
                     if (jparams.RateLevels[r] > jparams.Rate)
                     {
@@ -84,7 +60,7 @@ namespace Dicom
                 eparams.tcp_numlayers++;
                 eparams.tcp_rates[r] = (float)jparams.Rate;
 
-                if (!newPixelData.TransferSyntaxIsLossy && jparams.Rate > 0) eparams.tcp_rates[eparams.tcp_numlayers++] = 0;
+                if (!newPixelData.IsLossy && jparams.Rate > 0) eparams.tcp_rates[eparams.tcp_numlayers++] = 0;
 
                 if (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.Rgb && jparams.AllowMCT) eparams.tcp_mct = 1;
 
@@ -100,104 +76,76 @@ namespace Dicom
                     cmptparm[i].w = oldPixelData.Width;
                 }
 
-                try
+                OPJ_COLOR_SPACE color_space = getOpenJpegColorSpace(oldPixelData.PhotometricInterpretation);
+                image = opj_image_create(oldPixelData.SamplesPerPixel, &cmptparm[0], color_space);
+
+                image.x0 = eparams.image_offset_x0;
+                image.y0 = eparams.image_offset_y0;
+                image.x1 = image.x0 + ((oldPixelData.Width - 1) * eparams.subsampling_dx) + 1;
+                image.y1 = image.y0 + ((oldPixelData.Height - 1) * eparams.subsampling_dy) + 1;
+
+                for (int c = 0; c < image.numcomps; c++)
                 {
-                    OPJ_COLOR_SPACE color_space = getOpenJpegColorSpace(oldPixelData.PhotometricInterpretation);
-                    image = opj_image_create(oldPixelData.SamplesPerPixel, &cmptparm[0], color_space);
+                    opj_image_comp_t* comp = &image.comps[c];
 
-                    image.x0 = eparams.image_offset_x0;
-                    image.y0 = eparams.image_offset_y0;
-                    image.x1 = image.x0 + ((oldPixelData.Width - 1) * eparams.subsampling_dx) + 1;
-                    image.y1 = image.y0 + ((oldPixelData.Height - 1) * eparams.subsampling_dy) + 1;
+                    int pos = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
+                    var offset =
+                        oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : image.numcomps;
 
-                    for (int c = 0; c < image.numcomps; c++)
+                    if (oldPixelData.BytesAllocated == 1)
                     {
-                        opj_image_comp_t* comp = &image.comps[c];
-
-                        int pos = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar
-                                      ? (c * pixelCount)
-                                      : c;
-                        const int offset =
-                            oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : image.numcomps;
-
-                        if (oldPixelData.BytesAllocated == 1)
+                        if (comp.sgnd)
                         {
-                            if (comp.sgnd)
+                            if (oldPixelData.BitsStored < 8)
                             {
-                                if (oldPixelData.BitsStored < 8)
+                                var sign = (byte)(1 << oldPixelData.HighBit);
+                                var mask = (byte)(0xff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
+                                for (var p = 0; p < pixelCount; p++)
                                 {
-                                    const unsigned 
-                                    char sign = 1 << oldPixelData.HighBit;
-                                    const unsigned 
-                                    char mask = (0xff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
-                                    for (int p = 0; p < pixelCount; p++)
-                                    {
-                                        const unsigned 
-                                        char pixel = frameData[pos];
-                                        if (pixel & sign) comp.data[p] = -(((-pixel) & mask) + 1);
-                                        else comp.data[p] = pixel;
-                                        pos += offset;
-                                    }
-                                }
-                                else
-                                {
-                                    char* frameData8 = (char*)(void*)frameData.begin();
-                                    for (int p = 0; p < pixelCount; p++)
-                                    {
-                                        comp.data[p] = frameData8[pos];
-                                        pos += offset;
-                                    }
+                                    var pixel = frameData[pos];
+                                    comp.data[p] = pixel & sign ? - (((-pixel) & mask) + 1) : pixel;
+                                    pos += offset;
                                 }
                             }
                             else
                             {
-                                for (int p = 0; p < pixelCount; p++)
+                                sbyte[] frameData8 = frameData.begin();
+                                for (var p = 0; p < pixelCount; p++)
                                 {
-                                    comp.data[p] = frameData[pos];
+                                    comp.data[p] = frameData8[pos];
                                     pos += offset;
                                 }
                             }
                         }
-                        else if (oldPixelData.BytesAllocated == 2)
+                        else
                         {
-                            if (comp.sgnd)
+                            for (var p = 0; p < pixelCount; p++)
                             {
-                                if (oldPixelData.BitsStored < 16)
+                                comp.data[p] = frameData[pos];
+                                pos += offset;
+                            }
+                        }
+                    }
+                    else if (oldPixelData.BytesAllocated == 2)
+                    {
+                        if (comp.sgnd)
+                        {
+                            if (oldPixelData.BitsStored < 16)
+                            {
+                                ushort[] frameData16 = frameData.begin();
+                                var sign = (ushort)(1 << oldPixelData.HighBit);
+                                var mask = (ushort)(0xffff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
+                                for (var p = 0; p < pixelCount; p++)
                                 {
-                                    unsigned
-                                    short* frameData16 = (unsigned
-                                    short*  )
-                                    (void*)frameData.begin();
-                                    const unsigned 
-                                    short sign = 1 << oldPixelData.HighBit;
-                                    const unsigned 
-                                    short mask = (0xffff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
-                                    for (int p = 0; p < pixelCount; p++)
-                                    {
-                                        const unsigned 
-                                        short pixel = frameData16[pos];
-                                        if (pixel & sign) comp.data[p] = -(((-pixel) & mask) + 1);
-                                        else comp.data[p] = pixel;
-                                        pos += offset;
-                                    }
-                                }
-                                else
-                                {
-                                    short* frameData16 = (short*)(void*)frameData.begin();
-                                    for (int p = 0; p < pixelCount; p++)
-                                    {
-                                        comp.data[p] = frameData16[pos];
-                                        pos += offset;
-                                    }
+                                    var pixel = frameData16[pos];
+                                    comp.data[p] = pixel & sign ? - (((-pixel) & mask) + 1) : pixel;
+                                    pos += offset;
                                 }
                             }
                             else
                             {
-                                unsigned
-                                short* frameData16 = (unsigned
-                                short*  )
-                                (void*)frameData.begin();
-                                for (int p = 0; p < pixelCount; p++)
+                                short[] frameData16 = frameData.begin();
+                                for (var p = 0; p < pixelCount; p++)
                                 {
                                     comp.data[p] = frameData16[pos];
                                     pos += offset;
@@ -206,41 +154,31 @@ namespace Dicom
                         }
                         else
                         {
-                            throw new InvalidOperationException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
+                            ushort[] frameData16 = frameData.begin();
+                            for (var p = 0; p < pixelCount; p++)
+                            {
+                                comp.data[p] = frameData16[pos];
+                                pos += offset;
+                            }
                         }
                     }
-
-                    opj_setup_encoder(cinfo, &eparams, image);
-
-                    cio = opj_cio_open((opj_common_ptr)cinfo, NULL, 0);
-
-                    if (opj_encode(cinfo, cio, image, eparams.index))
+                    else
                     {
-                        int clen = cio_tell(cio);
-                        Array<unsigned 
-                        char >^
-                        cbuf =ref
-                        new Array<unsigned 
-                        char >
-                        (clen + ((clen & 1) == 1 ? 1 : 0));
-                        Arrays.Copy(cio.buffer, cbuf, clen);
-
-                        newPixelData.AddFrame(cbuf);
+                        throw new InvalidOperationException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
                     }
-                    else throw ref
-                    new InvalidOperationException("Unable to JPEG 2000 encode image");
-
-                    if (cio != nullptr) opj_cio_close(cio);
-                    if (image != nullptr) opj_image_destroy(image);
-                    if (cinfo != nullptr) opj_destroy_compress(cinfo);
                 }
-                catch (...)
-                {
-                    if (cio != nullptr) opj_cio_close(cio);
-                    if (image != nullptr) opj_image_destroy(image);
-                    if (cinfo != nullptr) opj_destroy_compress(cinfo);
 
-                    throw;
+                if (opj_encode(cinfo, cio, image, eparams.index))
+                {
+                    int clen = cio_tell(cio);
+                    var cbuf = new byte[clen + ((clen & 1) == 1 ? 1 : 0)];
+                    Array.Copy(cio.buffer, cbuf, clen);
+
+                    newPixelData.AddFrame(cbuf);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unable to JPEG 2000 encode image");
                 }
             }
 
@@ -250,10 +188,10 @@ namespace Dicom
 
                 if (jparams.AllowMCT && jparams.UpdatePhotometricInterpretation)
                 {
-                    if (newPixelData.TransferSyntaxIsLossy && jparams.Irreversible) newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrIct;
+                    if (newPixelData.IsLossy && jparams.Irreversible) newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrIct;
                     else newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrRct;
                 }
-            }*/
+            }
         }
 
         internal static void Decode(
