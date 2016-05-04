@@ -38,14 +38,14 @@ namespace Dicom
 
             var jparams = parameters ?? new DicomJpeg2000Params();
 
+            jparams.Irreversible = newPixelData.IsLossy;
+            jparams.AllowMCT = oldPixelData.PhotometricInterpretation == PhotometricInterpretation.Rgb;
+
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
 
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
                 var frameData = oldPixelData.GetFrame(frame);
-
-                if (newPixelData.IsLossy) jparams.Irreversible = true;
-                if (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.Rgb) jparams.AllowMCT = true;
 
                 var nc = oldPixelData.SamplesPerPixel;
                 var sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed
@@ -275,7 +275,11 @@ namespace Dicom
             list["Mct"] = param.AllowMCT ? "on" : "off";
             list["lossless"] = param.Irreversible ? "off" : "on";
             list["verbose"] = param.IsVerbose ? "on" : "off";
-            list["rate"] = param.Rate.ToString();
+
+            if (param.Irreversible)
+            {
+                list["rate"] = param.Rate.ToString();
+            }
 
             return list;
         }
