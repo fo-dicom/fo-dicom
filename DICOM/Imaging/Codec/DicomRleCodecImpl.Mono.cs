@@ -27,48 +27,50 @@ namespace Dicom.Imaging.Codec
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
                 var frameData = oldPixelData.GetFrame(frame);
+                var frameArray = frameData.Data;
 
-                var encoder = new RLEEncoder();
-
-                for (var s = 0; s < numberOfSegments; s++)
+                using (var encoder = new RLEEncoder())
                 {
-                    encoder.NextSegment();
-
-                    var sample = s / oldPixelData.BytesAllocated;
-                    var sabyte = s % oldPixelData.BytesAllocated;
-
-                    int pos;
-                    int offset;
-
-                    if (newPixelData.PlanarConfiguration == PlanarConfiguration.Interleaved)
+                    for (var s = 0; s < numberOfSegments; s++)
                     {
-                        pos = sample * oldPixelData.BytesAllocated;
-                        offset = numberOfSegments;
-                    }
-                    else
-                    {
-                        pos = sample * oldPixelData.BytesAllocated * pixelCount;
-                        offset = oldPixelData.BytesAllocated;
-                    }
+                        encoder.NextSegment();
 
-                    pos += oldPixelData.BytesAllocated - sabyte - 1;
+                        var sample = s / oldPixelData.BytesAllocated;
+                        var sabyte = s % oldPixelData.BytesAllocated;
 
-                    for (var p = 0; p < pixelCount; p++)
-                    {
-                        if (pos >= frameData.Size)
+                        int pos;
+                        int offset;
+
+                        if (newPixelData.PlanarConfiguration == PlanarConfiguration.Interleaved)
                         {
-                            throw new InvalidOperationException("Read position is past end of frame buffer");
+                            pos = sample * oldPixelData.BytesAllocated;
+                            offset = numberOfSegments;
                         }
-                        encoder.Encode(frameData.Data[pos]);
-                        pos += offset;
+                        else
+                        {
+                            pos = sample * oldPixelData.BytesAllocated * pixelCount;
+                            offset = oldPixelData.BytesAllocated;
+                        }
+
+                        pos += oldPixelData.BytesAllocated - sabyte - 1;
+
+                        for (var p = 0; p < pixelCount; p++)
+                        {
+                            if (pos >= frameArray.Length)
+                            {
+                                throw new InvalidOperationException("Read position is past end of frame buffer");
+                            }
+                            encoder.Encode(frameArray[pos]);
+                            pos += offset;
+                        }
+                        encoder.Flush();
                     }
-                    encoder.Flush();
+
+                    encoder.MakeEvenLength();
+
+                    var data = encoder.GetBuffer();
+                    newPixelData.AddFrame(data);
                 }
-
-                encoder.MakeEvenLength();
-
-                var data = encoder.GetBuffer();
-                newPixelData.AddFrame(data);
             }
         }
 
@@ -130,17 +132,19 @@ namespace Dicom.Imaging.Codec
 
         #region INNER TYPES
 
-        private class RLEEncoder
+        private sealed class RLEEncoder : IDisposable
         {
             #region FIELDS
+
+            private bool disposed = false;
 
             private int _count;
 
             private readonly int[] _offsets;
 
-            private readonly Stream _stream;
+            private readonly MemoryStream _stream;
 
-            private readonly IByteTarget _writer;
+            private readonly BinaryWriter _writer;
 
             private readonly byte[] _buffer;
 
@@ -160,7 +164,7 @@ namespace Dicom.Imaging.Codec
                 _count = 0;
                 _offsets = new int[15];
                 _stream = new MemoryStream();
-                _writer = new StreamByteTarget(_stream) { Endian = Endian.Little };
+                _writer = EndianBinaryWriter.Create(_stream, Endian.Little);
                 _buffer = new byte[132];
 
                 // Write header
@@ -182,6 +186,16 @@ namespace Dicom.Imaging.Codec
 
             #region METHODS
 
+            public void Dispose()
+            {
+                if (this.disposed) return;
+
+                this._writer.Dispose();
+                this._stream.Dispose();
+
+                this.disposed = true;
+            }
+
             internal IByteBuffer GetBuffer()
             {
                 Flush();
@@ -194,7 +208,7 @@ namespace Dicom.Imaging.Codec
                     this._writer.Write((uint)_offsets[i]);
                 }
 
-                return new StreamByteBuffer(_stream, 0, (uint)Length);
+                return new MemoryByteBuffer(this._stream.ToArray());
             }
 
             internal void NextSegment()
@@ -324,7 +338,7 @@ namespace Dicom.Imaging.Codec
 
             private void AppendBytes(byte[] bytes, int offset, int count)
             {
-                _writer.Write(bytes, (uint)offset, (uint)count);
+                _writer.Write(bytes, offset, count);
                 this.Length += count;
             }
 
