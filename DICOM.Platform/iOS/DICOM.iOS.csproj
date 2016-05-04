@@ -43,6 +43,15 @@
     <Compile Include="..\..\DICOM\DatabaseQueryTransformRule.cs">
       <Link>DatabaseQueryTransformRule.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000CodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpeg2000CodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomRleCodecImpl.Mono.cs">
       <Link>Imaging\Codec\DicomRleCodecImpl.Mono.cs</Link>
     </Compile>
@@ -94,11 +103,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CSJ2K.Core, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\Xamarin.iOS10\CSJ2K.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CSJ2K.Platform, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\Xamarin.iOS10\CSJ2K.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
