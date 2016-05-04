@@ -1,6 +1,12 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+
+using CSJ2K.j2k.image.input;
+
+using Dicom.IO;
+
 namespace Dicom
 {
     using System;
@@ -12,20 +18,10 @@ namespace Dicom
     using Dicom.Imaging.Codec;
     using Dicom.IO.Buffer;
 
+    using JpegColorSpace = CSJ2K.Color.ColorSpace.CSEnum;
+
     internal static class DicomJpeg2000CodecImpl
     {
-        /*        private OPJ_COLOR_SPACE getOpenJpegColorSpace(PhotometricInterpretation photometricInterpretation)
-        {
-            if (photometricInterpretation == PhotometricInterpretation.Rgb) return CLRSPC_SRGB;
-            else if (photometricInterpretation == PhotometricInterpretation.Monochrome1
-                     || photometricInterpretation == PhotometricInterpretation.Monochrome2) return CLRSPC_GRAY;
-            else if (photometricInterpretation == PhotometricInterpretation.PaletteColor) return CLRSPC_GRAY;
-            else if (photometricInterpretation == PhotometricInterpretation.YbrFull
-                     || photometricInterpretation == PhotometricInterpretation.YbrFull422
-                     || photometricInterpretation == PhotometricInterpretation.YbrPartial422) return CLRSPC_SYCC;
-            else return CLRSPC_UNKNOWN;
-        }*/
-
         internal static void Encode(
             DicomPixelData oldPixelData,
             DicomPixelData newPixelData,
@@ -34,9 +30,11 @@ namespace Dicom
             if ((oldPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422)
                 || (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422)
                 || (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial420))
+            {
                 throw new InvalidOperationException(
                     "Photometric Interpretation '" + oldPixelData.PhotometricInterpretation
                     + "' not supported by JPEG 2000 encoder");
+            }
 
             var jparams = parameters ?? new DicomJpeg2000Params();
 
@@ -46,55 +44,26 @@ namespace Dicom
             {
                 var frameData = oldPixelData.GetFrame(frame);
 
-                if (newPixelData.IsLossy && jparams.Irreversible) eparams.irreversible = 1;
+                if (newPixelData.IsLossy) jparams.Irreversible = true;
+                if (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.Rgb) jparams.AllowMCT = true;
 
-                for (uint r = 0; r < jparams.RateLevels.Length; r++)
+                var nc = oldPixelData.SamplesPerPixel;
+                var sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed
+                           && !jparams.EncodeSignedPixelValuesAsUnsigned;
+                var comps = new int[nc][];
+
+                var colorSpace = GetJpegColorSpace(oldPixelData.PhotometricInterpretation);
+
+                for (var c = 0; c < nc; c++)
                 {
-                    if (jparams.RateLevels[r] > jparams.Rate)
-                    {
-                        eparams.tcp_numlayers++;
-                        eparams.tcp_rates[r] = (float)jparams.RateLevels[r];
-                    }
-                    else break;
-                }
-                eparams.tcp_numlayers++;
-                eparams.tcp_rates[r] = (float)jparams.Rate;
+                    var comp = new int[pixelCount];
 
-                if (!newPixelData.IsLossy && jparams.Rate > 0) eparams.tcp_rates[eparams.tcp_numlayers++] = 0;
-
-                if (oldPixelData.PhotometricInterpretation == PhotometricInterpretation.Rgb && jparams.AllowMCT) eparams.tcp_mct = 1;
-
-                memset(&cmptparm[0], 0, sizeof(opj_image_cmptparm_t) * 3);
-                for (int i = 0; i < oldPixelData.SamplesPerPixel; i++)
-                {
-                    cmptparm[i].bpp = oldPixelData.BitsAllocated;
-                    cmptparm[i].prec = oldPixelData.BitsStored;
-                    if (!jparams.EncodeSignedPixelValuesAsUnsigned) cmptparm[i].sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed;
-                    cmptparm[i].dx = eparams.subsampling_dx;
-                    cmptparm[i].dy = eparams.subsampling_dy;
-                    cmptparm[i].h = oldPixelData.Height;
-                    cmptparm[i].w = oldPixelData.Width;
-                }
-
-                OPJ_COLOR_SPACE color_space = getOpenJpegColorSpace(oldPixelData.PhotometricInterpretation);
-                image = opj_image_create(oldPixelData.SamplesPerPixel, &cmptparm[0], color_space);
-
-                image.x0 = eparams.image_offset_x0;
-                image.y0 = eparams.image_offset_y0;
-                image.x1 = image.x0 + ((oldPixelData.Width - 1) * eparams.subsampling_dx) + 1;
-                image.y1 = image.y0 + ((oldPixelData.Height - 1) * eparams.subsampling_dy) + 1;
-
-                for (int c = 0; c < image.numcomps; c++)
-                {
-                    opj_image_comp_t* comp = &image.comps[c];
-
-                    int pos = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
-                    var offset =
-                        oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : image.numcomps;
+                    var pos = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
+                    var offset = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : nc;
 
                     if (oldPixelData.BytesAllocated == 1)
                     {
-                        if (comp.sgnd)
+                        if (sgnd)
                         {
                             if (oldPixelData.BitsStored < 8)
                             {
@@ -102,17 +71,16 @@ namespace Dicom
                                 var mask = (byte)(0xff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
                                 for (var p = 0; p < pixelCount; p++)
                                 {
-                                    var pixel = frameData[pos];
-                                    comp.data[p] = pixel & sign ? - (((-pixel) & mask) + 1) : pixel;
+                                    var pixel = (sbyte)frameData.Data[pos];
+                                    comp[p] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
                                     pos += offset;
                                 }
                             }
                             else
                             {
-                                sbyte[] frameData8 = frameData.begin();
                                 for (var p = 0; p < pixelCount; p++)
                                 {
-                                    comp.data[p] = frameData8[pos];
+                                    comp[p] = (sbyte)frameData.Data[pos];
                                     pos += offset;
                                 }
                             }
@@ -121,43 +89,49 @@ namespace Dicom
                         {
                             for (var p = 0; p < pixelCount; p++)
                             {
-                                comp.data[p] = frameData[pos];
+                                comp[p] = frameData.Data[pos];
                                 pos += offset;
                             }
                         }
                     }
                     else if (oldPixelData.BytesAllocated == 2)
                     {
-                        if (comp.sgnd)
+                        if (sgnd)
                         {
                             if (oldPixelData.BitsStored < 16)
                             {
-                                ushort[] frameData16 = frameData.begin();
+                                var frameData16 = new ushort[pixelCount];
+                                Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
+
                                 var sign = (ushort)(1 << oldPixelData.HighBit);
                                 var mask = (ushort)(0xffff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
                                 for (var p = 0; p < pixelCount; p++)
                                 {
                                     var pixel = frameData16[pos];
-                                    comp.data[p] = pixel & sign ? - (((-pixel) & mask) + 1) : pixel;
+                                    comp[p] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
                                     pos += offset;
                                 }
                             }
                             else
                             {
-                                short[] frameData16 = frameData.begin();
+                                var frameData16 = new short[pixelCount];
+                                Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
+
                                 for (var p = 0; p < pixelCount; p++)
                                 {
-                                    comp.data[p] = frameData16[pos];
+                                    comp[p] = frameData16[pos];
                                     pos += offset;
                                 }
                             }
                         }
                         else
                         {
-                            ushort[] frameData16 = frameData.begin();
+                            var frameData16 = new ushort[pixelCount];
+                            Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
+
                             for (var p = 0; p < pixelCount; p++)
                             {
-                                comp.data[p] = frameData16[pos];
+                                comp[p] = frameData16[pos];
                                 pos += offset;
                             }
                         }
@@ -166,19 +140,26 @@ namespace Dicom
                     {
                         throw new InvalidOperationException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
                     }
+
+                    comps[c] = comp;
                 }
 
-                if (opj_encode(cinfo, cio, image, eparams.index))
-                {
-                    int clen = cio_tell(cio);
-                    var cbuf = new byte[clen + ((clen & 1) == 1 ? 1 : 0)];
-                    Array.Copy(cio.buffer, cbuf, clen);
+                var image = new BlkImgDataSrcImpl(
+                    oldPixelData.Width,
+                    oldPixelData.Height,
+                    nc,
+                    oldPixelData.BitsAllocated,
+                    Enumerable.Repeat(sgnd, nc).ToArray(),
+                    comps);
 
-                    newPixelData.AddFrame(cbuf);
-                }
-                else
+                try
                 {
-                    throw new InvalidOperationException("Unable to JPEG 2000 encode image");
+                    var cbuf = J2kImage.ToBytes(image, ToParameterList(jparams, false));
+                    newPixelData.AddFrame(new MemoryByteBuffer(cbuf));
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidOperationException("Unable to JPEG 2000 encode image", e);
                 }
             }
 
@@ -227,7 +208,7 @@ namespace Dicom
                 if ((frameSize & 1) == 1) ++frameSize;
                 var destArray = new byte[frameSize];
 
-                var image = J2kImage.FromBytes(jpegData.Data, ToParameterList(parameters));
+                var image = J2kImage.FromBytes(jpegData.Data, ToParameterList(parameters, true));
 
                 if (image == null) throw new InvalidOperationException("Error in JPEG 2000 code stream!");
 
@@ -267,6 +248,18 @@ namespace Dicom
             }
         }
 
+        private static JpegColorSpace GetJpegColorSpace(PhotometricInterpretation photometricInterpretation)
+        {
+            if (photometricInterpretation == PhotometricInterpretation.Rgb) return JpegColorSpace.sRGB;
+            else if (photometricInterpretation == PhotometricInterpretation.Monochrome1
+                     || photometricInterpretation == PhotometricInterpretation.Monochrome2) return JpegColorSpace.GreyScale;
+            else if (photometricInterpretation == PhotometricInterpretation.PaletteColor) return JpegColorSpace.GreyScale;
+            else if (photometricInterpretation == PhotometricInterpretation.YbrFull
+                     || photometricInterpretation == PhotometricInterpretation.YbrFull422
+                     || photometricInterpretation == PhotometricInterpretation.YbrPartial422) return JpegColorSpace.sYCC;
+            else return JpegColorSpace.Unknown;
+        }
+
         private static ParameterList ToParameterList(DicomJpeg2000Params parameters, bool decoder = true)
         {
             // These JPEG2000 codec parameters are not translated: EncodeSignedPixelValuesAsUnsigned, RateLevels, 
@@ -275,13 +268,14 @@ namespace Dicom
                 new ParameterList(
                     decoder
                         ? J2kImage.GetDefaultDecoderParameterList(null)
-                        : J2kImage.GetDefaultEncoderParameterList(null))
-                    {
-                        ["Mct"] = parameters.AllowMCT ? "on" : "off",
-                        ["lossless"] = parameters.Irreversible ? "off" : "on",
-                        ["verbose"] = parameters.IsVerbose ? "on" : "off",
-                        ["rate"] = parameters.Rate.ToString()
-                    };
+                        : J2kImage.GetDefaultEncoderParameterList(null));
+
+            var param = parameters ?? new DicomJpeg2000Params();
+
+            list["Mct"] = param.AllowMCT ? "on" : "off";
+            list["lossless"] = param.Irreversible ? "off" : "on";
+            list["verbose"] = param.IsVerbose ? "on" : "off";
+            list["rate"] = param.Rate.ToString();
 
             return list;
         }

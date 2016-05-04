@@ -28,15 +28,18 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="CSJ2K.Core">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\net40-client\CSJ2K.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CSJ2K.Platform">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\net40-client\CSJ2K.Platform.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,6 +97,15 @@
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomRleCodecImpl.Mono.cs">
       <Link>Imaging\Codec\DicomRleCodecImpl.Mono.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000CodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpeg2000CodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -109,5 +121,8 @@
       <Project>{A661D347-CF7D-4F36-8101-0544AE85EEEC}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
