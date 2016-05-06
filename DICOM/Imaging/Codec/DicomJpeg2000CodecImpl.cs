@@ -1,14 +1,15 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+
 namespace Dicom
 {
     using System;
     using System.Linq;
 
     using CSJ2K;
-    using CSJ2K.j2k.image;
     using CSJ2K.j2k.util;
+    using CSJ2K.Util;
 
     using Dicom.Imaging;
     using Dicom.Imaging.Codec;
@@ -140,7 +141,7 @@ namespace Dicom
                     comps[c] = comp;
                 }
 
-                var image = new BlkImgDataSrcImpl(
+                var image = new PortableImageSource(
                     oldPixelData.Width,
                     oldPixelData.Height,
                     nc,

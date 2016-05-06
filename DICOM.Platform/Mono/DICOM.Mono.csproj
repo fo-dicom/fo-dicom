@@ -34,11 +34,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="CSJ2K.Core">
-      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\net40-client\CSJ2K.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CSJ2K.Platform">
-      <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\net40-client\CSJ2K.Platform.dll</HintPath>
+    <Reference Include="CSJ2K">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\net40-client\CSJ2K.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
