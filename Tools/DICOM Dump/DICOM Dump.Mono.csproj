@@ -54,6 +54,12 @@
     <Reference Include="CSJ2K.Platform">
       <HintPath>..\..\packages\CSJ2K.2.0.0-beta2\lib\net40-client\CSJ2K.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="FJ.CoreWin">
+      <HintPath>..\..\packages\Flux.Jpeg.Core.0.8.0\lib\net35\FJ.CoreWin.dll</HintPath>
+    </Reference>
+    <Reference Include="CSJ2K">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\net40-client\CSJ2K.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
@@ -110,6 +116,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
