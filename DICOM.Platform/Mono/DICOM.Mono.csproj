@@ -112,9 +112,6 @@
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.Mono.cs">
       <Link>Imaging\Codec\DicomJpegProcess1Codec.Mono.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.Mono.cs">
-      <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
