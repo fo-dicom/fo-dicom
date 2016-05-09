@@ -37,8 +37,8 @@
     <Reference Include="CSJ2K">
       <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\net40-client\CSJ2K.dll</HintPath>
     </Reference>
-    <Reference Include="FJ.CoreWin">
-      <HintPath>..\..\packages\Flux.Jpeg.Core.0.8.0\lib\net35\FJ.CoreWin.dll</HintPath>
+    <Reference Include="BitMiracle.LibJpeg.Portable">
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +111,9 @@
     </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.Mono.cs">
       <Link>Imaging\Codec\DicomJpegProcess1Codec.Mono.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.Mono.cs">
+      <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

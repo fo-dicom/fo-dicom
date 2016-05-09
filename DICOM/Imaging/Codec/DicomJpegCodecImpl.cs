@@ -1,6 +1,10 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+
+using BitMiracle.LibJpeg;
+
 namespace Dicom
 {
     using System;
@@ -10,11 +14,11 @@ namespace Dicom
     using Dicom.Imaging.Codec;
     using Dicom.IO.Buffer;
 
-    using FluxJpeg.Core;
-    using FluxJpeg.Core.Decoder;
-    using FluxJpeg.Core.Encoder;
+//    using FluxJpeg.Core;
+//    using FluxJpeg.Core.Decoder;
+//    using FluxJpeg.Core.Encoder;
 
-    using JpegColorSpace = FluxJpeg.Core.ColorSpace;
+//    using JpegColorSpace = FluxJpeg.Core.ColorSpace;
 
     internal static class DicomJpegCodecImpl
     {
@@ -36,7 +40,6 @@ namespace Dicom
 
             var w = oldPixelData.Width;
             var h = oldPixelData.Height;
-            var colorModel = GetColorModel(oldPixelData.PhotometricInterpretation);
 
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
@@ -44,13 +47,11 @@ namespace Dicom
 
                 var nc = oldPixelData.SamplesPerPixel;
                 var sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed;
-                var comps = new byte[nc][,];
 
+                var rows = Enumerable.Repeat(new short[w, nc], h).ToArray();
 
                 for (var c = 0; c < nc; c++)
                 {
-                    var comp = new byte[w, h];
-
                     var pos = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * w * h) : c;
                     var offset = oldPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? 1 : nc;
 
@@ -59,7 +60,7 @@ namespace Dicom
                         var data = frameData.Data;
                         if (sgnd)
                         {
-                            /*if (oldPixelData.BitsStored < 8)
+                            if (oldPixelData.BitsStored < 8)
                             {
                                 var sign = (byte)(1 << oldPixelData.HighBit);
                                 var mask = (byte)(0xff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
@@ -68,7 +69,7 @@ namespace Dicom
                                     for (var x = 0; x < w; ++x)
                                     {
                                         var pixel = (sbyte)data[pos];
-                                        comp[x, y] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
+                                        rows[y][x, c] = (short)((pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel);
                                         pos += offset;
                                     }
                                 }
@@ -79,11 +80,11 @@ namespace Dicom
                                 {
                                     for (var x = 0; x < w; ++x)
                                     {
-                                        comp[x, y] = (sbyte)data[pos];
+                                        rows[y][x, c] = (sbyte)data[pos];
                                         pos += offset;
                                     }
                                 }
-                            }*/
+                            }
                         }
                         else
                         {
@@ -91,19 +92,19 @@ namespace Dicom
                             {
                                 for (var x = 0; x < w; ++x)
                                 {
-                                    comp[x, y] = data[pos];
+                                    rows[y][x, c] = data[pos];
                                     pos += offset;
                                 }
                             }
                         }
                     }
-                    /*else if (oldPixelData.BytesAllocated == 2)
+                    else if (oldPixelData.BytesAllocated == 2)
                     {
                         if (sgnd)
                         {
                             if (oldPixelData.BitsStored < 16)
                             {
-                                var frameData16 = new ushort[pixelCount];
+                                var frameData16 = new ushort[w * h];
                                 Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
 
                                 var sign = (ushort)(1 << oldPixelData.HighBit);
@@ -113,21 +114,21 @@ namespace Dicom
                                     for (var x = 0; x < w; ++x)
                                     {
                                         var pixel = frameData16[pos];
-                                        comp[x, y] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
+                                        rows[y][x, c] = (short)((pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel);
                                         pos += offset;
                                     }
                                 }
                             }
                             else
                             {
-                                var frameData16 = new short[pixelCount];
+                                var frameData16 = new short[w * h];
                                 Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
 
                                 for (var y = 0; y < h; ++y)
                                 {
                                     for (var x = 0; x < w; ++x)
                                     {
-                                        comp[x, y] = frameData16[pos];
+                                        rows[y][x, c] = frameData16[pos];
                                         pos += offset;
                                     }
                                 }
@@ -135,36 +136,40 @@ namespace Dicom
                         }
                         else
                         {
-                            var frameData16 = new ushort[pixelCount];
+                            var frameData16 = new ushort[w * h];
                             Buffer.BlockCopy(frameData.Data, 0, frameData16, 0, (int)frameData.Size);
 
                             for (var y = 0; y < h; ++y)
                             {
                                 for (var x = 0; x < w; ++x)
                                 {
-                                    comp[x, y] = frameData16[pos];
+                                    rows[y][x, c] = (short)frameData16[pos];
                                     pos += offset;
                                 }
                             }
                         }
-                    }*/
+                    }
                     else
                     {
-                        throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8");
+                        throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
                     }
-
-                    comps[c] = comp;
                 }
-
-
-                var image = new Image(colorModel, comps);
 
                 try
                 {
                     using (var stream = new MemoryStream())
                     {
-                        var encoder = new JpegEncoder(image, jparams.Quality, stream);
-                        encoder.Encode();
+                        var sampleRows =
+                            rows.Select(
+                                row =>
+                                new SampleRow(
+                                    ToRawRow(row, oldPixelData.BitsAllocated),
+                                    w,
+                                    (byte)oldPixelData.BitsStored,
+                                    (byte)nc)).ToArray();
+                        var colorSpace = GetColorSpace(oldPixelData.PhotometricInterpretation);
+                        var encoder = new JpegImage(sampleRows, colorSpace);
+                        encoder.WriteJpeg(stream);
                         newPixelData.AddFrame(new MemoryByteBuffer(stream.ToArray()));
                     }
                 }
@@ -215,45 +220,48 @@ namespace Dicom
 
                 using (var stream = new MemoryStream(jpegData.Data))
                 {
-                    var decoder = new JpegDecoder(stream);
-                    var image = decoder.Decode().Image;
-                    var components = image.Raster;
+                    var decoder = new JpegImage(stream);
+                    var w = decoder.Width;
+                    var h = decoder.Height;
 
-                    for (var c = 0; c < components.Length; c++)
+                    for (var c = 0; c < decoder.ComponentsPerSample; c++)
                     {
-                        var comp = components[c];
-
                         var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
                         var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
                                          ? 1
-                                         : components.Length;
+                                         : decoder.ComponentsPerSample;
 
                         if (newPixelData.BytesAllocated == 1)
                         {
-                            for (var y = 0; y < comp.GetLength(1); ++y)
+                            for (var y = 0; y < h; ++y)
                             {
-                                for (var x = 0; x < comp.GetLength(0); ++x)
+                                var row = decoder.GetRow(y);
+                                for (var x = 0; x < w; ++x)
                                 {
-                                    destArray[pos] = comp[x, y];
+                                    destArray[pos] = (byte)row[x][c];
                                     pos += offset;
                                 }
                             }
                         }
                         else if (newPixelData.BytesAllocated == 2)
                         {
-                            for (var y = 0; y < comp.GetLength(1); ++y)
+                            var destArray16 = new short[frameSize >> 1];
+                            for (var y = 0; y < h; ++y)
                             {
-                                for (var x = 0; x < comp.GetLength(0); ++x)
+                                var row = decoder.GetRow(y);
+                                for (var x = 0; x < w; ++x)
                                 {
-                                    destArray[2 * pos] = comp[x, y];
+                                    destArray16[pos] = row[x][c];
                                     pos += offset;
                                 }
                             }
+
+                            Buffer.BlockCopy(destArray16, 0, destArray, 0, frameSize);
                         }
                         else
                         {
                             throw new InvalidOperationException(
-                                "JPEG module only supports Bytes Allocated == 8 or 16!");
+                                "JPEG module only supports Bytes Allocated == 8!");
                         }
                     }
 
@@ -262,29 +270,59 @@ namespace Dicom
             }
         }
 
-        private static ColorModel GetColorModel(PhotometricInterpretation photometricInterpretation)
+        private static Colorspace GetColorSpace(PhotometricInterpretation photometricInterpretation)
         {
             if (photometricInterpretation == PhotometricInterpretation.Rgb)
             {
-                return new ColorModel { colorspace = JpegColorSpace.RGB, Opaque = true };
+                return Colorspace.RGB;
             }
             else if (photometricInterpretation == PhotometricInterpretation.Monochrome1
                      || photometricInterpretation == PhotometricInterpretation.Monochrome2)
             {
-                return new ColorModel { colorspace = JpegColorSpace.Gray, Opaque = true };
+                return Colorspace.Grayscale;
             }
             else if (photometricInterpretation == PhotometricInterpretation.PaletteColor)
             {
-                return new ColorModel { colorspace = JpegColorSpace.Gray, Opaque = true };
+                return Colorspace.Grayscale;
             }
             else if (photometricInterpretation == PhotometricInterpretation.YbrFull
                      || photometricInterpretation == PhotometricInterpretation.YbrFull422
                      || photometricInterpretation == PhotometricInterpretation.YbrPartial422)
             {
-                return new ColorModel { colorspace = JpegColorSpace.YCbCr, Opaque = true };
+                return Colorspace.YCbCr;
             }
 
-            return default(ColorModel);
+            return Colorspace.Unknown;
+        }
+
+        private static byte[] ToRawRow(short[,] row, int bitsAllocated)
+        {
+            byte[] bytes;
+            switch (bitsAllocated)
+            {
+                case 8:
+                    bytes = new byte[row.Length];
+                    for (int x = 0, idx = 0; x < row.GetLength(0); ++x)
+                    {
+                        for (var c = 0; c < row.GetLength(1); ++c, ++idx)
+                        {
+                            bytes[idx] = (byte)row[x, c];
+                        }
+                    }
+                    return bytes;
+                case 16:
+                    bytes = new byte[2 * row.Length];
+                    for (int x = 0, idx = 0; x < row.GetLength(0); ++x)
+                    {
+                        for (var c = 0; c < row.GetLength(1); ++c, ++idx)
+                        {
+                            bytes[idx] = (byte)row[x, c];
+                        }
+                    }
+                    return bytes;
+                default:
+                    throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
+            }
         }
     }
 }

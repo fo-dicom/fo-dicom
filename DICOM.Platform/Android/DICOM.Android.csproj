@@ -41,16 +41,16 @@
     <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BitMiracle.LibJpeg.Portable, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CSJ2K, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\MonoAndroid1\CSJ2K.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
-    <Reference Include="Portable.FJCore, Version=0.8.0.0, Culture=neutral, PublicKeyToken=d79a4df8eb0cd3e3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Flux.Jpeg.Core.0.8.0\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Portable.FJCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
