@@ -60,6 +60,7 @@ namespace Dicom
 
                     if (oldPixelData.BytesAllocated == 1)
                     {
+                        var data = frameData.Data;
                         if (sgnd)
                         {
                             if (oldPixelData.BitsStored < 8)
@@ -68,7 +69,7 @@ namespace Dicom
                                 var mask = (byte)(0xff >> (oldPixelData.BitsAllocated - oldPixelData.BitsStored));
                                 for (var p = 0; p < pixelCount; p++)
                                 {
-                                    var pixel = (sbyte)frameData.Data[pos];
+                                    var pixel = (sbyte)data[pos];
                                     comp[p] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
                                     pos += offset;
                                 }
@@ -77,7 +78,7 @@ namespace Dicom
                             {
                                 for (var p = 0; p < pixelCount; p++)
                                 {
-                                    comp[p] = (sbyte)frameData.Data[pos];
+                                    comp[p] = (sbyte)data[pos];
                                     pos += offset;
                                 }
                             }
@@ -86,7 +87,7 @@ namespace Dicom
                         {
                             for (var p = 0; p < pixelCount; p++)
                             {
-                                comp[p] = frameData.Data[pos];
+                                comp[p] = data[pos];
                                 pos += offset;
                             }
                         }

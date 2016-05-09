@@ -1,7 +1,6 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-
 namespace Dicom
 {
     using System;
@@ -30,7 +29,7 @@ namespace Dicom
             {
                 throw new InvalidOperationException(
                     "Photometric Interpretation '" + oldPixelData.PhotometricInterpretation
-                    + "' not supported by JPEG 2000 encoder");
+                    + "' not supported by JPEG encoder");
             }
 
             var jparams = parameters ?? new DicomJpegParams();
@@ -57,6 +56,7 @@ namespace Dicom
 
                     if (oldPixelData.BytesAllocated == 1)
                     {
+                        var data = frameData.Data;
                         if (sgnd)
                         {
                             /*if (oldPixelData.BitsStored < 8)
@@ -67,7 +67,7 @@ namespace Dicom
                                 {
                                     for (var x = 0; x < w; ++x)
                                     {
-                                        var pixel = (sbyte)frameData.Data[pos];
+                                        var pixel = (sbyte)data[pos];
                                         comp[x, y] = (pixel & sign) > 0 ? -(((-pixel) & mask) + 1) : pixel;
                                         pos += offset;
                                     }
@@ -79,7 +79,7 @@ namespace Dicom
                                 {
                                     for (var x = 0; x < w; ++x)
                                     {
-                                        comp[x, y] = (sbyte)frameData.Data[pos];
+                                        comp[x, y] = (sbyte)data[pos];
                                         pos += offset;
                                     }
                                 }
@@ -87,12 +87,11 @@ namespace Dicom
                         }
                         else
                         {
-                            var bytes = frameData.Data;
                             for (var y = 0; y < h; ++y)
                             {
                                 for (var x = 0; x < w; ++x)
                                 {
-                                    comp[x, y] = bytes[pos];
+                                    comp[x, y] = data[pos];
                                     pos += offset;
                                 }
                             }
