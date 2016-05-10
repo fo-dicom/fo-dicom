@@ -7,8 +7,10 @@ namespace Dicom.Imaging.Codec
 {
     public class DicomCodecExtensionsTest
     {
+        #region Unit tests
+
         [Fact]
-        public void ChangeTransferSyntax_FromJ2KToJPEGWithParameters_DoesNotThrow()
+        public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
             var exception =
@@ -17,5 +19,18 @@ namespace Dicom.Imaging.Codec
                     file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
         }
+
+        [Fact]
+        public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
+        {
+            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var exception =
+                Record.Exception(
+                    () =>
+                    file.Dataset.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { Quality = 50 }));
+            Assert.Null(exception);
+        }
+
+        #endregion
     }
 }
