@@ -16,7 +16,7 @@ namespace Dicom.Imaging.Codec
             var exception =
                 Record.Exception(
                     () =>
-                    file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { Quality = 50 }));
+                    file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
         }
 
@@ -27,7 +27,7 @@ namespace Dicom.Imaging.Codec
             var exception =
                 Record.Exception(
                     () =>
-                    file.Dataset.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { Quality = 50 }));
+                    file.Dataset.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
         }
 

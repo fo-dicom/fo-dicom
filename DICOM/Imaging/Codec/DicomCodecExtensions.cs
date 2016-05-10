@@ -20,7 +20,7 @@ namespace Dicom.Imaging.Codec
             DicomTransferSyntax syntax,
             DicomCodecParams parameters = null)
         {
-            var transcoder = new DicomTranscoder(file.FileMetaInfo.TransferSyntax, syntax, parameters, parameters);
+            var transcoder = new DicomTranscoder(file.FileMetaInfo.TransferSyntax, syntax, null, parameters);
             return transcoder.Transcode(file);
         }
 
@@ -36,7 +36,7 @@ namespace Dicom.Imaging.Codec
             DicomTransferSyntax syntax,
             DicomCodecParams parameters = null)
         {
-            var transcoder = new DicomTranscoder(dataset.InternalTransferSyntax, syntax, parameters, parameters);
+            var transcoder = new DicomTranscoder(dataset.InternalTransferSyntax, syntax, null, parameters);
             return transcoder.Transcode(dataset);
         }
     }
