@@ -14,6 +14,7 @@ timeout /T 5
 @call "%VS140COMNTOOLS%VsDevCmd.bat"
 
 @cd ..
+@.\Setup\nuget.exe restore Dicom.Full.sln
 @msbuild "DICOM.Full.sln" /t:Rebuild /p:Configuration=Release;Platform="Any CPU"
 @msbuild "DICOM.Full.sln" /t:Rebuild /p:Configuration=Release;Platform="x86"
 @msbuild "DICOM.Full.sln" /t:Rebuild /p:Configuration=Release;Platform="x64"
