@@ -28,15 +28,18 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="CSJ2K">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\net40-client\CSJ2K.dll</HintPath>
+    </Reference>
+    <Reference Include="BitMiracle.LibJpeg.Portable">
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +94,27 @@
     <Compile Include="..\..\DICOM\Imaging\Codec\MonoTranscoderManager.cs">
       <Link>Imaging\Codec\MonoTranscoderManager.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomRleCodecImpl.Mono.cs">
+      <Link>Imaging\Codec\DicomRleCodecImpl.Mono.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000CodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpeg2000CodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegCodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpegCodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.Mono.cs">
+      <Link>Imaging\Codec\DicomJpegProcess1Codec.Mono.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.Mono.cs">
+      <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -106,5 +130,8 @@
       <Project>{A661D347-CF7D-4F36-8101-0544AE85EEEC}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

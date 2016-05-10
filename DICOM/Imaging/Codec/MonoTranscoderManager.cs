@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Reflection;
+
+using Dicom.Log;
+
 namespace Dicom.Imaging.Codec
 {
     using System;
-    using System.IO;
-    using System.Reflection;
-
-    using Dicom.Log;
+    using System.Linq;
 
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Mono applications.
@@ -53,12 +54,28 @@ namespace Dicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         protected override void LoadCodecsImpl(string path, string search)
         {
-            if (path == null) path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().EscapedCodeBase).LocalPath);
+            Assembly assembly = null;
+            if (search == null)
+            {
+                assembly = typeof(MonoTranscoderManager).Assembly;
+            }
+            else
+            {
+                var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+                log.Warn("Codec loading from external assemblies not yet implemented.");
+            }
 
-            if (search == null) search = "Dicom.Native*.dll";
+            if (assembly == null) return;
 
-            var log = LogManager.GetLogger("Dicom.Imaging.Codec");
-            log.Warn("Codec loading for Mono not yet implemented.");
+            var types =
+                assembly.DefinedTypes.Where(
+                    ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
+
+            foreach (var ti in types)
+            {
+                var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
+                Codecs[codec.TransferSyntax] = codec;
+            }
         }
 
         #endregion
