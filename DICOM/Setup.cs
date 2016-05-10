@@ -87,6 +87,9 @@ namespace Dicom
 
         private static IEnumerable<Assembly> GetPlatformAssemblies()
         {
+#if NET35
+            return new[] { typeof(Setup).Assembly };
+#else
             return PlatformAssemblyNames.Select(
                 name =>
                     {
@@ -99,6 +102,7 @@ namespace Dicom
                             return null;
                         }
                     }).Where(assembly => assembly != null);
+#endif
         }
     }
 }

@@ -68,7 +68,7 @@ namespace Dicom.Log
         {
             get
             {
-#if __IOS__ || __ANDROID__
+#if __IOS__ || __ANDROID__ || NET35
                 return ConsoleColor.Black;
 #else
                 return Console.ForegroundColor;
@@ -76,7 +76,7 @@ namespace Dicom.Log
             }
             set
             {
-#if !__IOS__ && !__ANDROID__
+#if !__IOS__ && !__ANDROID__ && !NET35
                 Console.ForegroundColor = value;
 #endif
             }
