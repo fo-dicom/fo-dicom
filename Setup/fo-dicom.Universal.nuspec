@@ -16,7 +16,7 @@
         </dependencies>
     </metadata>
     <files>
-		<file src="Targets\fo-dicom.Windows.targets" target="build\uap\fo-dicom.Platform.targets" />
+		<file src="Targets\fo-dicom.Universal.targets" target="build\uap" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native.Windows\Dicom.Imaging.Codec.winmd" target="lib\uap" />
         <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="lib\uap" />
         <file src="..\DICOM.Platform\Windows\bin\x86\Release\Dicom.Platform.dll" target="runtimes\win10-x86\lib\uap" />
