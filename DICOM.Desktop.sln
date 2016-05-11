@@ -76,6 +76,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "DICOM\DICOM
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
 	EndGlobalSection

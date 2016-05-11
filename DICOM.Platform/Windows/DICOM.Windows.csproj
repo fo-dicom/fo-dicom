@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dicom</RootNamespace>
-    <AssemblyName>Dicom.Platform</AssemblyName>
+    <AssemblyName>Dicom.Core</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -177,12 +177,9 @@
       <Project>{0a648368-9b9a-49bf-8c11-eba79f241b94}</Project>
       <Name>DICOM.Native.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
-      <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
-      <Name>DICOM.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
