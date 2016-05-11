@@ -11,15 +11,12 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>.NET specific support libraries for fo-dicom.</description>
         <language>en-US</language>
-        <dependencies>
-			<dependency id="fo-dicom.Core" version="$version$" />
-        </dependencies>
     </metadata>
     <files>
         <file src="Targets\fo-dicom.Desktop.targets" target="build\net452" />
         <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net452" />
         <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net452" />
-        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Platform.dll" target="lib\net452" />
-        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Platform.pdb" target="lib\net452" />
+        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Core.dll" target="lib\net452" />
+        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Core.pdb" target="lib\net452" />
     </files>
 </package>

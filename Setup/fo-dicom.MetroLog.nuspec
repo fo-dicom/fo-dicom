@@ -12,7 +12,7 @@
         <description>Support library for connecting MetroLog log handler to fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Core" version="$version$" />
+            <dependency id="fo-dicom" version="$version$" />
             <dependency id="MetroLog" version="0.8.9" />
         </dependencies>
     </metadata>

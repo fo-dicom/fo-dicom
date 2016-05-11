@@ -12,7 +12,7 @@
         <description>Support library for connecting NLog log handler to fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Core" version="$version$" />
+            <dependency id="fo-dicom.Desktop" version="$version$" />
             <dependency id="NLog" version="4.1.2" />
         </dependencies>
     </metadata>

@@ -12,8 +12,21 @@
         <description>A portable DICOM library for .NET, Universal Windows Platform, Xamarin iOS and Xamarin Android.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Legacy" version="$version$" />
-            <dependency id="fo-dicom.Platform" version="$version$" />
+			<group targetFramework="portable-net45+netcore45+wpa81">
+				<dependency id="fo-dicom.Core" version="$version$" />
+			</group>
+			<group targetFramework="net452">
+				<dependency id="fo-dicom.Desktop" version="$version$" />
+			</group>
+			<group targetFramework="uap">
+				<dependency id="fo-dicom.Universal" version="$version$" />
+			</group>
+			<group targetFramework="MonoAndroid10">
+				<dependency id="fo-dicom.Android" version="$version$" />
+			</group>
+			<group targetFramework="Xamarin.iOS10">
+				<dependency id="fo-dicom.iOS" version="$version$" />
+			</group>
         </dependencies>
     </metadata>
     <files/>

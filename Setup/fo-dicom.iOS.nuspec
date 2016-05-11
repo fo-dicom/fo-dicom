@@ -12,11 +12,12 @@
         <description>Xamarin iOS specific support libraries for fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-			<dependency id="fo-dicom.Core" version="$version$" />
+			<dependency id="Portable.LibJpeg.NET" version="1.5.0" />
+			<dependency id="CSJ2K" version="2.0.0-beta4" />
         </dependencies>
     </metadata>
     <files>
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Platform.dll" target="lib\Xamarin.iOS10" />
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Platform.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.pdb" target="lib\Xamarin.iOS10" />
     </files>
 </package>
