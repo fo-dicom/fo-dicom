@@ -1,1 +1,1 @@
-set version=2.1.0-beta2
+set version=3.0.0-beta1

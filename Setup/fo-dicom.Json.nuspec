@@ -12,7 +12,7 @@
         <description>Support library for serializing fo-dicom DICOM datasets to json per http://dicom.nema.org/medical/dicom/current/output/chtml/part18/chapter_F.html .</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Core" version="$version$" />
+            <dependency id="fo-dicom" version="$version$" />
             <dependency id="Newtonsoft.Json" version="8.0.2" />
         </dependencies>
     </metadata>

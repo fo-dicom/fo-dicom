@@ -12,7 +12,7 @@
         <description>Support library for connecting Serilog log handler to fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Core" version="$version$" />
+            <dependency id="fo-dicom.Desktop" version="$version$" />
             <dependency id="Serilog" version="1.5.12" />
         </dependencies>
     </metadata>

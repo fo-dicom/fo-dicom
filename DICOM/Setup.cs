@@ -90,18 +90,7 @@ namespace Dicom
 #if NET35
             return new[] { typeof(Setup).Assembly };
 #else
-            return PlatformAssemblyNames.Select(
-                name =>
-                    {
-                        try
-                        {
-                            return Assembly.Load(new AssemblyName(name));
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-                    }).Where(assembly => assembly != null);
+            return new[] { typeof(Setup).GetTypeInfo().Assembly };
 #endif
         }
     }
