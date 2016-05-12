@@ -5,8 +5,16 @@ namespace Dicom
 {
     using Dicom.Network;
 
+    /// <summary>
+    /// Representation of the file meta information in a DICOM Part 10 file.
+    /// </summary>
     public class DicomFileMetaInformation : DicomDataset
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomFileMetaInformation"/> class.
+        /// </summary>
         public DicomFileMetaInformation()
         {
             Version = new byte[] { 0x00, 0x01 };
@@ -18,6 +26,12 @@ namespace Dicom
             SourceApplicationEntityTitle = machine;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomFileMetaInformation"/> class.
+        /// </summary>
+        /// <param name="dataset">
+        /// The dataset for which file meta information is required.
+        /// </param>
         public DicomFileMetaInformation(DicomDataset dataset)
             : this()
         {
@@ -26,6 +40,13 @@ namespace Dicom
             TransferSyntax = dataset.InternalTransferSyntax;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets or sets the file meta information version.
+        /// </summary>
         public byte[] Version
         {
             get
@@ -38,6 +59,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Media Storage SOP Class UID.
+        /// </summary>
         public DicomUID MediaStorageSOPClassUID
         {
             get
@@ -50,6 +74,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Media Storage SOP Instance UID.
+        /// </summary>
         public DicomUID MediaStorageSOPInstanceUID
         {
             get
@@ -62,6 +89,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the DICOM Part 10 dataset transfer syntax.
+        /// </summary>
         public DicomTransferSyntax TransferSyntax
         {
             get
@@ -74,6 +104,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Implementation Class UID.
+        /// </summary>
         public DicomUID ImplementationClassUID
         {
             get
@@ -86,6 +119,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Implementation Version Name.
+        /// </summary>
         public string ImplementationVersionName
         {
             get
@@ -98,6 +134,9 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Source Application Entity Title.
+        /// </summary>
         public string SourceApplicationEntityTitle
         {
             get
@@ -110,9 +149,22 @@ namespace Dicom
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return "DICOM File Meta Info";
         }
+
+        #endregion
     }
 }
