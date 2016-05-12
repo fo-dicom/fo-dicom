@@ -5,7 +5,7 @@ namespace Dicom
 {
     using Xunit;
 
-    public class DicomFileMetaInformationTests
+    public class DicomFileMetaInformationTest
     {
         [Fact]
         public void ImplementationVersionName_GetterWhenAttributeIncluded_ReturnsValue()
