@@ -4,6 +4,7 @@
 namespace Dicom.Bugs
 {
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Xunit;
@@ -17,7 +18,7 @@ namespace Dicom.Bugs
         {
             var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
             Assert.Equal(DicomFileFormat.DICOM3NoFileMetaInfo, file.Format);
-            Assert.False(file.FileMetaInfo.Contains(DicomTag.FileMetaInformationVersion));
+            Assert.Equal(0, file.FileMetaInfo.Count());
         }
 
         [Fact]
