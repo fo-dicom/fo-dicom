@@ -145,6 +145,7 @@
     <Compile Include="Network\DicomServiceTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
     <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
+    <Compile Include="Network\PDVTest.cs" />
     <Compile Include="Network\Ports.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
