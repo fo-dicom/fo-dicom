@@ -42,6 +42,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Unity-4.5.0\Editor\Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\DICOM.Platform\Desktop\Properties\AssemblyInfo.cs">
@@ -339,6 +343,12 @@
     </Compile>
     <Compile Include="..\..\DICOM\Imaging\SpatialTransform.cs">
       <Link>Imaging\SpatialTransform.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\UnityImage.cs">
+      <Link>Imaging\UnityImage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\UnityImageManager.cs">
+      <Link>Imaging\UnityImageManager.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\IO\Buffer\BulkDataUriByteBuffer.cs">
       <Link>IO\Buffer\BulkDataUriByteBuffer.cs</Link>
