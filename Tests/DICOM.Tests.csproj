@@ -43,11 +43,11 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.1.2\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -94,12 +94,13 @@
     <Compile Include="Bugs\GH223.cs" />
     <Compile Include="Bugs\GH220.cs" />
     <Compile Include="Bugs\GH258.cs" />
+    <Compile Include="Bugs\GH265.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDateRangeTest.cs" />
     <Compile Include="DicomDateTimeTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
-    <Compile Include="DicomFileMetaInformationTests.cs" />
+    <Compile Include="DicomFileMetaInformationTest.cs" />
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
@@ -177,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\CR-MONO1-10-chest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\GH220.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -92,35 +92,22 @@ namespace Dicom
         #region METHODS
 
         /// <summary>
-        /// Method to call before performing the actual saving.
-        /// </summary>
-        protected virtual void OnSave()
-        {
-        }
-
-        /// <summary>
         /// Save DICOM file.
         /// </summary>
         /// <param name="fileName">File name.</param>
         public void Save(string fileName)
         {
-            if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+            this.PreprocessFileMetaInformation();
 
-            if (Format == DicomFileFormat.DICOM3NoFileMetaInfo)
+            this.File = IOManager.CreateFileReference(fileName);
+            this.File.Delete();
+
+            this.OnSave();
+
+            using (var target = new FileByteTarget(this.File))
             {
-                // create file meta information from dataset
-                FileMetaInfo = new DicomFileMetaInformation(Dataset);
-            }
-
-            File = IOManager.CreateFileReference(fileName);
-            File.Delete();
-
-            OnSave();
-
-            using (var target = new FileByteTarget(File))
-            {
-                DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-                writer.Write(target, FileMetaInfo, Dataset);
+                var writer = new DicomFileWriter(DicomWriteOptions.Default);
+                writer.Write(target, this.FileMetaInfo, this.Dataset);
             }
         }
 
@@ -130,19 +117,12 @@ namespace Dicom
         /// <param name="stream">Stream on which to save DICOM file.</param>
         public void Save(Stream stream)
         {
-            if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2) throw new DicomFileException(this, "Unable to save ACR-NEMA file");
-
-            if (Format == DicomFileFormat.DICOM3NoFileMetaInfo)
-            {
-                // create file meta information from dataset
-                FileMetaInfo = new DicomFileMetaInformation(Dataset);
-            }
-
-            OnSave();
+            this.PreprocessFileMetaInformation();
+            this.OnSave();
 
             var target = new StreamByteTarget(stream);
-            DicomFileWriter writer = new DicomFileWriter(DicomWriteOptions.Default);
-            writer.Write(target, FileMetaInfo, Dataset);
+            var writer = new DicomFileWriter(DicomWriteOptions.Default);
+            writer.Write(target, this.FileMetaInfo, this.Dataset);
         }
 
 #if !NET35
@@ -153,16 +133,7 @@ namespace Dicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public async Task SaveAsync(string fileName)
         {
-            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
-            {
-                throw new DicomFileException(this, "Unable to save ACR-NEMA file");
-            }
-
-            if (this.Format == DicomFileFormat.DICOM3NoFileMetaInfo)
-            {
-                // create file meta information from dataset
-                this.FileMetaInfo = new DicomFileMetaInformation(this.Dataset);
-            }
+            this.PreprocessFileMetaInformation();
 
             this.File = IOManager.CreateFileReference(fileName);
             this.File.Delete();
@@ -183,17 +154,7 @@ namespace Dicom
         /// <returns>Awaitable task.</returns>
         public async Task SaveAsync(Stream stream)
         {
-            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
-            {
-                throw new DicomFileException(this, "Unable to save ACR-NEMA file");
-            }
-
-            if (this.Format == DicomFileFormat.DICOM3NoFileMetaInfo)
-            {
-                // create file meta information from dataset
-                this.FileMetaInfo = new DicomFileMetaInformation(this.Dataset);
-            }
-
+            this.PreprocessFileMetaInformation();
             this.OnSave();
 
             var target = new StreamByteTarget(stream);
@@ -534,6 +495,30 @@ namespace Dicom
             {
                 throw new DicomFileException(df, e.Message, e);
             }
+        }
+
+        /// <summary>
+        /// Method to call before performing the actual saving.
+        /// </summary>
+        protected virtual void OnSave()
+        {
+        }
+
+        /// <summary>
+        /// Preprocess file meta information before save.
+        /// </summary>
+        /// <exception cref="DicomFileException">If file format is ACR-NEMA version 2 or 3.</exception>
+        private void PreprocessFileMetaInformation()
+        {
+            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
+            {
+                throw new DicomFileException(this, "Unable to save ACR-NEMA file");
+            }
+
+            // create file meta information from dataset or update existing file meta information.
+            this.FileMetaInfo = this.Format == DicomFileFormat.DICOM3NoFileMetaInfo
+                                    ? new DicomFileMetaInformation(this.Dataset)
+                                    : new DicomFileMetaInformation(this.FileMetaInfo);
         }
 
         #endregion

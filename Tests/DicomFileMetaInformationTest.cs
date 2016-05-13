@@ -5,8 +5,10 @@ namespace Dicom
 {
     using Xunit;
 
-    public class DicomFileMetaInformationTests
+    public class DicomFileMetaInformationTest
     {
+        #region Unit tests
+
         [Fact]
         public void ImplementationVersionName_GetterWhenAttributeIncluded_ReturnsValue()
         {
@@ -60,5 +62,15 @@ namespace Dicom
             var exception = Record.Exception(() => { Assert.Null(metaInfo.SourceApplicationEntityTitle); });
             Assert.Null(exception);
         }
+
+        [Fact]
+        public void Constructor_FromFileMetaInformation_ShouldNotThrow()
+        {
+            var metaInfo = new DicomFileMetaInformation();
+            var exception = Record.Exception(() => new DicomFileMetaInformation(metaInfo));
+            Assert.Null(exception);
+        }
+
+        #endregion
     }
 }

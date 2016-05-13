@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom" version="$version$" />
-            <dependency id="MetroLog" version="0.8.9" />
+            <dependency id="MetroLog" version="1.0.1" />
         </dependencies>
     </metadata>
     <files>

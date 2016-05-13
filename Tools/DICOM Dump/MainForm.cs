@@ -67,7 +67,7 @@ namespace Dicom.Dump
         {
             get
             {
-                return _file != null && _file.FileMetaInfo != null && _file.FileMetaInfo.MediaStorageSOPClassUID != null
+                return _file != null && _file.Format == DicomFileFormat.DICOM3
                        && _file.FileMetaInfo.MediaStorageSOPClassUID.StorageCategory
                        == DicomStorageCategory.StructuredReport;
             }
