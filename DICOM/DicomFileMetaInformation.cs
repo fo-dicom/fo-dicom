@@ -17,13 +17,6 @@ namespace Dicom
         /// </summary>
         public DicomFileMetaInformation()
         {
-            Version = new byte[] { 0x00, 0x01 };
-            ImplementationClassUID = DicomImplementation.ClassUID;
-            ImplementationVersionName = DicomImplementation.Version;
-
-            var machine = NetworkManager.MachineName;
-            if (machine.Length > 16) machine = machine.Substring(0, 16);
-            SourceApplicationEntityTitle = machine;
         }
 
         /// <summary>
@@ -33,29 +26,33 @@ namespace Dicom
         /// The data set for which file meta information is required.
         /// </param>
         public DicomFileMetaInformation(DicomDataset dataset)
-            : this()
         {
-            MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
-            MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
-            TransferSyntax = dataset.InternalTransferSyntax;
+            this.Version = new byte[] { 0x00, 0x01 };
+
+            this.MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
+            this.MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            this.TransferSyntax = dataset.InternalTransferSyntax;
+
+            this.ImplementationClassUID = DicomImplementation.ClassUID;
+            this.ImplementationVersionName = DicomImplementation.Version;
+            this.SourceApplicationEntityTitle = CreateSourceApplicationEntityTitle();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomFileMetaInformation"/> class.
         /// </summary>
-        /// <param name="metaInfo">
-        /// DICOM file meta information to be copied.
-        /// </param>
+        /// <param name="metaInfo">DICOM file meta information to be updated.</param>
         public DicomFileMetaInformation(DicomFileMetaInformation metaInfo)
-            : this()
         {
-            if (metaInfo.Contains(DicomTag.FileMetaInformationVersion)) this.Version = metaInfo.Version;
+            this.Version = new byte[] { 0x00, 0x01 };
+
             if (metaInfo.Contains(DicomTag.MediaStorageSOPClassUID)) this.MediaStorageSOPClassUID = metaInfo.MediaStorageSOPClassUID;
             if (metaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID)) this.MediaStorageSOPInstanceUID = metaInfo.MediaStorageSOPInstanceUID;
             if (metaInfo.Contains(DicomTag.TransferSyntaxUID)) this.TransferSyntax = metaInfo.TransferSyntax;
-            if (metaInfo.Contains(DicomTag.ImplementationClassUID)) this.ImplementationClassUID = metaInfo.ImplementationClassUID;
-            if (metaInfo.Contains(DicomTag.ImplementationVersionName)) this.ImplementationVersionName = metaInfo.ImplementationVersionName;
-            if (metaInfo.Contains(DicomTag.SourceApplicationEntityTitle)) this.SourceApplicationEntityTitle = metaInfo.SourceApplicationEntityTitle;
+
+            this.ImplementationClassUID = DicomImplementation.ClassUID;
+            this.ImplementationVersionName = DicomImplementation.Version;
+            this.SourceApplicationEntityTitle = CreateSourceApplicationEntityTitle();
         }
 
         #endregion
@@ -181,6 +178,23 @@ namespace Dicom
         public override string ToString()
         {
             return "DICOM File Meta Info";
+        }
+
+        /// <summary>
+        /// Create a source application title from the machine name..
+        /// </summary>
+        /// <returns>
+        /// The machine name truncated to a maximum of 16 characters.
+        /// </returns>
+        private static string CreateSourceApplicationEntityTitle()
+        {
+            var machine = NetworkManager.MachineName;
+            if (machine.Length > 16)
+            {
+                machine = machine.Substring(0, 16);
+            }
+
+            return machine;
         }
 
         #endregion
