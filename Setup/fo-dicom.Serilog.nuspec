@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Desktop" version="$version$" />
-            <dependency id="Serilog" version="1.5.12" />
+            <dependency id="Serilog" version="1.5.14" />
         </dependencies>
     </metadata>
     <files>
