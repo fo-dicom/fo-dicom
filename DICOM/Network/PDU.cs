@@ -1298,6 +1298,11 @@ namespace Dicom.Network
         /// <param name="last">Is last fragment of command or data</param>
         public PDV(byte pcid, byte[] value, bool command, bool last)
         {
+            if (value.Length % 2 == 1)
+            {
+                Array.Resize(ref value, value.Length + 1);
+            }
+
             _pcid = pcid;
             _value = value;
             _command = command;
