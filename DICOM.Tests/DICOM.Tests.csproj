@@ -99,6 +99,7 @@
     <Compile Include="DicomDateRangeTest.cs" />
     <Compile Include="DicomDateTimeTest.cs" />
     <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="DicomDatasetAddTest.cs" />
     <Compile Include="DicomFileMetaInformationTests.cs" />
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />

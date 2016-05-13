@@ -26,3 +26,4 @@ DICOM/T4/part16.xml
 *.VC.opendb
 *.db
 *.DotSettings
+/UpgradeLog.htm
