@@ -16,8 +16,8 @@ namespace Dicom.Bugs
         public void DicomFileOpen_StreamedObject_NoMetaInfo()
         {
             var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
-            var metaInfo = file.FileMetaInfo;
-            Assert.Null(metaInfo);
+            Assert.Equal(DicomFileFormat.DICOM3NoFileMetaInfo, file.Format);
+            Assert.False(file.FileMetaInfo.Contains(DicomTag.FileMetaInformationVersion));
         }
 
         [Fact]
@@ -29,8 +29,9 @@ namespace Dicom.Bugs
             using (var stream = File.OpenRead(tempName))
             {
                 var file = DicomFile.Open(stream);
-                var metaInfo = file.FileMetaInfo;
-                Assert.NotNull(metaInfo);
+                Assert.Equal(DicomFileFormat.DICOM3, file.Format);
+                Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
+                Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
             }
         }
 

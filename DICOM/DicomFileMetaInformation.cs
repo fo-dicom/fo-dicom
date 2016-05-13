@@ -30,7 +30,7 @@ namespace Dicom
         /// Initializes a new instance of the <see cref="DicomFileMetaInformation"/> class.
         /// </summary>
         /// <param name="dataset">
-        /// The metaInfo for which file meta information is required.
+        /// The data set for which file meta information is required.
         /// </param>
         public DicomFileMetaInformation(DicomDataset dataset)
             : this()
