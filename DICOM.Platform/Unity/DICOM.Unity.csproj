@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DA47442A-8B75-43EF-8562-5F21ACC8D898}</ProjectGuid>
+    <ProjectGuid>{E51C520C-DCBC-472D-AB81-DDFA29A704DE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dicom</RootNamespace>
@@ -30,45 +30,35 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Unity-4.5.0\Editor\Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\DICOM\DicomTagGenerated.tt">
-      <Link>DicomTagGenerated.tt</Link>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DicomTagGenerated.cs</LastGenOutput>
-    </Content>
-    <Content Include="..\..\DICOM\DicomUIDGenerated.tt">
-      <Link>DicomUIDGenerated.tt</Link>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DicomUIDGenerated.cs</LastGenOutput>
-    </Content>
-    <Content Include="..\..\DICOM\Dictionaries\DICOM Dictionary.tt">
-      <Link>Dictionaries\DICOM Dictionary.tt</Link>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DICOM Dictionary.xml</LastGenOutput>
-    </Content>
-    <EmbeddedResource Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml">
-      <Link>Dictionaries\DICOM Dictionary.xml</Link>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DICOM Dictionary.tt</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\DICOM\Dictionaries\Private Dictionary.xml">
-      <Link>Dictionaries\Private Dictionary.xml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="..\..\DICOM.Platform\Desktop\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Compatibility\BinaryReaderExtensions.cs">
       <Link>Compatibility\BinaryReaderExtensions.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\Compatibility\ConcurrentDictionary.cs">
       <Link>Compatibility\ConcurrentDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\DirectoryInfoExtensions.cs">
+      <Link>Compatibility\DirectoryInfoExtensions.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\Compatibility\TypeExtensions.cs">
       <Link>Compatibility\TypeExtensions.cs</Link>
@@ -154,8 +144,6 @@
     <Compile Include="..\..\DICOM\DicomTagGenerated.cs">
       <Link>DicomTagGenerated.cs</Link>
       <DependentUpon>DicomTagGenerated.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="..\..\DICOM\DicomTransferSyntax.cs">
       <Link>DicomTransferSyntax.cs</Link>
@@ -169,8 +157,6 @@
     <Compile Include="..\..\DICOM\DicomUIDGenerated.cs">
       <Link>DicomUIDGenerated.cs</Link>
       <DependentUpon>DicomUIDGenerated.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="..\..\DICOM\DicomUIDGenerator.cs">
       <Link>DicomUIDGenerator.cs</Link>
@@ -192,6 +178,9 @@
     </Compile>
     <Compile Include="..\..\DICOM\Imaging\BitDepth.cs">
       <Link>Imaging\BitDepth.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
+      <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomCodecException.cs">
       <Link>Imaging\Codec\DicomCodecException.cs</Link>
@@ -355,6 +344,12 @@
     <Compile Include="..\..\DICOM\Imaging\SpatialTransform.cs">
       <Link>Imaging\SpatialTransform.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\UnityImage.cs">
+      <Link>Imaging\UnityImage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\UnityImageManager.cs">
+      <Link>Imaging\UnityImageManager.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\IO\Buffer\BulkDataUriByteBuffer.cs">
       <Link>IO\Buffer\BulkDataUriByteBuffer.cs</Link>
     </Compile>
@@ -405,6 +400,18 @@
     </Compile>
     <Compile Include="..\..\DICOM\IO\ByteConverter.cs">
       <Link>IO\ByteConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopDirectoryReference.cs">
+      <Link>IO\DesktopDirectoryReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopFileReference.cs">
+      <Link>IO\DesktopFileReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopIOManager.cs">
+      <Link>IO\DesktopIOManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
+      <Link>IO\DesktopPath.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\IO\DicomIoException.cs">
       <Link>IO\DicomIoException.cs</Link>
@@ -493,6 +500,12 @@
     <Compile Include="..\..\DICOM\IO\Writer\DicomWriter.cs">
       <Link>IO\Writer\DicomWriter.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Log\ConsoleExtensions.cs">
+      <Link>Log\ConsoleExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Log\ConsoleLogger.cs">
+      <Link>Log\ConsoleLogger.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Log\DicomDatasetDumper.cs">
       <Link>Log\DicomDatasetDumper.cs</Link>
     </Compile>
@@ -535,6 +548,9 @@
     <Compile Include="..\..\DICOM\Media\DicomFileScanner.cs">
       <Link>Media\DicomFileScanner.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Network\DesktopNetworkManager.cs">
+      <Link>Network\DesktopNetworkManager.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Network\NetworkManager.cs">
       <Link>Network\NetworkManager.cs</Link>
     </Compile>
@@ -549,9 +565,6 @@
     </Compile>
     <Compile Include="..\..\DICOM\Printing\PresentationLut.cs">
       <Link>Printing\PresentationLut.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Properties\AssemblyInfo.Core.cs">
-      <Link>Properties\AssemblyInfo.Core.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\Setup.cs">
       <Link>Setup.cs</Link>
@@ -582,14 +595,38 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\DICOM\DicomTagGenerated.tt">
+      <Link>DicomTagGenerated.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomTagGenerated.cs</LastGenOutput>
+    </Content>
+    <Content Include="..\..\DICOM\DicomUIDGenerated.tt">
+      <Link>DicomUIDGenerated.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomUIDGenerated.cs</LastGenOutput>
+    </Content>
+    <Content Include="..\..\DICOM\Dictionaries\DICOM Dictionary.tt">
+      <Link>Dictionaries\DICOM Dictionary.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DICOM Dictionary.xml</LastGenOutput>
+    </Content>
+    <EmbeddedResource Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml">
+      <Link>Dictionaries\DICOM Dictionary.xml</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\DICOM\Dictionaries\Private Dictionary.xml">
+      <Link>Dictionaries\Private Dictionary.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\DICOM\Dictionaries\DICOM Dictionary.xml.gz">
       <Link>Dictionaries\DICOM Dictionary.xml.gz</Link>
     </None>
     <None Include="..\..\DICOM\Dictionaries\Private Dictionary.xml.gz">
       <Link>Dictionaries\Private Dictionary.xml.gz</Link>
     </None>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\DICOM\T4\dictionarymethods.t4">
       <Link>T4\dictionarymethods.t4</Link>
     </None>
