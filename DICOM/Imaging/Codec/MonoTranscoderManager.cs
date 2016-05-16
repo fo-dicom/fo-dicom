@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Reflection;
-
-using Dicom.Log;
-
 namespace Dicom.Imaging.Codec
 {
     using System;
     using System.Linq;
+    using System.Reflection;
+
+    using Dicom.Log;
 
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Mono applications.
@@ -67,6 +66,17 @@ namespace Dicom.Imaging.Codec
 
             if (assembly == null) return;
 
+#if NET35
+            var types =
+                assembly.GetTypes().Where(
+                    ti => ti.IsClass && !ti.IsAbstract && ti.GetInterfaces().Contains(typeof(IDicomCodec)));
+
+            foreach (var type in types)
+            {
+                var codec = (IDicomCodec)Activator.CreateInstance(type);
+                Codecs[codec.TransferSyntax] = codec;
+            }
+#else
             var types =
                 assembly.DefinedTypes.Where(
                     ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
@@ -76,6 +86,7 @@ namespace Dicom.Imaging.Codec
                 var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
                 Codecs[codec.TransferSyntax] = codec;
             }
+#endif
         }
 
         #endregion

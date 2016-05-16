@@ -190,7 +190,11 @@ namespace Dicom.Imaging.Codec
             {
                 if (this.disposed) return;
 
+#if NET35
+                this._writer.Close();
+#else
                 this._writer.Dispose();
+#endif
                 this._stream.Dispose();
 
                 this.disposed = true;
