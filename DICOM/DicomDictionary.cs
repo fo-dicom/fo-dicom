@@ -161,10 +161,14 @@ namespace Dicom
                         }
 #else
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
-                        var stream = assembly.GetManifestResourceStream("Dicom.Dictionaries.DICOM Dictionary.xml.gz");
-                        var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                        var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
-                        reader.Process();
+                        using (
+                            var stream = assembly.GetManifestResourceStream(
+                                "Dicom.Dictionaries.DICOM Dictionary.xml.gz"))
+                        {
+                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+                            reader.Process();
+                        }
 #endif
                     }
                     catch (Exception e)
@@ -188,11 +192,14 @@ namespace Dicom
                             }
 #else
                             var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
-                            var stream =
-                                assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz");
-                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
-                            reader.Process();
+                            using (
+                                var stream =
+                                    assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz"))
+                            {
+                                var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                                var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+                                reader.Process();
+                            }
 #endif
                         }
                         catch (Exception e)
