@@ -228,6 +228,28 @@ namespace Dicom
             if (values != null) vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
             if (vr == null) vr = entry.ValueRepresentations.First();
 
+            return Add<T> (vr, tag, values ) ;
+        }
+
+        /// <summary>
+        /// Add single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>. Replace existing item.
+        /// </summary>
+        /// <typeparam name="T">Type of added values.</typeparam>
+        /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
+        /// <param name="tag">DICOM tag of the added item.</param>
+        /// <param name="values">Values of the added item.</param>
+        /// <remarks>No validation is performed on the <paramref name="vr"/> matching the element <paramref name="tag"/>
+        /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
+        /// </remarks>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
+        {
+            var entry = DicomDictionary.Default[tag];
+            if (entry == null)
+                throw new DicomDataException(
+                    "Tag {0} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.",
+                    tag);
+
             if (vr == DicomVR.AE)
             {
                 if (values == null) return Add(new DicomApplicationEntity(tag, EmptyBuffer.Value));
@@ -242,17 +264,16 @@ namespace Dicom
 
             if (vr == DicomVR.AT)
             {
+                IEnumerable<DicomTag> parsedValues ;
+
+
                 if (values == null) return Add(new DicomAttributeTag(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(DicomTag)) return Add(new DicomAttributeTag(tag, values.Cast<DicomTag>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => DicomTag.Parse(x));
-
-                    return Add(new DicomAttributeTag(tag, parsedValues.ToArray()));
-                }
+                    return Add ( new DicomAttributeTag (tag, parsedValues.ToArray () ) ) ;
+                } 
 
             }
 
@@ -295,33 +316,30 @@ namespace Dicom
 
             if (vr == DicomVR.FD)
             {
+                IEnumerable<double> parsedValues ;
+
+
                 if (values == null) return Add(new DicomFloatingPointDouble(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(double)) return Add(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => double.Parse(x));
-
-                    return Add(new DicomFloatingPointDouble(tag, parsedValues.ToArray()));
-                }
+                    return Add ( new DicomFloatingPointDouble (tag, parsedValues.ToArray () ) ) ;
+                }              
             }
 
             if (vr == DicomVR.FL)
             {
+                IEnumerable<float> parsedValues ;
+
+
                 if (values == null) return Add(new DicomFloatingPointSingle(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(float)) return Add(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                if ( ParseVrValueFromString<float, T> ( values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => float.Parse(x));
-
-                    return Add(new DicomFloatingPointSingle(tag, parsedValues.ToArray()));
-                }
-            }
+                    return Add ( new DicomFloatingPointSingle (tag, parsedValues.ToArray () ) ) ;
+                }              }
 
             if (vr == DicomVR.IS)
             {
@@ -351,19 +369,10 @@ namespace Dicom
                 {
                     return Add ( new DicomOtherByte(tag, (IByteBuffer) values.First () ));
                 }
-                
-                if ( typeof(T) == typeof(string) ) 
-                {
-                    //assume base 64?
-                    //Convert.FromBase64String (values.Cast(string))
-                }
             }
 
             if (vr == DicomVR.OD)
             {
-                IEnumerable<double> parsedValues ;
-
-
                 if (values == null) return Add(new DicomOtherDouble(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(double)) return Add(new DicomOtherDouble(tag, values.Cast<double>().ToArray()));
             
@@ -371,18 +380,10 @@ namespace Dicom
                 {
                     return Add ( new DicomOtherDouble (tag, (IByteBuffer) values.First () ));
                 }
-
-                if ( AddOtherVRFromString( values, double.Parse, out parsedValues) )
-                {
-                    return Add ( new DicomOtherDouble (tag, parsedValues.ToArray ( ) ) ) ;
-                }    
             }
 
             if (vr == DicomVR.OF)
             {
-                IEnumerable<float> parsedValues ;
-
-
                 if (values == null) return Add(new DicomOtherFloat(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(float)) return Add(new DicomOtherFloat(tag, values.Cast<float>().ToArray()));
 
@@ -390,18 +391,10 @@ namespace Dicom
                 {
                     return Add ( new DicomOtherFloat(tag, (IByteBuffer) values.First () ));
                 }
-
-                if ( AddOtherVRFromString( values, float.Parse, out parsedValues) )
-                {
-                    return Add ( new DicomOtherFloat (tag, parsedValues.ToArray ( ) ) ) ;
-                }
             }
 
             if (vr == DicomVR.OL)
             {
-                IEnumerable<uint> parsedValues ;
-
-
                 if (values == null) return Add(new DicomOtherLong(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(uint)) return Add(new DicomOtherLong(tag, values.Cast<uint>().ToArray()));
 
@@ -409,29 +402,16 @@ namespace Dicom
                 {
                     return Add ( new DicomOtherLong(tag, (IByteBuffer) values.First () ));
                 }
-
-                if (AddOtherVRFromString( values, uint.Parse, out parsedValues) )
-                {
-                    return Add ( new DicomOtherLong (tag, parsedValues.ToArray ( ) ) ) ;
-                }
             }
 
             if (vr == DicomVR.OW)
             {
-                IEnumerable<ushort> parsedValues ;
-
-
                 if (values == null) return Add(new DicomOtherWord(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(ushort)) return Add(new DicomOtherWord(tag, values.Cast<ushort>().ToArray()));
                 
                 if ( typeof(T)==typeof(IByteBuffer) && values.Length == 1 )
                 {
                     return Add ( new DicomOtherWord (tag, (IByteBuffer) values.First () ));
-                }
-
-                if ( AddOtherVRFromString ( values, ushort.Parse, out parsedValues) )
-                {
-                    return Add ( new DicomOtherWord (tag, parsedValues.ToArray ( ) ) ) ;
                 }
             }
 
@@ -449,16 +429,15 @@ namespace Dicom
 
             if (vr == DicomVR.SL)
             {
+                IEnumerable<int> parsedValues ;
+                
                 if (values == null) return Add(new DicomSignedLong(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(int)) return Add(new DicomSignedLong(tag, values.Cast<int>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => int.Parse(x));
-
-                    return Add(new DicomSignedLong(tag, parsedValues.ToArray()));
+                    return Add ( new DicomSignedLong (tag, parsedValues.ToArray ( ) ) ) ;
                 }
             }
 
@@ -472,16 +451,16 @@ namespace Dicom
 
             if (vr == DicomVR.SS)
             {
+                IEnumerable<short> parsedValues ;
+                
+                
                 if (values == null) return Add(new DicomSignedShort(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(short)) return Add(new DicomSignedShort(tag, values.Cast<short>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => short.Parse(x));
-
-                    return Add(new DicomSignedShort(tag, parsedValues.ToArray()));
+                    return Add ( new DicomSignedShort (tag, parsedValues.ToArray ( ) ) ) ;
                 }
             }
 
@@ -517,16 +496,15 @@ namespace Dicom
 
             if (vr == DicomVR.UL)
             {
+                IEnumerable<uint> parsedValues ;
+
+
                 if (values == null) return Add(new DicomUnsignedLong(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(uint)) return Add(new DicomUnsignedLong(tag, values.Cast<uint>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => uint.Parse(x));
-
-                    return Add(new DicomUnsignedLong(tag, parsedValues.ToArray()));
+                    return Add ( new DicomUnsignedLong (tag, parsedValues.ToArray ( ) ) ) ;
                 }
             }
 
@@ -534,6 +512,11 @@ namespace Dicom
             {
                 if (values == null) return Add(new DicomUnknown(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(byte)) return Add(new DicomUnknown(tag, values.Cast<byte>().ToArray()));
+                
+                if ( typeof(T)==typeof(IByteBuffer) && values.Length == 1 )
+                {
+                    return Add ( new DicomUnknown (tag, (IByteBuffer) values.First () ));
+                }
             }
 
             if (vr == DicomVR.UR)
@@ -544,16 +527,15 @@ namespace Dicom
 
             if (vr == DicomVR.US)
             {
+                IEnumerable<ushort> parsedValues ;
+                
+                
                 if (values == null) return Add(new DicomUnsignedShort(tag, EmptyBuffer.Value));
                 if (typeof(T) == typeof(ushort)) return Add(new DicomUnsignedShort(tag, values.Cast<ushort>().ToArray()));
 
-                if (typeof(T) == typeof(string)) 
+                if ( ParseVrValueFromString ( values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out parsedValues) )
                 {
-                    var stringValues = values.Cast<string>().ToArray();
-
-                    var parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x => ushort.Parse(x));
-
-                    return Add(new DicomUnsignedShort(tag, parsedValues.ToArray()));
+                    return Add ( new DicomUnsignedShort (tag, parsedValues.ToArray ( ) ) ) ;
                 }
             }
 
@@ -736,7 +718,13 @@ namespace Dicom
                 item.GetType());
         }
 
-        private bool AddOtherVRFromString<R, T> ( T[] values, Func<string, R> parser, out IEnumerable<R> parsedValues ) 
+        private bool ParseVrValueFromString<R, T> 
+        ( 
+            T[] values, 
+            DicomVM valueMultiplicity,
+            Func<string, R> parser, 
+            out IEnumerable<R> parsedValues 
+        ) 
         {
             parsedValues = null ;
 
@@ -744,8 +732,8 @@ namespace Dicom
             {
                 var stringValues = values.Cast<string>().ToArray();
 
-
-                if ( stringValues.Length == 1 ) //should usually be the case
+                if ( valueMultiplicity.Maximum > 1 && 
+                     stringValues.Length == 1 )
                 { 
                     stringValues = stringValues[0].Split ( '\\' ) ;
                 }

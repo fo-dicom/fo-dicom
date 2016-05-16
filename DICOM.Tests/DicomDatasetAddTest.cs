@@ -20,8 +20,13 @@ namespace Dicom
         [Fact]
         public void DicomSignedShortTest ()
         {
-            short[] values = new short [] { 5, 8 } ;
+            short[] values = new short [] { 5 } ; //single Value element
             DicomSignedShort element = new DicomSignedShort(DicomTag.TagAngleSecondAxis, values );
+            
+            TestAddElementToDatasetAsString<short> ( element, values ) ;
+
+            values = new short [] { 5, 8 } ; //multi-value element
+            element = new DicomSignedShort(DicomTag.CenterOfCircularExposureControlSensingRegion, values );
             
             TestAddElementToDatasetAsString<short> ( element, values ) ;
         }
@@ -29,10 +34,16 @@ namespace Dicom
         [Fact]
         public void DicomAttributeTagTest()
         {
-            var expected = new DicomTag[] { DicomTag.ALinePixelSpacing};
+            var expected = new DicomTag[] { DicomTag.ALinePixelSpacing}; //single value
             DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, expected);
-
-            TestAddElementToDatasetAsString(element, expected);
+            
+            
+            TestAddElementToDatasetAsString<string>(element, expected.Select ( n=> n.ToString ("J", null)).ToArray());
+            
+            expected = new DicomTag[] { DicomTag.ALinePixelSpacing, DicomTag.AccessionNumber}; //multi-value
+            element = new DicomAttributeTag(DicomTag.FrameIncrementPointer, expected);
+            
+            TestAddElementToDatasetAsString(element, expected.Select ( n=> n.ToString ("J", null)).ToArray());
         }
 
         [Fact]
@@ -62,7 +73,6 @@ namespace Dicom
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, testValues );
             
             TestAddElementToDatasetAsByteBuffer<double> ( element, testValues ) ;
-            TestAddElementToDatasetAsString<double>(element,testValues) ;
         }
         
         [Fact]
@@ -72,7 +82,7 @@ namespace Dicom
 
             var element = new DicomOtherByte(DicomTag.PixelData, testValues );
             
-            TestAddElementToDatasetAsByteBuffer<byte> ( element, testValues ) ;
+            TestAddElementToDatasetAsByteBuffer ( element, testValues ) ;
         }
         #endregion
 
@@ -80,16 +90,74 @@ namespace Dicom
 
         private void TestAddElementToDatasetAsString<T>(DicomElement element, T[] testValues )
         {
-            DicomDataset ds = new DicomDataset ( ) ;
-            var stringValues = testValues.Select ( x=>x.ToString());
+            DicomDataset ds = new DicomDataset();
+            string[] stringValues;
 
 
-            ds.Add<string> (element.Tag, stringValues.ToArray ( ) ) ;
-
-            for (int index = 0; index < element.Count; index++ )
+            if (typeof(T) == typeof(string))
             {
-                Assert.Equal(testValues[index], ds.Get<T> ( element.Tag, index )) ;
+                stringValues = testValues.Cast<string>().ToArray();
             }
+            else
+            {
+                stringValues = testValues.Select(x => x.ToString()).ToArray();
+            }
+
+
+            ds.Add<string>(element.Tag, stringValues);
+
+            
+            for (int index = 0; index < element.Count; index++)
+            {
+                string val;
+
+                val = GetStringValue(element, ds, index);
+
+                Assert.Equal(stringValues[index], val);
+            }
+
+            if (element.Tag.DictionaryEntry.ValueMultiplicity.Maximum > 1)
+            {
+                var stringValue = string.Join("\\", testValues);
+
+                ds.Add<string>(element.Tag, stringValue);
+
+                for (int index = 0; index < element.Count; index++)
+                {
+                    string val ;
+
+                    val = GetStringValue(element, ds, index);
+                    
+                    Assert.Equal(stringValues[index], val ) ;
+                }
+            }
+        }
+
+        private string GetStringValue(DicomElement element, DicomDataset ds, int index)
+        {
+            string val;
+
+
+            if (element.ValueRepresentation == DicomVR.AT)
+            {
+                //Should this be a fix in the toolkit?
+                val = GetATElementValue(element, ds, index);
+            }
+            else
+            {
+                val = ds.Get<string>(element.Tag, index);
+            }
+
+            return val;
+        }
+
+        private static string GetATElementValue ( DicomElement element, DicomDataset ds, int index )
+        {
+            var atElement = ds.Get<DicomElement>(element.Tag, null);
+
+            var testValue = atElement.Get<DicomTag> ( index ) ;
+
+            return testValue.ToString("J", null);
         }
 
         private void TestAddElementToDatasetAsByteBuffer<T>(DicomElement element, T[] testValues )
