@@ -5,6 +5,7 @@ namespace Dicom.Imaging
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
 
     using CoreGraphics;
 
@@ -57,6 +58,12 @@ namespace Dicom.Imaging
     /// </summary>
     public sealed class IOSImage : ImageDisposableBase<CGImage>
     {
+        #region FIELDS
+
+        private const int SizeOfRgba = 4;
+
+        #endregion
+
         #region CONSTRUCTORS
 
         /// <summary>
@@ -116,13 +123,25 @@ namespace Dicom.Imaging
         /// <param name="rotation">Image rotation.</param>
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
+            // Switch R and B components before rendering.
+            var length = SizeOfRgba * this.width * this.height;
+            var bytes = new byte[length];
+            Marshal.Copy(this.pixels.Pointer, bytes, 0, length);
+
+            for (var k = 0; k < length; k += 4)
+            {
+                var tmp = bytes[k];
+                bytes[k] = bytes[k + 2];
+                bytes[k + 2] = tmp;
+            }
+
             using (
                 var context = new CGBitmapContext(
-                    this.pixels.Pointer,
+                    bytes,
                     this.width,
                     this.height,
                     8,
-                    4 * this.width,
+                    SizeOfRgba * this.width,
                     CGColorSpace.CreateDeviceRGB(),
                     CGImageAlphaInfo.PremultipliedLast))
             {
