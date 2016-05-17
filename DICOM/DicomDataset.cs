@@ -697,27 +697,24 @@ namespace Dicom
                 item.GetType());
         }
 
-        private bool ParseVrValueFromString<R, T> 
-        ( 
-            T[] values, 
+        private static bool ParseVrValueFromString<T, TOut>(
+            IEnumerable<T> values,
             DicomVM valueMultiplicity,
-            Func<string, R> parser, 
-            out IEnumerable<R> parsedValues 
-        ) 
+            Func<string, TOut> parser,
+            out IEnumerable<TOut> parsedValues)
         {
             parsedValues = null;
 
-            if (typeof(T) == typeof(string)) 
+            if (typeof(T) == typeof(string))
             {
                 var stringValues = values.Cast<string>().ToArray();
 
-                if ( valueMultiplicity.Maximum > 1 &&
-                     stringValues.Length == 1 )
-                { 
-                    stringValues = stringValues[0].Split ('\\');
+                if (valueMultiplicity.Maximum > 1 && stringValues.Length == 1)
+                {
+                    stringValues = stringValues[0].Split('\\');
                 }
 
-                parsedValues = stringValues.Where(n => !string.IsNullOrWhiteSpace(n)).Select(x =>  parser (x));
+                parsedValues = stringValues.Where(n => !string.IsNullOrEmpty(n?.Trim())).Select(parser);
 
                 return true;
             }
