@@ -92,6 +92,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "DICOM\DICOM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Tests", "Tests\DICOM.Tests.csproj", "{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Netcore", "DICOM.Platform\Netcore\DICOM.Netcore.csproj", "{91817E6D-78A6-494B-A4EC-8D65CE07684B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
@@ -99,6 +101,7 @@ Global
 		DICOM\DICOM.Shared.projitems*{322dd2ff-c0b7-4cbf-be95-f0032fd94e02}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
+		DICOM\DICOM.Shared.projitems*{91817e6d-78a6-494b-a4ec-8d65ce07684b}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -392,6 +395,16 @@ Global
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|ARM.ActiveCfg = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x64.ActiveCfg = Release|Any CPU
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842}.Release|x86.ActiveCfg = Release|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Release|ARM.ActiveCfg = Release|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Release|x64.ActiveCfg = Release|Any CPU
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -423,6 +436,7 @@ Global
 		{F3120AC1-B538-4A30-B4A8-835376737EF5} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{849A140B-EF3E-4367-90BC-9F9383DC1481} = {A3F3827E-70AB-4683-BE7E-6B90931FE835}
 		{6D0CE6E2-BC02-4E83-8697-18B47CBEF842} = {01F74C31-F62B-46F0-9F64-0AA83D14FA21}
+		{91817E6D-78A6-494B-A4EC-8D65CE07684B} = {97271825-84EF-4DD0-922F-9B84E629C388}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
