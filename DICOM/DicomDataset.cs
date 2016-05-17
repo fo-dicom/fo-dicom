@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dicom.IO.Buffer;
-
-using Dicom.StructuredReport;
-
 namespace Dicom
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
+
+    using Dicom.IO.Buffer;
+    using Dicom.StructuredReport;
+
 
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
@@ -228,7 +228,7 @@ namespace Dicom
             if (values != null) vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
             if (vr == null) vr = entry.ValueRepresentations.First();
 
-            return Add<T> (vr, tag, values);
+            return Add(vr, tag, values);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Dicom
                 IEnumerable<DicomTag> parsedValues;
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out parsedValues))
                 {
-                    return Add(new DicomAttributeTag (tag, parsedValues.ToArray()));
+                    return Add(new DicomAttributeTag(tag, parsedValues.ToArray()));
                 }
             }
 
@@ -355,7 +355,7 @@ namespace Dicom
                 
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomOtherByte(tag, (IByteBuffer) values.First()));
+                    return Add(new DicomOtherByte(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -366,7 +366,7 @@ namespace Dicom
             
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomOtherDouble (tag, (IByteBuffer) values.First()));
+                    return Add(new DicomOtherDouble(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -377,7 +377,7 @@ namespace Dicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomOtherFloat(tag, (IByteBuffer) values.First()));
+                    return Add(new DicomOtherFloat(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -388,7 +388,7 @@ namespace Dicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomOtherLong(tag, (IByteBuffer) values.First()));
+                    return Add(new DicomOtherLong(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -399,7 +399,7 @@ namespace Dicom
                 
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomOtherWord (tag, (IByteBuffer) values.First()));
+                    return Add(new DicomOtherWord(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -423,7 +423,7 @@ namespace Dicom
                 IEnumerable<int> parsedValues;
                 if ( ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out parsedValues))
                 {
-                    return Add(new DicomSignedLong (tag, parsedValues.ToArray ()));
+                    return Add(new DicomSignedLong(tag, parsedValues.ToArray()));
                 }
             }
 
@@ -443,7 +443,7 @@ namespace Dicom
                 IEnumerable<short> parsedValues;
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out parsedValues))
                 {
-                    return Add(new DicomSignedShort (tag, parsedValues.ToArray()));
+                    return Add(new DicomSignedShort(tag, parsedValues.ToArray()));
                 }
             }
 
@@ -483,7 +483,7 @@ namespace Dicom
                 if (typeof(T) == typeof(uint)) return Add(new DicomUnsignedLong(tag, values.Cast<uint>().ToArray()));
 
                 IEnumerable<uint> parsedValues;
-                if ( ParseVrValueFromString( values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out parsedValues))
                 {
                     return Add(new DicomUnsignedLong(tag, parsedValues.ToArray()));
                 }
@@ -496,7 +496,7 @@ namespace Dicom
                 
                 if (typeof(T) == typeof(IByteBuffer) && values.Length == 1)
                 {
-                    return Add(new DicomUnknown(tag, (IByteBuffer) values.First()));
+                    return Add(new DicomUnknown(tag, (IByteBuffer)values[0]));
                 }
             }
 
@@ -514,7 +514,7 @@ namespace Dicom
                 IEnumerable<ushort> parsedValues;
                 if ( ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out parsedValues))
                 {
-                    return Add(new DicomUnsignedShort (tag, parsedValues.ToArray()));
+                    return Add(new DicomUnsignedShort(tag, parsedValues.ToArray()));
                 }
             }
 
@@ -525,10 +525,10 @@ namespace Dicom
             }
 
             throw new InvalidOperationException(
-                String.Format(
+                string.Format(
                     "Unable to create DICOM element of type {0} with values of type {1}",
                     vr.Code,
-                    typeof(T).ToString()));
+                    typeof(T)));
         }
 
         /// <summary>
