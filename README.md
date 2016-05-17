@@ -10,10 +10,10 @@
 
 ### Features
 * Core functionality in Portable Class Library (PCL)
-* Targets .NET 4.5 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, and Mono
+* Targets .NET 4.5.2 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
 * DICOM dictionary version 2016b
 * High-performance, fully asynchronous `async`/`await` API
-* (.NET and UWP only) JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression
+* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
 * Image rendering
 * JSON support
@@ -32,12 +32,12 @@ Starting with *fo-dicom* version 2.1.0, there are also separate platform package
 ### v2.0 Breaking Changes
 Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
 
-ImageManager.SetImplementation(WPFImageManager.Instance);
+    ImageManager.SetImplementation(WPFImageManager.Instance);
 
 By default, logging defaults to the no-op `NullLogerManager`. On .NET, several log managers are available and can be enabled like this:
 
-LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
-LogManager.SetImplementation(NLogManager.Instance);        // or ...
+    LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
+    LogManager.SetImplementation(NLogManager.Instance);        // or ...
 
 On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
 
