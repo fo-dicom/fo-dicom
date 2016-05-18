@@ -12,9 +12,8 @@
         "**/WPF*",
         "**/Windows*",
         "Imaging/Codec/Desktop*",
-        "Imaging/Codec/*Impl*",
+        "Imaging/Codec/*Impl.cs",
         "Imaging/Codec/*Loss*",
-        "Imaging/Codec/*Mono*",
         "Imaging/Codec/*Native*",
         "Imaging/Codec/*Process*",
         "Network/Desktop*"

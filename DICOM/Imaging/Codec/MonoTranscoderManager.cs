@@ -56,7 +56,11 @@ namespace Dicom.Imaging.Codec
             Assembly assembly = null;
             if (search == null)
             {
+#if NET35
                 assembly = typeof(MonoTranscoderManager).Assembly;
+#else
+                assembly = IntrospectionExtensions.GetTypeInfo(typeof(MonoTranscoderManager)).Assembly;
+#endif
             }
             else
             {
