@@ -15,8 +15,7 @@
         "Imaging/Codec/*Impl.cs",
         "Imaging/Codec/*Loss*",
         "Imaging/Codec/*Native*",
-        "Imaging/Codec/*Process*",
-        "Network/Desktop*"
+        "Imaging/Codec/*Process*"
       ],
       "excludeFiles": [
         "Properties/AssemblyInfo.Legacy.cs",

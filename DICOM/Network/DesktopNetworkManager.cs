@@ -43,7 +43,11 @@ namespace Dicom.Network
         {
             get
             {
+#if NETSTANDARD
+                return Environment.GetEnvironmentVariable("COMPUTERNAME");
+#else
                 return Environment.MachineName;
+#endif
             }
         }
 
@@ -89,7 +93,11 @@ namespace Dicom.Network
             var socketEx = exception as SocketException;
             if (socketEx != null)
             {
+#if NETSTANDARD
+                errorCode = (int)socketEx.SocketErrorCode;
+#else
                 errorCode = socketEx.ErrorCode;
+#endif
                 errorDescriptor = socketEx.SocketErrorCode.ToString();
                 return true;
             }
