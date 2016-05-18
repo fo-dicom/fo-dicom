@@ -1,0 +1,50 @@
+﻿{
+  "buildOptions": {
+    "compile": {
+      "include": "**/*.cs",
+      "includeFiles": [ "../SharedAssemblyInfo.cs" ],
+      "exclude": [
+        "Compatibility/*",
+        "**/Android*",
+        "**/IOS*",
+        "**/Unity*",
+        "**/WinForms*",
+        "**/WPF*",
+        "**/Desktop*",
+        "**/Windows*",
+        "Imaging/Codec/*Impl*",
+        "Imaging/Codec/*Native*",
+        "Imaging/Codec/*Mono*",
+        "Imaging/Codec/*Loss*",
+        "Imaging/Codec/*Process*",
+      ],
+      "excludeFiles": [
+        "Properties/AssemblyInfo.Legacy.cs",
+        "Imaging/DicomOverlayDataFactory.cs",
+        "Log/ConsoleLogger.cs",
+        "Log/ConsoleExtensions.cs",
+        "Printing/FilmBoxExtensions.cs",
+        "Printing/ImageBoxExtensions.cs",
+        "DatabaseQueryTransformRule.cs"
+      ]
+    },
+    "embed": [
+      "Dictionaries/DICOM&#x20;Dictionary.xml.gz",
+      "Dictionaries/Private&#x20;Dictionary.xml.gz"
+    ],
+    "publicSign": true,
+    "keyFile": "fo-dicom.snk",
+    "outputName": "Dicom.Core"
+  },
+
+  "dependencies": {
+    "NETStandard.Library": "1.5.0-rc2-24027",
+    "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027",
+    "System.Threading.Tasks.Parallel": "4.0.1-rc2-24027"
+  },
+
+  "frameworks": {
+    "netstandard1.1": {
+    }
+  }
+}
