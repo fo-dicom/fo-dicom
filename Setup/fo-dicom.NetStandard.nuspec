@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.NetStandard</id>
+        <version>$version$</version>
+        <title>Fellow Oak DICOM .NET Standard Library</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The core DICOM library for .NET Standard 1.3 and higher.</description>
+        <language>en-US</language>
+		<dependencies>
+			<dependency id="NETStandard.Library" version="1.5.0-rc2-24027" />
+			<dependency id="System.Data.SqlClient" version="4.1.0-rc2-24027" />
+			<dependency id="System.IO.FileSystem" version="4.0.1-rc2-24027" />
+			<dependency id="System.Net.NetworkInformation" version="4.1.0-rc2-24027" />
+			<dependency id="System.Net.Security" version="4.0.0-rc2-24027" />
+			<dependency id="System.Runtime.Serialization.Primitives" version="4.1.1-rc2-24027" />
+			<dependency id="System.Threading.Tasks.Parallel" version="4.0.1-rc2-24027" />
+		</dependencies>
+    </metadata>
+    <files>
+        <file src="..\DICOM\bin\Release\netstandard1.3\Dicom.Core.dll" target="lib\netstandard1.3" />
+        <file src="..\DICOM\bin\Release\netstandard1.3\Dicom.Core.pdb" target="lib\netstandard1.3" />
+    </files>
+</package>
