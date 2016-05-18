@@ -47,7 +47,11 @@ namespace Dicom.IO
 
         public static T[] ToArray<T>(IByteBuffer buffer)
         {
+#if NETFX_CORE || NETSTANDARD
+            uint size = (uint)Marshal.SizeOf<T>();
+#else
             uint size = (uint)Marshal.SizeOf(typeof(T));
+#endif
             uint padding = buffer.Size % size;
             uint count = buffer.Size / size;
             T[] values = new T[count];
@@ -57,7 +61,11 @@ namespace Dicom.IO
 
         public static T Get<T>(IByteBuffer buffer, int n)
         {
+#if NETFX_CORE || NETSTANDARD
+            int size = Marshal.SizeOf<T>();
+#else
             int size = Marshal.SizeOf(typeof(T));
+#endif
             T[] values = new T[1];
             if (buffer.IsMemory) System.Buffer.BlockCopy(buffer.Data, size * n, values, 0, size);
             else

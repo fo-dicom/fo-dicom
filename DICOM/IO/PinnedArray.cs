@@ -75,7 +75,11 @@ namespace Dicom.IO
         public PinnedArray(int count)
         {
             _count = count;
+#if NETFX_CORE || NETSTANDARD
+            _size = Marshal.SizeOf<T>() * _count;
+#else
             _size = Marshal.SizeOf(typeof(T)) * _count;
+#endif
             _data = new T[_count];
             _handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
             _pointer = _handle.AddrOfPinnedObject();
@@ -84,7 +88,11 @@ namespace Dicom.IO
         public PinnedArray(T[] data)
         {
             _count = data.Length;
+#if NETFX_CORE || NETSTANDARD
+            _size = Marshal.SizeOf<T>() * _count;
+#else
             _size = Marshal.SizeOf(typeof(T)) * _count;
+#endif
             _data = data;
             _handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
             _pointer = _handle.AddrOfPinnedObject();
