@@ -163,7 +163,7 @@ namespace Dicom
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                         using (
                             var stream = assembly.GetManifestResourceStream(
-                                "Dicom.Dictionaries.DICOM Dictionary.xml.gz"))
+                                "Dicom.Dictionaries.DICOMDictionary.xml.gz"))
                         {
                             var gzip = new GZipStream(stream, CompressionMode.Decompress);
                             var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
@@ -194,7 +194,7 @@ namespace Dicom
                             var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                             using (
                                 var stream =
-                                    assembly.GetManifestResourceStream("Dicom.Dictionaries.Private Dictionary.xml.gz"))
+                                    assembly.GetManifestResourceStream("Dicom.Dictionaries.PrivateDictionary.xml.gz"))
                             {
                                 var gzip = new GZipStream(stream, CompressionMode.Decompress);
                                 var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);

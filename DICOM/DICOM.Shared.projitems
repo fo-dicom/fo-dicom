@@ -244,13 +244,11 @@
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
       <DependentUpon>DICOM Dictionary.tt</DependentUpon>
     </None>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOMDictionary.xml.gz" />
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\PrivateDictionary.xml.gz" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)T4\dictionarymethods.t4" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml.gz" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml.gz" />
   </ItemGroup>
 </Project>
