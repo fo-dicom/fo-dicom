@@ -56,7 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM\DICOM.Core.csproj">
+    <ProjectReference Include="..\..\DICOM.Platform\Portable\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>

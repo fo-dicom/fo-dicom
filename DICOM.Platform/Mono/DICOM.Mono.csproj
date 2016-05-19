@@ -37,12 +37,12 @@
     <Reference Include="CSJ2K">
       <HintPath>..\..\packages\CSJ2K.2.0.0-beta4\lib\net40-client\CSJ2K.dll</HintPath>
     </Reference>
-    <Reference Include="BitMiracle.LibJpeg.Portable">
-      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="BitMiracle.LibJpeg.Portable">
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0.1\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

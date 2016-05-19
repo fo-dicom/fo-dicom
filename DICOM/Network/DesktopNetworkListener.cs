@@ -108,7 +108,11 @@ namespace Dicom.Network
 
             store.Open(OpenFlags.ReadOnly);
             var certs = store.Certificates.Find(X509FindType.FindBySubjectName, certificateName, false);
+#if NETSTANDARD
+            store.Dispose();
+#else
             store.Close();
+#endif
 
             if (certs.Count == 0)
             {

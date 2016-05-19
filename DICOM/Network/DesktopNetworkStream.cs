@@ -40,7 +40,12 @@ namespace Dicom.Network
         {
             this.Host = host;
             this.Port = port;
+#if NETSTANDARD
+            this.tcpClient = new TcpClient { NoDelay = noDelay };
+            this.tcpClient.ConnectAsync(host, port).Wait();
+#else
             this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
+#endif
 
             Stream stream = this.tcpClient.GetStream();
             if (useTls)
@@ -49,7 +54,11 @@ namespace Dicom.Network
                     stream,
                     false,
                     (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || ignoreSslPolicyErrors);
+#if NETSTANDARD
+                ssl.AuthenticateAsClientAsync(host).Wait();
+#else
                 ssl.AuthenticateAsClient(host);
+#endif
                 stream = ssl;
             }
 
@@ -66,14 +75,20 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {
+#if NETSTANDARD
+#else
             this.Host = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
             this.Port = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
-
+#endif
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
             {
                 var ssl = new SslStream(stream, false);
+#if NETSTANDARD
+                ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls, false).Wait();
+#else
                 ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls, false);
+#endif
                 stream = ssl;
             }
 
@@ -136,7 +151,11 @@ namespace Dicom.Network
 
             if (this.tcpClient != null)
             {
+#if NETSTANDARD
+                this.tcpClient.Dispose();
+#else
                 this.tcpClient.Close();
+#endif
             }
 
             this.disposed = true;

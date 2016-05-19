@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A3550FE3-1CB5-4760-8670-9C8AFE0925A3}</ProjectGuid>
+    <ProjectGuid>{FCAAE348-5D26-46CF-BFA3-C0B99C711B3D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dicom</RootNamespace>
@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -37,29 +37,47 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="DICOM.Core.csproj">
+    <ProjectReference Include="..\DICOM.Platform\Portable\DICOM.Core.csproj">
       <Project>{a661d347-cf7d-4f36-8101-0544ae85eeec}</Project>
       <Name>DICOM.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncFactory.cs" />
-    <Compile Include="DicomDatasetWalkerExtensions.cs" />
-    <Compile Include="DicomFile.Async.cs" />
-    <Compile Include="DicomFileExtensions.Async.cs" />
-    <Compile Include="IO\Reader\DicomFileReaderExtensions.cs" />
-    <Compile Include="IO\Reader\DicomReaderExtensions.cs" />
-    <Compile Include="IO\Writer\DicomFileWriterExtensions.cs" />
-    <Compile Include="Media\DicomDirectory.Async.cs" />
-    <Compile Include="Network\DicomClientExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.Legacy.cs" />
+    <Compile Include="..\DICOM\AsyncFactory.cs">
+      <Link>AsyncFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomDatasetWalkerExtensions.cs">
+      <Link>DicomDatasetWalkerExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFile.Async.cs">
+      <Link>DicomFile.Async.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\DicomFileExtensions.Async.cs">
+      <Link>DicomFileExtensions.Async.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomFileReaderExtensions.cs">
+      <Link>IO\Reader\DicomFileReaderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Reader\DicomReaderExtensions.cs">
+      <Link>IO\Reader\DicomReaderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\IO\Writer\DicomFileWriterExtensions.cs">
+      <Link>IO\Writer\DicomFileWriterExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Media\DicomDirectory.Async.cs">
+      <Link>Media\DicomDirectory.Async.cs</Link>
+    </Compile>
+    <Compile Include="..\DICOM\Network\DicomClientExtensions.cs">
+      <Link>Network\DicomClientExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -119,11 +119,7 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
