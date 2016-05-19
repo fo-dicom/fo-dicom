@@ -1,4 +1,4 @@
-#### v.3.0.0 (Beta 1, TBD)
+#### v.3.0.0 (Beta 1, 5/20/2016)
 * .NET Core Library Build Request (#256 #294)
 * Red and Blue bytes swapped in color images on iOS (#290 #291)
 * Support creating DS Value elements from string and IByteBuffer (#288)
@@ -31,7 +31,7 @@
 * Implement JSON serialization and deserialization of DICOM objects (#182 #186)
 * Open and save DicomDirectory to Stream (#181 #235)
 * Exposing network infos (ip and port) in association (#173 #225)
-* Image compression/decompression for Mono and Xamarin (#128 #279)
+* Image compression/decompression for Mono and Xamarin (#128 #279 #295)
 
 #### v2.0.2 (2/15/2016)
 * "Index was outside the bounds of the array" in PrecalculatedLUT indexer (#219 #221)
