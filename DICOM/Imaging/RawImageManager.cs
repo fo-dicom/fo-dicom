@@ -3,17 +3,15 @@
 
 namespace Dicom.Imaging
 {
-    using Dicom.IO;
-
     /// <summary>
-    /// WPF based implementation of the <see cref="ImageManager"/>.
+    /// BGRA byte array implementation of the <see cref="ImageManager"/>.
     /// </summary>
     public sealed class RawImageManager : ImageManager
     {
         #region FIELDS
 
         /// <summary>
-        /// Single instance of the WPF image manager.
+        /// Single instance of the BGRA byte array image manager.
         /// </summary>
         public static readonly ImageManager Instance;
 
@@ -22,7 +20,7 @@ namespace Dicom.Imaging
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes the static fields of <see cref="WPFImageManager"/>
+        /// Initializes the static fields of <see cref="RawImageManager"/>
         /// </summary>
         static RawImageManager()
         {

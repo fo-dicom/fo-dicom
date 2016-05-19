@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom.Imaging
 {
+    using System;
     using System.Collections.Generic;
 
     using Dicom.Imaging.Render;
