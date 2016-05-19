@@ -91,6 +91,7 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
+#if SUPPORT16BIT
                     else if (oldPixelData.BytesAllocated == 2)
                     {
                         if (sgnd)
@@ -133,9 +134,11 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
+#endif
                     else
                     {
-                        throw new InvalidOperationException("JPEG 2000 codec only supports Bits Allocated == 8 or 16");
+                        throw new InvalidOperationException(
+                            $"JPEG 2000 codec does not support Bits Allocated == {oldPixelData.BitsAllocated}");
                     }
 
                     comps[c] = comp;
@@ -226,6 +229,7 @@ namespace Dicom.Imaging.Codec
                             pos += offset;
                         }
                     }
+#if SUPPORT16BIT
                     else if (newPixelData.BytesAllocated == 2)
                     {
                         for (var p = 0; p < pixelCount; p++)
@@ -234,10 +238,11 @@ namespace Dicom.Imaging.Codec
                             pos += offset;
                         }
                     }
+#endif
                     else
                     {
                         throw new InvalidOperationException(
-                            "JPEG 2000 module only supports Bytes Allocated == 8 or 16!");
+                            $"JPEG 2000 codec does not support Bits Allocated == {newPixelData.BitsAllocated}!");
                     }
                 }
 

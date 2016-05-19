@@ -28,8 +28,6 @@ namespace Dicom.Imaging.Codec
                     + "' not supported by JPEG encoder");
             }
 
-            var jparams = parameters ?? new DicomJpegParams();
-
             var w = oldPixelData.Width;
             var h = oldPixelData.Height;
 
@@ -40,7 +38,7 @@ namespace Dicom.Imaging.Codec
                 var nc = oldPixelData.SamplesPerPixel;
                 var sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed;
 
-                var rows = Enumerable.Repeat(new short[w, nc], h).ToArray();
+                var rows = Enumerable.Range(0, h).Select(i => new short[w, nc]).ToArray();
 
                 for (var c = 0; c < nc; c++)
                 {
@@ -90,6 +88,7 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
+#if SUPPORT16BIT
                     else if (oldPixelData.BytesAllocated == 2)
                     {
                         if (sgnd)
@@ -141,9 +140,11 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
+#endif
                     else
                     {
-                        throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
+                        throw new InvalidOperationException(
+                            $"JPEG codec does not support Bits Allocated == {oldPixelData.BitsAllocated}");
                     }
                 }
 
@@ -162,7 +163,7 @@ namespace Dicom.Imaging.Codec
                         var colorSpace = GetColorSpace(oldPixelData.PhotometricInterpretation);
                         using (var encoder = new JpegImage(sampleRows, colorSpace))
                         {
-                            encoder.WriteJpeg(stream);
+                            encoder.WriteJpeg(stream, ToCompressionParameters(parameters));
                         }
                         newPixelData.AddFrame(new MemoryByteBuffer(stream.ToArray()));
                     }
@@ -237,6 +238,7 @@ namespace Dicom.Imaging.Codec
                                 }
                             }
                         }
+#if SUPPORT16BIT
                         else if (newPixelData.BytesAllocated == 2)
                         {
                             var destArray16 = new short[frameSize >> 1];
@@ -252,9 +254,11 @@ namespace Dicom.Imaging.Codec
 
                             Buffer.BlockCopy(destArray16, 0, destArray, 0, frameSize);
                         }
+#endif
                         else
                         {
-                            throw new InvalidOperationException("JPEG module only supports Bytes Allocated == 8!");
+                            throw new InvalidOperationException(
+                                $"JPEG module does not support Bits Allocated == {newPixelData.BitsAllocated}!");
                         }
                     }
 
@@ -303,6 +307,7 @@ namespace Dicom.Imaging.Codec
                         }
                     }
                     return bytes;
+#if SUPPORT16BIT
                 case 16:
                     bytes = new byte[2 * row.Length];
                     for (int x = 0, idx = 0; x < row.GetLength(0); ++x)
@@ -313,9 +318,23 @@ namespace Dicom.Imaging.Codec
                         }
                     }
                     return bytes;
+#endif
                 default:
-                    throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
+                    throw new InvalidOperationException($"JPEG codec does not support Bits Allocated == {bitsAllocated}");
             }
+        }
+
+        private static CompressionParameters ToCompressionParameters(DicomJpegParams parameters)
+        {
+            var compressionParams = new CompressionParameters();
+
+            if (parameters != null)
+            {
+                compressionParams.Quality = parameters.Quality;
+                compressionParams.SmoothingFactor = parameters.SmoothingFactor;
+            }
+
+            return compressionParams;
         }
     }
 }
