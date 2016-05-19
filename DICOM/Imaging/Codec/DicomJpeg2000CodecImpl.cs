@@ -2,7 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 
-namespace Dicom
+namespace Dicom.Imaging.Codec
 {
     using System;
     using System.Linq;
@@ -12,7 +12,6 @@ namespace Dicom
     using CSJ2K.Util;
 
     using Dicom.Imaging;
-    using Dicom.Imaging.Codec;
     using Dicom.IO.Buffer;
 
     using JpegColorSpace = CSJ2K.Color.ColorSpace.CSEnum;

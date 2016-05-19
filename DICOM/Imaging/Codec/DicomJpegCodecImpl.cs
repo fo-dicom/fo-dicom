@@ -1,24 +1,16 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Linq;
-
-using BitMiracle.LibJpeg;
-
-namespace Dicom
+namespace Dicom.Imaging.Codec
 {
     using System;
     using System.IO;
+    using System.Linq;
+
+    using BitMiracle.LibJpeg;
 
     using Dicom.Imaging;
-    using Dicom.Imaging.Codec;
     using Dicom.IO.Buffer;
-
-//    using FluxJpeg.Core;
-//    using FluxJpeg.Core.Decoder;
-//    using FluxJpeg.Core.Encoder;
-
-//    using JpegColorSpace = FluxJpeg.Core.ColorSpace;
 
     internal static class DicomJpegCodecImpl
     {
@@ -168,8 +160,10 @@ namespace Dicom
                                     (byte)oldPixelData.BitsStored,
                                     (byte)nc)).ToArray();
                         var colorSpace = GetColorSpace(oldPixelData.PhotometricInterpretation);
-                        var encoder = new JpegImage(sampleRows, colorSpace);
-                        encoder.WriteJpeg(stream);
+                        using (var encoder = new JpegImage(sampleRows, colorSpace))
+                        {
+                            encoder.WriteJpeg(stream);
+                        }
                         newPixelData.AddFrame(new MemoryByteBuffer(stream.ToArray()));
                     }
                 }
@@ -260,8 +254,7 @@ namespace Dicom
                         }
                         else
                         {
-                            throw new InvalidOperationException(
-                                "JPEG module only supports Bytes Allocated == 8!");
+                            throw new InvalidOperationException("JPEG module only supports Bytes Allocated == 8!");
                         }
                     }
 
