@@ -8,7 +8,7 @@ namespace Dicom.Imaging
     /// <summary>
     /// WPF based implementation of the <see cref="ImageManager"/>.
     /// </summary>
-    public sealed class WPFImageManager : ImageManager
+    public sealed class RawImageManager : ImageManager
     {
         #region FIELDS
 
@@ -24,9 +24,9 @@ namespace Dicom.Imaging
         /// <summary>
         /// Initializes the static fields of <see cref="WPFImageManager"/>
         /// </summary>
-        static WPFImageManager()
+        static RawImageManager()
         {
-            Instance = new WPFImageManager();
+            Instance = new RawImageManager();
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
@@ -56,7 +56,7 @@ namespace Dicom.Imaging
         /// <returns><see cref="IImage"/> object using the current implementation.</returns>
         protected override IImage CreateImageImpl(int width, int height)
         {
-            return new WPFImage(width, height);
+            return new RawImage(width, height);
         }
 
         #endregion
