@@ -18,10 +18,18 @@
         "Imaging/Codec/*Process*"
       ],
       "excludeFiles": [
-        "Properties/AssemblyInfo.Legacy.cs",
         "Imaging/DicomOverlayDataFactory.cs",
+        "IO/Reader/DicomFileReaderExtensions.cs",
+        "IO/Reader/DicomReaderExtensions.cs",
+        "IO/Writer/DicomFileWriterExtensions.cs",
+        "Media/DicomDirectory.Async.cs",
+        "Network/DicomClientExtensions.cs",
         "Printing/FilmBoxExtensions.cs",
-        "Printing/ImageBoxExtensions.cs"
+        "Printing/ImageBoxExtensions.cs",
+        "AsyncFactory.cs",
+        "DicomDatasetWalkerExtensions.cs",
+        "DicomFile.Async.cs",
+        "DicomFileExtensions.Async.cs"
       ]
     },
     "embed": {
