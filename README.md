@@ -2,34 +2,43 @@
 
 # Fellow Oak DICOM
 
-[//]: # ( [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/) )
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### Features
-* Core functionality in Portable Class Library (PCL)
-* Targets .NET 4.5.2 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
+* Portable Class Library (PCL)
+* Targets .NET 4.5.2 and higher, .NET Core 1.3 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
 * DICOM dictionary version 2016b
 * High-performance, fully asynchronous `async`/`await` API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on Xamarin, Mono and Unity platforms)
+* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
 * Image rendering
 * JSON support
 
 ### Installation
-Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package contains all assemblies required to consume *fo-dicom* in a .NET application.
+Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 
-Starting with *fo-dicom* version 2.0, there will also be separate *NuGet* packages available for [Dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/), [Dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) and
-[Dicom.Platform](https://www.nuget.org/packages/fo-dicom.Platform/). *Dicom.Core* is the PCL library with core functionality, *Dicom.Legacy* is a PCL library with obsolete asynchronous API methods, and *Dicom.Platform* contains
-the support libraries required to run *fo-dicom* on specific target platforms. As of now, .NET 4.5 and higher, *Universal Windows Platform*, *Xamarin iOS* and *Xamarin Android* are the available platforms in the *Dicom.Platform* *NuGet* package.
-Starting with *fo-dicom* version 2.1.0, there are also separate platform packages for *Windows Desktop*, *Universal Windows Platform*, Xamarin iOS* and *Xamarin Android*.
+### NuGet Packages
+Package | Description
+------- | -----------
+[fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Dependencies package including core libraries for Microsoft and Xamarin platforms
+[fo-dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/) | Core library for PCL Profile 111
+[fo-dicom.Desktop](https://www.nuget.org/packages/fo-dicom.Desktop/) | Core library and native codec libraries for .NET 4.5.2 and higher
+[fo-dicom.NetStandard](https://www.nuget.org/packages/fo-dicom.NetStandard/) | Core library for .NET Core applications, Level 1.3 and higher
+[fo-dicom.Universal](https://www.nuget.org/packages/fo-dicom.Universal/) | Core library and native codec libraries for Universal Windows Platform
+[fo-dicom.Android](https://www.nuget.org/packages/fo-dicom.Android/) | Core library for Xamarin Android
+[fo-dicom.iOS](https://www.nuget.org/packages/fo-dicom.iOS/) | Core library for Xamarin iOS (Unified)
+[fo-dicom.log4net](https://www.nuget.org/packages/fo-dicom.log4net/) | .NET connector to enable *fo-dicom* logging with log4net
+[fo-dicom.MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/) | PCL Profile 111 connector to enable *fo-dicom* logging with MetroLog
+[fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable *fo-dicom* logging with NLog
+[fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
+[fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
+[fo-dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) | PCL profile 111 library with obsolete asynchronous methods (to be deprecated)
 
-*fo-dicom* can use a wide variety of logging frameworks. These connectors come in separate *NuGet* packages for [NLog](https://www.nuget.org/packages/fo-dicom.NLog/), [Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/),
-[log4net](https://www.nuget.org/packages/fo-dicom.log4net/) and [MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/). The *MetroLog* connector is a Portable Class Library, whereas the other logging connectors are .NET dedicated libraries.
-
-### v2.0 Breaking Changes
+### Usage Notes
 Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
 
     ImageManager.SetImplementation(WPFImageManager.Instance);
@@ -129,13 +138,13 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Justin Wake](https://github.com/jwake)
 * [Johannes Liegert](https://github.com/0xLigety)
 * [Chris Hafey](https://github.com/chafey)
+* [Michael Pavlovsky](https://github.com/michaelp)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
 * [do0om](https://github.com/do0om)
 * [Thunderstriker](https://github.com/Thunderstriker)
 * [Ed55](https://github.com/Ed55)
 * [zcr01](https://github.com/zcr01)
-* [Michael Pavlovsky](https://github.com/michaelp)
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.

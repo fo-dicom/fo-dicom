@@ -32,5 +32,8 @@
 			</group>
         </dependencies>
     </metadata>
-    <files/>
+    <files>
+        <file src="..\README.md" />
+        <file src="..\ChangeLog.md" />
+	</files>
 </package>
