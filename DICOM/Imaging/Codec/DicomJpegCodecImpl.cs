@@ -1,24 +1,16 @@
 // Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Linq;
-
-using BitMiracle.LibJpeg;
-
-namespace Dicom
+namespace Dicom.Imaging.Codec
 {
     using System;
     using System.IO;
+    using System.Linq;
+
+    using BitMiracle.LibJpeg;
 
     using Dicom.Imaging;
-    using Dicom.Imaging.Codec;
     using Dicom.IO.Buffer;
-
-//    using FluxJpeg.Core;
-//    using FluxJpeg.Core.Decoder;
-//    using FluxJpeg.Core.Encoder;
-
-//    using JpegColorSpace = FluxJpeg.Core.ColorSpace;
 
     internal static class DicomJpegCodecImpl
     {
@@ -36,8 +28,6 @@ namespace Dicom
                     + "' not supported by JPEG encoder");
             }
 
-            var jparams = parameters ?? new DicomJpegParams();
-
             var w = oldPixelData.Width;
             var h = oldPixelData.Height;
 
@@ -48,7 +38,7 @@ namespace Dicom
                 var nc = oldPixelData.SamplesPerPixel;
                 var sgnd = oldPixelData.PixelRepresentation == PixelRepresentation.Signed;
 
-                var rows = Enumerable.Repeat(new short[w, nc], h).ToArray();
+                var rows = Enumerable.Range(0, h).Select(i => new short[w, nc]).ToArray();
 
                 for (var c = 0; c < nc; c++)
                 {
@@ -98,6 +88,7 @@ namespace Dicom
                             }
                         }
                     }
+#if SUPPORT16BIT
                     else if (oldPixelData.BytesAllocated == 2)
                     {
                         if (sgnd)
@@ -149,9 +140,11 @@ namespace Dicom
                             }
                         }
                     }
+#endif
                     else
                     {
-                        throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
+                        throw new InvalidOperationException(
+                            $"JPEG codec does not support Bits Allocated == {oldPixelData.BitsAllocated}");
                     }
                 }
 
@@ -168,8 +161,10 @@ namespace Dicom
                                     (byte)oldPixelData.BitsStored,
                                     (byte)nc)).ToArray();
                         var colorSpace = GetColorSpace(oldPixelData.PhotometricInterpretation);
-                        var encoder = new JpegImage(sampleRows, colorSpace);
-                        encoder.WriteJpeg(stream);
+                        using (var encoder = new JpegImage(sampleRows, colorSpace))
+                        {
+                            encoder.WriteJpeg(stream, ToCompressionParameters(parameters));
+                        }
                         newPixelData.AddFrame(new MemoryByteBuffer(stream.ToArray()));
                     }
                 }
@@ -243,6 +238,7 @@ namespace Dicom
                                 }
                             }
                         }
+#if SUPPORT16BIT
                         else if (newPixelData.BytesAllocated == 2)
                         {
                             var destArray16 = new short[frameSize >> 1];
@@ -258,10 +254,11 @@ namespace Dicom
 
                             Buffer.BlockCopy(destArray16, 0, destArray, 0, frameSize);
                         }
+#endif
                         else
                         {
                             throw new InvalidOperationException(
-                                "JPEG module only supports Bytes Allocated == 8!");
+                                $"JPEG module does not support Bits Allocated == {newPixelData.BitsAllocated}!");
                         }
                     }
 
@@ -310,6 +307,7 @@ namespace Dicom
                         }
                     }
                     return bytes;
+#if SUPPORT16BIT
                 case 16:
                     bytes = new byte[2 * row.Length];
                     for (int x = 0, idx = 0; x < row.GetLength(0); ++x)
@@ -320,9 +318,23 @@ namespace Dicom
                         }
                     }
                     return bytes;
+#endif
                 default:
-                    throw new InvalidOperationException("JPEG codec only supports Bits Allocated == 8 & 16");
+                    throw new InvalidOperationException($"JPEG codec does not support Bits Allocated == {bitsAllocated}");
             }
+        }
+
+        private static CompressionParameters ToCompressionParameters(DicomJpegParams parameters)
+        {
+            var compressionParams = new CompressionParameters();
+
+            if (parameters != null)
+            {
+                compressionParams.Quality = parameters.Quality;
+                compressionParams.SmoothingFactor = parameters.SmoothingFactor;
+            }
+
+            return compressionParams;
         }
     }
 }

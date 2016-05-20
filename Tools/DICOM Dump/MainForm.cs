@@ -63,15 +63,9 @@ namespace Dicom.Dump
             lvi.SubItems.Add(value);
         }
 
-        private bool IsStructuredReport
-        {
-            get
-            {
-                return _file != null && _file.Format == DicomFileFormat.DICOM3
-                       && _file.FileMetaInfo.MediaStorageSOPClassUID.StorageCategory
-                       == DicomStorageCategory.StructuredReport;
-            }
-        }
+        private bool IsStructuredReport => this._file != null
+                                           && this._file.Dataset.Get<DicomUID>(DicomTag.SOPClassUID, null)?.StorageCategory
+                                           == DicomStorageCategory.StructuredReport;
 
         public void OpenFile(string fileName)
         {
