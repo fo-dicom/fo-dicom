@@ -16,7 +16,7 @@
 				<dependency id="fo-dicom.Core" version="$version$" />
 			</group>
 			<group targetFramework="netstandard1.3">
-				<dependency id="fo-dicom.NetStandard" version="$version$" />
+				<dependency id="fo-dicom.NetCore" version="$version$" />
 			</group>
 			<group targetFramework="net452">
 				<dependency id="fo-dicom.Desktop" version="$version$" />
