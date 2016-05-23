@@ -41,8 +41,12 @@
     <StartupObject>Dicom.Dump.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BitMiracle.LibJpeg.Portable, Version=1.5.0.0, Culture=neutral, PublicKeyToken=d69f732e552243f5, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.0.1\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
+    <Reference Include="BitMiracle.LibJpeg.NetCore, Version=1.5.1.2, Culture=neutral, PublicKeyToken=d69f732e552243f5, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1-pre2\lib\netstandard1.0\BitMiracle.LibJpeg.NetCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CSJ2K, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.2.0.0-beta6\lib\net40-client\CSJ2K.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

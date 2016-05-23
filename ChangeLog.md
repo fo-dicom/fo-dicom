@@ -1,5 +1,5 @@
 #### v.3.0.0 (Beta 1, 5/20/2016)
-* .NET Core Library Build Request (#256 #294)
+* .NET Core Library Build Request (#256 #294 #296 #297)
 * Red and Blue bytes swapped in color images on iOS (#290 #291)
 * Support creating DS Value elements from string and IByteBuffer (#288)
 * Pixel Data not null-padded to even length (#284 #286)
