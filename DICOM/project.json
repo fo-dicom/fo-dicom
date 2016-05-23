@@ -2,7 +2,11 @@
   "buildOptions": {
     "compile": {
       "include": "**/*.cs",
-      "includeFiles": [ "../SharedAssemblyInfo.cs" ],
+      "includeFiles": [
+        "../SharedAssemblyInfo.cs",
+        "Imaging/Codec/DicomJpeg2000LosslessCodec.cs",
+        "Imaging/Codec/DicomJpeg2000LossyCodec.cs"
+      ],
       "exclude": [
         "Compatibility/*",
         "**/Android*",
@@ -12,13 +16,15 @@
         "**/WPF*",
         "**/Windows*",
         "Imaging/Codec/Desktop*",
-        "Imaging/Codec/*Impl.cs",
         "Imaging/Codec/*Loss*",
-        "Imaging/Codec/*Native*",
-        "Imaging/Codec/*Process*"
+        "Imaging/Codec/*Native*.cs"
       ],
       "excludeFiles": [
         "Imaging/DicomOverlayDataFactory.cs",
+        "Imaging/Codec/DicomJpegProcess1Codec.cs",
+        "Imaging/Codec/DicomJpegProcess4Codec.cs",
+        "Imaging/Codec/DicomJpegProcess4Codec.Mono.cs",
+        "Imaging/Codec/DicomRleCodecImpl.cs",
         "IO/Reader/DicomFileReaderExtensions.cs",
         "IO/Reader/DicomReaderExtensions.cs",
         "IO/Writer/DicomFileWriterExtensions.cs",
@@ -52,7 +58,9 @@
     "System.Net.NetworkInformation": "4.1.0-rc2-24027",
     "System.Net.Security": "4.0.0-rc2-24027",
     "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027",
-    "System.Threading.Tasks.Parallel": "4.0.1-rc2-24027"
+    "System.Threading.Tasks.Parallel": "4.0.1-rc2-24027",
+    "CSJ2K": "2.0.0-beta6",
+    "Portable.LibJpeg.NET": "1.5.1-pre2"
   },
 
   "frameworks": {
