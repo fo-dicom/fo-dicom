@@ -238,9 +238,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomStructuredReportException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)DicomTagGenerated.tt" />
-    <Content Include="$(MSBuildThisFileDirectory)DicomUIDGenerated.tt" />
-    <Content Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.tt" />
+    <None Include="$(MSBuildThisFileDirectory)DicomTagGenerated.tt" />
+    <None Include="$(MSBuildThisFileDirectory)DicomUIDGenerated.tt" />
+    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.tt" />
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
       <DependentUpon>DICOM Dictionary.tt</DependentUpon>
     </None>
