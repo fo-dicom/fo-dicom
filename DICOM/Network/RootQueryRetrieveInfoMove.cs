@@ -18,7 +18,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Gets the relational retrieval flag.
+        /// Gets or sets the relational retrieval flag.
         /// </summary>
         public byte? RelationalRetrieval { get; set; }
 
