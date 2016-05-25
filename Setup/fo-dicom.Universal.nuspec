@@ -9,11 +9,8 @@
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Universal Windows Platform specific support libraries for fo-dicom.</description>
+        <description>Core fo-dicom libraries for Universal Windows Platform (Windows 10).</description>
         <language>en-US</language>
-        <dependencies>
-			<dependency id="fo-dicom.Core" version="$version$" />
-        </dependencies>
     </metadata>
     <files>
 		<file src="Targets\fo-dicom.Universal.targets" target="build\uap" />
