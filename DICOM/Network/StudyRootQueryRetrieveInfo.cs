@@ -33,27 +33,27 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the relational queries.
         /// </summary>
-        public byte? RelationalQueries { get; }
+        public byte? RelationalQueries { get; set; }
 
         /// <summary>
         /// Gets the date time matching.
         /// </summary>
-        public byte? DateTimeMatching { get; }
+        public byte? DateTimeMatching { get; set; }
 
         /// <summary>
         /// Gets the fuzzy semantic matching.
         /// </summary>
-        public byte? FuzzySemanticMatching { get; }
+        public byte? FuzzySemanticMatching { get; set; }
 
         /// <summary>
         /// Gets the time zone query adjustment.
         /// </summary>
-        public byte? TimezoneQueryAdjustment { get; }
+        public byte? TimezoneQueryAdjustment { get; set; }
 
         /// <summary>
         /// Gets the enhanced multi frame image conversion.
         /// </summary>
-        public byte? EnhancedMultiFrameImageConversion { get; }
+        public byte? EnhancedMultiFrameImageConversion { get; set; }
 
         /// <summary>
         /// Factory method for creating a <see cref="RootQueryRetrieveInfoFind"/> instance.
