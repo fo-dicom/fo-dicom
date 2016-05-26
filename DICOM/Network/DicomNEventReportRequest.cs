@@ -46,6 +46,8 @@ namespace Dicom.Network
             }
         }
 
+        internal bool HasSOPInstanceUID => this.Command.Contains(DicomTag.RequestedSOPInstanceUID);
+
         public delegate void ResponseDelegate(DicomNEventReportRequest request, DicomNEventReportResponse response);
 
         public ResponseDelegate OnResponseReceived;

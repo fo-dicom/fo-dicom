@@ -22,19 +22,6 @@ namespace Dicom.Network
             Assert.Null(exception);
         }
 
-        [Fact]
-        public void MessageIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
-        {
-            var request = new DicomNEventReportRequest(
-                DicomUID.BasicFilmSessionSOPClass,
-                new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
-                2);
-            var response = new DicomNEventReportResponse(request, DicomStatus.Success);
-
-            var exception = Record.Exception(() => response.MessageID);
-            Assert.Null(exception);
-        }
-
         #endregion
     }
 }

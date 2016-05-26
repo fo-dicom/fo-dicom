@@ -16,6 +16,12 @@ namespace Dicom.Network
         public DicomNEventReportResponse(DicomNEventReportRequest request, DicomStatus status)
             : base(request, status)
         {
+            if (request.HasSOPInstanceUID)
+            {
+                this.SOPInstanceUID = request.SOPInstanceUID;
+            }
+
+            this.EventTypeID = request.EventTypeID;
         }
 
         public DicomUID SOPInstanceUID
