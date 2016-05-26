@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
 namespace Dicom.Network
 {
     public abstract class DicomPriorityRequest : DicomRequest
@@ -12,8 +10,8 @@ namespace Dicom.Network
         {
         }
 
-        protected DicomPriorityRequest(DicomCommandField type, DicomUID affectedClassUid, DicomPriority priority)
-            : base(type, affectedClassUid)
+        protected DicomPriorityRequest(DicomCommandField type, DicomUID requestedClassUid, DicomPriority priority)
+            : base(type, requestedClassUid)
         {
             Priority = priority;
         }

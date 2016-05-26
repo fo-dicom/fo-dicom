@@ -1,22 +1,38 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
 namespace Dicom.Network
 {
-    public class DicomResponse : DicomMessage
+    using System;
+    using System.Text;
+
+    /// <summary>
+    /// Base class for DIMSE-C and DIMSE-N response items.
+    /// </summary>
+    public abstract class DicomResponse : DicomMessage
     {
-        public DicomResponse(DicomDataset command)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomResponse"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The command dataset.
+        /// </param>
+        protected DicomResponse(DicomDataset command)
             : base(command)
         {
         }
 
-        public DicomResponse(DicomMessage request, DicomStatus status)
-            : base()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomResponse"/> class.
+        /// </summary>
+        /// <param name="request">
+        /// The request initiating the response.
+        /// </param>
+        /// <param name="status">
+        /// Response status.
+        /// </param>
+        protected DicomResponse(DicomRequest request, DicomStatus status)
         {
-
             PresentationContext = request.PresentationContext;
 
             Type = (DicomCommandField)(0x8000 | (int)request.Type);
@@ -25,6 +41,9 @@ namespace Dicom.Network
             Status = status;
         }
 
+        /// <summary>
+        /// Gets or sets the message ID of the request being responded to.
+        /// </summary>
         public ushort RequestMessageID
         {
             get
@@ -37,6 +56,9 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets or sets the response status.
+        /// </summary>
         public DicomStatus Status
         {
             get
@@ -53,6 +75,12 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Formatted output of the DICOM response.
+        /// </summary>
+        /// <returns>
+        /// The formatted output of the DICOM response.
+        /// </returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
