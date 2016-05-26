@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-using Dicom.Log;
-using Dicom.Network;
-
-using Xunit;
-
 namespace Dicom.Bugs
 {
+    using System;
+    using System.Text;
+    using Dicom.Log;
+    using Dicom.Network;
+
+    using Xunit;
+
     public class GH306
     {
         #region Unit tests
