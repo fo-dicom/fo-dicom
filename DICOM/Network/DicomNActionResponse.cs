@@ -1,18 +1,38 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
 namespace Dicom.Network
 {
+    using System;
+    using System.Text;
+
+    /// <summary>
+    /// Representation of an N-ACTION response message.
+    /// </summary>
     public class DicomNActionResponse : DicomResponse
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomNActionResponse"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// A dataset representing the response command.
+        /// </param>
         public DicomNActionResponse(DicomDataset command)
             : base(command)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomNActionResponse"/> class.
+        /// </summary>
+        /// <param name="request">
+        /// The associated N-ACTION request.
+        /// </param>
+        /// <param name="status">
+        /// The response status.
+        /// </param>
         public DicomNActionResponse(DicomNActionRequest request, DicomStatus status)
             : base(request, status)
         {
@@ -24,6 +44,13 @@ namespace Dicom.Network
             this.ActionTypeID = request.ActionTypeID;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the affected SOP instance UID.
+        /// </summary>
         public DicomUID SOPInstanceUID
         {
             get
@@ -36,6 +63,9 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets the action type ID.
+        /// </summary>
         public ushort ActionTypeID
         {
             get
@@ -48,6 +78,14 @@ namespace Dicom.Network
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Formatted output.
+        /// </summary>
+        /// <returns>Formetted output of the N-ACTION response.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -59,5 +97,7 @@ namespace Dicom.Network
             }
             return sb.ToString();
         }
+
+        #endregion
     }
 }
