@@ -1,23 +1,56 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
 namespace Dicom.Network
 {
+    using System;
+    using System.Text;
+
+    /// <summary>
+    /// Representation of an N-EVENTREPORT response message.
+    /// </summary>
     public class DicomNEventReportResponse : DicomResponse
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomNEventReportResponse"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The dataset representing the N-EVENTREPORT response command.
+        /// </param>
         public DicomNEventReportResponse(DicomDataset command)
             : base(command)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomNEventReportResponse"/> class.
+        /// </summary>
+        /// <param name="request">
+        /// The request associated with the N-EVENTREPORT response.
+        /// </param>
+        /// <param name="status">
+        /// The response status.
+        /// </param>
         public DicomNEventReportResponse(DicomNEventReportRequest request, DicomStatus status)
             : base(request, status)
         {
+            if (request.HasSOPInstanceUID)
+            {
+                this.SOPInstanceUID = request.SOPInstanceUID;
+            }
+
+            this.EventTypeID = request.EventTypeID;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the affected SOP instance UID.
+        /// </summary>
         public DicomUID SOPInstanceUID
         {
             get
@@ -30,6 +63,9 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets the event type ID.
+        /// </summary>
         public ushort EventTypeID
         {
             get
@@ -42,6 +78,14 @@ namespace Dicom.Network
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Formatted output of the N-EVENTREPORT response message.
+        /// </summary>
+        /// <returns>Formatted output of the N-EVENTREPORT response message.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -53,5 +97,7 @@ namespace Dicom.Network
             }
             return sb.ToString();
         }
+
+        #endregion
     }
 }

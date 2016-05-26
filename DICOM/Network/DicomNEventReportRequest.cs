@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Text;
-
 namespace Dicom.Network
 {
+    using System.Text;
+
     public class DicomNEventReportRequest : DicomRequest
     {
         public DicomNEventReportRequest(DicomDataset command)
@@ -13,12 +13,12 @@ namespace Dicom.Network
         }
 
         public DicomNEventReportRequest(
-            DicomUID affectedClassUid,
-            DicomUID affectedInstanceUid,
+            DicomUID requestedClassUid,
+            DicomUID requestedInstanceUid,
             ushort eventTypeId)
-            : base(DicomCommandField.NEventReportRequest, affectedClassUid)
+            : base(DicomCommandField.NEventReportRequest, requestedClassUid)
         {
-            SOPInstanceUID = affectedInstanceUid;
+            SOPInstanceUID = requestedInstanceUid;
             EventTypeID = eventTypeId;
         }
 
@@ -26,11 +26,11 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
             }
             private set
             {
-                Command.Add(DicomTag.AffectedSOPInstanceUID, value);
+                Command.Add(DicomTag.RequestedSOPInstanceUID, value);
             }
         }
 
@@ -45,6 +45,8 @@ namespace Dicom.Network
                 Command.Add(DicomTag.EventTypeID, value);
             }
         }
+
+        internal bool HasSOPInstanceUID => this.Command.Contains(DicomTag.RequestedSOPInstanceUID);
 
         public delegate void ResponseDelegate(DicomNEventReportRequest request, DicomNEventReportResponse response);
 

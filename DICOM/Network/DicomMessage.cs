@@ -1,26 +1,40 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
-using Dicom.Log;
-
 namespace Dicom.Network
 {
+    using System.Text;
+
+    using Dicom.Log;
+
+    /// <summary>
+    /// Base class for DIMSE-C and DIMSE-N message items.
+    /// </summary>
     public class DicomMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomMessage"/> class.
+        /// </summary>
         public DicomMessage()
         {
             Command = new DicomDataset();
             Dataset = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomMessage"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The DICOM dataset representing the message command.
+        /// </param>
         public DicomMessage(DicomDataset command)
         {
             Command = command;
         }
 
+        /// <summary>
+        /// Gets or sets the command field type.
+        /// </summary>
         public DicomCommandField Type
         {
             get
@@ -33,7 +47,9 @@ namespace Dicom.Network
             }
         }
 
-        /// <summary>Affected or requested SOP Class UID</summary>
+        /// <summary>
+        /// Gets or sets the affected or requested SOP Class UID
+        /// </summary>
         public DicomUID SOPClassUID
         {
             get
@@ -66,18 +82,9 @@ namespace Dicom.Network
             }
         }
 
-        public ushort MessageID
-        {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.MessageID);
-            }
-            set
-            {
-                Command.Add(DicomTag.MessageID, value);
-            }
-        }
-
+        /// <summary>
+        /// Gets a value indicating whether the message contains a dataset.
+        /// </summary>
         public bool HasDataset
         {
             get
@@ -88,14 +95,20 @@ namespace Dicom.Network
 
 
         /// <summary>
-        /// Presentation Context
+        /// Gets or sets the presentation Context.
         /// </summary>
         public DicomPresentationContext PresentationContext { get; set; }
 
+        /// <summary>
+        /// Gets or sets the associated DICOM command.
+        /// </summary>
         public DicomDataset Command { get; set; }
 
         private DicomDataset _dataset;
 
+        /// <summary>
+        /// Gets or sets the dataset potentially included in the message..
+        /// </summary>
         public DicomDataset Dataset
         {
             get
@@ -109,17 +122,30 @@ namespace Dicom.Network
             }
         }
 
-        /// <summary>State object that will be passed from request to response objects.</summary>
+        /// <summary>
+        /// Gets or sets the state object that will be passed from request to response objects.
+        /// </summary>
         public object UserState { get; set; }
 
+        /// <summary>
+        /// Formatted output of the DICOM message.
+        /// </summary>
+        /// <returns>Formatted output string of the DICOM message.</returns>
         public override string ToString()
         {
-            return String.Format(
+            return string.Format(
                 "{0} [{1}]",
                 ToString(Type),
-                IsRequest(Type) ? MessageID : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
+                IsRequest(Type)
+                    ? Command.Get<ushort>(DicomTag.MessageID)
+                    : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
         }
 
+        /// <summary>
+        /// Formatted output of the DICOM message.
+        /// </summary>
+        /// <param name="printDatasets">Indicates whether datasets should be printed.</param>
+        /// <returns>Formatted output string of the DICOM message.</returns>
         public string ToString(bool printDatasets)
         {
             var output = new StringBuilder(ToString());
@@ -145,6 +171,11 @@ namespace Dicom.Network
             return output.ToString();
         }
 
+        /// <summary>
+        /// Formatted output of the DICOM message.
+        /// </summary>
+        /// <param name="type">DICOM command field type.</param>
+        /// <returns>Formatted output string of the DICOM message.</returns>
         public static string ToString(DicomCommandField type)
         {
             switch (type)
@@ -200,6 +231,11 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Evaluates whether a DICOM message is a request or a response.
+        /// </summary>
+        /// <param name="type">DICOM command field type.</param>
+        /// <returns>True if message is a request, false otherwise.</returns>
         public static bool IsRequest(DicomCommandField type)
         {
             return ((int)type & 0x8000) == 0;

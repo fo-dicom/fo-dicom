@@ -11,22 +11,22 @@ namespace Dicom.Network
         }
 
         public DicomNCreateRequest(
-            DicomUID affectedClassUid,
-            DicomUID affectedInstanceUid)
-            : base(DicomCommandField.NCreateRequest, affectedClassUid)
+            DicomUID requestedClassUid,
+            DicomUID requestedInstanceUid)
+            : base(DicomCommandField.NCreateRequest, requestedClassUid)
         {
-            SOPInstanceUID = affectedInstanceUid;
+            SOPInstanceUID = requestedInstanceUid;
         }
 
         public DicomUID SOPInstanceUID
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
             }
             private set
             {
-                Command.Add(DicomTag.AffectedSOPInstanceUID, value);
+                Command.Add(DicomTag.RequestedSOPInstanceUID, value);
             }
         }
 
