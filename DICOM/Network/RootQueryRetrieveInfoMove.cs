@@ -18,9 +18,9 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Gets the relational retrieval flag.
+        /// Gets or sets the relational retrieval flag.
         /// </summary>
-        public byte? RelationalRetrieval { get; }
+        public byte? RelationalRetrieval { get; set; }
 
         /// <summary>
         /// Factory method for creating a <see cref="RootQueryRetrieveInfoMove"/> instance.
