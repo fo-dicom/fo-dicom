@@ -337,6 +337,9 @@ namespace Dicom.Network
 
         private void InitializeSend(INetworkStream stream, DicomAssociation association)
         {
+            this.associateNotifier = new TaskCompletionSource<bool>();
+            this.completeNotifier = new TaskCompletionSource<bool>();
+
             foreach (var request in this.requests)
             {
                 association.PresentationContexts.AddFromRequest(request);
@@ -345,9 +348,6 @@ namespace Dicom.Network
             {
                 association.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
             }
-
-            this.associateNotifier = new TaskCompletionSource<bool>();
-            this.completeNotifier = new TaskCompletionSource<bool>();
 
             this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);
         }

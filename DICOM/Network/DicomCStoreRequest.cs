@@ -60,7 +60,7 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes DICOM C-Store request to be sent to SCP.
         /// </summary>
-        /// <param name="file">DICOM file to be sent</param>
+        /// <param name="fileName">DICOM file to be sent</param>
         /// <param name="priority">Priority of request</param>
         public DicomCStoreRequest(string fileName, DicomPriority priority = DicomPriority.Medium)
             : this(DicomFile.Open(fileName), priority)
@@ -85,12 +85,12 @@ namespace Dicom.Network
 
         /// <summary>Gets the transfer syntax of the DICOM file associated with this DICOM C-Store request.</summary>
         public DicomTransferSyntax TransferSyntax
-        {
-            get
-            {
-                return File.FileMetaInfo.TransferSyntax;
-            }
-        }
+            =>
+                this.File != null
+                    ? (this.File.FileMetaInfo.Contains(DicomTag.TransferSyntaxUID)
+                           ? this.File.FileMetaInfo.TransferSyntax
+                           : this.File.Dataset.InternalTransferSyntax)
+                    : null;
 
         /// <summary>
         /// Additional transfer syntaxes to propose in the association request.
