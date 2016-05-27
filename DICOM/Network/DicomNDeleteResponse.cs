@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomNDeleteResponse : DicomResponse
+    public sealed class DicomNDeleteResponse : DicomResponse
     {
         public DicomNDeleteResponse(DicomDataset command)
             : base(command)

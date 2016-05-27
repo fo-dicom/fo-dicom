@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomNDeleteRequest : DicomRequest
+    public sealed class DicomNDeleteRequest : DicomRequest
     {
         public DicomNDeleteRequest(DicomDataset command)
             : base(command)

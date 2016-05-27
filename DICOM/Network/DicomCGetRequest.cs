@@ -6,7 +6,7 @@ namespace Dicom.Network
     /// <summary>
     /// Representation of a C-GET request.
     /// </summary>
-    public class DicomCGetRequest : DicomPriorityRequest
+    public sealed class DicomCGetRequest : DicomPriorityRequest
     {
         #region CONSTRUCTORS
 

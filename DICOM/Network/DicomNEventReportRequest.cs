@@ -5,7 +5,7 @@ namespace Dicom.Network
 {
     using System.Text;
 
-    public class DicomNEventReportRequest : DicomRequest
+    public sealed class DicomNEventReportRequest : DicomRequest
     {
         public DicomNEventReportRequest(DicomDataset command)
             : base(command)

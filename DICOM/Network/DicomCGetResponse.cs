@@ -9,7 +9,7 @@ namespace Dicom.Network
     /// <summary>
     /// Representation of a C-GET response.
     /// </summary>
-    public class DicomCGetResponse : DicomResponse
+    public sealed class DicomCGetResponse : DicomResponse
     {
         #region CONSTRUCTORS
 

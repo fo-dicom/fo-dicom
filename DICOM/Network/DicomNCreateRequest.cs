@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomNCreateRequest : DicomRequest
+    public sealed class DicomNCreateRequest : DicomRequest
     {
         public DicomNCreateRequest(DicomDataset command)
             : base(command)
