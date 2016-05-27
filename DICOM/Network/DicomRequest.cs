@@ -70,7 +70,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="service">Active DICOM service.</param>
         /// <param name="response">Response to be post-processed.</param>
-        internal abstract void PostResponse(DicomService service, DicomResponse response);
+        protected internal abstract void PostResponse(DicomService service, DicomResponse response);
 
         /// <summary>
         /// Global message ID generator.

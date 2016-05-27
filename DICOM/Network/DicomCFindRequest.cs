@@ -36,7 +36,7 @@ namespace Dicom.Network
 
         public ResponseDelegate OnResponseReceived;
 
-        internal override void PostResponse(DicomService service, DicomResponse response)
+        protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
             {

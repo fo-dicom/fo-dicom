@@ -114,7 +114,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="service">DICOM SCP implementation</param>
         /// <param name="response">Received DICOM response</param>
-        internal override void PostResponse(DicomService service, DicomResponse response)
+        protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
             {
