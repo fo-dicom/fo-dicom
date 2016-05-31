@@ -346,7 +346,11 @@ namespace Dicom.Network
             }
             foreach (var context in this.AdditionalPresentationContexts)
             {
-                association.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());
+                association.PresentationContexts.Add(
+                    context.AbstractSyntax,
+                    context.UserRole,
+                    context.ProviderRole,
+                    context.GetTransferSyntaxes().ToArray());
             }
 
             this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);

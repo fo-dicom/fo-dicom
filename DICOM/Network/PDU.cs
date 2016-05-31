@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using Dicom.IO;
@@ -501,6 +502,22 @@ namespace Dicom.Network
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
             }
 
+            foreach (var pc in _assoc.PresentationContexts)
+            {
+                if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
+                {
+                    pdu.Write("Item-Type", (byte)0x54);
+                    pdu.Write("Reserved", (byte)0x00);
+                    pdu.MarkLength16("Item-Length");
+                    pdu.MarkLength16("UID-Length");
+                    pdu.Write("Abstract Syntax UID", pc.AbstractSyntax.UID);
+                    pdu.WriteLength16();
+                    pdu.Write("SCU Role", pc.UserRole.GetValueOrDefault() ? (byte)1 : (byte)0);
+                    pdu.Write("SCP Role", pc.ProviderRole.GetValueOrDefault() ? (byte)1 : (byte)0);
+                    pdu.WriteLength16();
+                }
+            }
+
             // Implementation Version
             pdu.Write("Item-Type", (byte)0x55);
             pdu.Write("Reserved", (byte)0x00);
@@ -608,16 +625,18 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x54)
                         {
-                            raw.SkipBytes("SCU/SCP Role Selection", ul);
-                            /*
-                                    ushort rsul = raw.ReadUInt16();
-                                    if ((rsul + 4) != ul) {
-                                        throw new DicomNetworkException("SCU/SCP role selection length (" + ul + " bytes) does not match uid length (" + rsul + " + 4 bytes)");
-                                    }
-                                    raw.ReadChars(rsul);	// Abstract Syntax
-                                    raw.ReadByte();		// SCU role
-                                    raw.ReadByte();		// SCP role
-                                    */
+                            var asul = raw.ReadUInt16("Abstract Syntax Item-Length");
+                            var syntax = raw.ReadString("Abstract Syntax UID", asul);
+                            var userRole = raw.ReadByte("SCU role");
+                            var providerRole = raw.ReadByte("SCP role");
+                            var pc =
+                                _assoc.PresentationContexts.SingleOrDefault(
+                                    context => context.AbstractSyntax.UID.Equals(syntax));
+                            if (pc != null)
+                            {
+                                pc.UserRole = userRole == 0x01;
+                                pc.ProviderRole = providerRole == 0x01;
+                            }
                         }
                         else if (ut == 0x56)
                         {
@@ -625,7 +644,6 @@ namespace Dicom.Network
                         }
                         else
                         {
-                            //Debug.Log.Error("Unhandled user item: 0x{0:x2} ({1} + 4 bytes)", ut, ul);
                             raw.SkipBytes("Unhandled User Item", ul);
                         }
                     }
@@ -731,6 +749,22 @@ namespace Dicom.Network
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
             }
 
+            foreach (var pc in _assoc.PresentationContexts)
+            {
+                if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
+                {
+                    pdu.Write("Item-Type", (byte)0x54);
+                    pdu.Write("Reserved", (byte)0x00);
+                    pdu.MarkLength16("Item-Length");
+                    pdu.MarkLength16("UID-Length");
+                    pdu.Write("Abstract Syntax UID", pc.AbstractSyntax.UID);
+                    pdu.WriteLength16();
+                    pdu.Write("SCU Role", pc.UserRole.GetValueOrDefault() ? (byte)1 : (byte)0);
+                    pdu.Write("SCP Role", pc.ProviderRole.GetValueOrDefault() ? (byte)1 : (byte)0);
+                    pdu.WriteLength16();
+                }
+            }
+
             // Implementation Version
             pdu.Write("Item-Type", (byte)0x55);
             pdu.Write("Reserved", (byte)0x00);
@@ -833,6 +867,21 @@ namespace Dicom.Network
                         {
                             _assoc.MaxAsyncOpsInvoked = raw.ReadUInt16("Asynchronous Operations Invoked");
                             _assoc.MaxAsyncOpsPerformed = raw.ReadUInt16("Asynchronous Operations Performed");
+                        }
+                        else if (ut == 0x54)
+                        {
+                            var asul = raw.ReadUInt16("Abstract Syntax Item-Length");
+                            var syntax = raw.ReadString("Abstract Syntax UID", asul);
+                            var userRole = raw.ReadByte("SCU role");
+                            var providerRole = raw.ReadByte("SCP role");
+                            var pc =
+                                _assoc.PresentationContexts.SingleOrDefault(
+                                    context => context.AbstractSyntax.UID.Equals(syntax));
+                            if (pc != null)
+                            {
+                                pc.UserRole = userRole == 0x01;
+                                pc.ProviderRole = providerRole == 0x01;
+                            }
                         }
                         else if (ut == 0x55)
                         {

@@ -7,21 +7,45 @@ namespace Dicom.Network
     using System.Collections.ObjectModel;
     using System.Linq;
 
+    /// <summary>
+    /// Enumeration of presentation context results.
+    /// </summary>
     public enum DicomPresentationContextResult : byte
     {
+        /// <summary>
+        /// Presentation context is proposed.
+        /// </summary>
         Proposed = 255,
 
+        /// <summary>
+        /// Presentation context is accepted.
+        /// </summary>
         Accept = 0,
 
+        /// <summary>
+        /// Presentation context is rejected by user.
+        /// </summary>
         RejectUser = 1,
 
+        /// <summary>
+        /// Presentation context is rejected for unspecified reason.
+        /// </summary>
         RejectNoReason = 2,
 
+        /// <summary>
+        /// Presentation context is rejected due to abstract syntax not being supported.
+        /// </summary>
         RejectAbstractSyntaxNotSupported = 3,
 
+        /// <summary>
+        /// Presentation context is rejected due to transfer syntaxes not being supported.
+        /// </summary>
         RejectTransferSyntaxesNotSupported = 4
     }
 
+    /// <summary>
+    /// Representation of a presentation context.
+    /// </summary>
     public class DicomPresentationContext
     {
         #region Private Members
@@ -38,14 +62,64 @@ namespace Dicom.Network
 
         #region Public Constructor
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomPresentationContext"/> class.
+        /// </summary>
+        /// <param name="pcid">
+        /// The presentation context ID.
+        /// </param>
+        /// <param name="abstractSyntax">
+        /// The abstract syntax associated with the presentation context.
+        /// </param>
         public DicomPresentationContext(byte pcid, DicomUID abstractSyntax)
+            : this(pcid, abstractSyntax, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomPresentationContext"/> class.
+        /// </summary>
+        /// <param name="pcid">
+        /// The presentation context ID.
+        /// </param>
+        /// <param name="abstractSyntax">
+        /// The abstract syntax associated with the presentation context.
+        /// </param>
+        /// <param name="userRole">
+        /// Indicates whether SCU role is supported.
+        /// </param>
+        /// <param name="providerRole">
+        /// Indicates whether SCP role is supported.
+        /// </param>
+        public DicomPresentationContext(
+            byte pcid,
+            DicomUID abstractSyntax,
+            bool? userRole,
+            bool? providerRole)
         {
             _pcid = pcid;
             _result = DicomPresentationContextResult.Proposed;
             _abstract = abstractSyntax;
             _transferSyntaxes = new List<DicomTransferSyntax>();
+            UserRole = userRole;
+            ProviderRole = providerRole;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomPresentationContext"/> class.
+        /// </summary>
+        /// <param name="pcid">
+        /// The presentation context ID.
+        /// </param>
+        /// <param name="abstractSyntax">
+        /// The abstract syntax associated with the presentation context.
+        /// </param>
+        /// <param name="transferSyntax">
+        /// Accepted transfer syntax.
+        /// </param>
+        /// <param name="result">
+        /// Result of presentation context negotiation.
+        /// </param>
         internal DicomPresentationContext(
             byte pcid,
             DicomUID abstractSyntax,
@@ -57,36 +131,32 @@ namespace Dicom.Network
             _abstract = abstractSyntax;
             _transferSyntaxes = new List<DicomTransferSyntax>();
             _transferSyntaxes.Add(transferSyntax);
+            UserRole = null;
+            ProviderRole = null;
         }
 
         #endregion
 
         #region Public Properties
 
-        public byte ID
-        {
-            get
-            {
-                return _pcid;
-            }
-        }
+        /// <summary>
+        /// Gets the presentation context ID.
+        /// </summary>
+        public byte ID => _pcid;
 
-        public DicomPresentationContextResult Result
-        {
-            get
-            {
-                return _result;
-            }
-        }
+        /// <summary>
+        /// Gets the association negotiation result.
+        /// </summary>
+        public DicomPresentationContextResult Result =>_result;
 
-        public DicomUID AbstractSyntax
-        {
-            get
-            {
-                return _abstract;
-            }
-        }
+        /// <summary>
+        /// Gets the abstact syntax associated with the presentation context.
+        /// </summary>
+        public DicomUID AbstractSyntax => _abstract;
 
+        /// <summary>
+        /// Gets the accepted transfer syntax, if defined, otherwise <code>null</code>.
+        /// </summary>
         public DicomTransferSyntax AcceptedTransferSyntax
         {
             get
@@ -95,6 +165,16 @@ namespace Dicom.Network
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets an indicator whether presentation context supports an SCU role. If undefined, default value is assumed.
+        /// </summary>
+        public bool? UserRole { get; set; }
+
+        /// <summary>
+        /// Gets an indicator whether presentation context supports an SCU role. If undefined, default value is assumed.
+        /// </summary>
+        public bool? ProviderRole { get; set; }
 
         #endregion
 
@@ -145,7 +225,7 @@ namespace Dicom.Network
         /// <param name="acceptedTransferSyntaxes">Transfer syntaxes that the SCP accepts for the proposed abstract syntax.</param>
         /// <param name="scpPriority">If set to <c>true</c>, transfer syntaxes will be accepted in the order specified by <paramref name="acceptedTransferSyntaxes"/>. If set to <c>false</c>, transfer syntaxes will be accepted in the order proposed by the SCU.</param>
         /// <returns>Returns <c>true</c> if an accepted transfer syntax was found. Returns <c>false</c> if no accepted transfer syntax was found.</returns>
-        public bool AcceptTransferSyntaxes(DicomTransferSyntax[] acceptedTransferSyntaxes, bool scpPriority = false)
+        public bool AcceptTransferSyntaxes(DicomTransferSyntax[] acceptedTransferSyntaxes, bool scpPriority)
         {
             if (Result == DicomPresentationContextResult.Accept) return true;
 
@@ -179,31 +259,55 @@ namespace Dicom.Network
             return false;
         }
 
+        /// <summary>
+        /// Add transfer syntax.
+        /// </summary>
+        /// <param name="ts">Transfer syntax to add to presentation context.</param>
         public void AddTransferSyntax(DicomTransferSyntax ts)
         {
             if (ts != null && !_transferSyntaxes.Contains(ts)) _transferSyntaxes.Add(ts);
         }
 
+        /// <summary>
+        /// Remove transfer syntax.
+        /// </summary>
+        /// <param name="ts">Transfer syntax to remove from presentation context.</param>
         public void RemoveTransferSyntax(DicomTransferSyntax ts)
         {
             if (ts != null && _transferSyntaxes.Contains(ts)) _transferSyntaxes.Remove(ts);
         }
 
+        /// <summary>
+        /// Clear all supported transfer syntaxes.
+        /// </summary>
         public void ClearTransferSyntaxes()
         {
             _transferSyntaxes.Clear();
         }
 
+        /// <summary>
+        /// Get read-only list of supported transfer syntaxes.
+        /// </summary>
+        /// <returns></returns>
         public IList<DicomTransferSyntax> GetTransferSyntaxes()
         {
             return new ReadOnlyCollection<DicomTransferSyntax>(_transferSyntaxes);
         }
 
+        /// <summary>
+        /// Checks whether presentation context contains <paramref name="ts">transfer syntax</paramref>.
+        /// </summary>
+        /// <param name="ts">Transfer syntax to check.</param>
+        /// <returns><code>true</code> if <paramref name="ts">transfer syntax</paramref> is supported, <code>false</code> otherwise.</returns>
         public bool HasTransferSyntax(DicomTransferSyntax ts)
         {
             return _transferSyntaxes.Contains(ts);
         }
 
+        /// <summary>
+        /// Get user-friendly description of negotiation result.
+        /// </summary>
+        /// <returns>User-friendly description of negotiation result.</returns>
         public string GetResultDescription()
         {
             switch (_result)
