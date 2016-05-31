@@ -792,9 +792,10 @@ namespace Dicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
+            // TODO Disabled reset to ensure that C-GET works well with DCMTK dcmqrscp. Is there a better way?
             // reset async ops in case remote end does not negotiate
-            _assoc.MaxAsyncOpsInvoked = 1;
-            _assoc.MaxAsyncOpsPerformed = 1;
+            //_assoc.MaxAsyncOpsInvoked = 1;
+            //_assoc.MaxAsyncOpsPerformed = 1;
 
             uint l = raw.Length - 6;
             ushort c = 0;
