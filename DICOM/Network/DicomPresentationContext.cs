@@ -181,6 +181,56 @@ namespace Dicom.Network
         #region Public Members
 
         /// <summary>
+        /// Get presentation context valid for C-GET requests for the specified <paramref name="abstractSyntax"/>.
+        /// </summary>
+        /// <param name="abstractSyntax">Abstract syntax for which presentation context should be generated.</param>
+        /// <param name="transferSyntaxes">Supported transfer syntaxes. If <code>null</code> or empty, <see cref="DicomTransferSyntax.ImplicitVRLittleEndian"/> is 
+        /// added as default transfer syntax.</param>
+        /// <returns>Presentation context valid for C-GET requests for the specified <paramref name="abstractSyntax"/>.</returns>
+        public static DicomPresentationContext GetScpRolePresentationContext(
+            DicomUID abstractSyntax,
+            params DicomTransferSyntax[] transferSyntaxes)
+        {
+            var pc = new DicomPresentationContext(0, abstractSyntax, false, true);
+
+            if (transferSyntaxes != null && transferSyntaxes.Length > 0)
+            {
+                foreach (var transferSyntax in transferSyntaxes)
+                {
+                    pc.AddTransferSyntax(transferSyntax);
+                }
+            }
+            else
+            {
+                pc.AddTransferSyntax(DicomTransferSyntax.ImplicitVRLittleEndian);
+            }
+
+            return pc;
+        }
+
+        /// <summary>
+        /// Get, potentially filtered, collection of presentation contexts valid for C-GET requests.
+        /// </summary>
+        /// <param name="filter">Filter to apply when selecting a sub-set of active storage UID:s, or null to select all.</param>
+        /// <param name="transferSyntaxes">Supported transfer syntaxes.</param>
+        /// <returns>Collection of presentation contexts valid for C-GET requests.</returns>
+        public static IEnumerable<DicomPresentationContext> GetScpRolePresentationContextsFromStorageUids(
+            string filter,
+            params DicomTransferSyntax[] transferSyntaxes)
+        {
+            var noFilter = string.IsNullOrEmpty(filter?.Trim());
+            var capsFilter = noFilter ? string.Empty : filter.ToUpperInvariant();
+
+            return
+                DicomUID.Enumerate()
+                    .Where(
+                        uid =>
+                        uid.StorageCategory != DicomStorageCategory.None && !uid.IsRetired
+                        && (noFilter || uid.Name.ToUpperInvariant().Contains(capsFilter)))
+                    .Select(uid => GetScpRolePresentationContext(uid, transferSyntaxes));
+        }
+
+        /// <summary>
         /// Sets the <c>Result</c> of this presentation context.
         /// 
         /// The preferred method of accepting presentation contexts is to call one of the <c>AcceptTransferSyntaxes</c> methods.
