@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
 			<group targetFramework="portable-net45+netcore45+wpa81">
-				<dependency id="fo-dicom.Core" version="$version$" />
+				<dependency id="fo-dicom.Portable" version="$version$" />
 			</group>
 			<group targetFramework="netstandard1.3">
 				<dependency id="fo-dicom.NetCore" version="$version$" />
