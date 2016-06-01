@@ -30,7 +30,7 @@ namespace Dicom.Network
     /// client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
     /// </code>
     /// </example>
-    public class DicomCStoreRequest : DicomPriorityRequest
+    public sealed class DicomCStoreRequest : DicomPriorityRequest
     {
         /// <summary>
         /// Constructor for DICOM C-Store request received from SCU.
@@ -114,7 +114,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="service">DICOM SCP implementation</param>
         /// <param name="response">Received DICOM response</param>
-        internal override void PostResponse(DicomService service, DicomResponse response)
+        protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
             {

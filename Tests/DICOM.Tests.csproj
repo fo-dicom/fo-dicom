@@ -142,6 +142,7 @@
     <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
     <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
+    <Compile Include="Network\DicomCGetRequestTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
     <Compile Include="Network\DicomNEventReportResponseTest.cs" />
     <Compile Include="Network\DicomNActionResponseTest.cs" />

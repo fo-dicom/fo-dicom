@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomNSetResponse : DicomResponse
+    public sealed class DicomNSetResponse : DicomResponse
     {
         public DicomNSetResponse(DicomDataset command)
             : base(command)

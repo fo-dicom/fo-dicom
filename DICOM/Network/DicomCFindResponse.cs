@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Text;
-
 namespace Dicom.Network
 {
-    public class DicomCFindResponse : DicomResponse
+    using System;
+    using System.Text;
+
+    public sealed class DicomCFindResponse : DicomResponse
     {
         public DicomCFindResponse(DicomDataset command)
             : base(command)

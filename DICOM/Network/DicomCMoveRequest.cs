@@ -3,7 +3,7 @@
 
 namespace Dicom.Network
 {
-    public class DicomCMoveRequest : DicomPriorityRequest
+    public sealed class DicomCMoveRequest : DicomPriorityRequest
     {
         public DicomCMoveRequest(DicomDataset command)
             : base(command)
@@ -81,7 +81,7 @@ namespace Dicom.Network
 
         public ResponseDelegate OnResponseReceived;
 
-        internal override void PostResponse(DicomService service, DicomResponse response)
+        protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
             {

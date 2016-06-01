@@ -6,23 +6,50 @@ namespace Dicom.Network
     using System;
     using System.Text;
 
-    public sealed class DicomCMoveResponse : DicomResponse
+    /// <summary>
+    /// Representation of a C-GET response.
+    /// </summary>
+    public sealed class DicomCGetResponse : DicomResponse
     {
-        public DicomCMoveResponse(DicomDataset command)
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomCGetResponse"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The command associated with the C-GET operation.
+        /// </param>
+        public DicomCGetResponse(DicomDataset command)
             : base(command)
         {
         }
 
-        public DicomCMoveResponse(DicomCMoveRequest request, DicomStatus status)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomCGetResponse"/> class.
+        /// </summary>
+        /// <param name="request">
+        /// The C-GET request associated with the response.
+        /// </param>
+        /// <param name="status">
+        /// The status of the response.
+        /// </param>
+        public DicomCGetResponse(DicomCGetRequest request, DicomStatus status)
             : base(request, status)
         {
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets or sets the number of remaining sub-operations.
+        /// </summary>
         public int Remaining
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
+                return Command.Get(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
             }
             set
             {
@@ -30,11 +57,14 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of completed sub-operations.
+        /// </summary>
         public int Completed
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
+                return Command.Get(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
             }
             set
             {
@@ -42,11 +72,14 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of warning sub-operations.
+        /// </summary>
         public int Warnings
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfWarningSuboperations, (ushort)0);
+                return Command.Get(DicomTag.NumberOfWarningSuboperations, (ushort)0);
             }
             set
             {
@@ -54,11 +87,14 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of failed sub-operations.
+        /// </summary>
         public int Failures
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.NumberOfFailedSuboperations, (ushort)0);
+                return Command.Get(DicomTag.NumberOfFailedSuboperations, (ushort)0);
             }
             set
             {
@@ -66,6 +102,14 @@ namespace Dicom.Network
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Formatted output of the <see cref="DicomCGetResponse"/> item.
+        /// </summary>
+        /// <returns>Formatted output of the <see cref="DicomCGetResponse"/> item.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -87,7 +131,10 @@ namespace Dicom.Network
                     }
                 }
             }
+
             return sb.ToString();
         }
+
+        #endregion
     }
 }

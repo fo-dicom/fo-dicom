@@ -9,7 +9,7 @@ namespace Dicom.Network
     /// <summary>
     /// Representation of an N-EVENTREPORT response message.
     /// </summary>
-    public class DicomNEventReportResponse : DicomResponse
+    public sealed class DicomNEventReportResponse : DicomResponse
     {
         #region CONSTRUCTORS
 

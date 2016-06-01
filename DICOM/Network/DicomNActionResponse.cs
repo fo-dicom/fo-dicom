@@ -9,7 +9,7 @@ namespace Dicom.Network
     /// <summary>
     /// Representation of an N-ACTION response message.
     /// </summary>
-    public class DicomNActionResponse : DicomResponse
+    public sealed class DicomNActionResponse : DicomResponse
     {
         #region CONSTRUCTORS
 

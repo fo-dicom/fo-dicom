@@ -5,7 +5,7 @@ namespace Dicom.Network
 {
     using System.Text;
 
-    public class DicomNActionRequest : DicomRequest
+    public sealed class DicomNActionRequest : DicomRequest
     {
         public DicomNActionRequest(DicomDataset command)
             : base(command)
@@ -52,7 +52,7 @@ namespace Dicom.Network
 
         public ResponseDelegate OnResponseReceived;
 
-        internal override void PostResponse(DicomService service, DicomResponse response)
+        protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
             {

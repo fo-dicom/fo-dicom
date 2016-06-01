@@ -6,7 +6,7 @@ namespace Dicom.Network
     /// <summary>
     /// Represents a DICOM C-Store response to be returned to a C-Store SCU or a C-Store response that has been received from a C-Store SCP.
     /// </summary>
-    public class DicomCStoreResponse : DicomResponse
+    public sealed class DicomCStoreResponse : DicomResponse
     {
         /// <summary>
         /// Constructor for DICOM C-Store response received from SCP.

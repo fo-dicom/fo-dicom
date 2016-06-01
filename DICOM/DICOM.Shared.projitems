@@ -178,7 +178,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCFindRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCFindResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCGetRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCMoveRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCGetResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCMoveResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCommandField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCStoreRequest.cs" />
@@ -212,6 +214,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomTimeout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCEchoProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCFindProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCGetProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCMoveProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCStoreProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomNServiceProvider.cs" />

@@ -48,7 +48,7 @@ namespace Dicom.Network
         private bool _isConnected;
 
         private readonly Encoding _fallbackEncoding;
-
+         
         #endregion
 
         #region CONSTRUCTORS
@@ -511,6 +511,12 @@ namespace Dicom.Network
                                 case DicomCommandField.CFindResponse:
                                     _dimse = new DicomCFindResponse(command);
                                     break;
+                                case DicomCommandField.CGetRequest:
+                                    _dimse = new DicomCGetRequest(command);
+                                    break;
+                                case DicomCommandField.CGetResponse:
+                                    _dimse = new DicomCGetResponse(command);
+                                    break;
                                 case DicomCommandField.CMoveRequest:
                                     _dimse = new DicomCMoveRequest(command);
                                     break;
@@ -674,7 +680,16 @@ namespace Dicom.Network
                         SendResponse(response);
                         return;
                     }
-                    else throw new DicomNetworkException("C-Store SCP not implemented");
+                    else if (this is IDicomServiceUser)
+                    {
+                        var response = (this as IDicomServiceUser).OnCStoreRequest(dimse as DicomCStoreRequest);
+                        SendResponse(response);
+                        return;
+                    }
+                    else
+                    {
+                        throw new DicomNetworkException("C-Store SCP not implemented");
+                    }
                 }
 
                 if (dimse.Type == DicomCommandField.CFindRequest)
@@ -686,6 +701,17 @@ namespace Dicom.Network
                         return;
                     }
                     else throw new DicomNetworkException("C-Find SCP not implemented");
+                }
+
+                if (dimse.Type == DicomCommandField.CGetRequest)
+                {
+                    if (this is IDicomCGetProvider)
+                    {
+                        var responses = (this as IDicomCGetProvider).OnCGetRequest(dimse as DicomCGetRequest);
+                        foreach (var response in responses) SendResponse(response);
+                        return;
+                    }
+                    else throw new DicomNetworkException("C-GET SCP not implemented");
                 }
 
                 if (dimse.Type == DicomCommandField.CMoveRequest)
@@ -866,15 +892,61 @@ namespace Dicom.Network
                         else if (msg is DicomCFindRequest)
                             (msg as DicomCFindRequest).PostResponse(
                                 this,
-                                new DicomCFindResponse(msg as DicomCFindRequest, DicomStatus.SOPClassNotSupported));
+                                new DicomCFindResponse(
+                                    msg as DicomCFindRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomCGetRequest)
+                            (msg as DicomCGetRequest).PostResponse(
+                                this,
+                                new DicomCGetResponse(
+                                    msg as DicomCGetRequest,
+                                    DicomStatus.SOPClassNotSupported));
                         else if (msg is DicomCMoveRequest)
                             (msg as DicomCMoveRequest).PostResponse(
                                 this,
                                 new DicomCMoveResponse(
                                     msg as DicomCMoveRequest,
                                     DicomStatus.SOPClassNotSupported));
-
-                        //TODO: add N services
+                        else if (msg is DicomNActionRequest)
+                            (msg as DicomNActionRequest).PostResponse(
+                                this,
+                                new DicomNActionResponse(
+                                    msg as DicomNActionRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNCreateRequest)
+                            (msg as DicomNCreateRequest).PostResponse(
+                                this,
+                                new DicomNCreateResponse(
+                                    msg as DicomNCreateRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNDeleteRequest)
+                            (msg as DicomNDeleteRequest).PostResponse(
+                                this,
+                                new DicomNDeleteResponse(
+                                    msg as DicomNDeleteRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNEventReportRequest)
+                            (msg as DicomNEventReportRequest).PostResponse(
+                                this,
+                                new DicomNEventReportResponse(
+                                    msg as DicomNEventReportRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNGetRequest)
+                            (msg as DicomNGetRequest).PostResponse(
+                                this,
+                                new DicomNGetResponse(
+                                    msg as DicomNGetRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNSetRequest)
+                            (msg as DicomNSetRequest).PostResponse(
+                                this,
+                                new DicomNSetResponse(
+                                    msg as DicomNSetRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else
+                        {
+                            Logger.Warn("Unknown message type: {type}", msg.Type);
+                        }
                     }
                     catch
                     {
