@@ -169,12 +169,12 @@ namespace Dicom.Network
         /// <summary>
         /// Gets an indicator whether presentation context supports an SCU role. If undefined, default value is assumed.
         /// </summary>
-        public bool? UserRole { get; set; }
+        public bool? UserRole { get; internal set; }
 
         /// <summary>
         /// Gets an indicator whether presentation context supports an SCU role. If undefined, default value is assumed.
         /// </summary>
-        public bool? ProviderRole { get; set; }
+        public bool? ProviderRole { get; internal set; }
 
         #endregion
 
