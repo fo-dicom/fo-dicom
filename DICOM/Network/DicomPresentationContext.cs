@@ -231,6 +231,22 @@ namespace Dicom.Network
         }
 
         /// <summary>
+        /// Get storage category collection of presentation contexts valid for C-GET requests.
+        /// </summary>
+        /// <param name="storageCategory">Storage category for which the sub-set of presentation context should be selected.</param>
+        /// <param name="transferSyntaxes">Supported transfer syntaxes.</param>
+        /// <returns>Collection of presentation contexts valid for C-GET requests.</returns>
+        public static IEnumerable<DicomPresentationContext> GetScpRolePresentationContextsFromStorageUids(
+            DicomStorageCategory storageCategory,
+            params DicomTransferSyntax[] transferSyntaxes)
+        {
+            return
+                DicomUID.Enumerate()
+                    .Where(uid => uid.StorageCategory == storageCategory && !uid.IsRetired)
+                    .Select(uid => GetScpRolePresentationContext(uid, transferSyntaxes));
+        }
+
+        /// <summary>
         /// Sets the <c>Result</c> of this presentation context.
         /// 
         /// The preferred method of accepting presentation contexts is to call one of the <c>AcceptTransferSyntaxes</c> methods.
