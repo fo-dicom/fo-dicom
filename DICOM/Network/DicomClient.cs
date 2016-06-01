@@ -53,7 +53,23 @@ namespace Dicom.Network
 
         #endregion
 
+        #region DELEGATES
+
+        /// <summary>
+        /// Delegate for client handling the C-STORE request immediately.
+        /// </summary>
+        /// <param name="request">C-STORE request subject to handling.</param>
+        /// <returns>Response from handling the C-STORE <paramref name="request"/>.</returns>
+        public delegate DicomCStoreResponse CStoreRequestHandler(DicomCStoreRequest request);
+
+        #endregion
+
         #region PROPERTIES
+
+        /// <summary>
+        /// Gets or sets the handler of a client C-STORE request.
+        /// </summary>
+        public CStoreRequestHandler OnCStoreRequest { get; set; }
 
         /// <summary>
         /// Gets or sets time in milliseconds to keep connection alive for additional requests.
@@ -415,6 +431,10 @@ namespace Dicom.Network
 
             #region METHODS
 
+            /// <summary>
+            /// Callback for handling association accept scenarios.
+            /// </summary>
+            /// <param name="association">Accepted association.</param>
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
                 foreach (var ctx in this.client.AdditionalPresentationContexts)
@@ -440,6 +460,12 @@ namespace Dicom.Network
                 }
             }
 
+            /// <summary>
+            /// Callback for handling association reject scenarios.
+            /// </summary>
+            /// <param name="result">Specification of rejection result.</param>
+            /// <param name="source">Source of rejection.</param>
+            /// <param name="reason">Detailed reason for rejection.</param>
             public void OnReceiveAssociationReject(
                 DicomRejectResult result,
                 DicomRejectSource source,
@@ -448,24 +474,47 @@ namespace Dicom.Network
                 this.SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
+            /// <summary>
+            /// Callback on response from an association release.
+            /// </summary>
             public void OnReceiveAssociationReleaseResponse()
             {
                 this.SetComplete();
             }
 
+            /// <summary>
+            /// Callback on recieving an abort message.
+            /// </summary>
+            /// <param name="source">Abort source.</param>
+            /// <param name="reason">Detailed reason for abort.</param>
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
                 this.SetComplete(new DicomAssociationAbortedException(source, reason));
             }
 
+            /// <summary>
+            /// Callback when connection is closed.
+            /// </summary>
+            /// <param name="exception">Exception, if any, that forced connection to close.</param>
             public void OnConnectionClosed(Exception exception)
             {
                 this.SetComplete();
             }
 
-            protected override void OnSendQueueEmpty()
+            /// <summary>
+            /// Callback for handling a client related C-STORE request, typically emanating from the client's C-GET request.
+            /// </summary>
+            /// <param name="request">
+            /// C-STORE request.
+            /// </param>
+            /// <returns>
+            /// The <see cref="DicomCStoreResponse"/> related to the C-STORE <paramref name="request"/>.
+            /// </returns>
+            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
             {
-                this.OnLingerTimeout();
+                return this.client.OnCStoreRequest == null
+                           ? new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources)
+                           : this.client.OnCStoreRequest(request);
             }
 
             internal void _SendAssociationReleaseRequest()
@@ -482,6 +531,14 @@ namespace Dicom.Network
                 }
 
                 this.OnReleaseTimeout();
+            }
+
+            /// <summary>
+            /// Action to perform when send queue is empty.
+            /// </summary>
+            protected override void OnSendQueueEmpty()
+            {
+                this.OnLingerTimeout();
             }
 
             private async void OnLingerTimeout()

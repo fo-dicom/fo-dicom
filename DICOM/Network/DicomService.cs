@@ -48,8 +48,6 @@ namespace Dicom.Network
         private bool _isConnected;
 
         private readonly Encoding _fallbackEncoding;
-
-        private readonly Dictionary<int, DicomDataset> localStore = new Dictionary<int, DicomDataset>();
          
         #endregion
 
@@ -682,23 +680,15 @@ namespace Dicom.Network
                         SendResponse(response);
                         return;
                     }
-                    else
+                    else if (this is IDicomServiceUser)
                     {
-                        var request = dimse as DicomCStoreRequest;
-                        DicomStatus status;
-                        if (request.HasDataset)
-                        {
-                            localStore.Add(request.MessageID, request.Dataset);
-                            status = DicomStatus.Success;
-                        }
-                        else
-                        {
-                            status = DicomStatus.MissingAttributeValue;
-                        }
-
-                        var response = new DicomCStoreResponse(request, status);
+                        var response = (this as IDicomServiceUser).OnCStoreRequest(dimse as DicomCStoreRequest);
                         SendResponse(response);
                         return;
+                    }
+                    else
+                    {
+                        throw new DicomNetworkException("C-Store SCP not implemented");
                     }
                 }
 
