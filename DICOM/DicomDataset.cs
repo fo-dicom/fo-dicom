@@ -17,9 +17,15 @@ namespace Dicom
     /// </summary>
     public class DicomDataset : IEnumerable<DicomItem>
     {
+        #region FIELDS
+
         private IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
+
+        #endregion
+
+        #region CONSTRUCTORS
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomDataset"/> class.
@@ -33,14 +39,10 @@ namespace Dicom
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomDataset"/> class.
         /// </summary>
-        /// <param name="items">A collection of DICOM items.</param>
+        /// <param name="items">An array of DICOM items.</param>
         public DicomDataset(params DicomItem[] items)
-            : this()
+            : this((IEnumerable<DicomItem>)items)
         {
-            if (items != null)
-            {
-                foreach (DicomItem item in items) if (item != null) _items[item.Tag] = item;
-            }
         }
 
         /// <summary>
@@ -52,9 +54,28 @@ namespace Dicom
         {
             if (items != null)
             {
-                foreach (DicomItem item in items) if (item != null) _items[item.Tag] = item;
+                foreach (var item in items.Where(item => item != null))
+                {
+                    if (item.ValueRepresentation.Equals(DicomVR.SQ))
+                    {
+                        var tag = item.Tag;
+                        var sequenceItems =
+                            ((DicomSequence)item).Items.Where(dataset => dataset != null)
+                                .Select(dataset => new DicomDataset(dataset))
+                                .ToArray();
+                        _items[tag] = new DicomSequence(tag, sequenceItems);
+                    }
+                    else
+                    {
+                        _items[item.Tag] = item;
+                    }
+                }
             }
         }
+
+        #endregion
+
+        #region PROPERTIES
 
         /// <summary>Gets the DICOM transfer syntax of this dataset.</summary>
         public DicomTransferSyntax InternalTransferSyntax
@@ -77,6 +98,10 @@ namespace Dicom
                 }
             }
         }
+
+        #endregion
+
+        #region METHODS
 
         /// <summary>
         /// Gets the item or element value of the specified <paramref name="tag"/>. 
@@ -721,5 +746,7 @@ namespace Dicom
 
             return false;
         }
+
+        #endregion
     }
 }
