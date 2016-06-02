@@ -22,12 +22,14 @@
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 
 ### NuGet Packages
+*Valid for version 3.0.0-beta2 and later*
+
 Package | Description
 ------- | -----------
 [fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Dependencies package including core libraries for Microsoft and Xamarin platforms
-[fo-dicom.Core](https://www.nuget.org/packages/fo-dicom.Core/) | Core library for PCL Profile 111
+[fo-dicom.Portable](https://www.nuget.org/packages/fo-dicom.Portable/) | (Formerly *fo-dicom.Core*) Core library for PCL Profile 111
 [fo-dicom.Desktop](https://www.nuget.org/packages/fo-dicom.Desktop/) | Core library and native codec libraries for .NET 4.5.2 and higher
-[fo-dicom.NetStandard](https://www.nuget.org/packages/fo-dicom.NetStandard/) | Core library for .NET Core applications, Level 1.3 and higher
+[fo-dicom.NetCore](https://www.nuget.org/packages/fo-dicom.NetCore/) | (Formerly *fo-dicom.NetStandard*) Core library for .NET Core applications, Level 1.3 and higher
 [fo-dicom.Universal](https://www.nuget.org/packages/fo-dicom.Universal/) | Core library and native codec libraries for Universal Windows Platform
 [fo-dicom.Android](https://www.nuget.org/packages/fo-dicom.Android/) | Core library for Xamarin Android
 [fo-dicom.iOS](https://www.nuget.org/packages/fo-dicom.iOS/) | Core library for Xamarin iOS (Unified)
@@ -37,6 +39,11 @@ Package | Description
 [fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
 [fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
 [fo-dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) | PCL profile 111 library with obsolete asynchronous methods (to be deprecated)
+fo-dicom.Platform | *Deprecated* Use **fo-dicom** instead.
+
+To facilitate cross-platform development, the core library is strong name signed and denoted *Dicom.Core.dll* on all platforms. From an assembly reference point-of-view this convention makes the core assemblies mutually replaceable. It is thus possible to develop a Portable Class Library that depends on the PCL *Dicom.Core* assembly, and when the developed Portable Class Library is used in a platform-specific application, the PCL *Dicom.Core* assembly can be replaced with the platform-specific *Dicom.Core* assembly without needing to re-build anything. *fo-dicom.Json* and *fo-dicom.MetroLog* are examples of portable class libraries that depend on the PCL *Dicom.Core.dll*.
+
+The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
 
 ### Usage Notes
 Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
