@@ -232,6 +232,68 @@ namespace Dicom
             TestAddElementToDatasetAsByteBuffer(element, testValues);
         }
 
+        [Fact]
+        public void Constructor_FromDataset_DataReproduced()
+        {
+            var ds = new DicomDataset { { DicomTag.PatientID, "1" } };
+            var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var sps2 = new DicomDataset { { DicomTag.ScheduledStationName, "2" } };
+            var spcs1 = new DicomDataset { { DicomTag.ContextIdentifier, "1" } };
+            var spcs2 = new DicomDataset { { DicomTag.ContextIdentifier, "2" } };
+            var spcs3 = new DicomDataset { { DicomTag.ContextIdentifier, "3" } };
+            sps1.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs1, spcs2));
+            sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
+            ds.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
+
+            Assert.Equal("1", ds.Get<string>(DicomTag.PatientID));
+            Assert.Equal(
+                "1",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<string>(
+                    DicomTag.ScheduledStationName));
+            Assert.Equal(
+                "2",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[1].Get<string>(
+                    DicomTag.ScheduledStationName));
+            Assert.Equal(
+                "1",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+            Assert.Equal(
+                "2",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+                    DicomTag.ScheduledProtocolCodeSequence).Items[1].Get<string>(DicomTag.ContextIdentifier));
+            Assert.Equal(
+                "3",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[1].Get<DicomSequence>(
+                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+        }
+
+        [Fact]
+        public void Constructor_FromDataset_SequenceItemsNotLinked()
+        {
+            var ds = new DicomDataset { { DicomTag.PatientID, "1" } };
+            var sps = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var spcs = new DicomDataset { { DicomTag.ContextIdentifier, "1" } };
+            sps.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs));
+            ds.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps));
+
+            var ds2 = new DicomDataset(ds);
+            ds2.Add(DicomTag.PatientID, "2");
+            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Add(DicomTag.ScheduledStationName, "2");
+            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+                DicomTag.ScheduledProtocolCodeSequence).Items[0].Add(DicomTag.ContextIdentifier, "2");
+
+            Assert.Equal("1", ds.Get<string>(DicomTag.PatientID));
+            Assert.Equal(
+                "1",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<string>(
+                    DicomTag.ScheduledStationName));
+            Assert.Equal(
+                "1",
+                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+        }
+
         #endregion
 
         #region Support methods
