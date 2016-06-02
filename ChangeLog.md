@@ -36,6 +36,7 @@
 * Open and save DicomDirectory to Stream (#181 #235)
 * Implement C-GET support (#180 #309)
 * Exposing network infos (ip and port) in association (#173 #225)
+* Consider implementing DicomDataset.Clone() as "DeepClone" (#153 #313)
 * Image compression/decompression for Mono and Xamarin (#128 #279 #295)
 
 #### v2.0.2 (2/15/2016)
