@@ -72,7 +72,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = DicomServiceOptions.Default;
 
-            this.ReadAndProcessPDUs();
+            this.PDUProcessor = this.ReadAndProcessPDUAsync();
         }
 
         #endregion
@@ -130,6 +130,11 @@ namespace Dicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Task"/> maintaining the PDU reader/processor.
+        /// </summary>
+        public Task PDUProcessor { get; }
 
         #endregion
 
@@ -219,7 +224,7 @@ namespace Dicom.Network
             await this.SendNextPDUAsync().ConfigureAwait(false);
         }
 
-        private async void CloseConnection(Exception exception)
+        private async Task CloseConnectionAsync(Exception exception)
         {
             if (!_isConnected) return;
 
@@ -248,7 +253,7 @@ namespace Dicom.Network
             else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnConnectionClosed(exception);
         }
 
-        private async void ReadAndProcessPDUs()
+        private async Task ReadAndProcessPDUAsync()
         {
             try
             {
@@ -267,7 +272,7 @@ namespace Dicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            this.CloseConnection(null);
+                            await this.CloseConnectionAsync(null).ConfigureAwait(false);
                             return;
                         }
 
@@ -296,7 +301,7 @@ namespace Dicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            this.CloseConnection(null);
+                            await this.CloseConnectionAsync(null).ConfigureAwait(false);
                             return;
                         }
 
@@ -384,7 +389,7 @@ namespace Dicom.Network
                                 pdu.Read(raw);
                                 Logger.Info("{logId} <- Association release response", LogID);
                                 if (this is IDicomServiceUser) (this as IDicomServiceUser).OnReceiveAssociationReleaseResponse();
-                                CloseConnection(null);
+                                await this.CloseConnectionAsync(null).ConfigureAwait(false);
                                 return;
                             }
                         case 0x07:
@@ -398,7 +403,7 @@ namespace Dicom.Network
                                     pdu.Reason);
                                 if (this is IDicomServiceProvider) (this as IDicomServiceProvider).OnReceiveAbort(pdu.Source, pdu.Reason);
                                 else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnReceiveAbort(pdu.Source, pdu.Reason);
-                                CloseConnection(null);
+                                await this.CloseConnectionAsync(null).ConfigureAwait(false);
                                 return;
                             }
                         case 0xFF:
@@ -413,22 +418,22 @@ namespace Dicom.Network
             catch (ObjectDisposedException)
             {
                 // silently ignore
-                CloseConnection(null);
+                await this.CloseConnectionAsync(null).ConfigureAwait(false);
             }
             catch (NullReferenceException)
             {
                 // connection already closed; silently ignore
-                CloseConnection(null);
+                await this.CloseConnectionAsync(null).ConfigureAwait(false);
             }
             catch (IOException e)
             {
                 LogIOException(this.Logger, e, true);
-                CloseConnection(e);
+                await this.CloseConnectionAsync(e).ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 Logger.Error("Exception processing PDU: {@error}", e);
-                CloseConnection(e);
+                await this.CloseConnectionAsync(e).ConfigureAwait(false);
             }
         }
 
@@ -806,7 +811,7 @@ namespace Dicom.Network
                 catch (IOException e)
                 {
                     LogIOException(this.Logger, e, false);
-                    CloseConnection(e);
+                    await this.CloseConnectionAsync(e).ConfigureAwait(false);
                 }
                 catch
                 {
