@@ -45,6 +45,11 @@ namespace Dicom.Network
         /// <summary>DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether async operations invoked/performed limitations should be ignored while sending and retrieving messages.
+        /// </summary>
+        public bool IgnoreAsyncOps { get; set; }
+
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
     }

@@ -865,9 +865,16 @@ namespace Dicom.Network
                         return;
                     }
 
-                    if (_sending) return;
+                    if (_sending)
+                    {
+                        return;
+                    }
 
-                    if (Association.MaxAsyncOpsInvoked > 0 && _pending.Count >= Association.MaxAsyncOpsInvoked) return;
+                    if (!Options.IgnoreAsyncOps && Association.MaxAsyncOpsInvoked > 0
+                        && _pending.Count >= Association.MaxAsyncOpsInvoked)
+                    {
+                        return;
+                    }
 
                     _sending = true;
 
