@@ -147,8 +147,9 @@ namespace Dicom.Network
         {
             if (!this.CanSend) return;
 
-            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
-            var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
+            var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
+            var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
+                                        ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
 
@@ -176,8 +177,9 @@ namespace Dicom.Network
         {
             if (!this.CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
-            var noDelay = this.Options != null ? this.Options.TcpNoDelay : DicomServiceOptions.Default.TcpNoDelay;
-            var ignoreSslPolicyErrors = (this.Options ?? DicomServiceOptions.Default).IgnoreSslPolicyErrors;
+            var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
+            var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
+                                        ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
             this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
 

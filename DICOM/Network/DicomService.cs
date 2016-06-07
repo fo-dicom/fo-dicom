@@ -70,7 +70,7 @@ namespace Dicom.Network
             _isConnected = true;
             _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
-            Options = DicomServiceOptions.Default;
+            Options = new DicomServiceOptions();
 
             BackgroundWorker = ReadAndProcessPDUAsync();
         }
