@@ -403,6 +403,7 @@ namespace Dicom.Network
                     DicomClientTest.remoteHost = association.RemoteHost;
                     DicomClientTest.remotePort = association.RemotePort;
                     this.SendAssociationAccept(association);
+                    Thread.Sleep(1000);
                 }
                 else
                 {

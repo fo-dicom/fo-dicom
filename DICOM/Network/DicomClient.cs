@@ -244,8 +244,7 @@ namespace Dicom.Network
         /// <returns>True if association is established, false otherwise.</returns>
         public bool WaitForAssociation(int millisecondsTimeout = 5000)
         {
-            return this.associateNotifier != null && this.associateNotifier.Task.Wait(millisecondsTimeout)
-                   && this.associateNotifier.Task.Result;
+            return WaitForAssociationAsync(millisecondsTimeout).Result;
         }
 
         /// <summary>
@@ -255,9 +254,27 @@ namespace Dicom.Network
         /// <returns>True if association is established, false otherwise.</returns>
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = 5000)
         {
-            if (this.associateNotifier == null) return false;
-            var task = await Task.WhenAny(this.associateNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
-            return task is Task<bool> && ((Task<bool>)task).Result;
+            try
+            {
+                using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
+                {
+                    while (true)
+                    {
+                        if (this.associateNotifier != null && this.associateNotifier.Task.IsCompleted)
+                        {
+                            return this.associateNotifier.Task.Status == TaskStatus.RanToCompletion
+                                   && this.associateNotifier.Task.Result;
+                        }
+
+                        await Task.Delay(50, cancellationSource.Token).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -265,18 +282,7 @@ namespace Dicom.Network
         /// </summary>
         public void Release(int millisecondsTimeout = 10000)
         {
-            try
-            {
-                this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).Wait();
-            }
-            catch (Exception e)
-            {
-                Logger.Warn("Failure in releasing association: {error}", e);
-            }
-            finally
-            {
-                Abort();
-            }
+            ReleaseAsync(millisecondsTimeout).Wait();
         }
 
         /// <summary>
@@ -306,10 +312,7 @@ namespace Dicom.Network
         {
             if (this.aborted) return;
 
-            if (this.associateNotifier != null && !this.associateNotifier.Task.IsCompleted)
-            {
-                this.associateNotifier.TrySetResult(false);
-            }
+            this.associateNotifier?.TrySetResult(false);
             this.completeNotifier?.TrySetResult(true);
 
             if (this.networkStream != null)
@@ -410,7 +413,7 @@ namespace Dicom.Network
 
             private bool isLingering;
 
-            private object locker = new object();
+            private readonly object locker = new object();
 
             #endregion
 
@@ -427,8 +430,12 @@ namespace Dicom.Network
             {
                 this.client = client;
                 this.isLingering = false;
-                if (options != null) this.Options = options;
-                this.SendAssociationRequest(association);
+
+                if (options != null)
+                {
+                    Options = options;
+                }
+                SendAssociationRequest(association);
             }
 
             #endregion
@@ -441,6 +448,8 @@ namespace Dicom.Network
             /// <param name="association">Accepted association.</param>
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
+                this.client.associateNotifier.TrySetResult(true);
+
                 foreach (var ctx in this.client.AdditionalPresentationContexts)
                 {
                     foreach (
@@ -451,11 +460,13 @@ namespace Dicom.Network
                     }
                 }
 
-                this.client.associateNotifier.TrySetResult(true);
-
                 if (this.client.requests.Count > 0)
                 {
-                    foreach (var request in this.client.requests) SendRequest(request);
+                    foreach (var request in this.client.requests)
+                    {
+                        SendRequest(request);
+                    }
+
                     this.client.requests.Clear();
                 }
                 else
@@ -475,6 +486,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
+                this.client.associateNotifier.TrySetResult(false);
                 SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
