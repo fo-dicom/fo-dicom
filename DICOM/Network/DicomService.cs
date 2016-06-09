@@ -122,7 +122,10 @@ namespace Dicom.Network
         {
             get
             {
-                lock (_lock) return _pending.Count == 0;
+                lock (_lock)
+                {
+                    return _msgQueue.Count == 0 && _pending.Count == 0;
+                }
             }
         }
 

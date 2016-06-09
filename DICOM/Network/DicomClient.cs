@@ -347,10 +347,9 @@ namespace Dicom.Network
             if (this.aborted) return;
 
             this.service?.DoSendAbort();
-            Cleanup();
-
-
             this.aborted = true;
+
+            Cleanup();
         }
 
         private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
@@ -401,8 +400,15 @@ namespace Dicom.Network
                 }
             }
 
+            var lingerException = this.service?.LingerTask?.Exception;
+
             this.service = null;
             this.networkStream = null;
+
+            if (lingerException != null)
+            {
+                throw lingerException.Flatten().InnerException;
+            }
         }
 
         #endregion
@@ -416,8 +422,6 @@ namespace Dicom.Network
             private const int ReleaseTimeout = 2500;
 
             private readonly DicomClient client;
-
-            private bool isLingering;
 
             private readonly object locker = new object();
 
@@ -435,14 +439,20 @@ namespace Dicom.Network
                 : base(stream, fallbackEncoding, log)
             {
                 this.client = client;
-                this.isLingering = false;
 
                 if (options != null)
                 {
                     Options = options;
                 }
+
                 SendAssociationRequest(association);
             }
+
+            #endregion
+
+            #region PROPERTIES
+
+            internal Task LingerTask { get; private set; }
 
             #endregion
 
@@ -469,7 +479,7 @@ namespace Dicom.Network
                         association,
                         this.client.AdditionalPresentationContexts);
 
-                    DoSendAssociationReleaseRequestAsync().Wait();
+                    DoSendAssociationReleaseRequestAsync(ReleaseTimeout).Wait();
                 }
                 else
                 {
@@ -557,7 +567,7 @@ namespace Dicom.Network
                            : this.client.OnCStoreRequest(request);
             }
 
-            internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout = ReleaseTimeout)
+            internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout)
             {
                 try
                 {
@@ -585,21 +595,21 @@ namespace Dicom.Network
             /// <summary>
             /// Action to perform when send queue is empty.
             /// </summary>
-            protected override async void OnSendQueueEmpty()
+            protected override void OnSendQueueEmpty()
             {
                 lock (this.locker)
                 {
-                    if (this.isLingering) return;
-                    this.isLingering = true;
+                    if (LingerTask == null || LingerTask.IsCompleted)
+                    {
+                        LingerTask = LingerAsync();
+                    }
                 }
+            }
 
+            private async Task LingerAsync()
+            {
                 var linger = this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger;
                 var disconnected = await WaitForDisconnectAsync(linger).ConfigureAwait(false);
-
-                lock (this.locker)
-                {
-                    this.isLingering = false;
-                }
 
                 if (disconnected)
                 {
@@ -607,7 +617,7 @@ namespace Dicom.Network
                 }
                 else if (IsSendQueueEmpty)
                 {
-                    await DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
+                    await DoSendAssociationReleaseRequestAsync(ReleaseTimeout).ConfigureAwait(false);
                 }
             }
 
@@ -619,7 +629,7 @@ namespace Dicom.Network
                     {
                         while (true)
                         {
-                            if (!IsConnected)
+                            if (!IsConnected || !IsSendQueueEmpty)
                             {
                                 cancellationSource.Cancel();
                                 break;
@@ -630,7 +640,7 @@ namespace Dicom.Network
                 }
                 catch (TaskCanceledException)
                 {
-                    return true;
+                    return !IsConnected;
                 }
 
                 return false;
