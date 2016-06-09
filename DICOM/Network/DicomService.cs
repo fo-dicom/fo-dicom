@@ -855,7 +855,14 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
+
+                if (_sending)
+                {
+                    return;
+                }
+
             }
+
             SendNextMessage();
         }
 
@@ -867,14 +874,14 @@ namespace Dicom.Network
 
                 lock (_lock)
                 {
-                    if (_msgQueue.Count == 0)
+                    if (_sending)
                     {
-                        if (_pending.Count == 0) OnSendQueueEmpty();
                         return;
                     }
 
-                    if (_sending)
+                    if (_msgQueue.Count == 0)
                     {
+                        if (_pending.Count == 0) OnSendQueueEmpty();
                         return;
                     }
 
