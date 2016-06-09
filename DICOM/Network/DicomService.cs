@@ -146,7 +146,11 @@ namespace Dicom.Network
         /// <param name="request">Request to send.</param>
         public virtual void SendRequest(DicomRequest request)
         {
-            SendMessage(request);
+            lock (_lock)
+            {
+                _msgQueue.Enqueue(request);
+            }
+            SendNextMessage();
         }
 
         /// <summary>
@@ -155,7 +159,11 @@ namespace Dicom.Network
         /// <param name="response">Response to send.</param>
         protected void SendResponse(DicomResponse response)
         {
-            SendMessage(response);
+            lock (_lock)
+            {
+                _msgQueue.Enqueue(response);
+            }
+            SendNextMessage();
         }
 
         /// <summary>
@@ -211,22 +219,18 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         protected async Task SendPDUAsync(PDU pdu)
         {
-            await Task.Run(
-                () =>
-                    {
-                        var ready = false;
-                        while (!ready)
-                        {
-                            lock (_lock)
-                            {
-                                ready = _pduQueue.Count < MaximumPDUsInQueue;
-                            }
-                        }
-                    }).ConfigureAwait(false);
-
-            lock (_lock)
+            while (true)
             {
-                _pduQueue.Enqueue(pdu);
+                lock (_lock)
+                {
+                    if (_pduQueue.Count < MaximumPDUsInQueue)
+                    {
+                        _pduQueue.Enqueue(pdu);
+                        break;
+                    }
+                }
+
+                await Task.Delay(50).ConfigureAwait(false);
             }
 
             await SendNextPDUAsync().ConfigureAwait(false);
@@ -843,12 +847,6 @@ namespace Dicom.Network
 
                 lock (_lock) _writing = false;
             }
-        }
-
-        private void SendMessage(DicomMessage message)
-        {
-            lock (_lock) _msgQueue.Enqueue(message);
-            SendNextMessage();
         }
 
         private void SendNextMessage()
