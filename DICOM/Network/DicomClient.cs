@@ -267,15 +267,15 @@ namespace Dicom.Network
         {
             try
             {
-                this.service._SendAssociationReleaseRequest();
-                this.completeNotifier.Task.Wait(millisecondsTimeout);
+                this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).Wait();
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Warn("Failure in releasing association: {error}", e);
             }
             finally
             {
-                this.Abort();
+                Abort();
             }
         }
 
@@ -287,15 +287,15 @@ namespace Dicom.Network
         {
             try
             {
-                this.service._SendAssociationReleaseRequest();
-                await Task.WhenAny(this.completeNotifier.Task, Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+                await this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Warn("Failure in releasing association: {error}", e);
             }
             finally
             {
-                this.Abort();
+                Abort();
             }
         }
 
@@ -310,7 +310,7 @@ namespace Dicom.Network
             {
                 this.associateNotifier.TrySetResult(false);
             }
-            if (this.completeNotifier != null) this.completeNotifier.TrySetResult(true);
+            this.completeNotifier?.TrySetResult(true);
 
             if (this.networkStream != null)
             {
@@ -410,6 +410,8 @@ namespace Dicom.Network
 
             private bool isLingering;
 
+            private object locker = new object();
+
             #endregion
 
             #region CONSTRUCTORS
@@ -453,12 +455,12 @@ namespace Dicom.Network
 
                 if (this.client.requests.Count > 0)
                 {
-                    foreach (var request in this.client.requests) this.SendRequest(request);
+                    foreach (var request in this.client.requests) SendRequest(request);
                     this.client.requests.Clear();
                 }
                 else
                 {
-                    this._SendAssociationReleaseRequest();
+                    DoSendAssociationReleaseRequestAsync().Wait();
                 }
             }
 
@@ -473,7 +475,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                this.SetComplete(new DicomAssociationRejectedException(result, source, reason));
+                SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
             /// <summary>
@@ -481,7 +483,7 @@ namespace Dicom.Network
             /// </summary>
             public void OnReceiveAssociationReleaseResponse()
             {
-                this.SetComplete();
+                SetComplete();
             }
 
             /// <summary>
@@ -491,7 +493,7 @@ namespace Dicom.Network
             /// <param name="reason">Detailed reason for abort.</param>
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                this.SetComplete(new DicomAssociationAbortedException(source, reason));
+                SetComplete(new DicomAssociationAbortedException(source, reason));
             }
 
             /// <summary>
@@ -500,7 +502,7 @@ namespace Dicom.Network
             /// <param name="exception">Exception, if any, that forced connection to close.</param>
             public void OnConnectionClosed(Exception exception)
             {
-                this.SetComplete();
+                SetComplete();
             }
 
             /// <summary>
@@ -519,75 +521,74 @@ namespace Dicom.Network
                            : this.client.OnCStoreRequest(request);
             }
 
-            internal void _SendAssociationReleaseRequest()
+            internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout = ReleaseTimeout)
             {
                 try
                 {
-                    this.SendAssociationReleaseRequest();
+                    SendAssociationReleaseRequest();
+                    await WaitForDisconnectAsync(millisecondsTimeout).ConfigureAwait(false);
                 }
-                catch
+                catch (Exception e)
                 {
-                    // may have already disconnected
-                    this.SetComplete();
-                    return;
+                    Logger.Warn("Attempt to send association release request failed due to: {error}", e);
                 }
-
-                this.OnReleaseTimeout();
+                finally
+                {
+                    SetComplete();
+                }
             }
 
             /// <summary>
             /// Action to perform when send queue is empty.
             /// </summary>
-            protected override void OnSendQueueEmpty()
+            protected override async void OnSendQueueEmpty()
             {
-                this.OnLingerTimeout();
-            }
-
-            private async void OnLingerTimeout()
-            {
-                if (this.isLingering) return;
-
-                this.isLingering = true;
-                var disconnected =
-                    await
-                    this.WaitForDisconnect(this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger)
-                        .ConfigureAwait(false);
-                this.isLingering = false;
-
-                if (disconnected || !this.IsSendQueueEmpty) return;
-
-                this._SendAssociationReleaseRequest();
-            }
-
-            private async void OnReleaseTimeout()
-            {
-                if (!await this.WaitForDisconnect(ReleaseTimeout).ConfigureAwait(false))
+                lock (this.locker)
                 {
-                    this.SetComplete();
+                    if (this.isLingering) return;
+                    this.isLingering = true;
+                }
+
+                var linger = this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger;
+                var disconnected = await WaitForDisconnectAsync(linger).ConfigureAwait(false);
+
+                lock (this.locker)
+                {
+                    this.isLingering = false;
+                }
+
+                if (disconnected)
+                {
+                    SetComplete();
+                }
+                else if (IsSendQueueEmpty)
+                {
+                    await DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
                 }
             }
 
-            private async Task<bool> WaitForDisconnect(int millisecondsDelay)
+            private async Task<bool> WaitForDisconnectAsync(int millisecondsDelay)
             {
                 try
                 {
                     using (var cancellationSource = new CancellationTokenSource(millisecondsDelay))
                     {
-                        do
+                        while (true)
                         {
-                            if (!this.IsConnected)
+                            if (!IsConnected)
                             {
-                                this.SetComplete();
-                                return true;
+                                cancellationSource.Cancel();
+                                break;
                             }
-                            await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
+                            await Task.Delay(50, cancellationSource.Token).ConfigureAwait(false);
                         }
-                        while (!cancellationSource.IsCancellationRequested);
                     }
                 }
                 catch (TaskCanceledException)
                 {
+                    return true;
                 }
+
                 return false;
             }
 
