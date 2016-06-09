@@ -145,7 +145,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!CanSend) return;
 
             var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
@@ -161,7 +161,14 @@ namespace Dicom.Network
                 RemotePort = port
             };
 
-            this.DoSend(this.networkStream, assoc);
+            try
+            {
+                DoSendAsync(this.networkStream, assoc).Wait();
+            }
+            catch (AggregateException e)
+            {
+                throw e.Flatten().InnerException;
+            }
         }
 
         /// <summary>
@@ -175,7 +182,7 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            if (!this.CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+            if (!CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
@@ -191,7 +198,7 @@ namespace Dicom.Network
                 RemotePort = port
             };
 
-            return this.DoSendAsync(this.networkStream, assoc);
+            return DoSendAsync(this.networkStream, assoc);
         }
 
         /// <summary>
@@ -202,7 +209,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         public void Send(INetworkStream stream, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return;
+            if (!CanSend) return;
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
@@ -212,7 +219,14 @@ namespace Dicom.Network
                 RemotePort = stream.Port
             };
 
-            this.DoSend(stream, assoc);
+            try
+            {
+                DoSendAsync(stream, assoc).Wait();
+            }
+            catch (AggregateException e)
+            {
+                throw e.Flatten().InnerException;
+            }
         }
 
         /// <summary>
@@ -224,7 +238,7 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         public Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
         {
-            if (!this.CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+            if (!CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
@@ -234,7 +248,7 @@ namespace Dicom.Network
                 RemotePort = stream.Port
             };
 
-            return this.DoSendAsync(stream, assoc);
+            return DoSendAsync(stream, assoc);
         }
 
         /// <summary>
@@ -244,7 +258,14 @@ namespace Dicom.Network
         /// <returns>True if association is established, false otherwise.</returns>
         public bool WaitForAssociation(int millisecondsTimeout = 5000)
         {
-            return WaitForAssociationAsync(millisecondsTimeout).Result;
+            try
+            {
+                return WaitForAssociationAsync(millisecondsTimeout).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.Flatten().InnerException;
+            }
         }
 
         /// <summary>
@@ -282,7 +303,14 @@ namespace Dicom.Network
         /// </summary>
         public void Release(int millisecondsTimeout = 10000)
         {
-            ReleaseAsync(millisecondsTimeout).Wait();
+            try
+            {
+                ReleaseAsync(millisecondsTimeout).Wait();
+            }
+            catch (AggregateException e)
+            {
+                throw e.Flatten().InnerException;
+            }
         }
 
         /// <summary>
@@ -295,13 +323,9 @@ namespace Dicom.Network
             {
                 await this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
-            catch (Exception e)
-            {
-                Logger.Warn("Failure in releasing association: {error}", e);
-            }
             finally
             {
-                Abort();
+                Cleanup();
             }
         }
 
@@ -312,48 +336,24 @@ namespace Dicom.Network
         {
             if (this.aborted) return;
 
-            this.associateNotifier?.TrySetResult(false);
-            this.completeNotifier?.TrySetResult(true);
+            this.service?.DoSendAbort();
+            Cleanup();
 
-            if (this.networkStream != null)
-            {
-                try
-                {
-                    this.networkStream.Dispose();
-                }
-                catch
-                {
-                }
-            }
-
-            this.service = null;
-            this.networkStream = null;
 
             this.aborted = true;
         }
 
-        private void DoSend(INetworkStream stream, DicomAssociation assoc)
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
         {
             try
             {
-                this.InitializeSend(stream, assoc);
-                this.completeNotifier.Task.Wait();
-            }
-            catch (AggregateException ae)
-            {
-                throw ae.Flatten().InnerException;
+                InitializeSend(stream, assoc);
+                await this.completeNotifier.Task.ConfigureAwait(false);
             }
             finally
             {
-                this.FinalizeSend();
+                Cleanup();
             }
-        }
-
-        private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
-        {
-            this.InitializeSend(stream, assoc);
-            await this.completeNotifier.Task.ConfigureAwait(false);
-            this.FinalizeSend();
         }
 
         private void InitializeSend(INetworkStream stream, DicomAssociation association)
@@ -377,12 +377,11 @@ namespace Dicom.Network
             this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);
         }
 
-        private void FinalizeSend()
+        private void Cleanup()
         {
-            if (!this.associateNotifier.Task.IsCompleted)
-            {
-                this.associateNotifier.TrySetResult(true);
-            }
+            // If not already set, set notifiers here to signal competion to awaiters
+            this.associateNotifier?.TrySetResult(false);
+            this.completeNotifier?.TrySetResult(true);
 
             if (this.networkStream != null)
             {
@@ -390,8 +389,9 @@ namespace Dicom.Network
                 {
                     this.networkStream.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Logger.Warn("Failed to dispose network stream, reason: {error}", e);
                 }
             }
 
@@ -547,6 +547,14 @@ namespace Dicom.Network
                 finally
                 {
                     SetComplete();
+                }
+            }
+
+            internal void DoSendAbort()
+            {
+                if (IsConnected)
+                {
+                    SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
                 }
             }
 
