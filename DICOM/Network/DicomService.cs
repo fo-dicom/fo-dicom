@@ -891,7 +891,11 @@ namespace Dicom.Network
                     if (!Options.IgnoreAsyncOps && Association.MaxAsyncOpsInvoked > 0
                         && _pending.Count >= Association.MaxAsyncOpsInvoked)
                     {
-                        return;
+                        // Cannot easily recover from this unwanted state, so better to throw.
+                        throw new DicomNetworkException(
+                            "Cannot send messages since pending: {pending} would exceed max async ops invoked: {invoked}",
+                            _pending.Count,
+                            Association.MaxAsyncOpsInvoked);
                     }
 
                     _sending = true;
