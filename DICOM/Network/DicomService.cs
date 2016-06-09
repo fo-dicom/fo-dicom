@@ -146,11 +146,7 @@ namespace Dicom.Network
         /// <param name="request">Request to send.</param>
         public virtual void SendRequest(DicomRequest request)
         {
-            lock (_lock)
-            {
-                _msgQueue.Enqueue(request);
-            }
-            SendNextMessage();
+            SendMessage(request);
         }
 
         /// <summary>
@@ -159,11 +155,7 @@ namespace Dicom.Network
         /// <param name="response">Response to send.</param>
         protected void SendResponse(DicomResponse response)
         {
-            lock (_lock)
-            {
-                _msgQueue.Enqueue(response);
-            }
-            SendNextMessage();
+            SendMessage(response);
         }
 
         /// <summary>
@@ -692,16 +684,25 @@ namespace Dicom.Network
                 if (!DicomMessage.IsRequest(dimse.Type))
                 {
                     var rsp = dimse as DicomResponse;
+                    DicomRequest req;
                     lock (_lock)
                     {
-                        var req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
-                        if (req != null)
+                        req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
+                    }
+
+                    if (req != null)
+                    {
+                        rsp.UserState = req.UserState;
+                        req.PostResponse(this, rsp);
+                        if (rsp.Status.State != DicomState.Pending)
                         {
-                            rsp.UserState = req.UserState;
-                            req.PostResponse(this, rsp);
-                            if (rsp.Status.State != DicomState.Pending) _pending.Remove(req);
+                            lock (_lock)
+                            {
+                                _pending.Remove(req);
+                            }
                         }
                     }
+
                     return;
                 }
 
@@ -849,6 +850,15 @@ namespace Dicom.Network
             }
         }
 
+        private void SendMessage(DicomMessage message)
+        {
+            lock (_lock)
+            {
+                _msgQueue.Enqueue(message);
+            }
+            SendNextMessage();
+        }
+
         private void SendNextMessage()
         {
             while (true)
@@ -877,11 +887,8 @@ namespace Dicom.Network
                     _sending = true;
 
                     msg = _msgQueue.Dequeue();
-                }
 
-                if (msg is DicomRequest)
-                {
-                    lock (_lock)
+                    if (msg is DicomRequest)
                     {
                         _pending.Add(msg as DicomRequest);
                     }

@@ -19,6 +19,8 @@ namespace Dicom.Network
     {
         #region FIELDS
 
+        private readonly object locker = new object();
+
         private TaskCompletionSource<bool> completeNotifier;
 
         private TaskCompletionSource<bool> associateNotifier;
@@ -103,7 +105,13 @@ namespace Dicom.Network
         {
             get
             {
-                return this.requests.Count > 0 || this.AdditionalPresentationContexts.Count > 0;
+                int requestsCount;
+                lock (this.locker)
+                {
+                    requestsCount = this.requests.Count;
+                }
+
+                return requestsCount > 0 || this.AdditionalPresentationContexts.Count > 0;
             }
         }
 
@@ -128,11 +136,10 @@ namespace Dicom.Network
         /// <param name="request">DICOM request.</param>
         public void AddRequest(DicomRequest request)
         {
-            if (this.service != null && this.service.IsConnected)
+            lock (this.locker)
             {
-                this.service.SendRequest(request);
+                this.requests.Add(request);
             }
-            else this.requests.Add(request);
         }
 
         /// <summary>
@@ -321,7 +328,10 @@ namespace Dicom.Network
         {
             try
             {
-                await this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
+                if (this.service != null)
+                {
+                    await this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
+                }
             }
             finally
             {
@@ -361,10 +371,6 @@ namespace Dicom.Network
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
 
-            foreach (var request in this.requests)
-            {
-                association.PresentationContexts.AddFromRequest(request);
-            }
             foreach (var context in this.AdditionalPresentationContexts)
             {
                 association.PresentationContexts.Add(
@@ -374,7 +380,7 @@ namespace Dicom.Network
                     context.GetTransferSyntaxes().ToArray());
             }
 
-            this.service = new DicomServiceUser(this, stream, association, this.Options, this.FallbackEncoding, this.Logger);
+            this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
         }
 
         private void Cleanup()
@@ -450,28 +456,46 @@ namespace Dicom.Network
             {
                 this.client.associateNotifier.TrySetResult(true);
 
-                foreach (var ctx in this.client.AdditionalPresentationContexts)
+                List<DicomRequest> requests;
+                lock (this.client.locker)
                 {
-                    foreach (
-                        var item in
-                            association.PresentationContexts.Where(pc => pc.AbstractSyntax == ctx.AbstractSyntax))
-                    {
-                        ctx.SetResult(item.Result, item.AcceptedTransferSyntax);
-                    }
+                    requests = new List<DicomRequest>(this.client.requests);
+                    this.client.requests.Clear();
                 }
 
-                if (this.client.requests.Count > 0)
+                if (requests.Count == 0)
                 {
-                    foreach (var request in this.client.requests)
-                    {
-                        SendRequest(request);
-                    }
+                    UpdateAcceptedTransferSyntaxesInAdditionalPresentationContexts(
+                        association,
+                        this.client.AdditionalPresentationContexts);
 
-                    this.client.requests.Clear();
+                    DoSendAssociationReleaseRequestAsync().Wait();
                 }
                 else
                 {
-                    DoSendAssociationReleaseRequestAsync().Wait();
+                    while (requests.Count > 0)
+                    {
+                        foreach (var request in requests)
+                        {
+                            association.PresentationContexts.AddFromRequest(request);
+                        }
+
+                        UpdateAcceptedTransferSyntaxesInAdditionalPresentationContexts(
+                            association,
+                            this.client.AdditionalPresentationContexts);
+
+                        foreach (var request in requests)
+                        {
+                            SendRequest(request);
+                        }
+
+                        // Have any new requests been added while sending previous requests?
+                        lock (this.client.locker)
+                        {
+                            requests = new List<DicomRequest>(this.client.requests);
+                            this.client.requests.Clear();
+                        }
+                    }
                 }
             }
 
@@ -623,6 +647,20 @@ namespace Dicom.Network
                     else
                     {
                         this.client.completeNotifier.TrySetException(ex);
+                    }
+                }
+            }
+
+            private static void UpdateAcceptedTransferSyntaxesInAdditionalPresentationContexts(
+                DicomAssociation association,
+                IEnumerable<DicomPresentationContext> additionalPresentationContexts)
+            {
+                foreach (var ctx in additionalPresentationContexts)
+                {
+                    foreach (var item in
+                        association.PresentationContexts.Where(pc => pc.AbstractSyntax == ctx.AbstractSyntax))
+                    {
+                        ctx.SetResult(item.Result, item.AcceptedTransferSyntax);
                     }
                 }
             }
