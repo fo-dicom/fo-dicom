@@ -396,7 +396,7 @@ namespace Dicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Failed to dispose network stream, reason: {error}", e);
+                    Logger.Warn("Failed to dispose network stream, reason: {@error}", e);
                 }
             }
 
@@ -576,7 +576,7 @@ namespace Dicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Attempt to send association release request failed due to: {error}", e);
+                    Logger.Warn("Attempt to send association release request failed due to: {@error}", e);
                 }
                 finally
                 {
