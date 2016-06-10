@@ -62,17 +62,7 @@ namespace Dicom.Network
             this.IsListening = false;
             this.Exception = null;
 
-            Task.Factory.StartNew(
-                this.OnTimerTickAsync,
-                this.cancellationSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-            Task.Factory.StartNew(
-                this.ListenAsync,
-                this.cancellationSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            this.BackgroundWorker = Task.WhenAll(OnTimerTickAsync(), ListenAsync());
 
             this.disposed = false;
             this.Register();
@@ -106,6 +96,11 @@ namespace Dicom.Network
         /// Gets the exception that was thrown if the server failed to listen.
         /// </summary>
         public Exception Exception { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="Task"/> managing the background listening and unused client removal processes.
+        /// </summary>
+        public Task BackgroundWorker { get; }
 
         #endregion
 
@@ -193,7 +188,7 @@ namespace Dicom.Network
         /// <summary>
         /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        private async void ListenAsync()
+        private async Task ListenAsync()
         {
             try
             {
@@ -246,7 +241,7 @@ namespace Dicom.Network
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        private async void OnTimerTickAsync()
+        private async Task OnTimerTickAsync()
         {
             while (!this.cancellationSource.IsCancellationRequested)
             {

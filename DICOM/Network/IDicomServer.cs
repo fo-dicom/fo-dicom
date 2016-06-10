@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
+
 namespace Dicom.Network
 {
     using System;
@@ -38,6 +40,11 @@ namespace Dicom.Network
         /// Gets the exception that was thrown if the server failed to listen.
         /// </summary>
         Exception Exception { get; }
+
+        /// <summary>
+        /// Gets the <see cref="Task"/> managing the background listening and unused client removal processes.
+        /// </summary>
+        Task BackgroundWorker { get; }
 
         #endregion
 

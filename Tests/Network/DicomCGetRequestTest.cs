@@ -13,7 +13,7 @@ namespace Dicom.Network
         public void DicomCGetRequest_OneImageInSeries_Received()
         {
             var client = new DicomClient();
-            client.NegotiateAsyncOps(2, 1);
+            client.Options = new DicomServiceOptions { IgnoreAsyncOps = true };
 
             var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
                 DicomStorageCategory.Image,
@@ -49,7 +49,7 @@ namespace Dicom.Network
         public void DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
             var client = new DicomClient();
-            client.NegotiateAsyncOps(2, 1);
+            client.Options = new DicomServiceOptions { IgnoreAsyncOps = true };
 
             var pc = DicomPresentationContext.GetScpRolePresentationContext(DicomUID.CTImageStorage);
             client.AdditionalPresentationContexts.Add(pc);

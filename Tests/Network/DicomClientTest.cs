@@ -74,7 +74,7 @@ namespace Dicom.Network
             }
         }
 
-        [Theory(Skip = "Needs further attention")]
+        [Theory]
         [InlineData(20)]
         [InlineData(200)]
         public void Send_MultipleTimes_AllRecognized(int expected)
@@ -138,7 +138,7 @@ namespace Dicom.Network
             }
         }
 
-        [Theory(Skip = "Needs further attention")]
+        [Theory]
         [InlineData(20)]
         [InlineData(200)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
@@ -310,8 +310,6 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 client.WaitForAssociation();
-                Thread.Sleep(10);
-                Assert.False(task.IsCompleted);
 
                 client.Release();
                 Thread.Sleep(10);
@@ -330,8 +328,6 @@ namespace Dicom.Network
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 client.WaitForAssociation();
-                Thread.Sleep(10);
-                Assert.False(task.IsCompleted);
 
                 await client.ReleaseAsync();
                 Thread.Sleep(10);

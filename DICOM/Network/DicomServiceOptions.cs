@@ -8,21 +8,51 @@ namespace Dicom.Network
     /// </summary>
     public class DicomServiceOptions
     {
+        #region INNER TYPES
+
         /// <summary>Default options for use with the <see cref="DicomService"/> base class.</summary>
-        public static readonly DicomServiceOptions Default = new DicomServiceOptions();
+        public static class Default
+        {
+            public static readonly bool LogDataPDUs = false;
+
+            public static readonly bool LogDimseDatasets = false;
+
+            public static readonly bool UseRemoteAEForLogName = false;
+
+            public static readonly uint MaxCommandBuffer = 1 * 1024; //1KB
+
+            public static readonly uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
+
+            public static readonly int ThreadPoolLinger = 200;
+
+            public static readonly bool IgnoreSslPolicyErrors = false;
+
+            public static readonly bool IgnoreAsyncOps = false;
+
+            public static readonly bool TcpNoDelay = true;
+        }
+
+        #endregion
+
+        #region CONSTRUCTORS
 
         /// <summary>Constructor</summary>
         public DicomServiceOptions()
         {
-            LogDataPDUs = false;
-            LogDimseDatasets = false;
-            UseRemoteAEForLogName = false;
-            MaxCommandBuffer = 1 * 1024; //1KB
-            MaxDataBuffer = 1 * 1024 * 1024; //1MB
-            ThreadPoolLinger = 200;
-            IgnoreSslPolicyErrors = false;
-            TcpNoDelay = true;
+            LogDataPDUs = Default.LogDataPDUs;
+            LogDimseDatasets = Default.LogDimseDatasets;
+            UseRemoteAEForLogName = Default.UseRemoteAEForLogName;
+            MaxCommandBuffer = Default.MaxCommandBuffer;
+            MaxDataBuffer = Default.MaxDataBuffer;
+            ThreadPoolLinger = Default.ThreadPoolLinger;
+            IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
+            IgnoreAsyncOps = Default.IgnoreAsyncOps;
+            TcpNoDelay = Default.TcpNoDelay;
         }
+
+        #endregion
+
+        #region PROPERTIES
 
         /// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
         public bool LogDataPDUs { get; set; }
@@ -45,7 +75,14 @@ namespace Dicom.Network
         /// <summary>DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether async operations invoked/performed limitations should be ignored while sending and retrieving messages.
+        /// </summary>
+        public bool IgnoreAsyncOps { get; set; }
+
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
+
+        #endregion
     }
 }
