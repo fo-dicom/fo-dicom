@@ -1,4 +1,5 @@
-#### v.3.0.0 (Beta 2, 6/2/2016)
+#### v.3.0.0 (Beta 3, 6/10/2016)
+* Improved reliability in network operations (#199 #312 #314)
 * DicomClient should be able to C-STORE non-Part 10 DICOM files (#306 #307)
 * Incorrect dependency in fo-dicom.Universal.nuspec (#300 #301)
 * GetDateTime method does not handle missing date and time tags (#299 #302)
