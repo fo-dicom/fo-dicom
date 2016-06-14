@@ -6,10 +6,8 @@ using System;
 namespace Dicom
 {
     /// <summary>Code String for DICOM Value Representation</summary>
-    public sealed class DicomVRCode
+    public static class DicomVRCode
     {
-        private DicomVRCode ( ) {}
-
         public const string AE = "AE";
                                                     
         /// <summary>Age String</summary>
