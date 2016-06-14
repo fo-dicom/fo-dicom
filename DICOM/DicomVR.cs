@@ -91,67 +91,67 @@ namespace Dicom
             {
                 case "NONE":
                     return DicomVR.NONE;
-                case "AE":
+                case DicomVRCode.AE:
                     return DicomVR.AE;
-                case "AS":
+                case DicomVRCode.AS:
                     return DicomVR.AS;
-                case "AT":
+                case DicomVRCode.AT:
                     return DicomVR.AT;
-                case "CS":
+                case DicomVRCode.CS:
                     return DicomVR.CS;
-                case "DA":
+                case DicomVRCode.DA:
                     return DicomVR.DA;
-                case "DS":
+                case DicomVRCode.DS:
                     return DicomVR.DS;
-                case "DT":
+                case DicomVRCode.DT:
                     return DicomVR.DT;
-                case "FD":
+                case DicomVRCode.FD:
                     return DicomVR.FD;
-                case "FL":
+                case DicomVRCode.FL:
                     return DicomVR.FL;
-                case "IS":
+                case DicomVRCode.IS:
                     return DicomVR.IS;
-                case "LO":
+                case DicomVRCode.LO:
                     return DicomVR.LO;
-                case "LT":
+                case DicomVRCode.LT:
                     return DicomVR.LT;
-                case "OB":
+                case DicomVRCode.OB:
                     return DicomVR.OB;
-                case "OD":
+                case DicomVRCode.OD:
                     return DicomVR.OD;
-                case "OF":
+                case DicomVRCode.OF:
                     return DicomVR.OF;
-                case "OL":
+                case DicomVRCode.OL:
                     return DicomVR.OL;
-                case "OW":
+                case DicomVRCode.OW:
                     return DicomVR.OW;
-                case "PN":
+                case DicomVRCode.PN:
                     return DicomVR.PN;
-                case "SH":
+                case DicomVRCode.SH:
                     return DicomVR.SH;
-                case "SL":
+                case DicomVRCode.SL:
                     return DicomVR.SL;
-                case "SQ":
+                case DicomVRCode.SQ:
                     return DicomVR.SQ;
-                case "SS":
+                case DicomVRCode.SS:
                     return DicomVR.SS;
-                case "ST":
+                case DicomVRCode.ST:
                     return DicomVR.ST;
-                case "TM":
+                case DicomVRCode.TM:
                     return DicomVR.TM;
-                case "UC":
+                case DicomVRCode.UC:
                     return DicomVR.UC;
-                case "UI":
+                case DicomVRCode.UI:
                     return DicomVR.UI;
-                case "UL":
+                case DicomVRCode.UL:
                     return DicomVR.UL;
-                case "UN":
+                case DicomVRCode.UN:
                     return DicomVR.UN;
-                case "UR":
+                case DicomVRCode.UR:
                     return DicomVR.UR;
-                case "US":
+                case DicomVRCode.US:
                     return DicomVR.US;
-                case "UT":
+                case DicomVRCode.UT:
                     return DicomVR.UT;
                 default:
                     valid = false;
@@ -181,7 +181,7 @@ namespace Dicom
         /// <summary>Application Entity</summary>
         public static readonly DicomVR AE = new DicomVR
                                                 {
-                                                    Code = "AE",
+                                                    Code = DicomVRCode.AE,
                                                     Name = "Application Entity",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -197,7 +197,7 @@ namespace Dicom
         /// <summary>Age String</summary>
         public static readonly DicomVR AS = new DicomVR
                                                 {
-                                                    Code = "AS",
+                                                    Code = DicomVRCode.AS,
                                                     Name = "Age String",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -213,7 +213,7 @@ namespace Dicom
         /// <summary>Attribute Tag</summary>
         public static readonly DicomVR AT = new DicomVR
                                                 {
-                                                    Code = "AT",
+                                                    Code = DicomVRCode.AT,
                                                     Name = "Attribute Tag",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -229,7 +229,7 @@ namespace Dicom
         /// <summary>Code String</summary>
         public static readonly DicomVR CS = new DicomVR
                                                 {
-                                                    Code = "CS",
+                                                    Code = DicomVRCode.CS,
                                                     Name = "Code String",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -245,7 +245,7 @@ namespace Dicom
         /// <summary>Date</summary>
         public static readonly DicomVR DA = new DicomVR
                                                 {
-                                                    Code = "DA",
+                                                    Code = DicomVRCode.DA,
                                                     Name = "Date",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -261,7 +261,7 @@ namespace Dicom
         /// <summary>Decimal String</summary>
         public static readonly DicomVR DS = new DicomVR
                                                 {
-                                                    Code = "DS",
+                                                    Code = DicomVRCode.DS,
                                                     Name = "Decimal String",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -277,7 +277,7 @@ namespace Dicom
         /// <summary>Date Time</summary>
         public static readonly DicomVR DT = new DicomVR
                                                 {
-                                                    Code = "DT",
+                                                    Code = DicomVRCode.DT,
                                                     Name = "Date Time",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -293,7 +293,7 @@ namespace Dicom
         /// <summary>Floating Point Double</summary>
         public static readonly DicomVR FD = new DicomVR
                                                 {
-                                                    Code = "FD",
+                                                    Code = DicomVRCode.FD,
                                                     Name = "Floating Point Double",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -309,7 +309,7 @@ namespace Dicom
         /// <summary>Floating Point Single</summary>
         public static readonly DicomVR FL = new DicomVR
                                                 {
-                                                    Code = "FL",
+                                                    Code = DicomVRCode.FL,
                                                     Name = "Floating Point Single",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -325,7 +325,7 @@ namespace Dicom
         /// <summary>Integer String</summary>
         public static readonly DicomVR IS = new DicomVR
                                                 {
-                                                    Code = "IS",
+                                                    Code = DicomVRCode.IS,
                                                     Name = "Integer String",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -341,7 +341,7 @@ namespace Dicom
         /// <summary>Long String</summary>
         public static readonly DicomVR LO = new DicomVR
                                                 {
-                                                    Code = "LO",
+                                                    Code = DicomVRCode.LO,
                                                     Name = "Long String",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -358,7 +358,7 @@ namespace Dicom
         /// <summary>Long Text</summary>
         public static readonly DicomVR LT = new DicomVR
                                                 {
-                                                    Code = "LT",
+                                                    Code = DicomVRCode.LT,
                                                     Name = "Long Text",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -374,7 +374,7 @@ namespace Dicom
         /// <summary>Other Byte</summary>
         public static readonly DicomVR OB = new DicomVR
                                                 {
-                                                    Code = "OB",
+                                                    Code = DicomVRCode.OB,
                                                     Name = "Other Byte",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -390,7 +390,7 @@ namespace Dicom
         /// <summary>Other Double</summary>
         public static readonly DicomVR OD = new DicomVR
                                                 {
-                                                    Code = "OD",
+                                                    Code = DicomVRCode.OD,
                                                     Name = "Other Double",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -406,7 +406,7 @@ namespace Dicom
         /// <summary>Other Float</summary>
         public static readonly DicomVR OF = new DicomVR
                                                 {
-                                                    Code = "OF",
+                                                    Code = DicomVRCode.OF,
                                                     Name = "Other Float",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -422,7 +422,7 @@ namespace Dicom
         /// <summary>Other Long</summary>
         public static readonly DicomVR OL = new DicomVR
                                                 {
-                                                    Code = "OL",
+                                                    Code = DicomVRCode.OL,
                                                     Name = "Other Long",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -438,7 +438,7 @@ namespace Dicom
         /// <summary>Other Word</summary>
         public static readonly DicomVR OW = new DicomVR
                                                 {
-                                                    Code = "OW",
+                                                    Code = DicomVRCode.OW,
                                                     Name = "Other Word",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -454,7 +454,7 @@ namespace Dicom
         /// <summary>Person Name</summary>
         public static readonly DicomVR PN = new DicomVR
                                                 {
-                                                    Code = "PN",
+                                                    Code = DicomVRCode.PN,
                                                     Name = "Person Name",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -471,7 +471,7 @@ namespace Dicom
         /// <summary>Short String</summary>
         public static readonly DicomVR SH = new DicomVR
                                                 {
-                                                    Code = "SH",
+                                                    Code = DicomVRCode.SH,
                                                     Name = "Short String",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -488,7 +488,7 @@ namespace Dicom
         /// <summary>Signed Long</summary>
         public static readonly DicomVR SL = new DicomVR
                                                 {
-                                                    Code = "SL",
+                                                    Code = DicomVRCode.SL,
                                                     Name = "Signed Long",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -504,7 +504,7 @@ namespace Dicom
         /// <summary>Sequence of Items</summary>
         public static readonly DicomVR SQ = new DicomVR
                                                 {
-                                                    Code = "SQ",
+                                                    Code = DicomVRCode.SQ,
                                                     Name = "Sequence of Items",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -520,7 +520,7 @@ namespace Dicom
         /// <summary>Signed Short</summary>
         public static readonly DicomVR SS = new DicomVR
                                                 {
-                                                    Code = "SS",
+                                                    Code = DicomVRCode.SS,
                                                     Name = "Signed Short",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -536,7 +536,7 @@ namespace Dicom
         /// <summary>Short Text</summary>
         public static readonly DicomVR ST = new DicomVR
                                                 {
-                                                    Code = "ST",
+                                                    Code = DicomVRCode.ST,
                                                     Name = "Short Text",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -552,7 +552,7 @@ namespace Dicom
         /// <summary>Time</summary>
         public static readonly DicomVR TM = new DicomVR
                                                 {
-                                                    Code = "TM",
+                                                    Code = DicomVRCode.TM,
                                                     Name = "Time",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -568,7 +568,7 @@ namespace Dicom
         /// <summary>Unlimited Characters</summary>
         public static readonly DicomVR UC = new DicomVR
                                                 {
-                                                    Code = "UC",
+                                                    Code = DicomVRCode.UC,
                                                     Name = "Unlimited Characters",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -584,7 +584,7 @@ namespace Dicom
         /// <summary>Unique Identifier</summary>
         public static readonly DicomVR UI = new DicomVR
                                                 {
-                                                    Code = "UI",
+                                                    Code = DicomVRCode.UI,
                                                     Name = "Unique Identifier",
                                                     IsString = true,
                                                     IsStringEncoded = false,
@@ -600,7 +600,7 @@ namespace Dicom
         /// <summary>Unsigned Long</summary>
         public static readonly DicomVR UL = new DicomVR
                                                 {
-                                                    Code = "UL",
+                                                    Code = DicomVRCode.UL,
                                                     Name = "Unsigned Long",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -616,7 +616,7 @@ namespace Dicom
         /// <summary>Unknown</summary>
         public static readonly DicomVR UN = new DicomVR
                                                 {
-                                                    Code = "UN",
+                                                    Code = DicomVRCode.UN,
                                                     Name = "Unknown",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -632,7 +632,7 @@ namespace Dicom
         /// <summary>Universal Resource Identifier or Universal Resource Locator (URI/URL)</summary>
         public static readonly DicomVR UR = new DicomVR
                                                 {
-                                                    Code = "UR",
+                                                    Code = DicomVRCode.UR,
                                                     Name = "Universal Resource Identifier or Locator",
                                                     IsString = true,
                                                     IsStringEncoded = true,
@@ -648,7 +648,7 @@ namespace Dicom
         /// <summary>Unsigned Short</summary>
         public static readonly DicomVR US = new DicomVR
                                                 {
-                                                    Code = "US",
+                                                    Code = DicomVRCode.US,
                                                     Name = "Unsigned Short",
                                                     IsString = false,
                                                     IsStringEncoded = false,
@@ -664,7 +664,7 @@ namespace Dicom
         /// <summary>Unlimited Text</summary>
         public static readonly DicomVR UT = new DicomVR
                                                 {
-                                                    Code = "UT",
+                                                    Code = DicomVRCode.UT,
                                                     Name = "Unlimited Text",
                                                     IsString = true,
                                                     IsStringEncoded = true,

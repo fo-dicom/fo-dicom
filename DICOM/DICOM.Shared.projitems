@@ -52,6 +52,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomUIDPrivate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomVM.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomVR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DicomVRCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IClassifiedManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\BilinearInterpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\BitDepth.cs" />
