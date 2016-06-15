@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2016 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2016b">
+<dictionary version="2016c">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -156,6 +156,9 @@
     <tag group="0008" element="0119" keyword="LongCodeValue" vr="UC" vm="1">Long Code Value</tag>
     <tag group="0008" element="0120" keyword="URNCodeValue" vr="UR" vm="1">URN Code Value</tag>
     <tag group="0008" element="0121" keyword="EquivalentCodeSequence" vr="SQ" vm="1">Equivalent Code Sequence</tag>
+    <tag group="0008" element="0122" keyword="MappingResourceName" vr="LO" vm="1">Mapping Resource Name</tag>
+    <tag group="0008" element="0123" keyword="ContextGroupIdentificationSequence" vr="SQ" vm="1">Context Group Identification Sequence</tag>
+    <tag group="0008" element="0124" keyword="MappingResourceIdentificationSequence" vr="SQ" vm="1">Mapping Resource Identification Sequence</tag>
     <tag group="0008" element="0201" keyword="TimezoneOffsetFromUTC" vr="SH" vm="1">Timezone Offset From UTC</tag>
     <tag group="0008" element="0300" keyword="PrivateDataElementCharacteristicsSequence" vr="SQ" vm="1">Private Data Element Characteristics Sequence</tag>
     <tag group="0008" element="0301" keyword="PrivateGroupReference" vr="US" vm="1">Private Group Reference</tag>
@@ -3859,8 +3862,11 @@
     <tag group="300A" element="0388" keyword="RangeModulatorGatingStopWaterEquivalentThickness" vr="FL" vm="1">Range Modulator Gating Stop Water Equivalent Thickness</tag>
     <tag group="300A" element="038A" keyword="IsocenterToRangeModulatorDistance" vr="FL" vm="1">Isocenter to Range Modulator Distance</tag>
     <tag group="300A" element="0390" keyword="ScanSpotTuneID" vr="SH" vm="1">Scan Spot Tune ID</tag>
+    <tag group="300A" element="0391" keyword="ScanSpotPrescribedIndices" vr="IS" vm="1-n">Scan Spot Prescribed Indices</tag>
     <tag group="300A" element="0392" keyword="NumberOfScanSpotPositions" vr="IS" vm="1">Number of Scan Spot Positions</tag>
+    <tag group="300A" element="0393" keyword="ScanSpotReordered" vr="CS" vm="1">Scan Spot Reordered</tag>
     <tag group="300A" element="0394" keyword="ScanSpotPositionMap" vr="FL" vm="1-n">Scan Spot Position Map</tag>
+    <tag group="300A" element="0395" keyword="ScanSpotReorderingAllowed" vr="CS" vm="1">Scan Spot Reordering Allowed</tag>
     <tag group="300A" element="0396" keyword="ScanSpotMetersetWeights" vr="FL" vm="1-n">Scan Spot Meterset Weights</tag>
     <tag group="300A" element="0398" keyword="ScanningSpotSize" vr="FL" vm="2">Scanning Spot Size</tag>
     <tag group="300A" element="039A" keyword="NumberOfPaintings" vr="IS" vm="1">Number of Paintings</tag>
@@ -5544,4 +5550,6 @@
     <uid uid="1.2.840.10008.6.1.1116" keyword="ContentAssessmentTypes701" type="Context Group Name">Content Assessment Types (701)</uid>
     <uid uid="1.2.840.10008.6.1.1117" keyword="RTContentAssessmentTypes702" type="Context Group Name">RT Content Assessment Types (702)</uid>
     <uid uid="1.2.840.10008.6.1.1118" keyword="BasisOfAssessment703" type="Context Group Name">Basis of Assessment (703)</uid>
+    <uid uid="1.2.840.10008.6.1.1119" keyword="ReaderSpecialty7449" type="Context Group Name">Reader Specialty (7449)</uid>
+    <uid uid="1.2.840.10008.6.1.1120" keyword="RequestedReportTypes9233" type="Context Group Name">Requested Report Types (9233)</uid>
 </dictionary>
