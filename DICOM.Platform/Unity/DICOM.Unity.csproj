@@ -163,6 +163,9 @@
     <Compile Include="..\..\DICOM\DicomVR.cs">
       <Link>DicomVR.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\DicomVRCode.cs">
+      <Link>DicomVRCode.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\IClassifiedManager.cs">
       <Link>IClassifiedManager.cs</Link>
     </Compile>
