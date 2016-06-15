@@ -11,7 +11,7 @@
 ### Features
 * Portable Class Library (PCL)
 * Targets .NET 4.5.2 and higher, .NET Core 1.3 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
-* DICOM dictionary version 2016b
+* DICOM dictionary version 2016c
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
@@ -29,7 +29,7 @@ Package | Description
 [fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Dependencies package including core libraries for Microsoft and Xamarin platforms
 [fo-dicom.Portable](https://www.nuget.org/packages/fo-dicom.Portable/) | (Formerly *fo-dicom.Core*) Core library for PCL Profile 111
 [fo-dicom.Desktop](https://www.nuget.org/packages/fo-dicom.Desktop/) | Core library and native codec libraries for .NET 4.5.2 and higher
-[fo-dicom.NetCore](https://www.nuget.org/packages/fo-dicom.NetCore/) | (Formerly *fo-dicom.NetStandard*) Core library for .NET Core applications, Level 1.3 and higher
+[fo-dicom.NetCore](https://www.nuget.org/packages/fo-dicom.NetCore/) | Core library for .NET Core applications, Level 1.3 and higher
 [fo-dicom.Universal](https://www.nuget.org/packages/fo-dicom.Universal/) | Core library and native codec libraries for Universal Windows Platform
 [fo-dicom.Android](https://www.nuget.org/packages/fo-dicom.Android/) | Core library for Xamarin Android
 [fo-dicom.iOS](https://www.nuget.org/packages/fo-dicom.iOS/) | Core library for Xamarin iOS (Unified)
