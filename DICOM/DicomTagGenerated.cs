@@ -461,6 +461,15 @@ namespace Dicom
         ///<summary>(0008,0121) VR=SQ VM=1 Equivalent Code Sequence</summary>
         public readonly static DicomTag EquivalentCodeSequence = new DicomTag(0x0008, 0x0121);
 
+        ///<summary>(0008,0122) VR=LO VM=1 Mapping Resource Name</summary>
+        public readonly static DicomTag MappingResourceName = new DicomTag(0x0008, 0x0122);
+
+        ///<summary>(0008,0123) VR=SQ VM=1 Context Group Identification Sequence</summary>
+        public readonly static DicomTag ContextGroupIdentificationSequence = new DicomTag(0x0008, 0x0123);
+
+        ///<summary>(0008,0124) VR=SQ VM=1 Mapping Resource Identification Sequence</summary>
+        public readonly static DicomTag MappingResourceIdentificationSequence = new DicomTag(0x0008, 0x0124);
+
         ///<summary>(0008,0201) VR=SH VM=1 Timezone Offset From UTC</summary>
         public readonly static DicomTag TimezoneOffsetFromUTC = new DicomTag(0x0008, 0x0201);
 
@@ -11570,11 +11579,20 @@ namespace Dicom
         ///<summary>(300A,0390) VR=SH VM=1 Scan Spot Tune ID</summary>
         public readonly static DicomTag ScanSpotTuneID = new DicomTag(0x300A, 0x0390);
 
+        ///<summary>(300A,0391) VR=IS VM=1-n Scan Spot Prescribed Indices</summary>
+        public readonly static DicomTag ScanSpotPrescribedIndices = new DicomTag(0x300A, 0x0391);
+
         ///<summary>(300A,0392) VR=IS VM=1 Number of Scan Spot Positions</summary>
         public readonly static DicomTag NumberOfScanSpotPositions = new DicomTag(0x300A, 0x0392);
 
+        ///<summary>(300A,0393) VR=CS VM=1 Scan Spot Reordered</summary>
+        public readonly static DicomTag ScanSpotReordered = new DicomTag(0x300A, 0x0393);
+
         ///<summary>(300A,0394) VR=FL VM=1-n Scan Spot Position Map</summary>
         public readonly static DicomTag ScanSpotPositionMap = new DicomTag(0x300A, 0x0394);
+
+        ///<summary>(300A,0395) VR=CS VM=1 Scan Spot Reordering Allowed</summary>
+        public readonly static DicomTag ScanSpotReorderingAllowed = new DicomTag(0x300A, 0x0395);
 
         ///<summary>(300A,0396) VR=FL VM=1-n Scan Spot Meterset Weights</summary>
         public readonly static DicomTag ScanSpotMetersetWeights = new DicomTag(0x300A, 0x0396);

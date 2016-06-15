@@ -1400,6 +1400,8 @@ namespace Dicom
             _uids.Add(DicomUID.ContentAssessmentTypes701.UID, DicomUID.ContentAssessmentTypes701);
             _uids.Add(DicomUID.RTContentAssessmentTypes702.UID, DicomUID.RTContentAssessmentTypes702);
             _uids.Add(DicomUID.BasisOfAssessment703.UID, DicomUID.BasisOfAssessment703);
+            _uids.Add(DicomUID.ReaderSpecialty7449.UID, DicomUID.ReaderSpecialty7449);
+            _uids.Add(DicomUID.RequestedReportTypes9233.UID, DicomUID.RequestedReportTypes9233);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -5565,6 +5567,12 @@ namespace Dicom
 
         ///<summary>Context Group Name: Basis of Assessment (703)</summary>
         public readonly static DicomUID BasisOfAssessment703 = new DicomUID("1.2.840.10008.6.1.1118", "Basis of Assessment (703)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Reader Specialty (7449)</summary>
+        public readonly static DicomUID ReaderSpecialty7449 = new DicomUID("1.2.840.10008.6.1.1119", "Reader Specialty (7449)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Requested Report Types (9233)</summary>
+        public readonly static DicomUID RequestedReportTypes9233 = new DicomUID("1.2.840.10008.6.1.1120", "Requested Report Types (9233)", DicomUidType.ContextGroupName, false);
 
     }
 }
