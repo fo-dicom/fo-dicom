@@ -445,6 +445,39 @@ namespace Dicom.Network
             }
         }
 
+        [Fact]
+        public void Send_EchoRequestToExternalServer_ShouldSucceed()
+        {
+            var result = false;
+            var awaiter = new ManualResetEventSlim();
+
+            var client = new DicomClient();
+            var req = new DicomCEchoRequest();
+            req.OnResponseReceived = (rq, rsp) =>
+                {
+                    if (rsp.Status == DicomStatus.Success)
+                    {
+                        result = true;
+                    }
+                    awaiter.Set();
+                };
+            client.AddRequest(req);
+
+            try
+            {
+                client.Send("localhost", 11112, false, "SCU", "COMMON");
+                awaiter.Wait();
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Console.WriteLine(ex);
+                awaiter.Set();
+            }
+
+            Assert.True(result);
+        }
+
         #endregion
 
         #region Support classes
