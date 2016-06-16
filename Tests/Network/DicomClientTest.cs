@@ -445,7 +445,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Requires external C-ECHO SCP")]
         public void Send_EchoRequestToExternalServer_ShouldSucceed()
         {
             var result = false;
