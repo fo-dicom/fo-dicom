@@ -542,5 +542,82 @@ namespace Dicom.IO.Reader {
 			_vr = null;
 			_length = 0;
 		}
+
+        /// <summary>
+        /// auto check Transfer Syntax of Dataset in DICOM file, maybe it's different with Transfer Syntax(0x0002,0x0010)
+        /// zssure@163.com
+        /// 2016-06-22
+        /// fo-dicom.1.0.38
+        /// https://github.com/zssure-thu/fo-dicom
+        /// </summary>
+        private bool bAutoDetectVRType = false;
+        private void autoCheckTransferSyntax(IByteSource source, ushort group, ushort element, object state)
+        {
+            //start checking Transfer Syntax after reading premable bytes
+            if (group > 0x0002 && !bAutoDetectVRType)
+            {
+                bAutoDetectVRType = true;//just check once
+                source.Mark();//mark the original position of pointer
+                //try to parse VR
+                uint tmpLength = 0;
+                source.Skip(2);
+                if (!source.Require(2, ParseDataset, state))
+                {
+                    _result = DicomReaderResult.Suspended;
+                    source.Rewind();
+                    return;
+                }
+                tmpLength = source.GetUInt16();
+                try
+                {
+                    if (!source.Require(tmpLength, ParseDataset, state))
+                    {
+                        _result = DicomReaderResult.Suspended;
+                        source.Rewind();
+                        return;
+                    }
+                    source.Skip((int)tmpLength);
+                    if (!source.Require(4, ParseDataset, state))
+                    {
+                        _result = DicomReaderResult.Suspended;
+                        source.Rewind();
+                        return;
+                    }
+                    ushort group2 = source.GetUInt16();
+                    ushort element2 = source.GetUInt16();
+                    DicomPrivateCreator creator2 = null;
+                    if (group2.IsOdd() && element2 > 0x00ff)
+                    {
+                        string pvt2 = null;
+                        uint card2 = (uint)(group2 << 16) + (uint)(element2 >> 8);
+                        if (_private.TryGetValue(card2, out pvt2))
+                            creator2 = Dictionary.GetPrivateCreator(pvt2);
+                    }
+                    var tmpTag = new DicomTag(group2, element2, creator2);
+                    var tmpEntry = Dictionary[tmpTag];
+
+                    if (!tmpTag.IsPrivate && tmpEntry != null && tmpEntry.MaskTag == null)
+                    {
+                        tmpTag = tmpEntry.Tag; // Use dictionary tag
+                        IsExplicitVR = true;
+                    }
+                    else
+                    {
+                        IsExplicitVR = false;
+                    }
+                    source.Rewind();
+                }
+                catch (Exception exin)
+                {
+                    source.Rewind();
+                    //说明有错误，直接抛出异常
+                    throw new DicomIoException("Auto Check Transfer Syntax Exception by zssure,Details:{0}", exin.StackTrace);
+
+                }
+
+
+            }
+
+        }
 	}
 }
