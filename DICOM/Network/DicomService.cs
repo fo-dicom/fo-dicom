@@ -1061,7 +1061,7 @@ namespace Dicom.Network
 
                         if (dimse.Message.HasDataset)
                         {
-                            dimse.Stream.IsCommand = false;
+                            dimse.Stream.SetIsCommandAsync(false).Wait();
 
                             writer = new DicomWriter(
                                 dimse.PresentationContext.AcceptedTransferSyntax,
@@ -1262,29 +1262,19 @@ namespace Dicom.Network
 
             #region Public Properties
 
-            public bool IsCommand
+            public async Task SetIsCommandAsync(bool value)
             {
-                get
+                // recalculate maximum PDU buffer size
+                if (_command != value)
                 {
-                    return _command;
-                }
-                set
-                {
-                    // recalculate maximum PDU buffer size
-                    if (_command != value)
-                    {
-                        if (value)
-                            _max = (_pduMax == 0)
-                                       ? _service.Options.MaxCommandBuffer
-                                       : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
-                        else
-                            _max = (_pduMax == 0)
-                                       ? _service.Options.MaxDataBuffer
-                                       : Math.Min(_pduMax, _service.Options.MaxDataBuffer);
+                    _max = _pduMax == 0
+                               ? _service.Options.MaxCommandBuffer
+                               : Math.Min(
+                                   _pduMax,
+                                   value ? _service.Options.MaxCommandBuffer : _service.Options.MaxDataBuffer);
 
-                        CreatePDVAsync(true).Wait();
-                        _command = value;
-                    }
+                    await CreatePDVAsync(true).ConfigureAwait(false);
+                    _command = value;
                 }
             }
 
