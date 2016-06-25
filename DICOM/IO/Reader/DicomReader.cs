@@ -122,7 +122,7 @@ namespace Dicom.IO.Reader {
 							_result = DicomReaderResult.Stopped;
 							return;
 						}
-
+                        autoCheckTransferSyntax(source, group, element, state);
 						_state = ParseState.VR;
 					}
 
