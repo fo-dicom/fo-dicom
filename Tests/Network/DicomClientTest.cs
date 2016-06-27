@@ -155,9 +155,7 @@ namespace Dicom.Network
             int port = Ports.GetNext();
 
             using (
-                var server = new DicomServer<DicomCEchoProvider>(
-                    port,
-                    logger: new TestOutputHelperLogger(_testOutputHelper)))
+                var server = new DicomServer<DicomCEchoProvider>(port))
             {
                 await Task.Delay(500).ConfigureAwait(false);
                 Assert.True(server.IsListening, "Server is not listening");
@@ -172,7 +170,7 @@ namespace Dicom.Network
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
-                                        //_testOutputHelper.WriteLine("Response #{0}", i);
+                                        _testOutputHelper.WriteLine("Response #{0}", i);
                                         Interlocked.Add(ref actual, 1);
                                     }
                             });
@@ -193,9 +191,7 @@ namespace Dicom.Network
             int port = Ports.GetNext();
 
             using (
-                var server = new DicomServer<DicomCEchoProvider>(
-                    port,
-                    logger: new TestOutputHelperLogger(_testOutputHelper)))
+                var server = new DicomServer<DicomCEchoProvider>(port))
             {
                 await Task.Delay(500).ConfigureAwait(false);
                 Assert.True(server.IsListening, "Server is not listening");
