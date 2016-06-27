@@ -356,7 +356,7 @@ namespace Dicom.Network
         {
             try
             {
-                InitializeSend(stream, assoc);
+                await InitializeSendAsync(stream, assoc).ConfigureAwait(false);
                 await this.completeNotifier.Task.ConfigureAwait(false);
             }
             finally
@@ -365,8 +365,13 @@ namespace Dicom.Network
             }
         }
 
-        private void InitializeSend(INetworkStream stream, DicomAssociation association)
+        private async Task InitializeSendAsync(INetworkStream stream, DicomAssociation association)
         {
+            while (this.service != null)
+            {
+                await Task.Delay(50).ConfigureAwait(false);
+            }
+
             this.associateNotifier = new TaskCompletionSource<bool>();
             this.completeNotifier = new TaskCompletionSource<bool>();
 
