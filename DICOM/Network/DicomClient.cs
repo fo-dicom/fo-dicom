@@ -356,13 +356,15 @@ namespace Dicom.Network
         {
             try
             {
-                if (this.service == null)
+                while (this.service != null)
                 {
-                    this.associateNotifier = new TaskCompletionSource<bool>();
-                    this.completeNotifier = new TaskCompletionSource<bool>();
-
-                    this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                    await Task.Delay(50).ConfigureAwait(false);
                 }
+
+                this.associateNotifier = new TaskCompletionSource<bool>();
+                this.completeNotifier = new TaskCompletionSource<bool>();
+
+                this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
 
                 await this.completeNotifier.Task.ConfigureAwait(false);
             }
