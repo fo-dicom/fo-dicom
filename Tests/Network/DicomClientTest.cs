@@ -88,21 +88,18 @@ namespace Dicom.Network
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
-            var @lock = new object();
 
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
-                var awaiter = new ManualResetEventSlim();
 
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) if (++actual >= expected) awaiter.Set(); } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { Interlocked.Add(ref actual, 1); } });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                awaiter.Wait(30000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -175,7 +172,7 @@ namespace Dicom.Network
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
-                                        _testOutputHelper.WriteLine("Response #{0}", i);
+                                        //_testOutputHelper.WriteLine("Response #{0}", i);
                                         Interlocked.Add(ref actual, 1);
                                     }
                             });
@@ -214,7 +211,7 @@ namespace Dicom.Network
                                     {
                                         OnResponseReceived = (req, res) =>
                                             {
-                                                _testOutputHelper.WriteLine("Response #{0}", requestIndex);
+                                                //_testOutputHelper.WriteLine("Response #{0}", requestIndex);
                                                 Interlocked.Add(ref actual, 1);
                                             }
                                     });
