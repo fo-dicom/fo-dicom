@@ -352,30 +352,24 @@ namespace Dicom.Network
             Cleanup();
         }
 
-        private async Task DoSendAsync(INetworkStream stream, DicomAssociation assoc)
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association)
         {
             try
             {
-                await InitializeSendAsync(stream, assoc).ConfigureAwait(false);
+                if (this.service == null)
+                {
+                    this.associateNotifier = new TaskCompletionSource<bool>();
+                    this.completeNotifier = new TaskCompletionSource<bool>();
+
+                    this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                }
+
                 await this.completeNotifier.Task.ConfigureAwait(false);
             }
             finally
             {
                 Cleanup();
             }
-        }
-
-        private async Task InitializeSendAsync(INetworkStream stream, DicomAssociation association)
-        {
-            while (this.service != null)
-            {
-                await Task.Delay(50).ConfigureAwait(false);
-            }
-
-            this.associateNotifier = new TaskCompletionSource<bool>();
-            this.completeNotifier = new TaskCompletionSource<bool>();
-
-            this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
         }
 
         private void Cleanup()
