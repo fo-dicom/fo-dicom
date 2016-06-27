@@ -93,14 +93,16 @@ namespace Dicom.Network
             using (new DicomServer<DicomCEchoProvider>(port))
             {
                 var actual = 0;
+                var awaiter = new ManualResetEventSlim();
 
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) ++actual; } });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { lock (@lock) if (++actual >= expected) awaiter.Set(); } });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
+                awaiter.Wait(30000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -154,6 +156,7 @@ namespace Dicom.Network
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
+            var awaiter = new ManualResetEventSlim();
 
             using (
                 var server = new DicomServer<DicomCEchoProvider>(
@@ -175,6 +178,7 @@ namespace Dicom.Network
                                     {
                                         _testOutputHelper.WriteLine("Response #{0}", i);
                                         Interlocked.Add(ref actual, 1);
+                                        if (actual >= expected) awaiter.Set();
                                     }
                             });
                     _testOutputHelper.WriteLine("Sending #{0}", i);
@@ -182,6 +186,7 @@ namespace Dicom.Network
                     _testOutputHelper.WriteLine("Sent (or timed out) #{0}", i);
                 }
 
+                awaiter.Wait(30000);
                 Assert.Equal(expected, actual);
             }
         }
