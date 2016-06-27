@@ -102,7 +102,7 @@ namespace Dicom.Network
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                Task.Run(() => { while (actual < expected) { } }).Wait(10000);
+                Task.Run(() => { while (actual < expected) { } }).Wait(60000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -170,7 +170,7 @@ namespace Dicom.Network
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                Task.Run(() => { while (actual < expected) { } }).Wait(10000);
+                Task.Run(() => { while (actual < expected) { } }).Wait(60000);
                 Assert.Equal(expected, actual);
             }
         }
