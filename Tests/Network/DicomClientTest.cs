@@ -156,14 +156,13 @@ namespace Dicom.Network
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
-            var awaiter = new ManualResetEventSlim();
 
             using (
                 var server = new DicomServer<DicomCEchoProvider>(
                     port,
                     logger: new TestOutputHelperLogger(_testOutputHelper)))
             {
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
                 Assert.True(server.IsListening, "Server is not listening");
 
                 var actual = 0;
@@ -178,15 +177,13 @@ namespace Dicom.Network
                                     {
                                         _testOutputHelper.WriteLine("Response #{0}", i);
                                         Interlocked.Add(ref actual, 1);
-                                        if (actual >= expected) awaiter.Set();
                                     }
                             });
                     _testOutputHelper.WriteLine("Sending #{0}", i);
-                    await Task.WhenAny(client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP"), Task.Delay(10000));
+                    await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP").ConfigureAwait(false);
                     _testOutputHelper.WriteLine("Sent (or timed out) #{0}", i);
                 }
 
-                awaiter.Wait(30000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -203,7 +200,7 @@ namespace Dicom.Network
                     port,
                     logger: new TestOutputHelperLogger(_testOutputHelper)))
             {
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
                 Assert.True(server.IsListening, "Server is not listening");
 
                 var actual = 0;
@@ -223,12 +220,10 @@ namespace Dicom.Network
                                     });
 
                             _testOutputHelper.WriteLine("Sending #{0}", requestIndex);
-                            var sendTask = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                            await Task.WhenAny(sendTask, Task.Delay(1000));
+                            await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP").ConfigureAwait(false);
                             _testOutputHelper.WriteLine("Sent (or timed out) #{0}", requestIndex);
                         }).ToList();
-                await Task.WhenAll(requests);
-
+                await Task.WhenAll(requests).ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }
