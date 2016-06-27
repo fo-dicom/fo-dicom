@@ -154,29 +154,15 @@ namespace Dicom.Network
         {
             int port = Ports.GetNext();
 
-            using (
-                var server = new DicomServer<DicomCEchoProvider>(port))
+            using (var server = new DicomServer<DicomCEchoProvider>(port))
             {
-                await Task.Delay(500);
-                Assert.True(server.IsListening, "Server is not listening");
-
                 var actual = 0;
 
                 var client = new DicomClient();
                 for (var i = 0; i < expected; i++)
                 {
-                    client.AddRequest(
-                        new DicomCEchoRequest
-                            {
-                                OnResponseReceived = (req, res) =>
-                                    {
-                                        _testOutputHelper.WriteLine("Response #{0}", i);
-                                        Interlocked.Add(ref actual, 1);
-                                    }
-                            });
-                    _testOutputHelper.WriteLine("Sending #{0}", i);
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => { Interlocked.Add(ref actual, 1); } });
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                    _testOutputHelper.WriteLine("Sent (or timed out) #{0}", i);
                 }
 
                 Assert.Equal(expected, actual);
