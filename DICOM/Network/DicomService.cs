@@ -448,6 +448,11 @@ namespace Dicom.Network
                 // connection already closed; silently ignore
                 await CloseConnectionAsync(null).ConfigureAwait(false);
             }
+            catch (DicomNetworkException e)
+            {
+                Logger.Error("Exception processing PDU: {@error}", e);
+                await CloseConnectionAsync(e).ConfigureAwait(false);
+            }
             catch (IOException e)
             {
                 LogIOException(this.Logger, e, true);
