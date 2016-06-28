@@ -84,7 +84,7 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
-        [InlineData(200)]
+        [InlineData(100)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
@@ -98,7 +98,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
@@ -152,7 +152,7 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
-        [InlineData(200)]
+        [InlineData(100)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
