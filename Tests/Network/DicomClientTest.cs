@@ -84,7 +84,7 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
-        [InlineData(100)]
+        //[InlineData(100)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
@@ -152,7 +152,7 @@ namespace Dicom.Network
 
         [Theory]
         [InlineData(20)]
-        [InlineData(100)]
+        //[InlineData(100)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             int port = Ports.GetNext();
