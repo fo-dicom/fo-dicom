@@ -98,7 +98,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
