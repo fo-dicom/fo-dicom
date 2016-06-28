@@ -90,7 +90,7 @@ namespace Dicom.Network
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
-            sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
+            if (Command.Contains(DicomTag.EventTypeID)) sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
                 if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
