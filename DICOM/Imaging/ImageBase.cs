@@ -48,6 +48,14 @@ namespace Dicom.Imaging
             this.disposed = false;
         }
 
+		/// <summary>
+		/// Destructor to free up the image resources.
+		/// </summary>
+		~ImageBase()
+		{
+			this.Dispose(false);
+		}
+		
         #endregion
 
         #region PROPERTIES

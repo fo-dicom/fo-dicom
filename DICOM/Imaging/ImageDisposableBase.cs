@@ -27,6 +27,14 @@ namespace Dicom.Imaging
         {
         }
 
+		/// <summary>
+		/// Destructor to free up the image resources.
+		/// </summary>
+		~ImageDisposableBase()
+		{
+			this.Dispose(false);
+		}
+
         #endregion
 
         #region METHODS
