@@ -63,6 +63,10 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Formatted output.
+        /// </summary>
+        /// <returns>Formatted output of the N-ACTION request.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

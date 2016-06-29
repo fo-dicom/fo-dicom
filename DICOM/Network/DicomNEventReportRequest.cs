@@ -63,6 +63,10 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Formatted output.
+        /// </summary>
+        /// <returns>Formatted output of the N-EVENTREPORT response message.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
