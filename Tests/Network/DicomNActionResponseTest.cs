@@ -35,6 +35,19 @@ namespace Dicom.Network
             Assert.Null(exception);
         }
 
+        [Fact]
+        public void ToString_ResponseWithoutActionTypeID_DoesNotThrow()
+        {
+            var command = new DicomDataset(new DicomUnsignedShort(DicomTag.CommandField, (ushort)DicomCommandField.NActionResponse),
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.BasicFilmSessionSOPClass),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new DicomUID("1.2.3", null, DicomUidType.SOPInstance)),
+                new DicomUnsignedShort(DicomTag.MessageIDBeingRespondedTo, 1));
+            var response = new DicomNActionResponse(command) { Status = DicomStatus.Success };
+
+            var exception = Record.Exception(() => response.ToString());
+            Assert.Null(exception);
+        }
+
         #endregion
     }
 }
