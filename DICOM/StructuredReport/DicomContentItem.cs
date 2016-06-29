@@ -352,7 +352,7 @@ namespace Dicom.StructuredReport
 
         public IEnumerable<DicomContentItem> Children()
         {
-            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence);
+            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence, 0, null);
 
             // silence exceptions for items without a content sequence
             if (sequence == null) sequence = new DicomSequence(DicomTag.ContentSequence);
@@ -362,7 +362,7 @@ namespace Dicom.StructuredReport
 
         public DicomContentItem Add(DicomContentItem item)
         {
-            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence);
+            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence, 0, null);
 
             if (sequence == null)
             {
