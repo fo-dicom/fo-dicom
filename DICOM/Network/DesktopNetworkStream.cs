@@ -75,11 +75,9 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {
-#if NETSTANDARD
-#else
             this.Host = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
             this.Port = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
-#endif
+
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
             {
@@ -96,7 +94,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Destrutor.
+        /// Destructor.
         /// </summary>
         ~DesktopNetworkStream()
         {
