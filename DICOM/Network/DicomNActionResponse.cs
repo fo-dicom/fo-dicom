@@ -85,12 +85,12 @@ namespace Dicom.Network
         /// <summary>
         /// Formatted output.
         /// </summary>
-        /// <returns>Formetted output of the N-ACTION response.</returns>
+        /// <returns>Formatted output of the N-ACTION response.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
-            sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
+            if (Command.Contains(DicomTag.ActionTypeID)) sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
                 if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);

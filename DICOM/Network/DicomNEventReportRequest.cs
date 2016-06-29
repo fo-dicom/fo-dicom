@@ -63,11 +63,15 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Formatted output.
+        /// </summary>
+        /// <returns>Formatted output of the N-EVENTREPORT response message.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]", ToString(Type), MessageID);
-            sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
+            if (Command.Contains(DicomTag.EventTypeID)) sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
             return sb.ToString();
         }
     }
