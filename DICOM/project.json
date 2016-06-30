@@ -52,15 +52,15 @@
   },
 
   "dependencies": {
-    "NETStandard.Library": "1.5.0-rc2-24027",
-    "System.Data.SqlClient": "4.1.0-rc2-24027",
-    "System.IO.FileSystem": "4.0.1-rc2-24027",
-    "System.Net.NetworkInformation": "4.1.0-rc2-24027",
-    "System.Net.Security": "4.0.0-rc2-24027",
-    "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027",
-    "System.Threading.Tasks.Parallel": "4.0.1-rc2-24027",
-    "CSJ2K": "2.0.0-beta6",
-    "Portable.LibJpeg.NET": "1.5.1-pre2"
+    "NETStandard.Library": "1.6.0",
+    "System.Data.SqlClient": "4.1.0",
+    "System.IO.FileSystem": "4.0.1",
+    "System.Net.NetworkInformation": "4.1.0",
+    "System.Net.Security": "4.0.0",
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "System.Threading.Tasks.Parallel": "4.0.1",
+    "CSJ2K": "2.0.0",
+    "Portable.LibJpeg.NET": "1.5.1"
   },
 
   "frameworks": {
