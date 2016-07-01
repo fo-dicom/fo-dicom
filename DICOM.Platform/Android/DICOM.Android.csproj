@@ -42,11 +42,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BitMiracle.LibJpeg.NetCore, Version=1.5.1.0, Culture=neutral, PublicKeyToken=d69f732e552243f5, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1\lib\netstandard1.0\BitMiracle.LibJpeg.NetCore.dll</HintPath>
+      <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1.1\lib\netstandard1.0\BitMiracle.LibJpeg.NetCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CSJ2K, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CSJ2K.2.0.0\lib\MonoAndroid1\CSJ2K.dll</HintPath>
+      <HintPath>..\..\packages\CSJ2K.2.0.0.1\lib\MonoAndroid1\CSJ2K.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Android" />
@@ -124,7 +124,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

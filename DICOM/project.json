@@ -1,4 +1,4 @@
-﻿{
+{
   "buildOptions": {
     "compile": {
       "include": "**/*.cs",
@@ -59,8 +59,8 @@
     "System.Net.Security": "4.0.0",
     "System.Runtime.Serialization.Primitives": "4.1.1",
     "System.Threading.Tasks.Parallel": "4.0.1",
-    "CSJ2K": "2.0.0",
-    "Portable.LibJpeg.NET": "1.5.1"
+    "CSJ2K": "2.0.0.1",
+    "Portable.LibJpeg.NET": "1.5.1.1"
   },
 
   "frameworks": {
