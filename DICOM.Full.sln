@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{A1D10E37-DC32-4A8E-ABFF-5E5FB3A9687C}"
 EndProject
@@ -78,7 +78,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Desktop", "DICOM.Plat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.iOS", "DICOM.Platform\iOS\DICOM.iOS.csproj", "{322DD2FF-C0B7-4CBF-BE95-F0032FD94E02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Windows", "DICOM.Platform\Windows\DICOM.Windows.csproj", "{F3120AC1-B538-4A30-B4A8-835376737EF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Universal", "DICOM.Platform\Windows\DICOM.Universal.csproj", "{F3120AC1-B538-4A30-B4A8-835376737EF5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{A3F3827E-70AB-4683-BE7E-6B90931FE835}"
 EndProject
@@ -90,18 +90,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Tests", "Tests\DICOM.
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DICOM.NetCore", "DICOM\DICOM.NetCore.xproj", "{3A4E2B45-2BC4-4583-A176-E7B695B60527}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Core", "DICOM.Platform\Portable\DICOM.Core.csproj", "{A661D347-CF7D-4F36-8101-0544AE85EEEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Portable", "DICOM.Platform\Portable\DICOM.Portable.csproj", "{A661D347-CF7D-4F36-8101-0544AE85EEEC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Legacy", "Legacy\DICOM.Legacy.csproj", "{FCAAE348-5D26-46CF-BFA3-C0B99C711B3D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
-		DICOM\DICOM.Shared.projitems*{f3120ac1-b538-4a30-b4a8-835376737ef5}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{322dd2ff-c0b7-4cbf-be95-f0032fd94e02}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
-		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
+		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{f3120ac1-b538-4a30-b4a8-835376737ef5}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
