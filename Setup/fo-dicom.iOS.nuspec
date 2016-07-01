@@ -12,8 +12,8 @@
         <description>Core fo-dicom library for Xamarin iOS (Unified).</description>
         <language>en-US</language>
         <dependencies>
-			<dependency id="Portable.LibJpeg.NET" version="1.5.1-pre2" />
-			<dependency id="CSJ2K" version="2.0.0-beta6" />
+			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
+			<dependency id="CSJ2K" version="2.0.0.1" />
         </dependencies>
     </metadata>
     <files>

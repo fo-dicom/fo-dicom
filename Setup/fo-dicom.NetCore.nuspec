@@ -19,8 +19,8 @@
 			<dependency id="System.Net.Security" version="4.0.0" />
 			<dependency id="System.Runtime.Serialization.Primitives" version="4.1.1" />
 			<dependency id="System.Threading.Tasks.Parallel" version="4.0.1" />
-			<dependency id="Portable.LibJpeg.NET" version="1.5.1-pre2" />
-			<dependency id="CSJ2K" version="2.0.0-beta6" />
+			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
+			<dependency id="CSJ2K" version="2.0.0.1" />
 		</dependencies>
     </metadata>
     <files>

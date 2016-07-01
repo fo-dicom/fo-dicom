@@ -146,6 +146,7 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Johannes Liegert](https://github.com/0xLigety)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
+* [Alexander Pyzynia](https://github.com/werwolfby)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
 * [do0om](https://github.com/do0om)
