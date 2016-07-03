@@ -27,3 +27,4 @@ DICOM/T4/part16.xml
 *.db
 *.DotSettings
 /UpgradeLog.htm
+/UpgradeLog2.htm

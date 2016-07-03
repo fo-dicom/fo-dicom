@@ -84,5 +84,24 @@ namespace Dicom.Network
                 return _messageId++;
             }
         }
+
+        /// <summary>
+        /// Create presentation of the request using specific transfer syntax instead of relying on the default offered Explicit Little Endian, Implicit Littile Endian sequeunce
+        /// </summary>
+        /// <param name="transferSyntaxes">The list of proposed transfer syntaxes</param>
+        public void CreatePresentationContext(params DicomTransferSyntax[] transferSyntaxes)
+        {
+            if(transferSyntaxes.Length == 0)
+            {
+                throw new ArgumentException("Proposed Transfer Syntaxes array can't be empty");
+            }
+
+            this.PresentationContext = new DicomPresentationContext(0, this.SOPClassUID);
+
+            foreach (var tx in transferSyntaxes)
+            {
+                this.PresentationContext.AddTransferSyntax(tx);
+            }
+        }
     }
 }

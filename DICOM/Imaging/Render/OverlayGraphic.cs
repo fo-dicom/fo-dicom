@@ -83,7 +83,8 @@ namespace Dicom.Imaging.Render
                 {
                     if (data[i] > 0)
                     {
-                        if ((ox + x) >= width) break;
+                        //this is wrong, when scaling is active
+                        //if ((ox + x) >= width) break;
                         int p = (oy * width) + ox + i;
                         pixels[p] = _color;
                     }

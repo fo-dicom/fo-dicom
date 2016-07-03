@@ -126,7 +126,10 @@ namespace Dicom.IO
         {
             if (_data != null)
             {
-                _handle.Free();
+                if(_handle.IsAllocated)
+                {
+                    _handle.Free();
+                }
                 _pointer = IntPtr.Zero;
                 _data = null;
             }

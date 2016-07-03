@@ -48,7 +48,7 @@ namespace Dicom.Printing
             get
             {
                 DicomSequence seq = null;
-                if (SOPClassUID == ColorSOPClassUID)
+                if (SOPClassUID == ColorSOPClassUID || this.Contains(DicomTag.BasicColorImageSequence))
                 {
                     seq = this.Get<DicomSequence>(DicomTag.BasicColorImageSequence);
                 }
