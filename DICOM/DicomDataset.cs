@@ -197,9 +197,19 @@ namespace Dicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset Add(params DicomItem[] items)
+        public DicomDataset Add(IEnumerable<DicomItem> items)
         {
-            return Add((IEnumerable<DicomItem>)items);
+            if (items != null)
+            {
+                foreach (var item in items)
+                {
+                    if (item != null)
+                    {
+                        _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
+                    }
+                }
+            }
+            return this;
         }
 
         /// <summary>
@@ -207,20 +217,9 @@ namespace Dicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset Add(IEnumerable<DicomItem> items)
+        public DicomDataset Add(params DicomItem[] items)
         {
-            if (items != null)
-            {
-                foreach (DicomItem item in items)
-                {
-                    if (item != null)
-                    {
-                        if (item.Tag.IsPrivate) _items[GetPrivateTag(item.Tag)] = item;
-                        else _items[item.Tag] = item;
-                    }
-                }
-            }
-            return this;
+            return Add((IEnumerable<DicomItem>)items);
         }
 
         /// <summary>
