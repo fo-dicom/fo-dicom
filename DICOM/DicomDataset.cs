@@ -197,6 +197,7 @@ namespace Dicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
+        /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(params DicomItem[] items)
         {
             return DoAdd(items, false);
@@ -207,6 +208,7 @@ namespace Dicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
+        /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(IEnumerable<DicomItem> items)
         {
             return DoAdd(items, false);
@@ -219,6 +221,7 @@ namespace Dicom
         /// <param name="tag">DICOM tag of the added item.</param>
         /// <param name="values">Values of the added item.</param>
         /// <returns>The dataset instance.</returns>
+        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
             return DoAdd(tag, values, false);
@@ -235,9 +238,58 @@ namespace Dicom
         /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
         /// </remarks>
         /// <returns>The dataset instance.</returns>
+        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
             return DoAdd(vr, tag, values, false);
+        }
+
+        /// <summary>
+        /// Add a collection of DICOM items to the dataset. Update existing items.
+        /// </summary>
+        /// <param name="items">Collection of DICOM items to add.</param>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdate(params DicomItem[] items)
+        {
+            return DoAdd(items, true);
+        }
+
+        /// <summary>
+        /// Add a collection of DICOM items to the dataset. Update existing items.
+        /// </summary>
+        /// <param name="items">Collection of DICOM items to add.</param>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdate(IEnumerable<DicomItem> items)
+        {
+            return DoAdd(items, true);
+        }
+
+        /// <summary>
+        /// Add or update a single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of added values.</typeparam>
+        /// <param name="tag">DICOM tag of the added item.</param>
+        /// <param name="values">Values of the added item.</param>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[] values)
+        {
+            return DoAdd(tag, values, true);
+        }
+
+        /// <summary>
+        /// Add or update a single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>. 
+        /// </summary>
+        /// <typeparam name="T">Type of added values.</typeparam>
+        /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
+        /// <param name="tag">DICOM tag of the added item.</param>
+        /// <param name="values">Values of the added item.</param>
+        /// <remarks>No validation is performed on the <paramref name="vr"/> matching the element <paramref name="tag"/>
+        /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
+        /// </remarks>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdate<T>(DicomVR vr, DicomTag tag, params T[] values)
+        {
+            return DoAdd(vr, tag, values, true);
         }
 
         /// <summary>
