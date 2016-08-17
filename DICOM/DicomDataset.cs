@@ -199,18 +199,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset Add(params DicomItem[] items)
         {
-            if (items != null)
-            {
-                foreach (DicomItem item in items)
-                {
-                    if (item != null)
-                    {
-                        if (item.Tag.IsPrivate) _items[GetPrivateTag(item.Tag)] = item;
-                        else _items[item.Tag] = item;
-                    }
-                }
-            }
-            return this;
+            return Add((IEnumerable<DicomItem>)items);
         }
 
         /// <summary>
