@@ -181,7 +181,7 @@ namespace Dicom
                 var creator = new DicomTag(tag.Group, group);
                 if (!Contains(creator))
                 {
-                    Add(new DicomLongString(creator, tag.PrivateCreator.Creator));
+                    AddOrUpdate(new DicomLongString(creator, tag.PrivateCreator.Creator));
                     break;
                 }
 
@@ -341,7 +341,7 @@ namespace Dicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination)
         {
-            if (destination != null) destination.Add(this);
+            if (destination != null) destination.AddOrUpdate(this);
             return this;
         }
 
@@ -355,7 +355,7 @@ namespace Dicom
         {
             if (destination != null)
             {
-                foreach (var tag in tags) destination.Add(Get<DicomItem>(tag));
+                foreach (var tag in tags) destination.AddOrUpdate(Get<DicomItem>(tag));
             }
             return this;
         }
@@ -368,7 +368,7 @@ namespace Dicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask)
         {
-            if (destination != null) destination.Add(_items.Values.Where(x => mask.IsMatch(x.Tag)));
+            destination?.AddOrUpdate(_items.Values.Where(x => mask.IsMatch(x.Tag)));
             return this;
         }
 
@@ -399,7 +399,7 @@ namespace Dicom
         /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
-            return String.Format("DICOM Dataset [{0} items]", _items.Count);
+            return $"DICOM Dataset [{_items.Count} items]";
         }
 
         /// <summary>

@@ -59,7 +59,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.Rows, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Rows, value));
             }
         }
 
@@ -75,7 +75,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomIntegerString(DicomTag.NumberOfFrames, value));
+                Dataset.AddOrUpdate(new DicomIntegerString(DicomTag.NumberOfFrames, value));
             }
         }
 
@@ -105,7 +105,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.BitsAllocated, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.BitsAllocated, value));
             }
         }
 
@@ -120,7 +120,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.BitsStored, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.BitsStored, value));
             }
         }
 
@@ -135,7 +135,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.HighBit, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.HighBit, value));
             }
         }
 
@@ -150,7 +150,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.SamplesPerPixel, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.SamplesPerPixel, value));
             }
         }
 
@@ -165,7 +165,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.PixelRepresentation, (ushort)value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PixelRepresentation, (ushort)value));
             }
         }
 
@@ -181,7 +181,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.PlanarConfiguration, (ushort)value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PlanarConfiguration, (ushort)value));
             }
         }
 
@@ -196,7 +196,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomCodeString(DicomTag.PhotometricInterpretation, value.Value));
+                Dataset.AddOrUpdate(new DicomCodeString(DicomTag.PhotometricInterpretation, value.Value));
             }
         }
 
@@ -390,7 +390,7 @@ namespace Dicom.Imaging
                 {
                     NumberOfFrames = 0;
                     Element = new DicomOtherByte(DicomTag.PixelData, new CompositeByteBuffer());
-                    Dataset.Add(Element);
+                    Dataset.AddOrUpdate(Element);
                 }
                 else Element = dataset.Get<DicomOtherByte>(DicomTag.PixelData);
             }
@@ -436,7 +436,7 @@ namespace Dicom.Imaging
                 {
                     NumberOfFrames = 0;
                     Element = new DicomOtherWord(DicomTag.PixelData, new CompositeByteBuffer());
-                    Dataset.Add(Element);
+                    Dataset.AddOrUpdate(Element);
                 }
                 else Element = dataset.Get<DicomOtherWord>(DicomTag.PixelData);
             }
@@ -490,7 +490,7 @@ namespace Dicom.Imaging
                 {
                     NumberOfFrames = 0;
                     Element = new DicomOtherByteFragment(DicomTag.PixelData);
-                    Dataset.Add(Element);
+                    Dataset.AddOrUpdate(Element);
                 }
                 else Element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
             }

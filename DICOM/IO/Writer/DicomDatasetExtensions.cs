@@ -29,7 +29,7 @@ namespace Dicom.IO.Writer
             var calculator = new DicomWriteLengthCalculator(dataset.InternalTransferSyntax, DicomWriteOptions.Default);
 
             uint length = calculator.Calculate(items);
-            dataset.Add(new DicomTag(group, 0x0000), length);
+            dataset.AddOrUpdate(new DicomTag(group, 0x0000), length);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Dicom.IO.Writer
                 }
 
                 uint length = calculator.Calculate(items);
-                dataset.Add(new DicomTag(group, 0x0000), length);
+                dataset.AddOrUpdate(new DicomTag(group, 0x0000), length);
             }
         }
 

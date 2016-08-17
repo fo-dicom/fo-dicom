@@ -43,7 +43,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.CommandField, (ushort)value);
+                Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
             }
         }
 
@@ -73,10 +73,10 @@ namespace Dicom.Network
                     case DicomCommandField.NSetRequest:
                     case DicomCommandField.NActionRequest:
                     case DicomCommandField.NDeleteRequest:
-                        Command.Add(DicomTag.RequestedSOPClassUID, value);
+                        Command.AddOrUpdate(DicomTag.RequestedSOPClassUID, value);
                         break;
                     default:
-                        Command.Add(DicomTag.AffectedSOPClassUID, value);
+                        Command.AddOrUpdate(DicomTag.AffectedSOPClassUID, value);
                         break;
                 }
             }
@@ -118,7 +118,7 @@ namespace Dicom.Network
             set
             {
                 _dataset = value;
-                Command.Add(DicomTag.CommandDataSetType, (_dataset != null) ? (ushort)0x0202 : (ushort)0x0101);
+                Command.AddOrUpdate(DicomTag.CommandDataSetType, (_dataset != null) ? (ushort)0x0202 : (ushort)0x0101);
             }
         }
 
