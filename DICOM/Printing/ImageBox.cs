@@ -68,12 +68,11 @@ namespace Dicom.Printing
             {
                 if (SOPClassUID == ColorSOPClassUID)
                 {
-                    this.Add(DicomTag.BasicColorImageSequence, value);
+                    this.AddOrUpdate(DicomTag.BasicColorImageSequence, value);
                 }
                 else
                 {
-                    this.Add(DicomTag.BasicGrayscaleImageSequence, value);
-
+                    this.AddOrUpdate(DicomTag.BasicGrayscaleImageSequence, value);
                 }
             }
         }
@@ -89,7 +88,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.ImageBoxPosition, value);
+                this.AddOrUpdate(DicomTag.ImageBoxPosition, value);
             }
         }
 
@@ -119,7 +118,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.Polarity, value);
+                this.AddOrUpdate(DicomTag.Polarity, value);
             }
         }
 
@@ -144,7 +143,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MagnificationType, value);
+                this.AddOrUpdate(DicomTag.MagnificationType, value);
             }
         }
 
@@ -160,7 +159,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.SmoothingType, value);
+                this.AddOrUpdate(DicomTag.SmoothingType, value);
             }
         }
 
@@ -176,7 +175,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MaxDensity, value);
+                this.AddOrUpdate(DicomTag.MaxDensity, value);
             }
         }
 
@@ -192,7 +191,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MinDensity, value);
+                this.AddOrUpdate(DicomTag.MinDensity, value);
             }
         }
 
@@ -221,7 +220,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.ConfigurationInformation, value);
+                this.AddOrUpdate(DicomTag.ConfigurationInformation, value);
             }
         }
 
@@ -237,7 +236,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.RequestedImageSize, value);
+                this.AddOrUpdate(DicomTag.RequestedImageSize, value);
             }
         }
 
@@ -277,7 +276,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.RequestedDecimateCropBehavior, value);
+                this.AddOrUpdate(DicomTag.RequestedDecimateCropBehavior, value);
             }
         }
 

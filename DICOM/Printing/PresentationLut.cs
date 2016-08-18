@@ -45,7 +45,7 @@ namespace Dicom.Printing
             {
                 if (LutSequence != null)
                 {
-                    LutSequence.Add(DicomTag.LUTDescriptor, value);
+                    LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace Dicom.Printing
             {
                 if (LutSequence != null)
                 {
-                    LutSequence.Add(DicomTag.LUTDescriptor, value);
+                    LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
                 }
                 else
                 {
@@ -97,7 +97,7 @@ namespace Dicom.Printing
             {
                 if (LutSequence != null)
                 {
-                    LutSequence.Add(DicomTag.LUTData, value);
+                    LutSequence.AddOrUpdate(DicomTag.LUTData, value);
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.PresentationLUTShape, value);
+                this.AddOrUpdate(DicomTag.PresentationLUTShape, value);
             }
         }
 

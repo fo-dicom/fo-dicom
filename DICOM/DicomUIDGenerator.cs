@@ -95,7 +95,7 @@ namespace Dicom
             foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray())
             {
                 var uid = dataset.Get<DicomUID>(ui.Tag);
-                if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown) dataset.Add(ui.Tag, this.Generate(uid));
+                if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown) dataset.AddOrUpdate(ui.Tag, this.Generate(uid));
             }
 
             foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>().ToArray())

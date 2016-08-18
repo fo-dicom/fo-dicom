@@ -44,7 +44,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomUnsignedShort(DicomTag.Columns, value));
+                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Columns, value));
             }
         }
 

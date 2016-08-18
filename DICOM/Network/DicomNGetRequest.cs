@@ -26,7 +26,7 @@ namespace Dicom.Network
             }
             private set
             {
-                Command.Add(DicomTag.RequestedSOPInstanceUID, value);
+                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
             }
         }
 
@@ -38,7 +38,7 @@ namespace Dicom.Network
             }
             private set
             {
-                Command.Add(DicomTag.AttributeIdentifierList, value);
+                Command.AddOrUpdate(DicomTag.AttributeIdentifierList, value);
             }
         }
 

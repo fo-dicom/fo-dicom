@@ -107,7 +107,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.ImageDisplayFormat, value);
+                this.AddOrUpdate(DicomTag.ImageDisplayFormat, value);
             }
         }
 
@@ -135,7 +135,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.FilmOrientation, value);
+                this.AddOrUpdate(DicomTag.FilmOrientation, value);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.FilmSizeID, value);
+                this.AddOrUpdate(DicomTag.FilmSizeID, value);
             }
         }
 
@@ -197,7 +197,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MagnificationType, value);
+                this.AddOrUpdate(DicomTag.MagnificationType, value);
             }
         }
 
@@ -213,7 +213,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MaxDensity, value);
+                this.AddOrUpdate(DicomTag.MaxDensity, value);
             }
         }
 
@@ -230,7 +230,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MinDensity, value);
+                this.AddOrUpdate(DicomTag.MinDensity, value);
             }
         }
 
@@ -261,7 +261,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.ConfigurationInformation, value);
+                this.AddOrUpdate(DicomTag.ConfigurationInformation, value);
             }
         }
 
@@ -278,7 +278,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.AnnotationDisplayFormatID, value);
+                this.AddOrUpdate(DicomTag.AnnotationDisplayFormatID, value);
             }
         }
 
@@ -294,7 +294,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.SmoothingType, value);
+                this.AddOrUpdate(DicomTag.SmoothingType, value);
             }
         }
 
@@ -321,7 +321,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.BorderDensity, value);
+                this.AddOrUpdate(DicomTag.BorderDensity, value);
             }
         }
 
@@ -348,7 +348,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.EmptyImageDensity, value);
+                this.AddOrUpdate(DicomTag.EmptyImageDensity, value);
             }
         }
 
@@ -370,7 +370,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.Trim, value);
+                this.AddOrUpdate(DicomTag.Trim, value);
             }
         }
 
@@ -387,7 +387,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.Illumination, value);
+                this.AddOrUpdate(DicomTag.Illumination, value);
             }
         }
 
@@ -403,7 +403,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.ReflectedAmbientLight, value);
+                this.AddOrUpdate(DicomTag.ReflectedAmbientLight, value);
             }
         }
 
@@ -431,7 +431,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.RequestedResolutionID, value);
+                this.AddOrUpdate(DicomTag.RequestedResolutionID, value);
             }
         }
 
@@ -443,7 +443,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(value);
+                this.AddOrUpdate(value);
             }
         }
 

@@ -79,7 +79,7 @@ namespace Dicom.Network
             }
             private set
             {
-                Command.Add(DicomTag.AffectedSOPInstanceUID, value);
+                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
             }
         }
 

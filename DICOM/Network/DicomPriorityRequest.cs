@@ -24,7 +24,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.Priority, (ushort)value);
+                Command.AddOrUpdate(DicomTag.Priority, (ushort)value);
             }
         }
     }
