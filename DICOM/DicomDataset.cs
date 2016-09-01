@@ -181,11 +181,11 @@ namespace Dicom
                 var creator = new DicomTag(tag.Group, group);
                 if (!Contains(creator))
                 {
-                    AddOrUpdate(new DicomLongString(creator, tag.PrivateCreator.Creator));
+                    Add(new DicomLongString(creator, tag.PrivateCreator.Creator));
                     break;
                 }
 
-                var value = Get<string>(creator, String.Empty);
+                var value = Get(creator, string.Empty);
                 if (tag.PrivateCreator.Creator == value) return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
             }
 
