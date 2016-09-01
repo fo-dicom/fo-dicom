@@ -168,7 +168,7 @@ namespace Dicom
                                 {
                                     dataset.CopyTo(modifiedAttributesSequenceItem, _output[i]);
                                     string str = reader.GetString(i);
-                                    dataset.Add(_output[i], str);
+                                    dataset.AddOrUpdate(_output[i], str);
                                 }
                             }
                         }

@@ -367,7 +367,7 @@ namespace Dicom.StructuredReport
             if (sequence == null)
             {
                 sequence = new DicomSequence(DicomTag.ContentSequence);
-                Dataset.AddOrUpdate(sequence);
+                Dataset.Add(sequence);
             }
 
             sequence.Items.Add(item.Dataset);

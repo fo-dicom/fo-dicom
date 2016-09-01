@@ -101,7 +101,7 @@ namespace Dicom.Media
         /// <param name="explicitVr">Indicates whether or not Value Representation of the DICOM directory should be explicit.</param>
         public DicomDirectory(bool explicitVr = true)
         {
-            FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, 0x00, 0x01);
+            FileMetaInfo.Version = new byte[] { 0x00, 0x01 };
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
             FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
             FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
