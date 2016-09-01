@@ -340,7 +340,7 @@ namespace Dicom.Dump
 
         private void ChangeSyntax(DicomTransferSyntax syntax, DicomCodecParams param = null)
         {
-            var file = _file.ChangeTransferSyntax(syntax, param);
+            var file = _file.Clone(syntax, param);
             OpenFile(file);
         }
 

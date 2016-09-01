@@ -291,7 +291,7 @@ namespace Dicom.Imaging.Codec
             dataset = dataset.Clone();
 
             var input = dataset;
-            if (input.InternalTransferSyntax.IsEncapsulated) input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+            if (input.InternalTransferSyntax.IsEncapsulated) input = input.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
 
             ProcessOverlays(input, dataset);
 
