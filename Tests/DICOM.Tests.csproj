@@ -90,6 +90,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Bugs\GH342.cs" />
     <Compile Include="Bugs\GH227.cs" />
     <Compile Include="Bugs\GH133.cs" />
     <Compile Include="Bugs\GH064.cs" />
@@ -192,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\GH342.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\CR-MONO1-10-chest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
