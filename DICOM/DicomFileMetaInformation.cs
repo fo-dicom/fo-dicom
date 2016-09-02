@@ -70,7 +70,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.FileMetaInformationVersion, value);
+                AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.MediaStorageSOPClassUID, value);
+                AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
             }
         }
 
@@ -100,7 +100,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.MediaStorageSOPInstanceUID, value);
+                AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
             }
         }
 
@@ -115,7 +115,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.TransferSyntaxUID, value.UID);
+                AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.ImplementationClassUID, value);
+                AddOrUpdate(DicomTag.ImplementationClassUID, value);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.ImplementationVersionName, value);
+                AddOrUpdate(DicomTag.ImplementationVersionName, value);
             }
         }
 
@@ -160,7 +160,7 @@ namespace Dicom
             }
             set
             {
-                Add(DicomTag.SourceApplicationEntityTitle, value);
+                AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
             }
         }
 

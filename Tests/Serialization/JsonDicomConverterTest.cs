@@ -310,7 +310,6 @@ namespace Dicom.Serialization
         {
             var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
             return new DicomDataset {
-                           new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
                            new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator), "AETITLE"),
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator), "34y"),
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator), new[] { DicomTag.SOPInstanceUID }),
@@ -351,7 +350,6 @@ namespace Dicom.Serialization
         {
             var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
             return new DicomDataset {
-                           new DicomLongString(new DicomTag(3, 0x0010, privateCreator), privateCreator.Creator),
                            new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator)),
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator)),
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator)),

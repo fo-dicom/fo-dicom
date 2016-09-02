@@ -147,7 +147,7 @@ namespace Dicom.IO.Reader
             }
 
             DicomDataset ds = _datasets.Peek();
-            ds.Add(element);
+            ds.AddOrUpdate(element);
         }
 
         public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
@@ -156,7 +156,7 @@ namespace Dicom.IO.Reader
             _sequences.Push(sq);
 
             DicomDataset ds = _datasets.Peek();
-            ds.Add(sq);
+            ds.AddOrUpdate(sq);
         }
 
         public void OnBeginSequenceItem(IByteSource source, uint length)
@@ -190,7 +190,7 @@ namespace Dicom.IO.Reader
             else throw new DicomDataException("Unexpected VR found for DICOM fragment sequence: {0}", vr.Code);
 
             DicomDataset ds = _datasets.Peek();
-            ds.Add(_fragment);
+            ds.AddOrUpdate(_fragment);
         }
 
         public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)

@@ -59,7 +59,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.MessageID, value);
+                Command.AddOrUpdate(DicomTag.MessageID, value);
             }
         }
 

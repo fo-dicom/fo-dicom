@@ -187,7 +187,7 @@ namespace Dicom.StructuredReport
             }
             private set
             {
-                Dataset.Add(DicomTag.ConceptNameCodeSequence, value);
+                Dataset.AddOrUpdate(DicomTag.ConceptNameCodeSequence, value);
             }
         }
 
@@ -235,46 +235,46 @@ namespace Dicom.StructuredReport
                 switch (value)
                 {
                     case DicomValueType.Container:
-                        Dataset.Add(DicomTag.ValueType, "CONTAINER");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "CONTAINER");
                         return;
                     case DicomValueType.Text:
-                        Dataset.Add(DicomTag.ValueType, "TEXT");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "TEXT");
                         return;
                     case DicomValueType.Code:
-                        Dataset.Add(DicomTag.ValueType, "CODE");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "CODE");
                         return;
                     case DicomValueType.Numeric:
-                        Dataset.Add(DicomTag.ValueType, "NUM");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "NUM");
                         return;
                     case DicomValueType.PersonName:
-                        Dataset.Add(DicomTag.ValueType, "PNAME");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "PNAME");
                         return;
                     case DicomValueType.Date:
-                        Dataset.Add(DicomTag.ValueType, "DATE");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "DATE");
                         return;
                     case DicomValueType.Time:
-                        Dataset.Add(DicomTag.ValueType, "TIME");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "TIME");
                         return;
                     case DicomValueType.DateTime:
-                        Dataset.Add(DicomTag.ValueType, "DATETIME");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "DATETIME");
                         return;
                     case DicomValueType.UIDReference:
-                        Dataset.Add(DicomTag.ValueType, "UIDREF");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "UIDREF");
                         return;
                     case DicomValueType.Composite:
-                        Dataset.Add(DicomTag.ValueType, "COMPOSITE");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "COMPOSITE");
                         return;
                     case DicomValueType.Image:
-                        Dataset.Add(DicomTag.ValueType, "IMAGE");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "IMAGE");
                         return;
                     case DicomValueType.Waveform:
-                        Dataset.Add(DicomTag.ValueType, "WAVEFORM");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "WAVEFORM");
                         return;
                     case DicomValueType.SpatialCoordinate:
-                        Dataset.Add(DicomTag.ValueType, "SCOORD");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "SCOORD");
                         return;
                     case DicomValueType.TemporalCoordinate:
-                        Dataset.Add(DicomTag.ValueType, "TCOORD");
+                        Dataset.AddOrUpdate(DicomTag.ValueType, "TCOORD");
                         return;
                     default:
                         break;
@@ -312,25 +312,25 @@ namespace Dicom.StructuredReport
                 switch (value)
                 {
                     case DicomRelationship.Contains:
-                        Dataset.Add(DicomTag.RelationshipType, "CONTAINS");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "CONTAINS");
                         return;
                     case DicomRelationship.HasProperties:
-                        Dataset.Add(DicomTag.RelationshipType, "HAS PROPERTIES");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "HAS PROPERTIES");
                         return;
                     case DicomRelationship.InferredFrom:
-                        Dataset.Add(DicomTag.RelationshipType, "INFERRED FROM");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "INFERRED FROM");
                         return;
                     case DicomRelationship.SelectedFrom:
-                        Dataset.Add(DicomTag.RelationshipType, "SELECTED FROM");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "SELECTED FROM");
                         return;
                     case DicomRelationship.HasObservationContext:
-                        Dataset.Add(DicomTag.RelationshipType, "HAS OBS CONTEXT");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "HAS OBS CONTEXT");
                         return;
                     case DicomRelationship.HasAcquisitionContext:
-                        Dataset.Add(DicomTag.RelationshipType, "HAS ACQ CONTEXT");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "HAS ACQ CONTEXT");
                         return;
                     case DicomRelationship.HasConceptModifier:
-                        Dataset.Add(DicomTag.RelationshipType, "HAS CONCEPT MOD");
+                        Dataset.AddOrUpdate(DicomTag.RelationshipType, "HAS CONCEPT MOD");
                         return;
                     default:
                         break;
@@ -346,7 +346,7 @@ namespace Dicom.StructuredReport
             }
             private set
             {
-                Dataset.Add(DicomTag.ContinuityOfContent, value.ToString().ToUpper());
+                Dataset.AddOrUpdate(DicomTag.ContinuityOfContent, value.ToString().ToUpper());
             }
         }
 

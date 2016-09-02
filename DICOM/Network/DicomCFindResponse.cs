@@ -26,7 +26,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
+                Command.AddOrUpdate(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
             }
         }
 
@@ -38,7 +38,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
+                Command.AddOrUpdate(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.NumberOfWarningSuboperations, (ushort)value);
+                Command.AddOrUpdate(DicomTag.NumberOfWarningSuboperations, (ushort)value);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.NumberOfFailedSuboperations, (ushort)value);
+                Command.AddOrUpdate(DicomTag.NumberOfFailedSuboperations, (ushort)value);
             }
         }
 

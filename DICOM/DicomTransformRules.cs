@@ -148,7 +148,7 @@ namespace Dicom
         public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
         {
             dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-            dataset.Add(_tag, _value);
+            dataset.AddOrUpdate(_tag, _value);
         }
 
         public override string ToString()
@@ -193,7 +193,7 @@ namespace Dicom
             if (dataset.Contains(_tag) && dataset.Get<string>(_tag, -1, String.Empty) == _match)
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                dataset.Add(_tag, _value);
+                dataset.AddOrUpdate(_tag, _value);
             }
         }
 
@@ -236,7 +236,7 @@ namespace Dicom
             if (dataset.Contains(_src))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _dst);
-                dataset.Add(_dst, dataset.Get<IByteBuffer>(_src));
+                dataset.AddOrUpdate(_dst, dataset.Get<IByteBuffer>(_src));
             }
         }
 
@@ -285,7 +285,7 @@ namespace Dicom
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
                 value = Regex.Replace(value, _pattern, _replacement);
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -329,7 +329,7 @@ namespace Dicom
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
-                dataset.Add(_tag, _prefix + value);
+                dataset.AddOrUpdate(_tag, _prefix + value);
             }
         }
 
@@ -373,7 +373,7 @@ namespace Dicom
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
-                dataset.Add(_tag, value + _append);
+                dataset.AddOrUpdate(_tag, value + _append);
             }
         }
 
@@ -431,7 +431,7 @@ namespace Dicom
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
                 if (_position == DicomTrimPosition.Start || _position == DicomTrimPosition.Both) while (value.StartsWith(_trim)) value = value.Substring(_trim.Length);
                 if (_position == DicomTrimPosition.End || _position == DicomTrimPosition.Both) while (value.EndsWith(_trim)) value = value.Substring(0, value.Length - _trim.Length);
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -500,7 +500,7 @@ namespace Dicom
                     if (_trim != null) value = value.TrimEnd(_trim);
                     else value = value.TrimEnd();
                 }
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -555,7 +555,7 @@ namespace Dicom
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
                 if (_totalLength < 0) value = value.PadLeft(-_totalLength, _paddingChar);
                 else value = value.PadRight(_totalLength, _paddingChar);
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -605,7 +605,7 @@ namespace Dicom
                     if (parts[i].Length > _length) parts[i] = parts[i].Substring(0, _length);
                 }
                 value = String.Join("\\", parts);
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -654,7 +654,7 @@ namespace Dicom
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
                 string[] parts = value.Split(_seperators);
                 value = String.Format(_format, parts);
-                dataset.Add(_tag, value);
+                dataset.AddOrUpdate(_tag, value);
             }
         }
 
@@ -695,7 +695,7 @@ namespace Dicom
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
-                dataset.Add(_tag, value.ToUpper());
+                dataset.AddOrUpdate(_tag, value.ToUpper());
             }
         }
 
@@ -736,7 +736,7 @@ namespace Dicom
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.Get<string>(_tag, -1, String.Empty);
-                dataset.Add(_tag, value.ToLower());
+                dataset.AddOrUpdate(_tag, value.ToLower());
             }
         }
 
@@ -778,7 +778,7 @@ namespace Dicom
         {
             dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
             var uid = dataset.Get<DicomUID>(_tag);
-            dataset.Add(_tag, _generator.Generate(uid));
+            dataset.AddOrUpdate(_tag, _generator.Generate(uid));
         }
 
         public override string ToString()

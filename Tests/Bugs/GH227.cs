@@ -38,7 +38,7 @@ namespace Dicom.Bugs
         {
             var deflated =
                 DicomFile.Open(@"Test Data\CT-MONO2-16-ankle")
-                    .ChangeTransferSyntax(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
+                    .Clone(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
 
             using (var stream = new MemoryStream())
             {
@@ -57,7 +57,7 @@ namespace Dicom.Bugs
         {
             var deflated =
                 DicomFile.Open(@"Test Data\CT-MONO2-16-ankle")
-                    .ChangeTransferSyntax(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
+                    .Clone(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
 
             using (var stream = new MemoryStream())
             {

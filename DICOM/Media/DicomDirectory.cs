@@ -52,7 +52,7 @@ namespace Dicom.Media
             {
                 if (!string.IsNullOrEmpty(value?.Trim()))
                 {
-                    Dataset.Add(DicomTag.FileSetID, value);
+                    Dataset.AddOrUpdate(DicomTag.FileSetID, value);
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace Dicom.Media
         /// <param name="explicitVr">Indicates whether or not Value Representation of the DICOM directory should be explicit.</param>
         public DicomDirectory(bool explicitVr = true)
         {
-            FileMetaInfo.Add<byte>(DicomTag.FileMetaInformationVersion, 0x00, 0x01);
+            FileMetaInfo.Version = new byte[] { 0x00, 0x01 };
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
             FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
             FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
@@ -370,7 +370,7 @@ namespace Dicom.Media
 
                 SetOffsets(RootDirectoryRecord);
 
-                Dataset.Add<uint>(
+                Dataset.AddOrUpdate<uint>(
                     DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity,
                     RootDirectoryRecord.Offset);
 
@@ -378,12 +378,12 @@ namespace Dicom.Media
 
                 while (lastRoot.NextDirectoryRecord != null) lastRoot = lastRoot.NextDirectoryRecord;
 
-                Dataset.Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
+                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
             }
             else
             {
-                Dataset.Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
-                Dataset.Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
+                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
+                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
             }
         }
 
@@ -414,24 +414,24 @@ namespace Dicom.Media
         {
             if (record.NextDirectoryRecord != null)
             {
-                record.Add<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
+                record.AddOrUpdate<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
                 SetOffsets(record.NextDirectoryRecord);
             }
             else
             {
-                record.Add<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, 0);
+                record.AddOrUpdate<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, 0);
             }
 
             if (record.LowerLevelDirectoryRecord != null)
             {
-                record.Add<uint>(
+                record.AddOrUpdate<uint>(
                     DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity,
                     record.LowerLevelDirectoryRecord.Offset);
                 SetOffsets(record.LowerLevelDirectoryRecord);
             }
             else
             {
-                record.Add<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0);
+                record.AddOrUpdate<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0);
             }
         }
 
@@ -487,10 +487,10 @@ namespace Dicom.Media
                 }
             }
             var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
-            newImage.Add(DicomTag.ReferencedFileID, referencedFileId);
-            newImage.Add(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
-            newImage.Add(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
-            newImage.Add(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
+            newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
+            newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
+            newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
+            newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
 
             if (currentImage != null)
             {

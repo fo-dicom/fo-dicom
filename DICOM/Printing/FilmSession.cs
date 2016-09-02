@@ -56,7 +56,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.FilmDestination, value);
+                this.AddOrUpdate(DicomTag.FilmDestination, value);
             }
         }
 
@@ -68,7 +68,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.FilmSessionLabel, value);
+                this.AddOrUpdate(DicomTag.FilmSessionLabel, value);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MemoryAllocation, value);
+                this.AddOrUpdate(DicomTag.MemoryAllocation, value);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.MediumType, value);
+                this.AddOrUpdate(DicomTag.MediumType, value);
             }
         }
 
@@ -131,7 +131,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.PrintPriority, value);
+                this.AddOrUpdate(DicomTag.PrintPriority, value);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Dicom.Printing
             }
             set
             {
-                this.Add(DicomTag.NumberOfCopies, value);
+                this.AddOrUpdate(DicomTag.NumberOfCopies, value);
             }
         }
 

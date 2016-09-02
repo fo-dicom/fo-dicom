@@ -52,7 +52,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.MessageIDBeingRespondedTo, value);
+                Command.AddOrUpdate(DicomTag.MessageIDBeingRespondedTo, value);
             }
         }
 
@@ -70,8 +70,8 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.Status, value.Code);
-                Command.Add(DicomTag.ErrorComment, value.ErrorComment);
+                Command.AddOrUpdate(DicomTag.Status, value.Code);
+                Command.AddOrUpdate(DicomTag.ErrorComment, value.ErrorComment);
             }
         }
 

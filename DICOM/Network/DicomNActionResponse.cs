@@ -59,7 +59,7 @@ namespace Dicom.Network
             }
             private set
             {
-                Command.Add(DicomTag.AffectedSOPInstanceUID, value);
+                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Dicom.Network
             }
             private set
             {
-                Command.Add(DicomTag.ActionTypeID, value);
+                Command.AddOrUpdate(DicomTag.ActionTypeID, value);
             }
         }
 

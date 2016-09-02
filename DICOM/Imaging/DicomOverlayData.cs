@@ -63,7 +63,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayRows), (ushort)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayRows), (ushort)value);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayColumns), (ushort)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayColumns), (ushort)value);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayType), value.ToString().ToUpper());
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayType), value.ToString().ToUpper());
             }
         }
 
@@ -110,7 +110,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayBitsAllocated), (ushort)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitsAllocated), (ushort)value);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayBitPosition), (ushort)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitPosition), (ushort)value);
             }
         }
 
@@ -140,7 +140,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(DicomTag.OverlayDescription, value);
+                Dataset.AddOrUpdate(DicomTag.OverlayDescription, value);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(DicomTag.OverlaySubtype, value);
+                Dataset.AddOrUpdate(DicomTag.OverlaySubtype, value);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(DicomTag.OverlayLabel, value);
+                Dataset.AddOrUpdate(DicomTag.OverlayLabel, value);
             }
         }
 
@@ -185,7 +185,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.NumberOfFramesInOverlay), value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.NumberOfFramesInOverlay), value);
             }
         }
 
@@ -200,7 +200,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.ImageFrameOrigin), (ushort)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.ImageFrameOrigin), (ushort)value);
             }
         }
 
@@ -215,7 +215,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginY);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginY);
             }
         }
 
@@ -230,7 +230,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(OverlayTag(DicomTag.OverlayOrigin), (short)OriginX, (short)value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)OriginX, (short)value);
             }
         }
 
@@ -245,7 +245,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.Add(new DicomOtherWord(OverlayTag(DicomTag.OverlayData), value));
+                Dataset.AddOrUpdate(new DicomOtherWord(OverlayTag(DicomTag.OverlayData), value));
             }
         }
 

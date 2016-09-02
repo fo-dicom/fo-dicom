@@ -73,7 +73,7 @@ namespace Dicom.Network
             }
             set
             {
-                Command.Add(DicomTag.MoveDestination, value);
+                Command.AddOrUpdate(DicomTag.MoveDestination, value);
             }
         }
 

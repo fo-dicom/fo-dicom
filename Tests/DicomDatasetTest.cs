@@ -278,10 +278,10 @@ namespace Dicom
             ds.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps));
 
             var ds2 = new DicomDataset(ds);
-            ds2.Add(DicomTag.PatientID, "2");
-            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Add(DicomTag.ScheduledStationName, "2");
+            ds2.AddOrUpdate(DicomTag.PatientID, "2");
+            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].AddOrUpdate(DicomTag.ScheduledStationName, "2");
             ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
-                DicomTag.ScheduledProtocolCodeSequence).Items[0].Add(DicomTag.ContextIdentifier, "2");
+                DicomTag.ScheduledProtocolCodeSequence).Items[0].AddOrUpdate(DicomTag.ContextIdentifier, "2");
 
             Assert.Equal("1", ds.Get<string>(DicomTag.PatientID));
             Assert.Equal(
@@ -335,7 +335,7 @@ namespace Dicom
             }
 
 
-            ds.Add(element.Tag, stringValues);
+            ds.AddOrUpdate(element.Tag, stringValues);
 
 
             for (int index = 0; index < element.Count; index++)
@@ -351,7 +351,7 @@ namespace Dicom
             {
                 var stringValue = string.Join("\\", testValues);
 
-                ds.Add(element.Tag, stringValue);
+                ds.AddOrUpdate(element.Tag, stringValue);
 
                 for (int index = 0; index < element.Count; index++)
                 {

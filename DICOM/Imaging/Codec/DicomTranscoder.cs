@@ -243,17 +243,17 @@ namespace Dicom.Imaging.Codec
 
             if (codec.TransferSyntax.IsLossy && newPixelData.NumberOfFrames > 0)
             {
-                newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompression, "01"));
+                newDataset.AddOrUpdate(new DicomCodeString(DicomTag.LossyImageCompression, "01"));
 
                 var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod)) methods.AddRange(newDataset.Get<string[]>(DicomTag.LossyImageCompressionMethod));
                 methods.Add(codec.TransferSyntax.LossyCompressionMethod);
-                newDataset.Add(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
+                newDataset.AddOrUpdate(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
 
                 double oldSize = oldPixelData.GetFrame(0).Size;
                 double newSize = newPixelData.GetFrame(0).Size;
                 var ratio = String.Format("{0:0.000}", oldSize / newSize);
-                newDataset.Add(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
+                newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
             }
 
             ProcessOverlays(oldDataset, newDataset);
@@ -276,11 +276,11 @@ namespace Dicom.Imaging.Codec
 
                 // If embedded overlay, Overlay Bits Allocated should equal Bits Allocated (#110).
                 var bitsAlloc = output.Get(DicomTag.BitsAllocated, (ushort)0);
-                output.Add(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
+                output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
 
                 var data = overlay.Data;
-                if (output.InternalTransferSyntax.IsExplicitVR) output.Add(new DicomOtherByte(dataTag, data));
-                else output.Add(new DicomOtherWord(dataTag, data));
+                if (output.InternalTransferSyntax.IsExplicitVR) output.AddOrUpdate(new DicomOtherByte(dataTag, data));
+                else output.AddOrUpdate(new DicomOtherWord(dataTag, data));
             }
         }
 
@@ -291,7 +291,7 @@ namespace Dicom.Imaging.Codec
             dataset = dataset.Clone();
 
             var input = dataset;
-            if (input.InternalTransferSyntax.IsEncapsulated) input = input.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian);
+            if (input.InternalTransferSyntax.IsEncapsulated) input = input.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
 
             ProcessOverlays(input, dataset);
 

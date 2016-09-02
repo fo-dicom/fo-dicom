@@ -1059,7 +1059,7 @@ namespace Dicom.Network
 
                         if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
                             msg.Dataset =
-                                msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
+                                msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
                     }
 
                     Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
