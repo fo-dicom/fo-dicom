@@ -353,7 +353,7 @@ namespace Dicom.IO.Reader
                         break;
                     }
 
-                    if (this.isExplicitVR)
+                    if (this.isExplicitVR || this.badPrivateSequence)
                     {
                         if (!source.Require(2))
                         {
@@ -450,7 +450,7 @@ namespace Dicom.IO.Reader
                         break;
                     }
 
-                    if (this.isExplicitVR)
+                    if (this.isExplicitVR || this.badPrivateSequence)
                     {
                         if (this._vr == DicomVR.Implicit)
                         {
