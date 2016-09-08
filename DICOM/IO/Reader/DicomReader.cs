@@ -925,7 +925,9 @@ namespace Dicom.IO.Reader
                     this.observer.OnBeginSequenceItem(source, this.length);
 
                     this.ResetState();
+                    ++this.sequenceDepth;
                     await this.ParseDatasetAsync(source).ConfigureAwait(false);
+                    --this.sequenceDepth;
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
