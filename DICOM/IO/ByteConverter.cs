@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -56,6 +58,41 @@ namespace Dicom.IO
             uint count = buffer.Size / size;
             T[] values = new T[count];
             System.Buffer.BlockCopy(buffer.Data, 0, values, 0, (int)(buffer.Size - padding));
+            return values;
+        }
+
+        public static T[] ToArray<T>(IByteBuffer buffer, int bitsAllocated)
+        {
+#if NETFX_CORE || NETSTANDARD
+            var bytesRequested = Marshal.SizeOf<T>();
+#else
+            var bytesRequested = Marshal.SizeOf(typeof(T));
+#endif
+            var bitsRequested = 8 * bytesRequested;
+            if (bitsAllocated > bitsRequested)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitsAllocated), "Bits allocated too large for array type");
+            }
+            if (bitsAllocated == bitsRequested)
+            {
+                return ToArray<T>(buffer);
+            }
+
+            var count = (int)(8 * buffer.Size / bitsAllocated);
+            var src = buffer.Data;
+            var dst = new byte[bytesRequested * count];
+
+            for (int j = 0, sij = 0; j < count; ++j)
+            {
+                for (int i = 0, dij = j * bitsRequested; i < bitsAllocated; ++i, ++sij, ++dij)
+                {
+                    if ((src[sij / 8] & (1 << (sij % 8))) != 0) dst[dij / 8] |= (byte)(1 << (dij % 8));
+                }
+            }
+
+            var values = new T[count];
+            System.Buffer.BlockCopy(dst, 0, values, 0, dst.Length);
+
             return values;
         }
 

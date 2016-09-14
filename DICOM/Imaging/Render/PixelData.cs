@@ -419,7 +419,7 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            var shortData = Dicom.IO.ByteConverter.ToArray<short>(data);
+            var shortData = Dicom.IO.ByteConverter.ToArray<short>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 16)
             {
@@ -610,7 +610,7 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            var ushortData = Dicom.IO.ByteConverter.ToArray<ushort>(data);
+            var ushortData = Dicom.IO.ByteConverter.ToArray<ushort>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 16)
             {
@@ -798,7 +798,7 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            var intData = Dicom.IO.ByteConverter.ToArray<int>(data);
+            var intData = Dicom.IO.ByteConverter.ToArray<int>(data, bitDepth.BitsAllocated);
 
             // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
             // shifts in the loop below just replaces the top shift bits by the sign bit.
@@ -952,7 +952,7 @@ namespace Dicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale unsgiend 32 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale unsigned 32 bits <seealso cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataU32 : IPixelData
     {
@@ -973,7 +973,7 @@ namespace Dicom.Imaging.Render
             _width = width;
             _height = height;
 
-            var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data);
+            var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 32)
             {
