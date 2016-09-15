@@ -90,6 +90,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Bugs\GH319.cs" />
     <Compile Include="Bugs\GH340.cs" />
     <Compile Include="Bugs\GH342.cs" />
     <Compile Include="Bugs\GH227.cs" />
