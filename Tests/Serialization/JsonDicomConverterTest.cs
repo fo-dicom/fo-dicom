@@ -329,7 +329,7 @@ namespace Dicom.Serialization
                            new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[] { 0xffff, 0x0000, 0x1234 }),
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator), "Morrison-Jones^Susan^^^Ph.D."),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator), "顔文字"),
-                           new DicomSignedLong(new DicomTag(3, 0x1104, privateCreator), -65538),
+                           new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator), -65538),
                            new DicomSequence(new DicomTag(3, 0x1015, privateCreator), new [] {
                              new DicomDataset { new DicomShortText(new DicomTag(3, 0x1016, privateCreator), "ಠ_ಠ") }
                            }),
@@ -369,7 +369,7 @@ namespace Dicom.Serialization
                            new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[0]),
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator)),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator)),
-                           new DicomSignedLong(new DicomTag(3, 0x1104, privateCreator)),
+                           new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator)),
                            new DicomSequence(new DicomTag(3, 0x1015, privateCreator)),
                            new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator)),
                            new DicomShortText(new DicomTag(3, 0x1018, privateCreator), null),
