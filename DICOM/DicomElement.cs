@@ -632,13 +632,15 @@ namespace Dicom
             {
                 if (_formats == null)
                 {
-                    _formats = new string[6];
-                    _formats[0] = "yyyyMMdd";
-                    _formats[1] = "yyyy.MM.dd";
-                    _formats[2] = "yyyy/MM/dd";
-                    _formats[3] = "yyyy";
-                    _formats[4] = "yyyyMM";
-                    _formats[5] = "yyyy.MM";
+                    _formats = new[]
+                                   {
+                                        "yyyyMMdd",
+                                        "yyyy.MM.dd",
+                                        "yyyy/MM/dd",
+                                        "yyyy",
+                                        "yyyyMM",
+                                        "yyyy.MM"
+                                   };
                 }
                 return _formats;
             }
@@ -795,7 +797,18 @@ namespace Dicom
                         "yyyyMMddHHmmss.f",
                         "yyyyMMddHHmmss",
                         "yyyyMMddHHmm",
+                        "yyyyMMddHH",
                         "yyyyMMdd",
+                        "yyyyMM",
+                        "yyyy",
+                        "yyyyMMddHHmmss.ffffffzzz",
+                        "yyyyMMddHHmmss.fffffzzz",
+                        "yyyyMMddHHmmss.ffffzzz",
+                        "yyyyMMddHHmmss.fffzzz",
+                        "yyyyMMddHHmmss.ffzzz",
+                        "yyyyMMddHHmmss.fzzz",
+                        "yyyyMMddHHmmzzz",
+                        "yyyyMMddHHzzz",
                         "yyyy.MM.dd",
                         "yyyy/MM/dd"
                     };
@@ -1566,44 +1579,46 @@ namespace Dicom
             {
                 if (_formats == null)
                 {
-                    _formats = new string[31];
-                    _formats[0] = "HHmmss";
-                    _formats[1] = "HH";
-                    _formats[2] = "HHmm";
-                    _formats[3] = "HHmmssf";
-                    _formats[4] = "HHmmssff";
-                    _formats[5] = "HHmmssfff";
-                    _formats[6] = "HHmmssffff";
-                    _formats[7] = "HHmmssfffff";
-                    _formats[8] = "HHmmssffffff";
-                    _formats[9] = "HHmmss.f";
-                    _formats[10] = "HHmmss.ff";
-                    _formats[11] = "HHmmss.fff";
-                    _formats[12] = "HHmmss.ffff";
-                    _formats[13] = "HHmmss.fffff";
-                    _formats[14] = "HHmmss.ffffff";
-                    _formats[15] = "HH.mm";
-                    _formats[16] = "HH.mm.ss";
-                    _formats[17] = "HH.mm.ss.f";
-                    _formats[18] = "HH.mm.ss.ff";
-                    _formats[19] = "HH.mm.ss.fff";
-                    _formats[20] = "HH.mm.ss.ffff";
-                    _formats[21] = "HH.mm.ss.fffff";
-                    _formats[22] = "HH.mm.ss.ffffff";
-                    _formats[23] = "HH:mm";
-                    _formats[24] = "HH:mm:ss";
-                    _formats[25] = "HH:mm:ss:f";
-                    _formats[26] = "HH:mm:ss:ff";
-                    _formats[27] = "HH:mm:ss:fff";
-                    _formats[28] = "HH:mm:ss:ffff";
-                    _formats[29] = "HH:mm:ss:fffff";
-                    _formats[30] = "HH:mm:ss:ffffff";
-                    _formats[25] = "HH:mm:ss.f";
-                    _formats[26] = "HH:mm:ss.ff";
-                    _formats[27] = "HH:mm:ss.fff";
-                    _formats[28] = "HH:mm:ss.ffff";
-                    _formats[29] = "HH:mm:ss.fffff";
-                    _formats[30] = "HH:mm:ss.ffffff";
+                    _formats = new[] 
+                                {
+                                    "HHmmss",
+                                    "HH",
+                                    "HHmm",
+                                    "HHmmssf",
+                                    "HHmmssff",
+                                    "HHmmssfff",
+                                    "HHmmssffff",
+                                    "HHmmssfffff",
+                                    "HHmmssffffff",
+                                    "HHmmss.f",
+                                    "HHmmss.ff",
+                                    "HHmmss.fff",
+                                    "HHmmss.ffff",
+                                    "HHmmss.fffff",
+                                    "HHmmss.ffffff",
+                                    "HH.mm",
+                                    "HH.mm.ss",
+                                    "HH.mm.ss.f",
+                                    "HH.mm.ss.ff",
+                                    "HH.mm.ss.fff",
+                                    "HH.mm.ss.ffff",
+                                    "HH.mm.ss.fffff",
+                                    "HH.mm.ss.ffffff",
+                                    "HH:mm",
+                                    "HH:mm:ss",
+                                    "HH:mm:ss:f",
+                                    "HH:mm:ss:ff",
+                                    "HH:mm:ss:fff",
+                                    "HH:mm:ss:ffff",
+                                    "HH:mm:ss:fffff",
+                                    "HH:mm:ss:ffffff",
+                                    "HH:mm:ss.f",
+                                    "HH:mm:ss.ff",
+                                    "HH:mm:ss.fff",
+                                    "HH:mm:ss.ffff",
+                                    "HH:mm:ss.fffff",
+                                    "HH:mm:ss.ffffff"
+                                };
                 }
                 return _formats;
             }
