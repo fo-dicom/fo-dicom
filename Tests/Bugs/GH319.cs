@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Dicom.Bugs
 {
+    [Collection("General")]
     public class GH319
     {
         [Fact]
