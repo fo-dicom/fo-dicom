@@ -32,12 +32,40 @@ namespace Dicom
         }
 
         [Fact]
+        public void DicomSignedShortAsDicomElement_Array_GetObjectValue()
+        {
+            DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            Assert.Equal((short)5, element.Get<object>());
+        }
+
+        [Fact]
+        public void DicomSignedShortAsDicomElement_Array_GetObjectArrayValue()
+        {
+            DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            Assert.Equal(new object[] { (short)5, (short)8 }, element.Get<object[]>());
+        }
+
+        [Fact]
         public void AttributeTagAsDicomElement_Array_GetDefaultValue()
         {
             var expected = DicomTag.ALinePixelSpacing;
             DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, DicomTag.ALinePixelSpacing);
             var actual = element.Get<DicomTag>();
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomUnsignedShortAsDicomElement_Array_GetObjectValue()
+        {
+            DicomElement element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            Assert.Equal((ushort)5, element.Get<object>());
+        }
+
+        [Fact]
+        public void DicomUnsignedShortAsDicomElement_Array_GetObjectArrayValue()
+        {
+            DicomElement element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            Assert.Equal(new object[] { (ushort)5, (ushort)8 }, element.Get<object[]>());
         }
 
         [Fact]
@@ -60,6 +88,22 @@ namespace Dicom
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, new MemoryByteBuffer(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 }));
             var actual = element.Get<double>();
             Assert.InRange(actual, double.MinValue, double.MaxValue);
+        }
+
+        [Fact]
+        public void DicomOtherDouble_Value_ReturnsObjectNumber()
+        {
+            var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, 12.345);
+            var actual = element.Get<object>();
+            Assert.Equal(actual, 12.345);
+        }
+
+        [Fact]
+        public void DicomFloatingPointDouble_Value_ReturnsObjectNumber()
+        {
+            var element = new DicomFloatingPointDouble(DicomTag.XRayTubeCurrentInmA, 12.345);
+            var actual = element.Get<object>();
+            Assert.Equal(actual, 12.345);
         }
 
         [Fact]

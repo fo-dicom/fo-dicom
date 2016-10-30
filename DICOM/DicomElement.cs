@@ -353,6 +353,20 @@ namespace Dicom
         {
             if (item == -1) item = 0;
 
+            if (typeof(T) == typeof(object))
+            {
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
+                return (T)(object)ByteConverter.Get<Tv>(Buffer, item);
+            }
+
+            if (typeof(T) == typeof(object[]))
+            {
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+
+                return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Cast<object>().ToArray();
+            }
+
             if (typeof(T) == typeof(Tv))
             {
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
