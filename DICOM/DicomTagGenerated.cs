@@ -5591,6 +5591,15 @@ namespace Dicom
         ///<summary>(0028,1224) VR=OW VM=1 Segmented Alpha Palette Color Lookup Table Data</summary>
         public readonly static DicomTag SegmentedAlphaPaletteColorLookupTableData = new DicomTag(0x0028, 0x1224);
 
+        ///<summary>(0028,1230) VR=SQ VM=1 Stored Value Color Range Sequence</summary>
+        public readonly static DicomTag StoredValueColorRangeSequence = new DicomTag(0x0028, 0x1230);
+
+        ///<summary>(0028,1231) VR=FD VM=1 Minimum Stored Value Mapped</summary>
+        public readonly static DicomTag MinimumStoredValueMapped = new DicomTag(0x0028, 0x1231);
+
+        ///<summary>(0028,1232) VR=FD VM=1 Maximum Stored Value Mapped</summary>
+        public readonly static DicomTag MaximumStoredValueMapped = new DicomTag(0x0028, 0x1232);
+
         ///<summary>(0028,1300) VR=CS VM=1 Breast Implant Present</summary>
         public readonly static DicomTag BreastImplantPresent = new DicomTag(0x0028, 0x1300);
 
@@ -7987,6 +7996,9 @@ namespace Dicom
 
         ///<summary>(0062,0006) VR=ST VM=1 Segment Description</summary>
         public readonly static DicomTag SegmentDescription = new DicomTag(0x0062, 0x0006);
+
+        ///<summary>(0062,0007) VR=SQ VM=1 Segmentation Algorithm Identification Sequence</summary>
+        public readonly static DicomTag SegmentationAlgorithmIdentificationSequence = new DicomTag(0x0062, 0x0007);
 
         ///<summary>(0062,0008) VR=CS VM=1 Segment Algorithm Type</summary>
         public readonly static DicomTag SegmentAlgorithmType = new DicomTag(0x0062, 0x0008);
@@ -10634,6 +10646,9 @@ namespace Dicom
         ///<summary>(3008,0066) VR=ST VM=1 Override Reason</summary>
         public readonly static DicomTag OverrideReason = new DicomTag(0x3008, 0x0066);
 
+        ///<summary>(3008,0067) VR=US VM=1 Parameter Value Number</summary>
+        public readonly static DicomTag ParameterValueNumber = new DicomTag(0x3008, 0x0067);
+
         ///<summary>(3008,0068) VR=SQ VM=1 Corrected Parameter Sequence</summary>
         public readonly static DicomTag CorrectedParameterSequence = new DicomTag(0x3008, 0x0068);
 
@@ -11818,6 +11833,9 @@ namespace Dicom
 
         ///<summary>(300A,038A) VR=FL VM=1 Isocenter to Range Modulator Distance</summary>
         public readonly static DicomTag IsocenterToRangeModulatorDistance = new DicomTag(0x300A, 0x038A);
+
+        ///<summary>(300A,038F) VR=FL VM=1-n Scan Spot Time Offset</summary>
+        public readonly static DicomTag ScanSpotTimeOffset = new DicomTag(0x300A, 0x038F);
 
         ///<summary>(300A,0390) VR=SH VM=1 Scan Spot Tune ID</summary>
         public readonly static DicomTag ScanSpotTuneID = new DicomTag(0x300A, 0x0390);

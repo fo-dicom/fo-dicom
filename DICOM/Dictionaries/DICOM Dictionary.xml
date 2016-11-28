@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2016 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2016d">
+<dictionary version="2016e">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -1866,6 +1866,9 @@
     <tag group="0028" element="1222" keyword="SegmentedGreenPaletteColorLookupTableData" vr="OW" vm="1">Segmented Green Palette Color Lookup Table Data</tag>
     <tag group="0028" element="1223" keyword="SegmentedBluePaletteColorLookupTableData" vr="OW" vm="1">Segmented Blue Palette Color Lookup Table Data</tag>
     <tag group="0028" element="1224" keyword="SegmentedAlphaPaletteColorLookupTableData" vr="OW" vm="1">Segmented Alpha Palette Color Lookup Table Data</tag>
+    <tag group="0028" element="1230" keyword="StoredValueColorRangeSequence" vr="SQ" vm="1">Stored Value Color Range Sequence</tag>
+    <tag group="0028" element="1231" keyword="MinimumStoredValueMapped" vr="FD" vm="1">Minimum Stored Value Mapped</tag>
+    <tag group="0028" element="1232" keyword="MaximumStoredValueMapped" vr="FD" vm="1">Maximum Stored Value Mapped</tag>
     <tag group="0028" element="1300" keyword="BreastImplantPresent" vr="CS" vm="1">Breast Implant Present</tag>
     <tag group="0028" element="1350" keyword="PartialView" vr="CS" vm="1">Partial View</tag>
     <tag group="0028" element="1351" keyword="PartialViewDescription" vr="ST" vm="1">Partial View Description</tag>
@@ -2665,6 +2668,7 @@
     <tag group="0062" element="0004" keyword="SegmentNumber" vr="US" vm="1">Segment Number</tag>
     <tag group="0062" element="0005" keyword="SegmentLabel" vr="LO" vm="1">Segment Label</tag>
     <tag group="0062" element="0006" keyword="SegmentDescription" vr="ST" vm="1">Segment Description</tag>
+    <tag group="0062" element="0007" keyword="SegmentationAlgorithmIdentificationSequence" vr="SQ" vm="1">Segmentation Algorithm Identification Sequence</tag>
     <tag group="0062" element="0008" keyword="SegmentAlgorithmType" vr="CS" vm="1">Segment Algorithm Type</tag>
     <tag group="0062" element="0009" keyword="SegmentAlgorithmName" vr="LO" vm="1">Segment Algorithm Name</tag>
     <tag group="0062" element="000A" keyword="SegmentIdentificationSequence" vr="SQ" vm="1">Segment Identification Sequence</tag>
@@ -3547,6 +3551,7 @@
     <tag group="3008" element="0064" keyword="MeasuredDoseReferenceNumber" vr="IS" vm="1">Measured Dose Reference Number</tag>
     <tag group="3008" element="0065" keyword="ParameterPointer" vr="AT" vm="1">Parameter Pointer</tag>
     <tag group="3008" element="0066" keyword="OverrideReason" vr="ST" vm="1">Override Reason</tag>
+    <tag group="3008" element="0067" keyword="ParameterValueNumber" vr="US" vm="1">Parameter Value Number</tag>
     <tag group="3008" element="0068" keyword="CorrectedParameterSequence" vr="SQ" vm="1">Corrected Parameter Sequence</tag>
     <tag group="3008" element="006A" keyword="CorrectionValue" vr="FL" vm="1">Correction Value</tag>
     <tag group="3008" element="0070" keyword="CalculatedDoseReferenceSequence" vr="SQ" vm="1">Calculated Dose Reference Sequence</tag>
@@ -3942,6 +3947,7 @@
     <tag group="300A" element="0386" keyword="RangeModulatorGatingStartWaterEquivalentThickness" vr="FL" vm="1">Range Modulator Gating Start Water Equivalent Thickness</tag>
     <tag group="300A" element="0388" keyword="RangeModulatorGatingStopWaterEquivalentThickness" vr="FL" vm="1">Range Modulator Gating Stop Water Equivalent Thickness</tag>
     <tag group="300A" element="038A" keyword="IsocenterToRangeModulatorDistance" vr="FL" vm="1">Isocenter to Range Modulator Distance</tag>
+    <tag group="300A" element="038F" keyword="ScanSpotTimeOffset" vr="FL" vm="1-n">Scan Spot Time Offset</tag>
     <tag group="300A" element="0390" keyword="ScanSpotTuneID" vr="SH" vm="1">Scan Spot Tune ID</tag>
     <tag group="300A" element="0391" keyword="ScanSpotPrescribedIndices" vr="IS" vm="1-n">Scan Spot Prescribed Indices</tag>
     <tag group="300A" element="0392" keyword="NumberOfScanSpotPositions" vr="IS" vm="1">Number of Scan Spot Positions</tag>
@@ -4274,13 +4280,15 @@
     <uid uid="1.2.840.10008.1.2.4.93" keyword="JPEG2000Part2MultiComponent" type="Transfer Syntax">JPEG 2000 Part 2 Multi-component Image Compression</uid>
     <uid uid="1.2.840.10008.1.2.4.94" keyword="JPIPReferenced" type="Transfer Syntax">JPIP Referenced</uid>
     <uid uid="1.2.840.10008.1.2.4.95" keyword="JPIPReferencedDeflate" type="Transfer Syntax">JPIP Referenced Deflate</uid>
-    <uid uid="1.2.840.10008.1.2.4.100" keyword="MPEG2" type="Transfer Syntax">MPEG2 Main Profile @ Main Level</uid>
-    <uid uid="1.2.840.10008.1.2.4.101" keyword="MPEG2MainProfileHighLevel" type="Transfer Syntax">MPEG2 Main Profile @ High Level</uid>
+    <uid uid="1.2.840.10008.1.2.4.100" keyword="MPEG2" type="Transfer Syntax">MPEG2 Main Profile / Main Level</uid>
+    <uid uid="1.2.840.10008.1.2.4.101" keyword="MPEG2MainProfileHighLevel" type="Transfer Syntax">MPEG2 Main Profile / High Level</uid>
     <uid uid="1.2.840.10008.1.2.4.102" keyword="MPEG4AVCH264HighProfileLevel41" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.1</uid>
     <uid uid="1.2.840.10008.1.2.4.103" keyword="MPEG4AVCH264BDCompatibleHighProfileLevel41" type="Transfer Syntax">MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</uid>
     <uid uid="1.2.840.10008.1.2.4.104" keyword="MPEG4AVCH264HighProfileLevel42For2DVideo" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</uid>
     <uid uid="1.2.840.10008.1.2.4.105" keyword="MPEG4AVCH264HighProfileLevel42For3DVideo" type="Transfer Syntax">MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</uid>
     <uid uid="1.2.840.10008.1.2.4.106" keyword="MPEG4AVCH264StereoHighProfileLevel42" type="Transfer Syntax">MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</uid>
+    <uid uid="1.2.840.10008.1.2.4.107" keyword="HEVCH265MainProfileLevel51" type="Transfer Syntax">HEVC/H.265 Main Profile / Level 5.1</uid>
+    <uid uid="1.2.840.10008.1.2.4.108" keyword="HEVCH265Main10ProfileLevel51" type="Transfer Syntax">HEVC/H.265 Main 10 Profile / Level 5.1</uid>
     <uid uid="1.2.840.10008.1.2.5" keyword="RLELossless" type="Transfer Syntax">RLE Lossless</uid>
     <uid uid="1.2.840.10008.1.2.6.1" keyword="RFC2557MIMEEncapsulation" type="Transfer Syntax">RFC 2557 MIME encapsulation</uid>
     <uid uid="1.2.840.10008.1.2.6.2" keyword="XMLEncoding" type="Transfer Syntax">XML Encoding</uid>
@@ -4309,6 +4317,10 @@
     <uid uid="1.2.840.10008.1.5.2" keyword="PETColorPaletteSOPInstance" type="Well-known SOP Instance">PET Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.3" keyword="HotMetalBlueColorPaletteSOPInstance" type="Well-known SOP Instance">Hot Metal Blue Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.4" keyword="PET20StepColorPaletteSOPInstance" type="Well-known SOP Instance">PET 20 Step Color Palette SOP Instance</uid>
+    <uid uid="1.2.840.10008.1.5.5" keyword="SpringColorPaletteSOPInstance" type="Well-known SOP Instance">Spring Color Palette SOP Instance</uid>
+    <uid uid="1.2.840.10008.1.5.6" keyword="SummerColorPaletteSOPInstance" type="Well-known SOP Instance">Summer Color Palette SOP Instance</uid>
+    <uid uid="1.2.840.10008.1.5.7" keyword="FallColorPaletteSOPInstance" type="Well-known SOP Instance">Fall Color Palette SOP Instance</uid>
+    <uid uid="1.2.840.10008.1.5.8" keyword="WinterColorPaletteSOPInstance" type="Well-known SOP Instance">Winter Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.9" keyword="BasicStudyContentNotificationSOPClass" type="SOP Class" retired="true">Basic Study Content Notification SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.1.20" keyword="Papyrus3ImplicitVRLittleEndian" type="Transfer Syntax" retired="true">Papyrus 3 Implicit VR Little Endian (Retired)</uid>
     <uid uid="1.2.840.10008.1.20.1" keyword="StorageCommitmentPushModelSOPClass" type="SOP Class">Storage Commitment Push Model SOP Class</uid>
@@ -4488,6 +4500,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.69" keyword="ColonCADSRStorage" type="SOP Class">Colon CAD SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.70" keyword="ImplantationPlanSRStorage" type="SOP Class">Implantation Plan SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.71" keyword="AcquisitionContextSRStorage" type="SOP Class">Acquisition Context SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.72" keyword="SimplifiedAdultEchoSRStorage" type="SOP Class">Simplified Adult Echo SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
@@ -5655,4 +5668,16 @@
     <uid uid="1.2.840.10008.6.1.1135" keyword="RTProcessOutput7023" type="Context Group Name">RT Process Output (7023)</uid>
     <uid uid="1.2.840.10008.6.1.1136" keyword="RTProcessInput7024" type="Context Group Name">RT Process Input (7024)</uid>
     <uid uid="1.2.840.10008.6.1.1137" keyword="RTProcessInputUsed7025" type="Context Group Name">RT Process Input Used (7025)</uid>
+    <uid uid="1.2.840.10008.6.1.1138" keyword="ProstateSectorAnatomy6300" type="Context Group Name">Prostate Sector Anatomy (6300)</uid>
+    <uid uid="1.2.840.10008.6.1.1139" keyword="ProstateSectorAnatomyFromPIRADSV26301" type="Context Group Name">Prostate Sector Anatomy from PI-RADS v2 (6301)</uid>
+    <uid uid="1.2.840.10008.6.1.1140" keyword="ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302" type="Context Group Name">Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)</uid>
+    <uid uid="1.2.840.10008.6.1.1141" keyword="ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303" type="Context Group Name">Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)</uid>
+    <uid uid="1.2.840.10008.6.1.1142" keyword="MeasurementSelectionReasons12301" type="Context Group Name">Measurement Selection Reasons (12301)</uid>
+    <uid uid="1.2.840.10008.6.1.1143" keyword="EchoFindingObservationTypes12302" type="Context Group Name">Echo Finding Observation Types (12302)</uid>
+    <uid uid="1.2.840.10008.6.1.1144" keyword="EchoMeasurementTypes12303" type="Context Group Name">Echo Measurement Types (12303)</uid>
+    <uid uid="1.2.840.10008.6.1.1145" keyword="EchoMeasuredProperties12304" type="Context Group Name">Echo Measured Properties (12304)</uid>
+    <uid uid="1.2.840.10008.6.1.1146" keyword="BasicEchoAnatomicSites12305" type="Context Group Name">Basic Echo Anatomic Sites (12305)</uid>
+    <uid uid="1.2.840.10008.6.1.1147" keyword="EchoFlowDirections12306" type="Context Group Name">Echo Flow Directions (12306)</uid>
+    <uid uid="1.2.840.10008.6.1.1148" keyword="CardiacPhasesAndTimePoints12307" type="Context Group Name">Cardiac Phases and Time Points (12307)</uid>
+    <uid uid="1.2.840.10008.6.1.1149" keyword="CoreEchoMeasurements12300" type="Context Group Name">Core Echo Measurements (12300)</uid>
 </dictionary>

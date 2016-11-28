@@ -50,6 +50,8 @@ namespace Dicom
             _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo);
             _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo);
             _uids.Add(DicomUID.MPEG4AVCH264StereoHighProfileLevel42.UID, DicomUID.MPEG4AVCH264StereoHighProfileLevel42);
+            _uids.Add(DicomUID.HEVCH265MainProfileLevel51.UID, DicomUID.HEVCH265MainProfileLevel51);
+            _uids.Add(DicomUID.HEVCH265Main10ProfileLevel51.UID, DicomUID.HEVCH265Main10ProfileLevel51);
             _uids.Add(DicomUID.RLELossless.UID, DicomUID.RLELossless);
             _uids.Add(DicomUID.RFC2557MIMEEncapsulation.UID, DicomUID.RFC2557MIMEEncapsulation);
             _uids.Add(DicomUID.XMLEncoding.UID, DicomUID.XMLEncoding);
@@ -78,6 +80,10 @@ namespace Dicom
             _uids.Add(DicomUID.PETColorPaletteSOPInstance.UID, DicomUID.PETColorPaletteSOPInstance);
             _uids.Add(DicomUID.HotMetalBlueColorPaletteSOPInstance.UID, DicomUID.HotMetalBlueColorPaletteSOPInstance);
             _uids.Add(DicomUID.PET20StepColorPaletteSOPInstance.UID, DicomUID.PET20StepColorPaletteSOPInstance);
+            _uids.Add(DicomUID.SpringColorPaletteSOPInstance.UID, DicomUID.SpringColorPaletteSOPInstance);
+            _uids.Add(DicomUID.SummerColorPaletteSOPInstance.UID, DicomUID.SummerColorPaletteSOPInstance);
+            _uids.Add(DicomUID.FallColorPaletteSOPInstance.UID, DicomUID.FallColorPaletteSOPInstance);
+            _uids.Add(DicomUID.WinterColorPaletteSOPInstance.UID, DicomUID.WinterColorPaletteSOPInstance);
             _uids.Add(DicomUID.BasicStudyContentNotificationSOPClassRETIRED.UID, DicomUID.BasicStudyContentNotificationSOPClassRETIRED);
             _uids.Add(DicomUID.Papyrus3ImplicitVRLittleEndianRETIRED.UID, DicomUID.Papyrus3ImplicitVRLittleEndianRETIRED);
             _uids.Add(DicomUID.StorageCommitmentPushModelSOPClass.UID, DicomUID.StorageCommitmentPushModelSOPClass);
@@ -257,6 +263,7 @@ namespace Dicom
             _uids.Add(DicomUID.ColonCADSRStorage.UID, DicomUID.ColonCADSRStorage);
             _uids.Add(DicomUID.ImplantationPlanSRStorage.UID, DicomUID.ImplantationPlanSRStorage);
             _uids.Add(DicomUID.AcquisitionContextSRStorage.UID, DicomUID.AcquisitionContextSRStorage);
+            _uids.Add(DicomUID.SimplifiedAdultEchoSRStorage.UID, DicomUID.SimplifiedAdultEchoSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
@@ -1424,6 +1431,18 @@ namespace Dicom
             _uids.Add(DicomUID.RTProcessOutput7023.UID, DicomUID.RTProcessOutput7023);
             _uids.Add(DicomUID.RTProcessInput7024.UID, DicomUID.RTProcessInput7024);
             _uids.Add(DicomUID.RTProcessInputUsed7025.UID, DicomUID.RTProcessInputUsed7025);
+            _uids.Add(DicomUID.ProstateSectorAnatomy6300.UID, DicomUID.ProstateSectorAnatomy6300);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromPIRADSV26301.UID, DicomUID.ProstateSectorAnatomyFromPIRADSV26301);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303);
+            _uids.Add(DicomUID.MeasurementSelectionReasons12301.UID, DicomUID.MeasurementSelectionReasons12301);
+            _uids.Add(DicomUID.EchoFindingObservationTypes12302.UID, DicomUID.EchoFindingObservationTypes12302);
+            _uids.Add(DicomUID.EchoMeasurementTypes12303.UID, DicomUID.EchoMeasurementTypes12303);
+            _uids.Add(DicomUID.EchoMeasuredProperties12304.UID, DicomUID.EchoMeasuredProperties12304);
+            _uids.Add(DicomUID.BasicEchoAnatomicSites12305.UID, DicomUID.BasicEchoAnatomicSites12305);
+            _uids.Add(DicomUID.EchoFlowDirections12306.UID, DicomUID.EchoFlowDirections12306);
+            _uids.Add(DicomUID.CardiacPhasesAndTimePoints12307.UID, DicomUID.CardiacPhasesAndTimePoints12307);
+            _uids.Add(DicomUID.CoreEchoMeasurements12300.UID, DicomUID.CoreEchoMeasurements12300);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1519,11 +1538,11 @@ namespace Dicom
         ///<summary>Transfer Syntax: JPIP Referenced Deflate</summary>
         public readonly static DicomUID JPIPReferencedDeflate = new DicomUID("1.2.840.10008.1.2.4.95", "JPIP Referenced Deflate", DicomUidType.TransferSyntax, false);
 
-        ///<summary>Transfer Syntax: MPEG2 Main Profile @ Main Level</summary>
-        public readonly static DicomUID MPEG2 = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile @ Main Level", DicomUidType.TransferSyntax, false);
+        ///<summary>Transfer Syntax: MPEG2 Main Profile / Main Level</summary>
+        public readonly static DicomUID MPEG2 = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile / Main Level", DicomUidType.TransferSyntax, false);
 
-        ///<summary>Transfer Syntax: MPEG2 Main Profile @ High Level</summary>
-        public readonly static DicomUID MPEG2MainProfileHighLevel = new DicomUID("1.2.840.10008.1.2.4.101", "MPEG2 Main Profile @ High Level", DicomUidType.TransferSyntax, false);
+        ///<summary>Transfer Syntax: MPEG2 Main Profile / High Level</summary>
+        public readonly static DicomUID MPEG2MainProfileHighLevel = new DicomUID("1.2.840.10008.1.2.4.101", "MPEG2 Main Profile / High Level", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
         public readonly static DicomUID MPEG4AVCH264HighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.102", "MPEG-4 AVC/H.264 High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
@@ -1539,6 +1558,12 @@ namespace Dicom
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</summary>
         public readonly static DicomUID MPEG4AVCH264StereoHighProfileLevel42 = new DicomUID("1.2.840.10008.1.2.4.106", "MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: HEVC/H.265 Main Profile / Level 5.1</summary>
+        public readonly static DicomUID HEVCH265MainProfileLevel51 = new DicomUID("1.2.840.10008.1.2.4.107", "HEVC/H.265 Main Profile / Level 5.1", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: HEVC/H.265 Main 10 Profile / Level 5.1</summary>
+        public readonly static DicomUID HEVCH265Main10ProfileLevel51 = new DicomUID("1.2.840.10008.1.2.4.108", "HEVC/H.265 Main 10 Profile / Level 5.1", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: RLE Lossless</summary>
         public readonly static DicomUID RLELossless = new DicomUID("1.2.840.10008.1.2.5", "RLE Lossless", DicomUidType.TransferSyntax, false);
@@ -1623,6 +1648,18 @@ namespace Dicom
 
         ///<summary>Well-known SOP Instance: PET 20 Step Color Palette SOP Instance</summary>
         public readonly static DicomUID PET20StepColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.4", "PET 20 Step Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+
+        ///<summary>Well-known SOP Instance: Spring Color Palette SOP Instance</summary>
+        public readonly static DicomUID SpringColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.5", "Spring Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+
+        ///<summary>Well-known SOP Instance: Summer Color Palette SOP Instance</summary>
+        public readonly static DicomUID SummerColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.6", "Summer Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+
+        ///<summary>Well-known SOP Instance: Fall Color Palette SOP Instance</summary>
+        public readonly static DicomUID FallColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.7", "Fall Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+
+        ///<summary>Well-known SOP Instance: Winter Color Palette SOP Instance</summary>
+        public readonly static DicomUID WinterColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.8", "Winter Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>SOP Class: Basic Study Content Notification SOP Class (Retired)</summary>
         public readonly static DicomUID BasicStudyContentNotificationSOPClassRETIRED = new DicomUID("1.2.840.10008.1.9", "Basic Study Content Notification SOP Class (Retired)", DicomUidType.SOPClass, true);
@@ -2160,6 +2197,9 @@ namespace Dicom
 
         ///<summary>SOP Class: Acquisition Context SR Storage</summary>
         public readonly static DicomUID AcquisitionContextSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.71", "Acquisition Context SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Simplified Adult Echo SR Storage</summary>
+        public readonly static DicomUID SimplifiedAdultEchoSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.72", "Simplified Adult Echo SR Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public readonly static DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
@@ -5661,6 +5701,42 @@ namespace Dicom
 
         ///<summary>Context Group Name: RT Process Input Used (7025)</summary>
         public readonly static DicomUID RTProcessInputUsed7025 = new DicomUID("1.2.840.10008.6.1.1137", "RT Process Input Used (7025)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Sector Anatomy (6300)</summary>
+        public readonly static DicomUID ProstateSectorAnatomy6300 = new DicomUID("1.2.840.10008.6.1.1138", "Prostate Sector Anatomy (6300)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Sector Anatomy from PI-RADS v2 (6301)</summary>
+        public readonly static DicomUID ProstateSectorAnatomyFromPIRADSV26301 = new DicomUID("1.2.840.10008.6.1.1139", "Prostate Sector Anatomy from PI-RADS v2 (6301)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)</summary>
+        public readonly static DicomUID ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302 = new DicomUID("1.2.840.10008.6.1.1140", "Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)</summary>
+        public readonly static DicomUID ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303 = new DicomUID("1.2.840.10008.6.1.1141", "Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Measurement Selection Reasons (12301)</summary>
+        public readonly static DicomUID MeasurementSelectionReasons12301 = new DicomUID("1.2.840.10008.6.1.1142", "Measurement Selection Reasons (12301)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Echo Finding Observation Types (12302)</summary>
+        public readonly static DicomUID EchoFindingObservationTypes12302 = new DicomUID("1.2.840.10008.6.1.1143", "Echo Finding Observation Types (12302)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Echo Measurement Types (12303)</summary>
+        public readonly static DicomUID EchoMeasurementTypes12303 = new DicomUID("1.2.840.10008.6.1.1144", "Echo Measurement Types (12303)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Echo Measured Properties (12304)</summary>
+        public readonly static DicomUID EchoMeasuredProperties12304 = new DicomUID("1.2.840.10008.6.1.1145", "Echo Measured Properties (12304)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Basic Echo Anatomic Sites (12305)</summary>
+        public readonly static DicomUID BasicEchoAnatomicSites12305 = new DicomUID("1.2.840.10008.6.1.1146", "Basic Echo Anatomic Sites (12305)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Echo Flow Directions (12306)</summary>
+        public readonly static DicomUID EchoFlowDirections12306 = new DicomUID("1.2.840.10008.6.1.1147", "Echo Flow Directions (12306)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Cardiac Phases and Time Points (12307)</summary>
+        public readonly static DicomUID CardiacPhasesAndTimePoints12307 = new DicomUID("1.2.840.10008.6.1.1148", "Cardiac Phases and Time Points (12307)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Core Echo Measurements (12300)</summary>
+        public readonly static DicomUID CoreEchoMeasurements12300 = new DicomUID("1.2.840.10008.6.1.1149", "Core Echo Measurements (12300)", DicomUidType.ContextGroupName, false);
 
     }
 }

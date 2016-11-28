@@ -11,7 +11,7 @@
 ### Features
 * Portable Class Library (PCL)
 * Targets .NET 4.5.2 and higher, .NET Core 1.3 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
-* DICOM dictionary version 2016c
+* DICOM dictionary version 2016e
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
@@ -142,11 +142,11 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Håkan MacLean](https://github.com/MacL3an)
 * [Zaid Safadi](https://github.com/Zaid-Safadi)
 * [Ryan Melena](https://github.com/RyanMelenaNoesis)
+* [Alexander Pyzynia](https://github.com/werwolfby)
 * [Justin Wake](https://github.com/jwake)
 * [Johannes Liegert](https://github.com/0xLigety)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
-* [Alexander Pyzynia](https://github.com/werwolfby)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
 * [do0om](https://github.com/do0om)
