@@ -272,14 +272,38 @@ namespace Dicom.Imaging
                 var pixelData = DicomPixelData.Create(clone, true);
                 pixelData.AddFrame(buffer);
 
-                // temporary fix for JPEG compressed YBR images
+                // temporary fix for JPEG compressed YBR images, according to enforcement above
                 if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
                      || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4)
-                    && pixelData.SamplesPerPixel == 3) pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                    && pixelData.SamplesPerPixel == 3)
+                {
+                    // When converting to RGB in Dicom.Imaging.Codec.Jpeg.i, PlanarConfiguration is set to Interleaved
+                    pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                    pixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
+                }
 
                 // temporary fix for JPEG 2000 Lossy images
                 if (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
-                    || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct) pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                    || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
+                {
+                    // Converted to RGB in Dicom.Imaging.Codec.Jpeg2000.cpp
+                    pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                }
+
+                // temporary fix for JPEG lossless and JPEG2000 compressed YBR images
+                if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess14
+                     || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess14SV1
+                     || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
+                     || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEG2000Lossy)
+                    && (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull
+                        || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
+                        || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422))
+                {
+                    // For JPEG lossless YBR type images in Dicom.Imaging.Codec.Jpeg.i and JPEG2000 YBR type images in Dicom.Imaging.Codec.Jpeg2000.cpp, 
+                    // YBR_FULL is applied and PlanarConfiguration is set to Planar
+                    pixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
+                    pixelData.PlanarConfiguration = PlanarConfiguration.Planar;
+                }
 
                 _pixelData = PixelDataFactory.Create(pixelData, 0);
             }
