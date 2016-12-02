@@ -63,14 +63,14 @@ namespace Dicom {
 				params.bytesperline = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
 				params.components = oldPixelData->SamplesPerPixel;
 
-				params.ilv = CharlsInterleaveModeType::None;
-				params.colorTransform = CharlsColorTransformationType::None;
-
-				if (oldPixelData->SamplesPerPixel == 3) {
-					params.ilv = (CharlsInterleaveModeType)jparams->InterleaveMode;
-					if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb)
-						params.colorTransform = (CharlsColorTransformationType)jparams->ColorTransform;
-				}
+				params.ilv =
+					oldPixelData->SamplesPerPixel == 3 && oldPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved
+					? CharlsInterleaveModeType::Sample
+					: CharlsInterleaveModeType::None;
+				params.colorTransform =
+					oldPixelData->SamplesPerPixel == 3 && oldPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull
+					? CharlsColorTransformationType::HP1
+					: CharlsColorTransformationType::None;
 
 				if (TransferSyntax == DicomTransferSyntax::JPEGLSNearLossless) {
 					params.allowedlossyerror = jparams->AllowedError;
