@@ -14,7 +14,7 @@ namespace Dicom.Network
     /// <summary>
     /// .NET implementation of <see cref="INetworkStream"/>.
     /// </summary>
-    public sealed class DesktopNetworkStream : INetworkStream
+    public class DesktopNetworkStream : INetworkStream
     {
         #region FIELDS
 
@@ -74,9 +74,11 @@ namespace Dicom.Network
         /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="DesktopNetworkStream"/>
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
-        {
-            this.Host = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            this.Port = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+        {            
+			this.Host = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString(); ;
+            this.Port = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+            this.RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+            this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;			
 
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
@@ -109,12 +111,12 @@ namespace Dicom.Network
         /// Gets the host of the network stream.
         /// </summary>
         public string Host { get; }
-
+		public string RemoteHost { get; }
         /// <summary>
         /// Gets the port of the network stream.
         /// </summary>
         public int Port { get; }
-
+		public int RemotePort { get; }
         #endregion
 
         #region METHODS

@@ -17,12 +17,12 @@ namespace Dicom.Network
         /// Gets the host of the network stream.
         /// </summary>
         string Host { get; }
-
+		string RemoteHost { get; }
         /// <summary>
         /// Gets the port of the network stream.
         /// </summary>
         int Port { get; }
-
+		int RemotePort { get; }
         #endregion
 
         #region METHODS
