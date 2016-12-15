@@ -247,22 +247,12 @@ namespace Dicom.Imaging
                 return;
             }
 
-
             if (Dataset.InternalTransferSyntax.IsEncapsulated)
             {
                 // decompress single frame from source dataset
-                DicomCodecParams cparams = null;
-                if (Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
-                    || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4)
-                {
-                    cparams = new DicomJpegParams { ConvertColorspaceToRGB = true };
-                }
-
                 var transcoder = new DicomTranscoder(
-                    this.Dataset.InternalTransferSyntax,
-                    DicomTransferSyntax.ExplicitVRLittleEndian,
-                    cparams,
-                    cparams);
+                                     this.Dataset.InternalTransferSyntax,
+                                     DicomTransferSyntax.ExplicitVRLittleEndian);
                 var buffer = transcoder.DecodeFrame(Dataset, frame);
 
                 // clone the dataset because modifying the pixel data modifies the dataset
@@ -270,16 +260,8 @@ namespace Dicom.Imaging
                 clone.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 
                 var pixelData = DicomPixelData.Create(clone, true);
+                TrimDecodedPixelDataProperties(pixelData, Dataset.InternalTransferSyntax);
                 pixelData.AddFrame(buffer);
-
-                // temporary fix for JPEG compressed YBR images
-                if ((Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
-                     || Dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4)
-                    && pixelData.SamplesPerPixel == 3) pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
-
-                // temporary fix for JPEG 2000 Lossy images
-                if (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
-                    || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct) pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
 
                 _pixelData = PixelDataFactory.Create(pixelData, 0);
             }
@@ -301,6 +283,47 @@ namespace Dicom.Imaging
             if (_pipeline == null)
             {
                 CreatePipeline();
+            }
+        }
+
+        private static void TrimDecodedPixelDataProperties(
+            DicomPixelData decodedPixelData,
+            DicomTransferSyntax inputTransferSyntax)
+        {
+            if (!inputTransferSyntax.IsEncapsulated) return;
+
+            // temporary fix for JPEG compressed YBR images, according to enforcement above
+            if ((inputTransferSyntax == DicomTransferSyntax.JPEGProcess1
+                 || inputTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && decodedPixelData.SamplesPerPixel == 3)
+            {
+                // When converting to RGB in Dicom.Imaging.Codec.Jpeg.i, PlanarConfiguration is set to Interleaved
+                decodedPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                decodedPixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
+            }
+
+            // temporary fix for JPEG 2000 Lossy images
+            if ((inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossy
+                 && decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct)
+                || (inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
+                    && decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct))
+            {
+                // Converted to RGB in Dicom.Imaging.Codec.Jpeg2000.cpp
+                decodedPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+            }
+
+            // temporary fix for JPEG lossless and JPEG2000 compressed YBR images
+            if ((inputTransferSyntax == DicomTransferSyntax.JPEGProcess14
+                 || inputTransferSyntax == DicomTransferSyntax.JPEGProcess14SV1
+                 || inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
+                 || inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossy)
+                && (decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull
+                    || decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
+                    || decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422))
+            {
+                // For JPEG lossless YBR type images in Dicom.Imaging.Codec.Jpeg.i and JPEG2000 YBR type images in Dicom.Imaging.Codec.Jpeg2000.cpp, 
+                // YBR_FULL is applied and PlanarConfiguration is set to Planar
+                decodedPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
+                decodedPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
             }
         }
 
