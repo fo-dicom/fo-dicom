@@ -52,18 +52,11 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 	params.bytesperline = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
 	params.components = oldPixelData->SamplesPerPixel;
 
-	params.ilv = CharlsInterleaveModeType::None;
+	params.ilv =
+		oldPixelData->SamplesPerPixel == 3 && oldPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved
+		? CharlsInterleaveModeType::Sample
+		: CharlsInterleaveModeType::Line;
 	params.colorTransform = CharlsColorTransformationType::None;
-
-	if (oldPixelData->SamplesPerPixel == 3) {
-		params.ilv = (CharlsInterleaveModeType)jparams->InterleaveMode;
-		if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb)
-			params.colorTransform = (CharlsColorTransformationType)jparams->ColorTransform;
-	}
-
-	if (oldPixelData->TransferSyntaxIsLossy) {
-		params.allowedlossyerror = jparams->AllowedError;
-	}
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ frameData = oldPixelData->GetFrame(frame);
