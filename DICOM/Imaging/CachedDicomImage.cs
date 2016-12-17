@@ -8,16 +8,37 @@ using System.Text;
 namespace Dicom.Imaging
 {
 
-    public class CachedDicomImage : DicomImage, IDisposable
+    public class CachedDicomImage : IDisposable
     {
 
+        private DicomImage _dicomImage;
         private bool _disposed;
         private IImage _cachedImage;
+        private int _frame;
 
 
         static CachedDicomImage()
         {
         }
+
+
+        public CachedDicomImage(DicomDataset dataset, int frame = 0)
+        {
+            _dicomImage = new DicomImage(dataset, frame);
+            _frame = frame;
+        }
+
+        public CachedDicomImage(string fileName, int frame = 0)
+        {
+            _dicomImage = new DicomImage(fileName, frame);
+            _frame = frame;
+        }
+
+        ~CachedDicomImage()
+        {
+            Dispose(false);
+        }
+
 
         /// <summary>
         /// Clears and disposes the cached IImage
@@ -29,92 +50,73 @@ namespace Dicom.Imaging
             _cachedImage = null;
         }
 
-        public CachedDicomImage(DicomDataset dataset, int frame = 0)
-            : base(dataset, frame)
+        public double WindowCenter
         {
-
-        }
-
-        public CachedDicomImage(string fileName, int frame = 0)
-            : base(fileName, frame)
-        {
-
-        }
-
-        ~CachedDicomImage()
-        {
-            Dispose(false);
-        }
-
-        public override double WindowCenter
-        {
-            get { return base.WindowCenter; }
+            get { return _dicomImage.WindowCenter; }
             set
             {
-                base.WindowCenter = value;
+                _dicomImage.WindowCenter = value;
                 ClearCachedImage();
             }
         }
 
-        public override double WindowWidth
+        public double WindowWidth
         {
-            get { return base.WindowWidth; }
+            get { return _dicomImage.WindowWidth; }
             set
             {
-                base.WindowWidth = value;
+                _dicomImage.WindowWidth = value;
                 ClearCachedImage();
             }
         }
 
-        public override Color32[] GrayscaleColorMap
+        public Color32[] GrayscaleColorMap
         {
-            get { return base.GrayscaleColorMap; }
+            get { return _dicomImage.GrayscaleColorMap; }
             set
             {
-                base.GrayscaleColorMap = value;
+                _dicomImage.GrayscaleColorMap = value;
                 ClearCachedImage();
             }
         }
 
-        public override int OverlayColor
+        public int OverlayColor
         {
-            get { return base.OverlayColor; }
+            get { return _dicomImage.OverlayColor; }
             set
             {
-                base.OverlayColor = value;
+                _dicomImage.OverlayColor = value;
                 ClearCachedImage();
             }
         }
 
-        public override double Scale
+        public double Scale
         {
-            get { return base.Scale; }
+            get { return _dicomImage.Scale; }
             set
             {
-                base.Scale = value;
+                _dicomImage.Scale = value;
                 ClearCachedImage();
             }
         }
 
-        public override bool ShowOverlays
+        public bool ShowOverlays
         {
-            get { return base.ShowOverlays; }
+            get { return _dicomImage.ShowOverlays; }
             set
             {
-                base.ShowOverlays = value;
+                _dicomImage.ShowOverlays = value;
                 ClearCachedImage();
             }
         }
 
-        public override IImage RenderImage(int frame = 0)
+        public IImage RenderImage()
         {
             lock (this)
             {
-                if (frame != CurrentFrame)
-                    ClearCachedImage();
 
                 if (_cachedImage != null)
-                    _cachedImage = base.RenderImage(frame);
+                    _cachedImage = _dicomImage.RenderImage(_frame);
 
                 return _cachedImage;
             }
