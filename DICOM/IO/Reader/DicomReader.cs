@@ -909,9 +909,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     this.ParseDataset(source);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool bEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (bEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
