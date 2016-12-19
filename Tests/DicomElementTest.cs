@@ -250,6 +250,24 @@ namespace Dicom
         }
 
         [Fact]
+        public void DicomCodeString_StringContainingNull_NullIsIgnored()
+        {
+            const MockEnum expected = MockEnum.Two;
+            var element = new DicomCodeString(DicomTag.AITDeviceType, "Two\0");
+            var actual = element.Get<MockEnum>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomCodeString_StringEndsWithSpace_SpaceIsIgnored()
+        {
+            const MockEnum expected = MockEnum.One;
+            var element = new DicomCodeString(DicomTag.AITDeviceType, "One ");
+            var actual = element.Get<MockEnum>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void DicomDecimalString_GetDecimal_ReturnsValue()
         {
             this.TestDicomDecimalStringGetItem<decimal>();
