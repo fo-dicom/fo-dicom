@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* Incorrect message logged when async ops are not available, but requested (#374 #381)
 * Fix get object for all DicomValueElement inheritors (#367 #368)
 * Null characters not trimmed from string values (#359 #380)
 * Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379)
