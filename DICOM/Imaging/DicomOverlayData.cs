@@ -91,7 +91,8 @@ namespace Dicom.Imaging
             {
                 var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType));
                 if (type.StartsWith("R")) return DicomOverlayType.ROI;
-                else return DicomOverlayType.Graphics;
+                if (type.StartsWith("G")) return DicomOverlayType.Graphics;
+                throw new DicomImagingException("Unsupported overlay type: {0}", type);
             }
             set
             {
