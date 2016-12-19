@@ -567,6 +567,13 @@ namespace Dicom.IO.Reader
                         break;
                     }
 
+                    // Fix to handle sequence items not associated with any sequence (#364)
+                    if (_tag == DicomTag.Item)
+                    {
+                        source.Rewind();
+                        _vr = DicomVR.SQ;
+                    }
+
                     if (this._vr == DicomVR.SQ)
                     {
                         // start of sequence
