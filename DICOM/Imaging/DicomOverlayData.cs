@@ -140,7 +140,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlayDescription, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayDescription), value);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlaySubtype, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlaySubtype), value);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlayLabel, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayLabel), value);
             }
         }
 
