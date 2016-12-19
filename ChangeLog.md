@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* Handle parsing sequence items not associated with any sequence (#364 #383)
 * Invalid handling of overlay data type, description, subtype and label (#375 #382)
 * Incorrect message logged when async ops are not available, but requested (#374 #381)
 * Fix get object for all DicomValueElement inheritors (#367 #368)
