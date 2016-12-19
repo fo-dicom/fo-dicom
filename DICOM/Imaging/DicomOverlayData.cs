@@ -95,7 +95,9 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayType), value.ToString().ToUpper());
+                Dataset.AddOrUpdate(
+                    OverlayTag(DicomTag.OverlayType),
+                    value.ToString().Substring(0, 1).ToUpperInvariant());
             }
         }
 
