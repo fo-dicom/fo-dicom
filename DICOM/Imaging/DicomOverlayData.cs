@@ -89,7 +89,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+                var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType));
                 if (type.StartsWith("R")) return DicomOverlayType.ROI;
                 else return DicomOverlayType.Graphics;
             }
