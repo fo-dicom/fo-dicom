@@ -196,9 +196,9 @@ namespace Dicom
             using (var stream2 = new MemoryStream())
             {
                 var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
-                file.Save(stream1);
+                file.Save(stream1, options1);
                 var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
-                file.Save(stream2);
+                file.Save(stream2, options2);
 
                 Assert.Equal(stream1.ToArray(), stream2.ToArray());
             }
