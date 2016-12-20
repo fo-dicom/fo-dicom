@@ -10,7 +10,7 @@ namespace Dicom.IO.Writer
             ExplicitLengthSequences = false;
             ExplicitLengthSequenceItems = false;
             KeepGroupLengths = false;
-            LargeObjectSize = 16 * 1024;
+            LargeObjectSize = 1024 * 1024;
         }
 
         public DicomWriteOptions(DicomWriteOptions options)

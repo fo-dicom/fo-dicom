@@ -204,6 +204,55 @@ namespace Dicom
             }
         }
 
+        [Fact]
+        public async Task SaveAsync_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            using (var stream1 = new MemoryStream())
+            using (var stream2 = new MemoryStream())
+            {
+                var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+                await file.SaveAsync(stream1, options1).ConfigureAwait(false);
+                var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+                await file.SaveAsync(stream2, options2).ConfigureAwait(false);
+
+                Assert.Equal(stream1.ToArray(), stream2.ToArray());
+            }
+        }
+
+        [Fact]
+        public void SaveToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            file.Save("saveasynctofile1", options1);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            file.Save("saveasynctofile2", options2);
+
+
+            var bytes1 = File.ReadAllBytes("saveasynctofile1");
+            var bytes2 = File.ReadAllBytes("saveasynctofile2");
+            Assert.Equal(bytes1, bytes2);
+        }
+
+        [Fact]
+        public async Task SaveAsyncToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            await file.SaveAsync("saveasynctofile1", options1).ConfigureAwait(false);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            await file.SaveAsync("saveasynctofile2", options2).ConfigureAwait(false);
+
+
+            var bytes1 = File.ReadAllBytes("saveasynctofile1");
+            var bytes2 = File.ReadAllBytes("saveasynctofile2");
+            Assert.Equal(bytes1, bytes2);
+        }
+
         #endregion
     }
 }
