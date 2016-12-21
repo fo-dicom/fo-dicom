@@ -175,5 +175,68 @@ namespace Dicom.Network
                 Assert.False(DicomServer.IsListening(Ports.GetNext()));
             }
         }
+
+        [Fact]
+        public void Send_KnownSOPClass_SendSucceeds()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        [Fact]
+        public void Send_PrivateNotRegisteredSOPClass_SendFails()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\GH355.dcm");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.SOPClassNotSupported, status);
+            }
+        }
+
+        [Fact]
+        public void Send_PrivateRegisteredSOPClass_SendSucceeds()
+        {
+            var uid = new DicomUID("1.3.46.670589.11.0.0.12.1", "Private MR Spectrum Storage", DicomUidType.SOPClass);
+            //DicomUID.Register(uid);
+
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\GH355.dcm");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
     }
 }
