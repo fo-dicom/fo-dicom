@@ -84,11 +84,8 @@ namespace Dicom
         public static DicomTransferSyntax GEPrivateImplicitVRBigEndian = new DicomTransferSyntax
                                                                              {
                                                                                  UID =
-                                                                                     new DicomUID(
-                                                                                     "1.2.840.113619.5.2",
-                                                                                     "GE Private Implicit VR Big Endian",
-                                                                                     DicomUidType
-                                                                                     .TransferSyntax),
+                                                                                     DicomUID
+                                                                                         .GEPrivateImplicitVRBigEndian,
                                                                                  IsExplicitVR =
                                                                                      false,
                                                                                  Endian =
