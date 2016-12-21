@@ -23,6 +23,10 @@ namespace Dicom.Network
     {
         #region FIELDS
 
+        protected Stream _dimseStream;
+
+        protected IFileReference _dimseStreamFile;
+
         private readonly INetworkStream _network;
 
         private readonly object _lock;
@@ -38,10 +42,6 @@ namespace Dicom.Network
         private readonly List<DicomRequest> _pending;
 
         private DicomMessage _dimse;
-
-        private Stream _dimseStream;
-
-        private IFileReference _dimseStreamFile;
 
         private int _readLength;
 
@@ -178,7 +178,6 @@ namespace Dicom.Network
             _dimseStream = _dimseStreamFile.Open();
             file.Save(_dimseStream);
             _dimseStream.Seek(0, SeekOrigin.End);
-
         }
 
         /// <summary>
