@@ -7,6 +7,7 @@
 * Null characters not trimmed from string values (#359 #380)
 * Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379)
 * Cannot override CreateCStoreReceiveStream due to private fields (#357 #386)
+* Enable registration of private UIDs (#355 #387)
 * DICOM Parse error - Stack empty (#342)
 * Sufficient image creation when Bits Allocated does not match destination type size (#340 #350)
 * Some Dicom Printer refuse print requests from fo-dicom (#336)
