@@ -220,7 +220,7 @@ namespace Dicom.Network
         public void Send_PrivateRegisteredSOPClass_SendSucceeds()
         {
             var uid = new DicomUID("1.3.46.670589.11.0.0.12.1", "Private MR Spectrum Storage", DicomUidType.SOPClass);
-            //DicomUID.Register(uid);
+            DicomUID.Register(uid);
 
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))

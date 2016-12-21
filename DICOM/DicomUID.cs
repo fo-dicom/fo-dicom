@@ -108,6 +108,11 @@ namespace Dicom
             }
         }
 
+        public static void Register(DicomUID uid)
+        {
+            _uids.Add(uid.UID, uid);
+        }
+
         public static DicomUID Generate(string name)
         {
             if (string.IsNullOrEmpty(RootUID))
