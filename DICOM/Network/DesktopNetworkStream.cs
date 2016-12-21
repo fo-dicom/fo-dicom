@@ -38,8 +38,8 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            this.Host = host;
-            this.Port = port;
+            this.RemoteHost = host;
+            this.RemotePort = port;
 #if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
@@ -75,8 +75,8 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {            
-			this.Host = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString(); ;
-            this.Port = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+			this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString(); ;
+            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
             this.RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
             this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;			
 
@@ -110,12 +110,12 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the host of the network stream.
         /// </summary>
-        public string Host { get; }
+        public string LocalHost { get; }
 		public string RemoteHost { get; }
         /// <summary>
         /// Gets the port of the network stream.
         /// </summary>
-        public int Port { get; }
+        public int LocalPort { get; }
 		public int RemotePort { get; }
         #endregion
 

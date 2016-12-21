@@ -46,8 +46,8 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal WindowsNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            this.Host = host;
-            this.Port = port;
+            this.RemoteHost = host;
+            this.RemotePort = port;
             this.socket = new StreamSocket();
             this.canDisposeSocket = true;
 
@@ -73,8 +73,8 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal WindowsNetworkStream(StreamSocket socket)
         {
-            this.Host = socket.Information.RemoteAddress.DisplayName;
-            this.Port = int.Parse(socket.Information.RemotePort, CultureInfo.InvariantCulture);
+            this.RemoteHost = socket.Information.RemoteAddress.DisplayName;
+            this.RemotePort = int.Parse(socket.Information.RemotePort, CultureInfo.InvariantCulture);
             this.socket = socket;
             this.canDisposeSocket = false;
             this.isConnected = true;
@@ -95,12 +95,14 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the host of the network stream.
         /// </summary>
-        public string Host { get; }
+        public string RemoteHost { get; }
+        public string LocalHost { get; }
 
         /// <summary>
         /// Gets the port of the network stream.
         /// </summary>
-        public int Port { get; }
+        public int RemotePort { get; }
+        public int LocalPort { get; }
 
         #endregion
 

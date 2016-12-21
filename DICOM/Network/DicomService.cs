@@ -347,8 +347,8 @@ namespace Dicom.Network
                             {
                                 Association = new DicomAssociation
                                                   {
-                                                      RemoteHost = _network.Host,
-                                                      RemotePort = _network.Port
+                                                      RemoteHost = _network.RemoteHost,
+                                                      RemotePort = _network.RemotePort
                                                   };
                                 var pdu = new AAssociateRQ(Association);
                                 pdu.Read(raw);
