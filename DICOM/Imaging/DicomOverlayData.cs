@@ -89,13 +89,16 @@ namespace Dicom.Imaging
         {
             get
             {
-                var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType), "Unknown");
+                var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType));
                 if (type.StartsWith("R")) return DicomOverlayType.ROI;
-                else return DicomOverlayType.Graphics;
+                if (type.StartsWith("G")) return DicomOverlayType.Graphics;
+                throw new DicomImagingException("Unsupported overlay type: {0}", type);
             }
             set
             {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayType), value.ToString().ToUpper());
+                Dataset.AddOrUpdate(
+                    OverlayTag(DicomTag.OverlayType),
+                    value.ToString().Substring(0, 1).ToUpperInvariant());
             }
         }
 
@@ -140,7 +143,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlayDescription, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayDescription), value);
             }
         }
 
@@ -155,7 +158,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlaySubtype, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlaySubtype), value);
             }
         }
 
@@ -170,7 +173,7 @@ namespace Dicom.Imaging
             }
             set
             {
-                Dataset.AddOrUpdate(DicomTag.OverlayLabel, value);
+                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayLabel), value);
             }
         }
 

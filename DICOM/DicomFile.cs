@@ -95,7 +95,8 @@ namespace Dicom
         /// Save DICOM file.
         /// </summary>
         /// <param name="fileName">File name.</param>
-        public void Save(string fileName)
+        /// <param name="options">Options to apply during writing.</param>
+        public void Save(string fileName, DicomWriteOptions options = null)
         {
             this.PreprocessFileMetaInformation();
 
@@ -106,7 +107,7 @@ namespace Dicom
 
             using (var target = new FileByteTarget(this.File))
             {
-                var writer = new DicomFileWriter(DicomWriteOptions.Default);
+                var writer = new DicomFileWriter(options);
                 writer.Write(target, this.FileMetaInfo, this.Dataset);
             }
         }
@@ -115,13 +116,14 @@ namespace Dicom
         /// Save DICOM file to stream.
         /// </summary>
         /// <param name="stream">Stream on which to save DICOM file.</param>
-        public void Save(Stream stream)
+        /// <param name="options">Options to apply during writing.</param>
+        public void Save(Stream stream, DicomWriteOptions options = null)
         {
             this.PreprocessFileMetaInformation();
             this.OnSave();
 
             var target = new StreamByteTarget(stream);
-            var writer = new DicomFileWriter(DicomWriteOptions.Default);
+            var writer = new DicomFileWriter(options);
             writer.Write(target, this.FileMetaInfo, this.Dataset);
         }
 
@@ -130,8 +132,9 @@ namespace Dicom
         /// Save to file asynchronously.
         /// </summary>
         /// <param name="fileName">Name of file.</param>
+        /// <param name="options">Options to apply during writing.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public async Task SaveAsync(string fileName)
+        public async Task SaveAsync(string fileName, DicomWriteOptions options = null)
         {
             this.PreprocessFileMetaInformation();
 
@@ -142,7 +145,7 @@ namespace Dicom
 
             using (var target = new FileByteTarget(this.File))
             {
-                var writer = new DicomFileWriter(DicomWriteOptions.Default);
+                var writer = new DicomFileWriter(options);
                 await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
             }
         }
@@ -151,14 +154,15 @@ namespace Dicom
         /// Asynchronously save DICOM file to stream.
         /// </summary>
         /// <param name="stream">Stream on which to save DICOM file.</param>
+        /// <param name="options">Options to apply during writing.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SaveAsync(Stream stream)
+        public async Task SaveAsync(Stream stream, DicomWriteOptions options = null)
         {
             this.PreprocessFileMetaInformation();
             this.OnSave();
 
             var target = new StreamByteTarget(stream);
-            var writer = new DicomFileWriter(DicomWriteOptions.Default);
+            var writer = new DicomFileWriter(options);
             await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
         }
 #endif

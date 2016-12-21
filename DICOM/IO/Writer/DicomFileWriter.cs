@@ -30,7 +30,7 @@ namespace Dicom.IO.Writer
         /// <param name="options">Writer options.</param>
         public DicomFileWriter(DicomWriteOptions options)
         {
-            this.options = options;
+            this.options = options ?? DicomWriteOptions.Default;
         }
 
         #endregion

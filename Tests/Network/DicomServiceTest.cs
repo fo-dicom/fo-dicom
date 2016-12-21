@@ -72,20 +72,21 @@ namespace Dicom.Network
         }
 
         #endregion
+    }
 
-        #region Support classes
+    #region Support classes
 
-        private class SimpleCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
-        {
-            private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
-                {
+    internal class SimpleCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
+    {
+        private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+            {
                     DicomTransferSyntax.ExplicitVRLittleEndian,
                     DicomTransferSyntax.ExplicitVRBigEndian,
                     DicomTransferSyntax.ImplicitVRLittleEndian
                 };
 
-            private static readonly DicomTransferSyntax[] AcceptedImageTransferSyntaxes =
-                {
+        private static readonly DicomTransferSyntax[] AcceptedImageTransferSyntaxes =
+            {
                     // Lossless
                     DicomTransferSyntax.JPEGLSLossless,
                     DicomTransferSyntax.JPEG2000Lossless,
@@ -105,49 +106,48 @@ namespace Dicom.Network
                     DicomTransferSyntax.ImplicitVRLittleEndian
                 };
 
-            public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-                : base(stream, fallbackEncoding, log)
-            {
-            }
-
-            public void OnReceiveAssociationRequest(DicomAssociation association)
-            {
-                foreach (var pc in association.PresentationContexts)
-                {
-                    if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-                    else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
-                }
-
-                this.SendAssociationAccept(association);
-            }
-
-            public void OnReceiveAssociationReleaseRequest()
-            {
-                this.SendAssociationReleaseResponse();
-            }
-
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
-
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
-
-            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-            {
-                var tempName = Path.GetTempFileName();
-                Console.WriteLine(tempName);
-                request.File.Save(tempName);
-
-                return new DicomCStoreResponse(request, DicomStatus.Success);
-            }
-
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+        public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+            : base(stream, fallbackEncoding, log)
+        {
         }
 
-        #endregion
+        public void OnReceiveAssociationRequest(DicomAssociation association)
+        {
+            foreach (var pc in association.PresentationContexts)
+            {
+                if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
+                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
+            }
+
+            this.SendAssociationAccept(association);
+        }
+
+        public void OnReceiveAssociationReleaseRequest()
+        {
+            this.SendAssociationReleaseResponse();
+        }
+
+        public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        {
+        }
+
+        public void OnConnectionClosed(Exception exception)
+        {
+        }
+
+        public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
+        {
+            var tempName = Path.GetTempFileName();
+            Console.WriteLine(tempName);
+            request.File.Save(tempName);
+
+            return new DicomCStoreResponse(request, DicomStatus.Success);
+        }
+
+        public void OnCStoreRequestException(string tempFileName, Exception e)
+        {
+        }
     }
+
+    #endregion
 }

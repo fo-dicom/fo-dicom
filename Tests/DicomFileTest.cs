@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Dicom.IO.Writer;
+
 namespace Dicom
 {
     using System;
@@ -183,6 +185,72 @@ namespace Dicom
             Func<ParseState, bool> criterion = state => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
+        }
+
+        [Fact]
+        public void Save_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            using (var stream1 = new MemoryStream())
+            using (var stream2 = new MemoryStream())
+            {
+                var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+                file.Save(stream1, options1);
+                var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+                file.Save(stream2, options2);
+
+                Assert.Equal(stream1.ToArray(), stream2.ToArray());
+            }
+        }
+
+        [Fact]
+        public async Task SaveAsync_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            using (var stream1 = new MemoryStream())
+            using (var stream2 = new MemoryStream())
+            {
+                var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+                await file.SaveAsync(stream1, options1).ConfigureAwait(false);
+                var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+                await file.SaveAsync(stream2, options2).ConfigureAwait(false);
+
+                Assert.Equal(stream1.ToArray(), stream2.ToArray());
+            }
+        }
+
+        [Fact]
+        public void SaveToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            file.Save("saveasynctofile1", options1);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            file.Save("saveasynctofile2", options2);
+
+
+            var bytes1 = File.ReadAllBytes("saveasynctofile1");
+            var bytes2 = File.ReadAllBytes("saveasynctofile2");
+            Assert.Equal(bytes1, bytes2);
+        }
+
+        [Fact]
+        public async Task SaveAsyncToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
+        {
+            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            await file.SaveAsync("saveasynctofile1", options1).ConfigureAwait(false);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            await file.SaveAsync("saveasynctofile2", options2).ConfigureAwait(false);
+
+
+            var bytes1 = File.ReadAllBytes("saveasynctofile1");
+            var bytes2 = File.ReadAllBytes("saveasynctofile2");
+            Assert.Equal(bytes1, bytes2);
         }
 
         #endregion

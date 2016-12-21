@@ -106,6 +106,7 @@
     <Compile Include="Bugs\GH258.cs" />
     <Compile Include="Bugs\GH265.cs" />
     <Compile Include="Bugs\GH306.cs" />
+    <Compile Include="Bugs\GH364.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\DicomImageTest.cs" />
+    <Compile Include="Imaging\DicomOverlayDataTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
@@ -196,6 +198,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test Data\GH355.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH364.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\GH342.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
