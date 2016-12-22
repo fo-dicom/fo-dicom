@@ -910,12 +910,12 @@ namespace Dicom.IO.Reader
                     this.ParseDataset(source);
                     --this.sequenceDepth;
                     // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
-                    bool bEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
 
-                    if (bEndSequence)
+                    if (isEndSequence)
                     {
                         // end of sequence
                         this.observer.OnEndSequence();
@@ -953,9 +953,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     await this.ParseDatasetAsync(source).ConfigureAwait(false);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (isEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
