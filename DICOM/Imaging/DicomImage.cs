@@ -75,7 +75,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>Scaling factor of the rendered image</summary>
-        public virtual double Scale
+        public double Scale
         {
             get
             {
@@ -179,10 +179,10 @@ namespace Dicom.Imaging
         }
 
         /// <summary>Show or hide DICOM overlays</summary>
-        public virtual bool ShowOverlays { get; set; }
+        public bool ShowOverlays { get; set; }
 
         /// <summary>Color used for displaying DICOM overlays. Default is magenta.</summary>
-        public virtual int OverlayColor
+        public int OverlayColor
         {
             get
             {
