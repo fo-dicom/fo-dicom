@@ -93,15 +93,23 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <summary>
-        /// Gets the host of the network stream.
+        /// Gets the remote host of the network stream.
         /// </summary>
         public string RemoteHost { get; }
+
+        /// <summary>
+        /// Gets the local host of the network stream
+        /// </summary>
         public string LocalHost { get; }
 
         /// <summary>
-        /// Gets the port of the network stream.
+        /// Gets the remote port of the network stream.
         /// </summary>
         public int RemotePort { get; }
+
+        /// <summary>
+        /// Gets the local port of the network stream.
+        /// </summary>
         public int LocalPort { get; }
 
         #endregion
