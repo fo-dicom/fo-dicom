@@ -411,7 +411,10 @@ namespace Dicom.IO.Reader
                         if (this._tag.Element == 0x0000)
                         {
                             // Group Length to UL
-                            this._vr = DicomVR.UL;
+                            // change 20161216: if changing from UN to UL then ParseLength causes a error, since length in UL is 2 bytes while length in UN is 6 bytes. 
+                            // so the source hat UN and coded the length in 6 bytes. if here the VR was changed to UL then ParseLength would only read 2 bytes and the parser is then wrong.
+                            // but no worry: in ParseValue in the first lines there is a lookup in the Dictionary of DicomTags and there the VR is changed to UL so that the value is finally interpreted correctly as UL.
+                           // this._vr = DicomVR.UL;
                             break;
                         }
                         if (this.isExplicitVR)
@@ -545,7 +548,7 @@ namespace Dicom.IO.Reader
                         }
                     }
 
-                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    if (this._tag == DicomTag.ItemDelimitationItem || this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // end of sequence item
                         return false;
@@ -686,7 +689,7 @@ namespace Dicom.IO.Reader
                         }
                     }
 
-                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    if (this._tag == DicomTag.ItemDelimitationItem || this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // end of sequence item
                         return false;
@@ -906,9 +909,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     this.ParseDataset(source);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (isEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -935,9 +953,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     await this.ParseDatasetAsync(source).ConfigureAwait(false);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (isEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
