@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
 * Invalid handling of overlay data type, description, subtype and label (#375 #382)
 * Incorrect message logged when async ops are not available, but requested (#374 #381)
 * Fix get object for all DicomValueElement inheritors (#367 #368)
@@ -56,7 +57,7 @@
 * Implement JSON serialization and deserialization of DICOM objects (#182 #186)
 * Open and save DicomDirectory to Stream (#181 #235)
 * Implement C-GET support (#180 #309)
-* Exposing network infos (ip and port) in association (#173 #225)
+* Exposing network infos (ip and port) in association (#173 #225 #377)
 * Consider implementing DicomDataset.Clone() as "DeepClone" (#153 #313)
 * Image compression/decompression for Mono and Xamarin (#128 #279 #295)
 
