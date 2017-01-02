@@ -222,8 +222,8 @@ namespace Dicom.Network
             {
                 MaxAsyncOpsInvoked = this.asyncInvoked,
                 MaxAsyncOpsPerformed = this.asyncPerformed,
-                RemoteHost = stream.Host,
-                RemotePort = stream.Port
+                RemoteHost = stream.RemoteHost,
+                RemotePort = stream.RemotePort
             };
 
             try
@@ -251,8 +251,8 @@ namespace Dicom.Network
             {
                 MaxAsyncOpsInvoked = this.asyncInvoked,
                 MaxAsyncOpsPerformed = this.asyncPerformed,
-                RemoteHost = stream.Host,
-                RemotePort = stream.Port
+                RemoteHost = stream.RemoteHost,
+                RemotePort = stream.RemotePort
             };
 
             return DoSendAsync(stream, assoc);
