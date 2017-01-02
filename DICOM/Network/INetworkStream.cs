@@ -14,15 +14,25 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <summary>
-        /// Gets the host of the network stream.
+        /// Gets the remote host of the network stream.
         /// </summary>
-        string Host { get; }
+        string RemoteHost { get; }
 
         /// <summary>
-        /// Gets the port of the network stream.
+        /// Gets the local host of the network stream.
         /// </summary>
-        int Port { get; }
+        string LocalHost { get; }
 
+        /// <summary>
+        /// Gets the remote port of the network stream.
+        /// </summary>
+        int RemotePort { get; }
+
+        /// <summary>
+        /// Gets the local port of the network stream.
+        /// </summary>
+        int LocalPort { get; }
+        
         #endregion
 
         #region METHODS
