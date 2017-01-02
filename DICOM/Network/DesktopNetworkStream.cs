@@ -14,7 +14,7 @@ namespace Dicom.Network
     /// <summary>
     /// .NET implementation of <see cref="INetworkStream"/>.
     /// </summary>
-    public class DesktopNetworkStream : INetworkStream
+    public sealed class DesktopNetworkStream : INetworkStream
     {
         #region FIELDS
 
@@ -40,6 +40,7 @@ namespace Dicom.Network
         {
             this.RemoteHost = host;
             this.RemotePort = port;
+
 #if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
@@ -62,6 +63,9 @@ namespace Dicom.Network
                 stream = ssl;
             }
 
+            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+
             this.networkStream = stream;
         }
 
@@ -74,11 +78,11 @@ namespace Dicom.Network
         /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="DesktopNetworkStream"/>
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
-        {            
-			this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString(); ;
+        {
+            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
             this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
             this.RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;			
+            this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
 
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
@@ -110,7 +114,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the remote host of the network stream.
         /// </summary>
-		public string RemoteHost { get; }
+        public string RemoteHost { get; }
 
         /// <summary>
         /// Gets the local host of the network stream.
@@ -126,7 +130,7 @@ namespace Dicom.Network
         /// Gets the local port of the network stream.
         /// </summary>
         public int LocalPort { get; }
-		
+
         #endregion
 
         #region METHODS

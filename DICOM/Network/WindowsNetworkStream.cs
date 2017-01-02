@@ -62,6 +62,9 @@ namespace Dicom.Network
             }
 
             this.isConnected = this.EstablishConnectionAsync(host, port, useTls).Result;
+
+            this.LocalHost = this.socket.Information.LocalAddress.DisplayName;
+            this.LocalPort = int.Parse(this.socket.Information.LocalPort, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -73,8 +76,11 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal WindowsNetworkStream(StreamSocket socket)
         {
+            this.LocalHost = socket.Information.LocalAddress.DisplayName;
+            this.LocalPort = int.Parse(socket.Information.LocalPort, CultureInfo.InvariantCulture);
             this.RemoteHost = socket.Information.RemoteAddress.DisplayName;
             this.RemotePort = int.Parse(socket.Information.RemotePort, CultureInfo.InvariantCulture);
+
             this.socket = socket;
             this.canDisposeSocket = false;
             this.isConnected = true;

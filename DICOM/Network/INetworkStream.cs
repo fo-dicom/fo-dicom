@@ -32,7 +32,7 @@ namespace Dicom.Network
         /// Gets the local port of the network stream.
         /// </summary>
         int LocalPort { get; }
-        
+
         #endregion
 
         #region METHODS
