@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #389)
 * Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
 * Invalid handling of overlay data type, description, subtype and label (#375 #382)
 * Incorrect message logged when async ops are not available, but requested (#374 #381)
