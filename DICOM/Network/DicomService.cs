@@ -250,6 +250,15 @@ namespace Dicom.Network
 
                 _isConnected = false;
                 _network.Dispose();
+
+                if (this is IDicomServiceProvider)
+                {
+                    (this as IDicomServiceProvider).OnConnectionClosed(exception);
+                }
+                else if (this is IDicomServiceUser)
+                {
+                    (this as IDicomServiceUser).OnConnectionClosed(exception);
+                }
             }
             catch (Exception e)
             {
@@ -262,19 +271,11 @@ namespace Dicom.Network
             if (exception != null)
             {
                 Logger.Error("Connection closed with error: {@error}", exception);
+                throw exception;
             }
             else
             {
                 Logger.Info("Connection closed");
-            }
-
-            if (this is IDicomServiceProvider)
-            {
-                (this as IDicomServiceProvider).OnConnectionClosed(exception);
-            }
-            else if (this is IDicomServiceUser)
-            {
-                (this as IDicomServiceUser).OnConnectionClosed(exception);
             }
         }
 
