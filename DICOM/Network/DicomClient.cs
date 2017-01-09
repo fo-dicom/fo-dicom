@@ -115,6 +115,23 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
+        /// </summary>
+        public bool IsSendRequired
+        {
+            get
+            {
+                bool required;
+                lock (this.locker)
+                {
+                    required = this.requests.Count > 0 && (this.service == null || !this.service.IsConnected);
+                }
+
+                return required;
+            }
+        }
+
         #endregion
 
         #region METHODS

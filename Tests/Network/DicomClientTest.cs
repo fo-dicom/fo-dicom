@@ -467,6 +467,62 @@ namespace Dicom.Network
             Assert.True(result);
         }
 
+        [Fact]
+        public void IsSendRequired_AddedRequestNotConnected_ReturnsTrue()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+                Assert.True(client.IsSendRequired);
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Thread.Sleep(100);
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+
+                Assert.True(client.IsSendRequired);
+            }
+        }
+
+        [Fact]
+        public void IsSendRequired_NoRequestNotConnected_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.False(client.IsSendRequired);
+            }
+        }
+
+        [Fact]
+        public void IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+
+                var client = new DicomClient { Linger = 10000 };
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter });
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter });
+                Thread.Sleep(100);
+
+                Assert.Equal(2, counter);
+                Assert.False(client.IsSendRequired);
+            }
+        }
+
         #endregion
 
         #region Support classes
