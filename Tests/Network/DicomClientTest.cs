@@ -74,7 +74,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
@@ -473,8 +473,6 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var counter = 0;
-
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
                 Assert.True(client.IsSendRequired);
@@ -493,8 +491,6 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var counter = 0;
-
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
@@ -512,10 +508,10 @@ namespace Dicom.Network
                 var counter = 0;
 
                 var client = new DicomClient { Linger = 10000 };
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter });
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter });
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
                 Thread.Sleep(100);
 
                 Assert.Equal(2, counter);
