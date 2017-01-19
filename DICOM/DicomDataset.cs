@@ -434,13 +434,13 @@ namespace Dicom
 
                 if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
 
-                if (n >= element.Count || element.Count == 0)
+                if (!typeof(T).GetTypeInfo().IsArray && (n >= element.Count || element.Count == 0))
                 {
                     if (useDefault) return defaultValue;
                     throw new DicomDataException("Element empty or index: {0} exceeds element count: {1}", n, element.Count);
                 }
 
-                return (T)(object)element.Get<T>(n);
+                return element.Get<T>(n);
             }
 
             if (item.GetType() == typeof(DicomSequence))
