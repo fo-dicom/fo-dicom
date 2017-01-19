@@ -630,7 +630,7 @@ namespace Dicom.Network
                             var userRole = raw.ReadByte("SCU role");
                             var providerRole = raw.ReadByte("SCP role");
                             var pc =
-                                _assoc.PresentationContexts.SingleOrDefault(
+                                _assoc.PresentationContexts.FirstOrDefault(
                                     context => context.AbstractSyntax.UID.Equals(syntax));
                             if (pc != null)
                             {
@@ -875,7 +875,7 @@ namespace Dicom.Network
                             var userRole = raw.ReadByte("SCU role");
                             var providerRole = raw.ReadByte("SCP role");
                             var pc =
-                                _assoc.PresentationContexts.SingleOrDefault(
+                                _assoc.PresentationContexts.FirstOrDefault(
                                     context => context.AbstractSyntax.UID.Equals(syntax));
                             if (pc != null)
                             {
