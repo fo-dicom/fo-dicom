@@ -315,6 +315,17 @@ namespace Dicom
                     DicomTag.ScheduledProtocolCodeSequence).Items[0].InternalTransferSyntax);
         }
 
+        [Fact]
+        public void Get_ArrayWhenTagExistsEmpty_ShouldReturnEmptyArray()
+        {
+            var tag = DicomTag.GridFrameOffsetVector;
+            var ds = new DicomDataset();
+            ds.Add(tag, (string[])null);
+
+            var array = ds.Get<string[]>(tag);
+            Assert.Equal(0, array.Length);
+        }
+
         #endregion
 
         #region Support methods
