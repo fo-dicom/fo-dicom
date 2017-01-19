@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
 * Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
 * Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #390)
 * Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
@@ -272,7 +273,7 @@
 * Don't parse values for IS and DS elements if returning string types
 * Add AMICAS private tags (AMICAS0) to private dictionary
 * Add support for 32-bit pixel data (Anders Gustafsson, Cureos AB)
-* Better handling of default item in Get<> method (Anders Gustafsson, Cureos AB)
+* Better handling of default item in Get&lt;&gt; method (Anders Gustafsson, Cureos AB)
 * Support opening DicomFile from Stream (Anders Gustafsson, Cureos AB)
 * Add support SIGMOID VOI LUT function
 * Better handling of size and position of image display window in DICOM Dump
@@ -281,9 +282,9 @@
 * Add support for image scaling in DicomImage
 * Use library to scale images before displaying in DICOM Dump
 * Calculate W/L from pixel data values if no defaults are available
-* Add ability to Get<> Int32 values from US/SS elements
-* Add ability to Get<> DicomVR and IByteBuffer from elements
-* Add ability to Get<> byte[] from elements
+* Add ability to Get&lt;&gt; Int32 values from US/SS elements
+* Add ability to Get&lt;&gt; DicomVR and IByteBuffer from elements
+* Add ability to Get&lt;&gt; byte[] from elements
 * Add ability to render basic PALETTE COLOR images
 * Fix unnecessary byte swap for 8-bit pixel data stored in OW
 * Add DicomFileException to allow better chance of recovery from parse errors
