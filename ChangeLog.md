@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* DicomClient multiple C-Store request cause exception when AsyncOps is not negotiated (#356 #400)
 * Unhandled exception after error in JPEG native decoding (#394 #399)
 * DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
 * Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
