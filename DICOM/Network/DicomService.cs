@@ -674,8 +674,8 @@ namespace Dicom.Network
             }
             catch (Exception e)
             {
-                SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
                 Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
+                throw;
             }
             finally
             {
