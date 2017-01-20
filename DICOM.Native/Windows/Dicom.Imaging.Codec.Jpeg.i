@@ -13,17 +13,28 @@ namespace IJGVERS {
       struct jpeg_error_mgr pub;
     };
 
-    // error handler, executes longjmp
-    void ErrorExit(j_common_ptr cinfo) {
+	// char * to wchar_t * converter
+	wchar_t * Convert(const char * src) {
+		size_t size = strlen(src) + 1, convertedChars = 0;
+		wchar_t * dest = new wchar_t[size];
+		mbstowcs_s(&convertedChars, dest, size, src, _TRUNCATE);
+		return dest;
+	}
+    
+	// error handler
+	void ErrorExit(j_common_ptr cinfo) {
         ErrorStruct *myerr = (ErrorStruct *)cinfo->err;
-    }
+		char buffer[JMSG_LENGTH_MAX];
+        (*cinfo->err->format_message)((jpeg_common_struct *)cinfo, buffer); /* Create the message */
+		throw ref new FailureException(ref new String(Convert(buffer)));
+	}
 
     // message handler for warning messages and the like
-    void OutputMessage(j_common_ptr cinfo) {
+	void OutputMessage(j_common_ptr cinfo) {
         ErrorStruct *myerr = (ErrorStruct *)cinfo->err;
         char buffer[JMSG_LENGTH_MAX];
         (*cinfo->err->format_message)((jpeg_common_struct *)cinfo, buffer); /* Create the message */
-        //DicomLog::Debug::Log->Info("IJG: {0}", gcnew String(buffer));
+        //LogManager::GetLogger("Dicom.Imaging.Codec")->Debug("IJG: {0}", ref new String(Convert(buffer)));
     }
 }
 
