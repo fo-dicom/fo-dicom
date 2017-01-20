@@ -27,8 +27,6 @@ namespace Dicom.Network
 
             public static readonly bool IgnoreSslPolicyErrors = false;
 
-            public static readonly bool IgnoreAsyncOps = false;
-
             public static readonly bool TcpNoDelay = true;
         }
 
@@ -46,7 +44,6 @@ namespace Dicom.Network
             MaxDataBuffer = Default.MaxDataBuffer;
             ThreadPoolLinger = Default.ThreadPoolLinger;
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
-            IgnoreAsyncOps = Default.IgnoreAsyncOps;
             TcpNoDelay = Default.TcpNoDelay;
         }
 
@@ -74,11 +71,6 @@ namespace Dicom.Network
 
         /// <summary>DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether async operations invoked/performed limitations should be ignored while sending and retrieving messages.
-        /// </summary>
-        public bool IgnoreAsyncOps { get; set; }
 
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
