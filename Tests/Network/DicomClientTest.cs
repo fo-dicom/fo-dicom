@@ -87,7 +87,9 @@ namespace Dicom.Network
         [InlineData(100)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
-            int port = Ports.GetNext();
+            var port = Ports.GetNext();
+            var locker = new object();
+            var flag = new ManualResetEventSlim();
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
@@ -95,14 +97,25 @@ namespace Dicom.Network
 
                 var actual = 0;
 
-                var client = new DicomClient();
+                var client = new DicomClient { Linger = 0 };
                 for (var i = 0; i < expected; ++i)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+                    client.AddRequest(
+                        new DicomCEchoRequest
+                            {
+                                OnResponseReceived = (req, res) =>
+                                    {
+                                        lock (locker)
+                                        {
+                                            _testOutputHelper.WriteLine($"{i}");
+                                            if (++actual == expected) flag.Set();
+                                        }
+                                    }
+                            });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                client.Release();
+                flag.Wait(10000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -155,7 +168,9 @@ namespace Dicom.Network
         [InlineData(100)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
-            int port = Ports.GetNext();
+            var port = Ports.GetNext();
+            var locker = new object();
+            var flag = new ManualResetEventSlim();
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
@@ -166,11 +181,21 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 for (var i = 0; i < expected; i++)
                 {
-                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+                    client.AddRequest(
+                        new DicomCEchoRequest
+                            {
+                                OnResponseReceived = (req, res) =>
+                                    {
+                                        lock (locker)
+                                        {
+                                            if (++actual == expected) flag.Set();
+                                        }
+                                    }
+                            });
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                await client.ReleaseAsync();
+                flag.Wait(10000);
                 Assert.Equal(expected, actual);
             }
         }
@@ -506,16 +531,27 @@ namespace Dicom.Network
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var counter = 0;
+                var flag = new ManualResetEventSlim();
 
-                var client = new DicomClient { Linger = 10000 };
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
+                var client = new DicomClient { Linger = 1000 };
+                client.AddRequest(
+                    new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
+                client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 Thread.Sleep(100);
 
-                Assert.Equal(2, counter);
+                client.AddRequest(
+                    new DicomCEchoRequest
+                        {
+                            OnResponseReceived = (req, res) =>
+                                {
+                                    Interlocked.Increment(ref counter);
+                                    flag.Set();
+                                }
+                        });
                 Assert.False(client.IsSendRequired);
+
+                flag.Wait(1000);
+                Assert.Equal(2, counter);
             }
         }
 

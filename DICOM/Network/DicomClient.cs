@@ -373,9 +373,9 @@ namespace Dicom.Network
         {
             try
             {
-                while (this.service != null)
+                if (this.service != null)
                 {
-                    await Task.Delay(50).ConfigureAwait(false);
+                    await completeNotifier.Task.ConfigureAwait(false);
                 }
 
                 this.associateNotifier = new TaskCompletionSource<bool>();
@@ -517,19 +517,9 @@ namespace Dicom.Network
                 }
                 else
                 {
-                    while (requests.Count > 0)
+                    foreach (var request in requests)
                     {
-                        foreach (var request in requests)
-                        {
-                            SendRequest(request);
-                        }
-
-                        // Have any new requests been added while sending previous requests?
-                        lock (this.client.locker)
-                        {
-                            requests = new List<DicomRequest>(this.client.requests);
-                            this.client.requests.Clear();
-                        }
+                        SendRequest(request);
                     }
                 }
             }
@@ -573,7 +563,7 @@ namespace Dicom.Network
             /// <param name="exception">Exception, if any, that forced connection to close.</param>
             public void OnConnectionClosed(Exception exception)
             {
-                SetComplete();
+                SetComplete(exception);
             }
 
             /// <summary>
@@ -594,6 +584,7 @@ namespace Dicom.Network
 
             internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout)
             {
+                Exception exception = null;
                 try
                 {
                     SendAssociationReleaseRequest();
@@ -602,10 +593,11 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Warn("Attempt to send association release request failed due to: {@error}", e);
+                    exception = e;
                 }
                 finally
                 {
-                    SetComplete();
+                    SetComplete(exception);
                 }
             }
 
@@ -633,16 +625,21 @@ namespace Dicom.Network
 
             private async Task LingerAsync()
             {
-                var linger = this.client.Linger == Timeout.Infinite ? 0 : this.client.Linger;
-                var disconnected = await WaitForDisconnectAsync(linger).ConfigureAwait(false);
+                while (true)
+                {
+                    var disconnected = await WaitForDisconnectAsync(client.Linger).ConfigureAwait(false);
 
-                if (disconnected)
-                {
-                    SetComplete();
-                }
-                else if (IsSendQueueEmpty)
-                {
-                    await DoSendAssociationReleaseRequestAsync(ReleaseTimeout).ConfigureAwait(false);
+                    if (disconnected)
+                    {
+                        SetComplete();
+                        break;
+                    }
+
+                    if (IsSendQueueEmpty)
+                    {
+                        await DoSendAssociationReleaseRequestAsync(ReleaseTimeout).ConfigureAwait(false);
+                        break;
+                    }
                 }
             }
 
@@ -654,13 +651,29 @@ namespace Dicom.Network
                     {
                         while (true)
                         {
-                            if (!IsConnected || !IsSendQueueEmpty)
+                            List<DicomRequest> requests;
+                            lock (this.client.locker)
                             {
-                                cancellationSource.Cancel();
-                                break;
+                                if (IsConnected)
+                                {
+                                    requests = new List<DicomRequest>(this.client.requests);
+                                    this.client.requests.Clear();
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
+
+                            foreach (var request in requests)
+                            {
+                                SendRequest(request);
+                            }
+
                             await Task.Delay(50, cancellationSource.Token).ConfigureAwait(false);
                         }
+
+                        cancellationSource.Cancel();
                     }
                 }
                 catch (TaskCanceledException)
