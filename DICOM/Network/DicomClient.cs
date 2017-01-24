@@ -409,10 +409,16 @@ namespace Dicom.Network
                 }
             }
 
+            this.networkStream = null;
+            this.service = null;
+
+            var completedException = completeNotifier?.Task?.Exception;
             var lingerException = this.service?.LingerTask?.Exception;
 
-            this.service = null;
-            this.networkStream = null;
+            if (completedException != null)
+            {
+                throw completedException.Flatten().InnerException;
+            }
 
             if (lingerException != null)
             {

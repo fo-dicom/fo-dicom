@@ -107,13 +107,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets whether or not the service is connected.
         /// </summary>
-        public bool IsConnected
-        {
-            get
-            {
-                return _isConnected;
-            }
-        }
+        public bool IsConnected => _network != null && _network.AsStream().CanRead;
 
         /// <summary>
         /// Gets whether or not the send queue is empty.
@@ -283,7 +277,7 @@ namespace Dicom.Network
         {
             try
             {
-                while (this.IsConnected)
+                while (_isConnected)
                 {
                     var stream = _network.AsStream();
 
@@ -291,21 +285,23 @@ namespace Dicom.Network
                     _readLength = 6;
 
                     var buffer = new byte[6];
-                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                    var count = await SafeReadAsync(stream, buffer, 0, 6, Logger).ConfigureAwait(false);
 
                     do
                     {
                         if (count == 0)
                         {
                             // disconnected
-                            await CloseConnectionAsync(null).ConfigureAwait(false);
+                            _isConnected = false;
                             return;
                         }
 
                         _readLength -= count;
                         if (_readLength > 0)
                         {
-                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
+                            count =
+                                await SafeReadAsync(stream, buffer, 6 - _readLength, _readLength, Logger)
+                                    .ConfigureAwait(false);
                         }
                     }
                     while (_readLength > 0);
@@ -317,7 +313,7 @@ namespace Dicom.Network
 
                     Array.Resize(ref buffer, length + 6);
 
-                    count = await stream.ReadAsync(buffer, 6, length).ConfigureAwait(false);
+                    count = await SafeReadAsync(stream, buffer, 6, length, Logger).ConfigureAwait(false);
 
                     // Read PDU
                     do
@@ -325,7 +321,7 @@ namespace Dicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            await CloseConnectionAsync(null).ConfigureAwait(false);
+                            _isConnected = false;
                             return;
                         }
 
@@ -333,8 +329,8 @@ namespace Dicom.Network
                         if (_readLength > 0)
                         {
                             count =
-                                await
-                                stream.ReadAsync(buffer, buffer.Length - _readLength, _readLength).ConfigureAwait(false);
+                                await SafeReadAsync(stream, buffer, buffer.Length - _readLength, _readLength, Logger)
+                                    .ConfigureAwait(false);
                         }
                     }
                     while (_readLength > 0);
@@ -1214,6 +1210,19 @@ namespace Dicom.Network
             else if (!(e.InnerException is ObjectDisposedException))
             {
                 logger.Error(otherFmt, e);
+            }
+        }
+
+        private static async Task<int> SafeReadAsync(Stream stream, byte[] buffer, int offset, int count, Logger logger)
+        {
+            try
+            {
+                return await stream.ReadAsync(buffer, offset, count).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                logger.Warn("Failed to read stream due to: {@error}", e);
+                return 0;
             }
         }
 
