@@ -249,6 +249,7 @@ namespace Dicom.Network
             }
             catch (AggregateException e)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw e.Flatten().InnerException;
             }
         }
@@ -288,6 +289,7 @@ namespace Dicom.Network
             }
             catch (AggregateException e)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw e.Flatten().InnerException;
             }
         }
@@ -333,6 +335,7 @@ namespace Dicom.Network
             }
             catch (AggregateException e)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw e.Flatten().InnerException;
             }
         }
@@ -373,17 +376,44 @@ namespace Dicom.Network
         {
             try
             {
-                if (this.service != null)
+                if (service == null || !service.IsConnected)
                 {
-                    await completeNotifier.Task.ConfigureAwait(false);
+                    associateNotifier = new TaskCompletionSource<bool>();
+                    completeNotifier = new TaskCompletionSource<bool>();
+
+                    service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                 }
 
-                this.associateNotifier = new TaskCompletionSource<bool>();
-                this.completeNotifier = new TaskCompletionSource<bool>();
+                await associateNotifier.Task.ConfigureAwait(false);
 
-                this.service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                var noSend = false;
+                lock (locker)
+                {
+                    if (requests.Count > 0)
+                    {
+                        if (service.IsConnected)
+                        {
+                            service.SendRequests(requests);
+                            requests.Clear();
+                        }
+                    }
+                    else
+                    {
+                        noSend = true;
+                    }
+                }
 
-                await this.completeNotifier.Task.ConfigureAwait(false);
+                if (noSend)
+                {
+                    await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
+                }
+
+                await completeNotifier.Task.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to send due to: {@error}", e);
+                throw;
             }
             finally
             {
@@ -393,10 +423,6 @@ namespace Dicom.Network
 
         private void Cleanup()
         {
-            // If not already set, set notifiers here to signal competion to awaiters
-            this.associateNotifier?.TrySetResult(false);
-            this.completeNotifier?.TrySetResult(true);
-
             if (this.networkStream != null)
             {
                 try
@@ -412,16 +438,21 @@ namespace Dicom.Network
             this.networkStream = null;
             this.service = null;
 
-            var completedException = completeNotifier?.Task?.Exception;
-            var lingerException = this.service?.LingerTask?.Exception;
+            // If not already set, set notifiers here to signal competion to awaiters
+            this.associateNotifier?.TrySetResult(false);
+            this.completeNotifier?.TrySetResult(true);
 
+            var completedException = completeNotifier?.Task?.Exception;
             if (completedException != null)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw completedException.Flatten().InnerException;
             }
 
+            var lingerException = this.service?.LingerTask?.Exception;
             if (lingerException != null)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw lingerException.Flatten().InnerException;
             }
         }
@@ -434,7 +465,7 @@ namespace Dicom.Network
         {
             #region FIELDS
 
-            private const int ReleaseTimeout = 2500;
+            private const int DefaultReleaseTimeout = 2500;
 
             private readonly DicomClient client;
 
@@ -509,25 +540,6 @@ namespace Dicom.Network
                 }
 
                 client.associateNotifier.TrySetResult(true);
-
-                var noRequests = false;
-                lock (client.locker)
-                {
-                    if (client.requests.Count > 0)
-                    {
-                        SendRequests(client.requests);
-                        client.requests.Clear();
-                    }
-                    else
-                    {
-                        noRequests = true;
-                    }
-                }
-
-                if (noRequests)
-                {
-                    DoSendAssociationReleaseRequestAsync(ReleaseTimeout).Wait();
-                }
             }
 
             /// <summary>
@@ -588,7 +600,7 @@ namespace Dicom.Network
                            : this.client.OnCStoreRequest(request);
             }
 
-            internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout)
+            internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout = DefaultReleaseTimeout)
             {
                 Exception exception = null;
                 try
@@ -643,7 +655,7 @@ namespace Dicom.Network
 
                     if (IsSendQueueEmpty)
                     {
-                        await DoSendAssociationReleaseRequestAsync(ReleaseTimeout).ConfigureAwait(false);
+                        await DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
                         break;
                     }
                 }

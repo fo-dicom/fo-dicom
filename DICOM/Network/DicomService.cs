@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2016 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Threading;
-
 namespace Dicom.Network
 {
     using System;
@@ -10,6 +8,7 @@ namespace Dicom.Network
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Dicom.Imaging.Codec;
@@ -249,7 +248,7 @@ namespace Dicom.Network
                     }
                 }
 
-                IsConnected = false;
+                lock (_lock) IsConnected = false;
                 _network.Dispose();
 
                 if (this is IDicomServiceProvider)
@@ -849,11 +848,7 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
-
-                if (_sending)
-                {
-                    return;
-                }
+                if (_sending) return;
             }
 
             SendNextMessage();
@@ -868,10 +863,7 @@ namespace Dicom.Network
                     _msgQueue.Enqueue(message);                    
                 }
 
-                if (_sending)
-                {
-                    return;
-                }
+                if (_sending) return;
             }
 
             SendNextMessage();
