@@ -50,7 +50,7 @@ namespace Dicom.Network
             this.AdditionalPresentationContexts = new List<DicomPresentationContext>();
             this.asyncInvoked = 1;
             this.asyncPerformed = 1;
-            this.Linger = 0;
+            this.Linger = 50;
         }
 
         #endregion
@@ -523,10 +523,7 @@ namespace Dicom.Network
                 }
                 else
                 {
-                    foreach (var request in requests)
-                    {
-                        SendRequest(request);
-                    }
+                    SendRequests(requests);
                 }
             }
 
@@ -594,7 +591,7 @@ namespace Dicom.Network
                 try
                 {
                     SendAssociationReleaseRequest();
-                    await WaitForDisconnectAsync(millisecondsTimeout, true).ConfigureAwait(false);
+                    await ListenForDisconnectAsync(millisecondsTimeout, true).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -633,7 +630,7 @@ namespace Dicom.Network
             {
                 while (true)
                 {
-                    var disconnected = await WaitForDisconnectAsync(client.Linger, false).ConfigureAwait(false);
+                    var disconnected = await ListenForDisconnectAsync(client.Linger, false).ConfigureAwait(false);
 
                     if (disconnected)
                     {
@@ -649,7 +646,7 @@ namespace Dicom.Network
                 }
             }
 
-            private async Task<bool> WaitForDisconnectAsync(int millisecondsDelay, bool releaseRequested)
+            private async Task<bool> ListenForDisconnectAsync(int millisecondsDelay, bool releaseRequested)
             {
                 try
                 {
@@ -666,16 +663,13 @@ namespace Dicom.Network
 
                             if (!releaseRequested)
                             {
-                                List<DicomRequest> requests;
                                 lock (this.client.locker)
                                 {
-                                    requests = new List<DicomRequest>(this.client.requests);
-                                    this.client.requests.Clear();
-                                }
-
-                                foreach (var request in requests)
-                                {
-                                    SendRequest(request);
+                                    if (IsConnected)
+                                    {
+                                        SendRequests(this.client.requests);
+                                        this.client.requests.Clear();
+                                    }
                                 }
                             }
                         }

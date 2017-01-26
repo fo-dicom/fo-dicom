@@ -48,7 +48,7 @@ namespace Dicom.Network
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter };
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
                 var client = new DicomClient();
                 client.AddRequest(request);
@@ -106,10 +106,8 @@ namespace Dicom.Network
                                 OnResponseReceived = (req, res) =>
                                     {
                                         _testOutputHelper.WriteLine($"{i}");
-                                        lock (locker)
-                                        {
-                                            if (++actual == expected) flag.Set();
-                                        }
+                                        Interlocked.Increment(ref actual);
+                                        if (actual == expected) flag.Set();
                                     }
                             });
                     client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
@@ -127,7 +125,7 @@ namespace Dicom.Network
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter };
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
                 var client = new DicomClient();
                 client.AddRequest(request);
@@ -154,7 +152,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await Task.WhenAny(task, Task.Delay(10000));
@@ -186,10 +184,8 @@ namespace Dicom.Network
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
-                                        lock (locker)
-                                        {
-                                            if (++actual == expected) flag.Set();
-                                        }
+                                        Interlocked.Increment(ref actual);
+                                        if (actual == expected) flag.Set();
                                     }
                             });
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
@@ -246,7 +242,7 @@ namespace Dicom.Network
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => ++counter };
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
                 var client = new DicomClient();
                 client.AddRequest(request);
@@ -272,7 +268,7 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => ++actual });
+                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 client.EndSend(client.BeginSend("127.0.0.1", port, false, "SCU", "ANY-SCP", null, null));
 
