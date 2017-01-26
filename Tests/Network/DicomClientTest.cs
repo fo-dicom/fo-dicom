@@ -88,7 +88,6 @@ namespace Dicom.Network
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
             var port = Ports.GetNext();
-            var locker = new object();
             var flag = new ManualResetEventSlim();
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -97,7 +96,7 @@ namespace Dicom.Network
 
                 var actual = 0;
 
-                var client = new DicomClient { Linger = 0 };
+                var client = new DicomClient();
                 for (var i = 0; i < expected; ++i)
                 {
                     client.AddRequest(
@@ -167,7 +166,6 @@ namespace Dicom.Network
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
             var port = Ports.GetNext();
-            var locker = new object();
             var flag = new ManualResetEventSlim();
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -176,7 +174,7 @@ namespace Dicom.Network
 
                 var actual = 0;
 
-                var client = new DicomClient { Linger = 0 };
+                var client = new DicomClient();
                 for (var i = 0; i < expected; i++)
                 {
                     client.AddRequest(
@@ -529,11 +527,10 @@ namespace Dicom.Network
                 var counter = 0;
                 var flag = new ManualResetEventSlim();
 
-                var client = new DicomClient { Linger = 1000 };
+                var client = new DicomClient { Linger = 100 };
                 client.AddRequest(
                     new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
                 client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                Thread.Sleep(100);
 
                 client.AddRequest(
                     new DicomCEchoRequest
