@@ -23,8 +23,6 @@ namespace Dicom.Network
 
             public static readonly uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
 
-            public static readonly int ThreadPoolLinger = 200;
-
             public static readonly bool IgnoreSslPolicyErrors = false;
 
             public static readonly bool TcpNoDelay = true;
@@ -42,7 +40,6 @@ namespace Dicom.Network
             UseRemoteAEForLogName = Default.UseRemoteAEForLogName;
             MaxCommandBuffer = Default.MaxCommandBuffer;
             MaxDataBuffer = Default.MaxDataBuffer;
-            ThreadPoolLinger = Default.ThreadPoolLinger;
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
             TcpNoDelay = Default.TcpNoDelay;
         }
@@ -65,9 +62,6 @@ namespace Dicom.Network
 
         /// <summary>Maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; }
-
-        /// <summary>Amount of time in milliseconds to retain Thread Pool thread to process additional requests.</summary>
-        public int ThreadPoolLinger { get; set; }
 
         /// <summary>DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }

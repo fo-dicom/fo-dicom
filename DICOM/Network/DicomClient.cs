@@ -594,7 +594,7 @@ namespace Dicom.Network
                 try
                 {
                     SendAssociationReleaseRequest();
-                    await WaitForDisconnectAsync(millisecondsTimeout).ConfigureAwait(false);
+                    await WaitForDisconnectAsync(millisecondsTimeout, true).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -633,7 +633,7 @@ namespace Dicom.Network
             {
                 while (true)
                 {
-                    var disconnected = await WaitForDisconnectAsync(client.Linger).ConfigureAwait(false);
+                    var disconnected = await WaitForDisconnectAsync(client.Linger, false).ConfigureAwait(false);
 
                     if (disconnected)
                     {
@@ -649,7 +649,7 @@ namespace Dicom.Network
                 }
             }
 
-            private async Task<bool> WaitForDisconnectAsync(int millisecondsDelay)
+            private async Task<bool> WaitForDisconnectAsync(int millisecondsDelay, bool releaseRequested)
             {
                 try
                 {
@@ -657,37 +657,36 @@ namespace Dicom.Network
                     {
                         while (true)
                         {
-                            List<DicomRequest> requests;
-                            lock (this.client.locker)
+                            await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
+
+                            if (!IsConnected)
                             {
-                                if (IsConnected)
+                                break;
+                            }
+
+                            if (!releaseRequested)
+                            {
+                                List<DicomRequest> requests;
+                                lock (this.client.locker)
                                 {
                                     requests = new List<DicomRequest>(this.client.requests);
                                     this.client.requests.Clear();
                                 }
-                                else
+
+                                foreach (var request in requests)
                                 {
-                                    break;
+                                    SendRequest(request);
                                 }
                             }
-
-                            foreach (var request in requests)
-                            {
-                                SendRequest(request);
-                            }
-
-                            await Task.Delay(50, cancellationSource.Token).ConfigureAwait(false);
                         }
 
-                        cancellationSource.Cancel();
+                        return true;
                     }
                 }
                 catch (TaskCanceledException)
                 {
-                    return !IsConnected;
+                    return false;
                 }
-
-                return false;
             }
 
             private void SetComplete(Exception ex = null)

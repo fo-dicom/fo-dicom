@@ -87,6 +87,8 @@ namespace Dicom.Network
         [InlineData(100)]
         public void Send_MultipleTimes_AllRecognized(int expected)
         {
+            //LogManager.SetImplementation(NLogManager.Instance);
+
             var port = Ports.GetNext();
             var locker = new object();
             var flag = new ManualResetEventSlim();
@@ -97,7 +99,7 @@ namespace Dicom.Network
 
                 var actual = 0;
 
-                var client = new DicomClient { Linger = 0 };
+                var client = new DicomClient { Linger = 100 };
                 for (var i = 0; i < expected; ++i)
                 {
                     client.AddRequest(
@@ -105,9 +107,9 @@ namespace Dicom.Network
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
+                                        _testOutputHelper.WriteLine($"{i}");
                                         lock (locker)
                                         {
-                                            _testOutputHelper.WriteLine($"{i}");
                                             if (++actual == expected) flag.Set();
                                         }
                                     }
