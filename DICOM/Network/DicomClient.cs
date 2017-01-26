@@ -499,7 +499,7 @@ namespace Dicom.Network
             /// <param name="association">Accepted association.</param>
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
-                foreach (var ctx in this.client.AdditionalPresentationContexts)
+                foreach (var ctx in client.AdditionalPresentationContexts)
                 {
                     foreach (var item in
                         association.PresentationContexts.Where(pc => pc.AbstractSyntax == ctx.AbstractSyntax))
@@ -508,22 +508,25 @@ namespace Dicom.Network
                     }
                 }
 
-                this.client.associateNotifier.TrySetResult(true);
+                client.associateNotifier.TrySetResult(true);
 
-                List<DicomRequest> requests;
-                lock (this.client.locker)
+                var noRequests = false;
+                lock (client.locker)
                 {
-                    requests = new List<DicomRequest>(this.client.requests);
-                    this.client.requests.Clear();
+                    if (client.requests.Count > 0)
+                    {
+                        SendRequests(client.requests);
+                        client.requests.Clear();
+                    }
+                    else
+                    {
+                        noRequests = true;
+                    }
                 }
 
-                if (requests.Count == 0)
+                if (noRequests)
                 {
                     DoSendAssociationReleaseRequestAsync(ReleaseTimeout).Wait();
-                }
-                else
-                {
-                    SendRequests(requests);
                 }
             }
 
