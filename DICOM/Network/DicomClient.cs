@@ -50,7 +50,7 @@ namespace Dicom.Network
             this.AdditionalPresentationContexts = new List<DicomPresentationContext>();
             this.asyncInvoked = 1;
             this.asyncPerformed = 1;
-            this.Linger = 50;
+            this.Linger = 0;
         }
 
         #endregion
