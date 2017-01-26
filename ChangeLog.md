@@ -2,6 +2,7 @@
 * Unhandled exception after error in JPEG native decoding (#394 #399)
 * DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
 * Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
+* Improved reliability in DicomClient.Send (#389 #407)
 * Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #390)
 * Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
 * Invalid handling of overlay data type, description, subtype and label (#375 #382)
