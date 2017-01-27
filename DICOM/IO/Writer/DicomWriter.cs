@@ -335,6 +335,6 @@ namespace Dicom.IO.Writer
 
             target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, remainingSize);
         }
-    }
 #endif
+    }
 }

@@ -674,8 +674,8 @@ namespace Dicom.Network
             }
             catch (Exception e)
             {
-                SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
                 Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
+                throw;
             }
             finally
             {
@@ -893,14 +893,11 @@ namespace Dicom.Network
                         return;
                     }
 
-                    if (!Options.IgnoreAsyncOps && Association.MaxAsyncOpsInvoked > 0
-                        && _pending.Count >= Association.MaxAsyncOpsInvoked)
+                    if (Association.MaxAsyncOpsInvoked > 0
+                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
+                        >= Association.MaxAsyncOpsInvoked)
                     {
-                        // Cannot easily recover from this unwanted state, so better to throw.
-                        throw new DicomNetworkException(
-                            "Cannot send messages since pending: {0} would exceed max async ops invoked: {1}",
-                            _pending.Count,
-                            Association.MaxAsyncOpsInvoked);
+                        return;
                     }
 
                     _sending = true;

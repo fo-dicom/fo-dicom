@@ -1,5 +1,8 @@
 #### v.3.0.0 (RC, TBD)
-* Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #389)
+* Unhandled exception after error in JPEG native decoding (#394 #399)
+* DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
+* Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
+* Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #390)
 * Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
 * Invalid handling of overlay data type, description, subtype and label (#375 #382)
 * Incorrect message logged when async ops are not available, but requested (#374 #381)
@@ -9,8 +12,10 @@
 * Null characters not trimmed from string values (#359 #380)
 * Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379)
 * Cannot override CreateCStoreReceiveStream due to private fields (#357 #386)
+* DicomClient multiple C-Store request cause exception when AsyncOps is not negotiated (#356 #400)
 * Enable registration of private UIDs (#355 #387)
 * DICOM Parse error - Stack empty (#342)
+* Invalid abort upon exception in P-Data-TF PDU processing (#341 #401)
 * Sufficient image creation when Bits Allocated does not match destination type size (#340 #350)
 * Some Dicom Printer refuse print requests from fo-dicom (#336)
 * DicomContentItem.Children() throws exception when there are no children (#332 #333)
@@ -271,7 +276,7 @@
 * Don't parse values for IS and DS elements if returning string types
 * Add AMICAS private tags (AMICAS0) to private dictionary
 * Add support for 32-bit pixel data (Anders Gustafsson, Cureos AB)
-* Better handling of default item in Get<> method (Anders Gustafsson, Cureos AB)
+* Better handling of default item in Get&lt;&gt; method (Anders Gustafsson, Cureos AB)
 * Support opening DicomFile from Stream (Anders Gustafsson, Cureos AB)
 * Add support SIGMOID VOI LUT function
 * Better handling of size and position of image display window in DICOM Dump
@@ -280,9 +285,9 @@
 * Add support for image scaling in DicomImage
 * Use library to scale images before displaying in DICOM Dump
 * Calculate W/L from pixel data values if no defaults are available
-* Add ability to Get<> Int32 values from US/SS elements
-* Add ability to Get<> DicomVR and IByteBuffer from elements
-* Add ability to Get<> byte[] from elements
+* Add ability to Get&lt;&gt; Int32 values from US/SS elements
+* Add ability to Get&lt;&gt; DicomVR and IByteBuffer from elements
+* Add ability to Get&lt;&gt; byte[] from elements
 * Add ability to render basic PALETTE COLOR images
 * Fix unnecessary byte swap for 8-bit pixel data stored in OW
 * Add DicomFileException to allow better chance of recovery from parse errors
