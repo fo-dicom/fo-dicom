@@ -20,9 +20,11 @@ namespace Dicom.Network
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
-    public abstract class DicomService
+    public abstract class DicomService : IDisposable
     {
         #region FIELDS
+
+        private bool _disposed = false;
 
         protected Stream _dimseStream;
 
@@ -138,6 +140,29 @@ namespace Dicom.Network
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                _dimseStream?.Dispose();
+                _network?.Dispose();
+                _pduQueueWatcher?.Dispose();
+            }
+
+            _disposed = true;
+        }
 
         /// <summary>
         /// Send request from service.

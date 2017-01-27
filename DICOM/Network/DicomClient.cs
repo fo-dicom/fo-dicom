@@ -433,10 +433,15 @@ namespace Dicom.Network
                 {
                     Logger.Warn("Failed to dispose network stream, reason: {@error}", e);
                 }
+
+                this.networkStream = null;
             }
 
-            this.networkStream = null;
-            this.service = null;
+            if (this.service != null)
+            {
+                this.service.Dispose();
+                this.service = null;
+            }
 
             // If not already set, set notifiers here to signal competion to awaiters
             this.associateNotifier?.TrySetResult(false);
@@ -667,24 +672,16 @@ namespace Dicom.Network
                 {
                     using (var cancellationSource = new CancellationTokenSource(millisecondsDelay))
                     {
-                        while (true)
+                        while (IsConnected)
                         {
                             await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
 
-                            if (!IsConnected)
-                            {
-                                break;
-                            }
-
-                            if (!releaseRequested)
+                            if (IsConnected && !releaseRequested)
                             {
                                 lock (this.client.locker)
                                 {
-                                    if (IsConnected)
-                                    {
-                                        SendRequests(this.client.requests);
-                                        this.client.requests.Clear();
-                                    }
+                                    SendRequests(this.client.requests);
+                                    this.client.requests.Clear();
                                 }
                             }
                         }
@@ -692,7 +689,7 @@ namespace Dicom.Network
                         return true;
                     }
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException e)
                 {
                     return false;
                 }
