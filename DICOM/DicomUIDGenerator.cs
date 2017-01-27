@@ -6,6 +6,7 @@ namespace Dicom
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Numerics;
     using System.Text;
 
     using Dicom.Network;
@@ -113,8 +114,8 @@ namespace Dicom
         /// <returns>A new UID with 2.25 prefix</returns>
         public static DicomUID GenerateDerivedFromUUID()
         {            
-            var guid = new System.Guid().ToByteArray();
-            var bigint = new System.Numerics.BigInteger(guid);
+            var guid = Guid.NewGuid().ToByteArray();
+            var bigint = new BigInteger(guid);
             var uid = "2.25." + bigint.ToString();
 
             return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
