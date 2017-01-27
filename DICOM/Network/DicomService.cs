@@ -36,7 +36,7 @@ namespace Dicom.Network
 
         private volatile bool _writing;
 
-        private volatile bool _sending;
+//        private volatile bool _sending;
 
         private readonly Queue<PDU> _pduQueue;
 
@@ -51,6 +51,10 @@ namespace Dicom.Network
         private readonly Encoding _fallbackEncoding;
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
+
+        private readonly Task _pduListener;
+
+        private readonly Task _messageSender;
 
         #endregion
 
@@ -76,7 +80,8 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            PDUListener = ListenAndProcessPDUsAsync();
+            _pduListener = ListenAndProcessPDUsAsync();
+            _messageSender = SendMessagesAsync();
         }
 
         #endregion
@@ -131,11 +136,6 @@ namespace Dicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
-
-        /// <summary>
-        /// Gets the <see cref="Task"/> maintaining the PDU reader/processor.
-        /// </summary>
-        public Task PDUListener { get; }
 
         #endregion
 
@@ -693,10 +693,10 @@ namespace Dicom.Network
                 Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
                 throw;
             }
-            finally
+            /*finally
             {
                 SendNextMessage();
-            }
+            }*/
         }
 
         private void PerformDimse(DicomMessage dimse)
@@ -873,10 +873,10 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
-                if (_sending) return;
+                //if (_sending) return;
             }
 
-            SendNextMessage();
+            //SendNextMessage();
         }
 
         private void SendMessages(IEnumerable<DicomMessage> messages)
@@ -888,36 +888,76 @@ namespace Dicom.Network
                     _msgQueue.Enqueue(message);                    
                 }
 
-                if (_sending) return;
+                //if (_sending) return;
             }
 
-            SendNextMessage();
+            //SendNextMessage();
         }
 
-        private void SendNextMessage()
+        private async Task SendMessagesAsync()
         {
-            while (true)
+            do
+            {
+                bool hold;
+                do
+                {
+                    await Task.Delay(1).ConfigureAwait(false);
+                    lock (_lock)
+                    {
+                        hold = _msgQueue.Count == 0
+                               || Association != null && Association.MaxAsyncOpsInvoked > 0
+                               && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
+                               >= Association.MaxAsyncOpsInvoked;
+                    }
+                }
+                while (hold);
+
+                int msgCount;
+                do
+                {
+                    DicomMessage msg;
+                    lock (_lock)
+                    {
+                        msg = _msgQueue.Dequeue();
+
+                        if (msg is DicomRequest)
+                        {
+                            _pending.Add(msg as DicomRequest);
+                        }
+                    }
+
+                    DoSendMessage(msg);
+
+                    lock (_lock) msgCount = _msgQueue.Count;
+                }
+                while (msgCount > 0);
+
+                bool pendingEmpty;
+                lock (_lock) pendingEmpty = _pending.Count == 0;
+                if (pendingEmpty) OnSendQueueEmpty();
+            }
+            while (IsConnected);
+            /*while (IsConnected)
             {
                 DicomMessage msg;
-
                 lock (_lock)
                 {
                     if (_sending)
                     {
-                        return;
+                        break;
                     }
 
                     if (_msgQueue.Count == 0)
                     {
                         if (_pending.Count == 0) OnSendQueueEmpty();
-                        return;
+                        break;
                     }
 
                     if (Association.MaxAsyncOpsInvoked > 0
                         && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
                         >= Association.MaxAsyncOpsInvoked)
                     {
-                        return;
+                        break;
                     }
 
                     _sending = true;
@@ -930,194 +970,171 @@ namespace Dicom.Network
                     }
                 }
 
-                DicomPresentationContext pc;
-                if (msg is DicomCStoreRequest)
-                {
+                DoSendMessage(msg);
+
+                lock (_lock) _sending = false;
+            }*/
+        }
+
+        private void DoSendMessage(DicomMessage msg)
+        {
+            DicomPresentationContext pc;
+            if (msg is DicomCStoreRequest)
+            {
+                pc =
+                    Association.PresentationContexts.FirstOrDefault(
+                        x =>
+                            x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
+                            && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
+                if (pc == null)
                     pc =
                         Association.PresentationContexts.FirstOrDefault(
-                            x =>
-                                x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
-                                && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
-                    if (pc == null)
-                        pc =
-                            Association.PresentationContexts.FirstOrDefault(
-                                x =>
-                                    x.Result == DicomPresentationContextResult.Accept &&
-                                    x.AbstractSyntax == msg.SOPClassUID);
-                }
-                else if (msg is DicomResponse)
-                {
-                    //the presentation context should be set already from the request object
-                    pc = msg.PresentationContext;
+                            x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+            }
+            else if (msg is DicomResponse)
+            {
+                //the presentation context should be set already from the request object
+                pc = msg.PresentationContext;
 
-                    //fail safe if no presentation context is already assigned to the response (is this going to happen)
-                    if (pc == null)
-                    {
-                        pc = this.Association.PresentationContexts.FirstOrDefault<DicomPresentationContext>(x => (x.Result == DicomPresentationContextResult.Accept) && (x.AbstractSyntax == msg.SOPClassUID));
-                    }
-
-                }
-                else
+                //fail safe if no presentation context is already assigned to the response (is this going to happen)
+                if (pc == null)
                 {
                     pc =
-                        Association.PresentationContexts.FirstOrDefault(
-                            x =>
-                                x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+                        this.Association.PresentationContexts.FirstOrDefault<DicomPresentationContext>(
+                            x => (x.Result == DicomPresentationContextResult.Accept) && (x.AbstractSyntax == msg.SOPClassUID));
+                }
+            }
+            else
+            {
+                pc =
+                    Association.PresentationContexts.FirstOrDefault(
+                        x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+            }
+
+            if (pc == null)
+            {
+                pc = msg.PresentationContext;
+            }
+
+            if (pc == null)
+            {
+                lock (_lock)
+                {
+                    _pending.Remove(msg as DicomRequest);
                 }
 
-                if (pc == null)
+                try
                 {
-                    pc = msg.PresentationContext;
+                    if (msg is DicomCStoreRequest)
+                        (msg as DicomCStoreRequest).PostResponse(
+                            this,
+                            new DicomCStoreResponse(msg as DicomCStoreRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomCEchoRequest)
+                        (msg as DicomCEchoRequest).PostResponse(
+                            this,
+                            new DicomCEchoResponse(msg as DicomCEchoRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomCFindRequest)
+                        (msg as DicomCFindRequest).PostResponse(
+                            this,
+                            new DicomCFindResponse(msg as DicomCFindRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomCGetRequest)
+                        (msg as DicomCGetRequest).PostResponse(
+                            this,
+                            new DicomCGetResponse(msg as DicomCGetRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomCMoveRequest)
+                        (msg as DicomCMoveRequest).PostResponse(
+                            this,
+                            new DicomCMoveResponse(msg as DicomCMoveRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNActionRequest)
+                        (msg as DicomNActionRequest).PostResponse(
+                            this,
+                            new DicomNActionResponse(msg as DicomNActionRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNCreateRequest)
+                        (msg as DicomNCreateRequest).PostResponse(
+                            this,
+                            new DicomNCreateResponse(msg as DicomNCreateRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNDeleteRequest)
+                        (msg as DicomNDeleteRequest).PostResponse(
+                            this,
+                            new DicomNDeleteResponse(msg as DicomNDeleteRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNEventReportRequest)
+                        (msg as DicomNEventReportRequest).PostResponse(
+                            this,
+                            new DicomNEventReportResponse(msg as DicomNEventReportRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNGetRequest)
+                        (msg as DicomNGetRequest).PostResponse(
+                            this,
+                            new DicomNGetResponse(msg as DicomNGetRequest, DicomStatus.SOPClassNotSupported));
+                    else if (msg is DicomNSetRequest)
+                        (msg as DicomNSetRequest).PostResponse(
+                            this,
+                            new DicomNSetResponse(msg as DicomNSetRequest, DicomStatus.SOPClassNotSupported));
+                    else
+                    {
+                        Logger.Warn("Unknown message type: {type}", msg.Type);
+                    }
+                }
+                catch
+                {
                 }
 
-                if (pc == null)
+                Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
+            }
+            else
+            {
+                var dimse = new Dimse { Message = msg, PresentationContext = pc };
+
+                // force calculation of command group length as required by standard
+                msg.Command.RecalculateGroupLengths();
+
+                if (msg.HasDataset)
                 {
-                    lock (_lock)
-                    {
-                        _pending.Remove(msg as DicomRequest);
-                    }
+                    // remove group lengths as recommended in PS 3.5 7.2
+                    //
+                    //	2. It is recommended that Group Length elements be removed during storage or transfer 
+                    //	   in order to avoid the risk of inconsistencies arising during coercion of data 
+                    //	   element values and changes in transfer syntax.
+                    msg.Dataset.RemoveGroupLengths();
 
-                    try
-                    {
-                        if (msg is DicomCStoreRequest)
-                            (msg as DicomCStoreRequest).PostResponse(
-                                this,
-                                new DicomCStoreResponse(msg as DicomCStoreRequest, DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomCEchoRequest)
-                            (msg as DicomCEchoRequest).PostResponse(
-                                this,
-                                new DicomCEchoResponse(msg as DicomCEchoRequest, DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomCFindRequest)
-                            (msg as DicomCFindRequest).PostResponse(
-                                this,
-                                new DicomCFindResponse(
-                                    msg as DicomCFindRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomCGetRequest)
-                            (msg as DicomCGetRequest).PostResponse(
-                                this,
-                                new DicomCGetResponse(
-                                    msg as DicomCGetRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomCMoveRequest)
-                            (msg as DicomCMoveRequest).PostResponse(
-                                this,
-                                new DicomCMoveResponse(
-                                    msg as DicomCMoveRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNActionRequest)
-                            (msg as DicomNActionRequest).PostResponse(
-                                this,
-                                new DicomNActionResponse(
-                                    msg as DicomNActionRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNCreateRequest)
-                            (msg as DicomNCreateRequest).PostResponse(
-                                this,
-                                new DicomNCreateResponse(
-                                    msg as DicomNCreateRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNDeleteRequest)
-                            (msg as DicomNDeleteRequest).PostResponse(
-                                this,
-                                new DicomNDeleteResponse(
-                                    msg as DicomNDeleteRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNEventReportRequest)
-                            (msg as DicomNEventReportRequest).PostResponse(
-                                this,
-                                new DicomNEventReportResponse(
-                                    msg as DicomNEventReportRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNGetRequest)
-                            (msg as DicomNGetRequest).PostResponse(
-                                this,
-                                new DicomNGetResponse(
-                                    msg as DicomNGetRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else if (msg is DicomNSetRequest)
-                            (msg as DicomNSetRequest).PostResponse(
-                                this,
-                                new DicomNSetResponse(
-                                    msg as DicomNSetRequest,
-                                    DicomStatus.SOPClassNotSupported));
-                        else
-                        {
-                            Logger.Warn("Unknown message type: {type}", msg.Type);
-                        }
-                    }
-                    catch
-                    {
-                    }
-
-                    Logger.Error(
-                        "No accepted presentation context found for abstract syntax: {sopClassUid}",
-                        msg.SOPClassUID);
+                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax) msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
                 }
-                else
+
+                Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
+
+                try
                 {
-                    var dimse = new Dimse
+                    dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
+
+                    var writer = new DicomWriter(
+                        DicomTransferSyntax.ImplicitVRLittleEndian,
+                        DicomWriteOptions.Default,
+                        new StreamByteTarget(dimse.Stream));
+
+                    dimse.Walker = new DicomDatasetWalker(msg.Command);
+                    dimse.Walker.Walk(writer);
+
+                    if (dimse.Message.HasDataset)
                     {
-                        Message = msg,
-                        PresentationContext = pc
-                    };
+                        dimse.Stream.SetIsCommandAsync(false).Wait();
 
-                    // force calculation of command group length as required by standard
-                    msg.Command.RecalculateGroupLengths();
-
-                    if (msg.HasDataset)
-                    {
-                        // remove group lengths as recommended in PS 3.5 7.2
-                        //
-                        //	2. It is recommended that Group Length elements be removed during storage or transfer 
-                        //	   in order to avoid the risk of inconsistencies arising during coercion of data 
-                        //	   element values and changes in transfer syntax.
-                        msg.Dataset.RemoveGroupLengths();
-
-                        if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
-                            msg.Dataset =
-                                msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
-                    }
-
-                    Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
-
-                    try
-                    {
-                        dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
-
-                        var writer = new DicomWriter(
-                            DicomTransferSyntax.ImplicitVRLittleEndian,
+                        writer = new DicomWriter(
+                            dimse.PresentationContext.AcceptedTransferSyntax,
                             DicomWriteOptions.Default,
                             new StreamByteTarget(dimse.Stream));
 
-                        dimse.Walker = new DicomDatasetWalker(msg.Command);
+                        dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
                         dimse.Walker.Walk(writer);
-
-                        if (dimse.Message.HasDataset)
-                        {
-                            dimse.Stream.SetIsCommandAsync(false).Wait();
-
-                            writer = new DicomWriter(
-                                dimse.PresentationContext.AcceptedTransferSyntax,
-                                DicomWriteOptions.Default,
-                                new StreamByteTarget(dimse.Stream));
-
-                            dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                            dimse.Walker.Walk(writer);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Exception sending DIMSE: {@error}", e);
-                    }
-                    finally
-                    {
-                        dimse.Stream.FlushAsync(true).Wait();
-                        dimse.Stream.Dispose();
                     }
                 }
-
-                lock (_lock) _sending = false;
+                catch (Exception e)
+                {
+                    Logger.Error("Exception sending DIMSE: {@error}", e);
+                }
+                finally
+                {
+                    dimse.Stream.FlushAsync(true).Wait();
+                    dimse.Stream.Dispose();
+                }
             }
         }
 
