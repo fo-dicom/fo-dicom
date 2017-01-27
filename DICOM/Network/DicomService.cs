@@ -76,7 +76,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            BackgroundWorker = ReadAndProcessPDUAsync();
+            PDUListener = ListenAndProcessPDUsAsync();
         }
 
         #endregion
@@ -135,7 +135,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the <see cref="Task"/> maintaining the PDU reader/processor.
         /// </summary>
-        public Task BackgroundWorker { get; }
+        public Task PDUListener { get; }
 
         #endregion
 
@@ -303,7 +303,7 @@ namespace Dicom.Network
             return true;
         }
 
-        private async Task ReadAndProcessPDUAsync()
+        private async Task ListenAndProcessPDUsAsync()
         {
             try
             {
