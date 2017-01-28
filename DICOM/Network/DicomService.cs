@@ -36,7 +36,7 @@ namespace Dicom.Network
 
         private volatile bool _writing;
 
-//        private volatile bool _sending;
+        private volatile bool _sending;
 
         private readonly Queue<PDU> _pduQueue;
 
@@ -53,8 +53,6 @@ namespace Dicom.Network
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
         private readonly Task _pduListener;
-
-        private readonly Task _messageSender;
 
         #endregion
 
@@ -81,7 +79,6 @@ namespace Dicom.Network
             Options = new DicomServiceOptions();
 
             _pduListener = ListenAndProcessPDUsAsync();
-            _messageSender = SendMessagesAsync();
         }
 
         #endregion
@@ -693,10 +690,10 @@ namespace Dicom.Network
                 Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
                 throw;
             }
-            /*finally
+            finally
             {
                 SendNextMessage();
-            }*/
+            }
         }
 
         private void PerformDimse(DicomMessage dimse)
@@ -873,10 +870,10 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
-                //if (_sending) return;
+                if (_sending) return;
             }
 
-            //SendNextMessage();
+            SendNextMessage();
         }
 
         private void SendMessages(IEnumerable<DicomMessage> messages)
@@ -888,56 +885,15 @@ namespace Dicom.Network
                     _msgQueue.Enqueue(message);                    
                 }
 
-                //if (_sending) return;
+                if (_sending) return;
             }
 
-            //SendNextMessage();
+            SendNextMessage();
         }
 
-        private async Task SendMessagesAsync()
+        private void SendNextMessage()
         {
-            do
-            {
-                bool hold;
-                do
-                {
-                    await Task.Delay(1).ConfigureAwait(false);
-                    lock (_lock)
-                    {
-                        hold = _msgQueue.Count == 0
-                               || Association != null && Association.MaxAsyncOpsInvoked > 0
-                               && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
-                               >= Association.MaxAsyncOpsInvoked;
-                    }
-                }
-                while (hold);
-
-                int msgCount;
-                do
-                {
-                    DicomMessage msg;
-                    lock (_lock)
-                    {
-                        msg = _msgQueue.Dequeue();
-
-                        if (msg is DicomRequest)
-                        {
-                            _pending.Add(msg as DicomRequest);
-                        }
-                    }
-
-                    DoSendMessage(msg);
-
-                    lock (_lock) msgCount = _msgQueue.Count;
-                }
-                while (msgCount > 0);
-
-                bool pendingEmpty;
-                lock (_lock) pendingEmpty = _pending.Count == 0;
-                if (pendingEmpty) OnSendQueueEmpty();
-            }
-            while (IsConnected);
-            /*while (IsConnected)
+            while (IsConnected)
             {
                 DicomMessage msg;
                 lock (_lock)
@@ -973,7 +929,7 @@ namespace Dicom.Network
                 DoSendMessage(msg);
 
                 lock (_lock) _sending = false;
-            }*/
+            }
         }
 
         private void DoSendMessage(DicomMessage msg)
