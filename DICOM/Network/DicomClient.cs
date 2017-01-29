@@ -386,24 +386,27 @@ namespace Dicom.Network
 
                 await associateNotifier.Task.ConfigureAwait(false);
 
-                var noSend = false;
+                var send = false;
                 lock (locker)
                 {
-                    if (requests.Count > 0)
-                    {
-                        if (service.IsConnected)
-                        {
-                            service.SendRequests(requests);
-                            requests.Clear();
-                        }
-                    }
-                    else
-                    {
-                        noSend = true;
-                    }
+                    send = requests.Count > 0;
                 }
 
-                if (noSend)
+                if (send)
+                {
+                    IList<DicomRequest> copy;
+                    lock (locker)
+                    {
+                        copy = new List<DicomRequest>(requests);
+                        requests.Clear();
+                    }
+
+                    foreach (var request in copy)
+                    {
+                        service.SendRequest(request);
+                    }
+                }
+                else
                 {
                     await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
                 }
@@ -678,10 +681,17 @@ namespace Dicom.Network
 
                             if (IsConnected && !releaseRequested)
                             {
+                                IList<DicomRequest> copy;
+
                                 lock (this.client.locker)
                                 {
-                                    SendRequests(this.client.requests);
-                                    this.client.requests.Clear();
+                                    copy = new List<DicomRequest>(client.requests);
+                                    client.requests.Clear();
+                                }
+
+                                foreach (var request in copy)
+                                {
+                                    SendRequest(request);
                                 }
                             }
                         }

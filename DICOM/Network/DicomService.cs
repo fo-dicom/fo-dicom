@@ -171,15 +171,6 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Send requests from service.
-        /// </summary>
-        /// <param name="requests">Requests to send.</param>
-        public virtual void SendRequests(IEnumerable<DicomRequest> requests)
-        {
-            SendMessages(requests);
-        }
-
-        /// <summary>
         /// Send response from service.
         /// </summary>
         /// <param name="response">Response to send.</param>
@@ -870,22 +861,6 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
-                if (_sending) return;
-            }
-
-            SendNextMessage();
-        }
-
-        private void SendMessages(IEnumerable<DicomMessage> messages)
-        {
-            lock (_lock)
-            {
-                foreach (var message in messages)
-                {
-                    _msgQueue.Enqueue(message);                    
-                }
-
-                if (_sending) return;
             }
 
             SendNextMessage();
