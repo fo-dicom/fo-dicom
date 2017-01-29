@@ -43,6 +43,7 @@
     <Reference Include="BitMiracle.LibJpeg.Portable">
       <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1.1\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
     </Reference>
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

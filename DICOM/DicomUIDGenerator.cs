@@ -107,6 +107,21 @@ namespace Dicom
             }
         }
 
+#if !NET35
+        /// <summary>
+        /// Generate a UUID-derived UID, according to ftp://medical.nema.org/medical/dicom/current/output/html/part05.html#sect_B.2
+        /// </summary>
+        /// <returns>A new UID with 2.25 prefix</returns>
+        public static DicomUID GenerateDerivedFromUUID()
+        {            
+            var guid = Guid.NewGuid().ToByteArray();
+            var bigint = new System.Numerics.BigInteger(guid);
+            var uid = "2.25." + bigint;
+
+            return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
+        }
+#endif
+
         #endregion
     }
 }
