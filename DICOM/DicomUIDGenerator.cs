@@ -116,10 +116,11 @@ namespace Dicom
         {            
             var guid = Guid.NewGuid().ToByteArray();
             var bigint = new BigInteger(guid);
-            var uid = "2.25." + bigint.ToString();
+            var uid = "2.25." + bigint;
 
             return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
         }
+
         #endregion
     }
 }
