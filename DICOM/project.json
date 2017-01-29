@@ -58,6 +58,7 @@
     "System.Net.NetworkInformation": "4.3.0",
     "System.Net.Security": "4.3.0",
     "System.Runtime.Serialization.Primitives": "4.3.0",
+    "System.Runtime.Numerics": "4.3.0",
     "System.Threading.Tasks.Parallel": "4.3.0",
     "CSJ2K": "2.0.0.1",
     "Portable.LibJpeg.NET": "1.5.1.1"
