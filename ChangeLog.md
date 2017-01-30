@@ -1,4 +1,5 @@
 #### v.3.0.0 (RC, TBD)
+* DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
 * Added method GenerateUuidDerived (#408)
 * Incorrect handling of padded buffer end in EvenLengthBuffer.GetByteRange (#405 #412)
 * Unhandled exception after error in JPEG native decoding (#394 #399)
