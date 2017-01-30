@@ -104,7 +104,6 @@ namespace Dicom.Media
             FileMetaInfo.Version = new byte[] { 0x00, 0x01 };
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
             FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
-            FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
             FileMetaInfo.TransferSyntax = explicitVr
                                               ? DicomTransferSyntax.ExplicitVRLittleEndian
                                               : DicomTransferSyntax.ImplicitVRLittleEndian;

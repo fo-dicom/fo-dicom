@@ -35,7 +35,9 @@ namespace Dicom
 
             this.ImplementationClassUID = DicomImplementation.ClassUID;
             this.ImplementationVersionName = DicomImplementation.Version;
-            this.SourceApplicationEntityTitle = CreateSourceApplicationEntityTitle();
+
+            var aet = CreateSourceApplicationEntityTitle();
+            if (aet != null) this.SourceApplicationEntityTitle = aet;
         }
 
         /// <summary>
@@ -52,7 +54,9 @@ namespace Dicom
 
             this.ImplementationClassUID = DicomImplementation.ClassUID;
             this.ImplementationVersionName = DicomImplementation.Version;
-            this.SourceApplicationEntityTitle = CreateSourceApplicationEntityTitle();
+
+            var aet = CreateSourceApplicationEntityTitle();
+            if (aet != null) this.SourceApplicationEntityTitle = aet;
         }
 
         #endregion
@@ -181,7 +185,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Create a source application title from the machine name..
+        /// Create a source application title from the machine name.
         /// </summary>
         /// <returns>
         /// The machine name truncated to a maximum of 16 characters.
@@ -189,7 +193,7 @@ namespace Dicom
         private static string CreateSourceApplicationEntityTitle()
         {
             var machine = NetworkManager.MachineName;
-            if (machine.Length > 16)
+            if (machine != null && machine.Length > 16)
             {
                 machine = machine.Substring(0, 16);
             }
