@@ -1,5 +1,6 @@
 #### v.3.0.0 (RC, TBD)
 * Added method GenerateUuidDerived (#408)
+* Incorrect handling of padded buffer end in EvenLengthBuffer.GetByteRange (#405 #412)
 * Unhandled exception after error in JPEG native decoding (#394 #399)
 * DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
 * Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
