@@ -369,7 +369,7 @@ namespace Dicom.Network
                                     "{callingAE} <- Association request:\n{association}",
                                     LogID,
                                     Association.ToString());
-                                if (this is IDicomServiceProvider) (this as IDicomServiceProvider).OnReceiveAssociationRequest(Association);
+                                (this as IDicomServiceProvider)?.OnReceiveAssociationRequest(Association);
                                 break;
                             }
                         case 0x02:
@@ -381,7 +381,7 @@ namespace Dicom.Network
                                     "{calledAE} <- Association accept:\n{assocation}",
                                     LogID,
                                     Association.ToString());
-                                if (this is IDicomServiceUser) (this as IDicomServiceUser).OnReceiveAssociationAccept(Association);
+                                (this as IDicomServiceUser)?.OnReceiveAssociationAccept(Association);
                                 break;
                             }
                         case 0x03:
@@ -394,11 +394,10 @@ namespace Dicom.Network
                                     pdu.Result,
                                     pdu.Source,
                                     pdu.Reason);
-                                if (this is IDicomServiceUser)
-                                    (this as IDicomServiceUser).OnReceiveAssociationReject(
-                                        pdu.Result,
-                                        pdu.Source,
-                                        pdu.Reason);
+                                (this as IDicomServiceUser)?.OnReceiveAssociationReject(
+                                    pdu.Result,
+                                    pdu.Source,
+                                    pdu.Reason);
                                 break;
                             }
                         case 0x04:
@@ -414,7 +413,7 @@ namespace Dicom.Network
                                 var pdu = new AReleaseRQ();
                                 pdu.Read(raw);
                                 Logger.Info("{logId} <- Association release request", LogID);
-                                if (this is IDicomServiceProvider) (this as IDicomServiceProvider).OnReceiveAssociationReleaseRequest();
+                                (this as IDicomServiceProvider)?.OnReceiveAssociationReleaseRequest();
                                 break;
                             }
                         case 0x06:
@@ -422,7 +421,7 @@ namespace Dicom.Network
                                 var pdu = new AReleaseRP();
                                 pdu.Read(raw);
                                 Logger.Info("{logId} <- Association release response", LogID);
-                                if (this is IDicomServiceUser) (this as IDicomServiceUser).OnReceiveAssociationReleaseResponse();
+                                (this as IDicomServiceUser)?.OnReceiveAssociationReleaseResponse();
                                 if (TryCloseConnection()) return;
                                 break;
                             }
@@ -435,8 +434,7 @@ namespace Dicom.Network
                                     LogID,
                                     pdu.Source,
                                     pdu.Reason);
-                                if (this is IDicomServiceProvider) (this as IDicomServiceProvider).OnReceiveAbort(pdu.Source, pdu.Reason);
-                                else if (this is IDicomServiceUser) (this as IDicomServiceUser).OnReceiveAbort(pdu.Source, pdu.Reason);
+                                (this as IDicomService)?.OnReceiveAbort(pdu.Source, pdu.Reason);
                                 if (TryCloseConnection()) return;
                                 break;
                             }
@@ -1046,15 +1044,7 @@ namespace Dicom.Network
                     }
                 }
 
-                if (this is IDicomServiceProvider)
-                {
-                    (this as IDicomServiceProvider).OnConnectionClosed(exception);
-                }
-                else if (this is IDicomServiceUser)
-                {
-                    (this as IDicomServiceUser).OnConnectionClosed(exception);
-                }
-
+                (this as IDicomService)?.OnConnectionClosed(exception);
                 lock (_lock) IsConnected = false;
             }
             catch (Exception e)
