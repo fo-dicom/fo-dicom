@@ -18,7 +18,7 @@ namespace Dicom
                     new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
                     new DicomDateTime(DicomTag.AcquisitionDateTime, new DateTime(2016, 4, 20, 10, 20, 30)));
 
-            var zone = DateTime.Now.ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
+            var zone = new DateTime(2016, 4, 20).ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
             var expected = $"20160420102030{zone}";
             var actual = dataset.Get<string>(DicomTag.AcquisitionDateTime);
 
@@ -33,7 +33,7 @@ namespace Dicom
                     new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
                     new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
 
-            var zone = DateTime.Now.ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
+            var zone = new DateTime(2016, 4, 20).ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
 
             var exception = Record.Exception(() => dataset.Add(DicomTag.AcquisitionDateTime, $"20160420102030{zone}"));
             Assert.Null(exception);

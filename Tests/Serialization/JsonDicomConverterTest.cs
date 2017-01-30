@@ -59,7 +59,7 @@ namespace Dicom.Serialization
         /// <summary>
         /// Tests that DS values are not mangled
         /// </summary>
-        [Fact(Skip = "Json.NET does not support accessing the string value of a json floating point number")]
+        [Fact]
         public void DecimalStringValuesShouldPass()
         {
             var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000" } } };
