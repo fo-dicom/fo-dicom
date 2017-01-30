@@ -355,7 +355,7 @@ namespace Dicom.Network
             }
             finally
             {
-                Cleanup();
+                HandleMonitoredExceptions(true);
             }
         }
 
@@ -369,7 +369,7 @@ namespace Dicom.Network
             this.service?.DoSendAbort();
             this.aborted = true;
 
-            Cleanup();
+            HandleMonitoredExceptions(true);
         }
 
         private async Task DoSendAsync(INetworkStream stream, DicomAssociation association)
@@ -420,44 +420,56 @@ namespace Dicom.Network
             }
             finally
             {
-                Cleanup();
+                HandleMonitoredExceptions(false);
             }
         }
 
-        private void Cleanup()
+        private void HandleMonitoredExceptions(bool cleanup)
         {
-            if (this.networkStream != null)
+            var completedException = completeNotifier?.Task?.Exception;
+            var lingerException = this.service?.LingerTask?.Exception;
+
+            if (cleanup || completedException != null || lingerException != null)
             {
-                try
+                if (this.networkStream != null)
                 {
-                    this.networkStream.Dispose();
-                }
-                catch (Exception e)
-                {
-                    Logger.Warn("Failed to dispose network stream, reason: {@error}", e);
+                    try
+                    {
+                        this.networkStream.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Warn("Failed to dispose network stream, reason: {@error}", e);
+                    }
+
+                    this.networkStream = null;
                 }
 
-                this.networkStream = null;
+                if (this.service != null)
+                {
+                    try
+                    {
+                        this.service.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Warn("Failed to dispose service, reason: {@error}", e);
+                    }
+
+                    this.service = null;
+                }
             }
 
-            if (this.service != null)
-            {
-                this.service.Dispose();
-                this.service = null;
-            }
-
-            // If not already set, set notifiers here to signal competion to awaiters
+            // If not already set, set notifiers here to signal completion to awaiters
             this.associateNotifier?.TrySetResult(false);
             this.completeNotifier?.TrySetResult(true);
 
-            var completedException = completeNotifier?.Task?.Exception;
             if (completedException != null)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 throw completedException.Flatten().InnerException;
             }
 
-            var lingerException = this.service?.LingerTask?.Exception;
             if (lingerException != null)
             {
                 // ReSharper disable once PossibleNullReferenceException

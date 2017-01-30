@@ -242,60 +242,57 @@ namespace Dicom.Network
             await SendNextPDUAsync().ConfigureAwait(false);
         }
 
-        private bool TryCloseConnection(Exception exception = null)
+        private async Task SendNextPDUAsync()
         {
-            try
+            while (true)
             {
-                if (!IsConnected) return true;
+                if (!IsConnected) return;
+
+                PDU pdu;
 
                 lock (_lock)
                 {
-                    if (_pduQueue.Count > 0 || _msgQueue.Count > 0 || _pending.Count > 0)
-                    {
-                        Logger.Info(
-                            "Queue(s) not empty, PDUs: {pduCount}, messages: {msgCount}, pending requests: {pendingCount}",
-                            _pduQueue.Count,
-                            _msgQueue.Count,
-                            _pending.Count);
-                        return false;
-                    }
+                    if (_writing) return;
+
+                    if (_pduQueue.Count == 0) return;
+
+                    _writing = true;
+
+                    pdu = _pduQueue.Dequeue();
+                    if (_pduQueue.Count < MaximumPDUsInQueue) _pduQueueWatcher.Set();
                 }
 
-                lock (_lock) IsConnected = false;
-                _network.Dispose();
+                if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-                if (this is IDicomServiceProvider)
+                MemoryStream ms = new MemoryStream();
+                pdu.Write().WritePDU(ms);
+
+                byte[] buffer = ms.ToArray();
+
+                try
                 {
-                    (this as IDicomServiceProvider).OnConnectionClosed(exception);
+                    await _network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
                 }
-                else if (this is IDicomServiceUser)
+                catch (IOException e)
                 {
-                    (this as IDicomServiceUser).OnConnectionClosed(exception);
+                    LogIOException(Logger, e, false);
+                    TryCloseConnection(e);
                 }
-            }
-            catch (Exception e)
-            {
-                if (exception == null)
+                catch (Exception e)
                 {
-                    exception = e;
+                    Logger.Error("Exception sending PDU: {@error}", e);
+                    TryCloseConnection(e);
                 }
-            }
 
-            if (exception != null)
-            {
-                Logger.Error("Connection closed with error: {@error}", exception);
-                throw exception;
+                lock (_lock) _writing = false;
             }
-
-            Logger.Info("Connection closed");
-            return true;
         }
 
         private async Task ListenAndProcessPDUsAsync()
         {
             try
             {
-                while (IsConnected)
+                while (true)
                 {
                     var stream = _network.AsStream();
 
@@ -303,7 +300,7 @@ namespace Dicom.Network
                     _readLength = 6;
 
                     var buffer = new byte[6];
-                    var count = await SafeReadAsync(stream, buffer, 0, 6, Logger).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
 
                     do
                     {
@@ -318,7 +315,7 @@ namespace Dicom.Network
                         if (_readLength > 0)
                         {
                             count =
-                                await SafeReadAsync(stream, buffer, 6 - _readLength, _readLength, Logger)
+                                await stream.ReadAsync(buffer, 6 - _readLength, _readLength)
                                     .ConfigureAwait(false);
                         }
                     }
@@ -331,7 +328,7 @@ namespace Dicom.Network
 
                     Array.Resize(ref buffer, length + 6);
 
-                    count = await SafeReadAsync(stream, buffer, 6, length, Logger).ConfigureAwait(false);
+                    count = await stream.ReadAsync(buffer, 6, length).ConfigureAwait(false);
 
                     // Read PDU
                     do
@@ -347,7 +344,7 @@ namespace Dicom.Network
                         if (_readLength > 0)
                         {
                             count =
-                                await SafeReadAsync(stream, buffer, buffer.Length - _readLength, _readLength, Logger)
+                                await stream.ReadAsync(buffer, buffer.Length - _readLength, _readLength)
                                     .ConfigureAwait(false);
                         }
                     }
@@ -451,6 +448,11 @@ namespace Dicom.Network
                             throw new DicomNetworkException("Unknown PDU type");
                     }
                 }
+            }
+            catch (ObjectDisposedException e)
+            {
+                Logger.Error("Exception processing PDU: {@error}", e);
+                TryCloseConnection(e);
             }
             catch (DicomNetworkException e)
             {
@@ -812,50 +814,6 @@ namespace Dicom.Network
             throw new DicomNetworkException("Operation not implemented");
         }
 
-        private async Task SendNextPDUAsync()
-        {
-            while (true)
-            {
-                if (!IsConnected) return;
-
-                PDU pdu;
-
-                lock (_lock)
-                {
-                    if (_writing) return;
-
-                    if (_pduQueue.Count == 0) return;
-
-                    _writing = true;
-
-                    pdu = _pduQueue.Dequeue();
-                    if (_pduQueue.Count < MaximumPDUsInQueue) _pduQueueWatcher.Set();
-                }
-
-                if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
-
-                MemoryStream ms = new MemoryStream();
-                pdu.Write().WritePDU(ms);
-
-                byte[] buffer = ms.ToArray();
-
-                try
-                {
-                    await _network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
-                }
-                catch (IOException e)
-                {
-                    LogIOException(Logger, e, false);
-                    TryCloseConnection(e);
-                }
-                catch
-                {
-                }
-
-                lock (_lock) _writing = false;
-            }
-        }
-
         private void SendMessage(DicomMessage message)
         {
             lock (_lock)
@@ -868,7 +826,7 @@ namespace Dicom.Network
 
         private void SendNextMessage()
         {
-            while (IsConnected)
+            while (true)
             {
                 DicomMessage msg;
                 lock (_lock)
@@ -1069,6 +1027,54 @@ namespace Dicom.Network
             }
         }
 
+        private bool TryCloseConnection(Exception exception = null)
+        {
+            try
+            {
+                if (!IsConnected) return true;
+
+                lock (_lock)
+                {
+                    if (_pduQueue.Count > 0 || _msgQueue.Count > 0 || _pending.Count > 0)
+                    {
+                        Logger.Info(
+                            "Queue(s) not empty, PDUs: {pduCount}, messages: {msgCount}, pending requests: {pendingCount}",
+                            _pduQueue.Count,
+                            _msgQueue.Count,
+                            _pending.Count);
+                        return false;
+                    }
+                }
+
+                if (this is IDicomServiceProvider)
+                {
+                    (this as IDicomServiceProvider).OnConnectionClosed(exception);
+                }
+                else if (this is IDicomServiceUser)
+                {
+                    (this as IDicomServiceUser).OnConnectionClosed(exception);
+                }
+
+                lock (_lock) IsConnected = false;
+            }
+            catch (Exception e)
+            {
+                if (exception == null)
+                {
+                    exception = e;
+                }
+            }
+
+            if (exception != null)
+            {
+                Logger.Error("Connection closed with error: {@error}", exception);
+                throw exception;
+            }
+
+            Logger.Info("Connection closed");
+            return true;
+        }
+
         #endregion
 
         #region Send Methods
@@ -1182,19 +1188,6 @@ namespace Dicom.Network
             else if (!(e.InnerException is ObjectDisposedException))
             {
                 logger.Error(otherFmt, e);
-            }
-        }
-
-        private static async Task<int> SafeReadAsync(Stream stream, byte[] buffer, int offset, int count, Logger logger)
-        {
-            try
-            {
-                return await stream.ReadAsync(buffer, offset, count).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                logger.Warn("Failed to read stream due to: {@error}", e);
-                return 0;
             }
         }
 
