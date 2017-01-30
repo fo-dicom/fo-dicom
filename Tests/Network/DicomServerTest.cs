@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Dicom.Helpers;
+
 namespace Dicom.Network
 {
     using System.Linq;
@@ -9,7 +11,7 @@ namespace Dicom.Network
 
     using Xunit;
 
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("Dicom.Helpers.PriorityOrderer", "DICOM [Unit Tests]")]
     public class DicomServerTest
     {
         [Fact]
@@ -196,7 +198,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact, TestPriority(1)]
         public void Send_PrivateNotRegisteredSOPClass_SendFails()
         {
             var port = Ports.GetNext();
@@ -216,7 +218,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact, TestPriority(2)]
         public void Send_PrivateRegisteredSOPClass_SendSucceeds()
         {
             var uid = new DicomUID("1.3.46.670589.11.0.0.12.1", "Private MR Spectrum Storage", DicomUidType.SOPClass);

@@ -116,7 +116,9 @@
     <Compile Include="DicomFileMetaInformationTest.cs" />
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
+    <Compile Include="Helpers\PriorityOrderer.cs" />
     <Compile Include="Helpers\TestOutputHelperLogger.cs" />
+    <Compile Include="Helpers\TestPriorityAttribute.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\DicomImageTest.cs" />
