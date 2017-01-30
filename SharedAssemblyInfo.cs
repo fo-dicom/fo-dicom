@@ -12,11 +12,11 @@ using System.Resources;
 
 [assembly: AssemblyCompany("fo-dicom")]
 [assembly: AssemblyProduct("fo-dicom")]
-[assembly: AssemblyCopyright("Copyright © fo-dicom contributors 2012-2016")]
+[assembly: AssemblyCopyright("Copyright © fo-dicom contributors 2012-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
 
-[assembly: AssemblyVersion("2.9.9")]
-[assembly: AssemblyFileVersion("2.9.9.4")]
-[assembly: AssemblyInformationalVersion("2.9.9")]
+[assembly: AssemblyVersion("3.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.1")]
+[assembly: AssemblyInformationalVersion("3.0.0")]
