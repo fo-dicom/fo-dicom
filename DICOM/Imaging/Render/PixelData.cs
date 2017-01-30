@@ -443,7 +443,7 @@ namespace Dicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 #if NET35
-                for (var y = 0; y < _height; ++y)
+                for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
 #endif
@@ -631,7 +631,7 @@ namespace Dicom.Imaging.Render
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
 #if NET35
-                for (var y = 0; y < _height; ++y)
+                for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
 #endif
@@ -812,7 +812,7 @@ namespace Dicom.Imaging.Render
             int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
             int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 #if NET35
-            for (var y = 0; y < _height; ++y)
+            for (var y = 0; y < Height; ++y)
 #else
             Parallel.For(0, Height, y =>
 #endif
@@ -987,7 +987,7 @@ namespace Dicom.Imaging.Render
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
 #if NET35
-                for (var y = 0; y < _height; ++y)
+                for (var y = 0; y < Height; ++y)
 #else
                 Parallel.For(0, Height, y =>
 #endif
