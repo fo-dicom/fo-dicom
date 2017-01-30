@@ -1,6 +1,7 @@
-#### v.3.0.0 (RC, TBD)
+#### v.3.0.0 (RC 1, 1/30/2017)
 * DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
 * Added method GenerateUuidDerived (#408)
+* Padding argument not accounted for in some IPixelData.GetMinMax implementations (#406 #414)
 * Incorrect handling of padded buffer end in EvenLengthBuffer.GetByteRange (#405 #412)
 * Unhandled exception after error in JPEG native decoding (#394 #399)
 * DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
