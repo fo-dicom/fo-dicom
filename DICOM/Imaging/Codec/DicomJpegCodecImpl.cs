@@ -187,6 +187,16 @@ namespace Dicom.Imaging.Codec
         {
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
 
+            if (parameters.ConvertColorspaceToRGB)
+            {
+                if (oldPixelData.PixelRepresentation == PixelRepresentation.Signed)
+                    throw new DicomCodecException(
+                        "JPEG codec unable to perform colorspace conversion on signed pixel data");
+
+                newPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
+                newPixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
+            }
+
             if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
                 || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
             {
