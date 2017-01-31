@@ -1,4 +1,5 @@
-#### v.3.0.0 (RC 1, 1/30/2017)
+#### v.3.0.0 (TBD)
+* Invalid decoding of JPEG baseline RGB images with managed JPEG codec (#417 #419)
 * DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
 * Added method GenerateUuidDerived (#408)
 * Padding argument not accounted for in some IPixelData.GetMinMax implementations (#406 #414)
