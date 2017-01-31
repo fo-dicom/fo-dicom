@@ -15,7 +15,7 @@
 * Handle parsing sequence items not associated with any sequence (#364 #383)
 * System Out Of Memory Exception when saving large DICOM files (#363 #384)
 * Null characters not trimmed from string values (#359 #380)
-* Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379)
+* Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379 #416 #418)
 * Cannot override CreateCStoreReceiveStream due to private fields (#357 #386)
 * DicomClient multiple C-Store request cause exception when AsyncOps is not negotiated (#356 #400)
 * Enable registration of private UIDs (#355 #387)

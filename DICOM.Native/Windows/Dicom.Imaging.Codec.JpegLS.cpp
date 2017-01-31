@@ -52,10 +52,11 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 	params.bytesperline = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
 	params.components = oldPixelData->SamplesPerPixel;
 
-	params.ilv =
-		oldPixelData->SamplesPerPixel == 3 && oldPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved
-		? CharlsInterleaveModeType::Sample
-		: CharlsInterleaveModeType::Line;
+	params.ilv = oldPixelData->SamplesPerPixel == 1
+		? CharlsInterleaveModeType::None :
+		oldPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved
+			? CharlsInterleaveModeType::Sample
+			: CharlsInterleaveModeType::Line;
 	params.colorTransform = CharlsColorTransformationType::None;
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
