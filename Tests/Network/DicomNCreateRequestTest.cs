@@ -8,7 +8,7 @@ namespace Dicom.Network
     public class DicomNCreateRequestTest
     {
         [Fact]
-        public void SOPInstanceUIDGetter_SOPInstanceUIDNotDefinedInConstruction_IsDefinedAndConstant()
+        public void SOPInstanceUIDGetter_SOPInstanceUIDNotDefinedInConstruction_IsNotDefinedInRequest()
         {
             var command = new DicomDataset();
             command.Add(DicomTag.CommandField, (ushort)DicomCommandField.NCreateRequest);
@@ -17,10 +17,7 @@ namespace Dicom.Network
 
             var request = new DicomNCreateRequest(command);
             var expected = request.SOPInstanceUID;
-            Assert.NotNull(expected);
-
-            var actual = request.SOPInstanceUID;
-            Assert.Equal(expected, actual);
+            Assert.Null(expected);
         }
     }
 }
