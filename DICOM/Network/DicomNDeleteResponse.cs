@@ -13,6 +13,7 @@ namespace Dicom.Network
         public DicomNDeleteResponse(DicomNDeleteRequest request, DicomStatus status)
             : base(request, status)
         {
+            SOPInstanceUID = request.SOPInstanceUID;
         }
 
         public DicomUID SOPInstanceUID

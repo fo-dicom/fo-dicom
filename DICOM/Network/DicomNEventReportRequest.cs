@@ -26,11 +26,11 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
             }
             private set
             {
-                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
+                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Dicom.Network
             }
         }
 
-        internal bool HasSOPInstanceUID => this.Command.Contains(DicomTag.RequestedSOPInstanceUID);
+        internal bool HasSOPInstanceUID => this.Command.Contains(DicomTag.AffectedSOPInstanceUID);
 
         public delegate void ResponseDelegate(DicomNEventReportRequest request, DicomNEventReportResponse response);
 
