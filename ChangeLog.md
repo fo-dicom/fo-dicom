@@ -1,4 +1,5 @@
 #### v.3.0.0 (TBD)
+* Print SCP exception due to insufficient DicomDataset.AddOrUpdate refactoring (#353 #420)
 * Invalid decoding of JPEG baseline RGB images with managed JPEG codec (#417 #419)
 * DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
 * Added method GenerateUuidDerived (#408)
