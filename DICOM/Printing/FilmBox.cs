@@ -443,6 +443,11 @@ namespace Dicom.Printing
             }
             set
             {
+                if (value.Tag.Equals(DicomTag.ReferencedPresentationLUTSequence))
+                {
+                    throw new InvalidOperationException(
+                        $"Added sequence must be Referenced Presentation LUT Sequence, is: {value.Tag}");
+                }
                 this.AddOrUpdate(value);
             }
         }
@@ -520,7 +525,7 @@ namespace Dicom.Printing
         public bool Initialize()
         {
             //initialization
-            this.Add(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
+            this.AddOrUpdate(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
 
             if (!this.Contains(DicomTag.FilmOrientation))
             {
