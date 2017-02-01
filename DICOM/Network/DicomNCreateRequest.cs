@@ -5,6 +5,12 @@ namespace Dicom.Network
 {
     public sealed class DicomNCreateRequest : DicomRequest
     {
+        #region Fields
+
+        private DicomUID _sopInstanceUID;
+
+        #endregion
+
         public DicomNCreateRequest(DicomDataset command)
             : base(command)
         {
@@ -22,11 +28,18 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+                if (_sopInstanceUID == null
+                    && (_sopInstanceUID = Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID, null)) == null)
+                {
+                    SOPInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID();
+                }
+
+                return _sopInstanceUID;
             }
             private set
             {
                 Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
+                _sopInstanceUID = value;
             }
         }
 

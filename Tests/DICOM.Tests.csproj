@@ -161,6 +161,7 @@
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\DicomCGetRequestTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
+    <Compile Include="Network\DicomNCreateRequestTest.cs" />
     <Compile Include="Network\DicomNEventReportResponseTest.cs" />
     <Compile Include="Network\DicomNActionResponseTest.cs" />
     <Compile Include="Network\DicomServerTest.cs" />
