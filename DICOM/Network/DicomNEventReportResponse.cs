@@ -36,12 +36,8 @@ namespace Dicom.Network
         public DicomNEventReportResponse(DicomNEventReportRequest request, DicomStatus status)
             : base(request, status)
         {
-            if (request.HasSOPInstanceUID)
-            {
-                this.SOPInstanceUID = request.SOPInstanceUID;
-            }
-
-            this.EventTypeID = request.EventTypeID;
+            SOPInstanceUID = request.SOPInstanceUID;
+            EventTypeID = request.EventTypeID;
         }
 
         #endregion
@@ -55,7 +51,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
             }
             private set
             {
@@ -70,7 +66,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Command.Get<ushort>(DicomTag.EventTypeID);
+                return Command.Get(DicomTag.EventTypeID, (ushort)0);
             }
             private set
             {

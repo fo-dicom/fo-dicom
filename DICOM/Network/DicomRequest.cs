@@ -14,7 +14,7 @@ namespace Dicom.Network
 
         private static volatile ushort _messageId = 1;
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace Dicom.Network
             {
                 return Command.Get<ushort>(DicomTag.MessageID);
             }
-            set
+            protected set
             {
                 Command.AddOrUpdate(DicomTag.MessageID, value);
             }
@@ -80,7 +80,7 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
-                if (_messageId == UInt16.MaxValue) _messageId = 1;
+                if (_messageId == ushort.MaxValue) _messageId = 1;
                 return _messageId++;
             }
         }

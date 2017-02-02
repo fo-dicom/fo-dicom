@@ -78,7 +78,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            _pduListener = ListenAndProcessPDUsAsync();
+            _pduListener = ListenAndProcessPDUAsync();
         }
 
         #endregion
@@ -275,7 +275,7 @@ namespace Dicom.Network
                 }
                 catch (IOException e)
                 {
-                    LogIOException(Logger, e, false);
+                    LogIOException(e, Logger, false);
                     TryCloseConnection(e);
                 }
                 catch (Exception e)
@@ -288,11 +288,11 @@ namespace Dicom.Network
             }
         }
 
-        private async Task ListenAndProcessPDUsAsync()
+        private async Task ListenAndProcessPDUAsync()
         {
             try
             {
-                while (true)
+                while (IsConnected)
                 {
                     var stream = _network.AsStream();
 
@@ -314,9 +314,7 @@ namespace Dicom.Network
                         _readLength -= count;
                         if (_readLength > 0)
                         {
-                            count =
-                                await stream.ReadAsync(buffer, 6 - _readLength, _readLength)
-                                    .ConfigureAwait(false);
+                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
                         }
                     }
                     while (_readLength > 0);
@@ -447,11 +445,6 @@ namespace Dicom.Network
                     }
                 }
             }
-            catch (ObjectDisposedException e)
-            {
-                Logger.Error("Exception processing PDU: {@error}", e);
-                TryCloseConnection(e);
-            }
             catch (DicomNetworkException e)
             {
                 Logger.Error("Exception processing PDU: {@error}", e);
@@ -459,8 +452,15 @@ namespace Dicom.Network
             }
             catch (IOException e)
             {
-                LogIOException(this.Logger, e, true);
-                TryCloseConnection(e);
+                if (LogIOException(e, Logger, true))
+                {
+                    // Underlying socket error, probably due to forcibly closed connection, ignore
+                    TryCloseConnection();
+                }
+                else
+                {
+                    TryCloseConnection(e);
+                }
             }
             catch (Exception e)
             {
@@ -1164,21 +1164,29 @@ namespace Dicom.Network
 
         #region Helper methods
 
-        private static void LogIOException(Logger logger, Exception e, bool reading)
+        private static bool LogIOException(Exception e, Logger logger, bool reading)
         {
-            var socketFmt = string.Format(@"Socket error {0} PDU: {{socketErrorCode}} [{{errorCode}}]", reading ? "reading" : "writing");
-            var otherFmt = string.Format(@"IO exception while {0} PDU: {{@error}}", reading ? "reading" : "writing");
-
             int errorCode;
             string errorDescriptor;
-            if (NetworkManager.IsSocketException(e, out errorCode, out errorDescriptor))
+            if (NetworkManager.IsSocketException(e.InnerException, out errorCode, out errorDescriptor))
             {
-                logger.Error(socketFmt, errorDescriptor, errorCode);
+                logger.Info(
+                    $"Socket error while {(reading ? "reading" : "writing")} PDU: {{socketError}} [{{errorCode}}]",
+                    errorDescriptor,
+                    errorCode);
+                return true;
             }
-            else if (!(e.InnerException is ObjectDisposedException))
+
+            if (e.InnerException is ObjectDisposedException)
             {
-                logger.Error(otherFmt, e);
+                logger.Info($"Object disposed while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
             }
+            else
+            {
+                logger.Error($"I/O exception while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
+            }
+
+            return false;
         }
 
         #endregion
