@@ -3,29 +3,52 @@
 
 namespace Dicom.Network
 {
+    /// <summary>
+    /// Representation of the N-CREATE response.
+    /// </summary>
     public sealed class DicomNCreateResponse : DicomResponse
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomNCreateResponse"/> class.
+        /// </summary>
+        /// <param name="command">N-CREATE response command.</param>
         public DicomNCreateResponse(DicomDataset command)
             : base(command)
         {
         }
 
+        /// <summary>
+        /// Initizalizes a new instance of the <see cref="DicomNCreateResponse"/> class.
+        /// </summary>
+        /// <param name="request">Associated N-CREATE request.</param>
+        /// <param name="status">Response status.</param>
         public DicomNCreateResponse(DicomNCreateRequest request, DicomStatus status)
             : base(request, status)
         {
             SOPInstanceUID = request.SOPInstanceUID;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the affected SOP instance UID.
+        /// </summary>
         public DicomUID SOPInstanceUID
         {
             get
             {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
             }
             private set
             {
                 Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
             }
         }
+
+        #endregion
     }
 }

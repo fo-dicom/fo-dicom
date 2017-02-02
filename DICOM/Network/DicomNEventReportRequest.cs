@@ -5,23 +5,45 @@ namespace Dicom.Network
 {
     using System.Text;
 
+    /// <summary>
+    /// Representation of an N-EVENTREPORT request.
+    /// </summary>
     public sealed class DicomNEventReportRequest : DicomRequest
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomNEventReportRequest"/> class.
+        /// </summary>
+        /// <param name="command">N-EVENTREPORT request command.</param>
         public DicomNEventReportRequest(DicomDataset command)
             : base(command)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomNEventReportRequest"/> class.
+        /// </summary>
+        /// <param name="affectedClassUid">Affected SOP class UID.</param>
+        /// <param name="affectedInstanceUid">Affected SOP instance UID.</param>
+        /// <param name="eventTypeId">Event type ID.</param>
         public DicomNEventReportRequest(
-            DicomUID requestedClassUid,
-            DicomUID requestedInstanceUid,
+            DicomUID affectedClassUid,
+            DicomUID affectedInstanceUid,
             ushort eventTypeId)
-            : base(DicomCommandField.NEventReportRequest, requestedClassUid)
+            : base(DicomCommandField.NEventReportRequest, affectedClassUid)
         {
-            SOPInstanceUID = requestedInstanceUid;
+            SOPInstanceUID = affectedInstanceUid;
             EventTypeID = eventTypeId;
         }
 
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the affected SOP instance UID.
+        /// </summary>
         public DicomUID SOPInstanceUID
         {
             get
@@ -34,6 +56,9 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets the event type ID.
+        /// </summary>
         public ushort EventTypeID
         {
             get
@@ -46,12 +71,31 @@ namespace Dicom.Network
             }
         }
 
-        internal bool HasSOPInstanceUID => this.Command.Contains(DicomTag.AffectedSOPInstanceUID);
+        #endregion
 
+        #region DELEGATES AND EVENTS
+
+        /// <summary>
+        /// Delegate representing a N-EVENTREPORT RSP received event handler.
+        /// </summary>
+        /// <param name="request">N-EVENTREPORT RQ.</param>
+        /// <param name="response">N-EVENTREPORT RSP.</param>
         public delegate void ResponseDelegate(DicomNEventReportRequest request, DicomNEventReportResponse response);
 
+        /// <summary>
+        /// Gets or sets the handler for the N-EVENTREPORT response received event.
+        /// </summary>
         public ResponseDelegate OnResponseReceived;
 
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Invoke the event handler upon receiving a N-EVENTREPORT response.
+        /// </summary>
+        /// <param name="service">Associated DICOM service.</param>
+        /// <param name="response">N-EVENTREPORT response.</param>
         protected internal override void PostResponse(DicomService service, DicomResponse response)
         {
             try
@@ -74,5 +118,7 @@ namespace Dicom.Network
             if (Command.Contains(DicomTag.EventTypeID)) sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
             return sb.ToString();
         }
+
+        #endregion
     }
 }
