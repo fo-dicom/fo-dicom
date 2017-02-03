@@ -1,4 +1,5 @@
-#### v.3.0.0 (RC2, 2/2/2017)
+#### v.3.0.0 (TBD)
+* Invalid reference in Universal targets build file (#422 #423)
 * Print SCP exception due to insufficient DicomDataset.AddOrUpdate refactoring (#353 #420)
 * Invalid decoding of JPEG baseline RGB images with managed JPEG codec (#417 #419)
 * DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
