@@ -24,7 +24,7 @@ namespace DICOM.Shared.Log
         {
             var xmlOutput = new StringBuilder();
             xmlOutput.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
-            xmlOutput.AppendLine(@"<NativeDicomModel> ");
+            xmlOutput.AppendLine(@"<NativeDicomModel>");
 
             DicomDatasetToXml(xmlOutput, dataset);
 
