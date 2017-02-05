@@ -1,10 +1,9 @@
-﻿using Dicom;
-using Dicom.IO.Buffer;
+﻿using Dicom.IO.Buffer;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DICOM.Shared.Log
+namespace Dicom.Log
 {
 
     /// <summary>
@@ -19,18 +18,8 @@ namespace DICOM.Shared.Log
         /// <param name="dataset">The DicomDataset that is converted to XML-String</param>
         public static string ConvertDicomToXML(DicomDataset dataset)
         {
-            string _xmlString = DicomToXml(dataset);
-            return _xmlString;
-        }
-
-        /// <summary>
-        /// Converts a <see cref="DicomDataset"/> to a XML-String asynchronous 
-        /// </summary>
-        /// <param name="dataset"></param>
-        /// <returns></returns>
-        public static Task<string> ConvertDicomToXMLAsync(DicomDataset dataset)
-        {
-            return Task.FromResult(ConvertDicomToXML(dataset));
+            string xmlString = DicomToXml(dataset);
+            return xmlString;
         }
 
         #region Private Methods

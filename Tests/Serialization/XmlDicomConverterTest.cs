@@ -1,4 +1,4 @@
-﻿using DICOM.Shared.Log;
+﻿using Dicom.Log;
 using System.Text;
 using Xunit;
 
