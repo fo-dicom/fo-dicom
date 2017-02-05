@@ -3,7 +3,7 @@
 
 namespace Dicom.Log
 {
-    using DICOM.Shared.Log;
+
     using System.Collections.Generic;
     using System.Text;
 
