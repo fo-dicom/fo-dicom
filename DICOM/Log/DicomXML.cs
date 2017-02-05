@@ -2,25 +2,40 @@
 using Dicom.IO.Buffer;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DICOM.Shared.Log
 {
 
-    public class DicomXML
+    /// <summary>
+    /// Does the conversion of <see cref="Dicom.DicomDataset"/> to a XML-String
+    /// </summary>
+    public static class DicomXML
     {
        
-        string _xmlString;
-
-        public DicomXML(DicomDataset dataset)
+        /// <summary>
+        /// Converts a <see cref="DicomDataset"/> to a XML-String
+        /// </summary>
+        /// <param name="dataset">The DicomDataset that is converted to XML-String</param>
+        public static string ConvertDicomToXML(DicomDataset dataset)
         {
-            _xmlString = DicomToXml(dataset);
+            string _xmlString = DicomToXml(dataset);
+            return _xmlString;
         }
 
-        public string XmlString => _xmlString;
+        /// <summary>
+        /// Converts a <see cref="DicomDataset"/> to a XML-String asynchronous 
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns></returns>
+        public static Task<string> ConvertDicomToXMLAsync(DicomDataset dataset)
+        {
+            return Task.FromResult(ConvertDicomToXML(dataset));
+        }
 
         #region Private Methods
 
-        private string DicomToXml(DicomDataset dataset)
+        private static string DicomToXml(DicomDataset dataset)
         {
             var xmlOutput = new StringBuilder();
             xmlOutput.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
@@ -32,7 +47,7 @@ namespace DICOM.Shared.Log
             return xmlOutput.ToString();
         }
 
-        private void DicomDatasetToXml(StringBuilder xmlOutput, DicomDataset dataset)
+        private static void DicomDatasetToXml(StringBuilder xmlOutput, DicomDataset dataset)
         {
             foreach (var item in dataset)
             {
@@ -47,8 +62,7 @@ namespace DICOM.Shared.Log
                     WriteDicomAttribute(xmlOutput, sq);
                     for (int i = 0; i < sq.Items.Count; i++)
                     {
-                        xmlOutput.AppendFormat(@"<Item number=""{0}"">", i + 1);
-                        xmlOutput.AppendLine();
+                        xmlOutput.AppendLine($@"<Item number=""{i+1}"">");
 
                         DicomDatasetToXml(xmlOutput, sq.Items[i]);
 
@@ -59,7 +73,7 @@ namespace DICOM.Shared.Log
             }
         }
 
-        private void DicomElementToXml(StringBuilder xmlOutput, DicomElement item)
+        private static void DicomElementToXml(StringBuilder xmlOutput, DicomElement item)
         {
             WriteDicomAttribute(xmlOutput, item);
 
@@ -69,43 +83,64 @@ namespace DICOM.Shared.Log
                 vr == DicomVRCode.OL || vr == DicomVRCode.UN)
             {
                 string binaryString = GetBinaryBase64(item);
-                xmlOutput.AppendFormat(@"<InlineBinary>{0}</InlineBinary>", binaryString);
-                xmlOutput.AppendLine();
+                xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
+            }
+            else if (vr == DicomVRCode.PN)
+            {
+                for (int i = 0; i < item.Count; i++)
+                {
+                    xmlOutput.AppendLine($@"<PersonName number=""{i+1}"">");
+                    xmlOutput.AppendLine(@"<Alphabetic>");
+
+                    DicomPersonName person = new DicomPersonName(item.Tag, item.Get<String>(i));
+
+                    string lastName = person.Last;
+                    if (!string.IsNullOrEmpty(lastName)) xmlOutput.AppendLine($@"<FamilyName>{EscapeXml(lastName)}</FamilyName>");
+                    string givenName = person.First;
+                    if (!string.IsNullOrEmpty(givenName)) xmlOutput.AppendLine($@"<GivenName>{EscapeXml(givenName)}</GivenName>");
+                    string middleName = person.Middle;
+                    if (!string.IsNullOrEmpty(middleName)) xmlOutput.AppendLine($@"<MiddleName>{EscapeXml(middleName)}</MiddleName>");
+                    string prefixName = person.Prefix;
+                    if (!string.IsNullOrEmpty(prefixName)) xmlOutput.AppendLine($@"<NamePrefix>{EscapeXml(prefixName)}</NamePrefix>");
+                    string suffixName = person.Suffix;
+                    if (!string.IsNullOrEmpty(suffixName)) xmlOutput.AppendLine($@"<NameSuffix>{EscapeXml(suffixName)}</NameSuffix>");
+
+                    xmlOutput.AppendLine(@"</Alphabetic>");
+                    xmlOutput.AppendLine(@"</PersonName>");
+                }
             }
             else
             {
                 for (int i = 0; i < item.Count; i++)
                 {
                     var valueString = EscapeXml(item.Get<String>(i));
-                    xmlOutput.AppendFormat(@"<Value number=""{0}"">{1}</Value>", i + 1, valueString);
-                    xmlOutput.AppendLine();
+                    xmlOutput.AppendLine($@"<Value number=""{i+1}"">{valueString}</Value>");
                 }
             }
 
             xmlOutput.AppendLine(@"</DicomAttribute>");
         }
 
-        private void WriteDicomAttribute(StringBuilder xmlOutput, DicomItem item)
+        private static void WriteDicomAttribute(StringBuilder xmlOutput, DicomItem item)
         {
             if (item.Tag.IsPrivate && item.Tag.PrivateCreator != null)
             {
-                xmlOutput.AppendFormat(@"<DicomAttribute tag=""{0:X4}{1:X4}"" vr=""{2}"" keyword=""{3}"" privateCreator=""{4}"">", item.Tag.Group, item.Tag.Element, item.ValueRepresentation.Code, item.Tag.DictionaryEntry.Keyword, item.Tag.PrivateCreator.Creator);
+                xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{ item.Tag.DictionaryEntry.Keyword}"" privateCreator=""{item.Tag.PrivateCreator.Creator}"">");
             }
             else
             {
-                xmlOutput.AppendFormat(@"<DicomAttribute tag=""{0:X4}{1:X4}"" vr=""{2}"" keyword=""{3}"">", item.Tag.Group, item.Tag.Element, item.ValueRepresentation.Code, item.Tag.DictionaryEntry.Keyword);
+                xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{item.Tag.DictionaryEntry.Keyword}"">");
             }
-            xmlOutput.AppendLine();
         }
 
-        private string GetBinaryBase64(DicomElement item)
+        private static string GetBinaryBase64(DicomElement item)
         {
             IByteBuffer buffer = item.Buffer;
             if (buffer == null) return string.Empty;
             return Convert.ToBase64String(buffer.Data);
         }
 
-        private string EscapeXml(string text)
+        private static string EscapeXml(string text)
         {
             return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
         }

@@ -39,16 +39,24 @@ namespace Dicom.Log
             return log.ToString();
         }
 
+        /// <summary>
+        /// Converts the <see cref="DicomDataset"/> into a XML-String 
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns>a XML-String</returns>
         public static string WriteToXml(this DicomDataset dataset)
         {
-            var dicomXml = new DicomXML(dataset);
-            return dicomXml.XmlString;
+            return DicomXML.ConvertDicomToXML(dataset);
         }
 
+        /// <summary>
+        /// Converts the <see cref="DicomFile"/> into a XML-String
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>a XML-String</returns>
         public static string WriteToXml(this DicomFile file)
         {
-            var dicomXml = new DicomXML(file.Dataset);
-            return dicomXml.XmlString;
+            return DicomXML.ConvertDicomToXML(file.Dataset);
         }
 
     }
