@@ -37,6 +37,8 @@ namespace Dicom.Network
 
         private bool aborted;
 
+        private Logger _logger;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -86,7 +88,17 @@ namespace Dicom.Network
         /// <summary>
         /// Gets or sets logger that is passed to the underlying <see cref="DicomService"/> implementation.
         /// </summary>
-        public Logger Logger { get; set; }
+        public Logger Logger
+        {
+            get
+            {
+                return _logger ?? (_logger = LogManager.GetLogger("Dicom.Network"));
+            }
+            set
+            {
+                _logger = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
