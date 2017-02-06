@@ -16,15 +16,15 @@ namespace Dicom.Imaging.Render
     {
         #region Private Members
 
-        private SingleBitPixelData _originalData;
+        private readonly SingleBitPixelData _originalData;
 
-        private IPixelData _scaledData;
+        private GrayscalePixelDataU8 _scaledData;
 
-        private int _offsetX;
+        private readonly int _offsetX;
 
-        private int _offsetY;
+        private readonly int _offsetY;
 
-        private int _color;
+        private readonly int _color;
 
         private double _scale;
 
@@ -53,40 +53,48 @@ namespace Dicom.Imaging.Render
 
         #region Public Methods
 
+        /// <summary>
+        /// Set overlay scale factor.
+        /// </summary>
+        /// <param name="scale">Scale factor.</param>
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scale) <= Double.Epsilon) return;
+            if (Math.Abs(scale - _scale) <= double.Epsilon) return;
 
             _scale = scale;
             _scaledData = null;
         }
 
+        /// <summary>
+        /// Render overlay graphic.
+        /// </summary>
+        /// <param name="pixels">Pixels subject to rendering.</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void Render(int[] pixels, int width, int height)
         {
-            byte[] data = null;
+            if (_scaledData == null) _scaledData = (GrayscalePixelDataU8)_originalData.Rescale(_scale);
 
-            if (_scaledData == null) _scaledData = _originalData.Rescale(_scale);
+            var data = _scaledData.Data;
 
-            data = (_scaledData as GrayscalePixelDataU8).Data;
-
-            int ox = (int)(_offsetX * _scale);
-            int oy = (int)(_offsetY * _scale);
+            var ox = (int)(_offsetX * _scale);
+            var oy = (int)(_offsetY * _scale);
 
 #if NET35
             for (var y = 0; y < _scaledData.Height; ++y)
 #else
-                Parallel.For(0, _scaledData.Height, y =>
+            Parallel.For(0, _scaledData.Height, y =>
 #endif
             {
-                if ((oy + y) >= height) return;
+                if (oy + y >= height) return;
                 for (int i = _scaledData.Width * y, e = i + _scaledData.Width, x = 0; i < e; i++, x++)
                 {
                     if (data[i] > 0)
                     {
                         //this is wrong, when scaling is active
                         //if ((ox + x) >= width) break;
-                        int p = (oy * width) + ox + i;
-                        pixels[p] = _color;
+                        var p = oy * width + ox + i;
+                        pixels[p] |= _color;
                     }
                 }
             }
