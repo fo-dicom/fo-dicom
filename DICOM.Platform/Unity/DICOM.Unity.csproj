@@ -568,6 +568,9 @@
     <Compile Include="..\..\DICOM\Printing\PresentationLut.cs">
       <Link>Printing\PresentationLut.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Serialization\DicomXML.cs">
+      <Link>Serialization\DicomXML.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Setup.cs">
       <Link>Setup.cs</Link>
     </Compile>

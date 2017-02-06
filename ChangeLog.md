@@ -1,4 +1,5 @@
 #### v.3.0.0 (TBD)
+* Serialize to XML according to DICOM standard PS 3.19, Section A (#425)
 * Invalid reference in Universal targets build file (#422 #423)
 * Alpha component is zero for color images on UWP, .NET Core and Xamarin platforms (#421 #428)
 * Print SCP exception due to insufficient DicomDataset.AddOrUpdate refactoring (#353 #420)

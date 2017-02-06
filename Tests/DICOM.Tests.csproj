@@ -173,6 +173,7 @@
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\JsonDicomConverterTest.cs" />
+    <Compile Include="Serialization\XmlDicomConverterTest.cs" />
     <Compile Include="StructuredReport\DicomContentItemTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -232,6 +232,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\ImageBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\PresentationLut.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\DicomXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Setup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomCodeItem.cs" />
