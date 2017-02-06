@@ -17,17 +17,17 @@ namespace Dicom.Log
     /// </summary>
     public class DicomDatasetLogger : IDicomDatasetWalker
     {
-        private Logger log;
+        private Logger _log;
 
-        private LogLevel level;
+        private LogLevel _level;
 
-        private int width = 128;
+        private int _width = 128;
 
-        private int value = 64;
+        private int _value = 64;
 
-        private int depth = 0;
+        private int _depth = 0;
 
-        private string pad = String.Empty;
+        private string _pad = String.Empty;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomDatasetLogger"/>.
@@ -38,10 +38,10 @@ namespace Dicom.Log
         /// <param name="valueLength">Maximum value length.</param>
         public DicomDatasetLogger(Logger logger, LogLevel level, int width = 128, int valueLength = 64)
         {
-            log = logger;
-            level = level;
-            width = width;
-            value = valueLength;
+            _log = logger;
+            _level = level;
+            _width = width;
+            _value = valueLength;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Dicom.Log
         public bool OnElement(DicomElement element)
         {
             StringBuilder sb = new StringBuilder();
-            if (depth > 0) sb.Append(pad).Append("> ");
+            if (_depth > 0) sb.Append(_pad).Append("> ");
             sb.Append(element.Tag);
             sb.Append(' ');
             sb.Append(element.ValueRepresentation.Code);
@@ -72,9 +72,9 @@ namespace Dicom.Log
             {
                 sb.Append('[');
                 string val = element.Get<string>();
-                if (val.Length > (value - 2 - sb.Length))
+                if (val.Length > (_value - 2 - sb.Length))
                 {
-                    sb.Append(val.Substring(0, value - 2 - sb.Length));
+                    sb.Append(val.Substring(0, _value - 2 - sb.Length));
                     sb.Append(')');
                 }
                 else
@@ -90,23 +90,23 @@ namespace Dicom.Log
             else
             {
                 var val = String.Join("/", element.Get<string[]>());
-                if (val.Length > (value - sb.Length))
+                if (val.Length > (_value - sb.Length))
                 {
-                    sb.Append(val.Substring(0, value - sb.Length));
+                    sb.Append(val.Substring(0, _value - sb.Length));
                 }
                 else
                 {
                     sb.Append(val);
                 }
             }
-            while (sb.Length < value) sb.Append(' ');
+            while (sb.Length < _value) sb.Append(' ');
             sb.Append('#');
             string name = element.Tag.DictionaryEntry.Keyword;
             sb.AppendFormat(
                 "{0,6}, {1}",
                 element.Length,
-                name.Substring(0, System.Math.Min(width - sb.Length - 9, name.Length)));
-            log.Log(level, sb.ToString());
+                name.Substring(0, System.Math.Min(_width - sb.Length - 9, name.Length)));
+            _log.Log(_level, sb.ToString());
             return true;
         }
 
@@ -129,10 +129,10 @@ namespace Dicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginSequence(DicomSequence sequence)
         {
-            log.Log(
-                level,
+            _log.Log(
+                _level,
                 "{padding}{tag} SQ {tagDictionaryEntryName}",
-                (depth > 0) ? pad + "> " : "",
+                (_depth > 0) ? _pad + "> " : "",
                 sequence.Tag,
                 sequence.Tag.DictionaryEntry.Name);
             IncreaseDepth();
@@ -146,7 +146,7 @@ namespace Dicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
-            log.Log(level, pad + "Item:");
+            _log.Log(_level, _pad + "Item:");
             IncreaseDepth();
             return true;
         }
@@ -178,10 +178,10 @@ namespace Dicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
-            log.Log(
-                level,
+            _log.Log(
+                _level,
                 "{padding}{tag} {vrCode} {tagDictionaryEntryName} [{offsets} offsets, {fragments} fragments]",
-                (depth > 0) ? pad + "> " : "",
+                (_depth > 0) ? _pad + "> " : "",
                 fragment.Tag,
                 fragment.ValueRepresentation.Code,
                 fragment.Tag.DictionaryEntry.Name,
@@ -230,18 +230,18 @@ namespace Dicom.Log
 
         private void IncreaseDepth()
         {
-            depth++;
+            _depth++;
 
-            pad = String.Empty;
-            for (int i = 0; i < depth; i++) pad += "  ";
+            _pad = String.Empty;
+            for (int i = 0; i < _depth; i++) _pad += "  ";
         }
 
         private void DecreaseDepth()
         {
-            depth--;
+            _depth--;
 
-            pad = String.Empty;
-            for (int i = 0; i < depth; i++) pad += "  ";
+            _pad = String.Empty;
+            for (int i = 0; i < _depth; i++) _pad += "  ";
         }
     }
 }
