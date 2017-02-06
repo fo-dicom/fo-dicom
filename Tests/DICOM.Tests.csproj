@@ -107,6 +107,7 @@
     <Compile Include="Bugs\GH265.cs" />
     <Compile Include="Bugs\GH306.cs" />
     <Compile Include="Bugs\GH364.cs" />
+    <Compile Include="Bugs\GH426.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
