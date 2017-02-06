@@ -10,12 +10,7 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class RgbColorPipeline : IPipeline
     {
-        public ILUT LUT
-        {
-            get
-            {
-                return null;
-            }
-        }
+        /// <inheritdoc />
+        public ILUT LUT => null;
     }
 }

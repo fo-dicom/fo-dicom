@@ -1213,6 +1213,8 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public void Render(ILUT lut, int[] output)
         {
+            const int AlphaFF = 0xff << 24;
+
             var data = Data;
             if (lut == null)
             {
@@ -1224,7 +1226,7 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
-                        output[i] = (data[p++] << 16) | (data[p++] << 8) | data[p++];
+                        output[i] = AlphaFF | (data[p++] << 16) | (data[p++] << 8) | data[p++];
                     }
                 }
 #if !NET35
@@ -1241,7 +1243,7 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
-                        output[i] = (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                        output[i] = AlphaFF | (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
                     }
                 }
 #if !NET35
