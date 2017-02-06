@@ -3,6 +3,7 @@
 
 namespace Dicom.Log
 {
+
     using System.Collections.Generic;
     using System.Text;
 
@@ -37,5 +38,26 @@ namespace Dicom.Log
             new DicomDatasetWalker(file.Dataset).Walk(dumper);
             return log.ToString();
         }
+
+        /// <summary>
+        /// Converts the <see cref="DicomDataset"/> into a XML-String 
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns>a XML-String</returns>
+        public static string WriteToXml(this DicomDataset dataset)
+        {
+            return DicomXML.ConvertDicomToXML(dataset);
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DicomFile"/> into a XML-String
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>a XML-String</returns>
+        public static string WriteToXml(this DicomFile file)
+        {
+            return DicomXML.ConvertDicomToXML(file.Dataset);
+        }
+
     }
 }

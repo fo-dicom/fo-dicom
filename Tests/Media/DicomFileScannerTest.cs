@@ -19,8 +19,11 @@ namespace Dicom.Media
             var scanner = new DicomFileScanner();
             scanner.FileFound += (fileScanner, file, name) =>
                 {
-                    if (name.EndsWith("DICOMDIR")) dicomdirFileFound = true;
-                    complete = true;
+                    if (name.EndsWith("DICOMDIR"))
+                    {
+                        dicomdirFileFound = true;
+                        complete = true;
+                    }
                 };
             scanner.Complete += fileScanner => complete = true;
 
