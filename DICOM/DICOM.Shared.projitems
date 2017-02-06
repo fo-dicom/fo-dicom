@@ -159,7 +159,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Log\DicomDatasetDumper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\DicomDatasetLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\DicomParserLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Log\DicomXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\HexWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\Logger.cs" />
@@ -233,6 +232,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\ImageBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\PresentationLut.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\DicomXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Setup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomCodeItem.cs" />

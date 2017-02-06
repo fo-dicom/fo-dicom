@@ -1,17 +1,19 @@
-﻿using Dicom.IO.Buffer;
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Dicom.IO.Buffer;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Dicom.Log
+namespace Dicom.Serialization
 {
-
     /// <summary>
-    /// Does the conversion of <see cref="Dicom.DicomDataset"/> to a XML-String
+    /// Does the conversion of <see cref="Dicom.DicomDataset"/> to an XML string
     /// </summary>
     public static class DicomXML
     {
-       
+        #region Public methods
+
         /// <summary>
         /// Converts a <see cref="DicomDataset"/> to a XML-String
         /// </summary>
@@ -21,6 +23,28 @@ namespace Dicom.Log
             string xmlString = DicomToXml(dataset);
             return xmlString;
         }
+
+        /// <summary>
+        /// Converts the <see cref="DicomDataset"/> into an XML string.
+        /// </summary>
+        /// <param name="dataset">Dataset to serialize.</param>
+        /// <returns>An XML string.</returns>
+        public static string WriteToXml(this DicomDataset dataset)
+        {
+            return ConvertDicomToXML(dataset);
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DicomFile"/> into an XML string.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>An XML string.</returns>
+        public static string WriteToXml(this DicomFile file)
+        {
+            return ConvertDicomToXML(file.Dataset);
+        }
+
+        #endregion
 
         #region Private Methods
 
@@ -49,7 +73,7 @@ namespace Dicom.Log
                     var sq = item as DicomSequence;
 
                     WriteDicomAttribute(xmlOutput, sq);
-                    for (int i = 0; i < sq.Items.Count; i++)
+                    for (var i = 0; i < sq.Items.Count; i++)
                     {
                         xmlOutput.AppendLine($@"<Item number=""{i+1}"">");
 
@@ -71,7 +95,7 @@ namespace Dicom.Log
             if (vr == DicomVRCode.OB || vr == DicomVRCode.OD || vr == DicomVRCode.OF || vr == DicomVRCode.OW ||
                 vr == DicomVRCode.OL || vr == DicomVRCode.UN)
             {
-                string binaryString = GetBinaryBase64(item);
+                var binaryString = GetBinaryBase64(item);
                 xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
             }
             else if (vr == DicomVRCode.PN)
@@ -81,7 +105,7 @@ namespace Dicom.Log
                     xmlOutput.AppendLine($@"<PersonName number=""{i+1}"">");
                     xmlOutput.AppendLine(@"<Alphabetic>");
 
-                    DicomPersonName person = new DicomPersonName(item.Tag, item.Get<String>(i));
+                    DicomPersonName person = new DicomPersonName(item.Tag, item.Get<string>(i));
 
                     string lastName = person.Last;
                     if (!string.IsNullOrEmpty(lastName)) xmlOutput.AppendLine($@"<FamilyName>{EscapeXml(lastName)}</FamilyName>");
@@ -102,7 +126,7 @@ namespace Dicom.Log
             {
                 for (int i = 0; i < item.Count; i++)
                 {
-                    var valueString = EscapeXml(item.Get<String>(i));
+                    var valueString = EscapeXml(item.Get<string>(i));
                     xmlOutput.AppendLine($@"<Value number=""{i+1}"">{valueString}</Value>");
                 }
             }
@@ -135,6 +159,5 @@ namespace Dicom.Log
         }
 
         #endregion
-
     }
 }

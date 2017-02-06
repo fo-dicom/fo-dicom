@@ -17,6 +17,7 @@
 * Supports very large datasets with content loading on demand
 * Image rendering
 * JSON support
+* XML export
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
@@ -142,13 +143,13 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Håkan MacLean](https://github.com/MacL3an)
 * [Zaid Safadi](https://github.com/Zaid-Safadi)
 * [Sam Gorman](https://github.com/HSGorman)
+* [Reinhard Gruber](https://github.com/gofal)
 * [Ryan Melena](https://github.com/RyanMelenaNoesis)
 * [Alexander Pyzynia](https://github.com/werwolfby)
 * [Justin Wake](https://github.com/jwake)
 * [Johannes Liegert](https://github.com/0xLigety)
 * [Chris Hafey](https://github.com/chafey)
 * [Michael Pavlovsky](https://github.com/michaelp)
-* [Reinhard Gruber](https://github.com/gofal)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
 * [do0om](https://github.com/do0om)
