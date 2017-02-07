@@ -86,7 +86,6 @@ namespace Dicom.Network
         {
             return implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
-#endif
 
         /// <summary>
         /// Checks whether specified <paramref name="exception"/> represents a socket exception.
@@ -99,6 +98,7 @@ namespace Dicom.Network
         {
             return implementation.IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
         }
+#endif
 
         /// <summary>
         /// Attempt to obtain a unique network identifier, e.g. based on a MAC address.
@@ -128,7 +128,6 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <returns>Network stream implementation.</returns>
         protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors);
-#endif
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
@@ -138,6 +137,7 @@ namespace Dicom.Network
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
         protected abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor);
+#endif
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.

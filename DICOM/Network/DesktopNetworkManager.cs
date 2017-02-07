@@ -79,7 +79,6 @@ namespace Dicom.Network
         {
             return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
-#endif
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
@@ -106,6 +105,7 @@ namespace Dicom.Network
             errorDescriptor = null;
             return false;
         }
+#endif
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
