@@ -1,4 +1,5 @@
 #### v.3.0.0 (TBD)
+* Deploy error for Unity based applications on Hololens (#431 #432)
 * Add method "AddOrUpdatePixelData" to the DicomDataset (#427 #430)
 * Adding too many presentation contexts causes null reference exception in DicomClient.Send (#426 #429)
 * Serialize to XML according to DICOM standard PS 3.19, Section A (#425)
