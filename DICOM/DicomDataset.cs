@@ -293,6 +293,27 @@ namespace Dicom
         }
 
         /// <summary>
+        /// Add or update the image pixel data element in the dataset
+        /// </summary>
+        /// <param name="vr">DICOM vr of the image pixel. For a PixelData element this value should be either DicomVR.OB or DicomVR.OW DICOM VR.</param>
+        /// <param name="pixelData">An <see cref="IByteBuffer"/> that holds the image pixel data </param>
+        /// <param name="transferSyntax">A DicomTransferSyntax object of the <paramref name="pixelData"/> parameter. 
+        /// If parameter is not provided (null), then the default TransferSyntax "ExplicitVRLittleEndian" will be applied to the dataset</param>
+        /// <remarks>Use this method whenever you are attaching an external image pixel data to the dataset and provide the proper TransferSyntax</remarks>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdatePixelData (DicomVR vr, IByteBuffer pixelData, DicomTransferSyntax transferSyntax = null ) 
+        {
+            this.AddOrUpdate ( vr, DicomTag.PixelData, pixelData ) ;
+            
+            if (null != transferSyntax)
+            {
+                InternalTransferSyntax = transferSyntax ;
+            }
+
+            return this ;
+        }
+
+        /// <summary>
         /// Checks the DICOM dataset to determine if the dataset already contains an item with the specified tag.
         /// </summary>
         /// <param name="tag">DICOM tag to test</param>
