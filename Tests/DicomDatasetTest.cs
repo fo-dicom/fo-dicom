@@ -316,6 +316,23 @@ namespace Dicom
         }
 
         [Fact]
+        public void AddOrUpdatePixelData_InternalTransferSyntax_Succeeds()
+        {
+            var ds        = new DicomDataset ( );
+            var data      = new IO.Buffer.MemoryByteBuffer ( new byte[] { 255 } ); //dummy data
+            var newSyntax = DicomTransferSyntax.DeflatedExplicitVRLittleEndian;
+            
+            ds.AddOrUpdatePixelData ( DicomVR.OB, data );
+            
+            Assert.Equal(DicomTransferSyntax.ExplicitVRLittleEndian, ds.InternalTransferSyntax);
+
+            ds.AddOrUpdatePixelData ( DicomVR.OB, data, newSyntax );
+
+            Assert.Equal(newSyntax, ds.InternalTransferSyntax);
+
+        }
+
+        [Fact]
         public void Get_ArrayWhenTagExistsEmpty_ShouldReturnEmptyArray()
         {
             var tag = DicomTag.GridFrameOffsetVector;
