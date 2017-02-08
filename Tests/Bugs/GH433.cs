@@ -33,14 +33,7 @@ namespace Dicom.Bugs
                                     lock (locker) actual = rsp.Status;
                                 }
                         });
-
-                try
-                {
-                    client.Send("localhost", port, false, "SCU", "ANY-SCP");
-                }
-                catch
-                {
-                }
+                client.Send("localhost", port, false, "SCU", "ANY-SCP");
 
                 Assert.Equal(expected, actual);
             }

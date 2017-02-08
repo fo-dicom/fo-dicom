@@ -389,12 +389,12 @@ namespace Dicom.Network
                     service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                 }
 
-                await associateNotifier.Task.ConfigureAwait(false);
+                var associated = await associateNotifier.Task.ConfigureAwait(false);
 
-                var send = false;
+                bool send;
                 lock (locker)
                 {
-                    send = requests.Count > 0;
+                    send = associated && requests.Count > 0;
                 }
 
                 if (send)
@@ -411,7 +411,7 @@ namespace Dicom.Network
                         service.SendRequest(request);
                     }
                 }
-                else
+                else if (associated)
                 {
                     await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
                 }

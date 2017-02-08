@@ -1,4 +1,5 @@
 #### v.3.0.0 (TBD)
+* Client should not send if association rejected (#433 #434)
 * Deploy error for Unity based applications on Hololens (#431 #432)
 * Add method "AddOrUpdatePixelData" to the DicomDataset (#427 #430)
 * Adding too many presentation contexts causes null reference exception in DicomClient.Send (#426 #429)
