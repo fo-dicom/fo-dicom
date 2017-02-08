@@ -58,6 +58,10 @@ By default, logging defaults to the no-op `NullLogerManager`. On .NET, several l
 
 On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
 
+#### Important notice for Universal Windows Platform applications
+The *fo-dicom* class library is not fully Windows Runtime compatible, and therefore cannot be built with the .NET Native tool chain enabled in *Universal Windows Platform* applications.  
+Typically, the *Compile with .NET Native tool chain* checkbox is checked in Release mode for UWP applications. To enable building the application in Release mode, uncheck this checkbox.
+
 ### Examples
 
 #### File Operations
