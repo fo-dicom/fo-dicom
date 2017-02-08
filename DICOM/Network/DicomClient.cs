@@ -315,25 +315,18 @@ namespace Dicom.Network
         {
             try
             {
+                var timedOut = false;
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
+                using (cancellationSource.Token.Register(() => timedOut = true))
                 {
-                    while (true)
-                    {
-                        if (this.associateNotifier != null && this.associateNotifier.Task.IsCompleted)
-                        {
-                            return this.associateNotifier.Task.Status == TaskStatus.RanToCompletion
-                                   && this.associateNotifier.Task.Result;
-                        }
-
-                        await Task.Delay(50, cancellationSource.Token).ConfigureAwait(false);
-                    }
+                    while (this.associateNotifier == null) await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
+                    return await this.associateNotifier.Task.ConfigureAwait(false) && !timedOut;
                 }
             }
-            catch (TaskCanceledException)
+            catch
             {
+                return false;
             }
-
-            return false;
         }
 
         /// <summary>
