@@ -293,15 +293,15 @@ namespace Dicom.Network
         [Fact]
         public void WaitForAssociation_TooShortTimeout_ReturnsFalse()
         {
-            int port = Ports.GetNext();
+            var port = Ports.GetNext();
             using (DicomServer.Create<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
-                client.AddRequest(new DicomCEchoRequest());
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = client.WaitForAssociation(1);
-                task.Wait(10000);
+                task.Wait(1000);
                 Assert.Equal(false, actual);
             }
         }
@@ -342,15 +342,15 @@ namespace Dicom.Network
         [Fact]
         public async Task WaitForAssociationAsync_TooShortTimeout_ReturnsFalse()
         {
-            int port = Ports.GetNext();
+            var port = Ports.GetNext();
             using (DicomServer.Create<MockCEchoProvider>(port))
             {
                 var client = new DicomClient();
-                client.AddRequest(new DicomCEchoRequest());
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 var actual = await client.WaitForAssociationAsync(1);
-                task.Wait(10000);
+                task.Wait(1000);
                 Assert.Equal(false, actual);
             }
         }
@@ -561,6 +561,11 @@ namespace Dicom.Network
 
             public void OnReceiveAssociationRequest(DicomAssociation association)
             {
+                foreach (var pc in association.PresentationContexts)
+                {
+                    pc.AcceptTransferSyntaxes(DicomTransferSyntax.ExplicitVRLittleEndian);
+                }
+
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
                 {
                     Thread.Sleep(1000);
