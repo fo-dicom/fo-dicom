@@ -221,9 +221,9 @@ namespace Dicom.Printing
             InternalTransferSyntax = dataset.InternalTransferSyntax;
         }
 
-#endregion
+        #endregion
 
-#region Film Box Manipulation
+        #region Film Box Manipulation
 
         /// <summary>
         /// Create new basic film box and add it to the film session
@@ -335,9 +335,9 @@ namespace Dicom.Printing
             return new FilmSession(SOPClassUID, SOPInstanceUID, this, IsColor);
         }
 
-#endregion
+        #endregion
 
-#region Load and Save
+        #region Load and Save
 
         public static FilmSession Load(string filmSessionFile)
         {
@@ -350,6 +350,6 @@ namespace Dicom.Printing
             return filmSession;
         }
 
-#endregion
+        #endregion
     }
 }
