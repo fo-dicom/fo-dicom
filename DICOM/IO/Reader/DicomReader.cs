@@ -571,7 +571,7 @@ namespace Dicom.IO.Reader
                     }
 
                     // Fix to handle sequence items not associated with any sequence (#364)
-                    if (_tag == DicomTag.Item)
+                    if (_tag.Equals(DicomTag.Item))
                     {
                         source.Rewind();
                         _vr = DicomVR.SQ;
@@ -709,6 +709,13 @@ namespace Dicom.IO.Reader
                             this.isExplicitVR = !this.isExplicitVR;
                         }
                         break;
+                    }
+
+                    // Fix to handle sequence items not associated with any sequence (#364)
+                    if (_tag.Equals(DicomTag.Item))
+                    {
+                        source.Rewind();
+                        _vr = DicomVR.SQ;
                     }
 
                     if (this._vr == DicomVR.SQ)
