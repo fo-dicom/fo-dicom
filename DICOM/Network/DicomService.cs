@@ -396,6 +396,7 @@ namespace Dicom.Network
                                     pdu.Result,
                                     pdu.Source,
                                     pdu.Reason);
+                                if (TryCloseConnection()) return;
                                 break;
                             }
                         case 0x04:
@@ -445,10 +446,15 @@ namespace Dicom.Network
                     }
                 }
             }
-            catch (DicomNetworkException e)
+            catch (ObjectDisposedException)
             {
-                Logger.Error("Exception processing PDU: {@error}", e);
-                TryCloseConnection(e);
+                // silently ignore
+                TryCloseConnection();
+            }
+            catch (NullReferenceException)
+            {
+                // connection already closed; silently ignore
+                TryCloseConnection();
             }
             catch (IOException e)
             {
