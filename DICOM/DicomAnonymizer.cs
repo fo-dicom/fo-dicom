@@ -1,30 +1,49 @@
+// Copyright (c) 2012-2017 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Dicom
 {
     public class DicomAnonymizer
-    {        
+    {
+        #region Fields
+
+        private static readonly int OptionsCount = Enum.GetValues(typeof(SecurityProfileOptions)).Length;
+
+        #endregion
+
         #region Embedded types
+
         /// <summary>Profile options as described in DICOM PS 3.15-2011</summary>
         /// <see>ftp://medical.nema.org/medical/dicom/2011/11_15pu.pdf</see>
         /// <remarks>The order of the flags are mapped to the profile's CSV file</remarks>
-        [Flags]        
+        [Flags]
         public enum SecurityProfileOptions : short
         {
             BasicProfile = 1,
+
             RetainSafePrivate = 2,
+
             RetainUIDs = 4,
+
             RetainDeviceIdent = 8,
+
             RetainPatientChars = 16,
+
             RetainLongFullDates = 32,
+
             RetainLongModifDates = 64,
+
             CleanDesc = 128,
+
             CleanStructdCont = 256,
+
             CleanGraph = 512
         }
 
@@ -33,21 +52,30 @@ namespace Dicom
         public enum SecurityProfileActions : byte
         {
             D = 1, // Replace with a non-zero length value that may be a dummy value and consistent with the VR
-            Z = 2, // Replace with a zero length value, or a non-zero length value that may be a dummy value and consistent with the VR
+
+            Z = 2,
+            // Replace with a zero length value, or a non-zero length value that may be a dummy value and consistent with the VR
+
             X = 4, // Remove
+
             K = 8, // Keep (unchanged for non-sequence attributes, cleaned for sequences)
-            C = 16, // Clean, that is replace with values of similar meaning known not to contain identifying information and consistent with the VR
-            U = 32  // Replace with a non-zero length UID that is internally consistent within a set of Instances            
+
+            C = 16,
+            // Clean, that is replace with values of similar meaning known not to contain identifying information and consistent with the VR
+
+            U = 32
+            // Replace with a non-zero length UID that is internally consistent within a set of Instances            
         }
 
         /// <summary>Security profile container</summary>
-        public class SecurityProfile : Dictionary<Regex, SecurityProfileActions> 
+        public class SecurityProfile : Dictionary<Regex, SecurityProfileActions>
         {
             /// <summary>Optional. Replacement patient name (random or alias)</summary>
             public string PatientName = null;
-            /// <summary>Optional. Replacement patient ID<summary>
+
+            /// <summary>Optional. Replacement patient ID</summary>
             public string PatientID = null;
-            
+
             /// <summary>
             /// Loads a security profile with the specified options
             /// </summary>
@@ -66,32 +94,28 @@ namespace Dicom
                     source = new StringReader(DefaultProfile);
                 }
 
-                while (true) 
+                string line;
+                while ((line = source.ReadLine()) != null)
                 {
-                    var line = source.ReadLine();
-                    if (line == null)
-                        break;
-
-                    if (string.IsNullOrWhiteSpace(line))
-                        continue;
+                    if (string.IsNullOrWhiteSpace(line)) continue;
 
                     var parts = line.Trim().Split(';');
-                    if (parts.Length == 0)
-                        continue;
+                    if (parts.Length == 0) continue;
 
                     var tag = new Regex(parts[0], RegexOptions.IgnoreCase | RegexOptions.Singleline);
                     var empty = default(char).ToString();
 
-                    for (int i=0; i<10; i++)
+                    for (var i = 0; i < OptionsCount; i++)
                     {
                         var flag = (SecurityProfileOptions)(1 << i);
 
                         if ((options & flag) == flag)
                         {
-                            var action = parts[i+1].FirstOrDefault().ToString();
+                            var action = parts[i + 1].ToCharArray().FirstOrDefault().ToString();
                             if (action != empty)
                             {
-                                profile[tag] = (SecurityProfileActions)Enum.Parse(typeof(SecurityProfileActions), action);
+                                profile[tag] =
+                                    (SecurityProfileActions)Enum.Parse(typeof(SecurityProfileActions), action);
                             }
                         }
                     }
@@ -115,7 +139,7 @@ namespace Dicom
             /// - CleanGraphOption</remarks>
             /// <remarks>Not handled: 
             /// </remarks>
-            private static string DefaultProfile = @"
+            private const string DefaultProfile = @"
                 [0-9A-F]{3}[13579BDF],[0-9A-F]{4};X;C;;;;;;;;
                 50[0-9A-F]{2},[0-9A-F]{4};X;;;;;;;;;C
                 60[0-9A-F]{2},4000;X;;;;;;;;;C
@@ -362,109 +386,73 @@ namespace Dicom
                 0040,A075;D;;;;;;;;;
                 0040,A073;D;;;;;;;;;
                 0040,A027;X;;;;;;;;;
-                0038,4000;X;;;;;;;C;;";                    
+                0038,4000;X;;;;;;;C;;";
         }
+
         #endregion
 
-        #region Public properties
-        /// <summary>Context/Output. Contains all the replaced UIDs.</summary>
-        /// <remarks>Useful for consistency across a file set (multiple calls to anonymization methods)</remarks>
-        public Dictionary<string, string> ReplacedUIDs { get; private set; } = new Dictionary<string, string>();
+        #region Constructors
 
-        /// <summary>The security profile for this anonymizer instance</summary>
-        public SecurityProfile Profile { get; private set; }
-        #endregion
-
-        #region Public methods
         /// <summary>Public constructor</summary>
         /// <param name="profile">Optional. The security profile to be used in one or multiple anonymizations. 
         /// If not specified or null, it will use the default/internal profile</param>
         public DicomAnonymizer(SecurityProfile profile = null)
         {
-            this.Profile = profile ?? SecurityProfile.LoadProfile(null, SecurityProfileOptions.BasicProfile);
+            Profile = profile ?? SecurityProfile.LoadProfile(null, SecurityProfileOptions.BasicProfile);
         }
+
+        #endregion
+
+        #region Public properties
+
+        /// <summary>Context/Output. Contains all the replaced UIDs.</summary>
+        /// <remarks>Useful for consistency across a file set (multiple calls to anonymization methods)</remarks>
+        public Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
+
+        /// <summary>The security profile for this anonymizer instance</summary>
+        public SecurityProfile Profile { get; }
+
+        #endregion
+
+        #region Public methods
 
         /// <summary>Anonymizes a dataset witout cloning</summary>
         /// <param name="dataset">The dataset to be altered</param>
         public void AnonymizeInPlace(DicomDataset dataset)
         {
-            this.PerformAnonymization(dataset, false);
-        }
-
-        /// <summary>Clones and anonymizes a dataset</summary>
-        /// <param name="dataset">The dataset to be cloned and anonymized</param>
-        /// <returns></returns>
-        public DicomDataset Anonymize(DicomDataset dataset)
-        {
-            return this.PerformAnonymization(dataset, true);
-        }
-
-        /// <summary>Anonymizes the dataset of an existing Dicom file</summary>
-        /// <param name="file">The file containing the dataset to be altered</param>
-        public void AnonymizeInPlace(DicomFile file)
-        {
-            this.PerformAnonymization(file.Dataset, false);
-
-            if (file.FileMetaInfo != null)
-                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
-        }
-
-        /// <summary>Creates a new Dicom file with an anonymized dataset</summary>
-        /// <param name="file">The file containing the original dataset</param>
-        /// <returns></returns>
-        public DicomFile Anonymize(DicomFile file)
-        {
-            var newDataset = this.PerformAnonymization(file.Dataset, true);
-            return new DicomFile(newDataset);
-        }        
-        #endregion
-
-        #region Private methods
-        /// <summary>Anonymizes an entire dataset</summary>
-        /// <param name="dataset">The dataset to be anonymized</param>
-        public DicomDataset PerformAnonymization(DicomDataset dataset, bool clone)
-        {
-            if (clone)
-                dataset = dataset.Clone();
-
             var toRemove = new List<DicomItem>();
             var itemList = dataset.ToArray();
 
             foreach (var item in itemList)
             {
-                ushort group = item.Tag.Group;
                 var element = item as DicomElement;
 
-                if (element == null)
-                    continue;
+                if (element == null) continue;
 
-                if (element.Tag.Equals(Dicom.DicomTag.PatientName) && this.Profile.PatientName != null)
+                if (element.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
                 {
-                    ReplaceString(dataset, element, this.Profile.PatientName);
+                    ReplaceString(dataset, element, Profile.PatientName);
                 }
-                else if (element.Tag.Equals(Dicom.DicomTag.PatientID) && this.Profile.PatientID != null)
+                else if (element.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
                 {
-                    ReplaceString(dataset, element, this.Profile.PatientID);
+                    ReplaceString(dataset, element, Profile.PatientID);
                 }
 
-                var parenthesis = new [] { '(', ')' };
+                var parenthesis = new[] { '(', ')' };
                 var tag = item.Tag.ToString().Trim(parenthesis);
-                var action = this.Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
+                var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
                 if (action.Key != null)
                 {
-                    var VR = item.ValueRepresentation;
+                    var vr = item.ValueRepresentation;
 
                     switch (action.Value)
                     {
                         case SecurityProfileActions.U: // UID
                         case SecurityProfileActions.C: // Clean
                         case SecurityProfileActions.D: // Dummy
-                            if (VR == DicomVR.UI)
-                                ReplaceUID(dataset, element);
-                            else if (VR.IsString)
-                                ReplaceString(dataset, element, "ANONYMOUS");
-                            else
-                                BlankElement(dataset, element);
+                            if (vr == DicomVR.UI) ReplaceUID(dataset, element);
+                            else if (vr.IsString) ReplaceString(dataset, element, "ANONYMOUS");
+                            else BlankElement(dataset, element);
                             break;
                         case SecurityProfileActions.K: // Keep
                             break;
@@ -474,113 +462,171 @@ namespace Dicom
                         case SecurityProfileActions.Z: // Zero-length
                             BlankElement(dataset, element);
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
             }
 
             dataset.Remove(item => toRemove.Contains(item));
-            return dataset;
         }
 
-        /// <summary>Blanks an element by passing to it an empty string</summary>
-        /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="element">The element to be altered</param>
-        private void BlankElement(DicomDataset dataset, DicomElement element)
+        /// <summary>Clones and anonymizes a dataset</summary>
+        /// <param name="dataset">The dataset to be cloned and anonymized</param>
+        /// <returns>Anonymized dataset.</returns>
+        public DicomDataset Anonymize(DicomDataset dataset)
         {
-            var stringElement = element as DicomStringElement;
-            if (stringElement != null)
-            {
-                dataset.AddOrUpdate(element.Tag, "");
-                return;
-            }
-            if (IsOtherElement(element))  // Replaces with an empty array
-            {
-                var ctor = element.GetType().GetConstructor(new Type[] { typeof(DicomTag) });
-                var item = (DicomItem)ctor.Invoke(new [] { element.Tag });
-                dataset.AddOrUpdate(element.Tag, item); 
-                return;
-            }
-
-            Type valueType = ElementValueType(element);   // Replace with the default value
-            if (valueType != null)
-            {
-                var ctor = element.GetType().GetConstructor(new Type[] { typeof(DicomTag), valueType });
-                var item = (DicomItem)ctor.Invoke(new [] { element.Tag, Activator.CreateInstance(valueType) });
-                dataset.AddOrUpdate(element.Tag, item); 
-                return;
-            }
-
-            // Special date/time cases
-            if (element is DicomDateTime)
-            {
-                dataset.AddOrUpdate(new DicomDateTime(element.Tag, DateTime.MinValue));
-            }
-            else if (element is DicomDate)
-            {
-                dataset.AddOrUpdate(new DicomDate(element.Tag, DateTime.MinValue));
-            }
-            else if (element is DicomTime)
-            {
-                dataset.AddOrUpdate(new DicomTime(element.Tag, new DicomDateRange()));
-            }
+            var clone = dataset.Clone();
+            AnonymizeInPlace(clone);
+            return clone;
         }
 
-        /// <summary>Evaluates whether an element is of type Other*</summary>
-        /// <param name="element">The element to be evaluated</param>
-        /// <returns>A boolean flag indicating whether the element is of the expected type, otherwise false</returns>
-        private bool IsOtherElement(DicomElement element)
+        /// <summary>Anonymizes the dataset of an existing Dicom file</summary>
+        /// <param name="file">The file containing the dataset to be altered</param>
+        public void AnonymizeInPlace(DicomFile file)
         {
-            var t = element.GetType();
-            return t == typeof(DicomOtherByte) || t == typeof(DicomOtherDouble) || t == typeof(DicomOtherFloat) ||
-                t == typeof(DicomOtherLong) || t == typeof(DicomOtherWord) || t == typeof(DicomUnknown);
+            AnonymizeInPlace(file.Dataset);
+            if (file.FileMetaInfo != null)
+            {
+                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            }
         }
 
-        /// <summary>Evaluates whether an element has a generic valueType</summary>
-        /// <param name="element">The element to be evaluated</param>
-        /// <returns>The data type if found, otherwise null</returns>
-        private Type ElementValueType(DicomElement element)
+        /// <summary>Creates a new Dicom file with an anonymized dataset</summary>
+        /// <param name="file">The file containing the original dataset</param>
+        /// <returns>Anonymized dataset.</returns>
+        public DicomFile Anonymize(DicomFile file)
         {
-            var t = element.GetType();
-            if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>))
-                return t.GenericTypeArguments[0];
-            else
-                return null;
+            var clone = file.Clone();
+            AnonymizeInPlace(clone);
+            return clone;
         }
 
-        /// <string>Replaces the content of an element</string>
-        /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="element">The element to be altered</param>
-        /// <param name="newString">The replacement string</param>
-        private void ReplaceString(DicomDataset dataset, DicomElement element, string newString)
-        {
-            dataset.AddOrUpdate<string>(element.Tag, newString);
-        }
+        #endregion
+
+        #region Private methods
+
 
         /// <string>Replaces the content of a UID with a random one</string>
         /// <param name="dataset">Reference to the dataset</param>
         /// <param name="element">The element to be altered</param>
-        /// <param name="newString">The object containing the replacement context</param>
         private void ReplaceUID(DicomDataset dataset, DicomElement element)
         {
             string rep;
             DicomUID uid;
-            var old = element.Get<string>();            
+            var old = element.Get<string>();
 
-            if (this.ReplacedUIDs.ContainsKey(old))
+            if (ReplacedUIDs.ContainsKey(old))
             {
-                rep = this.ReplacedUIDs[old];
+                rep = ReplacedUIDs[old];
                 uid = new DicomUID(rep, "Anonymized UID", DicomUidType.Unknown);
             }
             else
             {
                 uid = DicomUIDGenerator.GenerateDerivedFromUUID();
                 rep = uid.UID;
-                this.ReplacedUIDs[old] = rep; 
+                ReplacedUIDs[old] = rep;
             }
 
             var newItem = new DicomUniqueIdentifier(element.Tag, uid);
             dataset.AddOrUpdate(newItem);
         }
-        #endregion
+
+        /// <summary>Blanks an element by passing to it an empty string</summary>
+        /// <param name="dataset">Reference to the dataset</param>
+        /// <param name="element">The element to be altered</param>
+        private static void BlankElement(DicomDataset dataset, DicomElement element)
+        {
+            // Special date/time cases
+            if (element is DicomDateTime)
+            {
+                dataset.AddOrUpdate(new DicomDateTime(element.Tag, DateTime.MinValue));
+                return;
+            }
+            if (element is DicomDate)
+            {
+                dataset.AddOrUpdate(new DicomDate(element.Tag, DateTime.MinValue));
+                return;
+            }
+            if (element is DicomTime)
+            {
+                dataset.AddOrUpdate(new DicomTime(element.Tag, new DicomDateRange()));
+                return;
+            }
+
+            var stringElement = element as DicomStringElement;
+            if (stringElement != null)
+            {
+                dataset.AddOrUpdate(element.Tag, string.Empty);
+                return;
+            }
+
+            if (IsOtherElement(element)) // Replaces with an empty array
+            {
+                var ctor = GetConstructor(element, typeof(DicomTag));
+                var item = (DicomItem)ctor.Invoke(new object[] { element.Tag });
+                dataset.AddOrUpdate(element.Tag, item);
+                return;
+            }
+
+            var valueType = ElementValueType(element); // Replace with the default value
+            if (valueType != null)
+            {
+                var ctor = GetConstructor(element, typeof(DicomTag), valueType);
+                var item = (DicomItem)ctor.Invoke(new[] { element.Tag, Activator.CreateInstance(valueType) });
+                dataset.AddOrUpdate(element.Tag, item);
+            }
+        }
+
+        /// <summary>Evaluates whether an element is of type Other*</summary>
+        /// <param name="element">The element to be evaluated</param>
+        /// <returns>A boolean flag indicating whether the element is of the expected type, otherwise false</returns>
+        private static bool IsOtherElement(DicomElement element)
+        {
+            var t = element.GetType();
+            return t == typeof(DicomOtherByte) || t == typeof(DicomOtherDouble) || t == typeof(DicomOtherFloat)
+                   || t == typeof(DicomOtherLong) || t == typeof(DicomOtherWord) || t == typeof(DicomUnknown);
+        }
+
+        /// <summary>Evaluates whether an element has a generic valueType</summary>
+        /// <param name="element">The element to be evaluated</param>
+        /// <returns>The data type if found, otherwise null</returns>
+        private static Type ElementValueType(DicomElement element)
+        {
+            var t = element.GetType();
+            if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GenericTypeArguments[0];
+            return null;
+        }
+
+        /// <string>Replaces the content of an element</string>
+        /// <param name="dataset">Reference to the dataset</param>
+        /// <param name="element">The element to be altered</param>
+        /// <param name="newString">The replacement string</param>
+        private static void ReplaceString(DicomDataset dataset, DicomElement element, string newString)
+        {
+            dataset.AddOrUpdate(element.Tag, newString);
+        }
+
+        /// <summary>
+        /// Use reflection to get strongly-typed constructor info from <paramref name="element"/>.
+        /// </summary>
+        /// <param name="element">DICOM element for which constructor info should be obtained.</param>
+        /// <param name="parameterTypes">Expected parameter types in the requested constructor.</param>
+        /// <returns>Constructor info corresponding to <paramref name="element"/> and <paramref name="parameterTypes"/>.</returns>
+        private static ConstructorInfo GetConstructor(DicomElement element, params Type[] parameterTypes)
+        {
+#if PORTABLE || NETSTANDARD || NETFX_CORE
+            return element.GetType().GetTypeInfo().DeclaredConstructors.Single(
+                ci =>
+                    {
+                        var pars = ci.GetParameters().Select(par => par.ParameterType);
+                        return pars.SequenceEqual(parameterTypes);
+                    });
+#else
+            return element.GetType().GetConstructor(parameterTypes);
+#endif
+        }
+
+#endregion
     }
 }
