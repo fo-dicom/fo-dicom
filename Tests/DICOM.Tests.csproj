@@ -109,6 +109,7 @@
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
