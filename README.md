@@ -2,22 +2,26 @@
 
 # Fellow Oak DICOM
 
-[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[//]: # ( [![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/) )
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+### License
+This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
+
 ### Features
 * Portable Class Library (PCL)
-* Targets .NET 4.5.2 and higher, .NET Core 1.3 and higher, Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
+* Targets .NET 4.5.2 and higher, .NET Core (.NET Standard 1.3 and higher), Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
 * DICOM dictionary version 2016e
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
-* Image rendering
+* Platform-specific image rendering
 * JSON support
-* XML export
+* XML export (preview)
+* Anonymization (preview)
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
@@ -41,15 +45,14 @@ Package | Description
 [fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
 [fo-dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) | PCL profile 111 library with obsolete asynchronous methods (to be deprecated)
 
-To facilitate cross-platform development, the core library is strong name signed and denoted *Dicom.Core.dll* on all platforms. From an assembly reference point-of-view this convention makes the core assemblies mutually replaceable. It is thus possible to develop a Portable Class Library that depends on the PCL *Dicom.Core* assembly, and when the developed Portable Class Library is used in a platform-specific application, the PCL *Dicom.Core* assembly can be replaced with the platform-specific *Dicom.Core* assembly without needing to re-build anything. *fo-dicom.Json* and *fo-dicom.MetroLog* are examples of portable class libraries that depend on the PCL *Dicom.Core.dll*.
-
-The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
-
 ### Usage Notes
+
+#### Image rendering configuration
 Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
 
     ImageManager.SetImplementation(WPFImageManager.Instance);
 
+#### Logging configuration
 By default, logging defaults to the no-op `NullLogerManager`. On .NET, several log managers are available and can be enabled like this:
 
     LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
@@ -57,9 +60,19 @@ By default, logging defaults to the no-op `NullLogerManager`. On .NET, several l
 
 On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
 
+#### Cross-platform development
+
+To facilitate cross-platform development, the core library is strong name signed and denoted *Dicom.Core.dll* on all platforms. From an assembly reference point-of-view this convention makes the core assemblies mutually replaceable. It is thus possible to develop a Portable Class Library that depends on the PCL *Dicom.Core* assembly, and when the developed Portable Class Library is used in a platform-specific application, the PCL *Dicom.Core* assembly can be replaced with the platform-specific *Dicom.Core* assembly without needing to re-build anything. *fo-dicom.Json* and *fo-dicom.MetroLog* are examples of portable class libraries that depend on the PCL *Dicom.Core.dll*.
+
+The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
+
 #### Important notice for Universal Windows Platform applications
 The *fo-dicom* class library is not fully Windows Runtime compatible, and therefore cannot be built with the .NET Native tool chain enabled in *Universal Windows Platform* applications.  
 Typically, the *Compile with .NET Native tool chain* checkbox is checked in Release mode for UWP applications. To enable building the application in Release mode, uncheck this checkbox.
+
+### Sample applications
+There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
+that were previously included in the *Examples* sub-folder of the VS solutions.
 
 ### Examples
 
@@ -116,8 +129,8 @@ cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
 
 var client = new DicomClient();
 client.AddRequest(cfind);
-client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
-await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
+client.Send("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");             // Alt 1
+await client.SendAsync("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
 
 #### C-Move SCU
@@ -126,13 +139,9 @@ var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
 
 var client = new DicomClient();
 client.AddRequest(cmove);
-client.Send("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");             // Alt 1
-await client.SendAsync("127.0.0.1", 104, false, "SCU-AE", "SCP-AE");  // Alt 2
+client.Send("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");             // Alt 1
+await client.SendAsync("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
-
-### Sample applications
-There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
-that were previously included in the *Examples* sub-folder of the VS solutions.
 
 ### Contributors
 * [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
@@ -140,18 +149,20 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Ian Yates](http://github.com/IanYates)
 * [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Chris Horn](https://github.com/GMZ)
-* [Rickard Holmberg](https://github.com/rickardraysearch)
 * [Mahesh Dubey](https://github.com/mdubey82)
+* [Rickard Holmberg](https://github.com/rickardraysearch)
+* [Reinhard Gruber](https://github.com/gofal)
+* [Jaime Olivares](https://github.com/jaime-olivares)
+* [Zaid Safadi](https://github.com/Zaid-Safadi)
 * [Alexander Saratow](https://github.com/swalex)
 * [Håkan MacLean](https://github.com/MacL3an)
-* [Zaid Safadi](https://github.com/Zaid-Safadi)
 * [Sam Gorman](https://github.com/HSGorman)
-* [Reinhard Gruber](https://github.com/gofal)
+* [Justin Wake](https://github.com/jwake)
 * [Ryan Melena](https://github.com/RyanMelenaNoesis)
 * [Alexander Pyzynia](https://github.com/werwolfby)
-* [Justin Wake](https://github.com/jwake)
-* [Johannes Liegert](https://github.com/0xLigety)
 * [Chris Hafey](https://github.com/chafey)
+* [Johannes Liegert](https://github.com/0xLigety)
+* [Aerik Sylvan](https://github.com/aerik)
 * [Michael Pavlovsky](https://github.com/michaelp)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
@@ -160,5 +171,3 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 * [Ed55](https://github.com/Ed55)
 * [zcr01](https://github.com/zcr01)
 
-### License
-This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.

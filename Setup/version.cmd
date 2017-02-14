@@ -1,1 +1,1 @@
-set version=3.0.0-rc3
+set version=3.0.0

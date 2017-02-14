@@ -1,4 +1,4 @@
-#### v.3.0.0 (TBD)
+#### v.3.0.0 (2/15/2017)
 * DICOM Anonymizer preview (#410 #437)
 * Client should not send if association rejected (#433 #434)
 * Deploy error for Unity based applications on Hololens (#431 #432)
