@@ -13,7 +13,11 @@ namespace Dicom
         [Fact]
         public void AnonymizeInPlace_Dataset_PatientDataEmpty()
         {
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result.Dataset;
+#else
             var dataset = DicomFile.Open(@"./Test Data/CT1_J2KI").Dataset;
+#endif
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
@@ -25,7 +29,11 @@ namespace Dicom
         [Fact]
         public void AnonymizeInPlace_File_SopInstanceUidTransferredToMetaInfo()
         {
+#if NETFX_CORE
+            var file = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result;
+#else
             var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
+#endif
             var old = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(file);
@@ -39,7 +47,11 @@ namespace Dicom
         [Fact]
         public void AnonymizeInPlace_File_ImplementationVersionNameMaintained()
         {
+#if NETFX_CORE
+            var file = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result;
+#else
             var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
+#endif
             var expected = file.FileMetaInfo.ImplementationVersionName;
             Assert.False(string.IsNullOrEmpty(expected));
 
@@ -53,7 +65,11 @@ namespace Dicom
         [Fact]
         public void Anonymize_Dataset_OriginalDatasetNotModified()
         {
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT-MONO2-16-ankle").Result.Dataset;
+#else
             var dataset = DicomFile.Open(@"./Test Data/CT-MONO2-16-ankle").Dataset;
+#endif
             var expected = dataset.Get<DicomUID>(DicomTag.StudyInstanceUID);
 
             var anonymizer = new DicomAnonymizer();
@@ -66,6 +82,6 @@ namespace Dicom
             Assert.NotEqual(expected, actualNew);
         }
 
-        #endregion
+#endregion
     }
 }

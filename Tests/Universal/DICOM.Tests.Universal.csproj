@@ -93,12 +93,21 @@
     <Content Include="..\Test Data\GH364.dcm">
       <Link>Data\GH364.dcm</Link>
     </Content>
+    <Content Include="..\Test Data\CT-MONO2-16-ankle">
+      <Link>Data\CT-MONO2-16-ankle</Link>
+    </Content>
+    <Content Include="..\Test Data\CT1_J2KI">
+      <Link>Data\CT1_J2KI</Link>
+    </Content>
     <None Include="project.json" />
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\DicomAnonymizerTest.cs">
+      <Link>DicomAnonymizerTest.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH435.cs" />
     <Compile Include="Helpers\ApplicationContent.cs" />

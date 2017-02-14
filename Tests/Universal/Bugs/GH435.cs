@@ -14,12 +14,9 @@ namespace Dicom.Bugs
         [Fact]
         public async Task DicomFileOpen_MissingSequenceDeclaration_CanReadBeyond()
         {
-            using (var classicStream = await ApplicationContent.GetStreamAsync("Data/GH364.dcm"))
-            {
-                var dicomFile = await DicomFile.OpenAsync(classicStream);
-                var actual = dicomFile.Dataset.Contains(DicomTag.StudyInstanceUID);
-                Assert.True(actual);
-            }
+            var dicomFile = await ApplicationContent.OpenDicomFileAsync("Data/GH364.dcm");
+            var actual = dicomFile.Dataset.Contains(DicomTag.StudyInstanceUID);
+            Assert.True(actual);
         }
     }
 }

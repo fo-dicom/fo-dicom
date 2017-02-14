@@ -11,10 +11,14 @@ namespace Dicom.Helpers
 {
     internal static class ApplicationContent
     {
-        internal static async Task<Stream> GetStreamAsync(string relativePath)
+        internal static async Task<DicomFile> OpenDicomFileAsync(string relativePath)
         {
             var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///{relativePath}"));
-            return (await file.OpenReadAsync()).AsStreamForRead();
+            using (var stream = await file.OpenReadAsync())
+            using (var classicStream = stream.AsStreamForRead())
+            {
+                return await DicomFile.OpenAsync(classicStream);
+            }
         }
     }
 }
