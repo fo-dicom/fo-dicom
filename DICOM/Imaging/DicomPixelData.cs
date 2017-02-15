@@ -292,7 +292,7 @@ namespace Dicom.Imaging
             if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor)) throw new DicomImagingException("Palette Color LUT missing from dataset.");
 
             int size = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
-            int first = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
+            // int first = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
             int bits = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
 
             var r = Dataset.Get<byte[]>(DicomTag.RedPaletteColorLookupTableData);
