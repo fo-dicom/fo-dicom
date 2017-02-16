@@ -31,27 +31,31 @@ namespace Dicom.Network
 
         private readonly List<T> clients;
 
-        #endregion
+		private object optionalParams;
 
-        #region CONSTRUCTORS
+		#endregion
 
-        /// <summary>
-        /// Initializes an instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.
-        /// </summary>
-        /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        /// <param name="options">Service options.</param>
-        /// <param name="fallbackEncoding">Fallback encoding.</param>
-        /// <param name="logger">Logger, if null default logger will be applied.</param>
-        [Obsolete("Use DicomServer.Create to instantiate DICOM server object")]
-        public DicomServer(
-            int port,
+		#region CONSTRUCTORS
+
+		/// <summary>
+		/// Initializes an instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.
+		/// </summary>
+		/// <param name="port">Port to listen to.</param>
+		/// <param name="certificateName">Certificate name for authenticated connections.</param>
+		/// <param name="options">Service options.</param>
+		/// <param name="fallbackEncoding">Fallback encoding.</param>
+		/// <param name="logger">Logger, if null default logger will be applied.</param>
+		[Obsolete("Use DicomServer.Create to instantiate DICOM server object")]
+		public DicomServer(
+			int port,
+            object optionalParams = null,
             string certificateName = null,
             DicomServiceOptions options = null,
             Encoding fallbackEncoding = null,
             Logger logger = null)
         {
             this.Port = port;
+            this.optionalParams = optionalParams;
             this.certificateName = certificateName;
             this.fallbackEncoding = fallbackEncoding;
             this.cancellationSource = new CancellationTokenSource();
@@ -182,7 +186,9 @@ namespace Dicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            return (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
+            var instance = (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
+            instance.UserState = this.optionalParams;
+            return instance;
         }
 
         /// <summary>
@@ -296,15 +302,37 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
+            return Create<T>(port, null, certificateName, options, fallbackEncoding, logger);
+        }
+
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="optionalParams">Optional optional parameters.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        public static IDicomServer Create<T>(
+            int port,
+            object optionalParams,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider
+        {
             if (Servers.Any(server => server.Port == port))
             {
                 throw new DicomNetworkException("There is already a DICOM server registered on port {0}", port);
-            }
+			}
 
 #pragma warning disable CS0618 // Type or member is obsolete
             lock (locker)
             {
-                return new DicomServer<T>(port, certificateName, options, fallbackEncoding, logger);
+                return new DicomServer<T>(port, optionalParams, certificateName, options, fallbackEncoding, logger);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
