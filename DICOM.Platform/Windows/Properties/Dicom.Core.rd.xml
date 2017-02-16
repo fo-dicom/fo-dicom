@@ -25,9 +25,9 @@
     http://go.microsoft.com/fwlink/?LinkID=391919
 -->
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
-  <Library Name="DICOM.Windows">
+  <Library Name="Dicom.Core">
 
-  	<!-- add directives for your library here -->
+    <!-- add directives for your library here -->
 
   </Library>
 </Directives>
