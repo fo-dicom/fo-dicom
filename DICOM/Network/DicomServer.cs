@@ -31,6 +31,8 @@ namespace Dicom.Network
 
         private readonly List<T> clients;
 
+        private readonly object userState;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -39,6 +41,7 @@ namespace Dicom.Network
         /// Initializes an instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.
         /// </summary>
         /// <param name="port">Port to listen to.</param>
+        /// <param name="userState">Optional user state object.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         /// <param name="options">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
@@ -46,12 +49,14 @@ namespace Dicom.Network
         [Obsolete("Use DicomServer.Create to instantiate DICOM server object")]
         public DicomServer(
             int port,
+            object userState = null,
             string certificateName = null,
             DicomServiceOptions options = null,
             Encoding fallbackEncoding = null,
             Logger logger = null)
         {
             this.Port = port;
+            this.userState = userState;
             this.certificateName = certificateName;
             this.fallbackEncoding = fallbackEncoding;
             this.cancellationSource = new CancellationTokenSource();
@@ -182,7 +187,9 @@ namespace Dicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            return (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
+            var instance = (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
+            instance.UserState = this.userState;
+            return instance;
         }
 
         /// <summary>
@@ -201,9 +208,10 @@ namespace Dicom.Network
                 while (!this.cancellationSource.IsCancellationRequested)
                 {
                     var networkStream =
-                        await
-                        listener.AcceptNetworkStreamAsync(this.certificateName, noDelay, this.cancellationSource.Token)
-                            .ConfigureAwait(false);
+                        await listener.AcceptNetworkStreamAsync(
+                            this.certificateName,
+                            noDelay,
+                            this.cancellationSource.Token).ConfigureAwait(false);
 
                     if (networkStream != null)
                     {
@@ -271,7 +279,8 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private static readonly HashSet<IDicomServer> Servers = new HashSet<IDicomServer>(DicomServerPortComparer.Default);
+        private static readonly HashSet<IDicomServer> Servers =
+            new HashSet<IDicomServer>(DicomServerPortComparer.Default);
 
         private static readonly object locker = new object();
 
@@ -296,6 +305,28 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
+            return Create<T>(port, null, certificateName, options, fallbackEncoding, logger);
+        }
+
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="userState">Optional optional parameters.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        public static IDicomServer Create<T>(
+            int port,
+            object userState,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider
+        {
             if (Servers.Any(server => server.Port == port))
             {
                 throw new DicomNetworkException("There is already a DICOM server registered on port {0}", port);
@@ -304,7 +335,7 @@ namespace Dicom.Network
 #pragma warning disable CS0618 // Type or member is obsolete
             lock (locker)
             {
-                return new DicomServer<T>(port, certificateName, options, fallbackEncoding, logger);
+                return new DicomServer<T>(port, userState, certificateName, options, fallbackEncoding, logger);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
