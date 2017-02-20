@@ -13,15 +13,6 @@ namespace Dicom
     /// </summary>
     internal static class Setup
     {
-        #region FIELDS
-
-        /// <summary>
-        /// Potential names of the fo-dicom platform-specific assemblies.
-        /// </summary>
-        private static readonly string[] PlatformAssemblyNames = { "Dicom.Platform", "Dicom.Platform.Imaging" };
-
-        #endregion
-
         /// <summary>
         /// Gets a single instance from the platform assembly implementing the <typeparamref name="T"/> type.
         /// </summary>
