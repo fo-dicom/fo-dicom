@@ -144,32 +144,3 @@ client.AddRequest(cmove);
 client.Send("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");             // Alt 1
 await client.SendAsync("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");  // Alt 2
 ```
-
-### Contributors
-* [Anders Gustafsson](https://github.com/anders9ustafsson), Cureos AB
-* [Colby Dillion](https://github.com/rcd)
-* [Ian Yates](http://github.com/IanYates)
-* [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
-* [Chris Horn](https://github.com/GMZ)
-* [Mahesh Dubey](https://github.com/mdubey82)
-* [Rickard Holmberg](https://github.com/rickardraysearch)
-* [Reinhard Gruber](https://github.com/gofal)
-* [Jaime Olivares](https://github.com/jaime-olivares)
-* [Zaid Safadi](https://github.com/Zaid-Safadi)
-* [Alexander Saratow](https://github.com/swalex)
-* [Håkan MacLean](https://github.com/MacL3an)
-* [Sam Gorman](https://github.com/HSGorman)
-* [Justin Wake](https://github.com/jwake)
-* [Ryan Melena](https://github.com/RyanMelenaNoesis)
-* [Alexander Pyzynia](https://github.com/werwolfby)
-* [Chris Hafey](https://github.com/chafey)
-* [Johannes Liegert](https://github.com/0xLigety)
-* [Aerik Sylvan](https://github.com/aerik)
-* [Michael Pavlovsky](https://github.com/michaelp)
-* [lste](https://github.com/lste)
-* [captainstark](https://github.com/captainstark)
-* [do0om](https://github.com/do0om)
-* [Thunderstriker](https://github.com/Thunderstriker)
-* [Ed55](https://github.com/Ed55)
-* [zcr01](https://github.com/zcr01)
-
