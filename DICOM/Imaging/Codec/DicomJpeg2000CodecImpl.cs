@@ -48,8 +48,6 @@ namespace Dicom.Imaging.Codec
                            && !jparams.EncodeSignedPixelValuesAsUnsigned;
                 var comps = new int[nc][];
 
-                // var colorSpace = GetJpegColorSpace(oldPixelData.PhotometricInterpretation);
-
                 for (var c = 0; c < nc; c++)
                 {
                     var comp = new int[pixelCount];

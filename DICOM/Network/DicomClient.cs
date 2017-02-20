@@ -716,7 +716,7 @@ namespace Dicom.Network
                         return true;
                     }
                 }
-                catch
+                catch (TaskCanceledException)
                 {
                     return false;
                 }
