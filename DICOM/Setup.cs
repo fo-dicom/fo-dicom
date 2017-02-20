@@ -18,7 +18,7 @@ namespace Dicom
         /// <summary>
         /// Potential names of the fo-dicom platform-specific assemblies.
         /// </summary>
-        private static readonly string[] PlatformAssemblyNames = { "Dicom.Platform", "Dicom.Platform.Imaging" };
+        // private static readonly string[] PlatformAssemblyNames = { "Dicom.Platform", "Dicom.Platform.Imaging" };
 
         #endregion
 

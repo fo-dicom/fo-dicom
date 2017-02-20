@@ -164,8 +164,6 @@ namespace Dicom.IO.Writer
         /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnEndSequenceItem()
         {
-            DicomSequence sequence = _sequences.Peek();
-
             if (!_options.ExplicitLengthSequenceItems)
             {
                 WriteTagHeader(DicomTag.ItemDelimitationItem, DicomVR.NONE, 0);

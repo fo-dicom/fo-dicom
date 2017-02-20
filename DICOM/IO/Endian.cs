@@ -261,7 +261,7 @@ namespace Dicom.IO
         public static BinaryReader Create(Stream input, Endian endian)
         {
             if (input == null) throw new ArgumentNullException("input");
-            if (endian == null) throw new ArgumentNullException("endian");
+			// struct comparison to null is alway false if (endian == null) throw new ArgumentNullException("endian");
 
             if (BitConverter.IsLittleEndian)
             {
@@ -291,7 +291,7 @@ namespace Dicom.IO
         {
             if (encoding == null) return Create(input, endian);
             if (input == null) throw new ArgumentNullException("input");
-            if (endian == null) throw new ArgumentNullException("endian");
+            // struct comparison to null is alway false if (endian == null) throw new ArgumentNullException("endian");
 
             if (BitConverter.IsLittleEndian)
             {
@@ -509,7 +509,7 @@ namespace Dicom.IO
         public static BinaryWriter Create(Stream output, Endian endian)
         {
             if (output == null) throw new ArgumentNullException("output");
-            if (endian == null) throw new ArgumentNullException("endian");
+            // struct comparison to null is alway false if (endian == null) throw new ArgumentNullException("endian");
 
             if (BitConverter.IsLittleEndian)
             {
@@ -539,7 +539,7 @@ namespace Dicom.IO
         {
             if (encoding == null) return Create(output, endian);
             if (output == null) throw new ArgumentNullException("output");
-            if (endian == null) throw new ArgumentNullException("endian");
+            // struct comparison to null is alway false  if (endian == null) throw new ArgumentNullException("endian");
 
             if (BitConverter.IsLittleEndian)
             {
