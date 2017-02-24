@@ -1,3 +1,8 @@
+#### v.4.0.0 (TBD)
+* Repository re-organization (#445 #446)
+* Added optional parameter for use in extended DicomService (#348 #441)
+* Remove warning messages during build (#33 #438)
+
 #### v.3.0.0 (2/15/2017)
 * DICOM Anonymizer preview (#410 #437)
 * Client should not send if association rejected (#433 #434)
