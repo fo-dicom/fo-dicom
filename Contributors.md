@@ -27,3 +27,4 @@
 * [Thunderstriker](https://github.com/Thunderstriker)
 * [Ed55](https://github.com/Ed55)
 * [zcr01](https://github.com/zcr01)
+* [JustSomeHack](https://github.com/deyung)
