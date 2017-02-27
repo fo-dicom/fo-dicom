@@ -234,47 +234,6 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void BeginSend_SingleRequest_Recognized()
-        {
-            int port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
-            {
-                var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
-
-                var client = new DicomClient();
-                client.AddRequest(request);
-
-                client.EndSend(client.BeginSend("127.0.0.1", port, false, "SCU", "ANY-SCP", null, null));
-
-                Assert.Equal(1, counter);
-            }
-        }
-
-        [Theory]
-        [InlineData(2)]
-        [InlineData(5)]
-        [InlineData(20)]
-        [InlineData(100)]
-        public void BeginSend_MultipleRequests_AllRecognized(int expected)
-        {
-            int port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
-            {
-                var actual = 0;
-
-                var client = new DicomClient();
-                client.NegotiateAsyncOps(expected, 1);
-
-                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
-
-                client.EndSend(client.BeginSend("127.0.0.1", port, false, "SCU", "ANY-SCP", null, null));
-
-                Assert.Equal(expected, actual);
-            }
-        }
-
-        [Fact]
         public void WaitForAssociation_WithinTimeout_ReturnsTrue()
         {
             int port = Ports.GetNext();

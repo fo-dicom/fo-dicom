@@ -87,15 +87,6 @@ namespace Dicom
         }
 
         [Fact]
-        public void BeginSave_ToFile_FileExistsOnDisk()
-        {
-            var saveFile = new DicomFile(MinimumDatatset);
-            var fileName = Path.GetTempFileName();
-            saveFile.EndSave(saveFile.BeginSave(fileName, null, null));
-            Assert.True(File.Exists(fileName));
-        }
-
-        [Fact]
         public void Open_FromFile_YieldsValidDicomFile()
         {
             var saveFile = new DicomFile(MinimumDatatset);
@@ -116,19 +107,6 @@ namespace Dicom
             saveFile.Save(fileName);
 
             var openFile = await DicomFile.OpenAsync(fileName);
-            var expected = MinimumDatasetInstanceUid;
-            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void BeginOpen_FromFile_YieldsValidDicomFile()
-        {
-            var saveFile = new DicomFile(MinimumDatatset);
-            var fileName = Path.GetTempFileName();
-            saveFile.Save(fileName);
-
-            var openFile = _DicomFile.EndOpen(_DicomFile.BeginOpen(fileName, null, null));
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);

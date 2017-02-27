@@ -192,10 +192,6 @@
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
       <Name>DICOM.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Legacy\DICOM.Legacy.csproj">
-      <Project>{fcaae348-5d26-46cf-bfa3-c0b99c711b3d}</Project>
-      <Name>DICOM.Legacy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Logging\DICOM.NLog.Desktop\DICOM.NLog.Desktop.csproj">
       <Project>{89075100-3f00-44fb-a1cc-f77c10a59667}</Project>
       <Name>DICOM.NLog.Desktop</Name>
