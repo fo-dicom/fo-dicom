@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,7 +45,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -87,7 +88,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH319.cs" />
@@ -180,29 +181,31 @@
     <Compile Include="StructuredReport\DicomContentItemTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DICOM.Native\x64\DICOM.Native64.vcxproj">
+    <ProjectReference Include="..\..\DICOM.Native\x64\DICOM.Native64.vcxproj">
       <Project>{fa9c7678-b9d9-46bc-8921-8152fd6787ca}</Project>
       <Name>DICOM.Native64</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM.Native\x86\DICOM.Native.vcxproj">
+    <ProjectReference Include="..\..\DICOM.Native\x86\DICOM.Native.vcxproj">
       <Project>{c6148839-334d-4894-bdb9-e2d57438cf8a}</Project>
       <Name>DICOM.Native</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DICOM.Platform\Desktop\DICOM.Desktop.csproj">
+    <ProjectReference Include="..\..\DICOM.Platform\Desktop\DICOM.Desktop.csproj">
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
       <Name>DICOM.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Logging\DICOM.NLog.Desktop\DICOM.NLog.Desktop.csproj">
+    <ProjectReference Include="..\..\Logging\DICOM.NLog.Desktop\DICOM.NLog.Desktop.csproj">
       <Project>{89075100-3f00-44fb-a1cc-f77c10a59667}</Project>
       <Name>DICOM.NLog.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Serialization\Json\DICOM.Json.csproj">
+    <ProjectReference Include="..\..\Serialization\Json\DICOM.Json.csproj">
       <Project>{849a140b-ef3e-4367-90bc-9f9383dc1481}</Project>
       <Name>DICOM.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Test Data\GH355.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -280,7 +283,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
+    <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

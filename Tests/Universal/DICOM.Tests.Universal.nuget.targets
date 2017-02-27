@@ -4,6 +4,6 @@
     <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
   </PropertyGroup>
   <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\xunit.runner.visualstudio\2.1.0\build\uap10.0\xunit.runner.visualstudio.targets" Condition="Exists('$(NuGetPackageRoot)\xunit.runner.visualstudio\2.1.0\build\uap10.0\xunit.runner.visualstudio.targets')" />
+    <Import Project="$(NuGetPackageRoot)\xunit.runner.visualstudio\2.2.0\build\uap10.0\xunit.runner.visualstudio.targets" Condition="Exists('$(NuGetPackageRoot)\xunit.runner.visualstudio\2.2.0\build\uap10.0\xunit.runner.visualstudio.targets')" />
   </ImportGroup>
 </Project>
