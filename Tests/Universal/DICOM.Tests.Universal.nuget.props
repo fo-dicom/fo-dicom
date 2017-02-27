@@ -4,7 +4,7 @@
     <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
   </PropertyGroup>
   <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\xunit.core\2.1.0\build\win81\xunit.core.props" Condition="Exists('$(NuGetPackageRoot)\xunit.core\2.1.0\build\win81\xunit.core.props')" />
-    <Import Project="$(NuGetPackageRoot)\xunit.runner.visualstudio\2.1.0\build\uap10.0\xunit.runner.visualstudio.props" Condition="Exists('$(NuGetPackageRoot)\xunit.runner.visualstudio\2.1.0\build\uap10.0\xunit.runner.visualstudio.props')" />
+    <Import Project="$(NuGetPackageRoot)\xunit.core\2.2.0\build\uap10.0\xunit.core.props" Condition="Exists('$(NuGetPackageRoot)\xunit.core\2.2.0\build\uap10.0\xunit.core.props')" />
+    <Import Project="$(NuGetPackageRoot)\xunit.runner.visualstudio\2.2.0\build\uap10.0\xunit.runner.visualstudio.props" Condition="Exists('$(NuGetPackageRoot)\xunit.runner.visualstudio\2.2.0\build\uap10.0\xunit.runner.visualstudio.props')" />
   </ImportGroup>
 </Project>

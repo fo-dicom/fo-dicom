@@ -90,13 +90,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
-    <Content Include="..\Test Data\GH364.dcm">
+    <Content Include="..\Desktop\Test Data\GH364.dcm">
       <Link>Data\GH364.dcm</Link>
     </Content>
-    <Content Include="..\Test Data\CT-MONO2-16-ankle">
+    <Content Include="..\Desktop\Test Data\CT-MONO2-16-ankle">
       <Link>Data\CT-MONO2-16-ankle</Link>
     </Content>
-    <Content Include="..\Test Data\CT1_J2KI">
+    <Content Include="..\Desktop\Test Data\CT1_J2KI">
       <Link>Data\CT1_J2KI</Link>
     </Content>
     <None Include="project.json" />
@@ -106,7 +106,7 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\DicomAnonymizerTest.cs">
+    <Compile Include="..\Desktop\DicomAnonymizerTest.cs">
       <Link>DicomAnonymizerTest.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH435.cs" />
