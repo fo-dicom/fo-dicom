@@ -74,7 +74,7 @@ namespace Dicom.Imaging.Render
             // Bits outside bitsStored should be ignored. Try setting them to zeros and ones, respectively, and verify that the
             // output is unchanged:
             var equivalentData = origData.Select(x => (short)(x & mask)).ToArray();
-            var equivalentData2 = origData.Select(x => (short)(x | ~mask)).ToArray();
+            var equivalentData2 = origData.Select(x => (short)(x | (short)~mask)).ToArray();
 
             var pixelData = CreatePixelData_(
                 equivalentData,

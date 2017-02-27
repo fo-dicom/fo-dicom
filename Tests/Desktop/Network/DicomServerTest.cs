@@ -19,9 +19,9 @@ namespace Dicom.Network
         {
             var port = Ports.GetNext();
 
-            var server1 = new DicomServer<DicomCEchoProvider>(port);
+            var server1 = DicomServer.Create<DicomCEchoProvider>(port);
             while (!server1.IsListening) Thread.Sleep(10);
-            var server2 = new DicomServer<DicomCEchoProvider>(port);
+            var server2 = DicomServer.Create<DicomCEchoProvider>(port);
             Thread.Sleep(500);  // Allow for server2 to attempt listening
 
             Assert.True(server1.IsListening);
@@ -36,7 +36,7 @@ namespace Dicom.Network
         {
             var port = Ports.GetNext();
 
-            var server = new DicomServer<DicomCEchoProvider>(port);
+            var server = DicomServer.Create<DicomCEchoProvider>(port);
             while (!server.IsListening) Thread.Sleep(10);
 
             for (var i = 0; i < 10; ++i)
