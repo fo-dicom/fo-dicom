@@ -1,5 +1,6 @@
 #### v.4.0.0 (TBD)
 * Repository re-organization (#445 #446 #447 #448)
+* Deprecate Legacy class library (#415 #449)
 * Added optional parameter for use in extended DicomService (#348 #441)
 * Remove warning messages during build (#33 #438)
 

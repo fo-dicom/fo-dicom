@@ -63,13 +63,6 @@ namespace Dicom
         }
 
         [Fact]
-        public void BeginWalk_CheckSequenceItems_ShouldBeThree()
-        {
-            this.walker.EndWalk(this.walker.BeginWalk(this.walkerImpl, null, null));
-            Assert.Equal(3, this.walkerImpl.itemVisits);
-        }
-
-        [Fact]
         public void Walk_OnElementReturnedFalse_FallbackBehaviorContinueWalk()
         {
             this.walker.Walk(this.walkerImpl);

@@ -14,22 +14,6 @@ namespace Dicom.IO.Reader
         #region Unit tests
 
         [Fact]
-        public void EndRead_ValidSource_ReturnsSuccess()
-        {
-            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
-            {
-                var source = new StreamByteSource(stream);
-                var reader = new DicomFileReader();
-
-                const DicomReaderResult expected = DicomReaderResult.Success;
-                var actual = reader.EndRead(
-                    reader.BeginRead(source, new MockObserver(), new MockObserver(), null, null));
-
-                Assert.Equal(expected, actual);
-            }
-        }
-
-        [Fact]
         public void Read_ValidSource_ReturnsSuccess()
         {
             using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))

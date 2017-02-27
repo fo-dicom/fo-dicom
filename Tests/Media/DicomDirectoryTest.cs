@@ -34,16 +34,6 @@ namespace Dicom.Media
         }
 
         [Fact]
-        public void BeginOpen_DicomDirFile_Succeeds()
-        {
-            var dir = _DicomDirectory.EndOpen(_DicomDirectory.BeginOpen(@".\Test Data\DICOMDIR", null, null));
-
-            var expected = DicomUID.MediaStorageDirectoryStorage.UID;
-            var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
         public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
         {
             var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
