@@ -200,8 +200,8 @@
       <Project>{89075100-3f00-44fb-a1cc-f77c10a59667}</Project>
       <Name>DICOM.NLog.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Serialization\DICOM.Json\DICOM.Json.csproj">
-      <Project>{849A140B-EF3E-4367-90BC-9F9383DC1481}</Project>
+    <ProjectReference Include="..\Serialization\Json\DICOM.Json.csproj">
+      <Project>{849a140b-ef3e-4367-90bc-9f9383dc1481}</Project>
       <Name>DICOM.Json</Name>
     </ProjectReference>
   </ItemGroup>
