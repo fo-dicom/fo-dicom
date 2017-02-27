@@ -38,7 +38,11 @@ namespace Dicom.Imaging
         {
             get
             {
+#if NETSTANDARD
+                return false;
+#else
                 return true;
+#endif
             }
         }
 
