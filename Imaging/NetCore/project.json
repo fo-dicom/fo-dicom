@@ -1,0 +1,25 @@
+﻿{
+  "buildOptions": {
+    "compile": {
+      "include": [
+        "../../SharedAssemblyInfo.cs",
+        "../../DICOM/Imaging/WinFormsImage.cs",
+        "../../DICOM/Imaging/WinFormsImageManager.cs"
+      ]
+    },
+    "publicSign": true,
+    "keyFile": "../../DICOM/fo-dicom.snk",
+    "outputName": "Dicom.Imaging",
+    "define": [ "NETSTANDARD" ]
+  },
+
+  "dependencies": {
+    "fo-dicom.NetCore": "3.0.0",
+    "CoreCompat.System.Drawing": "1.0.0-beta006"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+    }
+  }
+}
