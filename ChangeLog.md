@@ -1,3 +1,6 @@
+#### v.3.0.1 (TBD)
+* YBR_FULL_422 JPEG Process 14 SV1 compressed image incorrectly decoded (#453 #454)
+
 #### v.3.0.0 (2/15/2017)
 * DICOM Anonymizer preview (#410 #437)
 * Client should not send if association rejected (#433 #434)

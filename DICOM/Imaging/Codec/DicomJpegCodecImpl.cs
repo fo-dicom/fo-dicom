@@ -197,23 +197,6 @@ namespace Dicom.Imaging.Codec
                 newPixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
             }
 
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
-            {
-                newPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
-            }
-
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422)
-            {
-                newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
-            }
-
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull)
-            {
-                newPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
-            }
-
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
             {
                 var jpegData = oldPixelData.GetFrame(frame);
@@ -231,7 +214,7 @@ namespace Dicom.Imaging.Codec
 
                     for (var c = 0; c < decoder.ComponentsPerSample; c++)
                     {
-                        var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
+                        var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? c * pixelCount : c;
                         var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
                                          ? 1
                                          : decoder.ComponentsPerSample;

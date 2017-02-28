@@ -457,11 +457,7 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
         if (jpeg_read_header(&dinfo, TRUE) == JPEG_SUSPENDED)
             throw gcnew DicomCodecException("Unable to decompress JPEG: Suspended");
             
-        if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull422 || newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrPartial422)
-            newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
-        else
-            newPixelData->PhotometricInterpretation = oldPixelData->PhotometricInterpretation;
-
+        newPixelData->PhotometricInterpretation = oldPixelData->PhotometricInterpretation;
         if (params->ConvertColorspaceToRGB && (dinfo.out_color_space == JCS_YCbCr || dinfo.out_color_space == JCS_RGB)) { 
             if (oldPixelData->PixelRepresentation == PixelRepresentation::Signed) 
                 throw gcnew DicomCodecException("JPEG codec unable to perform colorspace conversion on signed pixel data");
@@ -474,9 +470,6 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
             dinfo.out_color_space = JCS_UNKNOWN;
         }
         
-        if (newPixelData->PhotometricInterpretation == PhotometricInterpretation::YbrFull)
-            newPixelData->PlanarConfiguration = PlanarConfiguration::Planar;
-
         jpeg_calc_output_dimensions(&dinfo);
         jpeg_start_decompress(&dinfo);
 
