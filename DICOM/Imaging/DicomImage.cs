@@ -311,16 +311,14 @@ namespace Dicom.Imaging
                 decodedPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
             }
 
-            // temporary fix for JPEG lossless and JPEG2000 compressed YBR images
-            if ((inputTransferSyntax == DicomTransferSyntax.JPEGProcess14
-                 || inputTransferSyntax == DicomTransferSyntax.JPEGProcess14SV1
-                 || inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
+            // temporary fix for JPEG2000 compressed YBR images
+            if ((inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
                  || inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossy)
                 && (decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull
                     || decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
                     || decodedPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422))
             {
-                // For JPEG lossless YBR type images in Dicom.Imaging.Codec.Jpeg.i and JPEG2000 YBR type images in Dicom.Imaging.Codec.Jpeg2000.cpp, 
+                // For JPEG2000 YBR type images in Dicom.Imaging.Codec.Jpeg2000.cpp, 
                 // YBR_FULL is applied and PlanarConfiguration is set to Planar
                 decodedPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
                 decodedPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
