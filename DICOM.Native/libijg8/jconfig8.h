@@ -21,7 +21,9 @@
  *
  */
 
-/* We assume ANSI C and don't support DOS, 
+#define HAVE_STDLIB_H
+
+ /* We assume ANSI C and don't support DOS,
  * so the following settings need not be tested 
  */
 #define HAVE_PROTOTYPES 
