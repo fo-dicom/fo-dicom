@@ -75,7 +75,7 @@ namespace IJGVERS {
     }
 
     void termDestination(j_compress_ptr cinfo) {
-        int count = IJGE_BLOCKSIZE - cinfo->dest->free_in_buffer;
+        int count = IJGE_BLOCKSIZE - (int)cinfo->dest->free_in_buffer;
         Writer->WriteBytes(ArrayReference<unsigned char>(DataArray->begin(), count));
         create_task(Writer->StoreAsync()).wait();
         Writer->DetachStream();
@@ -382,7 +382,7 @@ namespace IJGVERS {
         unsigned char *next_buffer;
 
         // buffer size
-        unsigned int *next_buffer_size;
+        unsigned int next_buffer_size;
     };
 
     void initSource(j_decompress_ptr /* cinfo */) {
@@ -402,7 +402,7 @@ namespace IJGVERS {
             // In this case we must skip the remaining number of bytes here.
             if (src->skip_bytes > 0) {
                 if (src->pub.bytes_in_buffer < (unsigned long) src->skip_bytes) {
-                    src->skip_bytes            -= src->pub.bytes_in_buffer;
+                    src->skip_bytes            -= (long)src->pub.bytes_in_buffer;
                     src->pub.next_input_byte   += src->pub.bytes_in_buffer;
                     src->pub.bytes_in_buffer    = 0;
                     // cause a suspension return
@@ -425,7 +425,7 @@ namespace IJGVERS {
         SourceManagerStruct *src = (SourceManagerStruct *)(cinfo->src);
 
         if (src->pub.bytes_in_buffer < (size_t)num_bytes) {
-            src->skip_bytes             = num_bytes - src->pub.bytes_in_buffer;
+            src->skip_bytes             = num_bytes - (long)src->pub.bytes_in_buffer;
             src->pub.next_input_byte   += src->pub.bytes_in_buffer;
             src->pub.bytes_in_buffer    = 0; // causes a suspension return
         }
@@ -459,7 +459,7 @@ void JPEGCODEC::Decode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
         src.pub.next_input_byte   = NULL;
         src.skip_bytes            = 0;
         src.next_buffer           = (unsigned char*)(void*)jpegArray->begin();
-        src.next_buffer_size      = (unsigned int*)jpegArray->Length;
+        src.next_buffer_size      = (unsigned int)jpegArray->Length;
 
         IJGVERS::ErrorStruct jerr;
         memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));
@@ -559,7 +559,7 @@ int JPEGCODEC::ScanHeaderForPrecision(NativePixelData^ pixelData) {
     src.pub.next_input_byte   = NULL;
     src.skip_bytes            = 0;
     src.next_buffer           = (unsigned char*)(void*)jpegArray->begin();
-    src.next_buffer_size      = (unsigned int*)jpegArray->Length;
+    src.next_buffer_size      = (unsigned int)jpegArray->Length;
 
     IJGVERS::ErrorStruct jerr;
     memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));

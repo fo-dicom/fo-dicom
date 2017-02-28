@@ -71,8 +71,8 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 		CharlsApiResultType err = JpegLsEncode((void*)jpegData->begin(), jpegData->Length, &jpegDataSize, (void*)frameData->begin(), frameData->Length, &params, errorMessage);
 		if (err != CharlsApiResultType::OK) throw ref new FailureException(GetErrorMessage(err));
 
-		Array<unsigned char>^ buffer = ref new Array<unsigned char>(jpegDataSize + ((jpegDataSize & 1) == 1 ? 1 : 0));
-		Arrays::Copy(jpegData, buffer, jpegDataSize);
+		Array<unsigned char>^ buffer = ref new Array<unsigned char>(static_cast<unsigned int>(jpegDataSize + ((jpegDataSize & 1) == 1 ? 1 : 0)));
+		Arrays::Copy(jpegData, buffer, static_cast<int>(jpegDataSize));
 
 		newPixelData->AddFrame(buffer);
 	}
