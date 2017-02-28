@@ -21,14 +21,12 @@ namespace Dicom.Network
 
             var server1 = DicomServer.Create<DicomCEchoProvider>(port);
             while (!server1.IsListening) Thread.Sleep(10);
-            var server2 = DicomServer.Create<DicomCEchoProvider>(port);
-            Thread.Sleep(500);  // Allow for server2 to attempt listening
+
+            var exception = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port));
+            Assert.IsType<DicomNetworkException>(exception);
 
             Assert.True(server1.IsListening);
             Assert.Null(server1.Exception);
-
-            Assert.False(server2.IsListening);
-            Assert.IsType<SocketException>(server2.Exception);
         }
 
         [Fact]
