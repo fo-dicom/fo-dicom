@@ -67,7 +67,7 @@ namespace IJGVERS {
 
     void termDestination(j_compress_ptr cinfo) {
         JPEGCODEC^ thisPtr = (JPEGCODEC^)JPEGCODEC::This;
-        int count = IJGE_BLOCKSIZE - cinfo->dest->free_in_buffer;
+        int count = IJGE_BLOCKSIZE - (int)cinfo->dest->free_in_buffer;
         thisPtr->MemoryBuffer->Write(thisPtr->DataArray->Data, 0, count);
         thisPtr->DataArray = nullptr;
     }
@@ -387,7 +387,7 @@ namespace IJGVERS {
             // In this case we must skip the remaining number of bytes here.
             if (src->skip_bytes > 0) {
                 if (src->pub.bytes_in_buffer < (unsigned long) src->skip_bytes) {
-                    src->skip_bytes            -= src->pub.bytes_in_buffer;
+                    src->skip_bytes            -= (long)src->pub.bytes_in_buffer;
                     src->pub.next_input_byte   += src->pub.bytes_in_buffer;
                     src->pub.bytes_in_buffer    = 0;
                     // cause a suspension return
@@ -410,7 +410,7 @@ namespace IJGVERS {
         SourceManagerStruct *src = (SourceManagerStruct *)(cinfo->src);
 
         if (src->pub.bytes_in_buffer < (size_t)num_bytes) {
-            src->skip_bytes             = num_bytes - src->pub.bytes_in_buffer;
+            src->skip_bytes             = num_bytes - (long)src->pub.bytes_in_buffer;
             src->pub.next_input_byte   += src->pub.bytes_in_buffer;
             src->pub.bytes_in_buffer    = 0; // causes a suspension return
         }
