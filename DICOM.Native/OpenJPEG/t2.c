@@ -294,7 +294,7 @@ static int t2_encode_packet(opj_tcd_tile_t * tile, opj_tcp_t * tcp, opj_pi_itera
 		}
 	}
 	
-	return (c - dest);
+	return (int)(c - dest);
 }
 
 static opj_bool t2_init_seg(opj_tcd_cblk_dec_t* cblk, int index, int cblksty, int first) {
@@ -395,7 +395,7 @@ static int t2_decode_packet(opj_t2_t* t2, unsigned char *src, int len, opj_tcd_t
 		bio_init_dec(bio, hd, tcp->ppt_len);
 	} else {			/* Normal Case */
 		hd = c;
-		bio_init_dec(bio, hd, src+len-hd);
+		bio_init_dec(bio, hd, (int)(src+len-hd));
 	}
 	
 	present = bio_read(bio, 1);
@@ -424,17 +424,17 @@ static int t2_decode_packet(opj_t2_t* t2, unsigned char *src, int len, opj_tcd_t
 		/* INDEX >> */
 		
 		if (cp->ppm == 1) {		/* PPM case */
-			cp->ppm_len += cp->ppm_data-hd;
+			cp->ppm_len += (int)(cp->ppm_data-hd);
 			cp->ppm_data = hd;
-			return (c - src);
+			return (int)(c - src);
 		}
 		if (tcp->ppt == 1) {	/* PPT case */
-			tcp->ppt_len+=tcp->ppt_data-hd;
+			tcp->ppt_len+=(int)(tcp->ppt_data-hd);
 			tcp->ppt_data = hd;
-			return (c - src);
+			return (int)(c - src);
 		}
 		
-		return (hd - src);
+		return (int)(hd - src);
 	}
 	
 	for (bandno = 0; bandno < res->numbands; bandno++) {
@@ -539,10 +539,10 @@ static int t2_decode_packet(opj_t2_t* t2, unsigned char *src, int len, opj_tcd_t
 	/* INDEX >> */
 	
 	if (cp->ppm==1) {
-		cp->ppm_len+=cp->ppm_data-hd;
+		cp->ppm_len+=(int)(cp->ppm_data-hd);
 		cp->ppm_data = hd;
 	} else if (tcp->ppt == 1) {
-		tcp->ppt_len+=tcp->ppt_data-hd;
+		tcp->ppt_len+=(int)(tcp->ppt_data-hd);
 		tcp->ppt_data = hd;
 	} else {
 		c=hd;
@@ -615,7 +615,7 @@ static int t2_decode_packet(opj_t2_t* t2, unsigned char *src, int len, opj_tcd_t
 		}
 	}
 	
-	return (c - src);
+	return (int)(c - src);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -650,7 +650,7 @@ int t2_encode_packets(opj_t2_t* t2,int tileno, opj_tcd_tile_t *tile, int maxlaye
 				}
 				while (pi_next(&pi[poc])) {
 					if (pi[poc].layno < maxlayers) {
-						e = t2_encode_packet(tile, &cp->tcps[tileno], &pi[poc], c, dest + len - c, cstr_info, tileno);
+						e = t2_encode_packet(tile, &cp->tcps[tileno], &pi[poc], c, (int)(dest + len - c), cstr_info, tileno);
 						comp_len = comp_len + e;
 						if (e == -999) {
 							break;
@@ -673,7 +673,7 @@ int t2_encode_packets(opj_t2_t* t2,int tileno, opj_tcd_tile_t *tile, int maxlaye
 		pi_create_encode(pi, cp,tileno,pino,tpnum,tppos,t2_mode,cur_totnum_tp);
 		while (pi_next(&pi[pino])) {
 			if (pi[pino].layno < maxlayers) {
-				e = t2_encode_packet(tile, &cp->tcps[tileno], &pi[pino], c, dest + len - c, cstr_info, tileno);
+				e = t2_encode_packet(tile, &cp->tcps[tileno], &pi[pino], c, (int)(dest + len - c), cstr_info, tileno);
 				if (e == -999) {
 					break;
 				} else {
@@ -708,7 +708,7 @@ int t2_encode_packets(opj_t2_t* t2,int tileno, opj_tcd_tile_t *tile, int maxlaye
 		return e;
 	}
 	
-  return (c - dest);
+  return (int)(c - dest);
 }
 
 int t2_decode_packets(opj_t2_t *t2, unsigned char *src, int len, int tileno, opj_tcd_tile_t *tile, opj_codestream_info_t *cstr_info) {
@@ -738,7 +738,7 @@ int t2_decode_packets(opj_t2_t *t2, unsigned char *src, int len, int tileno, opj
 					pack_info = &cstr_info->tile[tileno].packet[cstr_info->packno];
 				else
 					pack_info = NULL;
-				e = t2_decode_packet(t2, c, src + len - c, tile, &cp->tcps[tileno], &pi[pino], pack_info);
+				e = t2_decode_packet(t2, c, (int)(src + len - c), tile, &cp->tcps[tileno], &pi[pino], pack_info);
 			} else {
 				e = 0;
 			}
@@ -797,7 +797,7 @@ int t2_decode_packets(opj_t2_t *t2, unsigned char *src, int len, int tileno, opj
 		return e;
 	}
 	
-	return (c - src);
+	return (int)(c - src);
 }
 
 /* ----------------------------------------------------------------------- */
