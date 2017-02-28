@@ -367,7 +367,7 @@ namespace IJGVERS {
         unsigned char *next_buffer;
 
         // buffer size
-        unsigned int *next_buffer_size;
+        unsigned int next_buffer_size;
     };
 
     void initSource(j_decompress_ptr /* cinfo */) {
@@ -443,7 +443,7 @@ void JPEGCODEC::Decode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
         src.pub.next_input_byte   = NULL;
         src.skip_bytes            = 0;
         src.next_buffer           = (unsigned char*)(void*)jpegArray->Pointer;
-        src.next_buffer_size      = (unsigned int*)jpegArray->ByteSize;
+        src.next_buffer_size      = (unsigned int)jpegArray->ByteSize;
 
         IJGVERS::ErrorStruct jerr;
         memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));
@@ -540,7 +540,7 @@ int JPEGCODEC::ScanHeaderForPrecision(DicomPixelData^ pixelData) {
     src.pub.next_input_byte   = NULL;
     src.skip_bytes            = 0;
     src.next_buffer           = (unsigned char*)(void*)jpegArray->Pointer;
-    src.next_buffer_size      = (unsigned int*)jpegArray->ByteSize;
+    src.next_buffer_size      = (unsigned int)jpegArray->ByteSize;
 
     IJGVERS::ErrorStruct jerr;
     memset(&jerr, 0, sizeof(IJGVERS::ErrorStruct));
