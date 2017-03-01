@@ -1,0 +1,256 @@
+jaricom.o: jaricom.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcapimin.o: jcapimin.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcapistd.o: jcapistd.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcarith.o: jcarith.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jccoefct.o: jccoefct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jccolor.o: jccolor.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcdctmgr.o: jcdctmgr.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jdct16.h
+jcdiffct.o: jcdiffct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jchuff.o: jchuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jchuff16.h
+jcinit.o: jcinit.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jclhuff.o: jclhuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h jchuff16.h
+jclossls.o: jclossls.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jclossy.o: jclossy.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jcmainct.o: jcmainct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcmarker.o: jcmarker.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcmaster.o: jcmaster.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jcodec.o: jcodec.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jlossls16.h
+jcomapi.o: jcomapi.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcparam.o: jcparam.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcphuff.o: jcphuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jchuff16.h
+jcpred.o: jcpred.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jcprepct.o: jcprepct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcsample.o: jcsample.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jcscale.o: jcscale.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jcshuff.o: jcshuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jchuff16.h
+jctrans.o: jctrans.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jdapimin.o: jdapimin.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdapistd.o: jdapistd.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdarith.o: jdarith.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdatadst.o: jdatadst.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jerror16.h
+jdatasrc.o: jdatasrc.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jerror16.h
+jdcoefct.o: jdcoefct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jdcolor.o: jdcolor.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jddctmgr.o: jddctmgr.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jdct16.h
+jddiffct.o: jddiffct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jdhuff.o: jdhuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jlossls16.h jdhuff16.h
+jdinput.o: jdinput.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdlhuff.o: jdlhuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h jdhuff16.h
+jdlossls.o: jdlossls.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jdlossy.o: jdlossy.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jdmainct.o: jdmainct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdmarker.o: jdmarker.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdmaster.o: jdmaster.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdmerge.o: jdmerge.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdphuff.o: jdphuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jdhuff16.h
+jdpostct.o: jdpostct.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdpred.o: jdpred.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jdsample.o: jdsample.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jdscale.o: jdscale.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossls16.h
+jdshuff.o: jdshuff.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h jdhuff16.h
+jdtrans.o: jdtrans.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jlossy16.h
+jerror.o: jerror.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jversion16.h jerror16.h
+jfdctflt.o: jfdctflt.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jfdctfst.o: jfdctfst.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jfdctint.o: jfdctint.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jidctflt.o: jidctflt.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jidctfst.o: jidctfst.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jidctint.o: jidctint.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jidctred.o: jidctred.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jdct16.h
+jmemmgr.o: jmemmgr.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jmemsys16.h
+jmemnobs.o: jmemnobs.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h jmemsys16.h
+jquant1.o: jquant1.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jquant2.o: jquant2.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h
+jutils.o: jutils.c jinclude16.h jconfig16.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib16.h jmorecfg16.h \
+  jpegint16.h jerror16.h

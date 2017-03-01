@@ -1,0 +1,256 @@
+jaricom.o: jaricom.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcapimin.o: jcapimin.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcapistd.o: jcapistd.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcarith.o: jcarith.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jccoefct.o: jccoefct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jccolor.o: jccolor.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcdctmgr.o: jcdctmgr.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jdct8.h
+jcdiffct.o: jcdiffct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jchuff.o: jchuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jchuff8.h
+jcinit.o: jcinit.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jclhuff.o: jclhuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h jchuff8.h
+jclossls.o: jclossls.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jclossy.o: jclossy.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jcmainct.o: jcmainct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcmarker.o: jcmarker.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcmaster.o: jcmaster.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jcodec.o: jcodec.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jlossls8.h
+jcomapi.o: jcomapi.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcparam.o: jcparam.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcphuff.o: jcphuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jchuff8.h
+jcpred.o: jcpred.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jcprepct.o: jcprepct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcsample.o: jcsample.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jcscale.o: jcscale.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jcshuff.o: jcshuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jchuff8.h
+jctrans.o: jctrans.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jdapimin.o: jdapimin.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdapistd.o: jdapistd.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdarith.o: jdarith.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdatadst.o: jdatadst.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jerror8.h
+jdatasrc.o: jdatasrc.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jerror8.h
+jdcoefct.o: jdcoefct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jdcolor.o: jdcolor.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jddctmgr.o: jddctmgr.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jdct8.h
+jddiffct.o: jddiffct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jdhuff.o: jdhuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jlossls8.h jdhuff8.h
+jdinput.o: jdinput.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdlhuff.o: jdlhuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h jdhuff8.h
+jdlossls.o: jdlossls.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jdlossy.o: jdlossy.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jdmainct.o: jdmainct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdmarker.o: jdmarker.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdmaster.o: jdmaster.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdmerge.o: jdmerge.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdphuff.o: jdphuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jdhuff8.h
+jdpostct.o: jdpostct.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdpred.o: jdpred.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jdsample.o: jdsample.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jdscale.o: jdscale.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossls8.h
+jdshuff.o: jdshuff.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h jdhuff8.h
+jdtrans.o: jdtrans.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jlossy8.h
+jerror.o: jerror.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jversion8.h jerror8.h
+jfdctflt.o: jfdctflt.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jfdctfst.o: jfdctfst.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jfdctint.o: jfdctint.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jidctflt.o: jidctflt.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jidctfst.o: jidctfst.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jidctint.o: jidctint.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jidctred.o: jidctred.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jdct8.h
+jmemmgr.o: jmemmgr.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jmemsys8.h
+jmemnobs.o: jmemnobs.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h jmemsys8.h
+jquant1.o: jquant1.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jquant2.o: jquant2.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h
+jutils.o: jutils.c jinclude8.h jconfig8.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib8.h jmorecfg8.h \
+  jpegint8.h jerror8.h

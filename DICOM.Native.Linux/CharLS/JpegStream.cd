@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="The JpegStreamWriter can be used to create JPEG streams containing JPEG-LS encodeded images.&#xD;&#xA;The basic mechanism is that the JpegStreamWriter serializes JpegSegments to the output  destination. There are 2 types of JpegSegments: The JpegMarkerSegments contain predefines JPEG markers that hold info about the encoded data and define the structure of the stream. The JpegImageDataSegments contain the actual encoded bits.">
+    <Position X="0.625" Y="5.74" Height="1.271" Width="5.106" />
+  </Comment>
+  <Class Name="JpegSegment">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAEAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>jpegsegment.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JpegMarkerSegment">
+    <Position X="0.5" Y="3" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAADABAAAABACACAAQACAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>jpegmarkersegment.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JpegImageDataSegment">
+    <Position X="4" Y="3" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAIACAAAAAAAAAhAAAAgAA=</HashCode>
+      <FileName>jpegimagedatasegment.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JpegStreamWriter">
+    <Position X="6.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAYAAgABKAAAAAADgAAEAgAQAACAYAgABAAAAUCAAA=</HashCode>
+      <FileName>jpegstreamwriter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JpegStreamReader">
+    <Position X="9" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AACZEBECAIEAEQAAAIAAAAAgACAABFAJQEAgAAAAAAA=</HashCode>
+      <FileName>jpegstreamreader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

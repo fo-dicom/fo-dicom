@@ -1,0 +1,256 @@
+jaricom.o: jaricom.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcapimin.o: jcapimin.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcapistd.o: jcapistd.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcarith.o: jcarith.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jccoefct.o: jccoefct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jccolor.o: jccolor.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcdctmgr.o: jcdctmgr.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jdct12.h
+jcdiffct.o: jcdiffct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jchuff.o: jchuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jchuff12.h
+jcinit.o: jcinit.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jclhuff.o: jclhuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h jchuff12.h
+jclossls.o: jclossls.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jclossy.o: jclossy.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jcmainct.o: jcmainct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcmarker.o: jcmarker.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcmaster.o: jcmaster.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jcodec.o: jcodec.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jlossls12.h
+jcomapi.o: jcomapi.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcparam.o: jcparam.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcphuff.o: jcphuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jchuff12.h
+jcpred.o: jcpred.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jcprepct.o: jcprepct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcsample.o: jcsample.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jcscale.o: jcscale.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jcshuff.o: jcshuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jchuff12.h
+jctrans.o: jctrans.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jdapimin.o: jdapimin.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdapistd.o: jdapistd.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdarith.o: jdarith.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdatadst.o: jdatadst.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jerror12.h
+jdatasrc.o: jdatasrc.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jerror12.h
+jdcoefct.o: jdcoefct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jdcolor.o: jdcolor.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jddctmgr.o: jddctmgr.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jdct12.h
+jddiffct.o: jddiffct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jdhuff.o: jdhuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jlossls12.h jdhuff12.h
+jdinput.o: jdinput.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdlhuff.o: jdlhuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h jdhuff12.h
+jdlossls.o: jdlossls.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jdlossy.o: jdlossy.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jdmainct.o: jdmainct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdmarker.o: jdmarker.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdmaster.o: jdmaster.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdmerge.o: jdmerge.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdphuff.o: jdphuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jdhuff12.h
+jdpostct.o: jdpostct.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdpred.o: jdpred.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jdsample.o: jdsample.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jdscale.o: jdscale.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossls12.h
+jdshuff.o: jdshuff.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h jdhuff12.h
+jdtrans.o: jdtrans.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jlossy12.h
+jerror.o: jerror.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jversion12.h jerror12.h
+jfdctflt.o: jfdctflt.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jfdctfst.o: jfdctfst.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jfdctint.o: jfdctint.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jidctflt.o: jidctflt.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jidctfst.o: jidctfst.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jidctint.o: jidctint.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jidctred.o: jidctred.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jdct12.h
+jmemmgr.o: jmemmgr.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jmemsys12.h
+jmemnobs.o: jmemnobs.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h jmemsys12.h
+jquant1.o: jquant1.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jquant2.o: jquant2.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h
+jutils.o: jutils.c jinclude12.h jconfig12.h \
+  ../../config/include/dcmtk/config/osconfig.h \
+  ../../config/include/dcmtk/config/cfunix.h jpeglib12.h jmorecfg12.h \
+  jpegint12.h jerror12.h

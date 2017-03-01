@@ -1,0 +1,59 @@
+#
+#	Makefile for dcmjpeg/libijg8
+#
+
+@SET_MAKE@
+
+SHELL = /bin/sh
+VPATH = @srcdir@:@top_srcdir@/include:@top_srcdir@/@configdir@/include
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+configdir = @top_srcdir@/@configdir@
+
+include $(configdir)/@common_makefile@
+
+ofstddir = $(top_srcdir)/../ofstd
+
+LOCALINCLUDES = -I$(ofstddir)/include
+LOCALDEFS = -DWITH_ARITHMETIC_PATCH
+
+objs = jcomapi.o  jcodec.o  jutils.o  jerror.o  jmemmgr.o  \
+	jmemnobs.o jcapimin.o jcapistd.o jctrans.o  jcparam.o  \
+	jdatadst.o jcinit.o   jcmaster.o jcmarker.o jcmainct.o \
+	jcprepct.o jclossls.o jclossy.o  jccoefct.o jccolor.o  \
+	jcsample.o jchuff.o   jcphuff.o  jcshuff.o  jclhuff.o  \
+	jcpred.o   jcscale.o  jcdiffct.o jcdctmgr.o jfdctfst.o \
+	jfdctflt.o jfdctint.o jdapimin.o jdapistd.o jdtrans.o  \
+	jdatasrc.o jdmaster.o jdinput.o  jdmarker.o jdlossls.o \
+	jdlossy.o  jdhuff.o   jdlhuff.o  jdphuff.o  jdshuff.o  \
+	jdpred.o   jdscale.o  jddiffct.o jdmainct.o jdcoefct.o \
+	jdpostct.o jddctmgr.o jidctfst.o jidctflt.o jidctint.o \
+	jidctred.o jdsample.o jdcolor.o  jquant1.o  jquant2.o  \
+	jdmerge.o  jcarith.o  jdarith.o  jaricom.o
+library = libijg8.$(LIBEXT)
+
+
+all: $(library)
+
+install: $(library)
+	$(configdir)/mkinstalldirs $(DESTDIR)$(libdir)
+	$(INSTALL_DATA) $(library) $(DESTDIR)$(libdir)/$(library)
+	$(RANLIB) $(DESTDIR)$(libdir)/$(library)
+
+
+$(library): $(objs)
+	$(AR) $(ARFLAGS) $@ $(objs)
+	$(RANLIB) $@
+
+
+clean:
+	rm -f $(objs) $(library) $(TRASH)
+
+distclean:
+	rm -f $(objs) $(library) $(DISTTRASH)
+
+
+dependencies:
+	$(CXX) -MM $(defines) $(includes) $(CPPFLAGS) $(CXXFLAGS) *.c  > $(DEP)
+
+include $(DEP)
