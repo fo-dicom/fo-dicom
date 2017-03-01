@@ -48,7 +48,8 @@
     "publicSign": true,
     "keyFile": "fo-dicom.snk",
     "outputName": "Dicom.Core",
-    "define": [ "NETSTANDARD" ]
+    "define": [ "NETSTANDARD" ],
+    "xmlDoc":  true 
   },
 
   "dependencies": {

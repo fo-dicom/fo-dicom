@@ -10,7 +10,8 @@
     "publicSign": true,
     "keyFile": "../../DICOM/fo-dicom.snk",
     "outputName": "Dicom.Imaging",
-    "define": [ "NETSTANDARD" ]
+    "define": [ "NETSTANDARD" ],
+    "xmlDoc":  true 
   },
 
   "dependencies": {

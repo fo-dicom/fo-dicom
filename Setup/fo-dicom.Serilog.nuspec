@@ -19,5 +19,6 @@
     <files>
         <file src="..\Logging\DICOM.Serilog.Desktop\bin\Release\Dicom.Serilog.dll" target="lib\net45" />
         <file src="..\Logging\DICOM.Serilog.Desktop\bin\Release\Dicom.Serilog.pdb" target="lib\net45" />
+        <file src="..\Logging\DICOM.Serilog.Desktop\bin\Release\Dicom.Serilog.xml" target="lib\net45" />
     </files>
 </package>
