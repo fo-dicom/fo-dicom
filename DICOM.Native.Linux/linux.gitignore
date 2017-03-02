@@ -1,8 +1,0 @@
-lib/
-cmake_install.cmake
-Makefile
-Makefile.*
-CMakeFiles/
-CMakeCache.txt
-*.a
-
