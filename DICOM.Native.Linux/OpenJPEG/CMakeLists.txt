@@ -67,8 +67,9 @@ endif()
 
 
 # Build the library
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+add_library(OpenJPEG ${OPENJPEG_SRCS})
 
-add_library(openjpeg2 ${OPENJPEG_SRCS})
 
 

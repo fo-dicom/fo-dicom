@@ -26,4 +26,6 @@ ENDIF ()
 
 set (charls_PUBLIC_HEADERS charls.h publictypes.h)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
 add_library(CharLS interface.cpp jpegls.cpp jpegmarkersegment.cpp jpegstreamreader.cpp jpegstreamwriter.cpp)

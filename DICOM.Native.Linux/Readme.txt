@@ -1,1 +1,7 @@
-Efferent Health Fo-DICOM Fork 
+# DICOM.Native.Linux
+
+# Compilation
+
+# Root DICOM.Native.Linux
+cmake .
+make
