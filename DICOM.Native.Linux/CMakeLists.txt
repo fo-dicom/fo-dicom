@@ -1,5 +1,5 @@
 # Declare project
-PROJECT(EFFERENT)
+PROJECT(DICOM.Native.Linux)
 
 # Minimum CMake version required
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
@@ -8,26 +8,26 @@ IF(CMAKE_BACKWARDS_COMPATIBILITY GREATER 2.8.3)
 ENDIF(CMAKE_BACKWARDS_COMPATIBILITY GREATER 2.8.3)
 
 #-----------------------------------------------------------------------------
-# General project settings to configure EFFERENT build process
+# General project settings to configure DICOM.Native.Linux build process
 #-----------------------------------------------------------------------------
 
 # Modules to be built
-SET(EFFERENT_MODULES  libijg8 libijg12 libijg16 CharLS OpenJPEG)
+SET(DICOM_Native_Linux_MODULES  libijg8 libijg12 libijg16 CharLS OpenJPEG)
 
 #-----------------------------------------------------------------------------
 # Include directories
 #-----------------------------------------------------------------------------
 
-SET(EFFERENT_INCLUDE_DIR
+SET(DICOM_Native_Linux_INCLUDE_DIR
  
-  ${EFFERENT_SOURCE_DIR}/libijg8
-  ${EFFERENT_SOURCE_DIR}/libijg12
-  ${EFFERENT_SOURCE_DIR}/libijg16
-  ${EFFERENT_SOURCE_DIR}/CharLS
-  ${EFFERENT_SOURCE_DIR}/OpenJPEG
+  ${DICOM_Native_Linux_INCLUDE_DIR}/libijg8
+  ${DICOM_Native_Linux_INCLUDE_DIR}/libijg12
+  ${DICOM_Native_Linux_INCLUDE_DIR}/libijg16
+  ${DICOM_Native_Linux_INCLUDE_DIR}/CharLS
+  ${DICOM_Native_Linux_INCLUDE_DIR}/OpenJPEG
 
 )
-INCLUDE_DIRECTORIES(${EFFERENT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${DICOM_Native_Linux_INCLUDE_DIR})
 
 #-----------------------------------------------------------------------------
 # Platform-independent settings
@@ -66,7 +66,7 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 #-----------------------------------------------------------------------------
 
 # Recurse into subdirectories
-FOREACH(module ${EFFERENT_MODULES})
+FOREACH(module ${DICOM_Native_Linux_MODULES})
   ADD_SUBDIRECTORY(${module})
 ENDFOREACH(module)
 
