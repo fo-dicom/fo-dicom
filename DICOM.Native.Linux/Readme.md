@@ -1,6 +1,6 @@
 # Dicom.Native.Linux
 
-This is a proposal for implementing all the codec set for Linux (and possibly macOS).
+This is a proposal for implementing all the Dicom codec set for Linux (and possibly macOS).
 
 ## What is already done
 The following projects are now compilable for the Ubuntu platform:
@@ -10,7 +10,7 @@ The following projects are now compilable for the Ubuntu platform:
 - Libijg12
 - Libijg16
 
-All the C++ and headers all adjusted for the g++ compiler and thus it may be possible to compile for macOS (still untested)
+All the C++ and headers are adjusted for the g++ compiler and thus it may be possible to compile for macOS as well (still untested)
 
 ## Compilation instructions
 - In Ubuntu, open a Terminal window
@@ -22,6 +22,6 @@ All the C++ and headers all adjusted for the g++ compiler and thus it may be pos
 ````
 
 ## What is missing
-Although all the mentioned components compile, the resulting binaries are still not tested (please advice if there are ready-made tests for the image-processing files).
+Although all the mentioned components compile, the resulting binaries are still not tested. Please advice if there are ready-made tests for the image-processing classes.
 
-The source code for the Codecs, with filenames Dicom.Imaging.Codec.cpp and .h, are still untouched. The proposal is to convert them into plain-old C++ so they can be also compiled to any platform and p/invoked from Dicom.Core.
+The source code for the Codecs, with filenames `Dicom.Imaging.Codec.*.cpp` and `.h`, are still untouched. The proposal is to convert them into plain-old C++ so they can be also compiled to any platform and p/invoked directly from `Dicom.Core`.
