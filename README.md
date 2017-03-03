@@ -8,8 +8,6 @@
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-### [fo-dicom 3.0.0 released on Feb 15, 2017!](https://github.com/fo-dicom/fo-dicom/wiki/Latest-release)
-
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
 
@@ -46,6 +44,9 @@ Package | Description
 [fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
 [fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
 [fo-dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) | PCL profile 111 library with obsolete asynchronous methods (to be deprecated)
+
+### API Documentation
+The API documentation for the core library (represented by *fo-dicom.Desktop*) and the *log4net*, *NLog* and *Serilog* connectors is available [here](https://fo-dicom.github.io/).
 
 ### Usage Notes
 
