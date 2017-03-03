@@ -15,5 +15,6 @@
     <files>
         <file src="..\DICOM.Platform\Portable\bin\Release\Dicom.Core.dll" target="lib\portable-net45+netcore45+wpa81" />
         <file src="..\DICOM.Platform\Portable\bin\Release\Dicom.Core.pdb" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\DICOM.Platform\Portable\bin\Release\Dicom.Core.xml" target="lib\portable-net45+netcore45+wpa81" />
     </files>
 </package>

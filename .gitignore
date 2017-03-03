@@ -28,3 +28,5 @@ DICOM/T4/part16.xml
 *.DotSettings
 /UpgradeLog.htm
 /UpgradeLog2.htm
+AppPackages/
+Documentation/Help/

@@ -3,14 +3,18 @@
     "compile": {
       "include": [
         "../../SharedAssemblyInfo.cs",
+        "../../DICOM/Imaging/DicomOverlayDataFactory.cs",
         "../../DICOM/Imaging/WinFormsImage.cs",
-        "../../DICOM/Imaging/WinFormsImageManager.cs"
+        "../../DICOM/Imaging/WinFormsImageManager.cs",
+        "../../DICOM/Printing/FilmBoxExtensions.cs",
+        "../../DICOM/Printing/ImageBoxExtensions.cs"
       ]
     },
     "publicSign": true,
     "keyFile": "../../DICOM/fo-dicom.snk",
     "outputName": "Dicom.Imaging",
-    "define": [ "NETSTANDARD" ]
+    "define": [ "NETSTANDARD" ],
+    "xmlDoc":  true 
   },
 
   "dependencies": {
