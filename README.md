@@ -70,8 +70,7 @@ To facilitate cross-platform development, the core library is strong name signed
 The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
 
 #### Important notice for Universal Windows Platform applications
-The *fo-dicom* class library is not fully Windows Runtime compatible, and therefore cannot be built with the .NET Native tool chain enabled in *Universal Windows Platform* applications.  
-Typically, the *Compile with .NET Native tool chain* checkbox is checked in Release mode for UWP applications. To enable building the application in Release mode, uncheck this checkbox.
+For versions 3.0.0 and earlier, UWP applications using *fo-dicom.Universal* does not out-of-the-box build to .NET Native. A workaround is provided [here](https://github.com/fo-dicom/fo-dicom/wiki/Universal-Windows-Platform-and-.NET-Native).
 
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
