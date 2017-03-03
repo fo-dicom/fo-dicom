@@ -1,9 +1,10 @@
 #### v.4.0.0 (TBD)
 * Repository re-organization (#445 #446 #447 #448 #451 #452)
 * Deprecate Legacy class library (#415 #449)
-* Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450)
+* Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450 #459)
 * Added optional parameter for use in extended DicomService (#348 #441)
 * Remove warning messages during build (#33 #438)
+* Online and NuGet packages API documentation (#28 #459)
 
 #### v.3.0.1 (TBD)
 * YBR_FULL_422 JPEG Process 14 SV1 compressed image incorrectly decoded (#453 #454)
