@@ -6,7 +6,8 @@
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459)
 
-#### v.3.0.1 (TBD)
+#### v.3.0.1 (3/06/2017)
+* Add runtime directives to enable .NET Native builds for UWP (#424 #460)
 * YBR_FULL_422 JPEG Process 14 SV1 compressed image incorrectly decoded (#453 #454)
 
 #### v.3.0.0 (2/15/2017)
