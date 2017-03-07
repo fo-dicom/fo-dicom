@@ -7,7 +7,9 @@
       "include": [
         "../../SharedAssemblyInfo.cs",
         "../Desktop/DicomDatasetTest.cs",
-        "../Desktop/DicomDictionaryTest.cs"
+        "../Desktop/DicomDictionaryTest.cs",
+        "../Desktop/Network/DicomClientTest.cs",
+        "../Desktop/Network/Ports.cs"
       ]
     },
     "publicSign": true,
