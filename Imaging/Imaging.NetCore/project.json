@@ -18,7 +18,9 @@
   },
 
   "dependencies": {
-    "fo-dicom.NetCore": "3.0.0",
+    "NetCore": {
+      "target": "project"
+    },
     "CoreCompat.System.Drawing": "1.0.0-beta006"
   },
 

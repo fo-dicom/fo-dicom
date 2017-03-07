@@ -9,7 +9,6 @@ namespace Dicom.Network
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Dicom.Helpers;
     using Dicom.Log;
 
     using Xunit;
