@@ -47,6 +47,7 @@ namespace Dicom.Printing
         ///   zeros.
         ///   </description>
         /// </item>
+        /// </list>
         /// </remarks>
         public string FilmDestination
         {
