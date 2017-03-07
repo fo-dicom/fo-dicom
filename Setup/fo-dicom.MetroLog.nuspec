@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Logging\DICOM.MetroLog\bin\Release\Dicom.MetroLog.dll" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\Logging\DICOM.MetroLog\bin\Release\Dicom.MetroLog.pdb" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\Logging\DICOM.MetroLog\bin\Release\Dicom.MetroLog.xml" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Logging\MetroLog\bin\Release\Dicom.MetroLog.dll" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Logging\MetroLog\bin\Release\Dicom.MetroLog.pdb" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Logging\MetroLog\bin\Release\Dicom.MetroLog.xml" target="lib\portable-net45+netcore45+wpa81" />
     </files>
 </package>
