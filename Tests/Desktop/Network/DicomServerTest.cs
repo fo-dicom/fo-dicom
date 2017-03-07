@@ -238,5 +238,27 @@ namespace Dicom.Network
                 Assert.Equal(DicomStatus.Success, status);
             }
         }
+
+        [Fact]
+        public void Stop_ClientsCount_ShouldBeZeroAfterShortDelay()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) Thread.Sleep(10);
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                Thread.Sleep(100);
+
+                server.Stop();
+                Thread.Sleep(100);
+
+                var actual = ((DicomServer<DicomCEchoProvider>) server).ClientsCount;
+                Assert.Equal(0, actual);
+            }
+        }
     }
 }

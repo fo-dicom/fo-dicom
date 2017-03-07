@@ -107,6 +107,12 @@ namespace Dicom.Network
         /// </summary>
         public Task BackgroundWorker { get; }
 
+        /// <summary>
+        /// Gets the number of clients currently connected to the server.
+        /// </summary>
+        /// <remarks>Included for testing purposes only.</remarks>
+        internal int ClientsCount => this.clients.Count;
+
         #endregion
 
         #region METHODS
