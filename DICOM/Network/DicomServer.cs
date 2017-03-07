@@ -111,7 +111,7 @@ namespace Dicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int ClientsCount => this.clients.Count;
+        internal int DisconnectedClientsCount => this.clients.Count(client => !client.IsConnected);
 
         #endregion
 

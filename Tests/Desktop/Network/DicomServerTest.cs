@@ -240,7 +240,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Stop_ClientsCount_ShouldBeZeroAfterShortDelay()
+        public void Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
             var port = Ports.GetNext();
 
@@ -251,12 +251,13 @@ namespace Dicom.Network
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Release(0);
                 Thread.Sleep(100);
 
                 server.Stop();
                 Thread.Sleep(100);
 
-                var actual = ((DicomServer<DicomCEchoProvider>) server).ClientsCount;
+                var actual = ((DicomServer<DicomCEchoProvider>) server).DisconnectedClientsCount;
                 Assert.Equal(0, actual);
             }
         }
