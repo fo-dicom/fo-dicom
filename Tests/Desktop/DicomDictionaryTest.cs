@@ -13,7 +13,7 @@ namespace Dicom
     using Xunit;
 
     [Collection("General")]
-    public class DicomDictionaryTest: IDisposable
+    public class DicomDictionaryTest : IDisposable
     {
         #region Unit tests
 
@@ -55,6 +55,8 @@ namespace Dicom
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
             Assert.Equal(expected, actual);
         }
+
+#if !NETSTANDARD
 
         [Fact]
         public void Throws_If_Already_Loaded()
@@ -157,6 +159,7 @@ namespace Dicom
                     () => DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: false));
             });
         }
+#endif
 
         #endregion
 
@@ -179,6 +182,9 @@ namespace Dicom
 
         #endregion
 
+#if NETSTANDARD
+        public void Dispose() { }
+#else
         #region appDomain Stuff
 
         private static int index = 0;
@@ -201,6 +207,9 @@ namespace Dicom
             System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Created.", testDomain.FriendlyName));
 
         }
+
         #endregion
+
+#endif
     }
 }
