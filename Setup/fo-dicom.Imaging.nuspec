@@ -17,8 +17,8 @@
 		</dependencies>
     </metadata>
     <files>
-        <file src="..\Imaging\NetCore\bin\Release\netstandard1.3\Dicom.Imaging.dll" target="lib\netstandard1.3" />
-        <file src="..\Imaging\NetCore\bin\Release\netstandard1.3\Dicom.Imaging.pdb" target="lib\netstandard1.3" />
-        <file src="..\Imaging\NetCore\bin\Release\netstandard1.3\Dicom.Imaging.xml" target="lib\netstandard1.3" />
+        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.dll" target="lib\netstandard1.3" />
+        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.pdb" target="lib\netstandard1.3" />
+        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.xml" target="lib\netstandard1.3" />
     </files>
 </package>
