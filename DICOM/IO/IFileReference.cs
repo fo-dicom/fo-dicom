@@ -65,7 +65,7 @@ namespace Dicom.IO
 
         /// <summary>
         /// Moves file and updates internal reference.
-        /// Calling this method will also set the <see cref="DesktopFileReference.IsTempFile"/> property to <c>False</c>.
+        /// Calling this method will also set the <see cref="IsTempFile"/> property to <c>False</c>.
         /// </summary>
         /// <param name="dstFileName">Full name of the moved file.</param>
         /// <param name="overwrite">True if already existing file should be overwritten, false otherwise.</param>
