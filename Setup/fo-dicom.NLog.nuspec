@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Logging\DICOM.NLog.Desktop\bin\Release\Dicom.NLog.dll" target="lib\net45" />
-        <file src="..\Logging\DICOM.NLog.Desktop\bin\Release\Dicom.NLog.pdb" target="lib\net45" />
-        <file src="..\Logging\DICOM.NLog.Desktop\bin\Release\Dicom.NLog.xml" target="lib\net45" />
+        <file src="..\Logging\NLog.Desktop\bin\Release\Dicom.NLog.dll" target="lib\net452" />
+        <file src="..\Logging\Log.Desktop\bin\Release\Dicom.NLog.pdb" target="lib\net452" />
+        <file src="..\Logging\NLog.Desktop\bin\Release\Dicom.NLog.xml" target="lib\net452" />
     </files>
 </package>
