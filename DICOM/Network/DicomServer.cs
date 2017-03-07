@@ -139,7 +139,7 @@ namespace Dicom.Network
         /// <summary>
         /// Execute the disposal.
         /// </summary>
-        /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
+        /// <param name="disposing">True if called from <see cref="Dispose()"/>, false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.disposed)

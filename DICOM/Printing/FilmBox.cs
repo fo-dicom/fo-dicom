@@ -478,8 +478,8 @@ namespace Dicom.Printing
         /// </summary>
         /// <param name="filmSession">Film session instance</param>
         /// <param name="sopInstance">Basic film box SOP Instance UID</param>
+        /// <param name="transferSyntax">Requested internal transfer syntax.</param>
         public FilmBox(FilmSession filmSession, DicomUID sopInstance, DicomTransferSyntax transferSyntax)
-            : base()
         {
             this.InternalTransferSyntax = transferSyntax;
             _filmSession = filmSession;

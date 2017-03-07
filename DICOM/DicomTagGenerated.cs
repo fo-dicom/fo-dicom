@@ -5513,7 +5513,7 @@ namespace Dicom
         ///<summary>(0028,1054) VR=LO VM=1 Rescale Type</summary>
         public readonly static DicomTag RescaleType = new DicomTag(0x0028, 0x1054);
 
-        ///<summary>(0028,1055) VR=LO VM=1-n Window Center & Width Explanation</summary>
+        ///<summary>(0028,1055) VR=LO VM=1-n Window Center &amp; Width Explanation</summary>
         public readonly static DicomTag WindowCenterWidthExplanation = new DicomTag(0x0028, 0x1055);
 
         ///<summary>(0028,1056) VR=CS VM=1 VOI LUT Function</summary>

@@ -5,7 +5,7 @@
 * Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450 #459)
 * Added optional parameter for use in extended DicomService (#348 #441)
 * Remove warning messages during build (#33 #438)
-* Online and NuGet packages API documentation (#28 #459)
+* Online and NuGet packages API documentation (#28 #459 #466)
 
 #### v.3.0.1 (3/06/2017)
 * Add runtime directives to enable .NET Native builds for UWP (#424 #460)

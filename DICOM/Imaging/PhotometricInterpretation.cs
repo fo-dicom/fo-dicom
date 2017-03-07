@@ -145,7 +145,7 @@ namespace Dicom.Imaging
         /// <summary>
         /// Pixel data describe a color image with a single sample per pixel (single image plane). The 
         /// pixel value is used as an index into each of the Red, Blue, and Green Palette Color Lookup 
-        /// Tables (0028,1101-1103&1201-1203). This value may be used only when Samples per Pixel (0028,0002) 
+        /// Tables (0028,1101-1103 &amp; 1201-1203). This value may be used only when Samples per Pixel (0028,0002) 
         /// has a value of 1. When the Photometric Interpretation is Palette Color; Red, Blue, and Green 
         /// Palette Color Lookup Tables shall be present.
         /// </summary>

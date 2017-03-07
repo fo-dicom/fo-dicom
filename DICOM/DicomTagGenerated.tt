@@ -13,8 +13,9 @@ namespace Dicom
     foreach (var kv in tags)
     {
         var tag = kv.Value;
+        var description = ToXmlValidDescription(tag.Item4);
 #>
-        ///<summary>(<#= tag.Item1 #>,<#= tag.Item2 #>) VR=<#= tag.Item5 #> VM=<#= tag.Item6 #> <#= tag.Item4 #><#= tag.Item7 ? " (RETIRED)" : "" #></summary>
+        ///<summary>(<#= tag.Item1 #>,<#= tag.Item2 #>) VR=<#= tag.Item5 #> VM=<#= tag.Item6 #> <#= description #><#= tag.Item7 ? " (RETIRED)" : "" #></summary>
         public readonly static DicomTag <#= ToTagKeyword(tag.Item3, tag.Item7) #> = new DicomTag(0x<#= ToStrictNumeric(tag.Item1) #>, 0x<#= ToStrictNumeric(tag.Item2) #>);
 
 <#

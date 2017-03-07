@@ -156,7 +156,7 @@ namespace Dicom.Network
         /// <summary>
         /// Do the actual disposal.
         /// </summary>
-        /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
+        /// <param name="disposing">True if called from <see cref="Dispose()"/>, false otherwise.</param>
         /// <remarks>The underlying stream is normally passed on to a <see cref="DicomService"/> implementation that
         /// is responsible for disposing the stream when appropriate. Therefore, the stream should not be disposed here.</remarks>
         private void Dispose(bool disposing)
