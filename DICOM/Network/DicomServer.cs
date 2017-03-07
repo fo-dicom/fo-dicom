@@ -267,6 +267,7 @@ namespace Dicom.Network
                 catch (OperationCanceledException)
                 {
                     this.Logger.Info("Disconnected client cleanup manually terminated.");
+                    this.clients.RemoveAll(client => !client.IsConnected);
                 }
                 catch (Exception e)
                 {
