@@ -107,6 +107,12 @@ namespace Dicom.Network
         /// </summary>
         public Task BackgroundWorker { get; }
 
+        /// <summary>
+        /// Gets the number of clients currently connected to the server.
+        /// </summary>
+        /// <remarks>Included for testing purposes only.</remarks>
+        internal int DisconnectedClientsCount => this.clients.Count(client => !client.IsConnected);
+
         #endregion
 
         #region METHODS
@@ -261,6 +267,7 @@ namespace Dicom.Network
                 catch (OperationCanceledException)
                 {
                     this.Logger.Info("Disconnected client cleanup manually terminated.");
+                    this.clients.RemoveAll(client => !client.IsConnected);
                 }
                 catch (Exception e)
                 {
