@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.dll" target="lib\Xamarin.iOS10" />
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.pdb" target="lib\Xamarin.iOS10" />
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.xml" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.xml" target="lib\Xamarin.iOS10" />
     </files>
 </package>

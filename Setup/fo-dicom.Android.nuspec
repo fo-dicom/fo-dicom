@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Core.dll" target="lib\MonoAndroid1" />
-        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Core.pdb" target="lib\MonoAndroid1" />
-        <file src="..\DICOM.Platform\Android\bin\Release\Dicom.Core.xml" target="lib\MonoAndroid1" />
+        <file src="..\Platform\Android\bin\Release\Dicom.Core.dll" target="lib\MonoAndroid1" />
+        <file src="..\Platform\Android\bin\Release\Dicom.Core.pdb" target="lib\MonoAndroid1" />
+        <file src="..\Platform\Android\bin\Release\Dicom.Core.xml" target="lib\MonoAndroid1" />
     </files>
 </package>
