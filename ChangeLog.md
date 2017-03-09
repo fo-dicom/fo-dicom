@@ -1,7 +1,7 @@
 #### v.4.0.0 (TBD)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)
-* Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468 #469 #476)
+* Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468 #469 #476 #477 #478)
 * Deprecate Legacy class library (#415 #449)
 * Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450 #459)
 * Added optional parameter for use in extended DicomService (#348 #441)
