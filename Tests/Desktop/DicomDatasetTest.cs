@@ -294,7 +294,6 @@ namespace Dicom
                     DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
         }
 
-#if !NETSTANDARD
         [Fact]
         public void InternalTransferSyntax_Setter_AppliesToAllSequenceDepths()
         {
@@ -315,7 +314,6 @@ namespace Dicom
                 ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
                     DicomTag.ScheduledProtocolCodeSequence).Items[0].InternalTransferSyntax);
         }
-#endif
 
         [Fact]
         public void AddOrUpdatePixelData_InternalTransferSyntax_Succeeds()

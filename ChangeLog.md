@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)
 * Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468)
 * Deprecate Legacy class library (#415 #449)

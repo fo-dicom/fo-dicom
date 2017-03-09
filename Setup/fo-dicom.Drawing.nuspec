@@ -3,13 +3,13 @@
     <metadata>
         <id>fo-dicom.Imaging</id>
         <version>$version$</version>
-        <title>Fellow Oak DICOM image rendering extensions for .NET Core</title>
+        <title>Fellow Oak DICOM System.Drawing support for .NET Core</title>
         <authors>fo-dicom contributors</authors>
         <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
         <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
         <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>System.Drawing.Bitmap support for fo-dicom on .NET Core.</description>
+        <description>System.Drawing support for fo-dicom on .NET Core.</description>
         <language>en-US</language>
 		<dependencies>
 			<dependency id="fo-dicom.NetCore" version="$version$" />
@@ -17,8 +17,8 @@
 		</dependencies>
     </metadata>
     <files>
-        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.dll" target="lib\netstandard1.3" />
-        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.pdb" target="lib\netstandard1.3" />
-        <file src="..\Imaging\Imaging.NetCore\bin\Release\netstandard1.3\Dicom.Imaging.xml" target="lib\netstandard1.3" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.dll" target="lib\netstandard1.3" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.pdb" target="lib\netstandard1.3" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.xml" target="lib\netstandard1.3" />
     </files>
 </package>

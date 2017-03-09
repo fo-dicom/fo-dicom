@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <AssemblyName>Dicom.Drawing</AssemblyName>
+    <RootNamespace>Dicom</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreCompat.System.Drawing" Version="1.0.0-beta006" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Platform\NetCore\DICOM.NetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\DicomOverlayDataFactory.cs">
+      <Link>Imaging\DicomOverlayDataFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\WinFormsImage.cs">
+      <Link>Imaging\WinFormsImage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\WinFormsImageManager.cs">
+      <Link>Imaging\WinFormsImageManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Printing\FilmBoxExtensions.cs">
+      <Link>Printing\FilmBoxExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Printing\ImageBoxExtensions.cs">
+      <Link>Printing\ImageBoxExtensions.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
+  </Project>
