@@ -151,7 +151,9 @@ namespace Dicom.Imaging
             return new MemoryByteBuffer(newPixels);
         }
 
+#if !NET35
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static byte ToByte(double x)
         {
             return (byte)(x < 0.0 ? 0.0 : x > 255.0 ? 255.0 : x);
