@@ -121,7 +121,7 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM.Platform\Mono\DICOM.Mono.csproj">
+    <ProjectReference Include="..\..\Platform\Mono\DICOM.Mono.csproj">
       <Project>{0E451E9D-3F37-46C1-98D3-3090743061CF}</Project>
       <Name>DICOM.Mono</Name>
     </ProjectReference>
