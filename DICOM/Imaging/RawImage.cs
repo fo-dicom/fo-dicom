@@ -49,7 +49,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="WPFImage"/> object.
+        /// Initializes an instance of the <see cref="RawImage"/> object.
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
