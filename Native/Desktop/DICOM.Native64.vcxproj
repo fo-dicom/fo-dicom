@@ -63,6 +63,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;CHARLS_STATIC;OPJ_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4691</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -77,6 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DisableSpecificWarnings>4691</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,10 +111,10 @@
     <ClInclude Include="..\CharLS\publictypes.h" />
     <ClInclude Include="..\CharLS\scan.h" />
     <ClInclude Include="..\CharLS\util.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg2000.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.JpegLS.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Rle.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Rle.h" />
     <ClInclude Include="..\OpenJPEG\bio.h" />
     <ClInclude Include="..\OpenJPEG\cidx_manager.h" />
     <ClInclude Include="..\OpenJPEG\cio.h" />
@@ -141,7 +143,7 @@
     <ClInclude Include="..\OpenJPEG\tgt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AssemblyInfo.cpp" />
+    <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="..\CharLS\interface.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
@@ -162,14 +164,14 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg2000.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.JpegLS.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_12.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_16.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_8.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Rle.cpp" />
-    <ClCompile Include="..\DicomNativeExt.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_8.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
+    <ClCompile Include="DicomNativeExt.cpp" />
     <ClCompile Include="..\OpenJPEG\bio.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
@@ -264,7 +266,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM.Platform\Desktop\DICOM.Desktop.csproj">
+    <ProjectReference Include="..\..\Platform\Desktop\DICOM.Desktop.csproj">
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x64.vcxproj">
@@ -278,7 +280,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Dicom.Imaging.Codec.Jpeg.i" />
+    <None Include="Dicom.Imaging.Codec.Jpeg.i" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,8 +14,9 @@
     <ProjectGuid>{C6148839-334D-4894-BDB9-E2D57438CF8A}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>Dicom.ImagingCodec</RootNamespace>
+    <RootNamespace>Dicom.Imaging.Codec</RootNamespace>
     <ProjectName>DICOM.Native</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -45,15 +46,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Dicom.Native</TargetName>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Dicom.Native</TargetName>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -63,6 +64,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;CHARLS_STATIC;OPJ_STATIC;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4691</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -77,6 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DisableSpecificWarnings>4691</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -89,7 +92,7 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AssemblyInfo.cpp" />
+    <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="..\CharLS\interface.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
@@ -110,14 +113,14 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg2000.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.JpegLS.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_12.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_16.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Jpeg_8.cpp" />
-    <ClCompile Include="..\Dicom.Imaging.Codec.Rle.cpp" />
-    <ClCompile Include="..\DicomNativeExt.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg2000.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.JpegLS.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_12.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_16.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Jpeg_8.cpp" />
+    <ClCompile Include="Dicom.Imaging.Codec.Rle.cpp" />
+    <ClCompile Include="DicomNativeExt.cpp" />
     <ClCompile Include="..\OpenJPEG\bio.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
@@ -232,10 +235,10 @@
     <ClInclude Include="..\CharLS\publictypes.h" />
     <ClInclude Include="..\CharLS\scan.h" />
     <ClInclude Include="..\CharLS\util.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Jpeg2000.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.JpegLS.h" />
-    <ClInclude Include="..\Dicom.Imaging.Codec.Rle.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Jpeg2000.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.JpegLS.h" />
+    <ClInclude Include="Dicom.Imaging.Codec.Rle.h" />
     <ClInclude Include="..\OpenJPEG\bio.h" />
     <ClInclude Include="..\OpenJPEG\cidx_manager.h" />
     <ClInclude Include="..\OpenJPEG\cio.h" />
@@ -264,7 +267,7 @@
     <ClInclude Include="..\OpenJPEG\tgt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM.Platform\Desktop\DICOM.Desktop.csproj">
+    <ProjectReference Include="..\..\Platform\Desktop\DICOM.Desktop.csproj">
       <Project>{59b38770-d2e7-40b9-8d27-a20691f1caa9}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x86.vcxproj">
@@ -278,7 +281,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Dicom.Imaging.Codec.Jpeg.i">
+    <None Include="Dicom.Imaging.Codec.Jpeg.i">
       <FileType>CppCode</FileType>
     </None>
   </ItemGroup>
