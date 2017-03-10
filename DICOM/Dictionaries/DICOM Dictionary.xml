@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2017 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2016e">
+<dictionary version="2017a">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -317,6 +317,10 @@
     <tag group="0010" element="0217" keyword="StrainSource" vr="LO" vm="1">Strain Source</tag>
     <tag group="0010" element="0218" keyword="StrainAdditionalInformation" vr="UT" vm="1">Strain Additional Information</tag>
     <tag group="0010" element="0219" keyword="StrainCodeSequence" vr="SQ" vm="1">Strain Code Sequence</tag>
+    <tag group="0010" element="0221" keyword="GeneticModificationsSequence" vr="SQ" vm="1">Genetic Modifications Sequence</tag>
+    <tag group="0010" element="0222" keyword="GeneticModificationsDescription" vr="UC" vm="1">Genetic Modifications Description</tag>
+    <tag group="0010" element="0223" keyword="GeneticModificationsNomenclature" vr="LO" vm="1">Genetic Modifications Nomenclature</tag>
+    <tag group="0010" element="0229" keyword="GeneticModificationsCodeSequence" vr="SQ" vm="1">Genetic Modifications Code Sequence</tag>
     <tag group="0010" element="1000" keyword="OtherPatientIDs" vr="LO" vm="1-n">Other Patient IDs</tag>
     <tag group="0010" element="1001" keyword="OtherPatientNames" vr="PN" vm="1-n">Other Patient Names</tag>
     <tag group="0010" element="1002" keyword="OtherPatientIDsSequence" vr="SQ" vm="1">Other Patient IDs Sequence</tag>
@@ -2775,7 +2779,7 @@
     <tag group="0068" element="62D0" keyword="HPGLDocumentID" vr="US" vm="1">HPGL Document ID</tag>
     <tag group="0068" element="62D5" keyword="HPGLDocumentLabel" vr="LO" vm="1">HPGL Document Label</tag>
     <tag group="0068" element="62E0" keyword="ViewOrientationCodeSequence" vr="SQ" vm="1">View Orientation Code Sequence</tag>
-    <tag group="0068" element="62F0" keyword="ViewOrientationModifier" vr="FD" vm="9">View Orientation Modifier</tag>
+    <tag group="0068" element="62F0" keyword="ViewOrientationModifierCodeSequence" vr="SQ" vm="1">View Orientation Modifier Code Sequence</tag>
     <tag group="0068" element="62F2" keyword="HPGLDocumentScaling" vr="FD" vm="1">HPGL Document Scaling</tag>
     <tag group="0068" element="6300" keyword="HPGLDocument" vr="OB" vm="1">HPGL Document</tag>
     <tag group="0068" element="6310" keyword="HPGLContourPenNumber" vr="US" vm="1">HPGL Contour Pen Number</tag>
@@ -3186,7 +3190,7 @@
     <tag group="0076" element="0020" keyword="ProcedureTypeCodeSequence" vr="SQ" vm="1">Procedure Type Code Sequence</tag>
     <tag group="0076" element="0030" keyword="SurgicalTechnique" vr="LO" vm="1">Surgical Technique</tag>
     <tag group="0076" element="0032" keyword="ComponentTypesSequence" vr="SQ" vm="1">Component Types Sequence</tag>
-    <tag group="0076" element="0034" keyword="ComponentTypeCodeSequence" vr="CS" vm="1">Component Type Code Sequence</tag>
+    <tag group="0076" element="0034" keyword="ComponentTypeCodeSequence" vr="SQ" vm="1">Component Type Code Sequence</tag>
     <tag group="0076" element="0036" keyword="ExclusiveComponentType" vr="CS" vm="1">Exclusive Component Type</tag>
     <tag group="0076" element="0038" keyword="MandatoryComponentType" vr="CS" vm="1">Mandatory Component Type</tag>
     <tag group="0076" element="0040" keyword="ComponentSequence" vr="SQ" vm="1">Component Sequence</tag>

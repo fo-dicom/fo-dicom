@@ -944,6 +944,18 @@ namespace Dicom
         ///<summary>(0010,0219) VR=SQ VM=1 Strain Code Sequence</summary>
         public readonly static DicomTag StrainCodeSequence = new DicomTag(0x0010, 0x0219);
 
+        ///<summary>(0010,0221) VR=SQ VM=1 Genetic Modifications Sequence</summary>
+        public readonly static DicomTag GeneticModificationsSequence = new DicomTag(0x0010, 0x0221);
+
+        ///<summary>(0010,0222) VR=UC VM=1 Genetic Modifications Description</summary>
+        public readonly static DicomTag GeneticModificationsDescription = new DicomTag(0x0010, 0x0222);
+
+        ///<summary>(0010,0223) VR=LO VM=1 Genetic Modifications Nomenclature</summary>
+        public readonly static DicomTag GeneticModificationsNomenclature = new DicomTag(0x0010, 0x0223);
+
+        ///<summary>(0010,0229) VR=SQ VM=1 Genetic Modifications Code Sequence</summary>
+        public readonly static DicomTag GeneticModificationsCodeSequence = new DicomTag(0x0010, 0x0229);
+
         ///<summary>(0010,1000) VR=LO VM=1-n Other Patient IDs</summary>
         public readonly static DicomTag OtherPatientIDs = new DicomTag(0x0010, 0x1000);
 
@@ -8318,8 +8330,8 @@ namespace Dicom
         ///<summary>(0068,62E0) VR=SQ VM=1 View Orientation Code Sequence</summary>
         public readonly static DicomTag ViewOrientationCodeSequence = new DicomTag(0x0068, 0x62E0);
 
-        ///<summary>(0068,62F0) VR=FD VM=9 View Orientation Modifier</summary>
-        public readonly static DicomTag ViewOrientationModifier = new DicomTag(0x0068, 0x62F0);
+        ///<summary>(0068,62F0) VR=SQ VM=1 View Orientation Modifier Code Sequence</summary>
+        public readonly static DicomTag ViewOrientationModifierCodeSequence = new DicomTag(0x0068, 0x62F0);
 
         ///<summary>(0068,62F2) VR=FD VM=1 HPGL Document Scaling</summary>
         public readonly static DicomTag HPGLDocumentScaling = new DicomTag(0x0068, 0x62F2);
@@ -9551,7 +9563,7 @@ namespace Dicom
         ///<summary>(0076,0032) VR=SQ VM=1 Component Types Sequence</summary>
         public readonly static DicomTag ComponentTypesSequence = new DicomTag(0x0076, 0x0032);
 
-        ///<summary>(0076,0034) VR=CS VM=1 Component Type Code Sequence</summary>
+        ///<summary>(0076,0034) VR=SQ VM=1 Component Type Code Sequence</summary>
         public readonly static DicomTag ComponentTypeCodeSequence = new DicomTag(0x0076, 0x0034);
 
         ///<summary>(0076,0036) VR=CS VM=1 Exclusive Component Type</summary>
