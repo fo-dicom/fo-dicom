@@ -315,9 +315,9 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -380,48 +380,48 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>..\obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>bin\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>Dicom.Imaging.Codec</TargetName>
     <LinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</LinkKeyFile>
     <WindowsMetadataLinkKeyFile>$(SolutionDir)DICOM\fo-dicom.snk</WindowsMetadataLinkKeyFile>
