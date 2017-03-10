@@ -166,8 +166,8 @@ namespace Dicom.Imaging.Render
                 if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar) buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
 
                 if (pi == PhotometricInterpretation.YbrFull) buffer = PixelDataConverter.YbrFullToRgb(buffer);
-                else if (pi == PhotometricInterpretation.YbrFull422) buffer = PixelDataConverter.YbrFull422ToRgb(buffer);
-                else if (pi == PhotometricInterpretation.YbrPartial422) buffer = PixelDataConverter.YbrPartial422ToRgb(buffer);
+                else if (pi == PhotometricInterpretation.YbrFull422) buffer = PixelDataConverter.YbrFull422ToRgb(buffer, pixelData.Width);
+                else if (pi == PhotometricInterpretation.YbrPartial422) buffer = PixelDataConverter.YbrPartial422ToRgb(buffer, pixelData.Width);
 
                 return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
             }

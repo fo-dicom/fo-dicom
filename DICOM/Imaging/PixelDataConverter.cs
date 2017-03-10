@@ -91,15 +91,16 @@ namespace Dicom.Imaging
         /// Convert YBR_FULL_422 photometric interpretation pixels to RGB.
         /// </summary>
         /// <param name="data">Array of YBR_FULL_422 photometric interpretation pixels.</param>
+        /// <param name="width">Image width.</param>
         /// <returns>Array of pixel data in RGB photometric interpretation.</returns>
-        public static IByteBuffer YbrFull422ToRgb(IByteBuffer data)
+        public static IByteBuffer YbrFull422ToRgb(IByteBuffer data, int width)
         {
             var oldPixels = data.Data;
             var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
 
             unchecked
             {
-                for (int n = 0, p = 0; n < oldPixels.Length;)
+                for (int n = 0, p = 0, col = 0; n < oldPixels.Length;)
                 {
                     int y1 = oldPixels[n++];
                     int y2 = oldPixels[n++];
@@ -110,9 +111,19 @@ namespace Dicom.Imaging
                     newPixels[p++] = ToByte(y1 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(y1 + 1.7720 * (cb - 128) + 0.5);
 
+                    if (++col == width)
+                    {
+                        // Issue #471: for uneven width images (i.e. when col equals width after first of two pixels), 
+                        // ignore last pixel in each row.
+                        col = 0;
+                        continue;
+                    }
+
                     newPixels[p++] = ToByte(y2 + 1.4020 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(y2 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(y2 + 1.7720 * (cb - 128) + 0.5);
+
+                    if (++col == width) col = 0;
                 }
             }
 
@@ -123,15 +134,16 @@ namespace Dicom.Imaging
         /// Convert YBR_PARTIAL_422 photometric interpretation pixels to RGB.
         /// </summary>
         /// <param name="data">Array of YBR_PARTIAL_422 photometric interpretation pixels.</param>
+        /// <param name="width">Image width.</param>
         /// <returns>Array of pixel data in RGB photometric interpretation.</returns>
-        public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data)
+        public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data, int width)
         {
             var oldPixels = data.Data;
             var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
 
             unchecked
             {
-                for (int n = 0, p = 0; n < oldPixels.Length;)
+                for (int n = 0, p = 0, col = 0; n < oldPixels.Length;)
                 {
                     int y1 = oldPixels[n++];
                     int y2 = oldPixels[n++];
@@ -142,9 +154,19 @@ namespace Dicom.Imaging
                     newPixels[p++] = ToByte(1.1644 * (y1 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(1.1644 * (y1 - 16) + 2.0173 * (cb - 128) + 0.5);
 
+                    if (++col == width)
+                    {
+                        // Issue #471: for uneven width images (i.e. when col equals width after first of two pixels), 
+                        // ignore last pixel in each row.
+                        col = 0;
+                        continue;
+                    }
+
                     newPixels[p++] = ToByte(1.1644 * (y2 - 16) + 1.5960 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(1.1644 * (y2 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
                     newPixels[p++] = ToByte(1.1644 * (y2 - 16) + 2.0173 * (cb - 128) + 0.5);
+
+                    if (++col == width) col = 0;
                 }
             }
 

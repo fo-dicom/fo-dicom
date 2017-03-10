@@ -255,11 +255,22 @@ namespace Dicom.Imaging
             {
                 if (BitsAllocated == 1)
                 {
-                    var bytes = (Width * Height) / 8;
-                    if (((Width * Height) % 8) > 0) bytes++;
+                    var bytes = Width * Height / 8;
+                    if ((Width * Height) % 8 > 0) bytes++;
                     return bytes;
                 }
-                return BytesAllocated * SamplesPerPixel * Width * Height;
+
+                // Issue #471, handle special case with invalid uneven width for YBR_*_422 and YBR_PARTIAL_420 images
+                var actualWidth = Width;
+                if (actualWidth % 2 != 0 &&
+                    (PhotometricInterpretation.Equals(PhotometricInterpretation.YbrFull422) ||
+                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial422) ||
+                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial420)))
+                {
+                    ++actualWidth;
+                }
+
+                return BytesAllocated * SamplesPerPixel * actualWidth * Height;
             }
         }
 
