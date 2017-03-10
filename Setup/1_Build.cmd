@@ -1,17 +1,22 @@
 @echo off
 
+@set "VS17COMMONTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\"
+@if NOT EXIST "%VS17COMMONTOOLS%" goto error_VS17_notfound
+
 echo.
 echo fo-dicom builder
 echo ================
 echo. 
-echo This Windows batch file will use Visual Studio 2015 to
-echo compile the Release versions of fo-dicom.
-echo. 
+echo This Windows batch file will use Visual Studio 2017 Professional
+echo to compile the Release versions of fo-dicom.
+echo.
+echo Path to VS 2017 common tools folder is set as follows:
+echo %VS17COMMONTOOLS%
+echo.
 
 timeout /T 5
 
-@if "%VS140COMNTOOLS%"=="" goto error_no_VS140COMNTOOLSDIR
-@call "%VS140COMNTOOLS%VsDevCmd.bat"
+@call "%VS17COMMONTOOLS%VsDevCmd.bat"
 
 @cd ..
 @.\Setup\nuget.exe restore Dicom.Full.sln -source https://www.nuget.org/api/v2
@@ -23,8 +28,10 @@ timeout /T 5
 @goto end
 
 @REM -----------------------------------------------------------------------
-:error_no_VS140COMNTOOLSDIR
-@echo ERROR: Cannot determine the location of the VS Common Tools folder.
+:error_VS17_notfound
+@echo ERROR: 
+@echo Path to the Visual Studio 2017 common tools folder is invalid.
+@echo Update VS17COMMONTOOLS to a valid path and run again.
 @goto end
 
 :end

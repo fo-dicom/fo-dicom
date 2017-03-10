@@ -23,6 +23,8 @@ DICOM/T4/part16.xml
 *.userprefs
 /.vs
 *.lock.json
+*.nuget.props
+*.nuget.targets
 *.VC.opendb
 *.db
 *.DotSettings
