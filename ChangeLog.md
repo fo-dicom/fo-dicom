@@ -1,4 +1,5 @@
 #### v.3.0.2 (TBD)
+* N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
 * Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
 
 #### v.3.0.1 (3/06/2017)
