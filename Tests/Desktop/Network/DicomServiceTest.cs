@@ -138,7 +138,7 @@ namespace Dicom.Network
         public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
-            Console.WriteLine(tempName);
+            Logger.Info(tempName);
             request.File.Save(tempName);
 
             return new DicomCStoreResponse(request, DicomStatus.Success);

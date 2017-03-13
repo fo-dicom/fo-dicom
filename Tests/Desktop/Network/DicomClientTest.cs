@@ -437,7 +437,7 @@ namespace Dicom.Network
             catch (Exception ex)
             {
                 result = false;
-                Console.WriteLine(ex);
+                client.Logger.Error("Send failed, exception: {0}", ex);
                 awaiter.Set();
             }
 
