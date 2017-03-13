@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Added missing encodings for .NET Core (#481 #486)
 * Update to latest DICOM Standard 2017a (#480 #482)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)
