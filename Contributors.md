@@ -28,3 +28,4 @@
 * [Ed55](https://github.com/Ed55)
 * [zcr01](https://github.com/zcr01)
 * [JustSomeHack](https://github.com/deyung)
+* [Nick Nelson](https://github.com/npnelson)

@@ -8,6 +8,7 @@
 * Added optional parameter for use in extended DicomService (#348 #441)
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466)
+* Added missing encodings for .NET Core (#481)
 
 #### v.3.0.2 (TBD)
 * N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)

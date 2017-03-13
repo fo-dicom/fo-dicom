@@ -25,5 +25,13 @@ namespace Dicom
             var actual = DicomEncoding.GetEncoding("GBK").CodePage;
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void GetEncoding_GB18030_Desktop() //https://github.com/fo-dicom/fo-dicom/issues/481
+        {
+            var expected = Encoding.GetEncoding("GB18030").CodePage;
+            var actual = DicomEncoding.GetEncoding("GB18030").CodePage;
+            Assert.Equal(expected, actual);
+        }
     }
 }
