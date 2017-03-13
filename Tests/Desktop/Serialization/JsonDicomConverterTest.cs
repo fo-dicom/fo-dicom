@@ -199,7 +199,6 @@ namespace Dicom.Serialization
             var target = new DicomDataset { new DicomOtherWord(DicomTag.PixelData, bulkData) };
             var json = JsonConvert.SerializeObject(target, Formatting.Indented, new JsonDicomConverter());
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            Console.WriteLine(json);
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
             Assert.Equal(json, json2);
 

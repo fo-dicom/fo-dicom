@@ -52,8 +52,6 @@ namespace Dicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
-        private readonly Task _pduListener;
-
         #endregion
 
         #region CONSTRUCTORS
@@ -78,7 +76,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            _pduListener = ListenAndProcessPDUAsync();
+            PduListener = ListenAndProcessPDUAsync();
         }
 
         #endregion
@@ -133,6 +131,11 @@ namespace Dicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Task"/> that listens for PDUs.
+        /// </summary>
+        protected Task PduListener { get; }
 
         #endregion
 
