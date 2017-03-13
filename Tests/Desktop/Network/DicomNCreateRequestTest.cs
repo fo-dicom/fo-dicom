@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Dicom.Network
 {
+    [Collection("Network"), Trait("Category", "Network")]
     public class DicomNCreateRequestTest
     {
         [Fact]
@@ -13,7 +14,7 @@ namespace Dicom.Network
             var command = new DicomDataset();
             command.Add(DicomTag.CommandField, (ushort)DicomCommandField.NCreateRequest);
             command.Add(DicomTag.MessageID, (ushort)1);
-            command.Add(DicomTag.RequestedSOPClassUID, "1.2.3");
+            command.Add(DicomTag.AffectedSOPClassUID, "1.2.3");
 
             var request = new DicomNCreateRequest(command);
             var expected = request.SOPInstanceUID;
