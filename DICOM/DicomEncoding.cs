@@ -18,6 +18,13 @@ namespace Dicom
         /// </summary>
         public static readonly Encoding Default = IOManager.BaseEncoding;
 
+#if NETSTANDARD
+        static DicomEncoding()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+#endif
+
         /// <summary>
         /// Get encoding from charset.
         /// </summary>
