@@ -1,6 +1,5 @@
 #### v.4.0.0 (TBD)
 * Update to latest DICOM Standard 2017a (#480 #482)
-* Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)
 * Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468 #469 #476 #477 #478)
@@ -9,6 +8,10 @@
 * Added optional parameter for use in extended DicomService (#348 #441)
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466)
+
+#### v.3.0.2 (TBD)
+* N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
+* Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
 
 #### v.3.0.1 (3/06/2017)
 * Add runtime directives to enable .NET Native builds for UWP (#424 #460)
