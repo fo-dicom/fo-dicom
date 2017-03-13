@@ -32,9 +32,9 @@ namespace Dicom.IO
             Instance = new DesktopIOManager();
         }
 
-#endregion
+        #endregion
 
-#region METHODS
+        #region METHODS
 
         /// <summary>
         /// Implementation of the base encoding getter.
@@ -66,6 +66,6 @@ namespace Dicom.IO
             return new DesktopDirectoryReference(directoryName);
         }
 
-#endregion
+        #endregion
     }
 }
