@@ -267,10 +267,10 @@ namespace Dicom.Network
 
                 if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-                MemoryStream ms = new MemoryStream();
+                var ms = new MemoryStream();
                 pdu.Write().WritePDU(ms);
 
-                byte[] buffer = ms.ToArray();
+                var buffer = ms.ToArray();
 
                 try
                 {
@@ -449,27 +449,20 @@ namespace Dicom.Network
                     }
                 }
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException e)
             {
                 // silently ignore
-                TryCloseConnection();
+                TryCloseConnection(e);
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e)
             {
                 // connection already closed; silently ignore
-                TryCloseConnection();
+                TryCloseConnection(e);
             }
             catch (IOException e)
             {
-                if (LogIOException(e, Logger, true))
-                {
-                    // Underlying socket error, probably due to forcibly closed connection, ignore
-                    TryCloseConnection();
-                }
-                else
-                {
-                    TryCloseConnection(e);
-                }
+                LogIOException(e, Logger, true);
+                TryCloseConnection(e);
             }
             catch (Exception e)
             {
@@ -1042,6 +1035,13 @@ namespace Dicom.Network
 
                 lock (_lock)
                 {
+                    if (exception != null)
+                    {
+                        _pduQueue.Clear();
+                        _msgQueue.Clear();
+                        _pending.Clear();
+                    }
+
                     if (_pduQueue.Count > 0 || _msgQueue.Count > 0 || _pending.Count > 0)
                     {
                         Logger.Info(
@@ -1058,16 +1058,8 @@ namespace Dicom.Network
             }
             catch (Exception e)
             {
-                if (exception == null)
-                {
-                    exception = e;
-                }
-            }
-
-            if (exception != null)
-            {
-                Logger.Error("Connection closed with error: {@error}", exception);
-                throw exception;
+                Logger.Error("Error during close attempt: {@error}", e);
+                throw;
             }
 
             Logger.Info("Connection closed");
@@ -1173,7 +1165,7 @@ namespace Dicom.Network
 
         #region Helper methods
 
-        private static bool LogIOException(Exception e, Logger logger, bool reading)
+        private static void LogIOException(Exception e, Logger logger, bool reading)
         {
             int errorCode;
             string errorDescriptor;
@@ -1183,10 +1175,8 @@ namespace Dicom.Network
                     $"Socket error while {(reading ? "reading" : "writing")} PDU: {{socketError}} [{{errorCode}}]",
                     errorDescriptor,
                     errorCode);
-                return true;
             }
-
-            if (e.InnerException is ObjectDisposedException)
+            else if (e.InnerException is ObjectDisposedException)
             {
                 logger.Info($"Object disposed while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
             }
@@ -1194,8 +1184,6 @@ namespace Dicom.Network
             {
                 logger.Error($"I/O exception while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
             }
-
-            return false;
         }
 
         #endregion
