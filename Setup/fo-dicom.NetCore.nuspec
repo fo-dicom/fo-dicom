@@ -18,6 +18,7 @@
 			<dependency id="System.Net.NetworkInformation" version="4.3.0" />
 			<dependency id="System.Net.Security" version="4.3.0" />
 			<dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+			<dependency id="System.Text.Encoding.CodePages" version="4.3.0" />
 			<dependency id="System.Threading.Tasks.Parallel" version="4.3.0" />
 			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
 			<dependency id="CSJ2K" version="2.0.0.1" />
