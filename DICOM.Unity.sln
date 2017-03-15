@@ -5,7 +5,13 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Unity", "Platform\Unity\DICOM.Unity.csproj", "{E51C520C-DCBC-472D-AB81-DDFA29A704DE}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DICOM.Shared", "DICOM\DICOM.Shared.shproj", "{F9539369-1AD0-43B0-A35C-B82F6755C247}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DICOM\DICOM.Shared.projitems*{e51c520c-dcbc-472d-ab81-ddfa29a704de}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+#if !NET35
+
 namespace Dicom.Network
 {
     using System.Threading;
@@ -32,3 +34,5 @@ namespace Dicom.Network
         Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
     }
 }
+
+#endif
