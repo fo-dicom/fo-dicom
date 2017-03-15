@@ -11,6 +11,7 @@
 * Online and NuGet packages API documentation (#28 #459 #466)
 
 #### v.3.0.2 (TBD)
+* If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
 * N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
 * Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
 
