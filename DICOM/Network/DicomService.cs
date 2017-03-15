@@ -276,7 +276,7 @@ namespace Dicom.Network
                 catch (IOException e)
                 {
                     LogIOException(e, Logger, false);
-                    TryCloseConnection(e);
+                    TryCloseConnection(e, true);
                 }
                 catch (Exception e)
                 {
@@ -446,20 +446,20 @@ namespace Dicom.Network
                     }
                 }
             }
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
                 // silently ignore
-                TryCloseConnection(e);
+                TryCloseConnection(force: true);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 // connection already closed; silently ignore
-                TryCloseConnection(e);
+                TryCloseConnection(force: true);
             }
             catch (IOException e)
             {
                 LogIOException(e, Logger, true);
-                TryCloseConnection(e);
+                TryCloseConnection(e, true);
             }
             catch (Exception e)
             {
@@ -1024,7 +1024,7 @@ namespace Dicom.Network
             }
         }
 
-        private bool TryCloseConnection(Exception exception = null)
+        private bool TryCloseConnection(Exception exception = null, bool force = false)
         {
             try
             {
@@ -1032,7 +1032,7 @@ namespace Dicom.Network
 
                 lock (_lock)
                 {
-                    if (exception != null)
+                    if (force)
                     {
                         _pduQueue.Clear();
                         _msgQueue.Clear();
@@ -1052,15 +1052,17 @@ namespace Dicom.Network
 
                 (this as IDicomService)?.OnConnectionClosed(exception);
                 lock (_lock) IsConnected = false;
+
+                Logger.Info("Connection closed");
+
+                if (exception != null) throw exception;
+                return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Error during close attempt: {@error}", e);
                 throw;
             }
-
-            Logger.Info("Connection closed");
-            return true;
         }
 
         #endregion
