@@ -10,11 +10,11 @@ namespace System.IO
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
-            var count = (int)(source.Length - source.Position);
-            var bytes = new byte[count];
-
-            count = source.Read(bytes, 0, count);
-            destination.Write(bytes, 0, count);
+            int b;
+            while ((b = source.ReadByte()) >= 0)
+            {
+                destination.WriteByte((byte)b);
+            }
         }
     }
 }

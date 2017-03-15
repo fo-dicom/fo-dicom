@@ -210,11 +210,7 @@ namespace Dicom.IO.Reader
             {
                 if (this.isDeflated)
                 {
-#if NET35
-                    throw new NotSupportedException("Deflated datasets not supported in Unity.");
-#else
                     source = this.Decompress(source);
-#endif
                 }
 
                 this.result = DicomReaderResult.Processing;
