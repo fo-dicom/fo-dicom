@@ -113,6 +113,24 @@
     <Compile Include="..\..\DICOM\Compatibility\Unity.IO.Compression\SR.cs">
       <Link>Compatibility\Unity.IO.Compression\SR.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000CodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpeg2000CodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpeg2000LossyCodec.cs">
+      <Link>Imaging\Codec\DicomJpeg2000LossyCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegCodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpegCodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.Mono.cs">
+      <Link>Imaging\Codec\DicomJpegProcess1Codec.Mono.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.Mono.cs">
+      <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Network\UnityNetworkListener.cs">
       <Link>Network\UnityNetworkListener.cs</Link>
     </Compile>
