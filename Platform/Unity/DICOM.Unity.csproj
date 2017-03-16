@@ -41,6 +41,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\DICOM\Compatibility\BigInteger.cs">
+      <Link>Compatibility\BigInteger.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Compatibility\NumericsHelpers.cs">
+      <Link>NumericsHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Compatibility\StreamExtensions.cs">
       <Link>Compatibility\StreamExtensions.cs</Link>
     </Compile>
