@@ -11,6 +11,11 @@
 **
 =============================================================================*/
 
+using System.Globalization;
+using System.Text;
+
+using Unity.IO.Compression;
+
 namespace System.Numerics
 {
     internal struct BigInteger
@@ -193,7 +198,75 @@ namespace System.Numerics
 
         #endregion
 
+        #region public methods
+        public override string ToString()
+        {
+            return FormatBigInteger(this, null, NumberFormatInfo.CurrentInfo);
+        }
+
+        #endregion
+
         #region internal support methods
+
+        // Return the value of this BigInteger as a little-endian twos-complement
+        // byte array, using the fewest number of bytes possible. If the value is zero,
+        // return an array of one byte whose element is 0x00.
+        private byte[] ToByteArray()
+        {
+            if (_bits == null && _sign == 0)
+                return new byte[] { 0 };
+
+            // We could probably make this more efficient by eliminating one of the passes.
+            // The current code does one pass for uint array -> byte array conversion,
+            // and then another pass to remove unneeded bytes at the top of the array.
+            uint[] dwords;
+            byte highByte;
+
+            if (_bits == null)
+            {
+                dwords = new uint[] { (uint)_sign };
+                highByte = (byte)((_sign < 0) ? 0xff : 0x00);
+            }
+            else if (_sign == -1)
+            {
+                dwords = (uint[])_bits.Clone();
+                DangerousMakeTwosComplement(dwords);  // mutates dwords
+                highByte = 0xff;
+            }
+            else
+            {
+                dwords = _bits;
+                highByte = 0x00;
+            }
+
+            byte[] bytes = new byte[checked(4 * dwords.Length)];
+            int curByte = 0;
+            uint dword;
+            for (int i = 0; i < dwords.Length; i++)
+            {
+                dword = dwords[i];
+                for (int j = 0; j < 4; j++)
+                {
+                    bytes[curByte++] = (byte)(dword & 0xff);
+                    dword >>= 8;
+                }
+            }
+
+            // find highest significant byte
+            int msb;
+            for (msb = bytes.Length - 1; msb > 0; msb--)
+            {
+                if (bytes[msb] != highByte) break;
+            }
+            // ensure high bit is 0 if positive, 1 if negative
+            bool needExtraByte = (bytes[msb] & 0x80) != (highByte & 0x80);
+
+            byte[] trimmedBytes = new byte[msb + 1 + (needExtraByte ? 1 : 0)];
+            Array.Copy(bytes, trimmedBytes, msb + 1);
+
+            if (needExtraByte) trimmedBytes[trimmedBytes.Length - 1] = highByte;
+            return trimmedBytes;
+        }
 
         private int CompareTo(long other)
         {
@@ -267,6 +340,239 @@ namespace System.Numerics
         private static ulong MakeUlong(uint uHi, uint uLo)
         {
             return ((ulong)uHi << kcbitUint) | uLo;
+        }
+
+        #endregion
+
+        #region Support methods from BigNumber class
+
+        //
+        // internal static String FormatBigInteger(BigInteger value, String format, NumberFormatInfo info) {
+        //
+        private static string FormatBigInteger(BigInteger value, string format, NumberFormatInfo info)
+        {
+            int digits = 0;
+            char fmt = ParseFormatSpecifier(format, out digits);
+            if (fmt == 'x' || fmt == 'X')
+                return FormatBigIntegerToHexString(value, fmt, digits, info);
+
+            bool decimalFmt = (fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R');
+
+            if (!decimalFmt)
+            {
+                // Supports invariant formats only
+                throw new FormatException(SR.GetString(SR.Format_InvalidFormatSpecifier));
+            }
+
+            if (value._bits == null)
+            {
+                if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
+                {
+                    if (digits > 0)
+                        format = string.Format(CultureInfo.InvariantCulture, "D{0}",
+                            digits.ToString(CultureInfo.InvariantCulture));
+                    else
+                        format = "D";
+                }
+                return value._sign.ToString(format, info);
+            }
+
+
+            // First convert to base 10^9.
+            const uint kuBase = 1000000000; // 10^9
+            const int kcchBase = 9;
+
+            int cuSrc = Length(value._bits);
+            int cuMax;
+            try
+            {
+                cuMax = checked(cuSrc * 10 / 9 + 2);
+            }
+            catch (OverflowException e)
+            {
+                throw new FormatException(SR.GetString(SR.Format_TooLarge), e);
+            }
+            uint[] rguDst = new uint[cuMax];
+            int cuDst = 0;
+
+            for (int iuSrc = cuSrc; --iuSrc >= 0;)
+            {
+                uint uCarry = value._bits[iuSrc];
+                for (int iuDst = 0; iuDst < cuDst; iuDst++)
+                {
+                    ulong uuRes = MakeUlong(rguDst[iuDst], uCarry);
+                    rguDst[iuDst] = (uint) (uuRes % kuBase);
+                    uCarry = (uint) (uuRes / kuBase);
+                }
+                if (uCarry != 0)
+                {
+                    rguDst[cuDst++] = uCarry % kuBase;
+                    uCarry /= kuBase;
+                    if (uCarry != 0)
+                        rguDst[cuDst++] = uCarry;
+                }
+            }
+
+            int cchMax;
+            try
+            {
+                // Each uint contributes at most 9 digits to the decimal representation.
+                cchMax = checked(cuDst * kcchBase);
+            }
+            catch (OverflowException e)
+            {
+                throw new FormatException(SR.GetString(SR.Format_TooLarge), e);
+            }
+
+            if (decimalFmt)
+            {
+                if (digits > 0 && digits > cchMax)
+                    cchMax = digits;
+                if (value._sign < 0)
+                {
+                    try
+                    {
+                        // Leave an extra slot for a minus sign.
+                        cchMax = checked(cchMax + info.NegativeSign.Length);
+                    }
+                    catch (OverflowException e)
+                    {
+                        throw new FormatException(SR.GetString(SR.Format_TooLarge), e);
+                    }
+                }
+            }
+
+            int rgchBufSize;
+
+            try
+            {
+                // We'll pass the rgch buffer to native code, which is going to treat it like a string of digits, so it needs
+                // to be null terminated.  Let's ensure that we can allocate a buffer of that size.
+                rgchBufSize = checked(cchMax + 1);
+            }
+            catch (OverflowException e)
+            {
+                throw new FormatException(SR.GetString(SR.Format_TooLarge), e);
+            }
+
+            char[] rgch = new char[rgchBufSize];
+
+            int ichDst = cchMax;
+
+            for (int iuDst = 0; iuDst < cuDst - 1; iuDst++)
+            {
+                uint uDig = rguDst[iuDst];
+                for (int cch = kcchBase; --cch >= 0;)
+                {
+                    rgch[--ichDst] = (char) ('0' + uDig % 10);
+                    uDig /= 10;
+                }
+            }
+            for (uint uDig = rguDst[cuDst - 1]; uDig != 0;)
+            {
+                rgch[--ichDst] = (char) ('0' + uDig % 10);
+                uDig /= 10;
+            }
+
+            // Format Round-trip decimal
+            // This format is supported for integral types only. The number is converted to a string of
+            // decimal digits (0-9), prefixed by a minus sign if the number is negative. The precision
+            // specifier indicates the minimum number of digits desired in the resulting string. If required,
+            // the number is padded with zeros to its left to produce the number of digits given by the
+            // precision specifier.
+            int numDigitsPrinted = cchMax - ichDst;
+            while (digits > 0 && digits > numDigitsPrinted)
+            {
+                // pad leading zeros
+                rgch[--ichDst] = '0';
+                digits--;
+            }
+            if (value._sign < 0)
+            {
+                string negativeSign = info.NegativeSign;
+                for (int i = info.NegativeSign.Length - 1; i > -1; i--)
+                    rgch[--ichDst] = info.NegativeSign[i];
+            }
+            return new string(rgch, ichDst, cchMax - ichDst);
+        }
+
+        private static String FormatBigIntegerToHexString(BigInteger value, char format, int digits, NumberFormatInfo info)
+        {
+            StringBuilder sb = new StringBuilder();
+            byte[] bits = value.ToByteArray();
+            String fmt = null;
+            int cur = bits.Length - 1;
+
+            if (cur > -1)
+            {
+                // [FF..F8] drop the high F as the two's complement negative number remains clear
+                // [F7..08] retain the high bits as the two's complement number is wrong without it
+                // [07..00] drop the high 0 as the two's complement positive number remains clear
+                bool clearHighF = false;
+                byte head = bits[cur];
+                if (head > 0xF7)
+                {
+                    head -= 0xF0;
+                    clearHighF = true;
+                }
+                if (head < 0x08 || clearHighF)
+                {
+                    // {0xF8-0xFF} print as {8-F}
+                    // {0x00-0x07} print as {0-7}
+                    fmt = String.Format(CultureInfo.InvariantCulture, "{0}1", format);
+                    sb.Append(head.ToString(fmt, info));
+                    cur--;
+                }
+            }
+            if (cur > -1)
+            {
+                fmt = String.Format(CultureInfo.InvariantCulture, "{0}2", format);
+                while (cur > -1)
+                {
+                    sb.Append(bits[cur--].ToString(fmt, info));
+                }
+            }
+            if (digits > 0 && digits > sb.Length)
+            {
+                // insert leading zeros.  User specified "X5" so we create "0ABCD" instead of "ABCD"
+                sb.Insert(0, (value._sign >= 0 ? ("0") : (format == 'x' ? "f" : "F")), digits - sb.Length);
+            }
+            return sb.ToString();
+        }
+
+        // this function is consistent with VM\COMNumber.cpp!COMNumber::ParseFormatSpecifier
+        private static char ParseFormatSpecifier(String format, out Int32 digits)
+        {
+            digits = -1;
+            if (String.IsNullOrEmpty(format))
+            {
+                return 'R';
+            }
+
+            int i = 0;
+            char ch = format[i];
+            if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z')
+            {
+                i++;
+                int n = -1;
+
+                if (i < format.Length && format[i] >= '0' && format[i] <= '9')
+                {
+                    n = format[i++] - '0';
+                    while (i < format.Length && format[i] >= '0' && format[i] <= '9')
+                    {
+                        n = n * 10 + (format[i++] - '0');
+                        if (n >= 10)
+                            break;
+                    }
+                }
+                if (i >= format.Length || format[i] == '\0')
+                {
+                    digits = n;
+                    return ch;
+                }
+            }
+            return (char)0; // custom format
         }
 
         #endregion

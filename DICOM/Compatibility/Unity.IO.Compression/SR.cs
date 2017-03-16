@@ -5,7 +5,7 @@ namespace Unity.IO.Compression {
     /// NOTE: this is a hacked in replacement for the SR class
     ///     Unity games don't care about localized exception messages, so we just hacked these in the best we could
     /// </summary>
-    internal class SR
+    internal static class SR
     {
         public const string ArgumentOutOfRange_Enum = "Argument out of range";
         public const string CorruptedGZipHeader = "Corrupted gzip header";
@@ -27,9 +27,9 @@ namespace Unity.IO.Compression {
         public const string UnknownCompressionMode = "Unknown compression mode";
         public const string UnknownBlockType = "Unknown block type";
 
-        private SR()
-        {
-        }
+        // Related to BigNumber methods inside BigInteger.cs
+        public const string Format_TooLarge = "Number too large";
+        public const string Format_InvalidFormatSpecifier = "Invalid format specifier";
 
         internal static string GetString(string p)
         {
