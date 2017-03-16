@@ -134,9 +134,6 @@
     <Compile Include="..\..\DICOM\Compatibility\TypeExtensions.cs">
       <Link>Compatibility\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Imaging\Codec\DesktopTranscoderManager.cs">
-      <Link>Imaging\Codec\DesktopTranscoderManager.cs</Link>
-    </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomRleCodecImpl.Mono.cs">
       <Link>Imaging\Codec\DicomRleCodecImpl.Mono.cs</Link>
     </Compile>
