@@ -113,6 +113,15 @@
     <Compile Include="..\..\DICOM\Compatibility\Unity.IO.Compression\SR.cs">
       <Link>Compatibility\Unity.IO.Compression\SR.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Network\UnityNetworkListener.cs">
+      <Link>Network\UnityNetworkListener.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Network\UnityNetworkManager.cs">
+      <Link>Network\UnityNetworkManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Network\UnityNetworkStream.cs">
+      <Link>Network\UnityNetworkStream.cs</Link>
+    </Compile>
     <Compile Include="..\..\Platform\Desktop\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
@@ -165,9 +174,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Network\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
