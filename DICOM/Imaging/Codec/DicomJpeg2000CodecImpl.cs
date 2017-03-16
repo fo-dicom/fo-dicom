@@ -89,7 +89,6 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
-#if SUPPORT16BIT
                     else if (oldPixelData.BytesAllocated == 2)
                     {
                         if (sgnd)
@@ -132,7 +131,6 @@ namespace Dicom.Imaging.Codec
                             }
                         }
                     }
-#endif
                     else
                     {
                         throw new InvalidOperationException(
@@ -227,7 +225,6 @@ namespace Dicom.Imaging.Codec
                             pos += offset;
                         }
                     }
-#if SUPPORT16BIT
                     else if (newPixelData.BytesAllocated == 2)
                     {
                         for (var p = 0; p < pixelCount; p++)
@@ -236,7 +233,6 @@ namespace Dicom.Imaging.Codec
                             pos += offset;
                         }
                     }
-#endif
                     else
                     {
                         throw new InvalidOperationException(
