@@ -13,7 +13,7 @@
 
 namespace System.Numerics
 {
-    public struct BigInteger
+    internal struct BigInteger
     {
         #region members supporting exposed properties
 
@@ -35,7 +35,7 @@ namespace System.Numerics
 
         #region constructors
 
-        public BigInteger(int value)
+        internal BigInteger(int value)
         {
             if (value == int.MinValue)
                 this = s_bnMinInt;
@@ -44,10 +44,11 @@ namespace System.Numerics
                 _bits = null;
             }
         }
+
         //
         // Create a BigInteger from a little-endian twos-complement byte array
         //
-        public BigInteger(byte[] value)
+        internal BigInteger(byte[] value)
         {
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
@@ -129,7 +130,7 @@ namespace System.Numerics
                     this = s_bnZeroInt;
                 }
                 else if (isNegative) {
-                    NumericsHelpers.DangerousMakeTwosComplement(val); // mutates val
+                    DangerousMakeTwosComplement(val); // mutates val
 
                     // pack _bits to remove any wasted space after the twos complement
                     int len = val.Length; 
@@ -194,7 +195,7 @@ namespace System.Numerics
 
         #region internal support methods
 
-        public int CompareTo(long other)
+        private int CompareTo(long other)
         {
             if (_bits == null)
                 return ((long)_sign).CompareTo(other);
@@ -202,11 +203,11 @@ namespace System.Numerics
             if ((_sign ^ other) < 0 || (cu = Length(_bits)) > 2)
                 return _sign;
             ulong uu = other < 0 ? (ulong)-other : (ulong)other;
-            ulong uuTmp = cu == 2 ? NumericsHelpers.MakeUlong(_bits[1], _bits[0]) : _bits[0];
+            ulong uuTmp = cu == 2 ? MakeUlong(_bits[1], _bits[0]) : _bits[0];
             return _sign * uuTmp.CompareTo(uu);
         }
 
-        internal static int Length(uint[] rgu)
+        private static int Length(uint[] rgu)
         {
             var cu = rgu.Length;
             if (rgu[cu - 1] != 0)
@@ -215,5 +216,59 @@ namespace System.Numerics
         }
 
         #endregion
-    } 
+
+        #region Support methods from NumericsHelpers class
+
+        // Do an in-place twos complement of d and also return the result.
+        // "Dangerous" because it causes a mutation and needs to be used
+        // with care for immutable types
+        private static uint[] DangerousMakeTwosComplement(uint[] d)
+        {
+            // first do complement and +1 as long as carry is needed
+            int i = 0;
+            uint v = 0;
+            for (; i < d.Length; i++)
+            {
+                v = ~d[i] + 1;
+                d[i] = v;
+                if (v != 0) { i++; break; }
+            }
+            if (v != 0)
+            {
+                // now ones complement is sufficient
+                for (; i < d.Length; i++)
+                {
+                    d[i] = ~d[i];
+                }
+            }
+            else
+            {
+                //??? this is weird
+                d = resize(d, d.Length + 1);
+                d[d.Length - 1] = 1;
+            }
+            return d;
+        }
+
+        private static uint[] resize(uint[] v, int len)
+        {
+            if (v.Length == len) return v;
+            uint[] ret = new uint[len];
+            int n = System.Math.Min(v.Length, len);
+            for (int i = 0; i < n; i++)
+            {
+                ret[i] = v[i];
+            }
+            return ret;
+        }
+
+        private const int kcbitUint = 32;
+
+        private static ulong MakeUlong(uint uHi, uint uLo)
+        {
+            return ((ulong)uHi << kcbitUint) | uLo;
+        }
+
+        #endregion
+    }
 }

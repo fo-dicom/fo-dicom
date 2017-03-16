@@ -55,7 +55,6 @@ namespace Dicom.Network
 
         #region METHODS
 
-#if !NET35
         /// <summary>
         /// Platform-specific implementation to create a network listener object.
         /// </summary>
@@ -105,7 +104,6 @@ namespace Dicom.Network
             errorDescriptor = null;
             return false;
         }
-#endif
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
