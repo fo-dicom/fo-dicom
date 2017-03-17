@@ -219,17 +219,26 @@ namespace Dicom.Imaging.Codec
 
                     if (newPixelData.BytesAllocated == 1)
                     {
+                        var sign = 1 << newPixelData.HighBit;
+                        var mask = 0xff ^ sign;
+
                         for (var p = 0; p < pixelCount; p++)
                         {
-                            destArray[pos] = comp[p];
+                            var i = (comp[p] & mask) | sign;
+                            destArray[pos] = (byte)i;
                             pos += offset;
                         }
                     }
                     else if (newPixelData.BytesAllocated == 2)
                     {
+                        var sign = 1 << newPixelData.HighBit;
+                        var mask = 0xffff ^ sign;
+
                         for (var p = 0; p < pixelCount; p++)
                         {
-                            destArray[2 * pos] = comp[p];
+                            var i = (comp[p] & mask) | sign;
+                            destArray[2 * pos] = (byte)(i & 0xff);
+                            destArray[2 * pos + 1] = (byte)((i >> 2) & 0xff);
                             pos += offset;
                         }
                     }
