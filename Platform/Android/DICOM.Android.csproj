@@ -47,9 +47,8 @@
       <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1.1\lib\netstandard1.0\BitMiracle.LibJpeg.NetCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CSJ2K, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CSJ2K.2.0.0.1\lib\MonoAndroid1\CSJ2K.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CSJ2K, Version=2.8.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\MonoAndroid1\CSJ2K.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />

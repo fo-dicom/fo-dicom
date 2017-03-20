@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Desktop" version="$version$" />
-            <dependency id="NLog" version="4.3.4" />
+            <dependency id="NLog" version="4.4.4" />
         </dependencies>
     </metadata>
     <files>

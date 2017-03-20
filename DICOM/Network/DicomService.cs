@@ -1,22 +1,66 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+#if NET35
+
+using System.Text;
+using Dicom.Log;
+
 namespace Dicom.Network
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
+    /// <summary>
+    /// Dummy base class for DICOM network services in Unity.
+    /// </summary>
+    public abstract class DicomService
+    {
+        #region CONSTRUCTORS
 
-    using Dicom.Imaging.Codec;
-    using Dicom.IO;
-    using Dicom.IO.Reader;
-    using Dicom.IO.Writer;
-    using Dicom.Log;
+        protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+        {
+        }
 
+        #endregion
+
+        #region Send Methods
+
+        protected void SendAssociationRequest(DicomAssociation association) { }
+
+        protected void SendAssociationAccept(DicomAssociation association) { }
+
+        protected void SendAssociationReject(
+            DicomRejectResult result,
+            DicomRejectSource source,
+            DicomRejectReason reason)
+        { }
+
+        protected void SendAssociationReleaseRequest() { }
+
+        protected void SendAssociationReleaseResponse() { }
+
+        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) { }
+
+        #endregion
+    }
+}
+
+#else
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Dicom.Imaging.Codec;
+using Dicom.IO;
+using Dicom.IO.Reader;
+using Dicom.IO.Writer;
+using Dicom.Log;
+
+namespace Dicom.Network
+{
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
@@ -1439,3 +1483,5 @@ namespace Dicom.Network
         #endregion
     }
 }
+
+#endif

@@ -107,7 +107,6 @@ namespace Dicom
             }
         }
 
-#if !NET35
         /// <summary>
         /// Generate a UUID-derived UID, according to ftp://medical.nema.org/medical/dicom/current/output/html/part05.html#sect_B.2
         /// </summary>
@@ -121,7 +120,6 @@ namespace Dicom
 
             return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
         }
-#endif
 
         #endregion
     }

@@ -247,14 +247,29 @@
     <None Include="$(MSBuildThisFileDirectory)DicomTagGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)DicomUIDGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.tt" />
-    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
-      <DependentUpon>DICOM Dictionary.tt</DependentUpon>
-    </None>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOMDictionary.xml.gz" />
-    <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\PrivateDictionary.xml.gz" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)T4\dictionarymethods.t4" />
   </ItemGroup>
+  <Choose>
+    <When Condition="$(DefineConstants.Contains('NET35'))">
+	  <ItemGroup>
+	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
+		  <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	  </ItemGroup>
+    </When>
+    <Otherwise>
+	  <ItemGroup>
+	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
+		  <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+	    </None>
+	    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOMDictionary.xml.gz" />
+	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
+	    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\PrivateDictionary.xml.gz" />
+	  </ItemGroup>
+    </Otherwise>
+  </Choose>
 </Project>

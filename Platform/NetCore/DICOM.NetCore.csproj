@@ -128,7 +128,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSJ2K" Version="2.0.0.1" />
+    <PackageReference Include="CSJ2K" Version="3.0.0-alpha" />
     <PackageReference Include="Portable.LibJpeg.NET" Version="1.5.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />

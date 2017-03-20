@@ -97,7 +97,7 @@ namespace Dicom
                 string line;
                 while ((line = source.ReadLine()) != null)
                 {
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (string.IsNullOrEmpty(line.Trim())) continue;
 
                     var parts = line.Trim().Split(';');
                     if (parts.Length == 0) continue;
@@ -594,7 +594,11 @@ namespace Dicom
         private static Type ElementValueType(DicomElement element)
         {
             var t = element.GetType();
+#if NET35
+            if (t.IsGenericType && !t.ContainsGenericParameters && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GetGenericArguments()[0];
+#else
             if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GenericTypeArguments[0];
+#endif
             return null;
         }
 
@@ -627,6 +631,6 @@ namespace Dicom
 #endif
         }
 
-#endregion
+        #endregion
     }
 }

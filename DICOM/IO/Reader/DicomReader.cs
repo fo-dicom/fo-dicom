@@ -6,11 +6,13 @@ namespace Dicom.IO.Reader
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.IO.Compression;
     using System.Linq;
     using System.Text;
 
-#if !NET35
+#if NET35
+    using Unity.IO.Compression;
+#else
+    using System.IO.Compression;
     using System.Threading.Tasks;
 #endif
 
@@ -208,11 +210,7 @@ namespace Dicom.IO.Reader
             {
                 if (this.isDeflated)
                 {
-#if NET35
-                    throw new NotSupportedException("Deflated datasets not supported in Unity.");
-#else
                     source = this.Decompress(source);
-#endif
                 }
 
                 this.result = DicomReaderResult.Processing;
@@ -268,6 +266,7 @@ namespace Dicom.IO.Reader
                 // end of processing
                 this.result = DicomReaderResult.Success;
             }
+#endif
 
             private IByteSource Decompress(IByteSource source)
             {
@@ -290,7 +289,6 @@ namespace Dicom.IO.Reader
                     }
                 }
             }
-#endif
 
             private bool ParseTag(IByteSource source)
             {
@@ -1161,9 +1159,9 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-            #endregion
+#endregion
         }
 
-        #endregion
+#endregion
     }
 }
