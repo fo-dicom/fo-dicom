@@ -1,21 +1,17 @@
 // Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Linq;
+
+using CSJ2K;
+using CSJ2K.j2k.util;
+using CSJ2K.Util;
+
+using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging.Codec
 {
-    using System;
-    using System.Linq;
-
-    using CSJ2K;
-    using CSJ2K.j2k.util;
-    using CSJ2K.Util;
-
-    using Dicom.Imaging;
-    using Dicom.IO.Buffer;
-
-    using JpegColorSpace = CSJ2K.Color.ColorSpace.CSEnum;
-
     internal static class DicomJpeg2000CodecImpl
     {
         internal static void Encode(
@@ -177,6 +173,7 @@ namespace Dicom.Imaging.Codec
             DicomJpeg2000Params parameters)
         {
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
+            var bytesAllocated = newPixelData.BytesAllocated;
 
             if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
                 || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
@@ -205,41 +202,64 @@ namespace Dicom.Imaging.Codec
                 var destArray = new byte[frameSize];
 
                 var image = J2kImage.FromBytes(jpegData.Data, ToParameterList(parameters, true));
-
                 if (image == null) throw new InvalidOperationException("Error in JPEG 2000 code stream!");
 
                 for (var c = 0; c < image.NumberOfComponents; c++)
                 {
                     var comp = image.GetComponent(c);
 
-                    var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
-                    var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
+                    var pos = bytesAllocated * (newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? c * pixelCount : c);
+                    var offset = bytesAllocated * (newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
                                      ? 1
-                                     : image.NumberOfComponents;
+                                     : image.NumberOfComponents);
 
-                    if (newPixelData.BytesAllocated == 1)
+                    if (bytesAllocated == 1)
                     {
-                        var sign = 1 << newPixelData.HighBit;
-                        var mask = 0xff ^ sign;
-
-                        for (var p = 0; p < pixelCount; p++)
+                        if (newPixelData.PixelRepresentation == PixelRepresentation.Signed)
                         {
-                            var i = (comp[p] & mask) | sign;
-                            destArray[pos] = (byte)i;
-                            pos += offset;
+                            var sign = 1 << newPixelData.HighBit;
+                            var mask = 0xff ^ sign;
+
+                            for (var p = 0; p < pixelCount; p++)
+                            {
+                                int i = (i = comp[p] - sign) < 0 ? (i & mask) | sign : i & mask;
+                                destArray[pos] = (byte) i;
+                                pos += offset;
+                            }
+                        }
+                        else
+                        {
+                            for (var p = 0; p < pixelCount; p++)
+                            {
+                                destArray[pos] = (byte)comp[p];
+                                pos += offset;
+                            }
                         }
                     }
-                    else if (newPixelData.BytesAllocated == 2)
+                    else if (bytesAllocated == 2)
                     {
-                        var sign = 1 << newPixelData.HighBit;
-                        var mask = 0xffff ^ sign;
-
-                        for (var p = 0; p < pixelCount; p++)
+                        if (newPixelData.PixelRepresentation == PixelRepresentation.Signed)
                         {
-                            var i = (comp[p] & mask) | sign;
-                            destArray[2 * pos] = (byte)(i & 0xff);
-                            destArray[2 * pos + 1] = (byte)((i >> 2) & 0xff);
-                            pos += offset;
+                            var sign = 1 << newPixelData.HighBit;
+                            var mask = 0xffff ^ sign;
+
+                            for (var p = 0; p < pixelCount; p++)
+                            {
+                                int i = (i = comp[p] - sign) < 0 ? (i & mask) | sign : i & mask;
+                                destArray[pos] = (byte) (i & 0xff);
+                                destArray[pos + 1] = (byte) ((i >> 8) & 0xff);
+                                pos += offset;
+                            }
+                        }
+                        else
+                        {
+                            for (var p = 0; p < pixelCount; p++)
+                            {
+                                var i = comp[p];
+                                destArray[pos] = (byte)(i & 0xff);
+                                destArray[pos + 1] = (byte)((i >> 8) & 0xff);
+                                pos += offset;
+                            }
                         }
                     }
                     else
@@ -253,19 +273,7 @@ namespace Dicom.Imaging.Codec
             }
         }
 
-        private static JpegColorSpace GetJpegColorSpace(PhotometricInterpretation photometricInterpretation)
-        {
-            if (photometricInterpretation == PhotometricInterpretation.Rgb) return JpegColorSpace.sRGB;
-            else if (photometricInterpretation == PhotometricInterpretation.Monochrome1
-                     || photometricInterpretation == PhotometricInterpretation.Monochrome2) return JpegColorSpace.GreyScale;
-            else if (photometricInterpretation == PhotometricInterpretation.PaletteColor) return JpegColorSpace.GreyScale;
-            else if (photometricInterpretation == PhotometricInterpretation.YbrFull
-                     || photometricInterpretation == PhotometricInterpretation.YbrFull422
-                     || photometricInterpretation == PhotometricInterpretation.YbrPartial422) return JpegColorSpace.sYCC;
-            else return JpegColorSpace.Unknown;
-        }
-
-        private static ParameterList ToParameterList(DicomJpeg2000Params parameters, bool decoder = true)
+        private static ParameterList ToParameterList(DicomJpeg2000Params parameters, bool decoder)
         {
             // These JPEG2000 codec parameters are not translated: EncodeSignedPixelValuesAsUnsigned, RateLevels, 
             // UpdatePhotometricInterpretation
