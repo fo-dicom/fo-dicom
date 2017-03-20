@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
 			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
-			<dependency id="CSJ2K" version="2.0.0.1" />
+			<dependency id="CSJ2K" version="3.0.0-alpha" />
         </dependencies>
     </metadata>
     <files>

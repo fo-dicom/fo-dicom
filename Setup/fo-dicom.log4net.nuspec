@@ -13,7 +13,7 @@
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom.Desktop" version="$version$" />
-            <dependency id="log4net" version="2.0.5" />
+            <dependency id="log4net" version="2.0.8" />
         </dependencies>
     </metadata>
     <files>
