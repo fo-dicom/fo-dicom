@@ -1,4 +1,6 @@
 #### v.4.0.0 (TBD)
+* Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
+* Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)
 * Added missing encodings for .NET Core (#481 #486)
 * Update to latest DICOM Standard 2017a (#480 #482)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
