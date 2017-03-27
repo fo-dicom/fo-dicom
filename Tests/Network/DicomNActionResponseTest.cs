@@ -48,6 +48,14 @@ namespace Dicom.Network
             Assert.Null(exception);
         }
 
+        [Fact]
+        public void StatusSetter_SetWithoutErrorComment_DoesNotAddErrorComment()
+        {
+            DicomResponse x = new DicomNActionResponse(new DicomDataset());
+            x.Status = DicomStatus.Success;
+            Assert.False(x.Command.Contains(DicomTag.ErrorComment));
+        }
+
         #endregion
     }
 }
