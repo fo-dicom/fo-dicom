@@ -539,7 +539,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
         {
-            var entry = DicomDictionary.Default[tag];
+            var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
             if (entry == null)
                 throw new DicomDataException(
                     "Tag {0} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.",
