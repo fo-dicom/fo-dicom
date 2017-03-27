@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace Dicom.Network
@@ -178,11 +179,22 @@ namespace Dicom.Network
 
         static DicomStatus()
         {
+            ResetEntries();
+        }
+
+        /// <summary>
+        /// Resets the list of known DicomStatuses to the hard-coded list.
+        /// </summary>
+        internal static void ResetEntries()
+        {
+            Entries.Clear();
             #region Load Dicom Status List
 
             Entries.Add(Success);
             Entries.Add(Cancel);
             Entries.Add(Pending);
+            Entries.Add(Warning);
+            Entries.Add(WarningClass);
             Entries.Add(AttributeListError);
             Entries.Add(AttributeValueOutOfRange);
             Entries.Add(SOPClassNotSupported);
@@ -237,6 +249,8 @@ namespace Dicom.Network
             Entries.Add(MediaCreationManagementCancellationDeniedForUnspecifiedReason);
 
             #endregion
+
+            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
         }
 
         /// <summary>
@@ -253,6 +267,27 @@ namespace Dicom.Network
             return ProcessingFailure;
         }
 
+        private static int CountBits(ushort value)
+        {
+            int count = 0;
+
+            for (int i = 0; i < 16; i++)
+                if ((value & (1 << i)) != 0)
+                    count++;
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a set of known DicomStatuses.
+        /// </summary>
+        /// <param name="statuses">The statuses to add.</param>
+        public static void AddKnownDicomStatuses(IEnumerable<DicomStatus> statuses)
+        {
+            Entries.AddRange(statuses);
+            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
+        }
+
         #region Dicom Statuses
 
         /// <summary>Success: Success</summary>
@@ -263,6 +298,12 @@ namespace Dicom.Network
 
         /// <summary>Pending: Pending</summary>
         public static DicomStatus Pending = new DicomStatus("FF00", DicomState.Pending, "Pending");
+
+        /// <summary>Warning: Warning</summary>
+        public static DicomStatus Warning = new DicomStatus("0001", DicomState.Warning, "Warning");
+
+        /// <summary>Warning: Warning Class</summary>
+        public static DicomStatus WarningClass = new DicomStatus("Bxxx", DicomState.Warning, "Warning Class");
 
         /// <summary>Warning: Attribute list error</summary>
         public static DicomStatus AttributeListError = new DicomStatus(
