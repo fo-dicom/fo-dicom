@@ -26,6 +26,8 @@ namespace Dicom.Network
             public static readonly bool IgnoreSslPolicyErrors = false;
 
             public static readonly bool TcpNoDelay = true;
+
+            public static readonly bool OnePDVPerPDU = false;
         }
 
         #endregion
@@ -42,6 +44,7 @@ namespace Dicom.Network
             MaxDataBuffer = Default.MaxDataBuffer;
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
             TcpNoDelay = Default.TcpNoDelay;
+            OnePDVPerPDU = Default.OnePDVPerPDU;
         }
 
         #endregion
@@ -68,6 +71,9 @@ namespace Dicom.Network
 
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
+
+        /// <summary>Write one PDV per PDU regardless of whether another PDV would fit in the PDU. Works around common bugs in other implementations.</summary>
+        public bool OnePDVPerPDU { get; set; }
 
         #endregion
     }
