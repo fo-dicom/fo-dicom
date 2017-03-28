@@ -48,6 +48,31 @@ namespace Dicom.Network
             Assert.Null(exception);
         }
 
+        [Fact]
+        public void StatusSetter_SetWithoutErrorComment_DoesNotAddErrorComment()
+        {
+            DicomResponse x = new DicomNActionResponse(new DicomDataset());
+            x.Status = DicomStatus.Success;
+            Assert.False(x.Command.Contains(DicomTag.ErrorComment));
+        }
+
+        [Fact]
+        public void StatusSetter_ChangesFromStatusWithCommentToWithout_UpdatesErrorComment()
+        {
+            var comment = "This is a comment";
+            DicomResponse x = new DicomNActionResponse(new DicomDataset());
+            var status = new DicomStatus(
+                             "C303",
+                             DicomState.Failure,
+                             "Refused: The UPS may only become SCHEDULED via N-CREATE, not N-SET or N-ACTION",
+                             comment);
+            x.Status = status;
+            Assert.Equal(x.Command.Get<string>(DicomTag.ErrorComment), comment);
+
+            x.Status = DicomStatus.Success;
+            Assert.False(x.Command.Contains(DicomTag.ErrorComment));
+        }
+
         #endregion
     }
 }
