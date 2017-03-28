@@ -1,4 +1,6 @@
 #### v.3.0.2 (TBD)
+* DicomResponse.ErrorComment is always added in the DicomResponse.Status setter, even for successes (#501 #505)
+* DicomStatus.Lookup does not consider priority in matching (#499 #498)
 * If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
 * N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
 * Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
