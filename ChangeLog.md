@@ -1,4 +1,5 @@
 #### v.3.0.2 (TBD)
+* Add option in DicomServiceOptions for max PDVs per PDU (#502 #506)
 * DicomResponse.ErrorComment is always added in the DicomResponse.Status setter, even for successes (#501 #505)
 * DicomStatus.Lookup does not consider priority in matching (#499 #498)
 * If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
