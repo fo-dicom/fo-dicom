@@ -158,6 +158,77 @@ namespace Dicom
             });
         }
 
+        [Fact]
+        public void Add_PrivateTag_GetsCorrectVR()
+        {
+            var privCreatorDictEntry = new DicomDictionaryEntry(
+                                           new DicomTag(0x0011, 0x0010),
+                                           "Private Creator",
+                                           "PrivateCreator",
+                                           DicomVM.VM_1,
+                                           false,
+                                           DicomVR.LO);
+            DicomDictionary.Default.Add(privCreatorDictEntry);
+
+            DicomPrivateCreator privateCreator1 = DicomDictionary.Default.GetPrivateCreator("TESTCREATOR1");
+            DicomDictionary privDict1 = DicomDictionary.Default[privateCreator1];
+
+            var dictEntry = new DicomDictionaryEntry(
+                                DicomMaskedTag.Parse("0011", "xx10"),
+                                "TestPrivTagName",
+                                "TestPrivTagKeyword",
+                                DicomVM.VM_1,
+                                false,
+                                DicomVR.CS);
+            privDict1.Add(dictEntry);
+
+            var ds = new DicomDataset();
+            ds.Add(dictEntry.Tag, "VAL1");
+
+            Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(ds.GetPrivateTag(dictEntry.Tag)));
+        }
+
+        [Fact]
+        public void Enumerate_DictionaryEntriesWithPrivateTags_ContainsAllExpectedEntries()
+        {
+            var dict = new DicomDictionary();
+
+            var tag1 = new DicomTag(0x0010, 0x0020);
+            var dictEntry1 = new DicomDictionaryEntry(
+                                 tag1,
+                                 "TestPublicTagName",
+                                 "TestPublicTagKeyword",
+                                 DicomVM.VM_1,
+                                 false,
+                                 DicomVR.DT);
+            var privCreatorDictEntry = new DicomDictionaryEntry(
+                                           new DicomTag(0x0011, 0x0010),
+                                           "Private Creator",
+                                           "PrivateCreator",
+                                           DicomVM.VM_1,
+                                           false,
+                                           DicomVR.LO);
+            dict.Add(privCreatorDictEntry);
+
+            DicomPrivateCreator privateCreator = dict.GetPrivateCreator("TESTCREATOR");
+            DicomDictionary privDict = dict[privateCreator];
+
+            var dictEntry2 = new DicomDictionaryEntry(
+                                 DicomMaskedTag.Parse("0011", "xx10"),
+                                 "TestPrivTagName",
+                                 "TestPrivTagKeyword",
+                                 DicomVM.VM_1,
+                                 false,
+                                 DicomVR.DT);
+
+            privDict.Add(dictEntry2);
+            dict.Add(dictEntry1);
+
+            Assert.True(dict.Contains(dictEntry1));
+            Assert.True(dict.Contains(privCreatorDictEntry));
+            Assert.True(dict[dictEntry2.Tag.PrivateCreator].Contains(dictEntry2));
+        }
+
         #endregion
 
         #region Support data
