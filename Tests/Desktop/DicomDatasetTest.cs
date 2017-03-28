@@ -357,7 +357,7 @@ namespace Dicom
 
             var ds = new DicomDataset();
             ds.Add(dictEntry.Tag, "VAL1");
-            Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(ds.GetPrivateTag(dictEntry.Tag)));
+            Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(dictEntry.Tag));
         }
 
         #endregion
