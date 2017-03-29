@@ -369,29 +369,32 @@ namespace Dicom.Network
                     length = Endian.Swap(length);
 
                     _readLength = length;
-
-                    Array.Resize(ref buffer, length + 6);
-
-                    count = await stream.ReadAsync(buffer, 6, length).ConfigureAwait(false);
-
+                    
                     // Read PDU
-                    do
+                    using (var ms = new MemoryStream())
                     {
-                        if (count == 0)
+                        ms.Write(buffer, 0, buffer.Length);
+                        while (_readLength > 0)
                         {
-                            // disconnected
-                            TryCloseConnection();
-                            return;
+                            int bytesToRead = Math.Min(_readLength, 1024);
+                            var tempBuffer = new byte[bytesToRead];
+                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
+                                    .ConfigureAwait(false);
+
+                            if (count == 0)
+                            {
+                                // disconnected
+                                TryCloseConnection();
+                                return;
+                            }
+
+                            ms.Write(tempBuffer, 0, count);
+
+                            _readLength -= count;
                         }
 
-                        _readLength -= count;
-                        if (_readLength > 0)
-                        {
-                            count =
-                                await stream.ReadAsync(buffer, buffer.Length - _readLength, _readLength)
-                                    .ConfigureAwait(false);
-                        }
-                    } while (_readLength > 0);
+                        buffer = ms.ToArray();
+                    }
 
                     var raw = new RawPDU(buffer);
 
