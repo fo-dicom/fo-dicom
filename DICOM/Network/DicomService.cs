@@ -96,6 +96,8 @@ namespace Dicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
+        private const int MaxBytesToRead = 16384;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -376,7 +378,7 @@ namespace Dicom.Network
                         ms.Write(buffer, 0, buffer.Length);
                         while (_readLength > 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, 1024);
+                            int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
                                     .ConfigureAwait(false);
