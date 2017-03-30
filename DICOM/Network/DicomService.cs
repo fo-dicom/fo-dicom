@@ -52,7 +52,7 @@ namespace Dicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
-        private readonly Task _pduListener;
+        private const int MaxBytesToRead = 16384;
 
         #endregion
 
@@ -133,6 +133,11 @@ namespace Dicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Task"/> that listens for PDUs.
+        /// </summary>
+        protected Task PduListener { get; }
 
         #endregion
 
@@ -329,7 +334,7 @@ namespace Dicom.Network
                         ms.Write(buffer, 0, buffer.Length);
                         while (_readLength > 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, 1024);
+                            int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
                                     .ConfigureAwait(false);
