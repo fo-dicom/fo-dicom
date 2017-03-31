@@ -55,7 +55,7 @@ namespace Dicom
             }
         }
 
-        public DicomPrivateCreator PrivateCreator { get; internal set; }
+        public DicomPrivateCreator PrivateCreator { get; set; }
 
         public DicomDictionaryEntry DictionaryEntry
         {
