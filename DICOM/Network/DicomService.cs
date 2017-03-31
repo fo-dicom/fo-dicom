@@ -78,7 +78,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            _pduListener = ListenAndProcessPDUAsync();
+            PduListener = ListenAndProcessPDUAsync();
         }
 
         #endregion
