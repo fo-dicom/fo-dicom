@@ -66,6 +66,20 @@ namespace Dicom.Serialization
             VerifyJsonTripleTrip(ds);
         }
 
+        /// <summary>Verify that PrivateCreators are set for the tags in a deserialized dataset.</summary>
+        [Fact]
+        public void Deserialize_PrivateCreators_AreSet()
+        {
+            var originalDataset = BuildAllTypesDataset_();
+
+            Assert.All(originalDataset, item => Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator)));
+
+            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
+            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.All(reconstituatedDataset, item => Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator)));
+        }
+
         /// <summary>
         /// Tests that DS values that are not proper json numbers get fixed on serialization.
         /// </summary>
@@ -79,7 +93,7 @@ namespace Dicom.Serialization
             Assert.Equal("1", (string)obj["00200032"].Value[0]);
             Assert.Equal("13", (string)obj["00200032"].Value[1]);
             Assert.Equal("0", (string)obj["00200032"].Value[2]);
-            
+
             // Would be nice, but Json.NET mangles the parsed json. Verify string instead:
             // Assert.Equal("-0", (string)obj["00200032"].Value[3]);
             //Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000E+00]}}");
