@@ -19,6 +19,7 @@
 * If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
 * N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
 * Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
+* Dicom Server listener consumes large amount of memory if http request is sent to listener (#327 #509)
 
 #### v.3.0.1 (3/06/2017)
 * Add runtime directives to enable .NET Native builds for UWP (#424 #460)
