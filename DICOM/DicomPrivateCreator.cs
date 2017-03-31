@@ -11,7 +11,11 @@ namespace Dicom
                                               IComparable<DicomPrivateCreator>,
                                               IComparable
     {
-        internal DicomPrivateCreator(string creator)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomPrivateCreator"/> class.
+        /// </summary>
+        /// <param name="creator">The textual value of the private creator</param>
+        public DicomPrivateCreator(string creator)
         {
             this.Creator = creator;
         }
