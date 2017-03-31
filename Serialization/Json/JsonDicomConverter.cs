@@ -95,6 +95,18 @@ namespace Dicom.Serialization
                 dataset.Add(item);
                 reader.Read();
             }
+            foreach (var item in dataset)
+            {
+                if (item.Tag.IsPrivate && ((item.Tag.Element & 0xff00) != 0))
+                {
+                    var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
+
+                    if (dataset.Contains(privateCreatorTag))
+                    {
+                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.Get<string>(privateCreatorTag));
+                    }
+                }
+            }
             if (reader.TokenType != JsonToken.EndObject) throw new JsonReaderException("Malformed DICOM json");
 
             return dataset;
