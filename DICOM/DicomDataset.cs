@@ -59,6 +59,7 @@ namespace Dicom
                     if (item.ValueRepresentation.Equals(DicomVR.SQ))
                     {
                         var tag = item.Tag;
+                        if (tag.IsPrivate) tag = GetPrivateTag(tag);
                         var sequenceItems =
                             ((DicomSequence)item).Items.Where(dataset => dataset != null)
                                 .Select(dataset => new DicomDataset(dataset))
@@ -67,7 +68,7 @@ namespace Dicom
                     }
                     else
                     {
-                        _items[item.Tag] = item;
+                        _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
             }
@@ -104,13 +105,13 @@ namespace Dicom
         #region METHODS
 
         /// <summary>
-        /// Gets the item or element value of the specified <paramref name="tag"/>. 
+        /// Gets the item or element value of the specified <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="n">Item index (for multi-valued elements).</param>
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
-        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified 
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
         /// <paramref name="n">item index</paramref> is out-of-range.</exception>
         public T Get<T>(DicomTag tag, int n = 0)
         {
@@ -118,7 +119,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Gets the integer element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// Gets the integer element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>.
         /// </summary>
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
@@ -130,7 +131,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
@@ -144,7 +145,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>. 
+        /// Gets the item or element value of the specified <paramref name="tag"/>, or default value if dataset does not contain <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
@@ -160,8 +161,20 @@ namespace Dicom
         /// Converts a dictionary tag to a valid private tag. Creates the private creator tag if needed.
         /// </summary>
         /// <param name="tag">Dictionary DICOM tag</param>
-        /// <returns>Private DICOM tag</returns>
+        /// <returns>Private DICOM tag, or null if all groups are already used.</returns>
         public DicomTag GetPrivateTag(DicomTag tag)
+        {
+            return GetPrivateTag(tag, true);
+        }
+
+        /// <summary>
+        /// Converts a dictionary tag to a valid private tag.
+        /// </summary>
+        /// <param name="tag">Dictionary DICOM tag</param>
+        /// <param name="createTag">Whether the PrivateCreator tag should be created if needed.</param>
+        /// <returns>Private DICOM tag, or null if all groups are already used or createTag is false and the
+        /// PrivateCreator is not already in the dataset. </returns>
+        internal DicomTag GetPrivateTag(DicomTag tag, bool createTag)
         {
             // not a private tag
             if (!tag.IsPrivate) return tag;
@@ -176,20 +189,22 @@ namespace Dicom
             if (tag.Element >= 0xff) return tag;
 
             ushort group = 0x0010;
-            for (;; group++)
+            for (; group <= 0x00ff; group++)
             {
                 var creator = new DicomTag(tag.Group, group);
                 if (!Contains(creator))
                 {
+                    if (!createTag) continue;
+
                     Add(new DicomLongString(creator, tag.PrivateCreator.Creator));
-                    break;
+                    return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
                 }
 
                 var value = Get(creator, string.Empty);
                 if (tag.PrivateCreator.Creator == value) return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
             }
 
-            return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
+            return null;
         }
 
         /// <summary>
@@ -265,7 +280,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Add or update a single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>. 
+        /// Add or update a single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>.
         /// </summary>
         /// <typeparam name="T">Type of added values.</typeparam>
         /// <param name="tag">DICOM tag of the added item.</param>
@@ -277,7 +292,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Add or update a single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>. 
+        /// Add or update a single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>.
         /// </summary>
         /// <typeparam name="T">Type of added values.</typeparam>
         /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
@@ -297,14 +312,14 @@ namespace Dicom
         /// </summary>
         /// <param name="vr">DICOM vr of the image pixel. For a PixelData element this value should be either DicomVR.OB or DicomVR.OW DICOM VR.</param>
         /// <param name="pixelData">An <see cref="IByteBuffer"/> that holds the image pixel data </param>
-        /// <param name="transferSyntax">A DicomTransferSyntax object of the <paramref name="pixelData"/> parameter. 
+        /// <param name="transferSyntax">A DicomTransferSyntax object of the <paramref name="pixelData"/> parameter.
         /// If parameter is not provided (null), then the default TransferSyntax "ExplicitVRLittleEndian" will be applied to the dataset</param>
         /// <remarks>Use this method whenever you are attaching an external image pixel data to the dataset and provide the proper TransferSyntax</remarks>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdatePixelData (DicomVR vr, IByteBuffer pixelData, DicomTransferSyntax transferSyntax = null ) 
+        public DicomDataset AddOrUpdatePixelData (DicomVR vr, IByteBuffer pixelData, DicomTransferSyntax transferSyntax = null )
         {
             this.AddOrUpdate ( vr, DicomTag.PixelData, pixelData ) ;
-            
+
             if (null != transferSyntax)
             {
                 InternalTransferSyntax = transferSyntax ;
@@ -320,6 +335,12 @@ namespace Dicom
         /// <returns><c>True</c> if a DICOM item with the specified tag already exists.</returns>
         public bool Contains(DicomTag tag)
         {
+            if (tag.IsPrivate)
+            {
+                var privateTag = GetPrivateTag(tag, false);
+                if (privateTag == null) return false;
+                return _items.ContainsKey(privateTag);
+            }
             return _items.ContainsKey(tag);
         }
 
@@ -330,7 +351,19 @@ namespace Dicom
         /// <returns>Current Dataset</returns>
         public DicomDataset Remove(params DicomTag[] tags)
         {
-            foreach (DicomTag tag in tags) _items.Remove(tag);
+            foreach (DicomTag tag in tags)
+            {
+                if (tag.IsPrivate)
+                {
+                    var privateTag = GetPrivateTag(tag);
+                    if (privateTag == null) continue;
+                    _items.Remove(privateTag);
+                }
+                else
+                {
+                    _items.Remove(tag);
+                }
+            }
             return this;
         }
 
@@ -424,7 +457,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// Gets the item or element value of the specified <paramref name="tag"/>. 
+        /// Gets the item or element value of the specified <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
@@ -434,7 +467,20 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         private T Get<T>(DicomTag tag, int n, bool useDefault, T defaultValue)
         {
+            if (tag.IsPrivate)
+            {
+                var privateTag = GetPrivateTag(tag, false);
+                if (privateTag == null)
+                {
+                    if (useDefault) return defaultValue;
+                    throw new DicomDataException("Tag: {0} not found in dataset", tag);
+                }
+
+                tag = privateTag;
+            }
+
             DicomItem item = null;
+
             if (!_items.TryGetValue(tag, out item))
             {
                 if (useDefault) return defaultValue;
@@ -539,7 +585,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
         {
-            var entry = DicomDictionary.Default[tag];
+            var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
             if (entry == null)
                 throw new DicomDataException(
                     "Tag {0} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.",
@@ -566,6 +612,7 @@ namespace Dicom
         /// <returns>The dataset instance.</returns>
         private DicomDataset DoAdd<T>(DicomVR vr, DicomTag tag, IList<T> values, bool allowUpdate)
         {
+            if (tag.IsPrivate) tag = GetPrivateTag(tag);
             if (vr == DicomVR.AE)
             {
                 if (values == null) return DoAdd(new DicomApplicationEntity(tag, EmptyBuffer.Value), allowUpdate);
