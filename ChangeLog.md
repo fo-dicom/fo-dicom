@@ -13,6 +13,8 @@
 * Online and NuGet packages API documentation (#28 #459 #466)
 
 #### v.3.0.2 (TBD)
+* Add private creator to private tags when deserializing json (#512 #513)
+* Adding private tags implicitly uses wrong VR (#503 #504)
 * Add option in DicomServiceOptions for max PDVs per PDU (#502 #506)
 * DicomResponse.ErrorComment is always added in the DicomResponse.Status setter, even for successes (#501 #505)
 * DicomStatus.Lookup does not consider priority in matching (#499 #498)
