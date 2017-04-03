@@ -66,6 +66,32 @@ namespace Dicom.Serialization
             VerifyJsonTripleTrip(ds);
         }
 
+        /// <summary>Verify that PrivateCreators are set for the tags in a deserialized dataset.</summary>
+        [Fact]
+        public void Deserialize_PrivateCreators_AreSet()
+        {
+            var originalDataset = BuildAllTypesDataset_();
+
+            ValidatePrivateCreatorsExist_(originalDataset);
+
+            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
+            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            ValidatePrivateCreatorsExist_(reconstituatedDataset);
+        }
+
+        private static void ValidatePrivateCreatorsExist_(DicomDataset dataset)
+        {
+            Assert.All(
+                dataset,
+                item =>
+                    {
+                        if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
+                        Assert.NotNull(item.Tag.DictionaryEntry);
+                        if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
+                    });
+        }
+
         /// <summary>
         /// Tests that DS values that are not proper json numbers get fixed on serialization.
         /// </summary>
@@ -79,7 +105,7 @@ namespace Dicom.Serialization
             Assert.Equal("1", (string)obj["00200032"].Value[0]);
             Assert.Equal("13", (string)obj["00200032"].Value[1]);
             Assert.Equal("0", (string)obj["00200032"].Value[2]);
-            
+
             // Would be nice, but Json.NET mangles the parsed json. Verify string instead:
             // Assert.Equal("-0", (string)obj["00200032"].Value[3]);
             //Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000E+00]}}");
@@ -308,41 +334,76 @@ namespace Dicom.Serialization
         private static DicomDataset BuildAllTypesDataset_()
         {
             var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
-            return new DicomDataset {
-                           new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator), "AETITLE"),
-                           new DicomAgeString(new DicomTag(3, 0x1003, privateCreator), "34y"),
-                           new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator), new[] { DicomTag.SOPInstanceUID }),
-                           new DicomCodeString(new DicomTag(3, 0x1005, privateCreator), "FOOBAR"),
-                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), "20000229"),
-                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new[] { "9876543210123457" }),
-                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), "20141231194212"),
-                           new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator), new[] { 0.25f }),
-                           new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator), new[] { Math.PI }),
-                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), 2147483647),
-                           new DicomLongString(new DicomTag(3, 0x100c, privateCreator), "(╯°□°）╯︵ ┻━┻"),
-                           new DicomLongText(new DicomTag(3, 0x100d, privateCreator), "┬──┬ ノ( ゜-゜ノ)"),
-                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[] { 1, 2, 3, 0, 255 }),
-                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[] { 1.0, 2.5 }),
-                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[] { 1.0f, 2.9f }),
-                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), new uint[] { 0xffffffff, 0x00000000, 0x12345678 }),
-                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[] { 0xffff, 0x0000, 0x1234 }),
-                           new DicomPersonName(new DicomTag(3, 0x1012, privateCreator), "Morrison-Jones^Susan^^^Ph.D."),
-                           new DicomShortString(new DicomTag(3, 0x1013, privateCreator), "顔文字"),
-                           new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator), -65538),
-                           new DicomSequence(new DicomTag(3, 0x1015, privateCreator), new [] {
-                             new DicomDataset { new DicomShortText(new DicomTag(3, 0x1016, privateCreator), "ಠ_ಠ") }
-                           }),
-                           new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator), -32768),
-                           new DicomShortText(new DicomTag(3, 0x1018, privateCreator), "ಠ_ಠ"),
-                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), "123456"),
-                           new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), "Hmph."),
-                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), DicomUID.CTImageStorage),
-                           new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator), 0xffffffff),
-                           new DicomUnknown(new DicomTag(3, 0x101d, privateCreator), new byte[] { 1, 2, 3, 0, 255 }),
-                           new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), "http://example.com?q=1"),
-                           new DicomUnsignedShort(new DicomTag(3, 0x101f, privateCreator), 0xffff),
-                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), "unlimited!")
-                         };
+            var privDict = DicomDictionary.Default[privateCreator];
+
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.AE));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx03"), "Private Tag 03", "PrivateTag03", DicomVM.VM_1, false, DicomVR.AS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx04"), "Private Tag 04", "PrivateTag04", DicomVM.VM_1, false, DicomVR.AT));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx05"), "Private Tag 05", "PrivateTag05", DicomVM.VM_1, false, DicomVR.CS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx06"), "Private Tag 06", "PrivateTag06", DicomVM.VM_1, false, DicomVR.DA));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx07"), "Private Tag 07", "PrivateTag07", DicomVM.VM_1, false, DicomVR.DS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx08"), "Private Tag 08", "PrivateTag08", DicomVM.VM_1, false, DicomVR.DT));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx09"), "Private Tag 09", "PrivateTag09", DicomVM.VM_1, false, DicomVR.FL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0a"), "Private Tag 0a", "PrivateTag0a", DicomVM.VM_1, false, DicomVR.FD));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0b"), "Private Tag 0b", "PrivateTag0b", DicomVM.VM_1, false, DicomVR.IS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0c"), "Private Tag 0c", "PrivateTag0c", DicomVM.VM_1, false, DicomVR.LO));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0d"), "Private Tag 0d", "PrivateTag0d", DicomVM.VM_1, false, DicomVR.LT));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0e"), "Private Tag 0e", "PrivateTag0e", DicomVM.VM_1, false, DicomVR.OB));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx0f"), "Private Tag 0f", "PrivateTag0f", DicomVM.VM_1, false, DicomVR.OD));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx10"), "Private Tag 10", "PrivateTag10", DicomVM.VM_1, false, DicomVR.OF));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx11"), "Private Tag 11", "PrivateTag11", DicomVM.VM_1, false, DicomVR.OL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx12"), "Private Tag 12", "PrivateTag12", DicomVM.VM_1, false, DicomVR.OW));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx13"), "Private Tag 13", "PrivateTag13", DicomVM.VM_1, false, DicomVR.PN));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx14"), "Private Tag 14", "PrivateTag14", DicomVM.VM_1, false, DicomVR.SH));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx15"), "Private Tag 15", "PrivateTag15", DicomVM.VM_1, false, DicomVR.SL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx16"), "Private Tag 16", "PrivateTag16", DicomVM.VM_1, false, DicomVR.SQ));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx17"), "Private Tag 17", "PrivateTag17", DicomVM.VM_1, false, DicomVR.ST));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx18"), "Private Tag 18", "PrivateTag18", DicomVM.VM_1, false, DicomVR.SS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx19"), "Private Tag 19", "PrivateTag19", DicomVM.VM_1, false, DicomVR.ST));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1a"), "Private Tag 1a", "PrivateTag1a", DicomVM.VM_1, false, DicomVR.TM));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1b"), "Private Tag 1b", "PrivateTag1b", DicomVM.VM_1, false, DicomVR.UC));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1c"), "Private Tag 1c", "PrivateTag1c", DicomVM.VM_1, false, DicomVR.UI));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1d"), "Private Tag 1d", "PrivateTag1d", DicomVM.VM_1, false, DicomVR.UL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1e"), "Private Tag 1e", "PrivateTag1e", DicomVM.VM_1, false, DicomVR.UN));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1f"), "Private Tag 1f", "PrivateTag1f", DicomVM.VM_1, false, DicomVR.UR));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx20"), "Private Tag 20", "PrivateTag20", DicomVM.VM_1, false, DicomVR.US));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx21"), "Private Tag 21", "PrivateTag21", DicomVM.VM_1, false, DicomVR.UT));
+
+            var ds = new DicomDataset();
+
+            ds.Add(new DicomApplicationEntity(ds.GetPrivateTag(new DicomTag(3, 0x0002, privateCreator)), "AETITLE"));
+            ds.Add(new DicomAgeString(ds.GetPrivateTag(new DicomTag(3, 0x0003, privateCreator)), "34y"));
+            ds.Add(new DicomAttributeTag(ds.GetPrivateTag(new DicomTag(3, 0x0004, privateCreator)), new[] { DicomTag.SOPInstanceUID }));
+            ds.Add(new DicomCodeString(ds.GetPrivateTag(new DicomTag(3, 0x0005, privateCreator)), "FOOBAR"));
+            ds.Add(new DicomDate(ds.GetPrivateTag(new DicomTag(3, 0x0006, privateCreator)), "20000229"));
+            ds.Add(new DicomDecimalString(ds.GetPrivateTag(new DicomTag(3, 0x0007, privateCreator)), new[] { "9876543210123457" }));
+            ds.Add(new DicomDateTime(ds.GetPrivateTag(new DicomTag(3, 0x0008, privateCreator)), "20141231194212"));
+            ds.Add(new DicomFloatingPointSingle(ds.GetPrivateTag(new DicomTag(3, 0x0009, privateCreator)), new[] { 0.25f }));
+            ds.Add(new DicomFloatingPointDouble(ds.GetPrivateTag(new DicomTag(3, 0x000a, privateCreator)), new[] { Math.PI }));
+            ds.Add(new DicomIntegerString(ds.GetPrivateTag(new DicomTag(3, 0x000b, privateCreator)), 2147483647));
+            ds.Add(new DicomLongString(ds.GetPrivateTag(new DicomTag(3, 0x000c, privateCreator)), "(╯°□°）╯︵ ┻━┻"));
+            ds.Add(new DicomLongText(ds.GetPrivateTag(new DicomTag(3, 0x000d, privateCreator)), "┬──┬ ノ( ゜-゜ノ)"));
+            ds.Add(new DicomOtherByte(ds.GetPrivateTag(new DicomTag(3, 0x000e, privateCreator)), new byte[] { 1, 2, 3, 0, 255 }));
+            ds.Add(new DicomOtherDouble(ds.GetPrivateTag(new DicomTag(3, 0x000f, privateCreator)), new double[] { 1.0, 2.5 }));
+            ds.Add(new DicomOtherFloat(ds.GetPrivateTag(new DicomTag(3, 0x0010, privateCreator)), new float[] { 1.0f, 2.9f }));
+            ds.Add(new DicomOtherLong(ds.GetPrivateTag(new DicomTag(3, 0x0011, privateCreator)), new uint[] { 0xffffffff, 0x00000000, 0x12345678 }));
+            ds.Add(new DicomOtherWord(ds.GetPrivateTag(new DicomTag(3, 0x0012, privateCreator)), new ushort[] { 0xffff, 0x0000, 0x1234 }));
+            ds.Add(new DicomPersonName(ds.GetPrivateTag(new DicomTag(3, 0x0013, privateCreator)), "Morrison-Jones^Susan^^^Ph.D."));
+            ds.Add(new DicomShortString(ds.GetPrivateTag(new DicomTag(3, 0x0014, privateCreator)), "顔文字"));
+            ds.Add(new DicomSignedLong(ds.GetPrivateTag(new DicomTag(3, 0x0015, privateCreator)), -65538));
+            ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0016, privateCreator)), new[] { new DicomDataset { new DicomShortText(new DicomTag(3, 0x0017, privateCreator), "ಠ_ಠ") } }));
+            ds.Add(new DicomSignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0018, privateCreator)), -32768));
+            ds.Add(new DicomShortText(ds.GetPrivateTag(new DicomTag(3, 0x0019, privateCreator)), "ಠ_ಠ"));
+            ds.Add(new DicomTime(ds.GetPrivateTag(new DicomTag(3, 0x001a, privateCreator)), "123456"));
+            ds.Add(new DicomUnlimitedCharacters(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), "Hmph."));
+            ds.Add(new DicomUniqueIdentifier(ds.GetPrivateTag(new DicomTag(3, 0x001c, privateCreator)), DicomUID.CTImageStorage));
+            ds.Add(new DicomUnsignedLong(ds.GetPrivateTag(new DicomTag(3, 0x001d, privateCreator)), 0xffffffff));
+            ds.Add(new DicomUnknown(ds.GetPrivateTag(new DicomTag(3, 0x001e, privateCreator)), new byte[] { 1, 2, 3, 0, 255 }));
+            ds.Add(new DicomUniversalResource(ds.GetPrivateTag(new DicomTag(3, 0x001f, privateCreator)), "http://example.com?q=1"));
+            ds.Add(new DicomUnsignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0020, privateCreator)), 0xffff));
+            ds.Add(new DicomUnlimitedText(ds.GetPrivateTag(new DicomTag(3, 0x0021, privateCreator)), "unlimited!"));
+
+            return ds;
         }
 
         private static DicomDataset BuildAllTypesNullDataset_()
