@@ -11,27 +11,27 @@
 #include "jpegstreamreader.h"
 #include <vector>
 
-
+using namespace std;
 using namespace charls;
 
 
 namespace
 {
-    bool IsDefault(const JlsCustomParameters& custom)
+    bool IsDefault(const JpegLSPresetCodingParameters& custom)
     {
-        if (custom.MAXVAL != 0)
+        if (custom.MaximumSampleValue != 0)
             return false;
 
-        if (custom.T1 != 0)
+        if (custom.Threshold1 != 0)
             return false;
 
-        if (custom.T2 != 0)
+        if (custom.Threshold2 != 0)
             return false;
 
-        if (custom.T3 != 0)
+        if (custom.Threshold3 != 0)
             return false;
 
-        if (custom.RESET != 0)
+        if (custom.ResetValue != 0)
             return false;
 
         return true;
@@ -40,26 +40,16 @@ namespace
 
 
 JpegStreamWriter::JpegStreamWriter() :
-_bCompare(false),
-_data(),
-_byteOffset(0),
-_lastCompenentIndex(0)
+    _data(),
+    _byteOffset(0),
+    _lastCompenentIndex(0)
 {
-}
-
-
-JpegStreamWriter::~JpegStreamWriter()
-{
-    for (size_t i = 0; i < _segments.size(); ++i)
-    {
-        delete _segments[i];
-    }
 }
 
 
 void JpegStreamWriter::AddColorTransform(ColorTransformation transformation)
 {
-    AddSegment(JpegMarkerSegment::CreateColorTransformMarker(transformation));
+    AddSegment(JpegMarkerSegment::CreateColorTransformSegment(transformation));
 }
 
 
@@ -74,8 +64,6 @@ size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
         _segments[i]->Serialize(*this);
     }
 
-    //_bCompare = false;
-
     WriteMarker(JpegMarkerCode::EndOfImage);
 
     return _byteOffset;
@@ -86,18 +74,18 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
 {
     if (!IsDefault(params.custom))
     {
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params.custom));
+        AddSegment(JpegMarkerSegment::CreateJpegLSPresetParametersSegment(params.custom));
     }
-    else if (params.bitspersample > 12)
+    else if (params.bitsPerSample > 12)
     {
-        JlsCustomParameters preset = ComputeDefault((1 << params.bitspersample) - 1, params.allowedlossyerror);
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
+        const JpegLSPresetCodingParameters preset = ComputeDefault((1 << params.bitsPerSample) - 1, params.allowedLossyError);
+        AddSegment(JpegMarkerSegment::CreateJpegLSPresetParametersSegment(preset));
     }
 
+    // Note: it is a common practice to start to count components by index 1.
     _lastCompenentIndex += 1;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == InterleaveMode::None ? _lastCompenentIndex : -1));
+    const int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
+    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
 
-    int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
-
-    AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
+    AddSegment(make_unique<JpegImageDataSegment>(info, params, componentCount));
 }

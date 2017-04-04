@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_CONTEXT
@@ -29,7 +29,7 @@ struct JlsContext
     }
 
 
-    JlsContext(int32_t a) :
+    explicit JlsContext(int32_t a) :
         A(a),
         B(0),
         C(0),
@@ -53,7 +53,7 @@ struct JlsContext
 
         // For performance work on copies of A,B,N (compiler will use registers).
         int a = A + std::abs(errorValue);
-        int b = B + errorValue * (2 * NEAR + 1); 
+        int b = B + errorValue * (2 * NEAR + 1);
         int n = N;
 
         ASSERT(a < 65536 * 256);
@@ -70,7 +70,7 @@ struct JlsContext
         n = n + 1;
         N = static_cast<int16_t>(n);
 
-        if (b + n <= 0) 
+        if (b + n <= 0)
         {
             b = b + n;
             if (b <= -n)
@@ -96,8 +96,8 @@ struct JlsContext
 
     inlinehint int32_t GetGolomb() const
     {
-        int32_t Ntest = N;
-        int32_t Atest = A;
+        const int32_t Ntest = N;
+        const int32_t Atest = A;
 
         if (Ntest >= Atest) return 0;
         if (Ntest << 1 >= Atest) return 1;

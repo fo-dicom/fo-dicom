@@ -8,6 +8,7 @@
 #include "util.h"
 #include "jpegsegment.h"
 #include <vector>
+#include <memory>
 
 enum class JpegMarkerCode : uint8_t;
 
@@ -22,11 +23,10 @@ class JpegStreamWriter
 
 public:
     JpegStreamWriter();
-    virtual ~JpegStreamWriter();
 
-    void AddSegment(JpegSegment* segment)
+    void AddSegment(std::unique_ptr<JpegSegment> segment)
     {
-        _segments.push_back(segment);
+        _segments.push_back(std::move(segment));
     }
 
     void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
@@ -45,11 +45,6 @@ public:
 
     std::size_t Write(const ByteStreamInfo& info);
 
-    void EnableCompare(bool bCompare)
-    {
-        _bCompare = bCompare;
-    }
-
 private:
     uint8_t* GetPos() const
     {
@@ -66,8 +61,6 @@ private:
 
     void WriteByte(uint8_t val)
     {
-        ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
-
         if (_data.rawStream)
         {
             _data.rawStream->sputc(val);
@@ -75,7 +68,7 @@ private:
         else
         {
             if (_byteOffset >= _data.count)
-                throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+                throw charls_error(charls::ApiResult::CompressedBufferTooSmall);
 
             _data.rawData[_byteOffset++] = val;
         }
@@ -109,11 +102,10 @@ private:
         _byteOffset += byteCount;
     }
 
-    bool _bCompare;
     ByteStreamInfo _data;
     std::size_t _byteOffset;
     int32_t _lastCompenentIndex;
-    std::vector<JpegSegment*> _segments;
+    std::vector<std::unique_ptr<JpegSegment>> _segments;
 };
 
 #endif

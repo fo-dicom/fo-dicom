@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_CONTEXTRUNMODE
@@ -41,10 +41,10 @@ struct CContextRunMode
 
     inlinehint int32_t GetGolomb() const
     {
+        const int32_t TEMP = A + (N >> 1) * _nRItype;
         int32_t Ntest = N;
-        int32_t TEMP = A + (N >> 1) * _nRItype;
         int32_t k = 0;
-        for(; Ntest < TEMP; k++) 
+        for(; Ntest < TEMP; k++)
         {
             Ntest <<= 1;
             ASSERT(k <= 32);
@@ -60,7 +60,7 @@ struct CContextRunMode
             Nn = Nn + 1;
         }
         A = A + ((EMErrval + 1 - _nRItype) >> 1);
-        if (N == _nReset) 
+        if (N == _nReset)
         {
             A = A >> 1;
             N = N >> 1;
@@ -72,9 +72,8 @@ struct CContextRunMode
 
     inlinehint int32_t ComputeErrVal(int32_t temp, int32_t k) const
     {
-        bool map = temp & 1;
-
-        int32_t errvalabs = (temp + int32_t(map)) / 2;
+        const bool map = temp & 1;
+        const int32_t errvalabs = (temp + static_cast<int32_t>(map)) / 2;
 
         if ((k != 0 || (2 * Nn >= N)) == map)
         {

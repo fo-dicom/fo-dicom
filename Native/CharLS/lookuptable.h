@@ -7,6 +7,9 @@
 #define CHARLS_LOOKUPTABLE
 
 
+#include <cstring>
+
+
 // Tables for fast decoding of short Golomb Codes.
 struct Code
 {
@@ -45,7 +48,7 @@ public:
 
     CTable()
     {
-        ::memset(_rgtype, 0, sizeof(_rgtype));
+        std::memset(_rgtype, 0, sizeof(_rgtype));
     }
 
     void AddEntry(uint8_t bvalue, Code c)

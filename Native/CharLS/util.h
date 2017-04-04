@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_UTIL
@@ -9,6 +9,7 @@
 #include "publictypes.h"
 #include <vector>
 #include <system_error>
+#include <memory>
 
 #ifdef NDEBUG
 #  ifndef ASSERT
@@ -17,12 +18,6 @@
 #else
 #include <cassert>
 #define ASSERT(t) assert(t)
-#endif
-
-#if defined(_WIN32)
-#ifdef _MSC_VER
-#pragma warning (disable:4512) // assignment operator could not be generated [VS2013]
-#endif
 #endif
 
 #undef  NEAR
@@ -34,19 +29,11 @@
 #    else
 #      define inlinehint inline
 #    endif
-#  elif
+#  else
 #    define inlinehint inline
 #  endif
 #endif
 
-
-#ifndef MAX
-#define MAX(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef MIN
-#define MIN(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
 
 enum constants
 {
@@ -143,7 +130,7 @@ inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 template<typename sample>
 struct Quad : Triplet<sample>
 {
-    Quad() : 
+    Quad() :
         v4(0)
         {}
 
@@ -167,9 +154,9 @@ struct FromBigEndian
 template<>
 struct FromBigEndian<4>
 {
-    inlinehint static unsigned int Read(uint8_t* pbyte)
+    inlinehint static unsigned int Read(const uint8_t* pbyte)
     {
-        return  (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
+        return (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
     }
 };
 
@@ -177,32 +164,40 @@ struct FromBigEndian<4>
 template<>
 struct FromBigEndian<8>
 {
-    inlinehint static uint64_t Read(uint8_t* pbyte)
+    inlinehint static uint64_t Read(const uint8_t* pbyte)
     {
         return (uint64_t(pbyte[0]) << 56) + (uint64_t(pbyte[1]) << 48) + (uint64_t(pbyte[2]) << 40) + (uint64_t(pbyte[3]) << 32) +
-                (uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);
+               (uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);
     }
 };
 
 
-const std::error_category& CharLSCategoryInstance();
-
-
-inline ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
+class charls_error : public std::system_error
 {
-    ByteStreamInfo info = ByteStreamInfo();
-    info.rawStream = stream;
-    return info;
-}
+public:
+    explicit charls_error(charls::ApiResult errorCode)
+        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance())
+    {
+    }
 
 
-inline void SkipBytes(ByteStreamInfo* streamInfo, std::size_t count)
+    charls_error(charls::ApiResult errorCode, const std::string& message)
+        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message)
+    {
+    }
+
+private:
+    static const std::error_category& CharLSCategoryInstance();
+};
+
+
+inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count)
 {
-    if (!streamInfo->rawData)
+    if (!streamInfo.rawData)
         return;
 
-    streamInfo->rawData += count;
-    streamInfo->count -= count;
+    streamInfo.rawData += count;
+    streamInfo.count -= count;
 }
 
 
@@ -211,12 +206,5 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
 {
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
 }
-
-
-inline std::system_error CreateSystemError(charls::ApiResult errorCode, const std::string& message)
-{
-    return std::system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message);
-}
-
 
 #endif

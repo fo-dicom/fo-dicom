@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 
@@ -9,13 +9,11 @@
 
 #include "defaulttraits.h"
 
-//
-// optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
-// This class is assumes MAXVAL correspond to a whole number of bits, and no custom RESET value is set when encoding.
-// The point of this is to have the most optimized code for the most common and most demanding scenario. 
-
+// Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
+// This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
+// The point of this is to have the most optimized code for the most common and most demanding scenario.
 template<typename sample, int32_t bitsperpixel>
-struct LosslessTraitsImplT 
+struct LosslessTraitsImplT
 {
     typedef sample SAMPLE;
     enum
@@ -25,13 +23,13 @@ struct LosslessTraitsImplT
         qbpp  = bitsperpixel,
         RANGE = (1 << bpp),
         MAXVAL= (1 << bpp) - 1,
-        LIMIT = 2 * (bitsperpixel + MAX(8,bitsperpixel)),
+        LIMIT = 2 * (bitsperpixel + std::max(8, bitsperpixel)),
         RESET = BASIC_RESET
     };
 
     static inlinehint int32_t ComputeErrVal(int32_t d)
     {
-        return ModRange(d);
+        return ModuloRange(d);
     }
 
     static inlinehint bool IsNear(int32_t lhs, int32_t rhs)
@@ -39,17 +37,21 @@ struct LosslessTraitsImplT
         return lhs == rhs;
     }
 
-    static inlinehint int32_t ModRange(int32_t Errval)
+// The following optimalization is implementation-dependent (works on x86 and ARM, see charlstest).
+#if defined(__clang__)
+     __attribute__((no_sanitize("shift")))
+#endif
+    static inlinehint int32_t ModuloRange(int32_t errorValue)
     {
-        return int32_t(Errval << (INT32_BITCOUNT  - bpp)) >> (INT32_BITCOUNT  - bpp); 
+        return static_cast<int32_t>(errorValue << (INT32_BITCOUNT - bpp)) >> (INT32_BITCOUNT - bpp);
     }
 
     static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
-        return SAMPLE(MAXVAL & (Px + ErrVal)); 
+        return static_cast<SAMPLE>(MAXVAL & (Px + ErrVal));
     }
 
-    static inlinehint int32_t CorrectPrediction(int32_t Pxc) 
+    static inlinehint int32_t CorrectPrediction(int32_t Pxc)
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -60,7 +62,7 @@ struct LosslessTraitsImplT
 
 
 template<typename SAMPLE, int32_t bpp>
-struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp> 
+struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp>
 {
     typedef SAMPLE PIXEL;
 };
@@ -71,7 +73,7 @@ struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 {
     typedef SAMPLE PIXEL;
 
-    static inlinehint signed char ModRange(int32_t Errval) 
+    static inlinehint signed char ModRange(int32_t Errval)
     {
         return static_cast<signed char>(Errval);
     }
@@ -83,7 +85,7 @@ struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 
     static inlinehint uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
-        return uint8_t(Px + ErrVal);
+        return static_cast<uint8_t>(Px + ErrVal);
     }
 };
 
@@ -93,19 +95,19 @@ struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 {
     typedef SAMPLE PIXEL;
 
-    static inlinehint short ModRange(int32_t Errval) 
+    static inlinehint short ModRange(int32_t Errval)
     {
-        return short(Errval);
+        return static_cast<short>(Errval);
     }
 
     static inlinehint int32_t ComputeErrVal(int32_t d)
     {
-        return short(d);
+        return static_cast<short>(d);
     }
 
     static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
-        return SAMPLE(Px + ErrVal);
+        return static_cast<SAMPLE>(Px + ErrVal);
     }
 };
 
@@ -127,7 +129,7 @@ struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
 
     static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
-        return SAMPLE(Px + ErrVal);
+        return static_cast<SAMPLE>(Px + ErrVal);
     }
 };
 

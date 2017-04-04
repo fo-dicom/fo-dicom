@@ -19,19 +19,19 @@ enum class JpegMarkerCode : uint8_t
     StartOfScan = 0xDA,  // SOS: Marks the start of scan.
 
     // The following markers are defined in ITU T.81 | ISO IEC 10918-1.
-    StartOfFrameBaselineJpeg = 0xC0,            // SOF_0:  Marks the start of a (Baseline jpeg) encoded frame.
-    StartOfFrameExtendedSequential = 0xC1,      // SOF_1:  Marks the start of a (Extended sequential, huffman) encoded frame.
-    StartOfFrameProgressive = 0xC2,             // SOF_2:  Marks the start of a (progressive, huffman) encoded frame.
-    StartOfFrameLossless = 0xC3,                // SOF_3:  Marks the start of a (lossless, huffman) encoded frame.
-    StartOfFrameDifferentialSequential = 0xC5,  // SOF_5:  Marks the start of a (differential sequential, huffman) encoded frame.
-    StartOfFrameDifferentialProgressive = 0xC6, // SOF_6:  Marks the start of a (differential progressive, huffman) encoded frame.
-    StartOfFrameDifferentialLossless = 0xC7,    // SOF_7:  Marks the start of a (differential lossless, huffman) encoded frame.
-    StartOfFrameExtendedArithemtic = 0xC9,      // SOF_9:  Marks the start of a (extended sequential, arithmetic) encoded frame.
-    StartOfFrameProgressiveArithemtic = 0xCA,   // SOF_10: Marks the start of a (progressive, arithmetic) encoded frame.
-    StartOfFrameLosslessArithemtic = 0xCB,      // SOF_11: Marks the start of a (lossless, arithmetic) encoded frame.
+    StartOfFrameBaselineJpeg = 0xC0,            // SOF_0:  Marks the start of a baseline jpeg encoded frame.
+    StartOfFrameExtendedSequential = 0xC1,      // SOF_1:  Marks the start of a extended sequential huffman encoded frame.
+    StartOfFrameProgressive = 0xC2,             // SOF_2:  Marks the start of a progressive huffman encoded frame.
+    StartOfFrameLossless = 0xC3,                // SOF_3:  Marks the start of a lossless huffman encoded frame.
+    StartOfFrameDifferentialSequential = 0xC5,  // SOF_5:  Marks the start of a differential sequential huffman encoded frame.
+    StartOfFrameDifferentialProgressive = 0xC6, // SOF_6:  Marks the start of a differential progressive huffman encoded frame.
+    StartOfFrameDifferentialLossless = 0xC7,    // SOF_7:  Marks the start of a differential lossless huffman encoded frame.
+    StartOfFrameExtendedArithemtic = 0xC9,      // SOF_9:  Marks the start of a extended sequential arithmetic encoded frame.
+    StartOfFrameProgressiveArithemtic = 0xCA,   // SOF_10: Marks the start of a progressive arithmetic encoded frame.
+    StartOfFrameLosslessArithemtic = 0xCB,      // SOF_11: Marks the start of a lossless arithmetic encoded frame.
 
-    StartOfFrameJpegLS = 0xF7,                  // SOF_55: Marks the start of a (JPEG-LS) encoded frame.
-    JpegLSExtendedParameters = 0xF8,            // LSE:    JPEG-LS extended parameters.
+    StartOfFrameJpegLS = 0xF7,                  // SOF_55: Marks the start of a JPEG-LS encoded frame.
+    JpegLSPresetParameters = 0xF8,              // LSE:    Marks the start of a JPEG-LS preset parameters segment.
 
     ApplicationData0 = 0xE0,                    // APP0: Application data 0: used for JFIF header.
     ApplicationData7 = 0xE7,                    // APP7: Application data 7: colorspace.

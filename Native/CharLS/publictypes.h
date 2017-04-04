@@ -1,11 +1,14 @@
-/* 
-  (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-*/ 
+/*
+  (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+*/
 #ifndef CHARLS_PUBLICTYPES
 #define CHARLS_PUBLICTYPES
 
 
 #ifdef __cplusplus
+
+#include <cstdint>
+#include <cstddef>
 
 namespace charls
 {
@@ -28,7 +31,7 @@ namespace charls
         UnknownJpegMarker = 11,              // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
         MissingJpegMarkerStart = 12,         // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         UnspecifiedFailure = 13,             // This error is returned when the implementation detected a failure, but no specific error is available.
-        UnexpectedFailure = 14,              // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        UnexpectedFailure = 14               // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
     };
 
     /// <summary>
@@ -52,22 +55,42 @@ namespace charls
         Sample = 2
     };
 
+    /// <summary>
+    /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
+    /// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding ratio.
+    /// These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard.
+    /// The JPEG-LS ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
+    /// </summary>
     enum class ColorTransformation
     {
-        // Default (RGB)
+        /// <summary>
+        /// No color space transformation has been applied.
+        /// </summary>
         None = 0,
 
-        // Color transforms as defined by HP
-        // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
-        HP1,
-        HP2,
-        HP3,
+        /// <summary>
+        /// Defines the reversible lossless color transformation:
+        /// G = G
+        /// R = R - G
+        /// B = B - G
+        /// </summary>
+        HP1 = 1,
 
-        // Defined by HP but not supported by CharLS
-        RgbAsYuvLossy,
-        Matrix,
-        BigEndian = 1 << 29,
-        LittleEndian = 1 << 30
+        /// <summary>
+        /// Defines the reversible lossless color transformation:
+        /// G = G
+        /// B = B - (R + G) / 2
+        /// R = R - G
+        /// </summary>
+        HP2 = 2,
+
+        /// <summary>
+        /// Defines the reversible lossless color transformation of Y-Cb-Cr):
+        /// R = R - G
+        /// B = B - G
+        /// G = G + (R + B) / 4
+        /// </summary>
+        HP3 = 3,
     };
 }
 
@@ -75,7 +98,12 @@ typedef charls::ApiResult CharlsApiResultType;
 typedef charls::InterleaveMode CharlsInterleaveModeType;
 typedef charls::ColorTransformation CharlsColorTransformationType;
 
+// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
+const std::size_t ErrorMessageSize = 256;
+
 #else
+
+#include <stdint.h>
 
 enum CharlsApiResult
 {
@@ -106,48 +134,113 @@ enum CharlsInterleaveMode
 enum CharlsColorTransformation
 {
     CHARLS_COLOR_TRANSFORMATION_NONE = 0,
-    CHARLS_COLOR_TRANSFORMATION_HP1,
-    CHARLS_COLOR_TRANSFORMATION_HP2,
-    CHARLS_COLOR_TRANSFORMATION_HP3,
-    CHARLS_COLOR_TRANSFORMATION_RGB_AS_YUV_LOSSY,
-    CHARLS_COLOR_TRANSFORMATION_MATRIX,
-    CHARLS_COLOR_TRANSFORMATION_BIGENDIAN = 1 << 29,
-    CHARLS_COLOR_TRANSFORMATION_LITTLEENDIAN = 1 << 30
+    CHARLS_COLOR_TRANSFORMATION_HP1 = 1,
+    CHARLS_COLOR_TRANSFORMATION_HP2 = 2,
+    CHARLS_COLOR_TRANSFORMATION_HP3 = 3,
 };
 
 typedef enum CharlsApiResult CharlsApiResultType;
 typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
 typedef enum CharlsColorTransformation CharlsColorTransformationType;
 
+// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
+#define CHARLS_ERROR_MESSAGE_SIZE 256
+
 #endif
 
 
-struct JlsCustomParameters
+/// <summary>
+/// Defines the JPEG-LS preset coding parameters as defined in ISO/IEC 14495-1, C.2.4.1.1.
+/// JPEG-LS defines a default set of parameters, but custom parameters can be used.
+/// When used these parameters are written into the encoded bit stream as they are needed for the decoding process.
+/// </summary>
+struct JpegLSPresetCodingParameters
 {
-    int MAXVAL;
-    int T1;
-    int T2;
-    int T3;
-    int RESET;
+    /// <summary>
+    /// Maximum possible value for any image sample in a scan.
+    /// This must be greater than or equal to the actual maximum value for the components in a scan.
+    /// </summary>
+    int MaximumSampleValue;
+
+    /// <summary>
+    /// First quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold1;
+
+    /// <summary>
+    /// Second quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold2;
+
+    /// <summary>
+    /// Third quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold3;
+
+    /// <summary>
+    /// Value at which the counters A, B, and N are halved.
+    /// </summary>
+    int ResetValue;
 };
 
 
 struct JlsRect
 {
-    int X, Y;
-    int Width, Height;
+    int X;
+    int Y;
+    int Width;
+    int Height;
 };
 
 
+/// <summary>
+/// Defines the parameters for the JPEG File Interchange Format.
+/// The format is defined in the JPEG File Interchange Format v1.02 document by Eric Hamilton.
+/// </summary>
+/// <remarks>
+/// The JPEG File Interchange Format is the de-facto standard JPEG interchange format.
+/// </remarks>
 struct JfifParameters
 {
-    int   Ver;
-    char  units;
-    int   XDensity;
-    int   YDensity;
-    short Xthumb;
-    short Ythumb;
-    void* pdataThumbnail; /* user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode() */
+    /// <summary>
+    /// Version of the JPEG File Interchange Format.
+    /// Should be set to zero to not write a JFIF header or to 1.02, encoded as: (1 * 256) + 2.
+    /// </summary>
+    int32_t version;
+
+    /// <summary>
+    /// Defines the units for the X and Y densities.
+    /// 0: no units, X and Y specify the pixel aspect ratio.
+    /// 1: X and Y are dots per inch.
+    /// 2: X and Y are dots per cm.
+    /// </summary>
+    int32_t units;
+
+    /// <summary>
+    /// Horizontal pixel density
+    /// </summary>
+    int32_t Xdensity;
+
+    /// <summary>
+    /// Vertical pixel density
+    /// </summary>
+    int32_t Ydensity;
+
+    /// <summary>
+    /// Thumbnail horizontal pixel count.
+    /// </summary>
+    int32_t Xthumbnail;
+
+    /// <summary>
+    /// Thumbnail vertical pixel count.
+    /// </summary>
+    int32_t Ythumbnail;
+
+    /// <summary>
+    /// Reference to a buffer with thumbnail pixels of size Xthumbnail * Ythumbnail * 3(RGB).
+    /// This parameter is only used when creating JPEG-LS encoded images.
+    /// </summary>
+    void* thumbnail;
 };
 
 
@@ -167,13 +260,13 @@ struct JlsParameters
     /// The number of valid bits per sample to encode.
     /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sampe, otherwise one byte per sample is assumed.
     /// </summary>
-    int bitspersample;
+    int bitsPerSample;
 
     /// <summary>
     /// The stride is the number of bytes from one row of pixels in memory to the next row of pixels in memory.
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </summary>
-    int bytesperline;	/* for [source (at encoding)][decoded (at decoding)] pixel image in user buffer */
+    int stride;
 
     /// <summary>
     /// The number of components.
@@ -184,47 +277,44 @@ struct JlsParameters
     /// <summary>
     /// Defines the allowed lossy error. Value 0 defines lossless.
     /// </summary>
-    int allowedlossyerror;
+    int allowedLossyError;
 
     /// <summary>
     /// Determines the order of the color components in the compressed stream.
     /// </summary>
-    CharlsInterleaveModeType ilv;
+    CharlsInterleaveModeType interleaveMode;
 
     /// <summary>
-    /// Color transformation used in the compressed stream. The color transformations are all lossless and 
-    /// are an HP proprietary extension of the standard. Do not use the color transformations unless 
-    /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only 
+    /// Color transformation used in the compressed stream. The color transformations are all lossless and
+    /// are an HP proprietary extension of the standard. Do not use the color transformations unless
+    /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only
     /// for sythetic images (non - photorealistic computer generated images).
     /// </summary>
-    CharlsColorTransformationType colorTransform;
+    CharlsColorTransformationType colorTransformation;
 
     /// <summary>
     /// If set to true RGB images will be decoded to BGR. BGR is the standard ordering in MS Windows bitmaps.
     /// </summary>
     char outputBgr;
-    struct JlsCustomParameters custom;
+    struct JpegLSPresetCodingParameters custom;
     struct JfifParameters jfif;
 };
-
-
 
 
 #ifdef __cplusplus
 
 #include <iostream>
-#include <cstdint>
 
 
-// 
+//
 // ByteStreamInfo & FromByteArray helper function
 //
 // ByteStreamInfo describes the stream: either set rawStream to a valid stream, or rawData/count, not both.
 // it's possible to decode to memorystreams, but using rawData will always be faster.
 //
-// Example use: 
+// Example use:
 //     ByteStreamInfo streamInfo = { fileStream.rdbuf() };
-// or 
+// or
 //     ByteStreamInfo streamInfo = FromByteArray( bytePtr, byteCount);
 //
 struct ByteStreamInfo
@@ -235,13 +325,18 @@ struct ByteStreamInfo
 };
 
 
-inline ByteStreamInfo FromByteArray(const void* bytes, std::size_t count)
+inline ByteStreamInfo FromByteArray(void* bytes, std::size_t count)
 {
-    ByteStreamInfo info = ByteStreamInfo();
-    info.rawData = static_cast<uint8_t*>(const_cast<void*>(bytes));
-    info.count = count;
-    return info;
+    return { nullptr, static_cast<uint8_t*>(bytes), count };
 }
+
+
+inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count)
+{
+    return FromByteArray(const_cast<void*>(bytes), count);
+}
+
+
 
 #endif
 
