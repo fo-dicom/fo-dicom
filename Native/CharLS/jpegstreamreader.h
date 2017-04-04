@@ -14,9 +14,7 @@ struct JlsParameters;
 class JpegCustomParameters;
 
 
-charls::ApiResult CheckParameterCoherent(const JlsParameters& pparams);
-JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
-
+JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 
 
 //
@@ -25,29 +23,24 @@ JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 class JpegStreamReader
 {
 public:
-    JpegStreamReader(ByteStreamInfo byteStreamInfo);
+    explicit JpegStreamReader(ByteStreamInfo byteStreamInfo);
 
     const JlsParameters& GetMetadata() const
     {
-        return _info;
+        return _params;
     }
 
-    const JlsCustomParameters& GetCustomPreset() const
+    const JpegLSPresetCodingParameters& GetCustomPreset() const
     {
-        return _info.custom;
+        return _params.custom;
     }
 
     void Read(ByteStreamInfo info);
     void ReadHeader();
 
-    void EnableCompare(bool bCompare)
+    void SetInfo(const JlsParameters& params)
     {
-        _bCompare = bCompare;
-    }
-
-    void SetInfo(const JlsParameters& info)
-    {
-        _info = info;
+        _params = params;
     }
 
     void SetRect(const JlsRect& rect)
@@ -59,24 +52,22 @@ public:
     uint8_t ReadByte();
 
 private:
-    void ReadScan(ByteStreamInfo rawPixels);
+    JpegMarkerCode ReadNextMarker();
     int ReadPresetParameters();
-    int ReadComment();
+    int ReadComment() const;
     int ReadStartOfFrame();
     int ReadWord();
     void ReadNBytes(std::vector<char>& dst, int byteCount);
     int ReadMarker(JpegMarkerCode marker);
 
-    // JFIF
     void ReadJfif();
+
     // Color Transform Application Markers & Code Stream (HP extension)
-    int ReadColorSpace();
+    int ReadColorSpace() const;
     int ReadColorXForm();
 
-private:
     ByteStreamInfo _byteStream;
-    bool _bCompare;
-    JlsParameters _info;
+    JlsParameters _params;
     JlsRect _rect;
 };
 

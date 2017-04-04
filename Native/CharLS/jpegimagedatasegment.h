@@ -5,28 +5,25 @@
 #ifndef CHARLS_JPEGIMAGEDATASEGMENT
 #define CHARLS_JPEGIMAGEDATASEGMENT
 
-#include "util.h"
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
 
 class JpegImageDataSegment : public JpegSegment
 {
 public:
-    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, int32_t icompStart, int ccompScan) :
-        _ccompScan(ccompScan),
-        _icompStart(icompStart),
+    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) :
+        _componentCount(componentCount),
         _rawStreamInfo(rawStream),
-        _info(info)
+        _params(params)
     {
     }
 
-    virtual void Serialize(JpegStreamWriter& streamWriter) override;
+    void Serialize(JpegStreamWriter& streamWriter) override;
 
 private:
-    int _ccompScan;
-    int32_t _icompStart;
+    int _componentCount;
     ByteStreamInfo _rawStreamInfo;
-    JlsParameters _info;
+    JlsParameters _params;
 };
 
 #endif

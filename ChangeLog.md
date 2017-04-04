@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Updated JPEG-LS to latest CharLS commit (#517)
 * Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
 * Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)
 * Added missing encodings for .NET Core (#481 #486)

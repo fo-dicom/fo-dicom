@@ -48,16 +48,16 @@ void DicomJpegLsNativeCodec::Encode(NativePixelData^ oldPixelData, NativePixelDa
 	JlsParameters params = {0};
 	params.width = oldPixelData->Width;
 	params.height = oldPixelData->Height;
-	params.bitspersample = oldPixelData->BitsStored;
-	params.bytesperline = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
+	params.bitsPerSample = oldPixelData->BitsStored;
+	params.stride = oldPixelData->BytesAllocated * oldPixelData->Width * oldPixelData->SamplesPerPixel;
 	params.components = oldPixelData->SamplesPerPixel;
 
-	params.ilv = oldPixelData->SamplesPerPixel == 1
+	params.interleaveMode = oldPixelData->SamplesPerPixel == 1
 		? CharlsInterleaveModeType::None :
 		oldPixelData->PlanarConfiguration == PlanarConfiguration::Interleaved
 			? CharlsInterleaveModeType::Sample
 			: CharlsInterleaveModeType::Line;
-	params.colorTransform = CharlsColorTransformationType::None;
+	params.colorTransformation = CharlsColorTransformationType::None;
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		Array<unsigned char>^ frameData = oldPixelData->GetFrame(frame);

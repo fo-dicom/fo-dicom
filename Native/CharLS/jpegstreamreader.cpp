@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 #include "jpegstreamreader.h"
 #include "util.h"
@@ -12,9 +12,13 @@
 #include "jlscodecfactory.h"
 #include "defaulttraits.h"
 #include <memory>
+#include <iomanip>
 
+using namespace std;
 using namespace charls;
 
+extern template class JlsCodecFactory<EncoderStrategy>;
+extern template class JlsCodecFactory<DecoderStrategy>;
 
 // Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
 const int BASIC_T1 = 3;
@@ -22,8 +26,11 @@ const int BASIC_T2 = 7;
 const int BASIC_T3 = 21;
 
 
+namespace
+{
+
 // JFIF\0
-uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
+uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
 
 
 int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
@@ -35,57 +42,58 @@ int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
 }
 
 
-JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
+ApiResult CheckParameterCoherent(const JlsParameters& params)
 {
-    JlsCustomParameters preset = JlsCustomParameters();
+    if (params.bitsPerSample < 2 || params.bitsPerSample > 16)
+        return ApiResult::ParameterValueNotSupported;
 
-    int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
+    if (params.interleaveMode < InterleaveMode::None || params.interleaveMode > InterleaveMode::Sample)
+        return ApiResult::InvalidCompressedData;
 
-    preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
-    preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
-    preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
-    preset.MAXVAL = MAXVAL;
-    preset.RESET = BASIC_RESET;
-    return preset;
+    switch (params.components)
+    {
+        case 4: return params.interleaveMode == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        case 3: return ApiResult::OK;
+        case 0: return ApiResult::InvalidJlsParameters;
+
+        default: return params.interleaveMode != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+    }
 }
 
 
-ApiResult CheckParameterCoherent(const JlsParameters& parameters)
+} // namespace
+
+
+JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
-    if (parameters.bitspersample < 2 || parameters.bitspersample > 16)
-        return ApiResult::ParameterValueNotSupported;
+    JpegLSPresetCodingParameters preset;
 
-    if (parameters.ilv < InterleaveMode::None || parameters.ilv > InterleaveMode::Sample)
-        return ApiResult::InvalidCompressedData;
+    const int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
 
-    switch (parameters.components)
-    {
-        case 4: return parameters.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
-        case 3: return ApiResult::OK;
-        case 1: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
-        case 0: return ApiResult::InvalidJlsParameters;
-
-        default: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
-    }
+    preset.Threshold1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
+    preset.Threshold2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.Threshold1, MAXVAL);
+    preset.Threshold3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7 * NEAR, preset.Threshold2, MAXVAL);
+    preset.MaximumSampleValue = MAXVAL;
+    preset.ResetValue = BASIC_RESET;
+    return preset;
 }
 
 
 void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 {
-    JlsParameters info = _info;
-    info.components = _ccompScan;
-    auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
+    JlsParameters info = _params;
+    info.components = _componentCount;
+    auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _params.custom);
+    unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
-    size_t cbyteWritten = codec->EncodeScan(std::move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
+    const size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData);
     streamWriter.Seek(cbyteWritten);
 }
 
 
 JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) :
     _byteStream(byteStreamInfo),
-    _bCompare(false),
-    _info(),
+    _params(),
     _rect()
 {
 }
@@ -95,33 +103,33 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
 
-    auto result = CheckParameterCoherent(_info);
+    const auto result = CheckParameterCoherent(_params);
     if (result != ApiResult::OK)
-        throw std::system_error(static_cast<int>(result), CharLSCategoryInstance());
+        throw charls_error(result);
 
     if (_rect.Width <= 0)
     {
-        _rect.Width = _info.width;
-        _rect.Height = _info.height;
+        _rect.Width = _params.width;
+        _rect.Height = _params.height;
     }
 
-    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
+    const int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
-    if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
-        throw std::system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * _params.components)
+        throw charls_error(ApiResult::UncompressedBufferTooSmall);
 
     int componentIndex = 0;
 
-    while (componentIndex < _info.components)
+    while (componentIndex < _params.components)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
-        std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
-        qcodec->DecodeScan(std::move(processLine), _rect, &_byteStream, _bCompare); 
-        SkipBytes(&rawPixels, static_cast<size_t>(bytesPerPlane));
+        unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_params, _params.custom);
+        unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
+        qcodec->DecodeScan(move(processLine), _rect, _byteStream);
+        SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
-        if (_info.ilv != InterleaveMode::None)
+        if (_params.interleaveMode != InterleaveMode::None)
             return;
 
         componentIndex += 1;
@@ -129,7 +137,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 }
 
 
-void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
+void JpegStreamReader::ReadNBytes(vector<char>& dst, int byteCount)
 {
     for (int i = 0; i < byteCount; ++i)
     {
@@ -140,35 +148,48 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 
 void JpegStreamReader::ReadHeader()
 {
-    if (ReadByte() != 0xFF)
-        throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
-
-    if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfImage)
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+    if (ReadNextMarker() != JpegMarkerCode::StartOfImage)
+        throw charls_error(ApiResult::InvalidCompressedData);
 
     for (;;)
     {
-        if (ReadByte() != 0xFF)
-            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
-
-        JpegMarkerCode marker = static_cast<JpegMarkerCode>(ReadByte());
+        const JpegMarkerCode marker = ReadNextMarker();
         if (marker == JpegMarkerCode::StartOfScan)
             return;
 
-        int32_t cbyteMarker = ReadWord();
+        const int32_t cbyteMarker = ReadWord();
+        const int bytesRead = ReadMarker(marker) + 2;
 
-        int bytesRead = ReadMarker(marker) + 2;
-
-        int paddingToRead = cbyteMarker - bytesRead;
-
+        const int paddingToRead = cbyteMarker - bytesRead;
         if (paddingToRead < 0)
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw charls_error(ApiResult::InvalidCompressedData);
 
         for (int i = 0; i < paddingToRead; ++i)
         {
             ReadByte();
         }
     }
+}
+
+
+JpegMarkerCode JpegStreamReader::ReadNextMarker()
+{
+    auto byte = ReadByte();
+    if (byte != 0xFF)
+    {
+        ostringstream message;
+        message << setfill('0');
+        message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << hex << uppercase << setw(2) << static_cast<unsigned int>(byte);
+        throw charls_error(ApiResult::MissingJpegMarkerStart, message.str());
+    }
+
+    // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
+    do
+    {
+        byte = ReadByte();
+    } while (byte == 0xFF);
+
+    return static_cast<JpegMarkerCode>(byte);
 }
 
 
@@ -185,7 +206,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::Comment:
             return ReadComment();
 
-        case JpegMarkerCode::JpegLSExtendedParameters:
+        case JpegMarkerCode::JpegLSPresetParameters:
             return ReadPresetParameters();
 
         case JpegMarkerCode::ApplicationData0:
@@ -208,17 +229,17 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
         case JpegMarkerCode::StartOfFrameLosslessArithemtic:
             {
-                std::ostringstream message;
+                ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
-                throw CreateSystemError(ApiResult::UnsupportedEncoding, message.str());
+                throw charls_error(ApiResult::UnsupportedEncoding, message.str());
             }
 
         // Other tags not supported (among which DNL DRI)
         default:
             {
-                std::ostringstream message;
+                ostringstream message;
                 message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
-                throw CreateSystemError(ApiResult::UnknownJpegMarker, message.str());
+                throw charls_error(ApiResult::UnknownJpegMarker, message.str());
             }
     }
 }
@@ -226,17 +247,17 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 
 int JpegStreamReader::ReadPresetParameters()
 {
-    int type = ReadByte();
+    const int type = ReadByte();
 
     switch (type)
     {
     case 1:
         {
-            _info.custom.MAXVAL = ReadWord();
-            _info.custom.T1 = ReadWord();
-            _info.custom.T2 = ReadWord();
-            _info.custom.T3 = ReadWord();
-            _info.custom.RESET = ReadWord();
+            _params.custom.MaximumSampleValue = ReadWord();
+            _params.custom.Threshold1 = ReadWord();
+            _params.custom.Threshold2 = ReadWord();
+            _params.custom.Threshold3 = ReadWord();
+            _params.custom.ResetValue = ReadWord();
             return 11;
         }
     }
@@ -250,39 +271,39 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if (!firstComponent)
     {
         if (ReadByte() != 0xFF)
-            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
+            throw charls_error(ApiResult::MissingJpegMarkerStart);
         if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+            throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     }
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
-    int componentCount = ReadByte();
-    if (componentCount != 1 && componentCount != _info.components)
-        throw std::system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
+    const int componentCount = ReadByte();
+    if (componentCount != 1 && componentCount != _params.components)
+        throw charls_error(ApiResult::ParameterValueNotSupported);
 
     for (int i = 0; i < componentCount; ++i)
     {
         ReadByte();
         ReadByte();
     }
-    _info.allowedlossyerror = ReadByte();
-    _info.ilv = static_cast<InterleaveMode>(ReadByte());
-    if (!(_info.ilv == InterleaveMode::None || _info.ilv == InterleaveMode::Line || _info.ilv == InterleaveMode::Sample))
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+    _params.allowedLossyError = ReadByte();
+    _params.interleaveMode = static_cast<InterleaveMode>(ReadByte());
+    if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
+        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     if (ReadByte() != 0)
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
 
-    if(_info.bytesperline == 0)
+    if(_params.stride == 0)
     {
-        int width = _rect.Width != 0 ? _rect.Width : _info.width;
-        int components = _info.ilv == InterleaveMode::None ? 1 : _info.components;
-        _info.bytesperline = components * width * ((_info.bitspersample + 7)/8);
+        const int width = _rect.Width != 0 ? _rect.Width : _params.width;
+        const int components = _params.interleaveMode == InterleaveMode::None ? 1 : _params.components;
+        _params.stride = components * width * ((_params.bitsPerSample + 7) / 8);
     }
 }
 
 
-int JpegStreamReader::ReadComment()
+int JpegStreamReader::ReadComment() const
 {
     return 0;
 }
@@ -295,33 +316,31 @@ void JpegStreamReader::ReadJfif()
         if(jfifID[i] != ReadByte())
             return;
     }
-    _info.jfif.Ver   = ReadWord();
+    _params.jfif.version   = ReadWord();
 
     // DPI or DPcm
-    _info.jfif.units = ReadByte();
-    _info.jfif.XDensity = ReadWord();
-    _info.jfif.YDensity = ReadWord();
+    _params.jfif.units = ReadByte();
+    _params.jfif.Xdensity = ReadWord();
+    _params.jfif.Ydensity = ReadWord();
 
     // thumbnail
-    _info.jfif.Xthumb = ReadByte();
-    _info.jfif.Ythumb = ReadByte();
-    if(_info.jfif.Xthumb > 0 && _info.jfif.pdataThumbnail) 
+    _params.jfif.Xthumbnail = ReadByte();
+    _params.jfif.Ythumbnail = ReadByte();
+    if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
     {
-        std::vector<char> tempbuff(static_cast<char*>(_info.jfif.pdataThumbnail), 
-            static_cast<char*>(_info.jfif.pdataThumbnail)+3*_info.jfif.Xthumb*_info.jfif.Ythumb);
-        ReadNBytes(tempbuff, 3*_info.jfif.Xthumb*_info.jfif.Ythumb);
+        vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
+            static_cast<char*>(_params.jfif.thumbnail)+3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
+        ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }
 }
 
 
 int JpegStreamReader::ReadStartOfFrame()
 {
-    _info.bitspersample = ReadByte();
-    int cline = ReadWord();
-    int ccol = ReadWord();
-    _info.width = ccol;
-    _info.height = cline;
-    _info.components= ReadByte();
+    _params.bitsPerSample = ReadByte();
+    _params.height = ReadWord();
+    _params.width = ReadWord();
+    _params.components= ReadByte();
     return 6;
 }
 
@@ -332,22 +351,22 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw std::system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+        throw charls_error(ApiResult::CompressedBufferTooSmall);
 
-    uint8_t value = _byteStream.rawData[0];
-    SkipBytes(&_byteStream, 1);
+    const uint8_t value = _byteStream.rawData[0];
+    SkipBytes(_byteStream, 1);
     return value;
 }
 
 
 int JpegStreamReader::ReadWord()
 {
-    int i = ReadByte() * 256;
+    const int i = ReadByte() * 256;
     return i + ReadByte();
 }
 
 
-int JpegStreamReader::ReadColorSpace()
+int JpegStreamReader::ReadColorSpace() const
 {
     return 0;
 }
@@ -355,25 +374,26 @@ int JpegStreamReader::ReadColorSpace()
 
 int JpegStreamReader::ReadColorXForm()
 {
-    std::vector<char> sourceTag;
+    vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
 
-    if (strncmp(&sourceTag[0], "mrfx", 4) != 0)
+    if (strncmp(sourceTag.data(), "mrfx", 4) != 0)
         return 4;
 
-    auto xform = static_cast<ColorTransformation>(ReadByte());
+    const auto xform = ReadByte();
     switch (xform)
     {
-        case ColorTransformation::None:
-        case ColorTransformation::HP1:
-        case ColorTransformation::HP2:
-        case ColorTransformation::HP3:
-            _info.colorTransform = xform;
+        case static_cast<uint8_t>(ColorTransformation::None):
+        case static_cast<uint8_t>(ColorTransformation::HP1):
+        case static_cast<uint8_t>(ColorTransformation::HP2):
+        case static_cast<uint8_t>(ColorTransformation::HP3):
+            _params.colorTransformation = static_cast<ColorTransformation>(xform);
             return 5;
-        case ColorTransformation::RgbAsYuvLossy:
-        case ColorTransformation::Matrix:
-            throw std::system_error(static_cast<int>(ApiResult::ImageTypeNotSupported), CharLSCategoryInstance());
+
+        case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
+        case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
+            throw charls_error(ApiResult::ImageTypeNotSupported);
         default:
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw charls_error(ApiResult::InvalidCompressedData);
     }
 }
