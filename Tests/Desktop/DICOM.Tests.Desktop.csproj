@@ -106,6 +106,7 @@
     <Compile Include="Bugs\GH258.cs" />
     <Compile Include="Bugs\GH265.cs" />
     <Compile Include="Bugs\GH306.cs" />
+    <Compile Include="Bugs\GH487.cs" />
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
@@ -206,6 +207,9 @@
   <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
+    <None Include="packages.config" />
+    <None Include="Test Data\GH487.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH355.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
