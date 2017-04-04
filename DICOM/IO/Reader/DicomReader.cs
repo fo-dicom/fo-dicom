@@ -560,7 +560,7 @@ namespace Dicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
                             this.isExplicitVR = !this.isExplicitVR;
@@ -701,7 +701,7 @@ namespace Dicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
                             this.isExplicitVR = !this.isExplicitVR;
@@ -1129,16 +1129,27 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-            private static bool IsPrivateSequenceBad(IByteSource source, bool isExplicitVR)
+            private static bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR)
             {
                 source.Mark();
 
                 try
                 {
                     // Skip "item" tags; continue skipping until length is non-zero (#223)
-                    while (new DicomTag(source.GetUInt16(), source.GetUInt16()) == DicomTag.Item    // group, element
-                           & source.GetUInt32() == 0)   // length (using & instead of && enforces RHS to be evaluated regardless of LHS)
+                    // Using & instead of && enforces RHS to be evaluated regardless of LHS
+                    uint length;
+                    while (source.GetUInt16() == DicomTag.Item.Group &
+                           source.GetUInt16() == DicomTag.Item.Element &
+                           (length = source.GetUInt32()) < uint.MaxValue)   // Dummy condition to ensure that length is included in parsing
                     {
+                        // Length non-zero, end skipping (#223)
+                        if (length > 0)
+                            break;
+
+                        // Handle scenario where last tag is private sequence with empty items (#487)
+                        count -= 8;
+                        if (count <= 0)
+                            return false;
                     }
 
                     source.GetUInt16(); // group
