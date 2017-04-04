@@ -71,7 +71,7 @@ namespace Dicom.Network
             set
             {
                 Command.AddOrUpdate(DicomTag.Status, value.Code);
-                if (string.IsNullOrWhiteSpace(value.ErrorComment))
+                if (string.IsNullOrEmpty(value.ErrorComment?.Trim()))
                 {
                     Command.Remove(DicomTag.ErrorComment);
                 }
