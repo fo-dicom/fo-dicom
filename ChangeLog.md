@@ -1,4 +1,5 @@
 #### v.3.0.2 (TBD)
+* DicomRejectReason enumerables should be parsed w.r.t. source (#516 #521)
 * Incorrect numerical value on RejectReason.ProtocolVersionNotSupported (#515 #520)
 * Add private creator to private tags when deserializing json (#512 #513)
 * Adding private tags implicitly uses wrong VR (#503 #504)
