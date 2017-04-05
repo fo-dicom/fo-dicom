@@ -207,7 +207,7 @@
   <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
-    <None Include="packages.config" />
+    </None>
     <None Include="Test Data\GH487.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
