@@ -953,7 +953,7 @@ namespace Dicom.Network
         CalledAENotRecognized = 7,
 
         /// <summary>Protocol version not supported (Service provider - ACSE)</summary>
-        ProtocolVersionNotSupported = 1,
+        ProtocolVersionNotSupported = 2,
 
         /// <summary>Temporary congestion (Service provider - Presentation)</summary>
         TemporaryCongestion = 1,
