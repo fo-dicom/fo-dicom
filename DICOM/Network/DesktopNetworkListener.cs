@@ -91,7 +91,7 @@ namespace Dicom.Network
 
                 return null;
             }
-            catch (TaskCanceledException)
+            catch
             {
                 return null;
             }
