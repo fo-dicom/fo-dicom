@@ -14,6 +14,7 @@
 * Online and NuGet packages API documentation (#28 #459 #466)
 
 #### v.3.0.2 (TBD)
+* Incorrect numerical value on RejectReason.ProtocolVersionNotSupported (#515 #520)
 * Add private creator to private tags when deserializing json (#512 #513)
 * Adding private tags implicitly uses wrong VR (#503 #504)
 * Add option in DicomServiceOptions for max PDVs per PDU (#502 #506)
