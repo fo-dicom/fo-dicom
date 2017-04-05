@@ -164,8 +164,8 @@ namespace Dicom.Network
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x01},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE,
-                    DicomRejectReason.NoReasonGiven),
-                nameof(DicomRejectReason.NoReasonGiven)
+                    DicomRejectReason.NoReasonGiven_),
+                nameof(DicomRejectReason.NoReasonGiven_)
             },
             new object[]
             {
