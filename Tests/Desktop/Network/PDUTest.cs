@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace Dicom.Network
 {
     using System.IO;
@@ -10,6 +14,8 @@ namespace Dicom.Network
     [Collection("Network")]
     public class PDUTest
     {
+        #region Unit tests
+
         [Fact]
         public void Write_AeWithNonAsciiCharacters_ShouldBeAsciified()
         {
@@ -91,5 +97,99 @@ namespace Dicom.Network
                 (1 == info.DateTimeMatching) && (1 == info.FuzzySemanticMatching) && (1 == info.RelationalQueries)
                 && (1 == info.TimezoneQueryAdjustment) && (false == info.EnhancedMultiFrameImageConversion.HasValue));
         }
+
+        [Theory]
+        [MemberData(nameof(RawPDUTestData))]
+        public void AssociateRJ_Read_ReasonGivenByContext(byte[] buffer, AAssociateRJ dummy, string expected)
+        {
+            using (var raw = new RawPDU(buffer))
+            {
+                var reject = new AAssociateRJ();
+                reject.Read(raw);
+                var actual = reject.Reason.ToString();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(RawPDUTestData))]
+        public void AssociateRJ_Write_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string dummy)
+        {
+            using (var raw = reject.Write())
+            using (var stream = new MemoryStream())
+            {
+                raw.WritePDU(stream);
+                var actual = stream.ToArray();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        #endregion
+
+        #region Test data
+
+        public static readonly IEnumerable<object[]> RawPDUTestData = new[]
+        {
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x01},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.NoReasonGiven),
+                nameof(DicomRejectReason.NoReasonGiven)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x02},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.ApplicationContextNotSupported),
+                nameof(DicomRejectReason.ApplicationContextNotSupported)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x03},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.CallingAENotRecognized),
+                nameof(DicomRejectReason.CallingAENotRecognized)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x07},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.CalledAENotRecognized),
+                nameof(DicomRejectReason.CalledAENotRecognized)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x01},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE,
+                    DicomRejectReason.NoReasonGiven),
+                nameof(DicomRejectReason.NoReasonGiven)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x02},
+                new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE,
+                    DicomRejectReason.ProtocolVersionNotSupported),
+                nameof(DicomRejectReason.ProtocolVersionNotSupported)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x02, 0x03, 0x01},
+                new AAssociateRJ(DicomRejectResult.Transient, DicomRejectSource.ServiceProviderPresentation,
+                    DicomRejectReason.TemporaryCongestion),
+                nameof(DicomRejectReason.TemporaryCongestion)
+            },
+            new object[]
+            {
+                new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x02, 0x03, 0x02},
+                new AAssociateRJ(DicomRejectResult.Transient, DicomRejectSource.ServiceProviderPresentation,
+                    DicomRejectReason.LocalLimitExceeded),
+                nameof(DicomRejectReason.LocalLimitExceeded)
+            }
+        };
+
+        #endregion
     }
 }
