@@ -91,7 +91,7 @@ namespace Dicom.Network
                 this.handle.Wait(token);
                 networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
             }
-            catch (OperationCanceledException)
+            catch
             {
                 networkStream = null;
             }
