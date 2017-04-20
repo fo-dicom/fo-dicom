@@ -584,15 +584,13 @@ namespace Dicom.Media
             var patientName = dataset.Get(DicomTag.PatientName, string.Empty);
 
             var currentPatient = RootDirectoryRecord;
-            string currPatId = null, currPatName = null;
 
             while (currentPatient != null)
             {
-                currPatId = currPatId ?? currentPatient.Get(DicomTag.PatientID, string.Empty);
-                currPatName = currPatName ?? currentPatient.Get(DicomTag.PatientName, string.Empty);
+                var currPatId = currentPatient.Get(DicomTag.PatientID, string.Empty);
+                var currPatName = currentPatient.Get(DicomTag.PatientName, string.Empty);
 
-                if (currPatId == patientId
-                    && currPatName == patientName)
+                if (currPatId == patientId && currPatName == patientName)
                 {
                     return currentPatient;
                 }
