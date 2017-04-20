@@ -13,7 +13,7 @@
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466)
 
-#### v.3.0.2 (TBD)
+#### v.3.0.2 (4/20/2017)
 * DicomRejectReason enumerables should be parsed w.r.t. source (#516 #521)
 * Incorrect numerical value on RejectReason.ProtocolVersionNotSupported (#515 #520)
 * Add private creator to private tags when deserializing json (#512 #513)
@@ -22,6 +22,7 @@
 * DicomResponse.ErrorComment is always added in the DicomResponse.Status setter, even for successes (#501 #505)
 * DicomStatus.Lookup does not consider priority in matching (#499 #498)
 * DesktopNetworkListener can throw an exception which causes DicomServer to stop listening (#495 #519)
+* Cannot create DICOMDIR after anonymizing images (#488 #522)
 * Cannot parse dicom files if the last tag is a private sequence containing only empty sequence items (#487 #518)
 * If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
 * N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
