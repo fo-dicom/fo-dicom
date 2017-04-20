@@ -580,14 +580,19 @@ namespace Dicom.Media
 
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
+            var patientId = dataset.Get(DicomTag.PatientID, string.Empty);
+            var patientName = dataset.Get(DicomTag.PatientName, string.Empty);
+
             var currentPatient = RootDirectoryRecord;
-            var patientId = dataset.Get<string>(DicomTag.PatientID);
-            var patientName = dataset.Get<string>(DicomTag.PatientName);
+            string currPatId = null, currPatName = null;
 
             while (currentPatient != null)
             {
-                if (currentPatient.Get<string>(DicomTag.PatientID) == patientId
-                    && currentPatient.Get<string>(DicomTag.PatientName) == patientName)
+                currPatId = currPatId ?? currentPatient.Get(DicomTag.PatientID, string.Empty);
+                currPatName = currPatName ?? currentPatient.Get(DicomTag.PatientName, string.Empty);
+
+                if (currPatId == patientId
+                    && currPatName == patientName)
                 {
                     return currentPatient;
                 }
@@ -602,6 +607,7 @@ namespace Dicom.Media
                     break;
                 }
             }
+
             var newPatient = CreateRecordSequenceItem(DicomDirectoryRecordType.Patient, dataset);
             if (currentPatient != null)
             {
@@ -613,6 +619,7 @@ namespace Dicom.Media
                 //no patients record found under root record
                 RootDirectoryRecord = newPatient;
             }
+
             return newPatient;
         }
 

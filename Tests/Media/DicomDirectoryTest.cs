@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using NLog.Internal;
 
 namespace Dicom.Media
 {
@@ -85,7 +84,7 @@ namespace Dicom.Media
         }
 
         [Fact]
-        public void AddFile_Anonymized_DoesNotThrow()
+        public void AddFile_AnonymizedSeries_AllFilesAddedToSameStudySeriesNode()
         {
             var dicomFiles = GetDicomFilesFromWebZip(
                 "https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/Philips_Medical_Images/mr711-mr712/abd1.zip");
@@ -104,7 +103,9 @@ namespace Dicom.Media
                 dicomDir.AddFile(dicomFile);
             }
 
-            Assert.Equal(dicomFiles.Count, dicomDir.RootDirectoryRecordCollection.Count());
+            var imageNodes = dicomDir.RootDirectoryRecord.LowerLevelDirectoryRecord.LowerLevelDirectoryRecord
+                .LowerLevelDirectoryRecordCollection;
+            Assert.Equal(dicomFiles.Count, imageNodes.Count());
         }
 
         private static IList<DicomFile> GetDicomFilesFromWebZip(string url)
