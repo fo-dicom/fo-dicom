@@ -215,21 +215,25 @@ namespace Dicom.Network
 
                 while (!this.cancellationSource.IsCancellationRequested)
                 {
-                    var networkStream =
-                        await listener.AcceptNetworkStreamAsync(
-                            this.certificateName,
-                            noDelay,
-                            this.cancellationSource.Token).ConfigureAwait(false);
-
-                    if (networkStream != null)
+                    bool clientAllowed = CheckClientAllowed();
+                    if(clientAllowed)
                     {
-                        var scp = this.CreateScp(networkStream);
-                        if (this.Options != null)
-                        {
-                            scp.Options = this.Options;
-                        }
+                        var networkStream =
+                            await listener.AcceptNetworkStreamAsync(
+                                this.certificateName,
+                                noDelay,
+                                this.cancellationSource.Token).ConfigureAwait(false);
 
-                        this.clients.Add(scp);
+                        if (networkStream != null)
+                        {
+                            var scp = this.CreateScp(networkStream);
+                            if (this.Options != null)
+                            {
+                                scp.Options = this.Options;
+                            }
+
+                            this.clients.Add(scp);
+                        }
                     }
                 }
 
@@ -252,6 +256,22 @@ namespace Dicom.Network
                 this.IsListening = false;
                 this.Exception = e;
             }
+        }
+
+        /// <summary>
+        /// Checks if the number clients has been exceeded
+        /// </summary>
+        /// <returns>Returns true if client if allowed, otherwise false</returns>
+        private bool CheckClientAllowed()
+        {
+            bool clientAllowed = true;
+            if (this.Options.NumberOfClientsAllowed != -1 && this.clients != null && this.Options.NumberOfClientsAllowed <= this.clients.Count)
+            {
+                clientAllowed = false;
+                Logger.Error($"Connection closed. Client Count Exceeded. Number NumberOfClientsAllowed is {this.Options.NumberOfClientsAllowed}, Current Number of clients is {this.clients.Count}");
+            }
+
+            return clientAllowed;
         }
 
         /// <summary>

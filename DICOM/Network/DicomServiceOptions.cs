@@ -28,6 +28,8 @@ namespace Dicom.Network
             public static readonly bool TcpNoDelay = true;
 
             public static readonly int MaxPDVsPerPDU = 0;
+
+            public static readonly int NumberOfClientsAllowed = -1;
         }
 
         #endregion
@@ -45,6 +47,7 @@ namespace Dicom.Network
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
             TcpNoDelay = Default.TcpNoDelay;
             MaxPDVsPerPDU = Default.MaxPDVsPerPDU;
+            NumberOfClientsAllowed = Default.NumberOfClientsAllowed;
         }
 
         #endregion
@@ -74,6 +77,9 @@ namespace Dicom.Network
 
         /// <summary>The maximum number of PDVs per PDU, or unlimited if set to zero. Setting this to 1 can work around common bugs in other implementations.</summary>
         public int MaxPDVsPerPDU { get; set; }
+
+        /// <summary>The number of client allowed.</summary>
+        public int NumberOfClientsAllowed { get; set; }
 
         #endregion
     }
