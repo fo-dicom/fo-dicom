@@ -1,0 +1,71 @@
+{
+  "buildOptions": {
+    "compile": {
+      "include": "../../DICOM/**/*.cs",
+      "includeFiles": [
+        "../../DICOM/../SharedAssemblyInfo.cs",
+        "../../DICOM/Imaging/Codec/DicomJpeg2000LosslessCodec.cs",
+        "../../DICOM/Imaging/Codec/DicomJpeg2000LossyCodec.cs"
+      ],
+      "exclude": [
+        "../../DICOM/Compatibility/*",
+        "../../DICOM/**/Android*",
+        "../../DICOM/**/IOS*",
+        "../../DICOM/**/Unity*",
+        "../../DICOM/**/WinForms*",
+        "../../DICOM/**/WPF*",
+        "../../DICOM/**/Windows*",
+        "../../DICOM/Imaging/Codec/Desktop*",
+        "../../DICOM/Imaging/Codec/*Loss*",
+        "../../DICOM/Imaging/Codec/*Native*.cs"
+      ],
+      "excludeFiles": [
+        "../../DICOM/Imaging/DicomOverlayDataFactory.cs",
+        "../../DICOM/Imaging/Codec/DicomJpegProcess1Codec.cs",
+        "../../DICOM/Imaging/Codec/DicomJpegProcess4Codec.cs",
+        "../../DICOM/Imaging/Codec/DicomJpegProcess4Codec.Mono.cs",
+        "../../DICOM/Imaging/Codec/DicomRleCodecImpl.cs",
+        "../../DICOM/IO/Reader/DicomFileReaderExtensions.cs",
+        "../../DICOM/IO/Reader/DicomReaderExtensions.cs",
+        "../../DICOM/IO/Writer/DicomFileWriterExtensions.cs",
+        "../../DICOM/Media/DicomDirectory.Async.cs",
+        "../../DICOM/Network/DicomClientExtensions.cs",
+        "../../DICOM/Printing/FilmBoxExtensions.cs",
+        "../../DICOM/Printing/ImageBoxExtensions.cs",
+        "../../DICOM/AsyncFactory.cs",
+        "../../DICOM/DicomDatasetWalkerExtensions.cs",
+        "../../DICOM/DicomFile.Async.cs",
+        "../../DICOM/DicomFileExtensions.Async.cs"
+      ]
+    },
+    "embed": {
+      "include": [ "../../DICOM/Dictionaries/*.xml.gz" ],
+      "mappings": {
+        "Dicom.Dictionaries.DICOMDictionary.xml.gz": "../../DICOM/Dictionaries/DICOMDictionary.xml.gz",
+        "Dicom.Dictionaries.PrivateDictionary.xml.gz": "../../DICOM/Dictionaries/PrivateDictionary.xml.gz"
+      }
+    },
+    "publicSign": true,
+    "keyFile": "../../DICOM/fo-dicom.snk",
+    "outputName": "Dicom.Core",
+    "define": [ "NETSTANDARD" ]
+  },
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "System.Data.SqlClient": "4.3.0",
+    "System.IO.FileSystem": "4.3.0",
+    "System.Net.NetworkInformation": "4.3.0",
+    "System.Net.Security": "4.3.0",
+    "System.Runtime.Serialization.Primitives": "4.3.0",
+    "System.Runtime.Numerics": "4.3.0",
+    "System.Threading.Tasks.Parallel": "4.3.0",
+    "CSJ2K": "2.0.0.1",
+    "Portable.LibJpeg.NET": "1.5.1.1"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+    }
+  }
+}

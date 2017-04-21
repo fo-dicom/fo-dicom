@@ -24,7 +24,7 @@
 		</dependencies>
     </metadata>
     <files>
-        <file src="..\DICOM\bin\Release\netstandard1.3\Dicom.Core.dll" target="lib\netstandard1.3" />
-        <file src="..\DICOM\bin\Release\netstandard1.3\Dicom.Core.pdb" target="lib\netstandard1.3" />
+        <file src="..\DICOM.Platform\NetCore\bin\Release\netstandard1.3\Dicom.Core.dll" target="lib\netstandard1.3" />
+        <file src="..\DICOM.Platform\NetCore\bin\Release\netstandard1.3\Dicom.Core.pdb" target="lib\netstandard1.3" />
     </files>
 </package>

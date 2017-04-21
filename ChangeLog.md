@@ -1,4 +1,4 @@
-#### v.3.0.2 (4/20/2017)
+#### v.3.0.2 (4/21/2017)
 * DicomRejectReason enumerables should be parsed w.r.t. source (#516 #521)
 * Incorrect numerical value on RejectReason.ProtocolVersionNotSupported (#515 #520)
 * Add private creator to private tags when deserializing json (#512 #513)
