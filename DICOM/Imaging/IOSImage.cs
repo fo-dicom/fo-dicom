@@ -71,8 +71,6 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        /// <param name="image">Image object.</param>
         public IOSImage(int width, int height)
             : base(width, height, new PinnedIntArray(width * height), null)
         {

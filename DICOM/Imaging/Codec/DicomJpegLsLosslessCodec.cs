@@ -18,10 +18,14 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
+#if NETFX_CORE
             DicomJpegLsNativeCodec.Encode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
                 parameters.ToNativeJpegLSParameters());
+#else
+            DicomJpegLsCodecImpl.Encode(oldPixelData, newPixelData, parameters as DicomJpegLsParams);
+#endif
         }
 
         public override void Decode(
@@ -29,10 +33,14 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
+#if NETFX_CORE
             DicomJpegLsNativeCodec.Decode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
                 parameters.ToNativeJpegLSParameters());
+#else
+            DicomJpegLsCodecImpl.Decode(oldPixelData, newPixelData, parameters as DicomJpegLsParams);
+#endif
         }
     }
 }
