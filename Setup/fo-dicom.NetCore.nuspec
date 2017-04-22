@@ -22,6 +22,7 @@
 			<dependency id="System.Threading.Tasks.Parallel" version="4.3.0" />
 			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
 			<dependency id="CSJ2K" version="3.0.0-alpha" />
+			<dependency id="cscharls" version="0.1.0" />
 		</dependencies>
     </metadata>
     <files>
