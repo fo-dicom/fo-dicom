@@ -62,7 +62,7 @@ namespace Dicom.IO.Buffer
                 {
                     try
                     {
-                        System.Buffer.BlockCopy(Buffers[pos].Data, offset, data, offset2, remain);
+                        System.Buffer.BlockCopy(Buffers[pos].Data, offset, data, offset2, count);
                     }
                     catch (Exception)
                     {
@@ -73,8 +73,8 @@ namespace Dicom.IO.Buffer
 
                 else
                 {
-                    byte[] temp = Buffers[pos].GetByteRange(offset, remain);
-                    System.Buffer.BlockCopy(temp, 0, data, offset2, remain);
+                    byte[] temp = Buffers[pos].GetByteRange(offset, count);
+                    System.Buffer.BlockCopy(temp, 0, data, offset2, count);
                 }
 
                 count -= remain;
