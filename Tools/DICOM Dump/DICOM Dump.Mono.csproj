@@ -12,7 +12,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +40,10 @@
     <StartupObject>Dicom.Dump.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="cscharls, Version=0.1.0.0, Culture=neutral, PublicKeyToken=982ce2dbcc5f1651, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

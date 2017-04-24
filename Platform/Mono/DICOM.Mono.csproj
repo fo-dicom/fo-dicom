@@ -33,21 +33,35 @@
     <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="cscharls, Version=0.1.0.0, Culture=neutral, PublicKeyToken=982ce2dbcc5f1651, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CSJ2K, Version=2.8.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\net40-client\CSJ2K.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="CSJ2K">
-      <HintPath>..\..\packages\CSJ2K.2.0.0.1\lib\net40-client\CSJ2K.dll</HintPath>
-    </Reference>
     <Reference Include="BitMiracle.LibJpeg.Portable">
       <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1.1\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsCodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpegLsCodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpegLsLosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpegLsNearLosslessCodec.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
