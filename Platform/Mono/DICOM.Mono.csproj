@@ -33,11 +33,11 @@
     <AssemblyOriginatorKeyFile>..\..\DICOM\fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="cscharls, Version=0.1.0.0, Culture=neutral, PublicKeyToken=982ce2dbcc5f1651, processorArchitecture=MSIL">
+    <Reference Include="cscharls">
       <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CSJ2K, Version=2.8.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+    <Reference Include="CSJ2K">
       <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\net40-client\CSJ2K.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -136,6 +136,12 @@
       <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+	<ResourceFiles Include="..\..\DICOM\Dictionaries\*.xml.gz" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+	<Copy SourceFiles="@(ResourceFiles)" DestinationFolder="Dictionaries"/>
+  </Target>
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" Condition="Exists('..\..\DICOM\DICOM.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

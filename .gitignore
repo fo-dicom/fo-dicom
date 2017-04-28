@@ -32,3 +32,4 @@ DICOM/T4/part16.xml
 /UpgradeLog2.htm
 AppPackages/
 Documentation/Help/
+Platform/Mono/Dictionaries/*.xml.gz
