@@ -131,7 +131,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="cscharls" Version="0.1.0" />
+    <PackageReference Include="cscharls" Version="0.1.1" />
     <PackageReference Include="CSJ2K" Version="3.0.0-alpha" />
     <PackageReference Include="Portable.LibJpeg.NET" Version="1.5.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />

@@ -119,7 +119,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="cscharls, Version=0.1.0.0, Culture=neutral, PublicKeyToken=982ce2dbcc5f1651, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\cscharls.0.1.0\lib\portable-net45+win8+wpa81\cscharls.dll</HintPath>
+      <HintPath>..\..\packages\cscharls.0.1.1\lib\portable-net45+win8+wpa81\cscharls.dll</HintPath>
     </Reference>
     <Reference Include="CSJ2K, Version=2.8.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\Xamarin.iOS10\CSJ2K.dll</HintPath>
