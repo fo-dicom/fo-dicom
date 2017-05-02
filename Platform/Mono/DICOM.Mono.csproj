@@ -136,6 +136,8 @@
       <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
     </Compile>
   </ItemGroup>
+  <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" Condition="Exists('..\..\DICOM\DICOM.Shared.projitems')" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
 	<DictionaryFolder>Dictionaries</DictionaryFolder>
   </PropertyGroup>
@@ -146,8 +148,6 @@
 	<MakeDir Directories="$(DictionaryFolder)"/>
 	<Copy SourceFiles="@(DictionaryFiles)" DestinationFolder="$(DictionaryFolder)"/>
   </Target>
-  <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" Condition="Exists('..\..\DICOM\DICOM.Shared.projitems')" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
