@@ -3,6 +3,7 @@
 # Fellow Oak DICOM
 
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 [![Build status](https://ci.appveyor.com/api/projects/status/r3yptmhufh3dl1xc?svg=true)](https://ci.appveyor.com/project/anders9ustafsson/fo-dicom)
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -26,7 +27,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 
 ### NuGet Packages
-*Valid for version 3.0.0 (incl. pre-releases) and later*
+*Valid for version 3.1.0 (incl. pre-releases) and later*
 
 Package | Description
 ------- | -----------
@@ -37,12 +38,13 @@ Package | Description
 [fo-dicom.Universal](https://www.nuget.org/packages/fo-dicom.Universal/) | Core library and native codec libraries for Universal Windows Platform
 [fo-dicom.Android](https://www.nuget.org/packages/fo-dicom.Android/) | Core library for Xamarin Android
 [fo-dicom.iOS](https://www.nuget.org/packages/fo-dicom.iOS/) | Core library for Xamarin iOS (Unified)
+[fo-dicom.Mono](https://www.nuget.org/packages/fo-dicom.Mono/) | Core library for Mono 4.5 and higher
 [fo-dicom.log4net](https://www.nuget.org/packages/fo-dicom.log4net/) | .NET connector to enable *fo-dicom* logging with log4net
 [fo-dicom.MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/) | PCL Profile 111 connector to enable *fo-dicom* logging with MetroLog
 [fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable *fo-dicom* logging with NLog
 [fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
 [fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
-[fo-dicom.Legacy](https://www.nuget.org/packages/fo-dicom.Legacy/) | PCL profile 111 library with obsolete asynchronous methods (to be deprecated)
+[fo-dicom.Drawing](https://www.nuget.org/packages/fo-dicom.Drawing/) | .NET Core library providing *System.Drawing* based image rendering and printing
 
 ### API Documentation
 The API documentation for the core library (represented by *fo-dicom.Desktop*) and the *log4net*, *NLog* and *Serilog* connectors is available [here](https://fo-dicom.github.io/).
@@ -68,9 +70,6 @@ To facilitate cross-platform development, the core library is strong name signed
 
 The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
 
-#### Important notice for Universal Windows Platform applications
-For versions 3.0.0 and earlier, UWP applications using *fo-dicom.Universal* does not out-of-the-box build to .NET Native. A workaround is provided [here](https://github.com/fo-dicom/fo-dicom/wiki/Universal-Windows-Platform-and-.NET-Native).
-
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
 that were previously included in the *Examples* sub-folder of the VS solutions.
@@ -84,10 +83,10 @@ var file = await DicomFile.OpenAsync(@"test.dcm");  // Alt 2
 
 var patientid = file.Dataset.Get<string>(DicomTag.PatientID);
 
-file.Dataset.Add(DicomTag.PatientsName, "DOE^JOHN");
+file.Dataset.AddOrUpdate(DicomTag.PatientsName, "DOE^JOHN");
 
 // creates a new instance of DicomFile
-file = file.ChangeTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1);
+var newFile = file.Clone(DicomTransferSyntax.JPEGProcess14SV1);
 
 file.Save(@"output.dcm");             // Alt 1
 await file.SaveAsync(@"output.dcm");  // Alt 2
