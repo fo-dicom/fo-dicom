@@ -136,15 +136,18 @@
       <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
     </Compile>
   </ItemGroup>
+  <PropertyGroup>
+	<DictionaryFolder>Dictionaries</DictionaryFolder>
+  </PropertyGroup>
   <ItemGroup>
-	<ResourceFiles Include="..\..\DICOM\Dictionaries\*.xml.gz" />
+	<DictionaryFiles Include="..\..\DICOM\Dictionaries\*.xml.gz" />
   </ItemGroup>
   <Target Name="BeforeBuild">
-	<Copy SourceFiles="@(ResourceFiles)" DestinationFolder="Dictionaries"/>
+	<MakeDir Directories="$(DictionaryFolder)"/>
+	<Copy SourceFiles="@(DictionaryFiles)" DestinationFolder="$(DictionaryFolder)"/>
   </Target>
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" Condition="Exists('..\..\DICOM\DICOM.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
