@@ -11,6 +11,7 @@ namespace Dicom
     using System.Threading.Tasks;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     [Collection("General")]
     public class DicomDictionaryTest : IDisposable
@@ -55,6 +56,22 @@ namespace Dicom
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void TimeGetEnumerator()
+        {
+            var start = DateTime.UtcNow;
+            var N = 10000;
+            for (int i = 0; i < N; i++)
+            {
+                Assert.NotNull(DicomDictionary.Default.First());
+            }
+
+            var end = DateTime.UtcNow;
+
+            output_.WriteLine($"GetEnumerator: {(end - start).TotalMilliseconds / N} ms per call");
+        }
+
 
 #if !NETSTANDARD
 
@@ -260,6 +277,7 @@ namespace Dicom
 
         private static int index = 0;
         private readonly AppDomain testDomain;
+        private ITestOutputHelper output_;
 
         public void Dispose()
         {
@@ -271,11 +289,12 @@ namespace Dicom
             }
         }
 
-        public DicomDictionaryTest()
+        public DicomDictionaryTest(ITestOutputHelper output)
         {
             var name = string.Concat("DicomDictionary test appdomain #", ++index);
             testDomain = AppDomain.CreateDomain(name, AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation);
             System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Created.", testDomain.FriendlyName));
+            output_ = output;
 
         }
 
