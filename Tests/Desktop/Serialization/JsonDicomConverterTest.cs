@@ -17,12 +17,20 @@ namespace Dicom.Serialization
     using Newtonsoft.Json.Linq;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
     public class JsonDicomConverterTest
     {
+        private ITestOutputHelper output_;
+
+        public JsonDicomConverterTest(ITestOutputHelper output)
+        {
+            output_ = output;
+        }
+
         /// <summary>
         /// Tests a "triple trip" test of serializing, de-serializing and re-serializing for a DICOM dataset containing a zoo of different types.
         /// </summary>
@@ -31,6 +39,24 @@ namespace Dicom.Serialization
         {
             var target = BuildZooDataset();
             VerifyJsonTripleTrip(target);
+        }
+
+        [Fact]
+        public void TimeParseTag()
+        {
+            var start = DateTime.UtcNow;
+            foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+            {
+                var tag = JsonDicomConverter.ParseTag(kw);
+                Assert.NotNull(tag);
+            }
+
+            var end = DateTime.UtcNow;
+
+            output_.WriteLine(
+                $"ParseTag: {(end - start).TotalMilliseconds} ms for {DicomDictionary.Default.Count()} tests");
+
+            Assert.True((end - start).TotalMilliseconds < 1000);
         }
 
         /// <summary>

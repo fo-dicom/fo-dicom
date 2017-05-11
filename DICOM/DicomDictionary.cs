@@ -77,6 +77,8 @@ namespace Dicom
 
         private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
+        private ConcurrentDictionary<string, DicomTag> _keywords;
+
         private object _maskedLock;
         private List<DicomDictionaryEntry> _masked;
 
@@ -91,6 +93,7 @@ namespace Dicom
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new List<DicomDictionaryEntry>();
             _maskedLock = new object();
             _maskedNeedsSort = false;
@@ -100,6 +103,7 @@ namespace Dicom
         {
             _privateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new List<DicomDictionaryEntry>();
             _maskedLock = new object();
             _maskedNeedsSort = false;
@@ -316,6 +320,7 @@ namespace Dicom
             {
                 // allow overwriting of existing entries
                 _entries[entry.Tag] = entry;
+                _keywords[entry.Keyword] = entry.Tag;
             }
             else
             {
@@ -323,6 +328,7 @@ namespace Dicom
                 {
                     _masked.Add(entry);
                     _maskedNeedsSort = true;
+                    _keywords[entry.Keyword] = entry.Tag;
                 }
             }
         }
@@ -351,6 +357,26 @@ namespace Dicom
                 var reader = new DicomDictionaryReader(this, format, s);
                 reader.Process();
             }
+        }
+
+        /// <summary>
+        /// Lookup a keyword.
+        /// </summary>
+        /// <param name="keyword">The attribute keyword that we look for.</param>
+        /// <returns>A matching DicomDictionaryEntry or null.</returns>
+        public DicomTag LookupKeyword(string keyword)
+        {
+            DicomTag result;
+            if (_keywords.TryGetValue(keyword, out result)) return result;
+
+            foreach (var privDict in _private.Values)
+            {
+                var r = privDict.LookupKeyword(keyword);
+                if (r != null)
+                    return r;
+            }
+
+            return null;
         }
 
         #endregion
