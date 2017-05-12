@@ -57,19 +57,29 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void TimeGetEnumerator()
+        private double TimeCall(int numCalls, Action call)
         {
             var start = DateTime.UtcNow;
-            var N = 10000;
-            for (int i = 0; i < N; i++)
-            {
-                Assert.NotNull(DicomDictionary.Default.First());
-            }
+
+            for (int i = 0; i < numCalls; i++) call();
 
             var end = DateTime.UtcNow;
 
-            output_.WriteLine($"GetEnumerator: {(end - start).TotalMilliseconds / N} ms per call");
+            var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
+
+            return millisecondsPerCall;
+        }
+
+        [Fact]
+        public void TimeGetEnumerator()
+        {
+            var millisecondsPerCall = TimeCall(100, () => Assert.NotNull(DicomDictionary.Default.Last()));
+
+            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).Last()));
+
+            output_.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
+
+            Assert.InRange(millisecondsPerCall, 0, referenceTime * 100);
         }
 
 
