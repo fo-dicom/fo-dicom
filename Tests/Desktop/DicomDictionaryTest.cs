@@ -6,6 +6,7 @@ using System;
 namespace Dicom
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -59,11 +60,11 @@ namespace Dicom
 
         private double TimeCall(int numCalls, Action call)
         {
-            var start = DateTime.UtcNow;
+            var start = Process.GetCurrentProcess().TotalProcessorTime;
 
             for (int i = 0; i < numCalls; i++) call();
 
-            var end = DateTime.UtcNow;
+            var end = Process.GetCurrentProcess().TotalProcessorTime;
 
             var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
 
@@ -71,15 +72,17 @@ namespace Dicom
         }
 
         [Fact]
-        public void TimeGetEnumerator()
+        public void GetEnumerator_ExecutionTime_IsNotSlow()
         {
+            DicomDictionary.EnsureDefaultDictionariesLoaded();
+
             var millisecondsPerCall = TimeCall(100, () => Assert.NotNull(DicomDictionary.Default.Last()));
 
-            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).Last()));
+            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).ToDictionary(i => 2 * i).Values.Last()));
 
             output_.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
 
-            Assert.InRange(millisecondsPerCall, 0, referenceTime * 100);
+            Assert.InRange(millisecondsPerCall, 0, referenceTime * 5);
         }
 
 
