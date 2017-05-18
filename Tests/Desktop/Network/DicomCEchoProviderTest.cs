@@ -17,7 +17,7 @@ namespace Dicom.Network
         {
             LogManager.SetImplementation(NLogManager.Instance);
             var target = NLogHelper.AssignMemoryTarget(
-                nameof(DicomCEchoProviderTest),
+                "Dicom.Network",
                 @"${message}",
                 NLog.LogLevel.Trace);
 
