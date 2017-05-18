@@ -100,7 +100,6 @@ namespace Dicom.Network
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
-            dimse.Dataset.Add(DicomTag.OtherPatientIDs, string.Empty);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientSex, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientBirthDate, string.Empty);
@@ -130,7 +129,6 @@ namespace Dicom.Network
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
-            dimse.Dataset.Add(DicomTag.OtherPatientIDs, string.Empty);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientSex, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientBirthDate, string.Empty);
@@ -208,7 +206,6 @@ namespace Dicom.Network
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Worklist);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
-            dimse.Dataset.Add(DicomTag.OtherPatientIDs, string.Empty);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientSex, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientWeight, string.Empty);
