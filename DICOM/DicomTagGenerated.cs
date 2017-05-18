@@ -956,8 +956,8 @@ namespace Dicom
         ///<summary>(0010,0229) VR=SQ VM=1 Genetic Modifications Code Sequence</summary>
         public readonly static DicomTag GeneticModificationsCodeSequence = new DicomTag(0x0010, 0x0229);
 
-        ///<summary>(0010,1000) VR=LO VM=1-n Other Patient IDs</summary>
-        public readonly static DicomTag OtherPatientIDs = new DicomTag(0x0010, 0x1000);
+        ///<summary>(0010,1000) VR=LO VM=1-n Other Patient IDs (RETIRED)</summary>
+        public readonly static DicomTag OtherPatientIDsRETIRED = new DicomTag(0x0010, 0x1000);
 
         ///<summary>(0010,1001) VR=PN VM=1-n Other Patient Names</summary>
         public readonly static DicomTag OtherPatientNames = new DicomTag(0x0010, 0x1001);
@@ -1004,8 +1004,8 @@ namespace Dicom
         ///<summary>(0010,1081) VR=LO VM=1 Branch of Service</summary>
         public readonly static DicomTag BranchOfService = new DicomTag(0x0010, 0x1081);
 
-        ///<summary>(0010,1090) VR=LO VM=1 Medical Record Locator</summary>
-        public readonly static DicomTag MedicalRecordLocator = new DicomTag(0x0010, 0x1090);
+        ///<summary>(0010,1090) VR=LO VM=1 Medical Record Locator (RETIRED)</summary>
+        public readonly static DicomTag MedicalRecordLocatorRETIRED = new DicomTag(0x0010, 0x1090);
 
         ///<summary>(0010,1100) VR=SQ VM=1 Referenced Patient Photo Sequence</summary>
         public readonly static DicomTag ReferencedPatientPhotoSequence = new DicomTag(0x0010, 0x1100);
@@ -4940,6 +4940,63 @@ namespace Dicom
         ///<summary>(0022,1531) VR=OF VM=1 Two Dimensional to Three Dimensional Map Data</summary>
         public readonly static DicomTag TwoDimensionalToThreeDimensionalMapData = new DicomTag(0x0022, 0x1531);
 
+        ///<summary>(0022,1612) VR=SQ VM=1 Derivation Algorithm Sequence</summary>
+        public readonly static DicomTag DerivationAlgorithmSequence = new DicomTag(0x0022, 0x1612);
+
+        ///<summary>(0022,1615) VR=SQ VM=1 Ophthalmic Image Type Code Sequence</summary>
+        public readonly static DicomTag OphthalmicImageTypeCodeSequence = new DicomTag(0x0022, 0x1615);
+
+        ///<summary>(0022,1616) VR=LO VM=1 Ophthalmic Image Type Description</summary>
+        public readonly static DicomTag OphthalmicImageTypeDescription = new DicomTag(0x0022, 0x1616);
+
+        ///<summary>(0022,1618) VR=SQ VM=1 Scan Pattern Type Code Sequence</summary>
+        public readonly static DicomTag ScanPatternTypeCodeSequence = new DicomTag(0x0022, 0x1618);
+
+        ///<summary>(0022,1620) VR=SQ VM=1 Referenced Surface Mesh Identification Sequence</summary>
+        public readonly static DicomTag ReferencedSurfaceMeshIdentificationSequence = new DicomTag(0x0022, 0x1620);
+
+        ///<summary>(0022,1622) VR=CS VM=1 Ophthalmic Volumetric Properties Flag</summary>
+        public readonly static DicomTag OphthalmicVolumetricPropertiesFlag = new DicomTag(0x0022, 0x1622);
+
+        ///<summary>(0022,1624) VR=FL VM=1 Ophthalmic Anatomic Reference Point X-Coordinate</summary>
+        public readonly static DicomTag OphthalmicAnatomicReferencePointXCoordinate = new DicomTag(0x0022, 0x1624);
+
+        ///<summary>(0022,1626) VR=FL VM=1 Ophthalmic Anatomic Reference Point Y-Coordinate</summary>
+        public readonly static DicomTag OphthalmicAnatomicReferencePointYCoordinate = new DicomTag(0x0022, 0x1626);
+
+        ///<summary>(0022,1628) VR=SQ VM=1 Ophthalmic En Face Image Quality Rating Sequence</summary>
+        public readonly static DicomTag OphthalmicEnFaceImageQualityRatingSequence = new DicomTag(0x0022, 0x1628);
+
+        ///<summary>(0022,1630) VR=DS VM=1 Quality Threshold</summary>
+        public readonly static DicomTag QualityThreshold = new DicomTag(0x0022, 0x1630);
+
+        ///<summary>(0022,1640) VR=SQ VM=1 OCT B-scan Analysis Acquisition Parameters Sequence</summary>
+        public readonly static DicomTag OCTBscanAnalysisAcquisitionParametersSequence = new DicomTag(0x0022, 0x1640);
+
+        ///<summary>(0022,1642) VR=UL VM=1 Number of B-scans Per Frame</summary>
+        public readonly static DicomTag NumberofBscansPerFrame = new DicomTag(0x0022, 0x1642);
+
+        ///<summary>(0022,1643) VR=FL VM=1 B-scan Slab Thickness</summary>
+        public readonly static DicomTag BscanSlabThickness = new DicomTag(0x0022, 0x1643);
+
+        ///<summary>(0022,1644) VR=FL VM=1 Distance Between B-scan Slabs</summary>
+        public readonly static DicomTag DistanceBetweenBscanSlabs = new DicomTag(0x0022, 0x1644);
+
+        ///<summary>(0022,1645) VR=FL VM=1 B-scan Cycle Time</summary>
+        public readonly static DicomTag BscanCycleTime = new DicomTag(0x0022, 0x1645);
+
+        ///<summary>(0022,1646) VR=FL VM=1-n B-scan Cycle Time Vector</summary>
+        public readonly static DicomTag BscanCycleTimeVector = new DicomTag(0x0022, 0x1646);
+
+        ///<summary>(0022,1649) VR=FL VM=1 A-scan Rate</summary>
+        public readonly static DicomTag AscanRate = new DicomTag(0x0022, 0x1649);
+
+        ///<summary>(0022,1650) VR=FL VM=1 B-scan Rate</summary>
+        public readonly static DicomTag BscanRate = new DicomTag(0x0022, 0x1650);
+
+        ///<summary>(0022,1658) VR=UL VM=1 Surface Mesh Z-Pixel Offset</summary>
+        public readonly static DicomTag SurfaceMeshZPixelOffset = new DicomTag(0x0022, 0x1658);
+
         ///<summary>(0024,0010) VR=FL VM=1 Visual Field Horizontal Extent</summary>
         public readonly static DicomTag VisualFieldHorizontalExtent = new DicomTag(0x0024, 0x0010);
 
@@ -6784,6 +6841,9 @@ namespace Dicom
 
         ///<summary>(0040,8302) VR=DS VM=1 Entrance Dose in mGy</summary>
         public readonly static DicomTag EntranceDoseInmGy = new DicomTag(0x0040, 0x8302);
+
+        ///<summary>(0040,8303) VR=CS VM=1 Entrance Dose Derivation</summary>
+        public readonly static DicomTag EntranceDoseDerivation = new DicomTag(0x0040, 0x8303);
 
         ///<summary>(0040,9092) VR=SQ VM=1 Parametric Map Frame Type Sequence</summary>
         public readonly static DicomTag ParametricMapFrameTypeSequence = new DicomTag(0x0040, 0x9092);
@@ -8837,14 +8897,29 @@ namespace Dicom
         ///<summary>(0070,1205) VR=US VM=1-n Cropping Specification Index</summary>
         public readonly static DicomTag CroppingSpecificationIndex = new DicomTag(0x0070, 0x1205);
 
-        ///<summary>(0070,1206) VR=CS VM=1 Compositing Method</summary>
-        public readonly static DicomTag CompositingMethod = new DicomTag(0x0070, 0x1206);
+        ///<summary>(0070,1206) VR=CS VM=1 Compositing Method (RETIRED)</summary>
+        public readonly static DicomTag CompositingMethodRETIRED = new DicomTag(0x0070, 0x1206);
 
         ///<summary>(0070,1207) VR=US VM=1 Volumetric Presentation Input Number</summary>
         public readonly static DicomTag VolumetricPresentationInputNumber = new DicomTag(0x0070, 0x1207);
 
         ///<summary>(0070,1208) VR=CS VM=1 Image Volume Geometry</summary>
         public readonly static DicomTag ImageVolumeGeometry = new DicomTag(0x0070, 0x1208);
+
+        ///<summary>(0070,1209) VR=UI VM=1 Volumetric Presentation Input Set UID</summary>
+        public readonly static DicomTag VolumetricPresentationInputSetUID = new DicomTag(0x0070, 0x1209);
+
+        ///<summary>(0070,120A) VR=SQ VM=1 Volumetric Presentation Input Set Sequence</summary>
+        public readonly static DicomTag VolumetricPresentationInputSetSequence = new DicomTag(0x0070, 0x120A);
+
+        ///<summary>(0070,120B) VR=CS VM=1 Global Crop</summary>
+        public readonly static DicomTag GlobalCrop = new DicomTag(0x0070, 0x120B);
+
+        ///<summary>(0070,120C) VR=US VM=1-n Global Cropping Specification Index</summary>
+        public readonly static DicomTag GlobalCroppingSpecificationIndex = new DicomTag(0x0070, 0x120C);
+
+        ///<summary>(0070,120D) VR=CS VM=1 Rendering Method</summary>
+        public readonly static DicomTag RenderingMethod = new DicomTag(0x0070, 0x120D);
 
         ///<summary>(0070,1301) VR=SQ VM=1 Volume Cropping Sequence</summary>
         public readonly static DicomTag VolumeCroppingSequence = new DicomTag(0x0070, 0x1301);
@@ -8897,6 +8972,42 @@ namespace Dicom
         ///<summary>(0070,1512) VR=FD VM=1 MPR View Height</summary>
         public readonly static DicomTag MPRViewHeight = new DicomTag(0x0070, 0x1512);
 
+        ///<summary>(0070,1602) VR=CS VM=1 Render Projection</summary>
+        public readonly static DicomTag RenderProjection = new DicomTag(0x0070, 0x1602);
+
+        ///<summary>(0070,1603) VR=FD VM=3 Viewpoint Position</summary>
+        public readonly static DicomTag ViewpointPosition = new DicomTag(0x0070, 0x1603);
+
+        ///<summary>(0070,1604) VR=FD VM=3 Viewpoint LookAt Point</summary>
+        public readonly static DicomTag ViewpointLookAtPoint = new DicomTag(0x0070, 0x1604);
+
+        ///<summary>(0070,1605) VR=FD VM=3 Viewpoint Up Direction</summary>
+        public readonly static DicomTag ViewpointUpDirection = new DicomTag(0x0070, 0x1605);
+
+        ///<summary>(0070,1606) VR=FD VM=6 Render Field of View</summary>
+        public readonly static DicomTag RenderFieldOfView = new DicomTag(0x0070, 0x1606);
+
+        ///<summary>(0070,1607) VR=FD VM=1 Sampling Step Size</summary>
+        public readonly static DicomTag SamplingStepSize = new DicomTag(0x0070, 0x1607);
+
+        ///<summary>(0070,1701) VR=CS VM=1 Shading Style</summary>
+        public readonly static DicomTag ShadingStyle = new DicomTag(0x0070, 0x1701);
+
+        ///<summary>(0070,1702) VR=FD VM=1 Ambient Reflection Intensity</summary>
+        public readonly static DicomTag AmbientReflectionIntensity = new DicomTag(0x0070, 0x1702);
+
+        ///<summary>(0070,1703) VR=FD VM=3 Light Direction</summary>
+        public readonly static DicomTag LightDirection = new DicomTag(0x0070, 0x1703);
+
+        ///<summary>(0070,1704) VR=FD VM=1 Diffuse Reflection Intensity</summary>
+        public readonly static DicomTag DiffuseReflectionIntensity = new DicomTag(0x0070, 0x1704);
+
+        ///<summary>(0070,1705) VR=FD VM=1 Specular Reflection Intensity</summary>
+        public readonly static DicomTag SpecularReflectionIntensity = new DicomTag(0x0070, 0x1705);
+
+        ///<summary>(0070,1706) VR=FD VM=1 Shininess</summary>
+        public readonly static DicomTag Shininess = new DicomTag(0x0070, 0x1706);
+
         ///<summary>(0070,1801) VR=SQ VM=1 Presentation State Classification Component Sequence</summary>
         public readonly static DicomTag PresentationStateClassificationComponentSequence = new DicomTag(0x0070, 0x1801);
 
@@ -8947,6 +9058,51 @@ namespace Dicom
 
         ///<summary>(0070,1A05) VR=FD VM=1 Animation Step Size</summary>
         public readonly static DicomTag AnimationStepSize = new DicomTag(0x0070, 0x1A05);
+
+        ///<summary>(0070,1A06) VR=FD VM=1 Swivel Range</summary>
+        public readonly static DicomTag SwivelRange = new DicomTag(0x0070, 0x1A06);
+
+        ///<summary>(0070,1A07) VR=OD VM=1 Volumetric Curve Up Directions</summary>
+        public readonly static DicomTag VolumetricCurveUpDirections = new DicomTag(0x0070, 0x1A07);
+
+        ///<summary>(0070,1A08) VR=SQ VM=1 Volume Stream Sequence</summary>
+        public readonly static DicomTag VolumeStreamSequence = new DicomTag(0x0070, 0x1A08);
+
+        ///<summary>(0070,1A09) VR=LO VM=1 RGBA Transfer Function Description</summary>
+        public readonly static DicomTag RGBATransferFunctionDescription = new DicomTag(0x0070, 0x1A09);
+
+        ///<summary>(0070,1B01) VR=SQ VM=1 Advanced Blending Sequence</summary>
+        public readonly static DicomTag AdvancedBlendingSequence = new DicomTag(0x0070, 0x1B01);
+
+        ///<summary>(0070,1B02) VR=US VM=1 Blending Input Number</summary>
+        public readonly static DicomTag BlendingInputNumber = new DicomTag(0x0070, 0x1B02);
+
+        ///<summary>(0070,1B03) VR=SQ VM=1 Blending Display Input Sequence</summary>
+        public readonly static DicomTag BlendingDisplayInputSequence = new DicomTag(0x0070, 0x1B03);
+
+        ///<summary>(0070,1B04) VR=SQ VM=1 Blending Display Sequence</summary>
+        public readonly static DicomTag BlendingDisplaySequence = new DicomTag(0x0070, 0x1B04);
+
+        ///<summary>(0070,1B06) VR=CS VM=1 Blending Mode</summary>
+        public readonly static DicomTag BlendingMode = new DicomTag(0x0070, 0x1B06);
+
+        ///<summary>(0070,1B07) VR=CS VM=1 Time Series Blending</summary>
+        public readonly static DicomTag TimeSeriesBlending = new DicomTag(0x0070, 0x1B07);
+
+        ///<summary>(0070,1B08) VR=CS VM=1 Geometry for Display</summary>
+        public readonly static DicomTag GeometryForDisplay = new DicomTag(0x0070, 0x1B08);
+
+        ///<summary>(0070,1B11) VR=SQ VM=1 Threshold Sequence</summary>
+        public readonly static DicomTag ThresholdSequence = new DicomTag(0x0070, 0x1B11);
+
+        ///<summary>(0070,1B12) VR=SQ VM=1 Threshold Value Sequence</summary>
+        public readonly static DicomTag ThresholdValueSequence = new DicomTag(0x0070, 0x1B12);
+
+        ///<summary>(0070,1B13) VR=CS VM=1 Threshold Type</summary>
+        public readonly static DicomTag ThresholdType = new DicomTag(0x0070, 0x1B13);
+
+        ///<summary>(0070,1B14) VR=FD VM=1 Threshold Value</summary>
+        public readonly static DicomTag ThresholdValue = new DicomTag(0x0070, 0x1B14);
 
         ///<summary>(0072,0002) VR=SH VM=1 Hanging Protocol Name</summary>
         public readonly static DicomTag HangingProtocolName = new DicomTag(0x0072, 0x0002);
@@ -10990,6 +11146,9 @@ namespace Dicom
 
         ///<summary>(300A,0082) VR=DS VM=3 Beam Dose Specification Point</summary>
         public readonly static DicomTag BeamDoseSpecificationPoint = new DicomTag(0x300A, 0x0082);
+
+        ///<summary>(300A,0083) VR=UI VM=1 Referenced Dose Reference UID</summary>
+        public readonly static DicomTag ReferencedDoseReferenceUID = new DicomTag(0x300A, 0x0083);
 
         ///<summary>(300A,0084) VR=DS VM=1 Beam Dose</summary>
         public readonly static DicomTag BeamDose = new DicomTag(0x300A, 0x0084);

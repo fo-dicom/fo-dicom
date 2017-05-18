@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2017 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2017a">
+<dictionary version="2017b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -321,7 +321,7 @@
     <tag group="0010" element="0222" keyword="GeneticModificationsDescription" vr="UC" vm="1">Genetic Modifications Description</tag>
     <tag group="0010" element="0223" keyword="GeneticModificationsNomenclature" vr="LO" vm="1">Genetic Modifications Nomenclature</tag>
     <tag group="0010" element="0229" keyword="GeneticModificationsCodeSequence" vr="SQ" vm="1">Genetic Modifications Code Sequence</tag>
-    <tag group="0010" element="1000" keyword="OtherPatientIDs" vr="LO" vm="1-n">Other Patient IDs</tag>
+    <tag group="0010" element="1000" keyword="OtherPatientIDs" vr="LO" vm="1-n" retired="true">Other Patient IDs</tag>
     <tag group="0010" element="1001" keyword="OtherPatientNames" vr="PN" vm="1-n">Other Patient Names</tag>
     <tag group="0010" element="1002" keyword="OtherPatientIDsSequence" vr="SQ" vm="1">Other Patient IDs Sequence</tag>
     <tag group="0010" element="1005" keyword="PatientBirthName" vr="PN" vm="1">Patient's Birth Name</tag>
@@ -337,7 +337,7 @@
     <tag group="0010" element="1060" keyword="PatientMotherBirthName" vr="PN" vm="1">Patient's Mother's Birth Name</tag>
     <tag group="0010" element="1080" keyword="MilitaryRank" vr="LO" vm="1">Military Rank</tag>
     <tag group="0010" element="1081" keyword="BranchOfService" vr="LO" vm="1">Branch of Service</tag>
-    <tag group="0010" element="1090" keyword="MedicalRecordLocator" vr="LO" vm="1">Medical Record Locator</tag>
+    <tag group="0010" element="1090" keyword="MedicalRecordLocator" vr="LO" vm="1" retired="true">Medical Record Locator</tag>
     <tag group="0010" element="1100" keyword="ReferencedPatientPhotoSequence" vr="SQ" vm="1">Referenced Patient Photo Sequence</tag>
     <tag group="0010" element="2000" keyword="MedicalAlerts" vr="LO" vm="1-n">Medical Alerts</tag>
     <tag group="0010" element="2110" keyword="Allergies" vr="LO" vm="1-n">Allergies</tag>
@@ -1649,6 +1649,25 @@
     <tag group="0022" element="1529" keyword="YCoordinatesCenterPixelViewAngle" vr="FL" vm="1">Y Coordinates Center Pixel View Angle</tag>
     <tag group="0022" element="1530" keyword="NumberOfMapPoints" vr="UL" vm="1">Number of Map Points</tag>
     <tag group="0022" element="1531" keyword="TwoDimensionalToThreeDimensionalMapData" vr="OF" vm="1">Two Dimensional to Three Dimensional Map Data</tag>
+    <tag group="0022" element="1612" keyword="DerivationAlgorithmSequence" vr="SQ" vm="1">Derivation Algorithm Sequence</tag>
+    <tag group="0022" element="1615" keyword="OphthalmicImageTypeCodeSequence" vr="SQ" vm="1">Ophthalmic Image Type Code Sequence</tag>
+    <tag group="0022" element="1616" keyword="OphthalmicImageTypeDescription" vr="LO" vm="1">Ophthalmic Image Type Description</tag>
+    <tag group="0022" element="1618" keyword="ScanPatternTypeCodeSequence" vr="SQ" vm="1">Scan Pattern Type Code Sequence</tag>
+    <tag group="0022" element="1620" keyword="ReferencedSurfaceMeshIdentificationSequence" vr="SQ" vm="1">Referenced Surface Mesh Identification Sequence</tag>
+    <tag group="0022" element="1622" keyword="OphthalmicVolumetricPropertiesFlag" vr="CS" vm="1">Ophthalmic Volumetric Properties Flag</tag>
+    <tag group="0022" element="1624" keyword="OphthalmicAnatomicReferencePointXCoordinate" vr="FL" vm="1">Ophthalmic Anatomic Reference Point X-Coordinate</tag>
+    <tag group="0022" element="1626" keyword="OphthalmicAnatomicReferencePointYCoordinate" vr="FL" vm="1">Ophthalmic Anatomic Reference Point Y-Coordinate</tag>
+    <tag group="0022" element="1628" keyword="OphthalmicEnFaceImageQualityRatingSequence" vr="SQ" vm="1">Ophthalmic En Face Image Quality Rating Sequence</tag>
+    <tag group="0022" element="1630" keyword="QualityThreshold" vr="DS" vm="1">Quality Threshold</tag>
+    <tag group="0022" element="1640" keyword="OCTBscanAnalysisAcquisitionParametersSequence" vr="SQ" vm="1">OCT B-scan Analysis Acquisition Parameters Sequence</tag>
+    <tag group="0022" element="1642" keyword="NumberofBscansPerFrame" vr="UL" vm="1">Number of B-scans Per Frame</tag>
+    <tag group="0022" element="1643" keyword="BscanSlabThickness" vr="FL" vm="1">B-scan Slab Thickness</tag>
+    <tag group="0022" element="1644" keyword="DistanceBetweenBscanSlabs" vr="FL" vm="1">Distance Between B-scan Slabs</tag>
+    <tag group="0022" element="1645" keyword="BscanCycleTime" vr="FL" vm="1">B-scan Cycle Time</tag>
+    <tag group="0022" element="1646" keyword="BscanCycleTimeVector" vr="FL" vm="1-n">B-scan Cycle Time Vector</tag>
+    <tag group="0022" element="1649" keyword="AscanRate" vr="FL" vm="1">A-scan Rate</tag>
+    <tag group="0022" element="1650" keyword="BscanRate" vr="FL" vm="1">B-scan Rate</tag>
+    <tag group="0022" element="1658" keyword="SurfaceMeshZPixelOffset" vr="UL" vm="1">Surface Mesh Z-Pixel Offset</tag>
     <tag group="0024" element="0010" keyword="VisualFieldHorizontalExtent" vr="FL" vm="1">Visual Field Horizontal Extent</tag>
     <tag group="0024" element="0011" keyword="VisualFieldVerticalExtent" vr="FL" vm="1">Visual Field Vertical Extent</tag>
     <tag group="0024" element="0012" keyword="VisualFieldShape" vr="CS" vm="1">Visual Field Shape</tag>
@@ -2264,6 +2283,7 @@
     <tag group="0040" element="4073" keyword="StorageURL" vr="UR" vm="1">Storage URL</tag>
     <tag group="0040" element="4074" keyword="XDSStorageSequence" vr="SQ" vm="1">XDS Storage Sequence</tag>
     <tag group="0040" element="8302" keyword="EntranceDoseInmGy" vr="DS" vm="1">Entrance Dose in mGy</tag>
+    <tag group="0040" element="8303" keyword="EntranceDoseDerivation" vr="CS" vm="1">Entrance Dose Derivation</tag>
     <tag group="0040" element="9092" keyword="ParametricMapFrameTypeSequence" vr="SQ" vm="1">Parametric Map Frame Type Sequence</tag>
     <tag group="0040" element="9094" keyword="ReferencedImageRealWorldValueMappingSequence" vr="SQ" vm="1">Referenced Image Real World Value Mapping Sequence</tag>
     <tag group="0040" element="9096" keyword="RealWorldValueMappingSequence" vr="SQ" vm="1">Real World Value Mapping Sequence</tag>
@@ -2948,9 +2968,14 @@
     <tag group="0070" element="1203" keyword="InputSequencePositionIndex" vr="US" vm="1">Input Sequence Position Index</tag>
     <tag group="0070" element="1204" keyword="Crop" vr="CS" vm="1">Crop</tag>
     <tag group="0070" element="1205" keyword="CroppingSpecificationIndex" vr="US" vm="1-n">Cropping Specification Index</tag>
-    <tag group="0070" element="1206" keyword="CompositingMethod" vr="CS" vm="1">Compositing Method</tag>
+    <tag group="0070" element="1206" keyword="CompositingMethod" vr="CS" vm="1" retired="true">Compositing Method</tag>
     <tag group="0070" element="1207" keyword="VolumetricPresentationInputNumber" vr="US" vm="1">Volumetric Presentation Input Number</tag>
     <tag group="0070" element="1208" keyword="ImageVolumeGeometry" vr="CS" vm="1">Image Volume Geometry</tag>
+    <tag group="0070" element="1209" keyword="VolumetricPresentationInputSetUID" vr="UI" vm="1">Volumetric Presentation Input Set UID</tag>
+    <tag group="0070" element="120A" keyword="VolumetricPresentationInputSetSequence" vr="SQ" vm="1">Volumetric Presentation Input Set Sequence</tag>
+    <tag group="0070" element="120B" keyword="GlobalCrop" vr="CS" vm="1">Global Crop</tag>
+    <tag group="0070" element="120C" keyword="GlobalCroppingSpecificationIndex" vr="US" vm="1-n">Global Cropping Specification Index</tag>
+    <tag group="0070" element="120D" keyword="RenderingMethod" vr="CS" vm="1">Rendering Method</tag>
     <tag group="0070" element="1301" keyword="VolumeCroppingSequence" vr="SQ" vm="1">Volume Cropping Sequence</tag>
     <tag group="0070" element="1302" keyword="VolumeCroppingMethod" vr="CS" vm="1">Volume Cropping Method</tag>
     <tag group="0070" element="1303" keyword="BoundingBoxCrop" vr="FD" vm="6">Bounding Box Crop</tag>
@@ -2968,6 +2993,18 @@
     <tag group="0070" element="150D" keyword="VolumetricCurvePoints" vr="OD" vm="1">Volumetric Curve Points</tag>
     <tag group="0070" element="1511" keyword="MPRViewHeightDirection" vr="FD" vm="3">MPR View Height Direction</tag>
     <tag group="0070" element="1512" keyword="MPRViewHeight" vr="FD" vm="1">MPR View Height</tag>
+    <tag group="0070" element="1602" keyword="RenderProjection" vr="CS" vm="1">Render Projection</tag>
+    <tag group="0070" element="1603" keyword="ViewpointPosition" vr="FD" vm="3">Viewpoint Position</tag>
+    <tag group="0070" element="1604" keyword="ViewpointLookAtPoint" vr="FD" vm="3">Viewpoint LookAt Point</tag>
+    <tag group="0070" element="1605" keyword="ViewpointUpDirection" vr="FD" vm="3">Viewpoint Up Direction</tag>
+    <tag group="0070" element="1606" keyword="RenderFieldOfView" vr="FD" vm="6">Render Field of View</tag>
+    <tag group="0070" element="1607" keyword="SamplingStepSize" vr="FD" vm="1">Sampling Step Size</tag>
+    <tag group="0070" element="1701" keyword="ShadingStyle" vr="CS" vm="1">Shading Style</tag>
+    <tag group="0070" element="1702" keyword="AmbientReflectionIntensity" vr="FD" vm="1">Ambient Reflection Intensity</tag>
+    <tag group="0070" element="1703" keyword="LightDirection" vr="FD" vm="3">Light Direction</tag>
+    <tag group="0070" element="1704" keyword="DiffuseReflectionIntensity" vr="FD" vm="1">Diffuse Reflection Intensity</tag>
+    <tag group="0070" element="1705" keyword="SpecularReflectionIntensity" vr="FD" vm="1">Specular Reflection Intensity</tag>
+    <tag group="0070" element="1706" keyword="Shininess" vr="FD" vm="1">Shininess</tag>
     <tag group="0070" element="1801" keyword="PresentationStateClassificationComponentSequence" vr="SQ" vm="1">Presentation State Classification Component Sequence</tag>
     <tag group="0070" element="1802" keyword="ComponentType" vr="CS" vm="1">Component Type</tag>
     <tag group="0070" element="1803" keyword="ComponentInputSequence" vr="SQ" vm="1">Component Input Sequence</tag>
@@ -2985,6 +3022,21 @@
     <tag group="0070" element="1A03" keyword="RecommendedAnimationRate" vr="FD" vm="1">Recommended Animation Rate</tag>
     <tag group="0070" element="1A04" keyword="AnimationCurveSequence" vr="SQ" vm="1">Animation Curve Sequence</tag>
     <tag group="0070" element="1A05" keyword="AnimationStepSize" vr="FD" vm="1">Animation Step Size</tag>
+    <tag group="0070" element="1A06" keyword="SwivelRange" vr="FD" vm="1">Swivel Range</tag>
+    <tag group="0070" element="1A07" keyword="VolumetricCurveUpDirections" vr="OD" vm="1">Volumetric Curve Up Directions</tag>
+    <tag group="0070" element="1A08" keyword="VolumeStreamSequence" vr="SQ" vm="1">Volume Stream Sequence</tag>
+    <tag group="0070" element="1A09" keyword="RGBATransferFunctionDescription" vr="LO" vm="1">RGBA Transfer Function Description</tag>
+    <tag group="0070" element="1B01" keyword="AdvancedBlendingSequence" vr="SQ" vm="1">Advanced Blending Sequence</tag>
+    <tag group="0070" element="1B02" keyword="BlendingInputNumber" vr="US" vm="1">Blending Input Number</tag>
+    <tag group="0070" element="1B03" keyword="BlendingDisplayInputSequence" vr="SQ" vm="1">Blending Display Input Sequence</tag>
+    <tag group="0070" element="1B04" keyword="BlendingDisplaySequence" vr="SQ" vm="1">Blending Display Sequence</tag>
+    <tag group="0070" element="1B06" keyword="BlendingMode" vr="CS" vm="1">Blending Mode</tag>
+    <tag group="0070" element="1B07" keyword="TimeSeriesBlending" vr="CS" vm="1">Time Series Blending</tag>
+    <tag group="0070" element="1B08" keyword="GeometryForDisplay" vr="CS" vm="1">Geometry for Display</tag>
+    <tag group="0070" element="1B11" keyword="ThresholdSequence" vr="SQ" vm="1">Threshold Sequence</tag>
+    <tag group="0070" element="1B12" keyword="ThresholdValueSequence" vr="SQ" vm="1">Threshold Value Sequence</tag>
+    <tag group="0070" element="1B13" keyword="ThresholdType" vr="CS" vm="1">Threshold Type</tag>
+    <tag group="0070" element="1B14" keyword="ThresholdValue" vr="FD" vm="1">Threshold Value</tag>
     <tag group="0072" element="0002" keyword="HangingProtocolName" vr="SH" vm="1">Hanging Protocol Name</tag>
     <tag group="0072" element="0004" keyword="HangingProtocolDescription" vr="LO" vm="1">Hanging Protocol Description</tag>
     <tag group="0072" element="0006" keyword="HangingProtocolLevel" vr="CS" vm="1">Hanging Protocol Level</tag>
@@ -3666,6 +3718,7 @@
     <tag group="300A" element="007B" keyword="FractionPattern" vr="LT" vm="1">Fraction Pattern</tag>
     <tag group="300A" element="0080" keyword="NumberOfBeams" vr="IS" vm="1">Number of Beams</tag>
     <tag group="300A" element="0082" keyword="BeamDoseSpecificationPoint" vr="DS" vm="3">Beam Dose Specification Point</tag>
+    <tag group="300A" element="0083" keyword="ReferencedDoseReferenceUID" vr="UI" vm="1">Referenced Dose Reference UID</tag>
     <tag group="300A" element="0084" keyword="BeamDose" vr="DS" vm="1">Beam Dose</tag>
     <tag group="300A" element="0086" keyword="BeamMeterset" vr="DS" vm="1">Beam Meterset</tag>
     <tag group="300A" element="0088" keyword="BeamDosePointDepth" vr="FL" vm="1" retired="true">Beam Dose Point Depth</tag>
@@ -4425,13 +4478,17 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.9.6.1" keyword="RespiratoryWaveformStorage" type="SOP Class">Respiratory Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.10" keyword="StandaloneModalityLUTStorage" type="SOP Class" retired="true">Standalone Modality LUT Storage (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11" keyword="StandaloneVOILUTStorage" type="SOP Class" retired="true">Standalone VOI LUT Storage (Retired)</uid>
-    <uid uid="1.2.840.10008.5.1.4.1.1.11.1" keyword="GrayscaleSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Grayscale Softcopy Presentation State Storage SOP Class</uid>
-    <uid uid="1.2.840.10008.5.1.4.1.1.11.2" keyword="ColorSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Color Softcopy Presentation State Storage SOP Class</uid>
-    <uid uid="1.2.840.10008.5.1.4.1.1.11.3" keyword="PseudoColorSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Pseudo-Color Softcopy Presentation State Storage SOP Class</uid>
-    <uid uid="1.2.840.10008.5.1.4.1.1.11.4" keyword="BlendingSoftcopyPresentationStateStorageSOPClass" type="SOP Class">Blending Softcopy Presentation State Storage SOP Class</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.1" keyword="GrayscaleSoftcopyPresentationStateStorage" type="SOP Class">Grayscale Softcopy Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.2" keyword="ColorSoftcopyPresentationStateStorage" type="SOP Class">Color Softcopy Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.3" keyword="PseudoColorSoftcopyPresentationStateStorage" type="SOP Class">Pseudo-Color Softcopy Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.4" keyword="BlendingSoftcopyPresentationStateStorage" type="SOP Class">Blending Softcopy Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.5" keyword="XAXRFGrayscaleSoftcopyPresentationStateStorage" type="SOP Class">XA/XRF Grayscale Softcopy Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.6" keyword="GrayscalePlanarMPRVolumetricPresentationStateStorage" type="SOP Class">Grayscale Planar MPR Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.7" keyword="CompositingPlanarMPRVolumetricPresentationStateStorage" type="SOP Class">Compositing Planar MPR Volumetric Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.8" keyword="AdvancedBlendingPresentationStateStorage" type="SOP Class">Advanced Blending Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.9" keyword="VolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Volume Rendering Volumetric Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.10" keyword="SegmentedVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Segmented Volume Rendering Volumetric Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.11" keyword="MultipleVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Multiple Volume Rendering Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1" keyword="XRayAngiographicImageStorage" type="SOP Class">X-Ray Angiographic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1.1" keyword="EnhancedXAImageStorage" type="SOP Class">Enhanced XA Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.2" keyword="XRayRadiofluoroscopicImageStorage" type="SOP Class">X-Ray Radiofluoroscopic Image Storage</uid>
@@ -4473,6 +4530,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.4" keyword="OphthalmicTomographyImageStorage" type="SOP Class">Ophthalmic Tomography Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.5" keyword="WideFieldOphthalmicPhotographyStereographicProjectionImageStorage" type="SOP Class">Wide Field Ophthalmic Photography Stereographic Projection Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.6" keyword="WideFieldOphthalmicPhotography3DCoordinatesImageStorage" type="SOP Class">Wide Field Ophthalmic Photography 3D Coordinates Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.7" keyword="OphthalmicOpticalCoherenceTomographyEnFaceImageStorage" type="SOP Class">Ophthalmic Optical Coherence Tomography En Face Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.8" keyword="OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage" type="SOP Class">Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.6" keyword="VLWholeSlideMicroscopyImageStorage" type="SOP Class">VL Whole Slide Microscopy Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.78.1" keyword="LensometryMeasurementsStorage" type="SOP Class">Lensometry Measurements Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.78.2" keyword="AutorefractionMeasurementsStorage" type="SOP Class">Autorefraction Measurements Storage</uid>
@@ -4505,6 +4564,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.70" keyword="ImplantationPlanSRStorage" type="SOP Class">Implantation Plan SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.71" keyword="AcquisitionContextSRStorage" type="SOP Class">Acquisition Context SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.72" keyword="SimplifiedAdultEchoSRStorage" type="SOP Class">Simplified Adult Echo SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.73" keyword="PatientRadiationDoseSRStorage" type="SOP Class">Patient Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
@@ -5368,7 +5428,7 @@
     <uid uid="1.2.840.10008.6.1.822" keyword="Organizations5002" type="Context Group Name">Organizations (5002)</uid>
     <uid uid="1.2.840.10008.6.1.823" keyword="MixedBreeds7486" type="Context Group Name">Mixed Breeds (7486)</uid>
     <uid uid="1.2.840.10008.6.1.824" keyword="BroselowLutenPediatricSizeCategories7040" type="Context Group Name">Broselow-Luten Pediatric Size Categories (7040)</uid>
-    <uid uid="1.2.840.10008.6.1.825" keyword="CalciumScoringPatientSizeCategories7042" type="Context Group Name">Calcium Scoring Patient Size Categories (7042)</uid>
+    <uid uid="1.2.840.10008.6.1.825" keyword="CMDCTECCCalciumScoringPatientSizeCategories7042" type="Context Group Name">CMDCTECC Calcium Scoring Patient Size Categories (7042)</uid>
     <uid uid="1.2.840.10008.6.1.826" keyword="CardiacUltrasoundReportTitles12245" type="Context Group Name">Cardiac Ultrasound Report Titles (12245)</uid>
     <uid uid="1.2.840.10008.6.1.827" keyword="CardiacUltrasoundIndicationForStudy12246" type="Context Group Name">Cardiac Ultrasound Indication for Study (12246)</uid>
     <uid uid="1.2.840.10008.6.1.828" keyword="PediatricFetalAndCongenitalCardiacSurgicalInterventions12247" type="Context Group Name">Pediatric, Fetal and Congenital Cardiac Surgical Interventions (12247)</uid>
@@ -5684,4 +5744,30 @@
     <uid uid="1.2.840.10008.6.1.1147" keyword="EchoFlowDirections12306" type="Context Group Name">Echo Flow Directions (12306)</uid>
     <uid uid="1.2.840.10008.6.1.1148" keyword="CardiacPhasesAndTimePoints12307" type="Context Group Name">Cardiac Phases and Time Points (12307)</uid>
     <uid uid="1.2.840.10008.6.1.1149" keyword="CoreEchoMeasurements12300" type="Context Group Name">Core Echo Measurements (12300)</uid>
+    <uid uid="1.2.840.10008.6.1.1150" keyword="OCTAProcessingAlgorithmFamilies4270" type="Context Group Name">OCT-A Processing Algorithm Families (4270)</uid>
+    <uid uid="1.2.840.10008.6.1.1151" keyword="EnFaceImageTypes4271" type="Context Group Name">En Face Image Types (4271)</uid>
+    <uid uid="1.2.840.10008.6.1.1152" keyword="OptScanPatternTypes4272" type="Context Group Name">Opt Scan Pattern Types (4272)</uid>
+    <uid uid="1.2.840.10008.6.1.1153" keyword="RetinalSegmentationSurfaces4273" type="Context Group Name">Retinal Segmentation Surfaces (4273)</uid>
+    <uid uid="1.2.840.10008.6.1.1154" keyword="OrgansForRadiationDoseEstimates10060" type="Context Group Name">Organs for Radiation Dose Estimates (10060)</uid>
+    <uid uid="1.2.840.10008.6.1.1155" keyword="AbsorbedRadiationDoseTypes10061" type="Context Group Name">Absorbed Radiation Dose Types (10061)</uid>
+    <uid uid="1.2.840.10008.6.1.1156" keyword="EquivalentRadiationDoseTypes10062" type="Context Group Name">Equivalent Radiation Dose Types (10062)</uid>
+    <uid uid="1.2.840.10008.6.1.1157" keyword="RadiationDoseEstimateDistributionRepresentation10063" type="Context Group Name">Radiation Dose Estimate Distribution Representation (10063)</uid>
+    <uid uid="1.2.840.10008.6.1.1158" keyword="PatientModelType10064" type="Context Group Name">Patient Model Type (10064)</uid>
+    <uid uid="1.2.840.10008.6.1.1159" keyword="RadiationTransportModelType10065" type="Context Group Name">Radiation Transport Model Type (10065)</uid>
+    <uid uid="1.2.840.10008.6.1.1160" keyword="AttenuatorCategory10066" type="Context Group Name">Attenuator Category (10066)</uid>
+    <uid uid="1.2.840.10008.6.1.1161" keyword="RadiationAttenuatorMaterials10067" type="Context Group Name">Radiation Attenuator Materials (10067)</uid>
+    <uid uid="1.2.840.10008.6.1.1162" keyword="EstimateMethodTypes10068" type="Context Group Name">Estimate Method Types (10068)</uid>
+    <uid uid="1.2.840.10008.6.1.1163" keyword="RadiationDoseEstimationParameter10069" type="Context Group Name">Radiation Dose Estimation Parameter  (10069)</uid>
+    <uid uid="1.2.840.10008.6.1.1164" keyword="RadiationDoseTypes10070" type="Context Group Name">Radiation Dose Types (10070)</uid>
+    <uid uid="1.2.840.10008.6.1.1165" keyword="MRDiffusionComponentSemantics7270" type="Context Group Name">MR Diffusion Component Semantics (7270)</uid>
+    <uid uid="1.2.840.10008.6.1.1166" keyword="MRDiffusionAnisotropyIndices7271" type="Context Group Name">MR Diffusion Anisotropy Indices (7271)</uid>
+    <uid uid="1.2.840.10008.6.1.1167" keyword="MRDiffusionModelParameters7272" type="Context Group Name">MR Diffusion Model Parameters (7272)</uid>
+    <uid uid="1.2.840.10008.6.1.1168" keyword="MRDiffusionModels7273" type="Context Group Name">MR Diffusion Models (7273)</uid>
+    <uid uid="1.2.840.10008.6.1.1169" keyword="MRDiffusionModelFittingMethods7274" type="Context Group Name">MR Diffusion Model Fitting Methods (7274)</uid>
+    <uid uid="1.2.840.10008.6.1.1170" keyword="MRDiffusionModelSpecificMethods7275" type="Context Group Name">MR Diffusion Model Specific Methods (7275)</uid>
+    <uid uid="1.2.840.10008.6.1.1171" keyword="MRDiffusionModelInputs7276" type="Context Group Name">MR Diffusion Model Inputs (7276)</uid>
+    <uid uid="1.2.840.10008.6.1.1172" keyword="UnitsOfDiffusionRateAreaOverTime7277" type="Context Group Name">Units of Diffusion Rate Area Over Time (7277)</uid>
+    <uid uid="1.2.840.10008.6.1.1173" keyword="PediatricSizeCategories7039" type="Context Group Name">Pediatric Size Categories (7039)</uid>
+    <uid uid="1.2.840.10008.6.1.1174" keyword="CalciumScoringPatientSizeCategories7041" type="Context Group Name">Calcium Scoring Patient Size Categories (7041)</uid>
+    <uid uid="1.2.840.10008.6.1.1175" keyword="ReasonForRepeatingAcquisition10034" type="Context Group Name">Reason for Repeating Acquisition (10034)</uid>
 </dictionary>
