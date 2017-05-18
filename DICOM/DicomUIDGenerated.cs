@@ -184,13 +184,17 @@ namespace Dicom
             _uids.Add(DicomUID.RespiratoryWaveformStorage.UID, DicomUID.RespiratoryWaveformStorage);
             _uids.Add(DicomUID.StandaloneModalityLUTStorageRETIRED.UID, DicomUID.StandaloneModalityLUTStorageRETIRED);
             _uids.Add(DicomUID.StandaloneVOILUTStorageRETIRED.UID, DicomUID.StandaloneVOILUTStorageRETIRED);
-            _uids.Add(DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass.UID, DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass);
-            _uids.Add(DicomUID.ColorSoftcopyPresentationStateStorageSOPClass.UID, DicomUID.ColorSoftcopyPresentationStateStorageSOPClass);
-            _uids.Add(DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass.UID, DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass);
-            _uids.Add(DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass.UID, DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass);
+            _uids.Add(DicomUID.GrayscaleSoftcopyPresentationStateStorage.UID, DicomUID.GrayscaleSoftcopyPresentationStateStorage);
+            _uids.Add(DicomUID.ColorSoftcopyPresentationStateStorage.UID, DicomUID.ColorSoftcopyPresentationStateStorage);
+            _uids.Add(DicomUID.PseudoColorSoftcopyPresentationStateStorage.UID, DicomUID.PseudoColorSoftcopyPresentationStateStorage);
+            _uids.Add(DicomUID.BlendingSoftcopyPresentationStateStorage.UID, DicomUID.BlendingSoftcopyPresentationStateStorage);
             _uids.Add(DicomUID.XAXRFGrayscaleSoftcopyPresentationStateStorage.UID, DicomUID.XAXRFGrayscaleSoftcopyPresentationStateStorage);
             _uids.Add(DicomUID.GrayscalePlanarMPRVolumetricPresentationStateStorage.UID, DicomUID.GrayscalePlanarMPRVolumetricPresentationStateStorage);
             _uids.Add(DicomUID.CompositingPlanarMPRVolumetricPresentationStateStorage.UID, DicomUID.CompositingPlanarMPRVolumetricPresentationStateStorage);
+            _uids.Add(DicomUID.AdvancedBlendingPresentationStateStorage.UID, DicomUID.AdvancedBlendingPresentationStateStorage);
+            _uids.Add(DicomUID.VolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.VolumeRenderingVolumetricPresentationStateStorage);
+            _uids.Add(DicomUID.SegmentedVolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.SegmentedVolumeRenderingVolumetricPresentationStateStorage);
+            _uids.Add(DicomUID.MultipleVolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.MultipleVolumeRenderingVolumetricPresentationStateStorage);
             _uids.Add(DicomUID.XRayAngiographicImageStorage.UID, DicomUID.XRayAngiographicImageStorage);
             _uids.Add(DicomUID.EnhancedXAImageStorage.UID, DicomUID.EnhancedXAImageStorage);
             _uids.Add(DicomUID.XRayRadiofluoroscopicImageStorage.UID, DicomUID.XRayRadiofluoroscopicImageStorage);
@@ -232,6 +236,8 @@ namespace Dicom
             _uids.Add(DicomUID.OphthalmicTomographyImageStorage.UID, DicomUID.OphthalmicTomographyImageStorage);
             _uids.Add(DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage.UID, DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage);
             _uids.Add(DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage.UID, DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage);
+            _uids.Add(DicomUID.OphthalmicOpticalCoherenceTomographyEnFaceImageStorage.UID, DicomUID.OphthalmicOpticalCoherenceTomographyEnFaceImageStorage);
+            _uids.Add(DicomUID.OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage.UID, DicomUID.OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage);
             _uids.Add(DicomUID.VLWholeSlideMicroscopyImageStorage.UID, DicomUID.VLWholeSlideMicroscopyImageStorage);
             _uids.Add(DicomUID.LensometryMeasurementsStorage.UID, DicomUID.LensometryMeasurementsStorage);
             _uids.Add(DicomUID.AutorefractionMeasurementsStorage.UID, DicomUID.AutorefractionMeasurementsStorage);
@@ -264,6 +270,7 @@ namespace Dicom
             _uids.Add(DicomUID.ImplantationPlanSRStorage.UID, DicomUID.ImplantationPlanSRStorage);
             _uids.Add(DicomUID.AcquisitionContextSRStorage.UID, DicomUID.AcquisitionContextSRStorage);
             _uids.Add(DicomUID.SimplifiedAdultEchoSRStorage.UID, DicomUID.SimplifiedAdultEchoSRStorage);
+            _uids.Add(DicomUID.PatientRadiationDoseSRStorage.UID, DicomUID.PatientRadiationDoseSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
@@ -1127,7 +1134,7 @@ namespace Dicom
             _uids.Add(DicomUID.Organizations5002.UID, DicomUID.Organizations5002);
             _uids.Add(DicomUID.MixedBreeds7486.UID, DicomUID.MixedBreeds7486);
             _uids.Add(DicomUID.BroselowLutenPediatricSizeCategories7040.UID, DicomUID.BroselowLutenPediatricSizeCategories7040);
-            _uids.Add(DicomUID.CalciumScoringPatientSizeCategories7042.UID, DicomUID.CalciumScoringPatientSizeCategories7042);
+            _uids.Add(DicomUID.CMDCTECCCalciumScoringPatientSizeCategories7042.UID, DicomUID.CMDCTECCCalciumScoringPatientSizeCategories7042);
             _uids.Add(DicomUID.CardiacUltrasoundReportTitles12245.UID, DicomUID.CardiacUltrasoundReportTitles12245);
             _uids.Add(DicomUID.CardiacUltrasoundIndicationForStudy12246.UID, DicomUID.CardiacUltrasoundIndicationForStudy12246);
             _uids.Add(DicomUID.PediatricFetalAndCongenitalCardiacSurgicalInterventions12247.UID, DicomUID.PediatricFetalAndCongenitalCardiacSurgicalInterventions12247);
@@ -1443,6 +1450,32 @@ namespace Dicom
             _uids.Add(DicomUID.EchoFlowDirections12306.UID, DicomUID.EchoFlowDirections12306);
             _uids.Add(DicomUID.CardiacPhasesAndTimePoints12307.UID, DicomUID.CardiacPhasesAndTimePoints12307);
             _uids.Add(DicomUID.CoreEchoMeasurements12300.UID, DicomUID.CoreEchoMeasurements12300);
+            _uids.Add(DicomUID.OCTAProcessingAlgorithmFamilies4270.UID, DicomUID.OCTAProcessingAlgorithmFamilies4270);
+            _uids.Add(DicomUID.EnFaceImageTypes4271.UID, DicomUID.EnFaceImageTypes4271);
+            _uids.Add(DicomUID.OptScanPatternTypes4272.UID, DicomUID.OptScanPatternTypes4272);
+            _uids.Add(DicomUID.RetinalSegmentationSurfaces4273.UID, DicomUID.RetinalSegmentationSurfaces4273);
+            _uids.Add(DicomUID.OrgansForRadiationDoseEstimates10060.UID, DicomUID.OrgansForRadiationDoseEstimates10060);
+            _uids.Add(DicomUID.AbsorbedRadiationDoseTypes10061.UID, DicomUID.AbsorbedRadiationDoseTypes10061);
+            _uids.Add(DicomUID.EquivalentRadiationDoseTypes10062.UID, DicomUID.EquivalentRadiationDoseTypes10062);
+            _uids.Add(DicomUID.RadiationDoseEstimateDistributionRepresentation10063.UID, DicomUID.RadiationDoseEstimateDistributionRepresentation10063);
+            _uids.Add(DicomUID.PatientModelType10064.UID, DicomUID.PatientModelType10064);
+            _uids.Add(DicomUID.RadiationTransportModelType10065.UID, DicomUID.RadiationTransportModelType10065);
+            _uids.Add(DicomUID.AttenuatorCategory10066.UID, DicomUID.AttenuatorCategory10066);
+            _uids.Add(DicomUID.RadiationAttenuatorMaterials10067.UID, DicomUID.RadiationAttenuatorMaterials10067);
+            _uids.Add(DicomUID.EstimateMethodTypes10068.UID, DicomUID.EstimateMethodTypes10068);
+            _uids.Add(DicomUID.RadiationDoseEstimationParameter10069.UID, DicomUID.RadiationDoseEstimationParameter10069);
+            _uids.Add(DicomUID.RadiationDoseTypes10070.UID, DicomUID.RadiationDoseTypes10070);
+            _uids.Add(DicomUID.MRDiffusionComponentSemantics7270.UID, DicomUID.MRDiffusionComponentSemantics7270);
+            _uids.Add(DicomUID.MRDiffusionAnisotropyIndices7271.UID, DicomUID.MRDiffusionAnisotropyIndices7271);
+            _uids.Add(DicomUID.MRDiffusionModelParameters7272.UID, DicomUID.MRDiffusionModelParameters7272);
+            _uids.Add(DicomUID.MRDiffusionModels7273.UID, DicomUID.MRDiffusionModels7273);
+            _uids.Add(DicomUID.MRDiffusionModelFittingMethods7274.UID, DicomUID.MRDiffusionModelFittingMethods7274);
+            _uids.Add(DicomUID.MRDiffusionModelSpecificMethods7275.UID, DicomUID.MRDiffusionModelSpecificMethods7275);
+            _uids.Add(DicomUID.MRDiffusionModelInputs7276.UID, DicomUID.MRDiffusionModelInputs7276);
+            _uids.Add(DicomUID.UnitsOfDiffusionRateAreaOverTime7277.UID, DicomUID.UnitsOfDiffusionRateAreaOverTime7277);
+            _uids.Add(DicomUID.PediatricSizeCategories7039.UID, DicomUID.PediatricSizeCategories7039);
+            _uids.Add(DicomUID.CalciumScoringPatientSizeCategories7041.UID, DicomUID.CalciumScoringPatientSizeCategories7041);
+            _uids.Add(DicomUID.ReasonForRepeatingAcquisition10034.UID, DicomUID.ReasonForRepeatingAcquisition10034);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1961,17 +1994,17 @@ namespace Dicom
         ///<summary>SOP Class: Standalone VOI LUT Storage (Retired)</summary>
         public readonly static DicomUID StandaloneVOILUTStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.11", "Standalone VOI LUT Storage (Retired)", DicomUidType.SOPClass, true);
 
-        ///<summary>SOP Class: Grayscale Softcopy Presentation State Storage SOP Class</summary>
-        public readonly static DicomUID GrayscaleSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.1", "Grayscale Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
+        ///<summary>SOP Class: Grayscale Softcopy Presentation State Storage</summary>
+        public readonly static DicomUID GrayscaleSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.1", "Grayscale Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
 
-        ///<summary>SOP Class: Color Softcopy Presentation State Storage SOP Class</summary>
-        public readonly static DicomUID ColorSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.2", "Color Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
+        ///<summary>SOP Class: Color Softcopy Presentation State Storage</summary>
+        public readonly static DicomUID ColorSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.2", "Color Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
 
-        ///<summary>SOP Class: Pseudo-Color Softcopy Presentation State Storage SOP Class</summary>
-        public readonly static DicomUID PseudoColorSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.3", "Pseudo-Color Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
+        ///<summary>SOP Class: Pseudo-Color Softcopy Presentation State Storage</summary>
+        public readonly static DicomUID PseudoColorSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.3", "Pseudo-Color Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
 
-        ///<summary>SOP Class: Blending Softcopy Presentation State Storage SOP Class</summary>
-        public readonly static DicomUID BlendingSoftcopyPresentationStateStorageSOPClass = new DicomUID("1.2.840.10008.5.1.4.1.1.11.4", "Blending Softcopy Presentation State Storage SOP Class", DicomUidType.SOPClass, false);
+        ///<summary>SOP Class: Blending Softcopy Presentation State Storage</summary>
+        public readonly static DicomUID BlendingSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.4", "Blending Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: XA/XRF Grayscale Softcopy Presentation State Storage</summary>
         public readonly static DicomUID XAXRFGrayscaleSoftcopyPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.5", "XA/XRF Grayscale Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
@@ -1981,6 +2014,18 @@ namespace Dicom
 
         ///<summary>SOP Class: Compositing Planar MPR Volumetric Presentation State Storage</summary>
         public readonly static DicomUID CompositingPlanarMPRVolumetricPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.7", "Compositing Planar MPR Volumetric Presentation State Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Advanced Blending Presentation State Storage</summary>
+        public readonly static DicomUID AdvancedBlendingPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.8", "Advanced Blending Presentation State Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Volume Rendering Volumetric Presentation State Storage</summary>
+        public readonly static DicomUID VolumeRenderingVolumetricPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.9", "Volume Rendering Volumetric Presentation State Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Segmented Volume Rendering Volumetric Presentation State Storage</summary>
+        public readonly static DicomUID SegmentedVolumeRenderingVolumetricPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.10", "Segmented Volume Rendering Volumetric Presentation State Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Multiple Volume Rendering Volumetric Presentation State Storage</summary>
+        public readonly static DicomUID MultipleVolumeRenderingVolumetricPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.11", "Multiple Volume Rendering Volumetric Presentation State Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: X-Ray Angiographic Image Storage</summary>
         public readonly static DicomUID XRayAngiographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.1", "X-Ray Angiographic Image Storage", DicomUidType.SOPClass, false);
@@ -2105,6 +2150,12 @@ namespace Dicom
         ///<summary>SOP Class: Wide Field Ophthalmic Photography 3D Coordinates Image Storage</summary>
         public readonly static DicomUID WideFieldOphthalmicPhotography3DCoordinatesImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.6", "Wide Field Ophthalmic Photography 3D Coordinates Image Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Ophthalmic Optical Coherence Tomography En Face Image Storage</summary>
+        public readonly static DicomUID OphthalmicOpticalCoherenceTomographyEnFaceImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.7", "Ophthalmic Optical Coherence Tomography En Face Image Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage</summary>
+        public readonly static DicomUID OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.8", "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: VL Whole Slide Microscopy Image Storage</summary>
         public readonly static DicomUID VLWholeSlideMicroscopyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.6", "VL Whole Slide Microscopy Image Storage", DicomUidType.SOPClass, false);
 
@@ -2200,6 +2251,9 @@ namespace Dicom
 
         ///<summary>SOP Class: Simplified Adult Echo SR Storage</summary>
         public readonly static DicomUID SimplifiedAdultEchoSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.72", "Simplified Adult Echo SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Patient Radiation Dose SR Storage</summary>
+        public readonly static DicomUID PatientRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.73", "Patient Radiation Dose SR Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public readonly static DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
@@ -4790,8 +4844,8 @@ namespace Dicom
         ///<summary>Context Group Name: Broselow-Luten Pediatric Size Categories (7040)</summary>
         public readonly static DicomUID BroselowLutenPediatricSizeCategories7040 = new DicomUID("1.2.840.10008.6.1.824", "Broselow-Luten Pediatric Size Categories (7040)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Calcium Scoring Patient Size Categories (7042)</summary>
-        public readonly static DicomUID CalciumScoringPatientSizeCategories7042 = new DicomUID("1.2.840.10008.6.1.825", "Calcium Scoring Patient Size Categories (7042)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: CMDCTECC Calcium Scoring Patient Size Categories (7042)</summary>
+        public readonly static DicomUID CMDCTECCCalciumScoringPatientSizeCategories7042 = new DicomUID("1.2.840.10008.6.1.825", "CMDCTECC Calcium Scoring Patient Size Categories (7042)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Cardiac Ultrasound Report Titles (12245)</summary>
         public readonly static DicomUID CardiacUltrasoundReportTitles12245 = new DicomUID("1.2.840.10008.6.1.826", "Cardiac Ultrasound Report Titles (12245)", DicomUidType.ContextGroupName, false);
@@ -5737,6 +5791,84 @@ namespace Dicom
 
         ///<summary>Context Group Name: Core Echo Measurements (12300)</summary>
         public readonly static DicomUID CoreEchoMeasurements12300 = new DicomUID("1.2.840.10008.6.1.1149", "Core Echo Measurements (12300)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: OCT-A Processing Algorithm Families (4270)</summary>
+        public readonly static DicomUID OCTAProcessingAlgorithmFamilies4270 = new DicomUID("1.2.840.10008.6.1.1150", "OCT-A Processing Algorithm Families (4270)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: En Face Image Types (4271)</summary>
+        public readonly static DicomUID EnFaceImageTypes4271 = new DicomUID("1.2.840.10008.6.1.1151", "En Face Image Types (4271)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Opt Scan Pattern Types (4272)</summary>
+        public readonly static DicomUID OptScanPatternTypes4272 = new DicomUID("1.2.840.10008.6.1.1152", "Opt Scan Pattern Types (4272)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Retinal Segmentation Surfaces (4273)</summary>
+        public readonly static DicomUID RetinalSegmentationSurfaces4273 = new DicomUID("1.2.840.10008.6.1.1153", "Retinal Segmentation Surfaces (4273)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Organs for Radiation Dose Estimates (10060)</summary>
+        public readonly static DicomUID OrgansForRadiationDoseEstimates10060 = new DicomUID("1.2.840.10008.6.1.1154", "Organs for Radiation Dose Estimates (10060)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Absorbed Radiation Dose Types (10061)</summary>
+        public readonly static DicomUID AbsorbedRadiationDoseTypes10061 = new DicomUID("1.2.840.10008.6.1.1155", "Absorbed Radiation Dose Types (10061)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Equivalent Radiation Dose Types (10062)</summary>
+        public readonly static DicomUID EquivalentRadiationDoseTypes10062 = new DicomUID("1.2.840.10008.6.1.1156", "Equivalent Radiation Dose Types (10062)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Dose Estimate Distribution Representation (10063)</summary>
+        public readonly static DicomUID RadiationDoseEstimateDistributionRepresentation10063 = new DicomUID("1.2.840.10008.6.1.1157", "Radiation Dose Estimate Distribution Representation (10063)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Model Type (10064)</summary>
+        public readonly static DicomUID PatientModelType10064 = new DicomUID("1.2.840.10008.6.1.1158", "Patient Model Type (10064)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Transport Model Type (10065)</summary>
+        public readonly static DicomUID RadiationTransportModelType10065 = new DicomUID("1.2.840.10008.6.1.1159", "Radiation Transport Model Type (10065)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Attenuator Category (10066)</summary>
+        public readonly static DicomUID AttenuatorCategory10066 = new DicomUID("1.2.840.10008.6.1.1160", "Attenuator Category (10066)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Attenuator Materials (10067)</summary>
+        public readonly static DicomUID RadiationAttenuatorMaterials10067 = new DicomUID("1.2.840.10008.6.1.1161", "Radiation Attenuator Materials (10067)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Estimate Method Types (10068)</summary>
+        public readonly static DicomUID EstimateMethodTypes10068 = new DicomUID("1.2.840.10008.6.1.1162", "Estimate Method Types (10068)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Dose Estimation Parameter  (10069)</summary>
+        public readonly static DicomUID RadiationDoseEstimationParameter10069 = new DicomUID("1.2.840.10008.6.1.1163", "Radiation Dose Estimation Parameter  (10069)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Dose Types (10070)</summary>
+        public readonly static DicomUID RadiationDoseTypes10070 = new DicomUID("1.2.840.10008.6.1.1164", "Radiation Dose Types (10070)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Component Semantics (7270)</summary>
+        public readonly static DicomUID MRDiffusionComponentSemantics7270 = new DicomUID("1.2.840.10008.6.1.1165", "MR Diffusion Component Semantics (7270)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Anisotropy Indices (7271)</summary>
+        public readonly static DicomUID MRDiffusionAnisotropyIndices7271 = new DicomUID("1.2.840.10008.6.1.1166", "MR Diffusion Anisotropy Indices (7271)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Model Parameters (7272)</summary>
+        public readonly static DicomUID MRDiffusionModelParameters7272 = new DicomUID("1.2.840.10008.6.1.1167", "MR Diffusion Model Parameters (7272)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Models (7273)</summary>
+        public readonly static DicomUID MRDiffusionModels7273 = new DicomUID("1.2.840.10008.6.1.1168", "MR Diffusion Models (7273)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Model Fitting Methods (7274)</summary>
+        public readonly static DicomUID MRDiffusionModelFittingMethods7274 = new DicomUID("1.2.840.10008.6.1.1169", "MR Diffusion Model Fitting Methods (7274)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Model Specific Methods (7275)</summary>
+        public readonly static DicomUID MRDiffusionModelSpecificMethods7275 = new DicomUID("1.2.840.10008.6.1.1170", "MR Diffusion Model Specific Methods (7275)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Diffusion Model Inputs (7276)</summary>
+        public readonly static DicomUID MRDiffusionModelInputs7276 = new DicomUID("1.2.840.10008.6.1.1171", "MR Diffusion Model Inputs (7276)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Units of Diffusion Rate Area Over Time (7277)</summary>
+        public readonly static DicomUID UnitsOfDiffusionRateAreaOverTime7277 = new DicomUID("1.2.840.10008.6.1.1172", "Units of Diffusion Rate Area Over Time (7277)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Pediatric Size Categories (7039)</summary>
+        public readonly static DicomUID PediatricSizeCategories7039 = new DicomUID("1.2.840.10008.6.1.1173", "Pediatric Size Categories (7039)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Calcium Scoring Patient Size Categories (7041)</summary>
+        public readonly static DicomUID CalciumScoringPatientSizeCategories7041 = new DicomUID("1.2.840.10008.6.1.1174", "Calcium Scoring Patient Size Categories (7041)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Reason for Repeating Acquisition (10034)</summary>
+        public readonly static DicomUID ReasonForRepeatingAcquisition10034 = new DicomUID("1.2.840.10008.6.1.1175", "Reason for Repeating Acquisition (10034)", DicomUidType.ContextGroupName, false);
 
     }
 }
