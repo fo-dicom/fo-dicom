@@ -14,7 +14,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 ### Features
 * Portable Class Library (PCL)
 * Targets .NET 4.5.2 and higher, .NET Core (.NET Standard 1.3 and higher), Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
-* DICOM dictionary version 2017a
+* DICOM dictionary version 2017b
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
