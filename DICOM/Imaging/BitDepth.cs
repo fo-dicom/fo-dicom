@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -111,7 +111,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Create new instance of <seealso cref="BitDpeth"/> from input <paramref name="dataset"/>
+        /// Create new instance of <seealso cref="BitDepth"/> from input <paramref name="dataset"/>
         /// </summary>
         /// <param name="dataset">Input dataset to extract bit depth information from</param>
         /// <returns>New <seealso cref="BitDepth"/> instance</returns>

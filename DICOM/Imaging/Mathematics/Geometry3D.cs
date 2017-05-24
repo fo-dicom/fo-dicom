@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -1008,10 +1008,7 @@ namespace Dicom.Imaging.Mathematics
 
         public Point3D Project(Point3D point)
         {
-            Point3D p = Plane.ClosestPoint(point);
-            //normal vector?
             throw new NotImplementedException();
-            //return p;
         }
 
         public Segment3D Project(Segment3D segment)

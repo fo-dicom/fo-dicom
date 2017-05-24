@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging.Codec
@@ -18,10 +18,14 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
+#if NETFX_CORE
             DicomJpegLsNativeCodec.Encode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
                 parameters.ToNativeJpegLSParameters());
+#else
+            DicomJpegLsCodecImpl.Encode(oldPixelData, newPixelData, parameters as DicomJpegLsParams);
+#endif
         }
 
         public override void Decode(
@@ -29,10 +33,14 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
+#if NETFX_CORE
             DicomJpegLsNativeCodec.Decode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
                 parameters.ToNativeJpegLSParameters());
+#else
+            DicomJpegLsCodecImpl.Decode(oldPixelData, newPixelData, parameters as DicomJpegLsParams);
+#endif
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Media
@@ -104,7 +104,6 @@ namespace Dicom.Media
             FileMetaInfo.Version = new byte[] { 0x00, 0x01 };
             FileMetaInfo.MediaStorageSOPClassUID = DicomUID.MediaStorageDirectoryStorage;
             FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Generate();
-            FileMetaInfo.SourceApplicationEntityTitle = string.Empty;
             FileMetaInfo.TransferSyntax = explicitVr
                                               ? DicomTransferSyntax.ExplicitVRLittleEndian
                                               : DicomTransferSyntax.ImplicitVRLittleEndian;
@@ -581,14 +580,17 @@ namespace Dicom.Media
 
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
+            var patientId = dataset.Get(DicomTag.PatientID, string.Empty);
+            var patientName = dataset.Get(DicomTag.PatientName, string.Empty);
+
             var currentPatient = RootDirectoryRecord;
-            var patientId = dataset.Get<string>(DicomTag.PatientID);
-            var patientName = dataset.Get<string>(DicomTag.PatientName);
 
             while (currentPatient != null)
             {
-                if (currentPatient.Get<string>(DicomTag.PatientID) == patientId
-                    && currentPatient.Get<string>(DicomTag.PatientName) == patientName)
+                var currPatId = currentPatient.Get(DicomTag.PatientID, string.Empty);
+                var currPatName = currentPatient.Get(DicomTag.PatientName, string.Empty);
+
+                if (currPatId == patientId && currPatName == patientName)
                 {
                     return currentPatient;
                 }
@@ -603,6 +605,7 @@ namespace Dicom.Media
                     break;
                 }
             }
+
             var newPatient = CreateRecordSequenceItem(DicomDirectoryRecordType.Patient, dataset);
             if (currentPatient != null)
             {
@@ -614,6 +617,7 @@ namespace Dicom.Media
                 //no patients record found under root record
                 RootDirectoryRecord = newPatient;
             }
+
             return newPatient;
         }
 

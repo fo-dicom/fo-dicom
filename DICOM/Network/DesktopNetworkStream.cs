@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -38,8 +38,9 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
-            this.Host = host;
-            this.Port = port;
+            this.RemoteHost = host;
+            this.RemotePort = port;
+
 #if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
@@ -62,6 +63,9 @@ namespace Dicom.Network
                 stream = ssl;
             }
 
+            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+
             this.networkStream = stream;
         }
 
@@ -75,8 +79,10 @@ namespace Dicom.Network
         /// is initialized with this server-side constructor.</remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
         {
-            this.Host = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            this.Port = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+            this.RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+            this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
 
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
@@ -106,14 +112,24 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <summary>
-        /// Gets the host of the network stream.
+        /// Gets the remote host of the network stream.
         /// </summary>
-        public string Host { get; }
+        public string RemoteHost { get; }
 
         /// <summary>
-        /// Gets the port of the network stream.
+        /// Gets the local host of the network stream.
         /// </summary>
-        public int Port { get; }
+        public string LocalHost { get; }
+
+        /// <summary>
+        /// Gets the remote port of the network stream.
+        /// </summary>
+        public int RemotePort { get; }
+
+        /// <summary>
+        /// Gets the local port of the network stream.
+        /// </summary>
+        public int LocalPort { get; }
 
         #endregion
 
@@ -140,7 +156,7 @@ namespace Dicom.Network
         /// <summary>
         /// Do the actual disposal.
         /// </summary>
-        /// <param name="disposing">True if called from <see cref="Dispose"/>, false otherwise.</param>
+        /// <param name="disposing">True if called from <see cref="Dispose()"/>, false otherwise.</param>
         /// <remarks>The underlying stream is normally passed on to a <see cref="DicomService"/> implementation that
         /// is responsible for disposing the stream when appropriate. Therefore, the stream should not be disposed here.</remarks>
         private void Dispose(bool disposing)

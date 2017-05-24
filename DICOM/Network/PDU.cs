@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -630,7 +630,7 @@ namespace Dicom.Network
                             var userRole = raw.ReadByte("SCU role");
                             var providerRole = raw.ReadByte("SCP role");
                             var pc =
-                                _assoc.PresentationContexts.SingleOrDefault(
+                                _assoc.PresentationContexts.FirstOrDefault(
                                     context => context.AbstractSyntax.UID.Equals(syntax));
                             if (pc != null)
                             {
@@ -875,7 +875,7 @@ namespace Dicom.Network
                             var userRole = raw.ReadByte("SCU role");
                             var providerRole = raw.ReadByte("SCP role");
                             var pc =
-                                _assoc.PresentationContexts.SingleOrDefault(
+                                _assoc.PresentationContexts.FirstOrDefault(
                                     context => context.AbstractSyntax.UID.Equals(syntax));
                             if (pc != null)
                             {
@@ -938,28 +938,33 @@ namespace Dicom.Network
     }
 
     /// <summary>Rejection reason</summary>
+    /// <remarks>The underlying value is a hexadecimal combination of the <see cref="DicomRejectSource"/> and the rejection
+    /// reason code given in Table 9-21 of DICOM Standard PS 3.8.</remarks>
     public enum DicomRejectReason
     {
         /// <summary>No reason given (Service user)</summary>
-        NoReasonGiven = 1,
+        NoReasonGiven = 0x11,
 
         /// <summary>Application context not supported (Service user)</summary>
-        ApplicationContextNotSupported = 2,
+        ApplicationContextNotSupported = 0x12,
 
         /// <summary>Calling AE not recognized (Service user)</summary>
-        CallingAENotRecognized = 3,
+        CallingAENotRecognized = 0x13,
 
         /// <summary>Called AE not recognized (Service user)</summary>
-        CalledAENotRecognized = 7,
+        CalledAENotRecognized = 0x17,
+
+        /// <summary>No reason given (Service provider - ACSE)</summary>
+        NoReasonGiven_ = 0x21,
 
         /// <summary>Protocol version not supported (Service provider - ACSE)</summary>
-        ProtocolVersionNotSupported = 1,
+        ProtocolVersionNotSupported = 0x22,
 
         /// <summary>Temporary congestion (Service provider - Presentation)</summary>
-        TemporaryCongestion = 1,
+        TemporaryCongestion = 0x31,
 
         /// <summary>Local limit exceeded (Service provider - Presentation)</summary>
-        LocalLimitExceeded = 2
+        LocalLimitExceeded = 0x32
     }
 
     /// <summary>A-ASSOCIATE-RJ</summary>
@@ -1027,13 +1032,16 @@ namespace Dicom.Network
         /// Writes A-ASSOCIATE-RJ to PDU buffer
         /// </summary>
         /// <returns>PDU buffer</returns>
+        /// <remarks>When writing the rejection reason to the <see cref="RawPDU"/> object, the <see cref="DicomRejectSource"/>
+        /// specification in the underlying value is masked out, to ensure that the reason code matches the codes specified
+        /// in Table 9-21 of DICOM Standard PS 3.8.</remarks>
         public RawPDU Write()
         {
             RawPDU pdu = new RawPDU((byte)0x03);
             pdu.Write("Reserved", (byte)0x00);
             pdu.Write("Result", (byte)_rt);
             pdu.Write("Source", (byte)_so);
-            pdu.Write("Reason", (byte)_rn);
+            pdu.Write("Reason", (byte)((byte)_rn & 0xf));
             return pdu;
         }
 
@@ -1041,12 +1049,15 @@ namespace Dicom.Network
         /// Reads A-ASSOCIATE-RJ from PDU buffer
         /// </summary>
         /// <param name="raw">PDU buffer</param>
+        /// <remarks>When reading the rejection reason, the previously read <see cref="DicomRejectSource"/> value is
+        /// combined with the numerical reject reason from the <see cref="RawPDU"/> object to yield numerical
+        /// values that matches the members of the <see cref="DicomRejectReason"/> enumeration.</remarks>
         public void Read(RawPDU raw)
         {
             raw.ReadByte("Reserved");
             _rt = (DicomRejectResult)raw.ReadByte("Result");
             _so = (DicomRejectSource)raw.ReadByte("Source");
-            _rn = (DicomRejectReason)raw.ReadByte("Reason");
+            _rn = (DicomRejectReason)((byte)_so << 4 | raw.ReadByte("Reason"));
         }
     }
 

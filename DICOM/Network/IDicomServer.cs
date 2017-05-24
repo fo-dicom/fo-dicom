@@ -1,14 +1,15 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+#if !NET35
+
+using System;
 using System.Threading.Tasks;
+
+using Dicom.Log;
 
 namespace Dicom.Network
 {
-    using System;
-
-    using Dicom.Log;
-
     /// <summary>
     /// Interface representing a DICOM server instance.
     /// </summary>
@@ -58,3 +59,5 @@ namespace Dicom.Network
         #endregion
     }
 }
+
+#endif

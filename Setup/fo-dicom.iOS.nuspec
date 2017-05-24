@@ -13,11 +13,13 @@
         <language>en-US</language>
         <dependencies>
 			<dependency id="Portable.LibJpeg.NET" version="1.5.1.1" />
-			<dependency id="CSJ2K" version="2.0.0.1" />
+			<dependency id="CSJ2K" version="3.0.0-alpha" />
+			<dependency id="cscharls" version="0.1.1" />
         </dependencies>
     </metadata>
     <files>
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.dll" target="lib\Xamarin.iOS10" />
-        <file src="..\DICOM.Platform\iOS\bin\Release\Dicom.Core.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.dll" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.pdb" target="lib\Xamarin.iOS10" />
+        <file src="..\Platform\iOS\bin\Release\Dicom.Core.xml" target="lib\Xamarin.iOS10" />
     </files>
 </package>

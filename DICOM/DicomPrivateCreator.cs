@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -11,7 +11,11 @@ namespace Dicom
                                               IComparable<DicomPrivateCreator>,
                                               IComparable
     {
-        internal DicomPrivateCreator(string creator)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomPrivateCreator"/> class.
+        /// </summary>
+        /// <param name="creator">The textual value of the private creator</param>
+        public DicomPrivateCreator(string creator)
         {
             this.Creator = creator;
         }

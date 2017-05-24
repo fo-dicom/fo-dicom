@@ -23,8 +23,13 @@ DICOM/T4/part16.xml
 *.userprefs
 /.vs
 *.lock.json
+*.nuget.props
+*.nuget.targets
 *.VC.opendb
 *.db
 *.DotSettings
 /UpgradeLog.htm
 /UpgradeLog2.htm
+AppPackages/
+Documentation/Help/
+Platform/Mono/Dictionaries/*.xml.gz

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Writer
@@ -10,7 +10,7 @@ namespace Dicom.IO.Writer
             ExplicitLengthSequences = false;
             ExplicitLengthSequenceItems = false;
             KeepGroupLengths = false;
-            LargeObjectSize = 16 * 1024;
+            LargeObjectSize = 1024 * 1024;
         }
 
         public DicomWriteOptions(DicomWriteOptions options)

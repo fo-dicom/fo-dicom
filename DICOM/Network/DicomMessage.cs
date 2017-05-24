@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -12,6 +12,12 @@ namespace Dicom.Network
     /// </summary>
     public class DicomMessage
     {
+        #region FIELDS
+
+        private DicomDataset _dataset;
+
+        #endregion
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomMessage"/> class.
         /// </summary>
@@ -41,7 +47,7 @@ namespace Dicom.Network
             {
                 return Command.Get<DicomCommandField>(DicomTag.CommandField);
             }
-            set
+            protected set
             {
                 Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
             }
@@ -61,11 +67,19 @@ namespace Dicom.Network
                     case DicomCommandField.NActionRequest:
                     case DicomCommandField.NDeleteRequest:
                         return Command.Get<DicomUID>(DicomTag.RequestedSOPClassUID);
-                    default:
+                    case DicomCommandField.CStoreRequest:
+                    case DicomCommandField.CFindRequest:
+                    case DicomCommandField.CGetRequest:
+                    case DicomCommandField.CMoveRequest:
+                    case DicomCommandField.CEchoRequest:
+                    case DicomCommandField.NEventReportRequest:
+                    case DicomCommandField.NCreateRequest:
                         return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID);
+                    default:
+                        return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID, null);
                 }
             }
-            set
+            protected set
             {
                 switch (Type)
                 {
@@ -85,14 +99,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets a value indicating whether the message contains a dataset.
         /// </summary>
-        public bool HasDataset
-        {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.CommandDataSetType, 0, 0x0101) != 0x0101;
-            }
-        }
-
+        public bool HasDataset => Command.Get<ushort>(DicomTag.CommandDataSetType, 0, 0x0101) != 0x0101;
 
         /// <summary>
         /// Gets or sets the presentation Context.
@@ -102,9 +109,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets or sets the associated DICOM command.
         /// </summary>
-        public DicomDataset Command { get; set; }
-
-        private DicomDataset _dataset;
+        public DicomDataset Command { get; protected set; }
 
         /// <summary>
         /// Gets or sets the dataset potentially included in the message..
@@ -118,7 +123,7 @@ namespace Dicom.Network
             set
             {
                 _dataset = value;
-                Command.AddOrUpdate(DicomTag.CommandDataSetType, (_dataset != null) ? (ushort)0x0202 : (ushort)0x0101);
+                Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort)0x0202 : (ushort)0x0101);
             }
         }
 
@@ -133,12 +138,8 @@ namespace Dicom.Network
         /// <returns>Formatted output string of the DICOM message.</returns>
         public override string ToString()
         {
-            return string.Format(
-                "{0} [{1}]",
-                ToString(Type),
-                IsRequest(Type)
-                    ? Command.Get<ushort>(DicomTag.MessageID)
-                    : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo));
+            return
+                $"{ToString(Type)} [{(IsRequest(Type) ? Command.Get<ushort>(DicomTag.MessageID) : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
         }
 
         /// <summary>

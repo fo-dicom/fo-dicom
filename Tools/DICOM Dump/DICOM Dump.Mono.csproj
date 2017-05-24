@@ -12,6 +12,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -19,8 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>false</Prefer32Bit>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
@@ -30,8 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>false</Prefer32Bit>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -39,6 +40,10 @@
     <StartupObject>Dicom.Dump.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="cscharls, Version=0.1.0.0, Culture=neutral, PublicKeyToken=982ce2dbcc5f1651, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,7 +54,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="CSJ2K">
-      <HintPath>..\..\packages\CSJ2K.2.0.0.1\lib\net40-client\CSJ2K.dll</HintPath>
+      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\net40-client\CSJ2K.dll</HintPath>
     </Reference>
     <Reference Include="BitMiracle.LibJpeg.Portable">
       <HintPath>..\..\packages\Portable.LibJpeg.NET.1.5.1.1\lib\portable-net4+sl5+netcore45+wpa81+wp8\BitMiracle.LibJpeg.Portable.dll</HintPath>
@@ -121,7 +126,7 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\DICOM.Platform\Mono\DICOM.Mono.csproj">
+    <ProjectReference Include="..\..\Platform\Mono\DICOM.Mono.csproj">
       <Project>{0E451E9D-3F37-46C1-98D3-3090743061CF}</Project>
       <Name>DICOM.Mono</Name>
     </ProjectReference>

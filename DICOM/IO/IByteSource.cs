@@ -1,14 +1,14 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+#if !NET35
+using System.Threading.Tasks;
+#endif
+
+using Dicom.IO.Buffer;
 
 namespace Dicom.IO
 {
-#if !NET35
-    using System.Threading.Tasks;
-#endif
-
-    using Dicom.IO.Buffer;
-
     /// <summary>
     /// Delegate for <see cref="IByteSource"/> callback functions.
     /// </summary>
@@ -129,7 +129,7 @@ namespace Dicom.IO
 #endif
 
         /// <summary>
-        /// Skip position <see cref="count"/> number of bytes.
+        /// Skip position <paramref name="count"/> number of bytes.
         /// </summary>
         /// <param name="count">Number of bytes to skip.</param>
         void Skip(int count);

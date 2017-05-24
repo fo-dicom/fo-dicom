@@ -1,14 +1,12 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
-    using System;
-
     /// <summary>
     /// Interface for implementations of a DICOM service as a client.
     /// </summary>
-    public interface IDicomServiceUser
+    public interface IDicomServiceUser : IDicomService
     {
         /// <summary>
         /// Callback for handling association accept scenarios.
@@ -28,19 +26,6 @@ namespace Dicom.Network
         /// Callback on response from an association release.
         /// </summary>
         void OnReceiveAssociationReleaseResponse();
-
-        /// <summary>
-        /// Callback on recieving an abort message.
-        /// </summary>
-        /// <param name="source">Abort source.</param>
-        /// <param name="reason">Detailed reason for abort.</param>
-        void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason);
-
-        /// <summary>
-        /// Callback when connection is closed.
-        /// </summary>
-        /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        void OnConnectionClosed(Exception exception);
 
         /// <summary>
         /// Callback for handling a client related C-STORE request, typically emanating from the client's C-GET request.

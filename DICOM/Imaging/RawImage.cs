@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging
@@ -49,7 +49,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="WPFImage"/> object.
+        /// Initializes an instance of the <see cref="RawImage"/> object.
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>

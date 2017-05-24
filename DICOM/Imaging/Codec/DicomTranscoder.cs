@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging.Codec
@@ -30,7 +30,7 @@ namespace Dicom.Imaging.Codec
         {
             InputSyntax = inputSyntax;
             OutputSyntax = outputSyntax;
-            InputCodecParams = inputCodecParams;
+            InputCodecParams = inputCodecParams ?? DefaultInputCodecParams(inputSyntax);
             OutputCodecParams = outputCodecParams;
         }
 
@@ -204,6 +204,13 @@ namespace Dicom.Imaging.Codec
             var newPixelData = DicomPixelData.Create(newDataset);
 
             return PixelDataFactory.Create(newPixelData, 0);
+        }
+
+        private static DicomCodecParams DefaultInputCodecParams(DicomTransferSyntax inputSyntax)
+        {
+            return inputSyntax == DicomTransferSyntax.JPEGProcess1 || inputSyntax == DicomTransferSyntax.JPEGProcess2_4
+                       ? new DicomJpegParams { ConvertColorspaceToRGB = true }
+                       : null;
         }
 
         private static DicomDataset Decode(

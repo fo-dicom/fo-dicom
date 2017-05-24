@@ -1,5 +1,7 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System.Runtime.CompilerServices;
 
 using Dicom.IO.Buffer;
 
@@ -17,17 +19,17 @@ namespace Dicom.Imaging
         /// <returns>Pixels data in planar format (RRR...GGG...BBB...)</returns>
         public static IByteBuffer InterleavedToPlanar24(IByteBuffer data)
         {
-            byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[oldPixels.Length];
-            int pixelCount = newPixels.Length / 3;
+            var oldPixels = data.Data;
+            var newPixels = new byte[oldPixels.Length];
+            var pixelCount = newPixels.Length / 3;
 
             unchecked
             {
-                for (int n = 0; n < pixelCount; n++)
+                for (var n = 0; n < pixelCount; n++)
                 {
-                    newPixels[n + (pixelCount * 0)] = oldPixels[(n * 3) + 0];
-                    newPixels[n + (pixelCount * 1)] = oldPixels[(n * 3) + 1];
-                    newPixels[n + (pixelCount * 2)] = oldPixels[(n * 3) + 2];
+                    newPixels[n + pixelCount * 0] = oldPixels[n * 3 + 0];
+                    newPixels[n + pixelCount * 1] = oldPixels[n * 3 + 1];
+                    newPixels[n + pixelCount * 2] = oldPixels[n * 3 + 2];
                 }
             }
 
@@ -41,100 +43,142 @@ namespace Dicom.Imaging
         /// <returns>Pixels data in interleaved format (RGB)</returns>
         public static IByteBuffer PlanarToInterleaved24(IByteBuffer data)
         {
-            byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[oldPixels.Length];
-            int pixelCount = newPixels.Length / 3;
+            var oldPixels = data.Data;
+            var newPixels = new byte[oldPixels.Length];
+            var pixelCount = newPixels.Length / 3;
 
             unchecked
             {
-                for (int n = 0; n < pixelCount; n++)
+                for (var n = 0; n < pixelCount; n++)
                 {
-                    newPixels[(n * 3) + 0] = oldPixels[n + (pixelCount * 0)];
-                    newPixels[(n * 3) + 1] = oldPixels[n + (pixelCount * 1)];
-                    newPixels[(n * 3) + 2] = oldPixels[n + (pixelCount * 2)];
+                    newPixels[n * 3 + 0] = oldPixels[n + pixelCount * 0];
+                    newPixels[n * 3 + 1] = oldPixels[n + pixelCount * 1];
+                    newPixels[n * 3 + 2] = oldPixels[n + pixelCount * 2];
                 }
             }
 
             return new MemoryByteBuffer(newPixels);
         }
 
+        /// <summary>
+        /// Convert YBR_FULL photometric interpretation pixels to RGB.
+        /// </summary>
+        /// <param name="data">Array of YBR_FULL photometric interpretation pixels.</param>
+        /// <returns>Array of pixel data in RGB photometric interpretation.</returns>
         public static IByteBuffer YbrFullToRgb(IByteBuffer data)
         {
-            byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[oldPixels.Length];
+            var oldPixels = data.Data;
+            var newPixels = new byte[oldPixels.Length];
 
             unchecked
             {
-                int y, b, r;
-                for (int n = 0; n < newPixels.Length; n += 3)
+                for (var n = 0; n < newPixels.Length; n += 3)
                 {
-                    y = oldPixels[n + 0];
-                    b = oldPixels[n + 1];
-                    r = oldPixels[n + 2];
+                    int y = oldPixels[n + 0];
+                    int b = oldPixels[n + 1];
+                    int r = oldPixels[n + 2];
 
-                    newPixels[n + 0] = (byte)(y + 1.4020 * (r - 128) + 0.5);
-                    newPixels[n + 1] = (byte)(y - 0.3441 * (b - 128) - 0.7141 * (r - 128) + 0.5);
-                    newPixels[n + 2] = (byte)(y + 1.7720 * (b - 128) + 0.5);
+                    newPixels[n + 0] = ToByte(y + 1.4020 * (r - 128) + 0.5);
+                    newPixels[n + 1] = ToByte(y - 0.3441 * (b - 128) - 0.7141 * (r - 128) + 0.5);
+                    newPixels[n + 2] = ToByte(y + 1.7720 * (b - 128) + 0.5);
                 }
             }
 
             return new MemoryByteBuffer(newPixels);
         }
 
-        public static IByteBuffer YbrFull422ToRgb(IByteBuffer data)
+        /// <summary>
+        /// Convert YBR_FULL_422 photometric interpretation pixels to RGB.
+        /// </summary>
+        /// <param name="data">Array of YBR_FULL_422 photometric interpretation pixels.</param>
+        /// <param name="width">Image width.</param>
+        /// <returns>Array of pixel data in RGB photometric interpretation.</returns>
+        public static IByteBuffer YbrFull422ToRgb(IByteBuffer data, int width)
         {
-            byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[(oldPixels.Length / 4) * 2 * 3];
+            var oldPixels = data.Data;
+            var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
 
             unchecked
             {
-                int y1, y2, cb, cr;
-                for (int n = 0, p = 0; n < oldPixels.Length;)
+                for (int n = 0, p = 0, col = 0; n < oldPixels.Length;)
                 {
-                    y1 = oldPixels[n++];
-                    y2 = oldPixels[n++];
-                    cb = oldPixels[n++];
-                    cr = oldPixels[n++];
+                    int y1 = oldPixels[n++];
+                    int y2 = oldPixels[n++];
+                    int cb = oldPixels[n++];
+                    int cr = oldPixels[n++];
 
-                    newPixels[p++] = (byte)(y1 + 1.4020 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(y1 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(y1 + 1.7720 * (cb - 128) + 0.5);
+                    newPixels[p++] = ToByte(y1 + 1.4020 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(y1 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(y1 + 1.7720 * (cb - 128) + 0.5);
 
-                    newPixels[p++] = (byte)(y2 + 1.4020 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(y2 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(y2 + 1.7720 * (cb - 128) + 0.5);
+                    if (++col == width)
+                    {
+                        // Issue #471: for uneven width images (i.e. when col equals width after first of two pixels), 
+                        // ignore last pixel in each row.
+                        col = 0;
+                        continue;
+                    }
+
+                    newPixels[p++] = ToByte(y2 + 1.4020 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(y2 - 0.3441 * (cb - 128) - 0.7141 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(y2 + 1.7720 * (cb - 128) + 0.5);
+
+                    if (++col == width) col = 0;
                 }
             }
 
             return new MemoryByteBuffer(newPixels);
         }
 
-        public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data)
+        /// <summary>
+        /// Convert YBR_PARTIAL_422 photometric interpretation pixels to RGB.
+        /// </summary>
+        /// <param name="data">Array of YBR_PARTIAL_422 photometric interpretation pixels.</param>
+        /// <param name="width">Image width.</param>
+        /// <returns>Array of pixel data in RGB photometric interpretation.</returns>
+        public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data, int width)
         {
-            byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[(oldPixels.Length / 4) * 2 * 3];
+            var oldPixels = data.Data;
+            var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
 
             unchecked
             {
-                int y1, y2, cb, cr;
-                for (int n = 0, p = 0; n < oldPixels.Length;)
+                for (int n = 0, p = 0, col = 0; n < oldPixels.Length;)
                 {
-                    y1 = oldPixels[n++];
-                    y2 = oldPixels[n++];
-                    cb = oldPixels[n++];
-                    cr = oldPixels[n++];
+                    int y1 = oldPixels[n++];
+                    int y2 = oldPixels[n++];
+                    int cb = oldPixels[n++];
+                    int cr = oldPixels[n++];
 
-                    newPixels[p++] = (byte)(1.1644 * (y1 - 16) + 1.5960 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(1.1644 * (y1 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(1.1644 * (y1 - 16) + 2.0173 * (cb - 128) + 0.5);
+                    newPixels[p++] = ToByte(1.1644 * (y1 - 16) + 1.5960 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(1.1644 * (y1 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(1.1644 * (y1 - 16) + 2.0173 * (cb - 128) + 0.5);
 
-                    newPixels[p++] = (byte)(1.1644 * (y2 - 16) + 1.5960 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(1.1644 * (y2 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
-                    newPixels[p++] = (byte)(1.1644 * (y2 - 16) + 2.0173 * (cb - 128) + 0.5);
+                    if (++col == width)
+                    {
+                        // Issue #471: for uneven width images (i.e. when col equals width after first of two pixels), 
+                        // ignore last pixel in each row.
+                        col = 0;
+                        continue;
+                    }
+
+                    newPixels[p++] = ToByte(1.1644 * (y2 - 16) + 1.5960 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(1.1644 * (y2 - 16) - 0.3917 * (cb - 128) - 0.8130 * (cr - 128) + 0.5);
+                    newPixels[p++] = ToByte(1.1644 * (y2 - 16) + 2.0173 * (cb - 128) + 0.5);
+
+                    if (++col == width) col = 0;
                 }
             }
 
             return new MemoryByteBuffer(newPixels);
+        }
+
+#if !NET35
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private static byte ToByte(double x)
+        {
+            return (byte)(x < 0.0 ? 0.0 : x > 255.0 ? 255.0 : x);
         }
 
         private static readonly byte[] BitReverseTable =
@@ -170,8 +214,8 @@ namespace Dicom.Imaging
         /// <summary>
         /// Reverses bits for each byte in buffer.
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="data">Original data subject to reversal.</param>
+        /// <returns>Buffer of reversed data.</returns>
         public static IByteBuffer ReverseBits(IByteBuffer data)
         {
             byte[] oldPixels = data.Data;
@@ -179,7 +223,7 @@ namespace Dicom.Imaging
 
             unchecked
             {
-                for (int n = 0; n < oldPixels.Length; n++)
+                for (var n = 0; n < oldPixels.Length; n++)
                 {
                     newPixels[n] = BitReverseTable[oldPixels[n]];
                 }

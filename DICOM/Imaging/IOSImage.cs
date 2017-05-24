@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging
@@ -71,8 +71,6 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="width">Image width.</param>
         /// <param name="height">Image height.</param>
-        /// <param name="pixels">Array of pixels.</param>
-        /// <param name="image">Image object.</param>
         public IOSImage(int width, int height)
             : base(width, height, new PinnedIntArray(width * height), null)
         {

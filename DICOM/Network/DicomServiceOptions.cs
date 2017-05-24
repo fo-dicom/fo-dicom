@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -23,13 +23,11 @@ namespace Dicom.Network
 
             public static readonly uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
 
-            public static readonly int ThreadPoolLinger = 200;
-
             public static readonly bool IgnoreSslPolicyErrors = false;
 
-            public static readonly bool IgnoreAsyncOps = false;
-
             public static readonly bool TcpNoDelay = true;
+
+            public static readonly int MaxPDVsPerPDU = 0;
         }
 
         #endregion
@@ -44,10 +42,9 @@ namespace Dicom.Network
             UseRemoteAEForLogName = Default.UseRemoteAEForLogName;
             MaxCommandBuffer = Default.MaxCommandBuffer;
             MaxDataBuffer = Default.MaxDataBuffer;
-            ThreadPoolLinger = Default.ThreadPoolLinger;
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
-            IgnoreAsyncOps = Default.IgnoreAsyncOps;
             TcpNoDelay = Default.TcpNoDelay;
+            MaxPDVsPerPDU = Default.MaxPDVsPerPDU;
         }
 
         #endregion
@@ -69,19 +66,14 @@ namespace Dicom.Network
         /// <summary>Maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; }
 
-        /// <summary>Amount of time in milliseconds to retain Thread Pool thread to process additional requests.</summary>
-        public int ThreadPoolLinger { get; set; }
-
         /// <summary>DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether async operations invoked/performed limitations should be ignored while sending and retrieving messages.
-        /// </summary>
-        public bool IgnoreAsyncOps { get; set; }
-
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
+
+        /// <summary>The maximum number of PDVs per PDU, or unlimited if set to zero. Setting this to 1 can work around common bugs in other implementations.</summary>
+        public int MaxPDVsPerPDU { get; set; }
 
         #endregion
     }

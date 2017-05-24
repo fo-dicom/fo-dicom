@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -71,7 +71,14 @@ namespace Dicom.Network
             set
             {
                 Command.AddOrUpdate(DicomTag.Status, value.Code);
-                Command.AddOrUpdate(DicomTag.ErrorComment, value.ErrorComment);
+                if (string.IsNullOrEmpty(value.ErrorComment?.Trim()))
+                {
+                    Command.Remove(DicomTag.ErrorComment);
+                }
+                else
+                {
+                    Command.AddOrUpdate(DicomTag.ErrorComment, value.ErrorComment);
+                }
             }
         }
 

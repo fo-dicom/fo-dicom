@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -55,7 +55,6 @@ namespace Dicom.Network
 
         #region METHODS
 
-#if !NET35
         /// <summary>
         /// Platform-specific implementation to create a network listener object.
         /// </summary>
@@ -79,7 +78,6 @@ namespace Dicom.Network
         {
             return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
-#endif
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.

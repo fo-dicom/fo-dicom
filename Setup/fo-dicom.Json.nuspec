@@ -13,11 +13,12 @@
         <language>en-US</language>
         <dependencies>
             <dependency id="fo-dicom" version="$version$" />
-            <dependency id="Newtonsoft.Json" version="8.0.3" />
+            <dependency id="Newtonsoft.Json" version="10.0.1" />
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.dll" target="lib\portable-net45+netcore45+wpa81" />
-        <file src="..\Serialization\DICOM.Json\bin\Release\Dicom.Json.pdb" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Serialization\Json\bin\Release\Dicom.Json.dll" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Serialization\Json\bin\Release\Dicom.Json.pdb" target="lib\portable-net45+netcore45+wpa81" />
+        <file src="..\Serialization\Json\bin\Release\Dicom.Json.xml" target="lib\portable-net45+netcore45+wpa81" />
     </files>
 </package>

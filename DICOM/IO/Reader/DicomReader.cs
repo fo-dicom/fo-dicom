@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Reader
@@ -6,11 +6,13 @@ namespace Dicom.IO.Reader
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.IO.Compression;
     using System.Linq;
     using System.Text;
 
-#if !NET35
+#if NET35
+    using Unity.IO.Compression;
+#else
+    using System.IO.Compression;
     using System.Threading.Tasks;
 #endif
 
@@ -208,11 +210,7 @@ namespace Dicom.IO.Reader
             {
                 if (this.isDeflated)
                 {
-#if NET35
-                    throw new NotSupportedException("Deflated datasets not supported in Unity.");
-#else
                     source = this.Decompress(source);
-#endif
                 }
 
                 this.result = DicomReaderResult.Processing;
@@ -268,6 +266,7 @@ namespace Dicom.IO.Reader
                 // end of processing
                 this.result = DicomReaderResult.Success;
             }
+#endif
 
             private IByteSource Decompress(IByteSource source)
             {
@@ -290,7 +289,6 @@ namespace Dicom.IO.Reader
                     }
                 }
             }
-#endif
 
             private bool ParseTag(IByteSource source)
             {
@@ -411,7 +409,10 @@ namespace Dicom.IO.Reader
                         if (this._tag.Element == 0x0000)
                         {
                             // Group Length to UL
-                            this._vr = DicomVR.UL;
+                            // change 20161216: if changing from UN to UL then ParseLength causes a error, since length in UL is 2 bytes while length in UN is 6 bytes. 
+                            // so the source hat UN and coded the length in 6 bytes. if here the VR was changed to UL then ParseLength would only read 2 bytes and the parser is then wrong.
+                            // but no worry: in ParseValue in the first lines there is a lookup in the Dictionary of DicomTags and there the VR is changed to UL so that the value is finally interpreted correctly as UL.
+                           // this._vr = DicomVR.UL;
                             break;
                         }
                         if (this.isExplicitVR)
@@ -545,7 +546,7 @@ namespace Dicom.IO.Reader
                         }
                     }
 
-                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    if (this._tag == DicomTag.ItemDelimitationItem || this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // end of sequence item
                         return false;
@@ -559,12 +560,19 @@ namespace Dicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
                             this.isExplicitVR = !this.isExplicitVR;
                         }
                         break;
+                    }
+
+                    // Fix to handle sequence items not associated with any sequence (#364)
+                    if (_tag.Equals(DicomTag.Item))
+                    {
+                        source.Rewind();
+                        _vr = DicomVR.SQ;
                     }
 
                     if (this._vr == DicomVR.SQ)
@@ -679,7 +687,7 @@ namespace Dicom.IO.Reader
                         }
                     }
 
-                    if (this._tag == DicomTag.ItemDelimitationItem)
+                    if (this._tag == DicomTag.ItemDelimitationItem || this._tag == DicomTag.SequenceDelimitationItem)
                     {
                         // end of sequence item
                         return false;
@@ -693,12 +701,19 @@ namespace Dicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, this.isExplicitVR))
+                        if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
                             this.isExplicitVR = !this.isExplicitVR;
                         }
                         break;
+                    }
+
+                    // Fix to handle sequence items not associated with any sequence (#364)
+                    if (_tag.Equals(DicomTag.Item))
+                    {
+                        source.Rewind();
+                        _vr = DicomVR.SQ;
                     }
 
                     if (this._vr == DicomVR.SQ)
@@ -899,9 +914,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     this.ParseDataset(source);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (isEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -928,9 +958,24 @@ namespace Dicom.IO.Reader
                     ++this.sequenceDepth;
                     await this.ParseDatasetAsync(source).ConfigureAwait(false);
                     --this.sequenceDepth;
+                    // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
+                    bool isEndSequence = (this._tag == DicomTag.SequenceDelimitationItem);
                     this.ResetState();
 
                     this.observer.OnEndSequenceItem();
+
+                    if (isEndSequence)
+                    {
+                        // end of sequence
+                        this.observer.OnEndSequence();
+                        if (this.badPrivateSequence)
+                        {
+                            this.isExplicitVR = !this.isExplicitVR;
+                            this.badPrivateSequence = false;
+                        }
+                        this.ResetState();
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -1084,16 +1129,27 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-            private static bool IsPrivateSequenceBad(IByteSource source, bool isExplicitVR)
+            private static bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR)
             {
                 source.Mark();
 
                 try
                 {
                     // Skip "item" tags; continue skipping until length is non-zero (#223)
-                    while (new DicomTag(source.GetUInt16(), source.GetUInt16()) == DicomTag.Item    // group, element
-                           & source.GetUInt32() == 0)   // length (using & instead of && enforces RHS to be evaluated regardless of LHS)
+                    // Using & instead of && enforces RHS to be evaluated regardless of LHS
+                    uint length;
+                    while (source.GetUInt16() == DicomTag.Item.Group &
+                           source.GetUInt16() == DicomTag.Item.Element &
+                           (length = source.GetUInt32()) < uint.MaxValue)   // Dummy condition to ensure that length is included in parsing
                     {
+                        // Length non-zero, end skipping (#223)
+                        if (length > 0)
+                            break;
+
+                        // Handle scenario where last tag is private sequence with empty items (#487)
+                        count -= 8;
+                        if (count <= 0)
+                            return false;
                     }
 
                     source.GetUInt16(); // group
@@ -1114,9 +1170,9 @@ namespace Dicom.IO.Reader
                 return false;
             }
 
-            #endregion
+#endregion
         }
 
-        #endregion
+#endregion
     }
 }

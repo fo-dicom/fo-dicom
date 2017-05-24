@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -84,11 +84,8 @@ namespace Dicom
         public static DicomTransferSyntax GEPrivateImplicitVRBigEndian = new DicomTransferSyntax
                                                                              {
                                                                                  UID =
-                                                                                     new DicomUID(
-                                                                                     "1.2.840.113619.5.2",
-                                                                                     "GE Private Implicit VR Big Endian",
-                                                                                     DicomUidType
-                                                                                     .TransferSyntax),
+                                                                                     DicomUID
+                                                                                         .GEPrivateImplicitVRBigEndian,
                                                                                  IsExplicitVR =
                                                                                      false,
                                                                                  Endian =

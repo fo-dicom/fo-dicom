@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System.Text;
 
 namespace Dicom.IO
 {
-    using System.Text;
-
     /// <summary>
     /// .NET/Windows Desktop implementation of the I/O manager.
     /// </summary>
@@ -26,6 +26,9 @@ namespace Dicom.IO
         /// </summary>
         static DesktopIOManager()
         {
+#if NETSTANDARD
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
             Instance = new DesktopIOManager();
         }
 
@@ -36,24 +39,12 @@ namespace Dicom.IO
         /// <summary>
         /// Implementation of the base encoding getter.
         /// </summary>
-        protected override Encoding BaseEncodingImpl
-        {
-            get
-            {
-                return Encoding.ASCII;
-            }
-        }
+        protected override Encoding BaseEncodingImpl => Encoding.ASCII;
 
         /// <summary>
         /// Gets the platform-specific path helper implementation.
         /// </summary>
-        protected override IPath PathImpl
-        {
-            get
-            {
-                return DesktopPath.Instance;
-            }
-        }
+        protected override IPath PathImpl => DesktopPath.Instance;
 
         /// <summary>
         /// Platform-specific implementation to create a file reference.

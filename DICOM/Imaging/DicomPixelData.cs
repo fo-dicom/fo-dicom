@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -255,11 +255,22 @@ namespace Dicom.Imaging
             {
                 if (BitsAllocated == 1)
                 {
-                    var bytes = (Width * Height) / 8;
-                    if (((Width * Height) % 8) > 0) bytes++;
+                    var bytes = Width * Height / 8;
+                    if ((Width * Height) % 8 > 0) bytes++;
                     return bytes;
                 }
-                return BytesAllocated * SamplesPerPixel * Width * Height;
+
+                // Issue #471, handle special case with invalid uneven width for YBR_*_422 and YBR_PARTIAL_420 images
+                var actualWidth = Width;
+                if (actualWidth % 2 != 0 &&
+                    (PhotometricInterpretation.Equals(PhotometricInterpretation.YbrFull422) ||
+                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial422) ||
+                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial420)))
+                {
+                    ++actualWidth;
+                }
+
+                return BytesAllocated * SamplesPerPixel * actualWidth * Height;
             }
         }
 
@@ -292,7 +303,6 @@ namespace Dicom.Imaging
             if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor)) throw new DicomImagingException("Palette Color LUT missing from dataset.");
 
             int size = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
-            int first = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
             int bits = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
 
             var r = Dataset.Get<byte[]>(DicomTag.RedPaletteColorLookupTableData);

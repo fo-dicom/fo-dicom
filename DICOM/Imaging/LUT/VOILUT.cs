@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -34,10 +34,10 @@ namespace Dicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOUTLUT"/>
+        /// Initialize new instance of <seealso cref="VOILUT"/>
         /// </summary>
         /// <param name="options">Render options</param>
-        public VOILUT(GrayscaleRenderOptions options)
+        protected VOILUT(GrayscaleRenderOptions options)
         {
             _renderOptions = options;
             Recalculate();
@@ -153,10 +153,9 @@ namespace Dicom.Imaging.LUT
         #region Factory Methods
 
         /// <summary>
-        /// Create a new VOILUT according to <paramref name="function"/>, <paramref name=" windowCenter"/>
-        /// and <paramref name="windowWidth"/>
+        /// Create a new VOILUT according to specifications in <paramref name="options"/>.
         /// </summary>
-        /// <param name="options">Render options</param>
+        /// <param name="options">Render options.</param>
         /// <returns></returns>
         public static VOILUT Create(GrayscaleRenderOptions options)
         {

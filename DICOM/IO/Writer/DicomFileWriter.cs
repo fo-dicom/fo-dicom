@@ -1,13 +1,15 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Writer
 {
     using System;
     using System.IO;
-    using System.IO.Compression;
 
-#if !NET35
+#if NET35
+    using Unity.IO.Compression;
+#else
+    using System.IO.Compression;
     using System.Threading.Tasks;
 #endif
 
@@ -30,7 +32,7 @@ namespace Dicom.IO.Writer
         /// <param name="options">Writer options.</param>
         public DicomFileWriter(DicomWriteOptions options)
         {
-            this.options = options;
+            this.options = options ?? DicomWriteOptions.Default;
         }
 
         #endregion
@@ -155,9 +157,6 @@ namespace Dicom.IO.Writer
 
             if (syntax.IsDeflate)
             {
-#if NET35
-                throw new NotSupportedException("Deflated datasets not supported in Unity.");
-#else
                 using (var uncompressed = new MemoryStream())
                 {
                     var temp = new StreamByteTarget(uncompressed);
@@ -171,7 +170,6 @@ namespace Dicom.IO.Writer
                         target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
                     }
                 }
-#endif
             }
             else
             {
@@ -205,7 +203,6 @@ namespace Dicom.IO.Writer
             DicomWriteOptions options)
         {
             UpdateDatasetGroupLengths(syntax, dataset, options);
-
 
             if (syntax.IsDeflate)
             {

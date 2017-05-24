@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
 {
-    using System;
     using System.Text;
 
     /// <summary>
@@ -36,12 +35,8 @@ namespace Dicom.Network
         public DicomNActionResponse(DicomNActionRequest request, DicomStatus status)
             : base(request, status)
         {
-            if (request.HasSOPInstanceUID)
-            {
-                this.SOPInstanceUID = request.SOPInstanceUID;
-            }
-
-            this.ActionTypeID = request.ActionTypeID;
+            SOPInstanceUID = request.SOPInstanceUID;
+            ActionTypeID = request.ActionTypeID;
         }
 
         #endregion
@@ -88,12 +83,12 @@ namespace Dicom.Network
         /// <returns>Formatted output of the N-ACTION response.</returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
             if (Command.Contains(DicomTag.ActionTypeID)) sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
-                if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                if (!string.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
             }
             return sb.ToString();
         }

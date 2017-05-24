@@ -14,9 +14,10 @@
     </metadata>
     <files>
         <file src="Targets\fo-dicom.Desktop.targets" target="build\net452" />
-        <file src="..\DICOM.Native\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net452" />
-        <file src="..\DICOM.Native\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net452" />
-        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Core.dll" target="lib\net452" />
-        <file src="..\DICOM.Platform\Desktop\bin\Release\Dicom.Core.pdb" target="lib\net452" />
+        <file src="..\Native\Desktop\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net452" />
+        <file src="..\Native\Desktop\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net452" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.dll" target="lib\net452" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.pdb" target="lib\net452" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.xml" target="lib\net452" />
     </files>
 </package>

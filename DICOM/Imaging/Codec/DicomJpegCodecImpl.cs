@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2016 fo-dicom contributors.
+// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging.Codec
@@ -187,21 +187,14 @@ namespace Dicom.Imaging.Codec
         {
             var pixelCount = oldPixelData.Height * oldPixelData.Width;
 
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct)
+            if (parameters.ConvertColorspaceToRGB)
             {
+                if (oldPixelData.PixelRepresentation == PixelRepresentation.Signed)
+                    throw new DicomCodecException(
+                        "JPEG codec unable to perform colorspace conversion on signed pixel data");
+
                 newPixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
-            }
-
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
-                || newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422)
-            {
-                newPixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
-            }
-
-            if (newPixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull)
-            {
-                newPixelData.PlanarConfiguration = PlanarConfiguration.Planar;
+                newPixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
             }
 
             for (var frame = 0; frame < oldPixelData.NumberOfFrames; frame++)
@@ -221,7 +214,7 @@ namespace Dicom.Imaging.Codec
 
                     for (var c = 0; c < decoder.ComponentsPerSample; c++)
                     {
-                        var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? (c * pixelCount) : c;
+                        var pos = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? c * pixelCount : c;
                         var offset = newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
                                          ? 1
                                          : decoder.ComponentsPerSample;

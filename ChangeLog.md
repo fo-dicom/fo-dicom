@@ -1,9 +1,80 @@
-#### v.3.0.0 (Beta 4, 7/09/16)
+#### v.3.1.0 (TBD)
+* Updated JPEG-LS to latest CharLS commit (#517)
+* Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
+* Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)
+* Added missing encodings for .NET Core (#481 #486)
+* Update to latest DICOM Standard 2017b (#480 #482 #536 #537)
+* Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
+* Call to DicomServer.Stop does not remove all clients (#456 #464)
+* Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468 #469 #476 #477 #478)
+* Deprecate Legacy class library (#415 #449)
+* Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450 #459)
+* Added optional parameter for use in extended DicomService (#348 #441)
+* Remove warning messages during build (#33 #438)
+* Online and NuGet packages API documentation (#28 #459 #466)
+
+#### v.3.0.2 (4/20/2017)
+* DicomRejectReason enumerables should be parsed w.r.t. source (#516 #521)
+* Incorrect numerical value on RejectReason.ProtocolVersionNotSupported (#515 #520)
+* Add private creator to private tags when deserializing json (#512 #513)
+* Adding private tags implicitly uses wrong VR (#503 #504)
+* Add option in DicomServiceOptions for max PDVs per PDU (#502 #506)
+* DicomResponse.ErrorComment is always added in the DicomResponse.Status setter, even for successes (#501 #505)
+* DicomStatus.Lookup does not consider priority in matching (#499 #498)
+* DesktopNetworkListener can throw an exception which causes DicomServer to stop listening (#495 #519)
+* Cannot create DICOMDIR after anonymizing images (#488 #522)
+* Cannot parse dicom files if the last tag is a private sequence containing only empty sequence items (#487 #518)
+* If the connection is closed by the host, DicomClient will keep trying to send (#472 #489)
+* N-CREATE response constructor throws when request command does not contain SOP Instance UID (#484 #485)
+* Cannot render YBR_FULL/PARTIAL_422 with odd number of columns (#471 #479)
+* Dicom Server listener consumes large amount of memory if http request is sent to listener (#327 #509)
+
+#### v.3.0.1 (3/06/2017)
+* Add runtime directives to enable .NET Native builds for UWP (#424 #460)
+* YBR_FULL_422 JPEG Process 14 SV1 compressed image incorrectly decoded (#453 #454)
+
+#### v.3.0.0 (2/15/2017)
+* DICOM Anonymizer preview (#410 #437)
+* Client should not send if association rejected (#433 #434)
+* Deploy error for Unity based applications on Hololens (#431 #432)
+* Add method "AddOrUpdatePixelData" to the DicomDataset (#427 #430)
+* Adding too many presentation contexts causes null reference exception in DicomClient.Send (#426 #429)
+* Serialize to XML according to DICOM standard PS 3.19, Section A (#425)
+* Invalid reference in Universal targets build file (#422 #423)
+* Alpha component is zero for color images on UWP, .NET Core and Xamarin platforms (#421 #428)
+* Print SCP exception due to insufficient DicomDataset.AddOrUpdate refactoring (#353 #420)
+* Invalid decoding of JPEG baseline RGB images with managed JPEG codec (#417 #419)
+* DicomFile.Save throwing an exception in DotNetCore for macOS (#411 #413)
+* Added method GenerateUuidDerived (#408)
+* Padding argument not accounted for in some IPixelData.GetMinMax implementations (#406 #414)
+* Incorrect handling of padded buffer end in EvenLengthBuffer.GetByteRange (#405 #412)
+* Unhandled exception after error in JPEG native decoding (#394 #399)
+* DicomDataset.Get&lt;T[]&gt; on empty tag should not throw (#392 #398)
+* Efilm 2.1.2 seems to send funny presentation contexts, break on PDU.read (#391 #397)
+* Improved reliability in DicomClient.Send (#389 #407)
+* Cannot catch exceptions while doing C-STORE if I close my network connection (#385 #390)
+* Handle UN encode group lengths and missing last item delimitation tag (#378 #388)
+* Invalid handling of overlay data type, description, subtype and label (#375 #382)
+* Incorrect message logged when async ops are not available, but requested (#374 #381)
+* Fix get object for all DicomValueElement inheritors (#367 #368)
+* Handle parsing sequence items not associated with any sequence (#364 #383 #435 #436)
+* System Out Of Memory Exception when saving large DICOM files (#363 #384)
+* Null characters not trimmed from string values (#359 #380)
+* Corrected JPEG-LS encoding and JPEG decoding for YBR images (#358 #379 #416 #418)
+* Cannot override CreateCStoreReceiveStream due to private fields (#357 #386)
+* DicomClient multiple C-Store request cause exception when AsyncOps is not negotiated (#356 #400)
+* Enable registration of private UIDs (#355 #387)
+* DICOM Parse error - Stack empty (#342)
+* Invalid abort upon exception in P-Data-TF PDU processing (#341 #401)
+* Sufficient image creation when Bits Allocated does not match destination type size (#340 #350)
 * Some Dicom Printer refuse print requests from fo-dicom (#336)
 * DicomContentItem.Children() throws exception when there are no children (#332 #333)
+* Functional changes in Dataset.Add, rename of ChangeTransferSyntax (#330 #343)
+* Added support for more date/time formats (#328 #352)
 * Exception if Storage Commitment N-Event Report response does not contain EventID tag  (#323 #329)
 * ImageDisposableBase implicit destructor missing (#322 #326)
 * Dicom Response Message should be sent using the same Presentation Context in the Request (#321)
+* DicomDataset.Contains(DicomTag tag) matches on object, will not find private tags (#319 #351)
 * Add DICOM VR Codes as constants (#315)
 * DicomClient should be able to C-STORE non-Part 10 DICOM files (#306 #307)
 * Incorrect dependency in fo-dicom.Universal.nuspec (#300 #301)
@@ -27,7 +98,7 @@
 * DicomClient.Send DicomAssociationRejectedException not working (#239 #249)
 * Dicom.Platform.rd.xml file should be included as Embedded Resource (#237 #247)
 * DicomIntegerString.Get&lt;T&gt;() throws for enums and non-int value types (#231 #212 #226)
-* Upgrade dictionary to latest DICOM version 2016c (#229 #233 #245 #246 #317 #318)
+* Upgrade dictionary to latest DICOM version 2016e (#229 #233 #245 #246 #317 #318 #360 #362 #372 #373)
 * Deflate Transfersyntax (#227 #259)
 * Use an editorconfig-file (#216 #215)
 * Upgrade to Visual Studio 2015 toolset (#214 #217)
@@ -42,7 +113,7 @@
 * Implement JSON serialization and deserialization of DICOM objects (#182 #186)
 * Open and save DicomDirectory to Stream (#181 #235)
 * Implement C-GET support (#180 #309)
-* Exposing network infos (ip and port) in association (#173 #225)
+* Exposing network infos (ip and port) in association (#173 #225 #377)
 * Consider implementing DicomDataset.Clone() as "DeepClone" (#153 #313)
 * Image compression/decompression for Mono and Xamarin (#128 #279 #295)
 
@@ -255,7 +326,7 @@
 * Don't parse values for IS and DS elements if returning string types
 * Add AMICAS private tags (AMICAS0) to private dictionary
 * Add support for 32-bit pixel data (Anders Gustafsson, Cureos AB)
-* Better handling of default item in Get<> method (Anders Gustafsson, Cureos AB)
+* Better handling of default item in Get&lt;&gt; method (Anders Gustafsson, Cureos AB)
 * Support opening DicomFile from Stream (Anders Gustafsson, Cureos AB)
 * Add support SIGMOID VOI LUT function
 * Better handling of size and position of image display window in DICOM Dump
@@ -264,9 +335,9 @@
 * Add support for image scaling in DicomImage
 * Use library to scale images before displaying in DICOM Dump
 * Calculate W/L from pixel data values if no defaults are available
-* Add ability to Get<> Int32 values from US/SS elements
-* Add ability to Get<> DicomVR and IByteBuffer from elements
-* Add ability to Get<> byte[] from elements
+* Add ability to Get&lt;&gt; Int32 values from US/SS elements
+* Add ability to Get&lt;&gt; DicomVR and IByteBuffer from elements
+* Add ability to Get&lt;&gt; byte[] from elements
 * Add ability to render basic PALETTE COLOR images
 * Fix unnecessary byte swap for 8-bit pixel data stored in OW
 * Add DicomFileException to allow better chance of recovery from parse errors

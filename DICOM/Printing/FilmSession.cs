@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -47,6 +47,7 @@ namespace Dicom.Printing
         ///   zeros.
         ///   </description>
         /// </item>
+        /// </list>
         /// </remarks>
         public string FilmDestination
         {
@@ -167,31 +168,34 @@ namespace Dicom.Printing
         /// <summary>
         /// Construct new film session from scratch
         /// </summary>
+        /// <param name="sopClassUID">Film session SOP Class UID</param>
+        /// <param name="sopInstance">Film session SOP instance UID</param>
+        /// <param name="isColor">Color images?</param>
         public FilmSession(DicomUID sopClassUID, DicomUID sopInstance = null, bool isColor = false)
-            : base()
         {
-            this.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+
             if (sopClassUID == null)
             {
-                throw new ArgumentNullException("sopClassUID");
+                throw new ArgumentNullException(nameof(sopClassUID));
             }
-
-
             SOPClassUID = sopClassUID;
 
             if (sopInstance == null || sopInstance.UID == string.Empty)
             {
+#if NET35
                 SOPInstanceUID = DicomUID.Generate();
+#else
+                SOPInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID();
+#endif
             }
             else
             {
                 SOPInstanceUID = sopInstance;
-
             }
 
-
-            this.Add(DicomTag.SOPClassUID, SOPClassUID);
-            this.Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
+            Add(DicomTag.SOPClassUID, SOPClassUID);
+            Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
 
             BasicFilmBoxes = new List<FilmBox>();
             PresentationLuts = new List<PresentationLut>();
@@ -202,19 +206,20 @@ namespace Dicom.Printing
         /// <summary>
         /// Construct new film session for specified SOP instance UID
         /// </summary>
+        /// <param name="sopClassUID">Film session SOP Class UID</param>
         /// <param name="sopInstance">Film session SOP instance UID</param>
         /// <param name="dataset">Film session dataset</param>
+        /// <param name="isColor">Color images?</param>
         public FilmSession(DicomUID sopClassUID, DicomUID sopInstance, DicomDataset dataset, bool isColor = false)
-            : this(sopClassUID, sopInstance)
+            : this(sopClassUID, sopInstance, isColor)
         {
             if (dataset == null)
             {
-                throw new ArgumentNullException("dataset");
+                throw new ArgumentNullException(nameof(dataset));
             }
             dataset.CopyTo(this);
 
-            this.InternalTransferSyntax = dataset.InternalTransferSyntax;
-            IsColor = isColor;
+            InternalTransferSyntax = dataset.InternalTransferSyntax;
         }
 
         #endregion

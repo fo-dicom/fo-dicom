@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -105,6 +105,20 @@ namespace Dicom
                     this.RegenerateAll(item);
                 }
             }
+        }
+
+        /// <summary>
+        /// Generate a UUID-derived UID, according to ftp://medical.nema.org/medical/dicom/current/output/html/part05.html#sect_B.2
+        /// </summary>
+        /// <returns>A new UID with 2.25 prefix</returns>
+        public static DicomUID GenerateDerivedFromUUID()
+        {            
+            var guid = Guid.NewGuid().ToByteArray();
+            var bigint = new System.Numerics.BigInteger(guid);
+            if (bigint < 0) bigint = -bigint;
+            var uid = "2.25." + bigint;
+
+            return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
         }
 
         #endregion

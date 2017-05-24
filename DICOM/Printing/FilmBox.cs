@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Printing
@@ -443,6 +443,11 @@ namespace Dicom.Printing
             }
             set
             {
+                if (value.Tag.Equals(DicomTag.ReferencedPresentationLUTSequence))
+                {
+                    throw new InvalidOperationException(
+                        $"Added sequence must be Referenced Presentation LUT Sequence, is: {value.Tag}");
+                }
                 this.AddOrUpdate(value);
             }
         }
@@ -473,8 +478,8 @@ namespace Dicom.Printing
         /// </summary>
         /// <param name="filmSession">Film session instance</param>
         /// <param name="sopInstance">Basic film box SOP Instance UID</param>
+        /// <param name="transferSyntax">Requested internal transfer syntax.</param>
         public FilmBox(FilmSession filmSession, DicomUID sopInstance, DicomTransferSyntax transferSyntax)
-            : base()
         {
             this.InternalTransferSyntax = transferSyntax;
             _filmSession = filmSession;
@@ -520,7 +525,7 @@ namespace Dicom.Printing
         public bool Initialize()
         {
             //initialization
-            this.Add(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
+            this.AddOrUpdate(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
 
             if (!this.Contains(DicomTag.FilmOrientation))
             {

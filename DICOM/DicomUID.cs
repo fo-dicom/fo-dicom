@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2016 fo-dicom contributors.
+﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -108,6 +108,11 @@ namespace Dicom
             }
         }
 
+        public static void Register(DicomUID uid)
+        {
+            _uids.Add(uid.UID, uid);
+        }
+
         public static DicomUID Generate(string name)
         {
             if (string.IsNullOrEmpty(RootUID))
@@ -189,10 +194,10 @@ namespace Dicom
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
 
-                if (this == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass) return DicomStorageCategory.PresentationState;
+                if (this == DicomUID.BlendingSoftcopyPresentationStateStorage
+                    || this == DicomUID.ColorSoftcopyPresentationStateStorage
+                    || this == DicomUID.GrayscaleSoftcopyPresentationStateStorage
+                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorage) return DicomStorageCategory.PresentationState;
 
                 if (this == DicomUID.AudioSRStorageTrialRETIRED || this == DicomUID.BasicTextSRStorage
                     || this == DicomUID.ChestCADSRStorage || this == DicomUID.ComprehensiveSRStorage
