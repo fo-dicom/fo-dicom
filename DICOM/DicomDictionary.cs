@@ -7,6 +7,7 @@ namespace Dicom
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.IO;
     using System.IO.Compression;
     using System.Linq;
     using System.Reflection;
@@ -344,8 +345,7 @@ namespace Dicom
 
         public IEnumerator<DicomDictionaryEntry> GetEnumerator()
         {
-            return _entries.Values.Concat(_masked.OrderBy(x => x.MaskTag.Mask)).GetEnumerator();
-            //return _entries.Values.Concat(_masked).GetEnumerator();
+            return _entries.Values.Concat(_masked).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
