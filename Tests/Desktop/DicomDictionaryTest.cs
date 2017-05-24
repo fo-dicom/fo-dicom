@@ -82,7 +82,7 @@ namespace Dicom
 
             output_.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
 
-            Assert.InRange(millisecondsPerCall, 0, referenceTime * 5);
+            Assert.InRange(millisecondsPerCall, 0, (1 + referenceTime) * 5);
         }
 
 
