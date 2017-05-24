@@ -137,7 +137,7 @@ namespace Dicom.Serialization
 
         #region Utilities
 
-        public static DicomTag ParseTag(string tagstr)
+        internal static DicomTag ParseTag(string tagstr)
         {
             if (Regex.IsMatch(tagstr, @"\A\b[0-9a-fA-F]+\b\Z"))
             {
@@ -147,7 +147,7 @@ namespace Dicom.Serialization
                 return tag;
             }
 
-            return DicomDictionary.Default.LookupKeyword(tagstr);
+            return DicomDictionary.Default[tagstr];
         }
 
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)

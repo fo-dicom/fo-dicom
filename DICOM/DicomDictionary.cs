@@ -294,6 +294,31 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets the DIcomTag for a given keyword.
+        /// </summary>
+        /// <param name="keyword">The attribute keyword that we look for.</param>
+        /// <returns>A matching DicomTag or null if none is found.</returns>
+        public DicomTag this[string keyword]
+        {
+            get
+            {
+                DicomTag result;
+                if (_keywords.TryGetValue(keyword, out result)) return result;
+
+                foreach (var privDict in _private.Values)
+                {
+                    var r = privDict[keyword];
+                    if (r != null)
+                        return r;
+                }
+
+                return null;
+            }
+        }
+
+
+
         #endregion
 
         #region Public Methods
@@ -344,27 +369,6 @@ namespace Dicom
                 reader.Process();
             }
         }
-
-        /// <summary>
-        /// Lookup a keyword.
-        /// </summary>
-        /// <param name="keyword">The attribute keyword that we look for.</param>
-        /// <returns>A matching DicomDictionaryEntry or null.</returns>
-        public DicomTag LookupKeyword(string keyword)
-        {
-            DicomTag result;
-            if (_keywords.TryGetValue(keyword, out result)) return result;
-
-            foreach (var privDict in _private.Values)
-            {
-                var r = privDict.LookupKeyword(keyword);
-                if (r != null)
-                    return r;
-            }
-
-            return null;
-        }
-
         #endregion
 
         #region IEnumerable Members

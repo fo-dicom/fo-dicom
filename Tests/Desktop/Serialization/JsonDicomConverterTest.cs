@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Diagnostics;
+
 namespace Dicom.Serialization
 {
     using System;
@@ -41,22 +43,73 @@ namespace Dicom.Serialization
             VerifyJsonTripleTrip(target);
         }
 
+        private double TimeCall(int numCalls, Action call)
+        {
+            var start = Process.GetCurrentProcess().TotalProcessorTime;
+
+            for (int i = 0; i < numCalls; i++) call();
+
+            var end = Process.GetCurrentProcess().TotalProcessorTime;
+
+            var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
+
+            return millisecondsPerCall;
+        }
+
         [Fact]
         public void TimeParseTag()
         {
-            var start = DateTime.UtcNow;
-            foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+            var millisecondsPerCallA = TimeCall(100, () =>
             {
-                var tag = JsonDicomConverter.ParseTag(kw);
-                Assert.NotNull(tag);
-            }
+                foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+                {
+                    var tag = DicomDictionary.Default[kw];
+                    Assert.NotNull(tag);
+                }
+            });
 
-            var end = DateTime.UtcNow;
+            var millisecondsPerCallB = TimeCall(3, () =>
+            {
+                foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+                {
+                    var tag = DicomDictionary.Default.FirstOrDefault(dde => dde.Keyword == kw);
+                    Assert.NotNull(tag);
+                }
+            });
+
+            var millisecondsPerCallC = TimeCall(100, () =>
+            {
+                var dict = DicomDictionary.Default.ToDictionary(dde => dde.Keyword, dde => dde.Tag);
+                foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+                {
+                    var tag = dict[kw];
+                    Assert.NotNull(tag);
+                }
+            });
+
+            var millisecondsPerCallD = TimeCall(100, () =>
+            {
+                foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
+                {
+                    var tag = JsonDicomConverter.ParseTag(kw);
+                    Assert.NotNull(tag);
+                }
+            });
 
             output_.WriteLine(
-                $"ParseTag: {(end - start).TotalMilliseconds} ms for {DicomDictionary.Default.Count()} tests");
+                $"Looking up keyword with pre-built dictionary: {millisecondsPerCallA} ms for {DicomDictionary.Default.Count()} tests");
 
-            Assert.True((end - start).TotalMilliseconds < 1000);
+            output_.WriteLine(
+                $"Looking up keyword with LINQ: {millisecondsPerCallB} ms for {DicomDictionary.Default.Count()} tests");
+
+            output_.WriteLine(
+                $"Looking up keyword with one dictionary built for all calls: {millisecondsPerCallC} ms for {DicomDictionary.Default.Count()} tests");
+
+            output_.WriteLine(
+                $"Parsing tag with JsonDicomConverter.ParseTag: {millisecondsPerCallD} ms for {DicomDictionary.Default.Count()} tests");
+
+            Assert.InRange(millisecondsPerCallD / millisecondsPerCallC, 0, 4);
+
         }
 
         /// <summary>
