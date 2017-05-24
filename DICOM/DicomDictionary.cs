@@ -79,10 +79,7 @@ namespace Dicom
 
         private ConcurrentDictionary<string, DicomTag> _keywords;
 
-        private object _maskedLock;
-        private List<DicomDictionaryEntry> _masked;
-
-        private bool _maskedNeedsSort;
+        private ConcurrentBag<DicomDictionaryEntry> _masked;
 
         #endregion
 
@@ -94,9 +91,7 @@ namespace Dicom
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
-            _masked = new List<DicomDictionaryEntry>();
-            _maskedLock = new object();
-            _maskedNeedsSort = false;
+            _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
@@ -104,9 +99,7 @@ namespace Dicom
             _privateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
-            _masked = new List<DicomDictionaryEntry>();
-            _maskedLock = new object();
-            _maskedNeedsSort = false;
+            _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
         #endregion
@@ -284,12 +277,9 @@ namespace Dicom
                 if (_entries.TryGetValue(tag, out entry)) return entry;
 
                 // this is faster than LINQ query
-                lock (_maskedLock)
+                foreach (var x in _masked)
                 {
-                    foreach (var x in _masked)
-                    {
-                        if (x.MaskTag.IsMatch(tag)) return x;
-                    }
+                    if (x.MaskTag.IsMatch(tag)) return x;
                 }
 
                 return UnknownTag;
@@ -324,12 +314,8 @@ namespace Dicom
             }
             else
             {
-                lock (_maskedLock)
-                {
-                    _masked.Add(entry);
-                    _maskedNeedsSort = true;
-                    _keywords[entry.Keyword] = entry.Tag;
-                }
+                _masked.Add(entry);
+                _keywords[entry.Keyword] = entry.Tag;
             }
         }
 
@@ -385,19 +371,7 @@ namespace Dicom
 
         public IEnumerator<DicomDictionaryEntry> GetEnumerator()
         {
-            List<DicomDictionaryEntry> items = new List<DicomDictionaryEntry>();
-            items.AddRange(_entries.Values.OrderBy(x => x.Tag));
-
-            lock (_maskedLock)
-            {
-                if (_maskedNeedsSort)
-                {
-                    _masked.Sort((a, b) => a.MaskTag.Mask.CompareTo(b.MaskTag.Mask));
-                    _maskedNeedsSort = false;
-                }
-                items.AddRange(_masked);
-            }
-            return items.GetEnumerator();
+            return _entries.Values.Concat(_masked).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
