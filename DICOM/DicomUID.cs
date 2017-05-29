@@ -194,10 +194,10 @@ namespace Dicom
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
 
-                if (this == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass
-                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass) return DicomStorageCategory.PresentationState;
+                if (this == DicomUID.BlendingSoftcopyPresentationStateStorage
+                    || this == DicomUID.ColorSoftcopyPresentationStateStorage
+                    || this == DicomUID.GrayscaleSoftcopyPresentationStateStorage
+                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorage) return DicomStorageCategory.PresentationState;
 
                 if (this == DicomUID.AudioSRStorageTrialRETIRED || this == DicomUID.BasicTextSRStorage
                     || this == DicomUID.ChestCADSRStorage || this == DicomUID.ComprehensiveSRStorage

@@ -23,7 +23,7 @@ namespace Dicom.Helpers
             lock (config)
             {
                 config.AddTarget(name, target);
-                config.LoggingRules.Add(new LoggingRule("*", minLogLevel ?? NLog.LogLevel.Debug, target));
+                config.LoggingRules.Add(new LoggingRule(name, minLogLevel ?? NLog.LogLevel.Debug, target));
 
                 NLog.LogManager.Configuration = config;
             }
