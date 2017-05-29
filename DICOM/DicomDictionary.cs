@@ -77,6 +77,8 @@ namespace Dicom
 
         private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
+        private ConcurrentDictionary<string, DicomTag> _keywords;
+
         private ConcurrentBag<DicomDictionaryEntry> _masked;
 
         #endregion
@@ -88,6 +90,7 @@ namespace Dicom
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
@@ -95,6 +98,7 @@ namespace Dicom
         {
             _privateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
@@ -290,6 +294,31 @@ namespace Dicom
             }
         }
 
+        /// <summary>
+        /// Gets the DIcomTag for a given keyword.
+        /// </summary>
+        /// <param name="keyword">The attribute keyword that we look for.</param>
+        /// <returns>A matching DicomTag or null if none is found.</returns>
+        public DicomTag this[string keyword]
+        {
+            get
+            {
+                DicomTag result;
+                if (_keywords.TryGetValue(keyword, out result)) return result;
+
+                foreach (var privDict in _private.Values)
+                {
+                    var r = privDict[keyword];
+                    if (r != null)
+                        return r;
+                }
+
+                return null;
+            }
+        }
+
+
+
         #endregion
 
         #region Public Methods
@@ -306,10 +335,12 @@ namespace Dicom
             {
                 // allow overwriting of existing entries
                 _entries[entry.Tag] = entry;
+                _keywords[entry.Keyword] = entry.Tag;
             }
             else
             {
                 _masked.Add(entry);
+                _keywords[entry.Keyword] = entry.Tag;
             }
         }
 
@@ -338,7 +369,6 @@ namespace Dicom
                 reader.Process();
             }
         }
-
         #endregion
 
         #region IEnumerable Members
