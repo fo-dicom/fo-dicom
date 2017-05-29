@@ -6,11 +6,13 @@ using System;
 namespace Dicom
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     [Collection("General")]
     public class DicomDictionaryTest : IDisposable
@@ -55,6 +57,34 @@ namespace Dicom
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
             Assert.Equal(expected, actual);
         }
+
+        private double TimeCall(int numCalls, Action call)
+        {
+            var start = Process.GetCurrentProcess().TotalProcessorTime;
+
+            for (int i = 0; i < numCalls; i++) call();
+
+            var end = Process.GetCurrentProcess().TotalProcessorTime;
+
+            var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
+
+            return millisecondsPerCall;
+        }
+
+        [Fact]
+        public void GetEnumerator_ExecutionTime_IsNotSlow()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded();
+
+            var millisecondsPerCall = TimeCall(100, () => Assert.NotNull(DicomDictionary.Default.Last()));
+
+            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).ToDictionary(i => 2 * i).Values.Last()));
+
+            output_.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
+
+            Assert.InRange(millisecondsPerCall, 0, (1 + referenceTime) * 5);
+        }
+
 
 #if !NETSTANDARD
 
@@ -260,6 +290,7 @@ namespace Dicom
 
         private static int index = 0;
         private readonly AppDomain testDomain;
+        private ITestOutputHelper output_;
 
         public void Dispose()
         {
@@ -271,11 +302,12 @@ namespace Dicom
             }
         }
 
-        public DicomDictionaryTest()
+        public DicomDictionaryTest(ITestOutputHelper output)
         {
             var name = string.Concat("DicomDictionary test appdomain #", ++index);
             testDomain = AppDomain.CreateDomain(name, AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation);
             System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Created.", testDomain.FriendlyName));
+            output_ = output;
 
         }
 
