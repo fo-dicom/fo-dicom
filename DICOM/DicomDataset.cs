@@ -507,6 +507,11 @@ namespace Dicom
                     throw new DicomDataException("Element empty or index: {0} exceeds element count: {1}", n, element.Count);
                 }
 
+				if (element.ValueRepresentation.IsMultiValue && typeof(T) == typeof(string))
+				{
+					return (T)(object)string.Join("\\", element.Get<string[]>());
+				}
+
                 return element.Get<T>(n);
             }
 
