@@ -1,4 +1,7 @@
 #### v.3.1.0 (TBD)
+* JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
+* DicomDictionary.GetEnumerator() is very slow (#532 #534)
+* CStore-SCU always adds a PC with LEExplicit and LEImplicit (#524 #541)
 * Updated JPEG-LS to latest CharLS commit (#517)
 * Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
 * Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)

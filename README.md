@@ -8,7 +8,8 @@
 [![Stories in Ready](https://badge.waffle.io/fo-dicom/fo-dicom.svg?label=ready&title=Ready)](http://waffle.io/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-If you like *fo-dicom* and want to contribute to its continued success, please consider making a small monetary contribution:
+### Support Us!
+If *fo-dicom* is a vital component in your open-source or commercial application and you want to contribute to its continued success, please consider making a small monetary contribution.
 <table>
 <tr>
 <th>€25</th>
