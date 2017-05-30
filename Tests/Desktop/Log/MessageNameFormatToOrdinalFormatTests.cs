@@ -1,14 +1,11 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Logging
+using System;
+using Xunit;
+
+namespace Dicom.Log
 {
-    using System;
-
-    using Dicom.Log;
-
-    using Xunit;
-
     [Collection("General")]
     public class MessageNameFormatToOrdinalFormatTests
     {
