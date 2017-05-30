@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Network
-{
     using System;
     using System.Linq;
     using System.Text;
@@ -14,6 +12,8 @@ namespace Dicom.Network
     using Xunit;
     using Xunit.Abstractions;
 
+namespace Dicom.Network
+{
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTest
     {
@@ -31,7 +31,7 @@ namespace Dicom.Network
 
         public DicomClientTest(ITestOutputHelper testOutputHelper)
         {
-            this._testOutputHelper = testOutputHelper;
+            _testOutputHelper = testOutputHelper;
             remoteHost = null;
             remotePort = 0;
         }
@@ -506,6 +506,23 @@ namespace Dicom.Network
             }
         }
 
+        [Fact]
+        public void Send_ToExplicitOnlyProvider_NotAccepted()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<ExplicitLECStoreProvider>(port))
+            {
+                var request = new DicomCStoreRequest(@"./Test Data/CR-MONO1-10-chest");
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
         #endregion
 
         #region Support classes
@@ -527,13 +544,13 @@ namespace Dicom.Network
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
                 {
                     Thread.Sleep(1000);
-                    DicomClientTest.remoteHost = association.RemoteHost;
-                    DicomClientTest.remotePort = association.RemotePort;
-                    this.SendAssociationAccept(association);
+                    remoteHost = association.RemoteHost;
+                    remotePort = association.RemotePort;
+                    SendAssociationAccept(association);
                 }
                 else
                 {
-                    this.SendAssociationReject(
+                    SendAssociationReject(
                         DicomRejectResult.Permanent,
                         DicomRejectSource.ServiceUser,
                         DicomRejectReason.CalledAENotRecognized);
@@ -542,7 +559,7 @@ namespace Dicom.Network
 
             public void OnReceiveAssociationReleaseRequest()
             {
-                this.SendAssociationReleaseResponse();
+                SendAssociationReleaseResponse();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -556,6 +573,59 @@ namespace Dicom.Network
             public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
             {
                 return new DicomCEchoResponse(request, DicomStatus.Success);
+            }
+        }
+
+        /// <summary>
+        /// Artificial C-STORE provider, only supporting Explicit LE transfer syntax for the purpose of
+        /// testing <see cref="Send_ToExplicitOnlyProvider_NotAccepted"/>.
+        /// </summary>
+        internal class ExplicitLECStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
+        {
+            private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+                {
+                    DicomTransferSyntax.ExplicitVRLittleEndian
+                };
+
+            public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
+            {
+            }
+
+            public void OnReceiveAssociationRequest(DicomAssociation association)
+            {
+                foreach (var pc in association.PresentationContexts)
+                {
+                    if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
+                    {
+                        SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
+                        return;
+                    }
+                }
+
+                SendAssociationAccept(association);
+            }
+
+            public void OnReceiveAssociationReleaseRequest()
+            {
+                SendAssociationReleaseResponse();
+            }
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
+            {
+                return new DicomCStoreResponse(request, DicomStatus.Success);
+            }
+
+            public void OnCStoreRequestException(string tempFileName, Exception e)
+            {
             }
         }
 
