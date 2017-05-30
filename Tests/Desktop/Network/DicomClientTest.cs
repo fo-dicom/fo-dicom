@@ -538,7 +538,7 @@ namespace Dicom.Network
             {
                 foreach (var pc in association.PresentationContexts)
                 {
-                    pc.AcceptTransferSyntaxes(DicomTransferSyntax.ExplicitVRLittleEndian);
+                    pc.AcceptTransferSyntaxes(DicomTransferSyntax.ImplicitVRLittleEndian);
                 }
 
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
@@ -580,7 +580,7 @@ namespace Dicom.Network
         /// Artificial C-STORE provider, only supporting Explicit LE transfer syntax for the purpose of
         /// testing <see cref="Send_ToExplicitOnlyProvider_NotAccepted"/>.
         /// </summary>
-        internal class ExplicitLECStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
+        private class ExplicitLECStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
             private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
                 {
