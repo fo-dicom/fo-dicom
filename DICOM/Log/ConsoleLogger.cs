@@ -1,26 +1,26 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Log
 {
-    using System;
-
     /// <summary>
     /// Logger for output to the <see cref="Console"/>.
     /// </summary>
-    public class ConsoleLogger : Logger
+    public class ConsoleLogger : TextWriterLogger
     {
         /// <summary>
         /// Singleton instance of the <see cref="ConsoleLogger"/>.
         /// </summary>
         public static readonly Logger Instance = new ConsoleLogger();
 
-        private readonly object @lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Initializes an instance of the <see cref="ConsoleLogger"/>.
         /// </summary>
-        private ConsoleLogger()
+        private ConsoleLogger() : base(Console.Out)
         {
         }
 
@@ -32,7 +32,7 @@ namespace Dicom.Log
         /// <param name="args">Log message arguments.</param>
         public override void Log(LogLevel level, string msg, params object[] args)
         {
-            lock (this.@lock)
+            lock (_lock)
             {
                 var previous = ConsoleForegroundColor;
                 switch (level)
@@ -53,9 +53,10 @@ namespace Dicom.Log
                         ConsoleForegroundColor = ConsoleColor.Magenta;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("level", level, null);
+                        throw new ArgumentOutOfRangeException(nameof(level), level, null);
                 }
-                Console.WriteLine(NameFormatToPositionalFormat(msg), args);
+
+                base.Log(level, msg, args);
                 ConsoleForegroundColor = previous;
             }
         }
