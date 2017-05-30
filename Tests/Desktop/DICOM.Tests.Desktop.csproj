@@ -147,6 +147,7 @@
     <Compile Include="IO\TemporaryFileTest.cs" />
     <Compile Include="IO\Writer\DicomFileWriterTest.cs" />
     <Compile Include="IO\Writer\DicomWriterTest.cs" />
+    <Compile Include="Log\TextWriterLoggerTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
@@ -174,7 +175,7 @@
     <Compile Include="Network\DicomServerTest.cs" />
     <Compile Include="Network\DicomServiceTest.cs" />
     <Compile Include="Network\PDUTest.cs" />
-    <Compile Include="Logging\MessageNameFormatToOrdinalFormatTests.cs" />
+    <Compile Include="Log\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Network\PDVTest.cs" />
     <Compile Include="Network\Ports.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
