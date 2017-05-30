@@ -8,6 +8,7 @@
 * Added missing encodings for .NET Core (#481 #486)
 * Update to latest DICOM Standard 2017b (#480 #482 #536 #537)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
+* Add TextWriterLogger (#461 #542)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)
 * Repository re-organization (#445 #446 #447 #448 #451 #452 #455 #462 #463 #465 #467 #468 #469 #476 #477 #478)
 * Deprecate Legacy class library (#415 #449)
