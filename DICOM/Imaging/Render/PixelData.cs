@@ -227,7 +227,7 @@ namespace Dicom.Imaging.Render
         /// <param name="width">Pixel data width.</param>
         /// <param name="height">Pixel data height.</param>
         /// <param name="data">Data byte array.</param>
-        protected GrayscalePixelDataU8(int width, int height, byte[] data)
+        protected internal GrayscalePixelDataU8(int width, int height, byte[] data)
         {
             Width = width;
             Height = height;
@@ -284,7 +284,7 @@ namespace Dicom.Imaging.Render
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public virtual IPixelData Rescale(double scale)
         {
             if (scale == 1.0) return this;
             var w = (int)(Width * scale);
@@ -389,6 +389,16 @@ namespace Dicom.Imaging.Render
         #endregion
 
         #region Public Methods
+
+        /// <inheritdoc />
+        public override IPixelData Rescale(double scale)
+        {
+            if (scale == 1.0) return this;
+            var w = (int)(Width * scale);
+            var h = (int)(Height * scale);
+            var data = NearestNeighborInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
+            return new GrayscalePixelDataU8(w, h, data);
+        }
 
         /// <inheritdoc />
         public override Histogram GetHistogram(int channel)
