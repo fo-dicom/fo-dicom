@@ -22,6 +22,7 @@ namespace Dicom.Dump
     public partial class MainForm : Form
     {
         private DicomFile _file;
+        private DicomAnonymizer _anonymizer;
 
         public MainForm()
         {
@@ -31,6 +32,7 @@ namespace Dicom.Dump
         protected override void OnLoad(EventArgs e)
         {
             DicomDictionary.EnsureDefaultDictionariesLoaded(ModifierKeys != Keys.Shift);
+            _anonymizer = new DicomAnonymizer();
 
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -45,6 +47,7 @@ namespace Dicom.Dump
         {
             lvDicom.Items.Clear();
             menuItemView.Enabled = false;
+            menuItemAnonymize.Enabled = false;
         }
 
         private delegate void AddItemDelegate(string tag, string vr, string length, string value);
@@ -102,7 +105,11 @@ namespace Dicom.Dump
                 new DicomDatasetWalker(_file.FileMetaInfo).Walk(new DumpWalker(this));
                 new DicomDatasetWalker(_file.Dataset).Walk(new DumpWalker(this));
 
-                if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport) menuItemView.Enabled = true;
+                if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport)
+                {
+                    menuItemView.Enabled = true;
+                    menuItemAnonymize.Enabled = true;
+                }
                 menuItemSyntax.Enabled = true;
                 menuItemSave.Enabled = true;
 
@@ -534,6 +541,12 @@ namespace Dicom.Dump
             {
                 e.Effect = DragDropEffects.None;
             }
+        }
+
+        private void OnClickAnonymize(object sender, EventArgs e)
+        {
+            var file = _anonymizer.Anonymize(_file);
+            OpenFile(file);
         }
     }
 }

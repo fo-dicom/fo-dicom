@@ -60,6 +60,7 @@
             this.error10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rLELosslessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPixelDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAnonymize = new System.Windows.Forms.ToolStripMenuItem();
             this.lvDicom = new System.Windows.Forms.ListView();
             this.columnHeaderTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderVR = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -112,6 +113,7 @@
             this.menuItemTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemView,
             this.menuItemSyntax,
+            this.menuItemAnonymize,
             this.exportPixelDataToolStripMenuItem});
             this.menuItemTools.Name = "menuItemTools";
             this.menuItemTools.Size = new System.Drawing.Size(47, 20);
@@ -364,6 +366,14 @@
             this.exportPixelDataToolStripMenuItem.Text = "Export Pixel Data";
             this.exportPixelDataToolStripMenuItem.Click += new System.EventHandler(this.OnClickExportPixelData);
             // 
+            // menuItemAnonymize
+            // 
+            this.menuItemAnonymize.Enabled = false;
+            this.menuItemAnonymize.Name = "menuItemAnonymize";
+            this.menuItemAnonymize.Size = new System.Drawing.Size(161, 22);
+            this.menuItemAnonymize.Text = "&Anonymize";
+            this.menuItemAnonymize.Click += new System.EventHandler(this.OnClickAnonymize);
+            // 
             // lvDicom
             // 
             this.lvDicom.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -491,6 +501,7 @@
         private System.Windows.Forms.ToolStripMenuItem quality50ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportPixelDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItemAnonymize;
     }
 }
 
