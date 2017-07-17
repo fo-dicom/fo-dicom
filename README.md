@@ -9,7 +9,7 @@
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### Support Us!
-If *fo-dicom* is a vital component in your open-source or commercial application and you want to contribute to its continued success, please consider making a small monetary contribution.
+If *fo-dicom* is a vital component in your open-source or commercial application and/or you want to contribute to its continued success, please consider making a small monetary contribution.
 <table>
 <tr>
 <th>€25</th>
@@ -29,7 +29,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 ### Features
 * Portable Class Library (PCL)
 * Targets .NET 4.5.2 and higher, .NET Core (.NET Standard 1.3 and higher), Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
-* DICOM dictionary version 2017b
+* DICOM dictionary version 2017c
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
 * Supports very large datasets with content loading on demand
