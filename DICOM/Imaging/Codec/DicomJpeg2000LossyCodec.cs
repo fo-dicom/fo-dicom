@@ -12,7 +12,7 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE
+#if NETFX_CORE && !HOLOLENS
             DicomJpeg2000NativeCodec.Encode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
@@ -27,7 +27,7 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE
+#if NETFX_CORE && !HOLOLENS
             DicomJpeg2000NativeCodec.Decode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),

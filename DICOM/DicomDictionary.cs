@@ -178,7 +178,7 @@ namespace Dicom
                     {
                         try
                         {
-#if NET35
+#if NET35 || HOLOLENS
                             using (
                                 var stream =
                                     new MemoryStream(
