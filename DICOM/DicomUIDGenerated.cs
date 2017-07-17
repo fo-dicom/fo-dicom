@@ -281,6 +281,10 @@ namespace Dicom
             _uids.Add(DicomUID.BasicStructuredDisplayStorage.UID, DicomUID.BasicStructuredDisplayStorage);
             _uids.Add(DicomUID.CTDefinedProcedureProtocolStorage.UID, DicomUID.CTDefinedProcedureProtocolStorage);
             _uids.Add(DicomUID.CTPerformedProcedureProtocolStorage.UID, DicomUID.CTPerformedProcedureProtocolStorage);
+            _uids.Add(DicomUID.ProtocolApprovalStorage.UID, DicomUID.ProtocolApprovalStorage);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelFIND.UID, DicomUID.ProtocolApprovalInformationModelFIND);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelMOVE.UID, DicomUID.ProtocolApprovalInformationModelMOVE);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelGET.UID, DicomUID.ProtocolApprovalInformationModelGET);
             _uids.Add(DicomUID.RTImageStorage.UID, DicomUID.RTImageStorage);
             _uids.Add(DicomUID.RTDoseStorage.UID, DicomUID.RTDoseStorage);
             _uids.Add(DicomUID.RTStructureSetStorage.UID, DicomUID.RTStructureSetStorage);
@@ -1476,6 +1480,7 @@ namespace Dicom
             _uids.Add(DicomUID.PediatricSizeCategories7039.UID, DicomUID.PediatricSizeCategories7039);
             _uids.Add(DicomUID.CalciumScoringPatientSizeCategories7041.UID, DicomUID.CalciumScoringPatientSizeCategories7041);
             _uids.Add(DicomUID.ReasonForRepeatingAcquisition10034.UID, DicomUID.ReasonForRepeatingAcquisition10034);
+            _uids.Add(DicomUID.ProtocolAssertionCodes800.UID, DicomUID.ProtocolAssertionCodes800);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2285,6 +2290,18 @@ namespace Dicom
         ///<summary>SOP Class: CT Performed Procedure Protocol Storage</summary>
         public readonly static DicomUID CTPerformedProcedureProtocolStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.200.2", "CT Performed Procedure Protocol Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Protocol Approval Storage</summary>
+        public readonly static DicomUID ProtocolApprovalStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.200.3", "Protocol Approval Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Protocol Approval Information Model - FIND</summary>
+        public readonly static DicomUID ProtocolApprovalInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.1.200.4", "Protocol Approval Information Model - FIND", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Protocol Approval Information Model - MOVE</summary>
+        public readonly static DicomUID ProtocolApprovalInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.1.200.5", "Protocol Approval Information Model - MOVE", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Protocol Approval Information Model - GET</summary>
+        public readonly static DicomUID ProtocolApprovalInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.1.200.6", "Protocol Approval Information Model - GET", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: RT Image Storage</summary>
         public readonly static DicomUID RTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.1", "RT Image Storage", DicomUidType.SOPClass, false);
 
@@ -2480,8 +2497,8 @@ namespace Dicom
         ///<summary>SOP Class: Hanging Protocol Information Model - GET</summary>
         public readonly static DicomUID HangingProtocolInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.38.4", "Hanging Protocol Information Model - GET", DicomUidType.SOPClass, false);
 
-        ///<summary>Transfer: Color Palette Storage</summary>
-        public readonly static DicomUID ColorPaletteStorage = new DicomUID("1.2.840.10008.5.1.4.39.1", "Color Palette Storage", DicomUidType.TransferSyntax, false);
+        ///<summary>SOP Class: Color Palette Storage</summary>
+        public readonly static DicomUID ColorPaletteStorage = new DicomUID("1.2.840.10008.5.1.4.39.1", "Color Palette Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Color Palette Query/Retrieve Information Model - FIND</summary>
         public readonly static DicomUID ColorPaletteQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.39.2", "Color Palette Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
@@ -5869,6 +5886,9 @@ namespace Dicom
 
         ///<summary>Context Group Name: Reason for Repeating Acquisition (10034)</summary>
         public readonly static DicomUID ReasonForRepeatingAcquisition10034 = new DicomUID("1.2.840.10008.6.1.1175", "Reason for Repeating Acquisition (10034)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Protocol Assertion Codes (800)</summary>
+        public readonly static DicomUID ProtocolAssertionCodes800 = new DicomUID("1.2.840.10008.6.1.1176", "Protocol Assertion Codes (800)", DicomUidType.ContextGroupName, false);
 
     }
 }

@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2017 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2017b">
+<dictionary version="2017c">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -142,9 +142,12 @@
     <tag group="0008" element="0106" keyword="ContextGroupVersion" vr="DT" vm="1">Context Group Version</tag>
     <tag group="0008" element="0107" keyword="ContextGroupLocalVersion" vr="DT" vm="1">Context Group Local Version</tag>
     <tag group="0008" element="0108" keyword="ExtendedCodeMeaning" vr="LT" vm="1">Extended Code Meaning</tag>
+    <tag group="0008" element="0109" keyword="CodingSchemeResourcesSequence" vr="SQ" vm="1">Coding Scheme Resources Sequence</tag>
+    <tag group="0008" element="010A" keyword="CodingSchemeURLType" vr="CS" vm="1">Coding Scheme URL Type</tag>
     <tag group="0008" element="010B" keyword="ContextGroupExtensionFlag" vr="CS" vm="1">Context Group Extension Flag</tag>
     <tag group="0008" element="010C" keyword="CodingSchemeUID" vr="UI" vm="1">Coding Scheme UID</tag>
     <tag group="0008" element="010D" keyword="ContextGroupExtensionCreatorUID" vr="UI" vm="1">Context Group Extension Creator UID</tag>
+    <tag group="0008" element="010E" keyword="CodingSchemeURL" vr="UR" vm="1">Coding Scheme URL</tag>
     <tag group="0008" element="010F" keyword="ContextIdentifier" vr="CS" vm="1">Context Identifier</tag>
     <tag group="0008" element="0110" keyword="CodingSchemeIdentificationSequence" vr="SQ" vm="1">Coding Scheme Identification Sequence</tag>
     <tag group="0008" element="0112" keyword="CodingSchemeRegistry" vr="LO" vm="1">Coding Scheme Registry</tag>
@@ -2255,7 +2258,7 @@
     <tag group="0040" element="4016" keyword="ReferencedGeneralPurposeScheduledProcedureStepSequence" vr="SQ" vm="1" retired="true">Referenced General Purpose Scheduled Procedure Step Sequence</tag>
     <tag group="0040" element="4018" keyword="ScheduledWorkitemCodeSequence" vr="SQ" vm="1">Scheduled Workitem Code Sequence</tag>
     <tag group="0040" element="4019" keyword="PerformedWorkitemCodeSequence" vr="SQ" vm="1">Performed Workitem Code Sequence</tag>
-    <tag group="0040" element="4020" keyword="InputAvailabilityFlag" vr="CS" vm="1">Input Availability Flag</tag>
+    <tag group="0040" element="4020" keyword="InputAvailabilityFlag" vr="CS" vm="1" retired="true">Input Availability Flag</tag>
     <tag group="0040" element="4021" keyword="InputInformationSequence" vr="SQ" vm="1">Input Information Sequence</tag>
     <tag group="0040" element="4022" keyword="RelevantInformationSequence" vr="SQ" vm="1" retired="true">Relevant Information Sequence</tag>
     <tag group="0040" element="4023" keyword="ReferencedGeneralPurposeScheduledProcedureStepTransactionUID" vr="UI" vm="1" retired="true">Referenced General Purpose Scheduled Procedure Step Transaction UID</tag>
@@ -2446,6 +2449,17 @@
     <tag group="0044" element="0012" keyword="SubstanceAdministrationDeviceID" vr="LO" vm="1">Substance Administration Device ID</tag>
     <tag group="0044" element="0013" keyword="ProductParameterSequence" vr="SQ" vm="1">Product Parameter Sequence</tag>
     <tag group="0044" element="0019" keyword="SubstanceAdministrationParameterSequence" vr="SQ" vm="1">Substance Administration Parameter Sequence</tag>
+    <tag group="0044" element="0100" keyword="ApprovalSequence" vr="SQ" vm="1">Approval Sequence</tag>
+    <tag group="0044" element="0101" keyword="AssertionCodeSequence" vr="SQ" vm="1">Assertion Code Sequence</tag>
+    <tag group="0044" element="0102" keyword="AssertionUID" vr="UI" vm="1">Assertion UID</tag>
+    <tag group="0044" element="0103" keyword="AsserterIdentificationSequence" vr="SQ" vm="1">Asserter Identification Sequence</tag>
+    <tag group="0044" element="0104" keyword="AssertionDateTime" vr="DT" vm="1">Assertion DateTime</tag>
+    <tag group="0044" element="0105" keyword="AssertionExpirationDateTime" vr="DT" vm="1">Assertion Expiration DateTime</tag>
+    <tag group="0044" element="0106" keyword="AssertionComments" vr="UT" vm="1">Assertion Comments</tag>
+    <tag group="0044" element="0107" keyword="RelatedAssertionSequence" vr="SQ" vm="1">Related Assertion Sequence</tag>
+    <tag group="0044" element="0108" keyword="ReferencedAssertionUID" vr="UI" vm="1">Referenced Assertion UID</tag>
+    <tag group="0044" element="0109" keyword="ApprovalSubjectSequence" vr="SQ" vm="1">Approval Subject Sequence</tag>
+    <tag group="0044" element="010A" keyword="OrganizationalRoleCodeSequence" vr="SQ" vm="1">Organizational Role Code Sequence</tag>
     <tag group="0046" element="0012" keyword="LensDescription" vr="LO" vm="1">Lens Description</tag>
     <tag group="0046" element="0014" keyword="RightLensSequence" vr="SQ" vm="1">Right Lens Sequence</tag>
     <tag group="0046" element="0015" keyword="LeftLensSequence" vr="SQ" vm="1">Left Lens Sequence</tag>
@@ -3293,7 +3307,7 @@
     <tag group="0082" element="0007" keyword="AssessmentObservationsSequence" vr="SQ" vm="1">Assessment Observations Sequence</tag>
     <tag group="0082" element="0008" keyword="ObservationSignificance" vr="CS" vm="1">Observation Significance</tag>
     <tag group="0082" element="000A" keyword="ObservationDescription" vr="UT" vm="1">Observation Description</tag>
-    <tag group="0082" element="000C" keyword="StructuredContraintObservationSequence" vr="SQ" vm="1">Structured Constraint Observation Sequence</tag>
+    <tag group="0082" element="000C" keyword="StructuredConstraintObservationSequence" vr="SQ" vm="1">Structured Constraint Observation Sequence</tag>
     <tag group="0082" element="0010" keyword="AssessedAttributeValueSequence" vr="SQ" vm="1">Assessed Attribute Value Sequence</tag>
     <tag group="0082" element="0016" keyword="AssessmentSetID" vr="LO" vm="1">Assessment Set ID</tag>
     <tag group="0082" element="0017" keyword="AssessmentRequesterSequence" vr="SQ" vm="1">Assessment Requester Sequence</tag>
@@ -4575,6 +4589,10 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.131" keyword="BasicStructuredDisplayStorage" type="SOP Class">Basic Structured Display Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.200.1" keyword="CTDefinedProcedureProtocolStorage" type="SOP Class">CT Defined Procedure Protocol Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.200.2" keyword="CTPerformedProcedureProtocolStorage" type="SOP Class">CT Performed Procedure Protocol Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.3" keyword="ProtocolApprovalStorage" type="SOP Class">Protocol Approval Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.4" keyword="ProtocolApprovalInformationModelFIND" type="SOP Class">Protocol Approval Information Model - FIND</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.5" keyword="ProtocolApprovalInformationModelMOVE" type="SOP Class">Protocol Approval Information Model - MOVE</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.6" keyword="ProtocolApprovalInformationModelGET" type="SOP Class">Protocol Approval Information Model - GET</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.1" keyword="RTImageStorage" type="SOP Class">RT Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.2" keyword="RTDoseStorage" type="SOP Class">RT Dose Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.3" keyword="RTStructureSetStorage" type="SOP Class">RT Structure Set Storage</uid>
@@ -4640,7 +4658,7 @@
     <uid uid="1.2.840.10008.5.1.4.38.2" keyword="HangingProtocolInformationModelFIND" type="SOP Class">Hanging Protocol Information Model - FIND</uid>
     <uid uid="1.2.840.10008.5.1.4.38.3" keyword="HangingProtocolInformationModelMOVE" type="SOP Class">Hanging Protocol Information Model - MOVE</uid>
     <uid uid="1.2.840.10008.5.1.4.38.4" keyword="HangingProtocolInformationModelGET" type="SOP Class">Hanging Protocol Information Model - GET</uid>
-    <uid uid="1.2.840.10008.5.1.4.39.1" keyword="ColorPaletteStorage" type="Transfer">Color Palette Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.39.1" keyword="ColorPaletteStorage" type="SOP Class">Color Palette Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.39.2" keyword="ColorPaletteQueryRetrieveInformationModelFIND" type="SOP Class">Color Palette Query/Retrieve Information Model - FIND</uid>
     <uid uid="1.2.840.10008.5.1.4.39.3" keyword="ColorPaletteQueryRetrieveInformationModelMOVE" type="SOP Class">Color Palette Query/Retrieve Information Model - MOVE</uid>
     <uid uid="1.2.840.10008.5.1.4.39.4" keyword="ColorPaletteQueryRetrieveInformationModelGET" type="SOP Class">Color Palette Query/Retrieve Information Model - GET</uid>
@@ -5770,4 +5788,5 @@
     <uid uid="1.2.840.10008.6.1.1173" keyword="PediatricSizeCategories7039" type="Context Group Name">Pediatric Size Categories (7039)</uid>
     <uid uid="1.2.840.10008.6.1.1174" keyword="CalciumScoringPatientSizeCategories7041" type="Context Group Name">Calcium Scoring Patient Size Categories (7041)</uid>
     <uid uid="1.2.840.10008.6.1.1175" keyword="ReasonForRepeatingAcquisition10034" type="Context Group Name">Reason for Repeating Acquisition (10034)</uid>
+    <uid uid="1.2.840.10008.6.1.1176" keyword="ProtocolAssertionCodes800" type="Context Group Name">Protocol Assertion Codes (800)</uid>
 </dictionary>

@@ -419,6 +419,12 @@ namespace Dicom
         ///<summary>(0008,0108) VR=LT VM=1 Extended Code Meaning</summary>
         public readonly static DicomTag ExtendedCodeMeaning = new DicomTag(0x0008, 0x0108);
 
+        ///<summary>(0008,0109) VR=SQ VM=1 Coding Scheme Resources Sequence</summary>
+        public readonly static DicomTag CodingSchemeResourcesSequence = new DicomTag(0x0008, 0x0109);
+
+        ///<summary>(0008,010A) VR=CS VM=1 Coding Scheme URL Type</summary>
+        public readonly static DicomTag CodingSchemeURLType = new DicomTag(0x0008, 0x010A);
+
         ///<summary>(0008,010B) VR=CS VM=1 Context Group Extension Flag</summary>
         public readonly static DicomTag ContextGroupExtensionFlag = new DicomTag(0x0008, 0x010B);
 
@@ -427,6 +433,9 @@ namespace Dicom
 
         ///<summary>(0008,010D) VR=UI VM=1 Context Group Extension Creator UID</summary>
         public readonly static DicomTag ContextGroupExtensionCreatorUID = new DicomTag(0x0008, 0x010D);
+
+        ///<summary>(0008,010E) VR=UR VM=1 Coding Scheme URL</summary>
+        public readonly static DicomTag CodingSchemeURL = new DicomTag(0x0008, 0x010E);
 
         ///<summary>(0008,010F) VR=CS VM=1 Context Identifier</summary>
         public readonly static DicomTag ContextIdentifier = new DicomTag(0x0008, 0x010F);
@@ -6758,8 +6767,8 @@ namespace Dicom
         ///<summary>(0040,4019) VR=SQ VM=1 Performed Workitem Code Sequence</summary>
         public readonly static DicomTag PerformedWorkitemCodeSequence = new DicomTag(0x0040, 0x4019);
 
-        ///<summary>(0040,4020) VR=CS VM=1 Input Availability Flag</summary>
-        public readonly static DicomTag InputAvailabilityFlag = new DicomTag(0x0040, 0x4020);
+        ///<summary>(0040,4020) VR=CS VM=1 Input Availability Flag (RETIRED)</summary>
+        public readonly static DicomTag InputAvailabilityFlagRETIRED = new DicomTag(0x0040, 0x4020);
 
         ///<summary>(0040,4021) VR=SQ VM=1 Input Information Sequence</summary>
         public readonly static DicomTag InputInformationSequence = new DicomTag(0x0040, 0x4021);
@@ -7330,6 +7339,39 @@ namespace Dicom
 
         ///<summary>(0044,0019) VR=SQ VM=1 Substance Administration Parameter Sequence</summary>
         public readonly static DicomTag SubstanceAdministrationParameterSequence = new DicomTag(0x0044, 0x0019);
+
+        ///<summary>(0044,0100) VR=SQ VM=1 Approval Sequence</summary>
+        public readonly static DicomTag ApprovalSequence = new DicomTag(0x0044, 0x0100);
+
+        ///<summary>(0044,0101) VR=SQ VM=1 Assertion Code Sequence</summary>
+        public readonly static DicomTag AssertionCodeSequence = new DicomTag(0x0044, 0x0101);
+
+        ///<summary>(0044,0102) VR=UI VM=1 Assertion UID</summary>
+        public readonly static DicomTag AssertionUID = new DicomTag(0x0044, 0x0102);
+
+        ///<summary>(0044,0103) VR=SQ VM=1 Asserter Identification Sequence</summary>
+        public readonly static DicomTag AsserterIdentificationSequence = new DicomTag(0x0044, 0x0103);
+
+        ///<summary>(0044,0104) VR=DT VM=1 Assertion DateTime</summary>
+        public readonly static DicomTag AssertionDateTime = new DicomTag(0x0044, 0x0104);
+
+        ///<summary>(0044,0105) VR=DT VM=1 Assertion Expiration DateTime</summary>
+        public readonly static DicomTag AssertionExpirationDateTime = new DicomTag(0x0044, 0x0105);
+
+        ///<summary>(0044,0106) VR=UT VM=1 Assertion Comments</summary>
+        public readonly static DicomTag AssertionComments = new DicomTag(0x0044, 0x0106);
+
+        ///<summary>(0044,0107) VR=SQ VM=1 Related Assertion Sequence</summary>
+        public readonly static DicomTag RelatedAssertionSequence = new DicomTag(0x0044, 0x0107);
+
+        ///<summary>(0044,0108) VR=UI VM=1 Referenced Assertion UID</summary>
+        public readonly static DicomTag ReferencedAssertionUID = new DicomTag(0x0044, 0x0108);
+
+        ///<summary>(0044,0109) VR=SQ VM=1 Approval Subject Sequence</summary>
+        public readonly static DicomTag ApprovalSubjectSequence = new DicomTag(0x0044, 0x0109);
+
+        ///<summary>(0044,010A) VR=SQ VM=1 Organizational Role Code Sequence</summary>
+        public readonly static DicomTag OrganizationalRoleCodeSequence = new DicomTag(0x0044, 0x010A);
 
         ///<summary>(0046,0012) VR=LO VM=1 Lens Description</summary>
         public readonly static DicomTag LensDescription = new DicomTag(0x0046, 0x0012);
@@ -9873,7 +9915,7 @@ namespace Dicom
         public readonly static DicomTag ObservationDescription = new DicomTag(0x0082, 0x000A);
 
         ///<summary>(0082,000C) VR=SQ VM=1 Structured Constraint Observation Sequence</summary>
-        public readonly static DicomTag StructuredContraintObservationSequence = new DicomTag(0x0082, 0x000C);
+        public readonly static DicomTag StructuredConstraintObservationSequence = new DicomTag(0x0082, 0x000C);
 
         ///<summary>(0082,0010) VR=SQ VM=1 Assessed Attribute Value Sequence</summary>
         public readonly static DicomTag AssessedAttributeValueSequence = new DicomTag(0x0082, 0x0010);
