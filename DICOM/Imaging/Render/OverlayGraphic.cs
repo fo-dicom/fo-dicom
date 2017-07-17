@@ -87,13 +87,11 @@ namespace Dicom.Imaging.Render
 #endif
             {
                 if (oy + y >= height) return;
-                for (int i = _scaledData.Width * y, e = i + _scaledData.Width, x = 0; i < e; i++, x++)
+                for (int i = _scaledData.Width * y, e = i + _scaledData.Width, p = (oy + y) * width + ox, x = 0; i < e; i++, p++, x++)
                 {
                     if (data[i] > 0)
                     {
-                        //this is wrong, when scaling is active
-                        //if ((ox + x) >= width) break;
-                        var p = oy * width + ox + i;
+                        if (ox + x >= width) break;
                         pixels[p] |= _color;
                     }
                 }

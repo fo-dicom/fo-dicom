@@ -56,6 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomVRCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IClassifiedManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\BilinearInterpolation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\NearestNeighborInterpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\BitDepth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Codec\DicomCodecException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Codec\DicomCodecExtensions.cs" />
