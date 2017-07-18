@@ -18,7 +18,7 @@
 			<group targetFramework="netstandard1.3">
 				<dependency id="fo-dicom.NetCore" version="$version$" />
 			</group>
-			<group targetFramework="net452">
+			<group targetFramework="net45">
 				<dependency id="fo-dicom.Desktop" version="$version$" />
 			</group>
 			<group targetFramework="uap">

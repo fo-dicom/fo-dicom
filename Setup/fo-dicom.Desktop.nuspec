@@ -13,11 +13,11 @@
         <language>en-US</language>
     </metadata>
     <files>
-        <file src="Targets\fo-dicom.Desktop.targets" target="build\net452" />
-        <file src="..\Native\Desktop\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net452" />
-        <file src="..\Native\Desktop\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net452" />
-        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.dll" target="lib\net452" />
-        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.pdb" target="lib\net452" />
-        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.xml" target="lib\net452" />
+        <file src="Targets\fo-dicom.Desktop.targets" target="build\net45" />
+        <file src="..\Native\Desktop\bin\x86\Release\DICOM.Native\Dicom.Native.dll" target="build\net45" />
+        <file src="..\Native\Desktop\bin\x64\Release\DICOM.Native64\Dicom.Native64.dll" target="build\net45" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.dll" target="lib\net45" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.pdb" target="lib\net45" />
+        <file src="..\Platform\Desktop\bin\Release\Dicom.Core.xml" target="lib\net45" />
     </files>
 </package>
