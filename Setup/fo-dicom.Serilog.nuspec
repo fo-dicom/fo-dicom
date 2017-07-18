@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.dll" target="lib\net452" />
-        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.pdb" target="lib\net452" />
-        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.xml" target="lib\net452" />
+        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.dll" target="lib\net45" />
+        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.pdb" target="lib\net45" />
+        <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.xml" target="lib\net45" />
     </files>
 </package>

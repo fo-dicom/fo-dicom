@@ -17,8 +17,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.dll" target="lib\net452" />
-        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.pdb" target="lib\net452" />
-        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.xml" target="lib\net452" />
+        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.dll" target="lib\net45" />
+        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.pdb" target="lib\net45" />
+        <file src="..\Logging\Log4Net.Desktop\bin\Release\Dicom.log4net.xml" target="lib\net45" />
     </files>
 </package>
