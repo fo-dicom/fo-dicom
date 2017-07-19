@@ -129,6 +129,7 @@
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\DicomImageTest.cs" />
     <Compile Include="Imaging\DicomOverlayDataTest.cs" />
+    <Compile Include="Imaging\DicomPixelDataTest.cs" />
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
