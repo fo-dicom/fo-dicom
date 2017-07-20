@@ -26,7 +26,7 @@ namespace Dicom.Imaging.Codec
             if (oldPixelData.BitsAllocated == 16 && oldPixelData.BitsStored <= 8)
             {
                 // check for embedded overlays?
-                newPixelData.BitsAllocated = 8;
+                newPixelData.Dataset.AddOrUpdate(DicomTag.BitsAllocated, (ushort)8);
             }
 
             var jparams = parameters as DicomJpegParams ?? GetDefaultParameters() as DicomJpegParams;
@@ -53,7 +53,7 @@ namespace Dicom.Imaging.Codec
             if (newPixelData.BitsAllocated == 16 && newPixelData.BitsStored <= 8)
             {
                 // check for embedded overlays here or below?
-                newPixelData.BitsAllocated = 8;
+                newPixelData.Dataset.AddOrUpdate(DicomTag.BitsAllocated, (ushort)8);
             }
 
             var jparams = parameters as DicomJpegParams ?? GetDefaultParameters() as DicomJpegParams;
@@ -79,7 +79,8 @@ namespace Dicom.Imaging.Codec
                 precision = oldPixelData.BitsStored;
             }
 
-            if (newPixelData.BitsStored <= 8 && precision > 8) newPixelData.BitsAllocated = 16; // embedded overlay?
+            if (newPixelData.BitsStored <= 8 && precision > 8)
+                newPixelData.Dataset.AddOrUpdate(DicomTag.BitsAllocated, (ushort)16); // embedded overlay?
 
             var codec = GetCodec(precision, jparams);
 

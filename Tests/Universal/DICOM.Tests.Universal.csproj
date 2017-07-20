@@ -109,6 +109,9 @@
     <Compile Include="..\Desktop\DicomAnonymizerTest.cs">
       <Link>DicomAnonymizerTest.cs</Link>
     </Compile>
+    <Compile Include="..\Desktop\Imaging\DicomPixelDataTest.cs">
+      <Link>Imaging\DicomPixelDataTest.cs</Link>
+    </Compile>
     <Compile Include="..\Desktop\Log\TextWriterLoggerTest.cs">
       <Link>Log\TextWriterLoggerTest.cs</Link>
     </Compile>
@@ -150,6 +153,7 @@
       <Name>DICOM.Universal</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

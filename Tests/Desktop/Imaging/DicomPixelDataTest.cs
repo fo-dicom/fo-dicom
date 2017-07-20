@@ -11,7 +11,7 @@ namespace Dicom.Imaging
         [Fact]
         public void Create_TransferSyntaxImplicitLE_ReturnsOtherWordPixelDataObject()
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ImplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ImplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, (ushort)8);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -21,7 +21,7 @@ namespace Dicom.Imaging
         [Fact]
         public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan16_Throws()
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, (ushort)17);
             var exception = Record.Exception(() => DicomPixelData.Create(dataset, true));
 
@@ -35,7 +35,7 @@ namespace Dicom.Imaging
         [InlineData(16)]
         public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan8_ReturnsOtherWordPixelDataObject(ushort bitsAllocated)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -49,7 +49,7 @@ namespace Dicom.Imaging
         [InlineData(1)]
         public void Create_TransferSyntaxExplicitLEBitsAllocatedLessThanOrEqualTo8_ReturnsOtherBytePixelDataObject(ushort bitsAllocated)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -63,7 +63,7 @@ namespace Dicom.Imaging
         [InlineData(16, 12)]
         public void BitsStored_Setter_SmallerThanOrEqualToBitsAllocatedIsAllowed(ushort bitsAllocated, ushort bitsStored)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -77,7 +77,7 @@ namespace Dicom.Imaging
         [InlineData(16, 17)]
         public void BitsStored_Setter_GreaterThanBitsAllocatedIsNotAllowed(ushort bitsAllocated, ushort bitsStored)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -90,7 +90,7 @@ namespace Dicom.Imaging
         [InlineData(16, 12)]
         public void HighBit_Setter_SmallerThanBitsAllocatedIsAllowed(ushort bitsAllocated, ushort highBit)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
@@ -106,7 +106,7 @@ namespace Dicom.Imaging
         [InlineData(16, 17)]
         public void HighBit_Setter_GreaterThanOrEqualToBitsAllocatedIsNotAllowed(ushort bitsAllocated, ushort highBit)
         {
-            var dataset = new DicomDataset { InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian };
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
             var pixelData = DicomPixelData.Create(dataset, true);
 
