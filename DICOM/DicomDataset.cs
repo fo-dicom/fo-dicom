@@ -28,12 +28,21 @@ namespace Dicom
         #region CONSTRUCTORS
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class with <see cref="InternalTransferSyntax"/>
+        /// set to Explicit VR Little Endian (DICOM default transfer syntax).
+        /// </summary>
+        public DicomDataset() : this(DicomTransferSyntax.ExplicitVRLittleEndian)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DicomDataset"/> class.
         /// </summary>
-        public DicomDataset()
+        /// <param name="internalTransferSyntax">Internal transfer syntax representation of the dataset.</param>
+        public DicomDataset(DicomTransferSyntax internalTransferSyntax)
         {
             _items = new SortedDictionary<DicomTag, DicomItem>();
-            InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            InternalTransferSyntax = internalTransferSyntax;
         }
 
         /// <summary>

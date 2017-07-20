@@ -3,6 +3,7 @@
 * Correct interpolation of rescaled overlay graphics (#545 #558)
 * JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
 * DicomDictionary.GetEnumerator() is very slow (#532 #534)
+* DicomPixelData.BitsAllocated setter removed (#528 #564)
 * CStore-SCU always adds a PC with LEExplicit and LEImplicit (#524 #541)
 * Updated JPEG-LS to latest CharLS commit (#517)
 * Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)

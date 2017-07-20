@@ -22,7 +22,7 @@ namespace Dicom {
 				// IJG eats the extra padding bits. Is there a better way to test for this?
 				if (oldPixelData->BitsAllocated == 16 && oldPixelData->BitsStored <= 8) {
 					// check for embedded overlays?
-					newPixelData->BitsAllocated = 8;
+					newPixelData->Dataset->AddOrUpdate(DicomTag::BitsAllocated, (unsigned short)8);
 				}
 
 				if (parameters == nullptr || parameters->GetType() != DicomJpegParams::typeid)
@@ -45,7 +45,7 @@ namespace Dicom {
 				// IJG eats the extra padding bits. Is there a better way to test for this?
 				if (newPixelData->BitsAllocated == 16 && newPixelData->BitsStored <= 8) {
 					// check for embedded overlays here or below?
-					newPixelData->BitsAllocated = 8;
+					newPixelData->Dataset->AddOrUpdate(DicomTag::BitsAllocated, (unsigned short)8);
 				}
 
 				if (parameters == nullptr || parameters->GetType() != DicomJpegParams::typeid)
@@ -71,7 +71,7 @@ namespace Dicom {
 				}
 
 				if (newPixelData->BitsStored <= 8 && precision > 8)
-					newPixelData->BitsAllocated = 16; // embedded overlay?
+					newPixelData->Dataset->AddOrUpdate(DicomTag::BitsAllocated, (unsigned short)16); // embedded overlay?
 
 				JpegNativeCodec^ codec = GetCodec(precision, jparams);
 

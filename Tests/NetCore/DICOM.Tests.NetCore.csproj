@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Desktop\Imaging\DicomPixelDataTest.cs" Link="Imaging\DicomPixelDataTest.cs" />
     <Compile Include="..\Desktop\Log\TextWriterLoggerTest.cs" Link="Log\TextWriterLoggerTest.cs" />
     <Compile Include="..\Desktop\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
@@ -69,6 +70,7 @@
 
   <ItemGroup>
     <Folder Include="Log\" />
+    <Folder Include="Imaging\" />
   </ItemGroup>
 
   <ItemGroup>
