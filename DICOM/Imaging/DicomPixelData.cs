@@ -80,7 +80,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Gets new instance of <seealso cref="BitDepth"/> using dataset information
+        /// Gets new instance of <seealso cref="BitDepth"/> using dataset information.
         /// </summary>
         public BitDepth BitDepth => new BitDepth(
             BitsAllocated,
@@ -89,7 +89,7 @@ namespace Dicom.Imaging
             PixelRepresentation == PixelRepresentation.Signed);
 
         /// <summary>
-        /// Number of bits allocated per pixel sample (0028,0100)
+        /// Gets number of bits allocated per pixel sample (0028,0100).
         /// </summary>
         public ushort BitsAllocated => Dataset.Get<ushort>(DicomTag.BitsAllocated);
 
