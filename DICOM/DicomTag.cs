@@ -110,12 +110,13 @@ namespace Dicom
             // sort by private creator only if element values are equal
             if (PrivateCreator != null || other.PrivateCreator != null)
             {
+                var elemCompare = (Element & 0xff).CompareTo(other.Element & 0xff);
+                if (elemCompare != 0) return elemCompare;
+
                 if (PrivateCreator == null) return -1;
                 if (other.PrivateCreator == null) return 1;
 
-                if (PrivateCreator != other.PrivateCreator) return PrivateCreator.CompareTo(other.PrivateCreator);
-
-                return (Element & 0xff).CompareTo(other.Element & 0xff);
+                return PrivateCreator.CompareTo(other.PrivateCreator);
             }
 
             return Element.CompareTo(other.Element);
