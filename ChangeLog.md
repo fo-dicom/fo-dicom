@@ -1,6 +1,7 @@
 #### v.3.1.0 (TBD)
 * Downgrade desktop libraries to framework version 4.5 (#561 #562)
 * Correct interpolation of rescaled overlay graphics (#545 #558)
+* Private tag is listed out or order (#535 #566)
 * JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
 * DicomDictionary.GetEnumerator() is very slow (#532 #534)
 * DicomPixelData.BitsAllocated setter removed (#528 #564)

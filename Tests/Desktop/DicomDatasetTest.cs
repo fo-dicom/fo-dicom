@@ -360,6 +360,45 @@ namespace Dicom
             Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(dictEntry.Tag));
         }
 
+        /// <summary>
+        /// Associated with Github issue #535.
+        /// </summary>
+        [Theory]
+        [InlineData(0x0016, 0x1106, 0x1053)]
+        [InlineData(0x0016, 0x1053, 0x1006)]
+        public void Add_RegularTags_ShouldBeSortedInGroupElementOrder(ushort group, ushort hiElem, ushort loElem)
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(new DicomTag(group, hiElem), 2);
+            dataset.Add(new DicomTag(group, loElem), 1);
+
+            var firstElem = dataset.First().Tag.Element;
+            Assert.Equal(loElem, firstElem);
+        }
+
+        /// <summary>
+        /// Associated with Github issue #535.
+        /// </summary>
+        [Theory]
+        [InlineData(0x0019, 0x1153, 0x1006, "", "PRIVATE")]
+        [InlineData(0x0019, 0x1053, 0x1006, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "")]
+        [InlineData(0x0019, 0x1053, 0x1006, "ALSOPRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1006, 0x1006, "PRIVATE", "ALSOPRIVATE")]
+        public void Add_PrivateTags_ShouldBeSortedInGroupByteElementCreatorOrder(ushort group, ushort hiElem,
+            ushort loElem, string hiCreator, string loCreator)
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(new DicomTag(group, hiElem, hiCreator), 2);
+            dataset.Add(new DicomTag(group, loElem, loCreator), 1);
+
+            var firstElem = dataset.First().Tag.Element;
+            var firstCreator = dataset.First().Tag.PrivateCreator.Creator;
+            Assert.Equal(loElem, firstElem);
+            Assert.Equal(loCreator, firstCreator);
+        }
+
         #endregion
 
         #region Support methods
