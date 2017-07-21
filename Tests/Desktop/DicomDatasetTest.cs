@@ -380,11 +380,13 @@ namespace Dicom
         /// Associated with Github issue #535.
         /// </summary>
         [Theory]
-        [InlineData(0x0019, 0x1153, 0x1006, "", "HOLOLOGIC")]
-        [InlineData(0x0019, 0x1053, 0x1006, "HOLOLOGIC", "HOLOLOGIC")]
-        [InlineData(0x0019, 0x1053, 0x1006, "DICOM", "HOLOLOGIC")]
-        [InlineData(0x0019, 0x1006, 0x1006, "HOLOLOGIC", "DICOM")]
-        public void Add_PrivateTags_ShouldBeSortedInGroupLowByteElementCreatorOrder(ushort group, ushort hiElem,
+        [InlineData(0x0019, 0x1153, 0x1006, "", "PRIVATE")]
+        [InlineData(0x0019, 0x1053, 0x1006, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "")]
+        [InlineData(0x0019, 0x1053, 0x1006, "ALSOPRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1006, 0x1006, "PRIVATE", "ALSOPRIVATE")]
+        public void Add_PrivateTags_ShouldBeSortedInGroupByteElementCreatorOrder(ushort group, ushort hiElem,
             ushort loElem, string hiCreator, string loCreator)
         {
             var dataset = new DicomDataset();

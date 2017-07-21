@@ -107,19 +107,18 @@ namespace Dicom
         {
             if (Group != other.Group) return Group.CompareTo(other.Group);
 
+            if (Element != other.Element) return Element.CompareTo(other.Element);
+
             // sort by private creator only if element values are equal
             if (PrivateCreator != null || other.PrivateCreator != null)
             {
-                var elemCompare = (Element & 0xff).CompareTo(other.Element & 0xff);
-                if (elemCompare != 0) return elemCompare;
-
                 if (PrivateCreator == null) return -1;
                 if (other.PrivateCreator == null) return 1;
 
                 return PrivateCreator.CompareTo(other.PrivateCreator);
             }
 
-            return Element.CompareTo(other.Element);
+            return 0;
         }
 
         public int CompareTo(object obj)

@@ -348,7 +348,7 @@ namespace Dicom
             {
                 var privateTag = GetPrivateTag(tag, false);
                 if (privateTag == null) return false;
-                return _items.ContainsKey(privateTag);
+                return _items.Any(kv => kv.Key.Equals(privateTag));
             }
             return _items.ContainsKey(tag);
         }
