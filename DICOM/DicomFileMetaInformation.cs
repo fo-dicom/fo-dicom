@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Dicom.Network;
+
 namespace Dicom
 {
-    using Dicom.Network;
-
     /// <summary>
     /// Representation of the file meta information in a DICOM Part 10 file.
     /// </summary>
@@ -27,17 +27,26 @@ namespace Dicom
         /// </param>
         public DicomFileMetaInformation(DicomDataset dataset)
         {
-            this.Version = new byte[] { 0x00, 0x01 };
+            Version = new byte[] { 0x00, 0x01 };
 
-            this.MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
-            this.MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
-            this.TransferSyntax = dataset.InternalTransferSyntax;
+            MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
+            MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            TransferSyntax = dataset.InternalTransferSyntax;
 
-            this.ImplementationClassUID = DicomImplementation.ClassUID;
-            this.ImplementationVersionName = DicomImplementation.Version;
+            ImplementationClassUID = DicomImplementation.ClassUID;
+            ImplementationVersionName = DicomImplementation.Version;
 
             var aet = CreateSourceApplicationEntityTitle();
-            if (aet != null) this.SourceApplicationEntityTitle = aet;
+            if (aet != null) SourceApplicationEntityTitle = aet;
+
+            if (dataset.Contains(DicomTag.SendingApplicationEntityTitle))
+                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.SendingApplicationEntityTitle);
+            if (dataset.Contains(DicomTag.ReceivingApplicationEntityTitle))
+                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.ReceivingApplicationEntityTitle);
+            if (dataset.Contains(DicomTag.PrivateInformationCreatorUID))
+                PrivateInformationCreatorUID = dataset.Get<DicomUID>(DicomTag.PrivateInformationCreatorUID);
+            if (dataset.Contains(DicomTag.PrivateInformation))
+                PrivateInformation = dataset.Get<byte[]>(DicomTag.PrivateInformation);
         }
 
         /// <summary>
@@ -46,17 +55,26 @@ namespace Dicom
         /// <param name="metaInfo">DICOM file meta information to be updated.</param>
         public DicomFileMetaInformation(DicomFileMetaInformation metaInfo)
         {
-            this.Version = new byte[] { 0x00, 0x01 };
+            Version = new byte[] { 0x00, 0x01 };
 
-            if (metaInfo.Contains(DicomTag.MediaStorageSOPClassUID)) this.MediaStorageSOPClassUID = metaInfo.MediaStorageSOPClassUID;
-            if (metaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID)) this.MediaStorageSOPInstanceUID = metaInfo.MediaStorageSOPInstanceUID;
-            if (metaInfo.Contains(DicomTag.TransferSyntaxUID)) this.TransferSyntax = metaInfo.TransferSyntax;
+            if (metaInfo.Contains(DicomTag.MediaStorageSOPClassUID)) MediaStorageSOPClassUID = metaInfo.MediaStorageSOPClassUID;
+            if (metaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID)) MediaStorageSOPInstanceUID = metaInfo.MediaStorageSOPInstanceUID;
+            if (metaInfo.Contains(DicomTag.TransferSyntaxUID)) TransferSyntax = metaInfo.TransferSyntax;
 
-            this.ImplementationClassUID = DicomImplementation.ClassUID;
-            this.ImplementationVersionName = DicomImplementation.Version;
+            ImplementationClassUID = DicomImplementation.ClassUID;
+            ImplementationVersionName = DicomImplementation.Version;
 
             var aet = CreateSourceApplicationEntityTitle();
-            if (aet != null) this.SourceApplicationEntityTitle = aet;
+            if (aet != null) SourceApplicationEntityTitle = aet;
+
+            if (metaInfo.Contains(DicomTag.SendingApplicationEntityTitle))
+                SendingApplicationEntityTitle = metaInfo.SendingApplicationEntityTitle;
+            if (metaInfo.Contains(DicomTag.ReceivingApplicationEntityTitle))
+                ReceivingApplicationEntityTitle = metaInfo.ReceivingApplicationEntityTitle;
+            if (metaInfo.Contains(DicomTag.PrivateInformationCreatorUID))
+                PrivateInformationCreatorUID = metaInfo.PrivateInformationCreatorUID;
+            if (metaInfo.Contains(DicomTag.PrivateInformation))
+                PrivateInformation = metaInfo.PrivateInformation;
         }
 
         #endregion
@@ -165,6 +183,67 @@ namespace Dicom
             set
             {
                 AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Sending Application Entity Title.
+        /// </summary>
+        public string SendingApplicationEntityTitle
+        {
+            get
+            {
+                return Get<string>(DicomTag.SendingApplicationEntityTitle, null);
+            }
+            set
+            {
+                AddOrUpdate(DicomTag.SendingApplicationEntityTitle, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Receiving Application Entity Title (optional attribute).
+        /// </summary>
+        public string ReceivingApplicationEntityTitle
+        {
+            get
+            {
+                return Get<string>(DicomTag.ReceivingApplicationEntityTitle, null);
+            }
+            set
+            {
+                AddOrUpdate(DicomTag.ReceivingApplicationEntityTitle, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Private Information Creator UID (optional attribute).
+        /// </summary>
+        public DicomUID PrivateInformationCreatorUID
+        {
+            get
+            {
+                return Get<DicomUID>(DicomTag.PrivateInformationCreatorUID, null);
+            }
+            set
+            {
+                AddOrUpdate(DicomTag.PrivateInformationCreatorUID, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the private information associated with <see cref="PrivateInformationCreatorUID"/>.
+        /// Required if <see cref="PrivateInformationCreatorUID"/> is defined.
+        /// </summary>
+        public byte[] PrivateInformation
+        {
+            get
+            {
+                return Get<byte[]>(DicomTag.PrivateInformation, null);
+            }
+            set
+            {
+                AddOrUpdate(DicomTag.PrivateInformation, value);
             }
         }
 
