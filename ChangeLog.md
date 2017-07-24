@@ -1,4 +1,5 @@
 #### v.3.1.0 (TBD)
+* ReceivingApplicationEntityTitle and SendingApplicationEntityTitle omitted during Save (#563 #569)
 * Downgrade desktop libraries to framework version 4.5 (#561 #562)
 * Correct interpolation of rescaled overlay graphics (#545 #558)
 * Private tag is listed out or order (#535 #566)
