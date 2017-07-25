@@ -2,7 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 
@@ -25,7 +25,8 @@ namespace Dicom
 
         private static readonly DateTime Y2K = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private readonly Dictionary<string, DicomUID> _sourceUidMap = new Dictionary<string, DicomUID>();
+        private readonly ConcurrentDictionary<string, DicomUID> _sourceUidMap =
+            new ConcurrentDictionary<string, DicomUID>();
 
         #endregion
 
@@ -70,17 +71,7 @@ namespace Dicom
         public DicomUID Generate(DicomUID sourceUid)
         {
             if (sourceUid == null) throw new ArgumentNullException(nameof(sourceUid));
-
-            lock (_lock)
-            {
-                DicomUID destinationUid;
-                if (_sourceUidMap.TryGetValue(sourceUid.UID, out destinationUid)) return destinationUid;
-
-                destinationUid = DoGenerate();
-                _sourceUidMap.Add(sourceUid.UID, destinationUid);
-
-                return destinationUid;
-            }
+            return _sourceUidMap.GetOrAdd(sourceUid.UID, uid => GenerateNew());
         }
 
         /// <summary>
@@ -112,7 +103,17 @@ namespace Dicom
         {
             lock (_lock)
             {
-                return DoGenerate();
+                var ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
+                if (ticks <= _lastTicks) ticks = _lastTicks + 1;
+                _lastTicks = ticks;
+
+                var str = ticks.ToString();
+                if (str.EndsWith("0000")) str = str.Substring(0, str.Length - 4);
+
+                var uid = new StringBuilder();
+                uid.Append(InstanceRootUID.UID).Append('.').Append(str);
+
+                return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
             }
         }
 
@@ -128,21 +129,6 @@ namespace Dicom
             var uid = "2.25." + bigint;
 
             return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
-        }
-
-        private static DicomUID DoGenerate()
-        {
-            var ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-            if (ticks == _lastTicks) ++ticks;
-            _lastTicks = ticks;
-
-            var str = ticks.ToString();
-            if (str.EndsWith("0000")) str = str.Substring(0, str.Length - 4);
-
-            var uid = new StringBuilder();
-            uid.Append(InstanceRootUID.UID).Append('.').Append(str);
-
-            return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
         }
 
         #endregion
