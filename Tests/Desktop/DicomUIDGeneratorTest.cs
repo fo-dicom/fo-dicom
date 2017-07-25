@@ -26,7 +26,7 @@ namespace Dicom
         [Fact]
         public void Generate_MultipleInParallel_AllValuesUnique()
         {
-            const int n = 100;
+            const int n = 100000;
             var uids = new string[n];
             var generator = new DicomUIDGenerator();
             Parallel.For(0, n, i => { uids[i] = generator.Generate().UID; });
