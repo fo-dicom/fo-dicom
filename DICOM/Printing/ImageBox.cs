@@ -50,11 +50,11 @@ namespace Dicom.Printing
                 DicomSequence seq = null;
                 if (SOPClassUID == ColorSOPClassUID || this.Contains(DicomTag.BasicColorImageSequence))
                 {
-                    seq = this.Get<DicomSequence>(DicomTag.BasicColorImageSequence);
+                    seq = this.Get<DicomSequence>(DicomTag.BasicColorImageSequence, null);
                 }
                 if (seq == null)
                 {
-                    seq = this.Get<DicomSequence>(DicomTag.BasicGrayscaleImageSequence);
+                    seq = this.Get<DicomSequence>(DicomTag.BasicGrayscaleImageSequence, null);
                 }
 
                 if (seq != null && seq.Items.Count > 0)

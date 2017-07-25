@@ -439,7 +439,7 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get<DicomSequence>(DicomTag.ReferencedPresentationLUTSequence);
+                return this.Get<DicomSequence>(DicomTag.ReferencedPresentationLUTSequence, null);
             }
             set
             {

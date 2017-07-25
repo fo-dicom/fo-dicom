@@ -10,21 +10,19 @@ namespace Dicom.Printing
 
         public static readonly DicomUID SopClassUid = DicomUID.PresentationLUTSOPClass;
 
-        public DicomUID SopInstanceUid { get; private set; }
+        public DicomUID SopInstanceUid { get; }
 
         public DicomDataset LutSequence
         {
             get
             {
-                var lutSequence = this.Get<DicomSequence>(DicomTag.PresentationLUTSequence);
+                var lutSequence = Get<DicomSequence>(DicomTag.PresentationLUTSequence, null);
                 if (lutSequence != null)
                 {
                     return lutSequence.Items[0];
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
 
@@ -36,10 +34,8 @@ namespace Dicom.Printing
                 {
                     return LutSequence.Get<ushort[]>(DicomTag.LUTDescriptor);
                 }
-                else
-                {
-                    return new ushort[0];
-                }
+
+                return new ushort[0];
             }
             set
             {
@@ -62,10 +58,8 @@ namespace Dicom.Printing
                 {
                     return LutSequence.Get(DicomTag.LUTDescriptor, string.Empty);
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return string.Empty;
             }
             set
             {
@@ -88,10 +82,8 @@ namespace Dicom.Printing
                 {
                     return LutSequence.Get<ushort[]>(DicomTag.LUTData);
                 }
-                else
-                {
-                    return new ushort[0];
-                }
+
+                return new ushort[0];
             }
             set
             {
@@ -110,28 +102,21 @@ namespace Dicom.Printing
         {
             get
             {
-                return this.Get(DicomTag.PresentationLUTShape, string.Empty);
+                return Get(DicomTag.PresentationLUTShape, string.Empty);
             }
             set
             {
-                this.AddOrUpdate(DicomTag.PresentationLUTShape, value);
+                AddOrUpdate(DicomTag.PresentationLUTShape, value);
             }
         }
 
         #region Constrctuors
 
         public PresentationLut(DicomUID sopInstance = null)
-            : base()
         {
-            this.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
-            if (sopInstance == null || sopInstance.UID == string.Empty)
-            {
-                SopInstanceUid = DicomUID.Generate();
-            }
-            else
-            {
-                SopInstanceUid = sopInstance;
-            }
+            InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            SopInstanceUid = sopInstance == null || sopInstance.UID == string.Empty ? DicomUID.Generate() : sopInstance;
+
             CreateLutSequence();
         }
 
@@ -139,17 +124,19 @@ namespace Dicom.Printing
         {
             if (dataset == null)
             {
-                throw new ArgumentNullException("dataset");
+                throw new ArgumentNullException(nameof(dataset));
             }
             dataset.CopyTo(this);
 
+            SopInstanceUid = sopInstance == null || sopInstance.UID == string.Empty ? DicomUID.Generate() : sopInstance;
+            AddOrUpdate(DicomTag.SOPInstanceUID, SopInstanceUid);
         }
 
         public void CreateLutSequence()
         {
             var lutSequence = new DicomSequence(DicomTag.PresentationLUTSequence);
             lutSequence.Items.Add(new DicomDataset());
-            this.Add(lutSequence);
+            Add(lutSequence);
         }
 
         #endregion
