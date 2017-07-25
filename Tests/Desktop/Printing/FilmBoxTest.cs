@@ -50,6 +50,15 @@ namespace Dicom.Printing
             Assert.True(loaded.BasicImageBoxes.Count > 0);
         }
 
+        [Fact]
+        private void PresentationLut_NoReferencedPresentationLutSequence_GetterReturnsNull()
+        {
+            var session = new FilmSession(DicomUID.BasicFilmSessionSOPClass);
+            var box = new FilmBox(session, null, DicomTransferSyntax.ImplicitVRLittleEndian);
+
+            Assert.Null(box.PresentationLut);
+        }
+
         #endregion
     }
 }
