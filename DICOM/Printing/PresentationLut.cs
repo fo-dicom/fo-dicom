@@ -5,113 +5,29 @@ using System;
 
 namespace Dicom.Printing
 {
+    /// <summary>
+    /// Convenience representation of a Presentation LUT Information Object.
+    /// 
+    /// For more information, see http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_B.18.html .
+    /// </summary>
     public class PresentationLut : DicomDataset
     {
+        #region FIELDS
 
+        /// <summary>
+        /// Gets the Presentation LUT SOP Class UID.
+        /// </summary>
         public static readonly DicomUID SopClassUid = DicomUID.PresentationLUTSOPClass;
 
-        public DicomUID SopInstanceUid { get; }
+        #endregion
 
-        public DicomDataset LutSequence
-        {
-            get
-            {
-                var lutSequence = Get<DicomSequence>(DicomTag.PresentationLUTSequence, null);
-                if (lutSequence != null)
-                {
-                    return lutSequence.Items[0];
-                }
+        #region CONSTRUCTORS
 
-                return null;
-            }
-        }
-
-        public ushort[] LutDescriptor
-        {
-            get
-            {
-                if (LutSequence != null)
-                {
-                    return LutSequence.Get<ushort[]>(DicomTag.LUTDescriptor);
-                }
-
-                return new ushort[0];
-            }
-            set
-            {
-                if (LutSequence != null)
-                {
-                    LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
-                }
-                else
-                {
-                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
-                }
-            }
-        }
-
-        public string LutExplanation
-        {
-            get
-            {
-                if (LutSequence != null)
-                {
-                    return LutSequence.Get(DicomTag.LUTDescriptor, string.Empty);
-                }
-
-                return string.Empty;
-            }
-            set
-            {
-                if (LutSequence != null)
-                {
-                    LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
-                }
-                else
-                {
-                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
-                }
-            }
-        }
-
-        public ushort[] LutData
-        {
-            get
-            {
-                if (LutSequence != null)
-                {
-                    return LutSequence.Get<ushort[]>(DicomTag.LUTData);
-                }
-
-                return new ushort[0];
-            }
-            set
-            {
-                if (LutSequence != null)
-                {
-                    LutSequence.AddOrUpdate(DicomTag.LUTData, value);
-                }
-                else
-                {
-                    throw new InvalidOperationException("No LUT sequence found, call CreateLutSequence first");
-                }
-            }
-        }
-
-        public string PresentationLutShape
-        {
-            get
-            {
-                return Get(DicomTag.PresentationLUTShape, string.Empty);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.PresentationLUTShape, value);
-            }
-        }
-
-        #region Constrctuors
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PresentationLut"/> class.
+        /// </summary>
+        /// <param name="sopInstance">SOP Instance UID associated with the Presentation LUT information object. If <code>null</code>,
+        /// a UID will be automatically generated.</param>
         public PresentationLut(DicomUID sopInstance = null)
         {
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
@@ -120,6 +36,12 @@ namespace Dicom.Printing
             CreateLutSequence();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PresentationLut"/> class.
+        /// </summary>
+        /// <param name="sopInstance">SOP Instance UID associated with the Presentation LUT information object. If <code>null</code>,
+        /// a UID will be automatically generated.</param>
+        /// <param name="dataset">Dataset presumed to contain Presentation LUT data.</param>
         public PresentationLut(DicomUID sopInstance, DicomDataset dataset)
         {
             if (dataset == null)
@@ -128,14 +50,83 @@ namespace Dicom.Printing
             }
             dataset.CopyTo(this);
 
+            if (!dataset.Contains(DicomTag.PresentationLUTSequence)) CreateLutSequence();
+
             SopInstanceUid = sopInstance == null || sopInstance.UID == string.Empty ? DicomUID.Generate() : sopInstance;
             AddOrUpdate(DicomTag.SOPInstanceUID, SopInstanceUid);
         }
 
-        public void CreateLutSequence()
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets the SOP Instance UID of the Presentation LUT object.
+        /// </summary>
+        public DicomUID SopInstanceUid { get; }
+
+        /// <summary>
+        /// Gets the Presentation LUT Sequence dataset.
+        /// 
+        /// For more information, see http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.11.4.html .
+        /// </summary>
+        public DicomDataset LutSequence
         {
-            var lutSequence = new DicomSequence(DicomTag.PresentationLUTSequence);
-            lutSequence.Items.Add(new DicomDataset());
+            get
+            {
+                var lutSequence = Get<DicomSequence>(DicomTag.PresentationLUTSequence);
+                return lutSequence.Items[0];
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the LUT Descriptor, i.e. the format of the LUT data.
+        /// 
+        /// If defined, the LUT Descriptor contains three values; number of entries in the lookup table, first input value mapped (always 0),
+        /// and number of bits for each entry in the <see cref="LutData">LUT Data</see> (between 10 and 16, inclusive).
+        /// 
+        /// For more details, see http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.11.4.html#sect_C.11.4.1
+        /// </summary>
+        public ushort[] LutDescriptor
+        {
+            get { return LutSequence.Get(DicomTag.LUTDescriptor, new ushort[0]); }
+            set { LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets a free-form text explanation of the meaning of the LUT.
+        /// </summary>
+        public string LutExplanation
+        {
+            get { return LutSequence.Get(DicomTag.LUTExplanation, string.Empty); }
+            set { LutSequence.AddOrUpdate(DicomTag.LUTExplanation, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the LUT entry values (P-Values).
+        /// </summary>
+        public ushort[] LutData
+        {
+            get { return LutSequence.Get(DicomTag.LUTData, new ushort[0]); }
+            set { LutSequence.AddOrUpdate(DicomTag.LUTData, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the shape of the Presentation LUT. Enumerated values 'IDENTITY' and 'LIN OD'.
+        /// </summary>
+        public string PresentationLutShape
+        {
+            get { return Get(DicomTag.PresentationLUTShape, string.Empty); }
+            set { AddOrUpdate(DicomTag.PresentationLUTShape, value); }
+        }
+
+        #endregion
+
+        #region METHODS
+
+        private void CreateLutSequence()
+        {
+            var lutSequence = new DicomSequence(DicomTag.PresentationLUTSequence, new DicomDataset());
             Add(lutSequence);
         }
 
