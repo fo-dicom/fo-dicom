@@ -22,6 +22,7 @@
 * Deprecate Legacy class library (#415 #449)
 * Provide System.Drawing.Bitmap support for image rendering with .NET Core (#409 #450 #459)
 * Added optional parameter for use in extended DicomService (#348 #441)
+* Pass through unsupported user data during PDU parsing (#242 #443)
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466)
 
