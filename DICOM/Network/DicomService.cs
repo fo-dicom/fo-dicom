@@ -66,7 +66,7 @@ namespace Dicom.Network
 	/// Delegate for passing byte array
 	/// </summary>
 	/// <param name="unsupportedBytes">byte array to be passed to the delegate.</param>
-	public delegate void HandleBytesDelegate(byte[] unsupportedBytes);
+	public delegate void PDUBytesHandler(byte[] unsupportedBytes);
 
     /// <summary>
     /// Base class for DICOM network services.
@@ -190,11 +190,10 @@ namespace Dicom.Network
         /// </summary>
         protected Task PduListener { get; }
 
-	/// <summary>
-	/// Event to pass unsupported byte arrays back
-	/// </summary>
-	public HandleBytesDelegate HandlePDUBytes;
-
+        /// <summary>
+        /// Gets or sets an event handler to handle unsupported PDU bytes.
+        /// </summary>
+        public PDUBytesHandler DoHandlePDUBytes { get; set; }
 
         #endregion
 
@@ -413,11 +412,6 @@ namespace Dicom.Network
 
                     var raw = new RawPDU(buffer);
 
-		    if (HandlePDUBytes != null)
-		    {
-			raw.HandlePDUBytes += HandlePDUBytes;
-		    }
-
                     switch (raw.Type)
                     {
                         case 0x01:
@@ -427,8 +421,19 @@ namespace Dicom.Network
                                 RemoteHost = _network.RemoteHost,
                                 RemotePort = _network.RemotePort
                             };
+
                             var pdu = new AAssociateRQ(Association);
+                            if (DoHandlePDUBytes != null)
+                            {
+                                pdu.HandlePDUBytes += DoHandlePDUBytes;
+                            }
+
                             pdu.Read(raw);
+                            if (DoHandlePDUBytes != null)
+                            {
+                                pdu.HandlePDUBytes -= DoHandlePDUBytes;
+                            }
+
                             LogID = Association.CallingAE;
                             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
                             Logger.Info(
