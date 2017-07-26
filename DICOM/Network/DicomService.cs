@@ -61,6 +61,13 @@ using Dicom.Log;
 
 namespace Dicom.Network
 {
+
+	/// <summary>
+	/// Delegate for passing byte array
+	/// </summary>
+	/// <param name="unsupportedBytes">byte array to be passed to the delegate.</param>
+	public delegate void HandleBytesDelegate(byte[] unsupportedBytes);
+
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
@@ -182,6 +189,12 @@ namespace Dicom.Network
         /// Gets the <see cref="Task"/> that listens for PDUs.
         /// </summary>
         protected Task PduListener { get; }
+
+	/// <summary>
+	/// Event to pass unsupported byte arrays back
+	/// </summary>
+	public HandleBytesDelegate HandlePDUBytes;
+
 
         #endregion
 
@@ -399,6 +412,11 @@ namespace Dicom.Network
                     }
 
                     var raw = new RawPDU(buffer);
+
+		    if (HandlePDUBytes != null)
+		    {
+			raw.HandlePDUBytes += HandlePDUBytes;
+		    }
 
                     switch (raw.Type)
                     {

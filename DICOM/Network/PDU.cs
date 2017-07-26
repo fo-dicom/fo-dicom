@@ -408,6 +408,11 @@ namespace Dicom.Network
     {
         private DicomAssociation _assoc;
 
+	/// <summary>
+	/// Event to pass unsupported byte arrays back
+	/// </summary>
+	public HandleBytesDelegate HandlePDUBytes;
+
         /// <summary>
         /// Initializes new A-ASSOCIATE-RQ
         /// </summary>
@@ -644,8 +649,15 @@ namespace Dicom.Network
                         }
                         else
                         {
-                            raw.SkipBytes("Unhandled User Item", ul);
-                        }
+			    if (HandlePDUBytes != null)
+			    {
+				HandlePDUBytes(raw.ReadBytes("Unhandled User Item", ul));
+			    }
+			    else
+			    {
+				raw.SkipBytes("Unhandled User Item", ul);
+			    }
+			}
                     }
                 }
             }
