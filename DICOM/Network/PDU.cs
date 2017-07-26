@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using Dicom.IO;
 
@@ -406,7 +405,7 @@ namespace Dicom.Network
     /// <summary>A-ASSOCIATE-RQ</summary>
     public class AAssociateRQ : PDU
     {
-        private DicomAssociation _assoc;
+        private readonly DicomAssociation _assoc;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-RQ
@@ -421,6 +420,15 @@ namespace Dicom.Network
         {
             return "A-ASSOCIATE-RQ";
         }
+
+        #region EVENTS
+
+        /// <summary>
+        /// Event to handle unsupported PDU bytes.
+        /// </summary>
+        public event PDUBytesHandler HandlePDUBytes;
+
+        #endregion
 
         #region Write
 
@@ -644,7 +652,14 @@ namespace Dicom.Network
                         }
                         else
                         {
-                            raw.SkipBytes("Unhandled User Item", ul);
+                            if (HandlePDUBytes != null)
+                            {
+                                HandlePDUBytes(raw.ReadBytes("Unhandled User Item", ul));
+                            }
+                            else
+                            {
+                                raw.SkipBytes("Unhandled User Item", ul);
+                            }
                         }
                     }
                 }

@@ -61,6 +61,13 @@ using Dicom.Log;
 
 namespace Dicom.Network
 {
+
+	/// <summary>
+	/// Delegate for passing byte array
+	/// </summary>
+	/// <param name="unsupportedBytes">byte array to be passed to the delegate.</param>
+	public delegate void PDUBytesHandler(byte[] unsupportedBytes);
+
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
@@ -182,6 +189,11 @@ namespace Dicom.Network
         /// Gets the <see cref="Task"/> that listens for PDUs.
         /// </summary>
         protected Task PduListener { get; }
+
+        /// <summary>
+        /// Gets or sets an event handler to handle unsupported PDU bytes.
+        /// </summary>
+        public PDUBytesHandler DoHandlePDUBytes { get; set; }
 
         #endregion
 
@@ -409,8 +421,19 @@ namespace Dicom.Network
                                 RemoteHost = _network.RemoteHost,
                                 RemotePort = _network.RemotePort
                             };
+
                             var pdu = new AAssociateRQ(Association);
+                            if (DoHandlePDUBytes != null)
+                            {
+                                pdu.HandlePDUBytes += DoHandlePDUBytes;
+                            }
+
                             pdu.Read(raw);
+                            if (DoHandlePDUBytes != null)
+                            {
+                                pdu.HandlePDUBytes -= DoHandlePDUBytes;
+                            }
+
                             LogID = Association.CallingAE;
                             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
                             Logger.Info(
