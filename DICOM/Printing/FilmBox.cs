@@ -127,7 +127,7 @@ namespace Dicom.Printing
         /// </item>
         /// </list>
         /// </remarks>
-        public string FilmOrienation
+        public string FilmOrientation
         {
             get
             {
@@ -529,7 +529,7 @@ namespace Dicom.Printing
 
             if (!this.Contains(DicomTag.FilmOrientation))
             {
-                FilmOrienation = "PORTRAIT";
+                FilmOrientation = "PORTRAIT";
             }
             if (!this.Contains(DicomTag.FilmSizeID))
             {
