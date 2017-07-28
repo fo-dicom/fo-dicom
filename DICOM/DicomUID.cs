@@ -128,7 +128,7 @@ namespace Dicom
         public static DicomUID Generate()
         {
             var generator = new DicomUIDGenerator();
-            return generator.Generate();
+            return DicomUIDGenerator.GenerateNew();
         }
 
         public static DicomUID Append(DicomUID baseUid, long nextSeq)

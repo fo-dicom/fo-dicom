@@ -3,17 +3,17 @@
 
 #if !NET35
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Dicom.Log;
+
 namespace Dicom.Network
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dicom.Log;
-
     /// <summary>
     /// Representation of a DICOM server.
     /// </summary>
@@ -23,17 +23,17 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private bool disposed;
+        private bool _disposed;
 
-        private readonly string certificateName;
+        private readonly string _certificateName;
 
-        private readonly Encoding fallbackEncoding;
+        private readonly Encoding _fallbackEncoding;
 
-        private readonly CancellationTokenSource cancellationSource;
+        private readonly CancellationTokenSource _cancellationSource;
 
-        private readonly List<T> clients;
+        private readonly List<T> _clients;
 
-        private readonly object userState;
+        private readonly object _userState;
 
         #endregion
 
@@ -57,22 +57,22 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null)
         {
-            this.Port = port;
-            this.userState = userState;
-            this.certificateName = certificateName;
-            this.fallbackEncoding = fallbackEncoding;
-            this.cancellationSource = new CancellationTokenSource();
-            this.clients = new List<T>();
+            Port = port;
+            _userState = userState;
+            _certificateName = certificateName;
+            _fallbackEncoding = fallbackEncoding;
+            _cancellationSource = new CancellationTokenSource();
+            _clients = new List<T>();
 
-            this.Options = options;
-            this.Logger = logger ?? LogManager.GetLogger("Dicom.Network");
-            this.IsListening = false;
-            this.Exception = null;
+            Options = options;
+            Logger = logger ?? LogManager.GetLogger("Dicom.Network");
+            IsListening = false;
+            Exception = null;
 
-            this.BackgroundWorker = Task.WhenAll(OnTimerTickAsync(), ListenAsync());
+            BackgroundWorker = Task.WhenAll(ListenAsync(), OnTimerTickAsync());
 
-            this.disposed = false;
-            this.Register();
+            _disposed = false;
+            Register();
         }
 
         #endregion
@@ -113,7 +113,7 @@ namespace Dicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int DisconnectedClientsCount => this.clients.Count(client => !client.IsConnected);
+        internal int DisconnectedClientsCount => _clients.Count(client => !client.IsConnected);
 
         #endregion
 
@@ -124,9 +124,9 @@ namespace Dicom.Network
         /// </summary>
         public void Stop()
         {
-            if (!this.cancellationSource.IsCancellationRequested)
+            if (!_cancellationSource.IsCancellationRequested)
             {
-                this.cancellationSource.Cancel();
+                _cancellationSource.Cancel();
             }
         }
 
@@ -135,7 +135,7 @@ namespace Dicom.Network
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
         }
 
         /// <summary>
@@ -144,20 +144,20 @@ namespace Dicom.Network
         /// <param name="disposing">True if called from <see cref="Dispose()"/>, false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposed)
+            if (_disposed)
             {
                 return;
             }
 
             if (disposing)
             {
-                this.Stop();
-                this.cancellationSource.Dispose();
-                this.clients.Clear();
+                Stop();
+                _cancellationSource.Dispose();
+                _clients.Clear();
             }
 
-            this.Unregister();
-            this.disposed = true;
+            Unregister();
+            _disposed = true;
         }
 
         /// <summary>
@@ -168,9 +168,9 @@ namespace Dicom.Network
             var added = DicomServer.Add(this);
             if (!added)
             {
-                this.Logger.Warn(
+                Logger.Warn(
                     "Could not register DICOM server on port {0}, probably because another server is already registered on the same port.",
-                    this.Port);
+                    Port);
             }
         }
 
@@ -182,9 +182,9 @@ namespace Dicom.Network
             var removed = DicomServer.Remove(this);
             if (!removed)
             {
-                this.Logger.Warn(
+                Logger.Warn(
                     "Could not unregister DICOM server on port {0}, either because registration failed or because server has already been unregistered once.",
-                    this.Port);
+                    Port);
             }
         }
 
@@ -195,8 +195,8 @@ namespace Dicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            var instance = (T)Activator.CreateInstance(typeof(T), stream, this.fallbackEncoding, this.Logger);
-            instance.UserState = this.userState;
+            var instance = (T)Activator.CreateInstance(typeof(T), stream, _fallbackEncoding, Logger);
+            instance.UserState = _userState;
             return instance;
         }
 
@@ -207,50 +207,61 @@ namespace Dicom.Network
         {
             try
             {
-                var noDelay = this.Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
+                var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
-                var listener = NetworkManager.CreateNetworkListener(this.Port);
+                var listener = NetworkManager.CreateNetworkListener(Port);
                 await listener.StartAsync().ConfigureAwait(false);
-                this.IsListening = true;
+                IsListening = true;
 
-                while (!this.cancellationSource.IsCancellationRequested)
+                while (!_cancellationSource.IsCancellationRequested)
                 {
-                    var networkStream =
-                        await listener.AcceptNetworkStreamAsync(
-                            this.certificateName,
-                            noDelay,
-                            this.cancellationSource.Token).ConfigureAwait(false);
+                    var token = _cancellationSource.Token;
+                    await WaitUntilClientIsAttachableAsync(token).ConfigureAwait(false);
+
+                    var networkStream = await listener.AcceptNetworkStreamAsync(_certificateName, noDelay, token)
+                        .ConfigureAwait(false);
 
                     if (networkStream != null)
                     {
-                        var scp = this.CreateScp(networkStream);
-                        if (this.Options != null)
+                        var scp = CreateScp(networkStream);
+                        if (Options != null)
                         {
-                            scp.Options = this.Options;
+                            scp.Options = Options;
                         }
 
-                        this.clients.Add(scp);
+                        _clients.Add(scp);
                     }
                 }
 
                 listener.Stop();
-                this.IsListening = false;
-                this.Exception = null;
+                IsListening = false;
+                Exception = null;
             }
             catch (OperationCanceledException)
             {
-                this.Logger.Info("Listening manually terminated");
+                Logger.Info("Listening manually terminated");
 
-                this.IsListening = false;
-                this.Exception = null;
+                IsListening = false;
+                Exception = null;
             }
             catch (Exception e)
             {
-                this.Logger.Error("Exception listening for clients, {@error}", e);
+                Logger.Error("Exception listening for clients, {@error}", e);
 
-                this.Stop();
-                this.IsListening = false;
-                this.Exception = e;
+                Stop();
+                IsListening = false;
+                Exception = e;
+            }
+        }
+
+        private async Task WaitUntilClientIsAttachableAsync(CancellationToken token)
+        {
+            var maxClientsAllowed = Options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
+            if (maxClientsAllowed == 0) return;
+
+            while (!token.IsCancellationRequested && _clients.Count >= maxClientsAllowed)
+            {
+                await Task.Delay(10, token).ConfigureAwait(false);
             }
         }
 
@@ -259,21 +270,21 @@ namespace Dicom.Network
         /// </summary>
         private async Task OnTimerTickAsync()
         {
-            while (!this.cancellationSource.IsCancellationRequested)
+            while (!_cancellationSource.IsCancellationRequested)
             {
                 try
                 {
-                    await Task.Delay(1000, this.cancellationSource.Token).ConfigureAwait(false);
-                    this.clients.RemoveAll(client => !client.IsConnected);
+                    await Task.Delay(1000, _cancellationSource.Token).ConfigureAwait(false);
+                    _clients.RemoveAll(client => !client.IsConnected);
                 }
                 catch (OperationCanceledException)
                 {
-                    this.Logger.Info("Disconnected client cleanup manually terminated.");
-                    this.clients.RemoveAll(client => !client.IsConnected);
+                    Logger.Info("Disconnected client cleanup manually terminated.");
+                    _clients.RemoveAll(client => !client.IsConnected);
                 }
                 catch (Exception e)
                 {
-                    this.Logger.Warn("Exception removing disconnected clients, {@error}", e);
+                    Logger.Warn("Exception removing disconnected clients, {@error}", e);
                 }
             }
         }
@@ -291,7 +302,7 @@ namespace Dicom.Network
         private static readonly HashSet<IDicomServer> Servers =
             new HashSet<IDicomServer>(DicomServerPortComparer.Default);
 
-        private static readonly object locker = new object();
+        private static readonly object _locker = new object();
 
         #endregion
 
@@ -342,7 +353,7 @@ namespace Dicom.Network
             }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            lock (locker)
+            lock (_locker)
             {
                 return new DicomServer<T>(port, userState, certificateName, options, fallbackEncoding, logger);
             }
@@ -376,7 +387,7 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be added, false otherwise.</returns>
         internal static bool Add(IDicomServer server)
         {
-            lock (locker)
+            lock (_locker)
             {
                 return Servers.Add(server);
             }
@@ -389,7 +400,7 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
         internal static bool Remove(IDicomServer server)
         {
-            lock (locker)
+            lock (_locker)
             {
                 return Servers.Remove(server);
             }

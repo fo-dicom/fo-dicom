@@ -530,7 +530,7 @@ namespace Dicom.Serialization
                            {
                              new DicomPersonName(DicomTag.PatientName, new[] { "Anna^Pelle", null, "Olle^Jöns^Pyjamas" }),
                              { DicomTag.SOPClassUID, DicomUID.RTPlanStorage },
-                             { DicomTag.SOPInstanceUID, new DicomUIDGenerator().Generate() },
+                             { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateNew() },
                              { DicomTag.SeriesInstanceUID, new DicomUID[] { } },
                              { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } },
                            };

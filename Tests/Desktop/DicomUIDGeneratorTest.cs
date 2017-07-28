@@ -28,17 +28,16 @@ namespace Dicom
         {
             const int n = 100000;
             var uids = new string[n];
-            var generator = new DicomUIDGenerator();
-            Parallel.For(0, n, i => { uids[i] = generator.Generate().UID; });
+            Parallel.For(0, n, i => { uids[i] = DicomUIDGenerator.GenerateNew().UID; });
             Assert.Equal(n, uids.Distinct().Count());
         }
 
         [Fact]
         public void Generate_SourceUidKnown_ReturnsMappedDestinationUid()
         {
-            var generator = new DicomUIDGenerator();
-            var source = generator.Generate();
+            var source = DicomUIDGenerator.GenerateNew();
 
+            var generator = new DicomUIDGenerator();
             var expected = generator.Generate(source);
             var actual = generator.Generate(source);
 
