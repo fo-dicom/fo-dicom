@@ -1,4 +1,5 @@
 #### v.3.1.0 (TBD)
+* Private group not added to tag when private tag item is added to dataset (#570 #577)
 * ReceivingApplicationEntityTitle and SendingApplicationEntityTitle omitted during Save (#563 #569)
 * Downgrade desktop libraries to framework version 4.5 (#561 #562)
 * DicomUIDGenerator.Generate UID Collisions (Non-unique UIDs) (#546 #571)
