@@ -1,0 +1,9 @@
+LIBRARY "CharLS"
+EXPORTS
+    JpegLsEncode
+    JpegLsDecode
+    JpegLsDecodeRect
+    JpegLsReadHeader
+    JpegLsEncodeStream
+    JpegLsDecodeStream
+    JpegLsReadHeaderStream
