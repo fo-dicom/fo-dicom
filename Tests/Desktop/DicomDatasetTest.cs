@@ -400,6 +400,29 @@ namespace Dicom
         }
 
         [Fact]
+        public void Add_DicomItemOnNonExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
+        {
+            var dataset = new DicomDataset();
+
+            var tag1 = new DicomTag(0x3001, 0x08, "PRIVATE");
+            var tag2 = new DicomTag(0x3001, 0x12, "PRIVATE");
+            var tag3 = new DicomTag(0x3001, 0x08, "ALSOPRIVATE");
+
+            // By using the .Add(DicomTag, ...) method, private tags get automatically updated so that a private
+            // creator group number is generated (if private creator is new) and inserted into the tag element.
+            dataset.Add(tag1, 1);
+            dataset.Add(tag2, 3.14);
+
+            // Should confirm that element of the tag is not updated to include the private creator group number.
+            dataset.Add(new DicomIntegerString(tag3, 50));
+
+            var tag3Private = dataset.GetPrivateTag(tag3);
+            var contained = dataset.SingleOrDefault(item => item.Tag.Group == tag3Private.Group &&
+                                                        item.Tag.Element == tag3Private.Element);
+            Assert.NotNull(contained);
+        }
+
+        [Fact]
         public void AddOrUpdate_DicomItemOnExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
         {
             var dataset = new DicomDataset();
