@@ -420,6 +420,9 @@ namespace Dicom
             var contained = dataset.SingleOrDefault(item => item.Tag.Group == tag3Private.Group &&
                                                         item.Tag.Element == tag3Private.Element);
             Assert.NotNull(contained);
+
+            var fifthItem = dataset.ElementAt(4);
+            Assert.Equal(fifthItem, contained);
         }
 
         [Fact]
@@ -448,6 +451,9 @@ namespace Dicom
             contained = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
                                                         item.Tag.Element == tag1Private.Element);
             Assert.NotNull(contained);
+
+            var thirdItem = dataset.ElementAt(2);
+            Assert.Equal(thirdItem, contained);
         }
 
         #endregion
