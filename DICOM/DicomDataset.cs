@@ -1,17 +1,16 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+using Dicom.IO.Buffer;
+using Dicom.StructuredReport;
+
 namespace Dicom
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
-    using Dicom.IO.Buffer;
-    using Dicom.StructuredReport;
-
-
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>
@@ -19,7 +18,7 @@ namespace Dicom
     {
         #region FIELDS
 
-        private IDictionary<DicomTag, DicomItem> _items;
+        private readonly IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
 
@@ -548,14 +547,28 @@ namespace Dicom
                 {
                     foreach (var item in items.Where(i => i != null))
                     {
-                        _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
+                        var tag = item.Tag;
+                        if (tag.IsPrivate)
+                        {
+                            tag = GetPrivateTag(tag);
+                            item.Tag = tag;
+                        }
+
+                        _items[tag] = item;
                     }
                 }
                 else
                 {
                     foreach (var item in items.Where(i => i != null))
                     {
-                        _items.Add(item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag, item);
+                        var tag = item.Tag;
+                        if (tag.IsPrivate)
+                        {
+                            tag = GetPrivateTag(tag);
+                            item.Tag = tag;
+                        }
+
+                        _items.Add(tag, item);
                     }
                 }
             }
@@ -572,13 +585,20 @@ namespace Dicom
         {
             if (item != null)
             {
+                var tag = item.Tag;
+                if (tag.IsPrivate)
+                {
+                    tag = GetPrivateTag(tag);
+                    item.Tag = tag;
+                }
+
                 if (allowUpdate)
                 {
-                    _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
+                    _items[tag] = item;
                 }
                 else
                 {
-                    _items.Add(item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag, item);
+                    _items.Add(tag, item);
                 }
             }
             return this;
