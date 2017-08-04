@@ -5,6 +5,7 @@
 * DicomUIDGenerator.Generate UID Collisions (Non-unique UIDs) (#546 #571)
 * Correct interpolation of rescaled overlay graphics (#545 #558)
 * Some getters of optional sequences do not account for missing sequence (#544 #572)
+* DicomCFindRequest is unsuitable for "Search for Unified Procedure Step (C-FIND)" (#540 #580)
 * Private tag is listed out or order (#535 #566)
 * JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
 * DicomDictionary.GetEnumerator() is very slow (#532 #534)

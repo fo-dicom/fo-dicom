@@ -1,14 +1,17 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+using System.Threading;
+
+using Xunit;
+
 namespace Dicom.Network
 {
-    using System.Threading;
-
-    using Xunit;
-
     public class DicomCGetRequestTest
     {
+        #region Unit tests
+
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public void DicomCGetRequest_OneImageInSeries_Received()
         {
@@ -80,5 +83,33 @@ namespace Dicom.Network
 
             Assert.Equal(140, counter);
         }
+
+        [Fact]
+        public void Level_GetterOnRequestCreatedFromCommand_Throws()
+        {
+            var request = new DicomCGetRequest(new DicomDataset());
+            var exception = Record.Exception(() => request.Level);
+            Assert.NotNull(exception);
+        }
+
+        [Theory, MemberData(nameof(InstancesLevels))]
+        public void Level_Getter_ReturnsCorrectQueryRetrieveLevel(DicomCGetRequest request, DicomQueryRetrieveLevel expected)
+        {
+            var actual = request.Level;
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Support Data
+
+        public static readonly IEnumerable<object[]> InstancesLevels = new[] 
+        {
+            new object[] { new DicomCGetRequest("1.2.3"), DicomQueryRetrieveLevel.Study },
+            new object[] { new DicomCGetRequest("1.2.3", "2.3.4"), DicomQueryRetrieveLevel.Series },
+            new object[] { new DicomCGetRequest("1.2.3", "2.3.4", "3.4.5"), DicomQueryRetrieveLevel.Image },
+        };
+
+        #endregion
     }
 }
