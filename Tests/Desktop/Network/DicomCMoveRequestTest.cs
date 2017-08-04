@@ -12,6 +12,14 @@ namespace Dicom.Network
     {
         #region Unit Tests
 
+        [Fact]
+        public void Level_GetterOnRequestCreatedFromCommand_Throws()
+        {
+            var request = new DicomCMoveRequest(new DicomDataset());
+            var exception = Record.Exception(() => request.Level);
+            Assert.NotNull(exception);
+        }
+
         [Theory, MemberData(nameof(InstancesLevels))]
         public void Level_Getter_ReturnsCorrectQueryRetrieveLevel(DicomCMoveRequest request, DicomQueryRetrieveLevel expected)
         {

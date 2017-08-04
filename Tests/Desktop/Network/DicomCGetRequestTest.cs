@@ -84,6 +84,14 @@ namespace Dicom.Network
             Assert.Equal(140, counter);
         }
 
+        [Fact]
+        public void Level_GetterOnRequestCreatedFromCommand_Throws()
+        {
+            var request = new DicomCGetRequest(new DicomDataset());
+            var exception = Record.Exception(() => request.Level);
+            Assert.NotNull(exception);
+        }
+
         [Theory, MemberData(nameof(InstancesLevels))]
         public void Level_Getter_ReturnsCorrectQueryRetrieveLevel(DicomCGetRequest request, DicomQueryRetrieveLevel expected)
         {

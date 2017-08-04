@@ -93,7 +93,7 @@ namespace Dicom.Network
         {
             get
             {
-                return Dataset.Get(DicomTag.QueryRetrieveLevel, DicomQueryRetrieveLevel.NotApplicable);
+                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
             }
             private set
             {
