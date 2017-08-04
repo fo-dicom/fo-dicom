@@ -93,12 +93,22 @@ namespace Dicom.Network
         {
             get
             {
-                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
+                return Dataset.Get(DicomTag.QueryRetrieveLevel, DicomQueryRetrieveLevel.NotApplicable);
             }
             private set
             {
-                Dataset.Remove(DicomTag.QueryRetrieveLevel);
-                if (value != DicomQueryRetrieveLevel.Worklist) Dataset.Add(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                switch (value)
+                {
+                    case DicomQueryRetrieveLevel.Patient:
+                    case DicomQueryRetrieveLevel.Study:
+                    case DicomQueryRetrieveLevel.Series:
+                    case DicomQueryRetrieveLevel.Image:
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        break;
+                    default:
+                        Dataset.Remove(DicomTag.QueryRetrieveLevel);
+                        break;
+                }
             }
         }
 

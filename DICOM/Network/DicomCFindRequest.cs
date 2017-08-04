@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
-    using System;
-
     /// <summary>
     /// Representation of a C-FIND request.
     /// </summary>
@@ -33,6 +33,24 @@ namespace Dicom.Network
             Level = level;
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomCFindRequest"/> class.
+        /// </summary>
+        /// <param name="affectedSopClassUid">Affected SOP Class UID.</param>
+        /// <param name="priority">Command priority.</param>
+        public DicomCFindRequest(DicomUID affectedSopClassUid, DicomPriority priority = DicomPriority.Medium)
+            : base(DicomCommandField.CFindRequest, affectedSopClassUid, priority)
+        {
+            if (!affectedSopClassUid.Equals(DicomUID.ModalityWorklistInformationModelFIND)
+                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepPullSOPClass) 
+                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepWatchSOPClass))
+            {
+                throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
+            }
+
+            Dataset = new DicomDataset();
+        }
+
         #endregion
 
         #region PROPERTIES
@@ -44,12 +62,22 @@ namespace Dicom.Network
         {
             get
             {
-                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
+                return Dataset.Get(DicomTag.QueryRetrieveLevel, DicomQueryRetrieveLevel.NotApplicable);
             }
             private set
             {
-                Dataset.Remove(DicomTag.QueryRetrieveLevel);
-                if (value != DicomQueryRetrieveLevel.Worklist) Dataset.Add(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                switch (value)
+                { 
+                    case DicomQueryRetrieveLevel.Patient:
+                    case DicomQueryRetrieveLevel.Study:
+                    case DicomQueryRetrieveLevel.Series:
+                    case DicomQueryRetrieveLevel.Image:
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        break;
+                    default:
+                        Dataset.Remove(DicomTag.QueryRetrieveLevel);
+                        break;
+                }
             }
         }
 
@@ -203,7 +231,7 @@ namespace Dicom.Network
             string modality = null,
             DicomDateRange scheduledDateTime = null)
         {
-            var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Worklist);
+            var dimse = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFIND);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
