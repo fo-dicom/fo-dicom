@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+
+using Dicom.Imaging.Codec;
+using Dicom.Imaging.Render;
+
 namespace Dicom.Imaging
 {
-    using System.Linq;
-
-    using Dicom.Imaging.Codec;
-    using Dicom.Imaging.Render;
-
     /// <summary>
     /// DICOM Image class for image rendering.
     /// </summary>
@@ -26,6 +26,8 @@ namespace Dicom.Imaging
         private DicomOverlayData[] _overlays;
 
         private int _overlayColor = unchecked((int)0xffff00ff);
+
+        private readonly object _lock = new object();
 
         #endregion
 
@@ -173,7 +175,7 @@ namespace Dicom.Imaging
                 {
                     throw new DicomImagingException(
                         "Grayscale color map not applicable for photometric interpretation: {0}",
-                        this.Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation));
+                        Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation));
                 }
             }
         }
@@ -210,8 +212,8 @@ namespace Dicom.Imaging
             {
                 foreach (var overlay in _overlays)
                 {
-                    if ((frame + 1) < overlay.OriginFrame
-                        || (frame + 1) > (overlay.OriginFrame + overlay.NumberOfFrames - 1)) continue;
+                    if (frame + 1 < overlay.OriginFrame
+                        || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1) continue;
 
                     var og = new OverlayGraphic(
                         PixelDataFactory.Create(overlay),
@@ -219,11 +221,11 @@ namespace Dicom.Imaging
                         overlay.OriginY - 1,
                         OverlayColor);
                     graphic.AddOverlay(og);
-                    og.Scale(this._scale);
+                    og.Scale(_scale);
                 }
             }
 
-            return graphic.RenderImage(this._pipeline.LUT);
+            return graphic.RenderImage(_pipeline.LUT);
         }
 
         /// <summary>
@@ -236,10 +238,22 @@ namespace Dicom.Imaging
         {
             Dataset = DicomTranscoder.ExtractOverlays(dataset);
 
-            if (PixelData == null)
+            bool isPixelDataNull;
+            lock (_lock)
             {
-                PixelData = DicomPixelData.Create(Dataset);
-                PhotometricInterpretation = PixelData.PhotometricInterpretation;
+                isPixelDataNull = PixelData == null;
+            }
+
+            if (isPixelDataNull)
+            {
+                lock (_lock)
+                {
+                    if (PixelData == null)
+                    {
+                        PixelData = DicomPixelData.Create(Dataset);
+                        PhotometricInterpretation = PixelData.PhotometricInterpretation;
+                    }
+                }
             }
             if (frame < 0)
             {
@@ -251,7 +265,7 @@ namespace Dicom.Imaging
             {
                 // decompress single frame from source dataset
                 var transcoder = new DicomTranscoder(
-                                     this.Dataset.InternalTransferSyntax,
+                                     Dataset.InternalTransferSyntax,
                                      DicomTransferSyntax.ExplicitVRLittleEndian);
                 var buffer = transcoder.DecodeFrame(Dataset, frame);
 
@@ -263,15 +277,13 @@ namespace Dicom.Imaging
                 TrimDecodedPixelDataProperties(pixelData, Dataset.InternalTransferSyntax);
                 pixelData.AddFrame(buffer);
 
-                _pixelData = PixelDataFactory.Create(pixelData, 0);
+                _pixelData = PixelDataFactory.Create(pixelData, 0).Rescale(_scale);
             }
             else
             {
                 // pull uncompressed frame from source pixel data
-                _pixelData = PixelDataFactory.Create(PixelData, frame);
+                _pixelData = PixelDataFactory.Create(PixelData, frame).Rescale(_scale);
             }
-
-            _pixelData = _pixelData.Rescale(_scale);
 
             _overlays =
                 DicomOverlayData.FromDataset(Dataset)
