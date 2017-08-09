@@ -4,48 +4,76 @@
 namespace Dicom.Imaging
 {
     /// <summary>
-    /// Photometric Interpretation
+    /// Photometric Interpretation.
     /// </summary>
     public class PhotometricInterpretation : DicomParseable
     {
         #region Constructor
 
-        private PhotometricInterpretation()
+        private PhotometricInterpretation(string value, string description, bool isColor, bool isPalette, bool isYBR,
+            ColorSpace colorSpace)
         {
+            Value = value;
+            Description = description;
+            IsColor = isColor;
+            IsPalette = isPalette;
+            IsYBR = isYBR;
+            ColorSpace = colorSpace;
         }
 
         #endregion
 
         #region Public Properties
 
-        public string Value { get; private set; }
+        /// <summary>
+        /// Gets the identifier value, corresponding with a DICOM defined term for tag (0028, 0004).
+        /// </summary>
+        public string Value { get; }
 
-        public string Description { get; private set; }
+        /// <summary>
+        /// Gets the description of the photometric interpretation.
+        /// </summary>
+        public string Description { get; }
 
-        public bool IsColor { get; private set; }
+        /// <summary>
+        /// Gets whether or not the photometric interpretation represents color (true) or grayscale (false).
+        /// </summary>
+        public bool IsColor { get; }
 
-        public bool IsPalette { get; private set; }
+        /// <summary>
+        /// Gets whether or not the photometric interpretation is represented by a palette of colors.
+        /// </summary>
+        public bool IsPalette { get; }
 
-        public bool IsYBR { get; private set; }
+        /// <summary>
+        /// Gets whether or not the photometric interpretation represents an YBR color scheme.
+        /// </summary>
+        public bool IsYBR { get; }
 
-        public ColorSpace ColorSpace { get; private set; }
+        /// <summary>
+        /// Gets the color space of the photometric interpretation, or <code>null</code> if <see cref="IsPalette"/> is <code>false</code>.
+        /// </summary>
+        public ColorSpace ColorSpace { get; }
 
         #endregion
 
         #region Public Methods
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj)) return true;
             if (!(obj is PhotometricInterpretation)) return false;
-            return (obj as PhotometricInterpretation).Value == Value;
+            return ((PhotometricInterpretation)obj).Value == Value;
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return Value.GetHashCode();
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return Description;
@@ -55,6 +83,12 @@ namespace Dicom.Imaging
 
         #region Static Methods
 
+        /// <summary>
+        /// Parse the photometric interpretation based on a string, typically obtained by reading DICOM tag (0028,0004).
+        /// </summary>
+        /// <param name="photometricInterpretation">String to be parsed.</param>
+        /// <returns><see cref="PhotometricInterpretation"/> object corresponding to the parsed <paramref name="photometricInterpretation"/> string.</returns>
+        /// <exception cref="DicomImagingException">Thrown when the parsed string cannot be matched with the known photometric interpretations.</exception>
         public static PhotometricInterpretation Parse(string photometricInterpretation)
         {
             switch (photometricInterpretation.Trim(' ', '\0'))
@@ -80,19 +114,32 @@ namespace Dicom.Imaging
                     return YbrIct;
                 case "YBR_RCT":
                     return YbrRct;
-                default:
-                    break;
             }
+
             throw new DicomImagingException("Unknown Photometric Interpretation [{0}]", photometricInterpretation);
         }
 
+        /// <summary>
+        /// Equivalence operator for <see cref="PhotometricInterpretation"/> class.
+        /// </summary>
+        /// <param name="a">Left-hand side object to compare for equivalence.</param>
+        /// <param name="b">Right-hand side object to compare for equivalence.</param>
+        /// <returns>True if both objects are <code>null</code> or <see cref="PhotometricInterpretation"/> objects with the same <see cref="Value"/>,
+        /// false otherwise.</returns>
         public static bool operator ==(PhotometricInterpretation a, PhotometricInterpretation b)
         {
-            if (((object)a == null) && ((object)b == null)) return true;
-            if (((object)a == null) || ((object)b == null)) return false;
+            if ((object)a == null && (object)b == null) return true;
+            if ((object)a == null || (object)b == null) return false;
             return a.Value == b.Value;
         }
 
+        /// <summary>
+        /// Non-equivalence operator for <see cref="PhotometricInterpretation"/> class.
+        /// </summary>
+        /// <param name="a">Left-hand side object to compare for non-equivalence.</param>
+        /// <param name="b">Right-hand side object to compare for none-equivalence.</param>
+        /// <returns>True if exactly one object is <code>null</code> or if both are <see cref="PhotometricInterpretation"/> objects with different <see cref="Value"/>,
+        /// false otherwise.</returns>
         public static bool operator !=(PhotometricInterpretation a, PhotometricInterpretation b)
         {
             return !(a == b);
@@ -105,42 +152,16 @@ namespace Dicom.Imaging
         /// to be displayed as white after any VOI gray scale transformations have been performed. See 
         /// PS 3.4. This value may be used only when Samples per Pixel (0028,0002) has a value of 1.
         /// </summary>
-        public static readonly PhotometricInterpretation Monochrome1 = new PhotometricInterpretation()
-                                                                           {
-                                                                               Value =
-                                                                                   "MONOCHROME1",
-                                                                               Description =
-                                                                                   "Monochrome 1",
-                                                                               IsColor =
-                                                                                   false,
-                                                                               IsPalette =
-                                                                                   false,
-                                                                               IsYBR = false,
-                                                                               ColorSpace =
-                                                                                   ColorSpace
-                                                                                   .Grayscale
-                                                                           };
+        public static readonly PhotometricInterpretation Monochrome1 =
+            new PhotometricInterpretation("MONOCHROME1", "Monochrome 1", false, false, false, ColorSpace.Grayscale);
 
         /// <summary>
         /// Pixel data represent a single monochrome image plane. The minimum sample value is intended 
         /// to be displayed as black after any VOI gray scale transformations have been performed. See 
         /// PS 3.4. This value may be used only when Samples per Pixel (0028,0002) has a value of 1.
         /// </summary>
-        public static readonly PhotometricInterpretation Monochrome2 = new PhotometricInterpretation()
-                                                                           {
-                                                                               Value =
-                                                                                   "MONOCHROME2",
-                                                                               Description =
-                                                                                   "Monochrome 2",
-                                                                               IsColor =
-                                                                                   false,
-                                                                               IsPalette =
-                                                                                   false,
-                                                                               IsYBR = false,
-                                                                               ColorSpace =
-                                                                                   ColorSpace
-                                                                                   .Grayscale
-                                                                           };
+        public static readonly PhotometricInterpretation Monochrome2 =
+            new PhotometricInterpretation("MONOCHROME2", "Monochrome 2", false, false, false, ColorSpace.Grayscale);
 
         /// <summary>
         /// Pixel data describe a color image with a single sample per pixel (single image plane). The 
@@ -149,39 +170,16 @@ namespace Dicom.Imaging
         /// has a value of 1. When the Photometric Interpretation is Palette Color; Red, Blue, and Green 
         /// Palette Color Lookup Tables shall be present.
         /// </summary>
-        public static readonly PhotometricInterpretation PaletteColor = new PhotometricInterpretation()
-                                                                            {
-                                                                                Value =
-                                                                                    "PALETTE COLOR",
-                                                                                Description
-                                                                                    =
-                                                                                    "Palette Color",
-                                                                                IsColor =
-                                                                                    true,
-                                                                                IsPalette =
-                                                                                    true,
-                                                                                IsYBR =
-                                                                                    false,
-                                                                                ColorSpace =
-                                                                                    ColorSpace
-                                                                                    .Indexed
-                                                                            };
+        public static readonly PhotometricInterpretation PaletteColor =
+            new PhotometricInterpretation("PALETTE COLOR", "Palette Color", true, true, false, ColorSpace.Indexed);
 
         /// <summary>
         /// Pixel data represent a color image described by red, green, and blue image planes. The minimum 
         /// sample value for each color plane represents minimum intensity of the color. This value may be 
         /// used only when Samples per Pixel (0028,0002) has a value of 3.
         /// </summary>
-        public static readonly PhotometricInterpretation Rgb = new PhotometricInterpretation()
-                                                                   {
-                                                                       Value = "RGB",
-                                                                       Description = "RGB",
-                                                                       IsColor = true,
-                                                                       IsPalette = false,
-                                                                       IsYBR = false,
-                                                                       ColorSpace =
-                                                                           ColorSpace.RGB
-                                                                   };
+        public static readonly PhotometricInterpretation Rgb =
+            new PhotometricInterpretation("RGB", "RGB", true, false, false, ColorSpace.RGB);
 
         /// <summary>
         /// Pixel data represent a color image described by one luminance (Y) and two chrominance planes 
@@ -195,18 +193,8 @@ namespace Dicom.Imaging
         /// Cb = - .1687R - .3313G + .5000B + 128
         /// Cr = + .5000R - .4187G - .0813B + 128
         /// </summary>
-        public static readonly PhotometricInterpretation YbrFull = new PhotometricInterpretation()
-                                                                       {
-                                                                           Value = "YBR_FULL",
-                                                                           Description =
-                                                                               "YBR Full",
-                                                                           IsColor = true,
-                                                                           IsPalette = false,
-                                                                           IsYBR = true,
-                                                                           ColorSpace =
-                                                                               ColorSpace
-                                                                               .YCbCrJPEG
-                                                                       };
+        public static readonly PhotometricInterpretation YbrFull =
+            new PhotometricInterpretation("YBR_FULL", "YBR Full", true, false, true, ColorSpace.YCbCrJPEG);
 
         /// <summary>
         /// The same as YBR_FULL except that the Cb and Cr values are sampled horizontally at half the Y rate 
@@ -218,17 +206,8 @@ namespace Dicom.Imaging
         /// Cr samples shall be at the location of the first Y sample. The next Cb and Cr samples shall be 
         /// at the location of the third Y sample etc.
         /// </summary>
-        public static readonly PhotometricInterpretation YbrFull422 = new PhotometricInterpretation()
-                                                                          {
-                                                                              Value =
-                                                                                  "YBR_FULL_422",
-                                                                              Description =
-                                                                                  "YBR Full 4:2:2",
-                                                                              IsColor = true,
-                                                                              IsPalette =
-                                                                                  false,
-                                                                              IsYBR = true
-                                                                          };
+        public static readonly PhotometricInterpretation YbrFull422 =
+            new PhotometricInterpretation("YBR_FULL_422", "YBR Full 4:2:2", true, false, true, null);
 
         /// <summary>
         /// The same as YBR_FULL_422 except that:
@@ -246,20 +225,8 @@ namespace Dicom.Imaging
         /// Cb = - .1482R - .2910G + .4392B + 128
         /// Cr = + .4392R - .3678G - .0714B + 128
         /// </summary>
-        public static readonly PhotometricInterpretation YbrPartial422 = new PhotometricInterpretation()
-                                                                             {
-                                                                                 Value =
-                                                                                     "YBR_PARTIAL_422",
-                                                                                 Description
-                                                                                     =
-                                                                                     "YBR Partial 4:2:2",
-                                                                                 IsColor =
-                                                                                     true,
-                                                                                 IsPalette =
-                                                                                     false,
-                                                                                 IsYBR =
-                                                                                     true
-                                                                             };
+        public static readonly PhotometricInterpretation YbrPartial422 =
+            new PhotometricInterpretation("YBR_PARTIAL_422", "YBR Partial 4:2:2", true, false, true, null);
 
         /// <summary>
         /// The same as YBR_PARTIAL_422 except that the Cb and Cr values are sampled horizontally and vertically 
@@ -272,20 +239,8 @@ namespace Dicom.Imaging
         /// next Cb and Cr samples shall be at the location of the third Y sample etc. The next Rows of Pixels 
         /// containing Cb and Cr samples (at the same locations than for the first Row) will be the third etc.
         /// </summary>
-        public static readonly PhotometricInterpretation YbrPartial420 = new PhotometricInterpretation()
-                                                                             {
-                                                                                 Value =
-                                                                                     "YBR_PARTIAL_420",
-                                                                                 Description
-                                                                                     =
-                                                                                     "YBR Partial 4:2:0",
-                                                                                 IsColor =
-                                                                                     true,
-                                                                                 IsPalette =
-                                                                                     false,
-                                                                                 IsYBR =
-                                                                                     true
-                                                                             };
+        public static readonly PhotometricInterpretation YbrPartial420 =
+            new PhotometricInterpretation("YBR_PARTIAL_420", "YBR Partial 4:2:0", true, false, true, null);
 
         /// <summary>
         /// Pixel data represent a color image described by one luminance (Y) and two chrominance planes 
@@ -299,15 +254,9 @@ namespace Dicom.Imaging
         /// Cb = - .16875R - .33126G + .50000B
         /// Cr = + .50000R - .41869G - .08131B
         /// </summary>
-        public static readonly PhotometricInterpretation YbrIct = new PhotometricInterpretation()
-                                                                      {
-                                                                          Value = "YBR_ICT",
-                                                                          Description =
-                                                                              "YBR Irreversible Color Transformation (JPEG 2000)",
-                                                                          IsColor = true,
-                                                                          IsPalette = false,
-                                                                          IsYBR = true
-                                                                      };
+        public static readonly PhotometricInterpretation YbrIct =
+            new PhotometricInterpretation("YBR_ICT", "YBR Irreversible Color Transformation (JPEG 2000)", true, false,
+                true, null);
 
         /// <summary>
         /// Pixel data represent a color image described by one luminance (Y) and two chrominance planes 
@@ -326,14 +275,8 @@ namespace Dicom.Imaging
         /// G = Y – floor((Cb + Cr) / 4)
         /// B = Cb + G
         /// </summary>
-        public static readonly PhotometricInterpretation YbrRct = new PhotometricInterpretation()
-                                                                      {
-                                                                          Value = "YBR_RCT",
-                                                                          Description =
-                                                                              "YBR Reversible Color Transformation (JPEG 2000)",
-                                                                          IsColor = true,
-                                                                          IsPalette = false,
-                                                                          IsYBR = true
-                                                                      };
+        public static readonly PhotometricInterpretation YbrRct =
+            new PhotometricInterpretation("YBR_RCT", "YBR Reversible Color Transformation (JPEG 2000)", true, false,
+                true, null);
     }
 }

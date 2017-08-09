@@ -12,7 +12,7 @@ namespace Dicom.Dump
 {
     public partial class DisplayForm : Form
     {
-        private DicomFile _file;
+        private readonly DicomFile _file;
 
         private DicomImage _image;
 
@@ -34,26 +34,26 @@ namespace Dicom.Dump
         {
             // execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
             ThreadPool.QueueUserWorkItem(
-                delegate(object s)
+                delegate
+                {
+                    try
                     {
-                        try
+                        _image = new DicomImage(_file.Dataset);
+                        _grayscale = _image.IsGrayscale;
+                        if (_grayscale)
                         {
-                            _image = new DicomImage(_file.Dataset);
-                            _grayscale = !_image.PhotometricInterpretation.IsColor;
-                            if (_grayscale)
-                            {
-                                _windowWidth = _image.WindowWidth;
-                                _windowCenter = _image.WindowCenter;
-                            }
-                            _frame = 0;
-                            Invoke(new WaitCallback(SizeForImage), _image);
-                            Invoke(new WaitCallback(DisplayImage), _image);
+                            _windowWidth = _image.WindowWidth;
+                            _windowCenter = _image.WindowCenter;
                         }
-                        catch (Exception ex)
-                        {
-                            OnException(ex);
-                        }
-                    });
+                        _frame = 0;
+                        Invoke(new WaitCallback(SizeForImage), _image);
+                        Invoke(new WaitCallback(DisplayImage), _image);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnException(ex);
+                    }
+                });
 
         }
 
@@ -79,13 +79,9 @@ namespace Dicom.Dump
 
                 pbDisplay.Image = image.RenderImage(_frame).As<Image>();
 
-                if (_grayscale)
-                    Text = String.Format(
-                        "DICOM Image Display [scale: {0}, wc: {1}, ww: {2}]",
-                        Math.Round(image.Scale, 1),
-                        image.WindowCenter,
-                        image.WindowWidth);
-                else Text = String.Format("DICOM Image Display [scale: {0}]", Math.Round(image.Scale, 1));
+                Text = _grayscale
+                    ? $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}, wc: {image.WindowCenter}, ww: {image.WindowWidth}]"
+                    : $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}]";
             }
             catch (Exception e)
             {
@@ -191,12 +187,12 @@ namespace Dicom.Dump
 
             GrayscaleRenderOptions options = null;
 
-            if (e.KeyCode == Keys.D0) options = GrayscaleRenderOptions.FromDataset(_image.Dataset);
-            else if (e.KeyCode == Keys.D1) options = GrayscaleRenderOptions.FromWindowLevel(_image.Dataset);
-            else if (e.KeyCode == Keys.D2) options = GrayscaleRenderOptions.FromImagePixelValueTags(_image.Dataset);
-            else if (e.KeyCode == Keys.D3) options = GrayscaleRenderOptions.FromMinMax(_image.Dataset);
-            else if (e.KeyCode == Keys.D4) options = GrayscaleRenderOptions.FromBitRange(_image.Dataset);
-            else if (e.KeyCode == Keys.D5) options = GrayscaleRenderOptions.FromHistogram(_image.Dataset, 90);
+            if (e.KeyCode == Keys.D0) options = GrayscaleRenderOptions.FromDataset(_file.Dataset);
+            else if (e.KeyCode == Keys.D1) options = GrayscaleRenderOptions.FromWindowLevel(_file.Dataset);
+            else if (e.KeyCode == Keys.D2) options = GrayscaleRenderOptions.FromImagePixelValueTags(_file.Dataset);
+            else if (e.KeyCode == Keys.D3) options = GrayscaleRenderOptions.FromMinMax(_file.Dataset);
+            else if (e.KeyCode == Keys.D4) options = GrayscaleRenderOptions.FromBitRange(_file.Dataset);
+            else if (e.KeyCode == Keys.D5) options = GrayscaleRenderOptions.FromHistogram(_file.Dataset, 90);
 
             if (options != null)
             {
