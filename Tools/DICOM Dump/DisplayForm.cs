@@ -53,8 +53,7 @@ namespace Dicom.Dump
                     {
                         OnException(ex);
                     }
-                });
-
+               });
         }
 
         private delegate void ExceptionHandler(Exception e);
@@ -67,7 +66,8 @@ namespace Dicom.Dump
                 return;
             }
 
-            MessageBox.Show(this, e.Message, "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, (e.InnerException ?? e).Message, "Image Render Exception", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
             Close();
         }
 
@@ -77,7 +77,7 @@ namespace Dicom.Dump
             {
                 var image = (DicomImage)state;
 
-                pbDisplay.Image = image.RenderImage(_frame).As<Image>();
+                pbDisplay.Image = image.RenderImage(_frame).AsBitmap();
 
                 Text = _grayscale
                     ? $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}, wc: {image.WindowCenter}, ww: {image.WindowWidth}]"
@@ -93,12 +93,12 @@ namespace Dicom.Dump
         {
             var image = (DicomImage)state;
 
-            Size max = SystemInformation.WorkingArea.Size;
+            var max = SystemInformation.WorkingArea.Size;
 
-            int maxW = max.Width - (Width - pbDisplay.Width);
-            int maxH = max.Height - (Height - pbDisplay.Height);
+            var maxW = max.Width - (Width - pbDisplay.Width);
+            var maxH = max.Height - (Height - pbDisplay.Height);
 
-            if (image.Width > maxW || image.Height > maxH) image.Scale = Math.Min((double)maxW / (double)image.Width, (double)maxH / (double)image.Height);
+            if (image.Width > maxW || image.Height > maxH) image.Scale = Math.Min((double)maxW / image.Width, (double)maxH / image.Height);
             else image.Scale = 1.0;
 
             Width = (int)(image.Width * image.Scale) + (Width - pbDisplay.Width);
@@ -212,13 +212,13 @@ namespace Dicom.Dump
             {
                 if (pbDisplay.Width > pbDisplay.Height)
                 {
-                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Height / (double)image.Height;
-                    else image.Scale = (double)pbDisplay.Width / (double)image.Width;
+                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Height / image.Height;
+                    else image.Scale = (double)pbDisplay.Width / image.Width;
                 }
                 else
                 {
-                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Width / (double)image.Width;
-                    else image.Scale = (double)pbDisplay.Height / (double)image.Height;
+                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Width / image.Width;
+                    else image.Scale = (double)pbDisplay.Height / image.Height;
                 }
 
                 // scale viewing window to match rescaled image size
@@ -229,8 +229,8 @@ namespace Dicom.Dump
             if (WindowState == FormWindowState.Maximized)
             {
                 image.Scale = Math.Min(
-                    (double)pbDisplay.Width / (double)image.Width,
-                    (double)pbDisplay.Height / (double)image.Height);
+                    (double)pbDisplay.Width / image.Width,
+                    (double)pbDisplay.Height / image.Height);
             }
 
             DisplayImage(image);
