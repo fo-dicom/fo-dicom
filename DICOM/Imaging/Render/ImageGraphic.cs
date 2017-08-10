@@ -1,13 +1,13 @@
 // Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Generic;
+
+using Dicom.Imaging.LUT;
+
 namespace Dicom.Imaging.Render
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Dicom.Imaging.LUT;
-
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>
@@ -44,64 +44,22 @@ namespace Dicom.Imaging.Render
         /// <summary>
         /// Number of pixel componenets (samples)
         /// </summary>
-        public int Components
-        {
-            get
-            {
-                return OriginalData.Components;
-            }
-        }
+        public int Components => OriginalData.Components;
 
         /// <summary>
         /// Original pixel data
         /// </summary>
-        public IPixelData OriginalData
-        {
-            get
-            {
-                return _originalData;
-            }
-        }
+        public IPixelData OriginalData => _originalData;
 
-        public int OriginalWidth
-        {
-            get
-            {
-                return _originalData.Width;
-            }
-        }
+        public int OriginalWidth => _originalData.Width;
 
-        public int OriginalHeight
-        {
-            get
-            {
-                return _originalData.Height;
-            }
-        }
+        public int OriginalHeight => _originalData.Height;
 
-        public int OriginalOffsetX
-        {
-            get
-            {
-                return _offsetX;
-            }
-        }
+        public int OriginalOffsetX => _offsetX;
 
-        public int OriginalOffsetY
-        {
-            get
-            {
-                return _offsetY;
-            }
-        }
+        public int OriginalOffsetY => _offsetY;
 
-        public double ScaleFactor
-        {
-            get
-            {
-                return _scaleFactor;
-            }
-        }
+        public double ScaleFactor => _scaleFactor;
 
         /// <summary>
         /// Scaled pixel data
@@ -112,44 +70,22 @@ namespace Dicom.Imaging.Render
             {
                 if (_scaledData == null)
                 {
-                    if (Math.Abs(_scaleFactor - 1.0) <= Double.Epsilon) _scaledData = _originalData;
-                    else _scaledData = OriginalData.Rescale(_scaleFactor);
+                    _scaledData = Math.Abs(_scaleFactor - 1.0) <= double.Epsilon
+                        ? _originalData
+                        : OriginalData.Rescale(_scaleFactor);
                 }
+
                 return _scaledData;
             }
         }
 
-        public int ScaledWidth
-        {
-            get
-            {
-                return ScaledData.Width;
-            }
-        }
+        public int ScaledWidth => ScaledData.Width;
 
-        public int ScaledHeight
-        {
-            get
-            {
-                return ScaledData.Height;
-            }
-        }
+        public int ScaledHeight => ScaledData.Height;
 
-        public int ScaledOffsetX
-        {
-            get
-            {
-                return (int)(_offsetX * _scaleFactor);
-            }
-        }
+        public int ScaledOffsetX => (int)(_offsetX * _scaleFactor);
 
-        public int ScaledOffsetY
-        {
-            get
-            {
-                return (int)(_offsetY * _scaleFactor);
-            }
-        }
+        public int ScaledOffsetY => (int)(_offsetY * _scaleFactor);
 
         public int ZOrder
         {
@@ -212,7 +148,7 @@ namespace Dicom.Imaging.Render
 
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scaleFactor) <= Double.Epsilon) return;
+            if (Math.Abs(scale - _scaleFactor) <= double.Epsilon) return;
 
             _scaleFactor = scale;
             _scaledData = null;
@@ -225,8 +161,8 @@ namespace Dicom.Imaging.Render
 
         public void BestFit(int width, int height)
         {
-            double xF = (double)width / (double)OriginalWidth;
-            double yF = (double)height / (double)OriginalHeight;
+            double xF = (double)width / OriginalWidth;
+            double yF = (double)height / OriginalHeight;
             Scale(Math.Min(xF, yF));
         }
 
@@ -271,22 +207,22 @@ namespace Dicom.Imaging.Render
 
         public IImage RenderImage(ILUT lut)
         {
-            if (this._applyLut && lut != null && !lut.IsValid)
+            if (_applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
             }
 
-            var image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
+            var image = ImageManager.CreateImage(ScaledWidth, ScaledHeight);
 
             var pixels = image.Pixels.Data;
-            this.ScaledData.Render(this._applyLut ? lut : null, pixels);
+            ScaledData.Render(_applyLut ? lut : null, pixels);
 
-            foreach (var overlay in this._overlays)
+            foreach (var overlay in _overlays)
             {
-                overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
+                overlay.Render(pixels, ScaledWidth, ScaledHeight);
             }
 
-            image.Render(this.Components, this._flipX, this._flipY, this._rotation);
+            image.Render(Components, _flipX, _flipY, _rotation);
 
             return image;
         }

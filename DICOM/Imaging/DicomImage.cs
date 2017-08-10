@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading;
 using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 
@@ -15,6 +16,8 @@ namespace Dicom.Imaging
     public class DicomImage
     {
         #region FIELDS
+
+        private int _currentFrame;
 
         private double _scale;
 
@@ -30,9 +33,9 @@ namespace Dicom.Imaging
 
         private GrayscaleRenderOptions _renderOptions;
 
-        private readonly object _lock = new object();
+        private static readonly object _lock = new object();
 
-        private readonly IDictionary<int, int> _encapsulatedFrameIndex;
+        private readonly IDictionary<int, int> _frameIndices;
 
         #endregion
 
@@ -48,7 +51,7 @@ namespace Dicom.Imaging
             ShowOverlays = true;
 
             _scale = 1.0;
-            _encapsulatedFrameIndex = new Dictionary<int, int>();
+            _frameIndices = new ConcurrentDictionary<int, int>();
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelData = CreateDicomPixelData(_dataset);
@@ -82,8 +85,8 @@ namespace Dicom.Imaging
             }
             set
             {
-                _scale = value;
-                _pixels = null;
+                Interlocked.Exchange(ref _scale, value);
+                Interlocked.Exchange(ref _pixels, null);
             }
         }
 
@@ -99,19 +102,12 @@ namespace Dicom.Imaging
         {
             get
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
-
+                EstablishPipeline();
                 return _renderOptions?.WindowWidth ?? 255;
             }
             set
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
+                EstablishPipeline();
 
                 if (_renderOptions != null)
                 {
@@ -125,19 +121,12 @@ namespace Dicom.Imaging
         {
             get
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
-
+                EstablishPipeline();
                 return _renderOptions?.WindowCenter ?? 127;
             }
             set
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
+                EstablishPipeline();
 
                 if (_renderOptions != null)
                 {
@@ -151,19 +140,12 @@ namespace Dicom.Imaging
         {
             get
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
-
+                EstablishPipeline();
                 return _renderOptions?.ColorMap;
             }
             set
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
+                EstablishPipeline();
 
                 if (_renderOptions != null)
                 {
@@ -183,11 +165,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                if (_pipeline == null)
-                {
-                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
-                }
-
+                EstablishPipeline();
                 return _renderOptions != null;
             }
         }
@@ -195,10 +173,13 @@ namespace Dicom.Imaging
         /// <summary>Show or hide DICOM overlays</summary>
         public bool ShowOverlays { get; set; }
 
-        /// <summary>Color used for displaying DICOM overlays. Default is magenta.</summary>
+        /// <summary>Gets or sets the color used for displaying DICOM overlays. Default is magenta.</summary>
         public int OverlayColor { get; set; } = unchecked((int)0xffff00ff);
 
-        public int CurrentFrame { get; private set; }
+        /// <summary>
+        /// Gets the index of the current frame.
+        /// </summary>
+        public int CurrentFrame => _currentFrame;
 
         #endregion
 
@@ -209,16 +190,15 @@ namespace Dicom.Imaging
         /// <returns>Rendered image</returns>
         public virtual IImage RenderImage(int frame = 0)
         {
-            if (frame != CurrentFrame || _pixels == null) Load(frame);
+            bool load;
+            lock (_lock) load = frame != CurrentFrame || _pixels == null;
+            if (load) Load(frame);
 
             var graphic = new ImageGraphic(_pixels);
 
             if (ShowOverlays)
             {
-                if (_overlays == null)
-                {
-                    _overlays = CreateGraphicsOverlays(_dataset);
-                }
+                EstablishGraphicsOverlays();
 
                 foreach (var overlay in _overlays)
                 {
@@ -246,14 +226,14 @@ namespace Dicom.Imaging
         {
             if (frame < 0)
             {
-                CurrentFrame = frame;
+                Interlocked.Exchange(ref _currentFrame, frame);
                 return;
             }
 
             int index;
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
-                if (!_encapsulatedFrameIndex.TryGetValue(frame, out index))
+                if (!_frameIndices.TryGetValue(frame, out index))
                 {
                     // decompress single frame from source dataset
                     var transcoder = new DicomTranscoder(
@@ -261,11 +241,14 @@ namespace Dicom.Imaging
                         DicomTransferSyntax.ExplicitVRLittleEndian);
                     var buffer = transcoder.DecodeFrame(_dataset, frame);
 
-                    // Get frame/index mapping for previously unstored frame.
-                    index = _pixelData.NumberOfFrames;
-                    _encapsulatedFrameIndex[frame] = index;
+                    lock (_lock)
+                    {
+                        // Get frame/index mapping for previously unstored frame.
+                        index = _pixelData.NumberOfFrames;
+                        _frameIndices.Add(frame, index);
 
-                    _pixelData.AddFrame(buffer);
+                        _pixelData.AddFrame(buffer);
+                    }
                 }
             }
             else
@@ -273,13 +256,44 @@ namespace Dicom.Imaging
                 index = frame;
             }
 
-            _pixels = PixelDataFactory.Create(_pixelData, index).Rescale(_scale);
-
-            CurrentFrame = frame;
-
-            if (_pipeline == null)
+            lock (_lock)
             {
-                _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
+                _pixels = PixelDataFactory.Create(_pixelData, index).Rescale(_scale);
+                _currentFrame = frame;
+            }
+
+            EstablishPipeline();
+        }
+
+        private void EstablishPipeline()
+        {
+            bool create;
+            lock (_lock)
+            {
+                create = _pipeline == null; 
+            }
+
+            var pipeline = create ? CreatePipeline(_dataset, _pixelData, ref _renderOptions) : null;
+
+            lock (_lock)
+            {
+                if (_pipeline == null) _pipeline = pipeline;
+            }
+        }
+
+        private void EstablishGraphicsOverlays()
+        {
+            bool create;
+            lock (_lock)
+            {
+                create = _overlays == null;
+            }
+
+            var overlays = create ? CreateGraphicsOverlays(_dataset) : null;
+
+            lock (_lock)
+            {
+                if (_overlays == null) _overlays = overlays;
             }
         }
 

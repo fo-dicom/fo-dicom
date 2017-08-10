@@ -192,6 +192,7 @@ namespace Dicom.Dump
                 return;
             }
 
+            if (!_image.IsGrayscale) return;
             GrayscaleRenderOptions options = null;
 
             if (e.KeyCode == Keys.D0) options = GrayscaleRenderOptions.FromDataset(_file.Dataset);
