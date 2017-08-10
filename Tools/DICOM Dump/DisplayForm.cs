@@ -24,6 +24,8 @@ namespace Dicom.Dump
 
         private int _frame;
 
+        private Image _rendered;
+
         public DisplayForm(DicomFile file)
         {
             _file = file;
@@ -77,7 +79,9 @@ namespace Dicom.Dump
             {
                 var image = (DicomImage)state;
 
-                pbDisplay.Image = image.RenderImage(_frame).AsBitmap();
+                pbDisplay.Image = null;
+                _rendered = image.RenderImage(_frame).Clone().AsBitmap();
+                pbDisplay.Image = _rendered;
 
                 Text = _grayscale
                     ? $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}, wc: {image.WindowCenter}, ww: {image.WindowWidth}]"
