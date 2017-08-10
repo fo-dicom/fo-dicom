@@ -11,6 +11,9 @@ using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging
 {
+    /// <summary>
+    /// Representation of enumerated DICOM overlay types.
+    /// </summary>
     public enum DicomOverlayType
     {
         /// <summary>Graphic overlay</summary>
@@ -32,10 +35,14 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="ds">Dataset</param>
         /// <param name="group">Overlay group</param>
+        /// <exception cref="DicomImagingException">Thrown if the overlay data is insufficient.</exception>
         public DicomOverlayData(DicomDataset ds, ushort group)
         {
-            Group = group;
+            if (IsOverlayDataInvalid(ds, group))
+                throw new DicomImagingException("Overlay data for group {0:X4} is invalid", group);
+
             Dataset = ds;
+            Group = group;
         }
 
         #endregion
@@ -43,17 +50,17 @@ namespace Dicom.Imaging
         #region Public Properties
 
         /// <summary>
-        /// DICOM Dataset
+        /// Gets the DICOM Dataset containing the overlay data.
         /// </summary>
-        public DicomDataset Dataset { get; private set; }
+        public DicomDataset Dataset { get; }
 
         /// <summary>
-        /// Overlay group
+        /// Get the overlay group number.
         /// </summary>
-        public ushort Group { get; private set; }
+        public ushort Group { get; }
 
         /// <summary>
-        /// Number of rows in overlay
+        /// Gets or sets the number of rows in overlay
         /// </summary>
         public int Rows
         {
@@ -68,7 +75,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Number of columns in overlay
+        /// Gets or sets the number of columns in overlay.
         /// </summary>
         public int Columns
         {
@@ -83,7 +90,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Overlay type
+        /// Gets or sets the overlay type.
         /// </summary>
         public DicomOverlayType Type
         {
@@ -103,7 +110,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Number of bits allocated in overlay data
+        /// Gets or sets the number of bits allocated in overlay data.
         /// </summary>
         public int BitsAllocated
         {
@@ -118,13 +125,13 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Bit position of embedded overlay
+        /// Gets or sets the bit position of embedded overlay.
         /// </summary>
         public int BitPosition
         {
             get
             {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0, 1);
+                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0, 0);
             }
             set
             {
@@ -133,13 +140,13 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Description of overlay
+        /// Gets or sets the description of the overlay.
         /// </summary>
         public string Description
         {
             get
             {
-                return Dataset.Get<string>(OverlayTag(DicomTag.OverlayDescription), String.Empty);
+                return Dataset.Get(OverlayTag(DicomTag.OverlayDescription), string.Empty);
             }
             set
             {
@@ -148,13 +155,13 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Subtype
+        /// Gets or sets the overlay subtype.
         /// </summary>
         public string Subtype
         {
             get
             {
-                return Dataset.Get<string>(OverlayTag(DicomTag.OverlaySubtype), String.Empty);
+                return Dataset.Get(OverlayTag(DicomTag.OverlaySubtype), string.Empty);
             }
             set
             {
@@ -163,13 +170,13 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Overlay label
+        /// Gets or sets the overlay label.
         /// </summary>
         public string Label
         {
             get
             {
-                return Dataset.Get<string>(OverlayTag(DicomTag.OverlayLabel), String.Empty);
+                return Dataset.Get(OverlayTag(DicomTag.OverlayLabel), string.Empty);
             }
             set
             {
@@ -178,13 +185,13 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Number of frames
+        /// Gets or sets the number of frames in the overlay.
         /// </summary>
         public int NumberOfFrames
         {
             get
             {
-                return Dataset.Get<int>(OverlayTag(DicomTag.NumberOfFramesInOverlay), 0, 1);
+                return Dataset.Get(OverlayTag(DicomTag.NumberOfFramesInOverlay), 0, 1);
             }
             set
             {
@@ -193,7 +200,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// First frame of overlay
+        /// Gets or sets the first frame of the overlay (frames are numbered from 1).
         /// </summary>
         public int OriginFrame
         {
@@ -208,7 +215,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Position of the first column of an overlay
+        /// Gets or sets the index of the first column of the overlay.
         /// </summary>
         public int OriginX
         {
@@ -223,7 +230,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Position of the first row of an overlay
+        /// Gets or sets the index of the first row of the overlay.
         /// </summary>
         public int OriginY
         {
@@ -238,7 +245,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Overlay data
+        /// Gets or sets the overlay data.
         /// </summary>
         public IByteBuffer Data
         {
@@ -257,15 +264,15 @@ namespace Dicom.Imaging
         #region Public Members
 
         /// <summary>
-        /// Gets the overlay data.
+        /// Gets the overlay data as <see cref="int"/> values.
         /// </summary>
         /// <param name="bg">Background color</param>
         /// <param name="fg">Foreground color</param>
         /// <returns>Overlay data</returns>
         public int[] GetOverlayDataS32(int bg, int fg)
         {
-            int[] overlay = new int[Rows * Columns];
-            BitArray bits = new BitArray(Data.Data);
+            var overlay = new int[Rows * Columns];
+            var bits = new BitArray(Data.Data);
             if (bits.Length < overlay.Length) throw new DicomDataException("Invalid overlay length: " + bits.Length);
             for (int i = 0, c = overlay.Length; i < c; i++)
             {
@@ -294,7 +301,7 @@ namespace Dicom.Imaging
 
                 try
                 {
-                    DicomOverlayData overlay = new DicomOverlayData(ds, group);
+                    var overlay = new DicomOverlayData(ds, group);
                     overlays.Add(overlay);
                 }
                 catch
@@ -302,6 +309,7 @@ namespace Dicom.Imaging
                     // bail out if not an overlay group
                 }
             }
+
             return overlays.ToArray();
         }
 
@@ -323,6 +331,18 @@ namespace Dicom.Imaging
         #endregion
 
         #region Private Methods
+
+        private static bool IsOverlayDataInvalid(DicomDataset ds, ushort group)
+        {
+            return string.IsNullOrEmpty(ds.Get<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
+                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
+                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0;
+        }
+
+        private static DicomTag OverlayTag(ushort group, DicomTag tag)
+        {
+            return new DicomTag(group, tag.Element);
+        }
 
         private DicomTag OverlayTag(DicomTag tag)
         {
@@ -347,19 +367,18 @@ namespace Dicom.Imaging
                 var pixels = DicomPixelData.Create(Dataset);
 
                 // (1,1) indicates top left pixel of image
-                int ox = Math.Max(0, OriginX - 1);
-                int oy = Math.Max(0, OriginY - 1);
-                int ow = Columns;
-                int oh = Rows;
+                var ox = Math.Max(0, OriginX - 1);
+                var oy = Math.Max(0, OriginY - 1);
+                var ow = Columns;
+                var oh = Rows;
 
                 var frame = pixels.GetFrame(0);
 
-                var bits = new BitList();
-                bits.Capacity = Rows * Columns;
-                int mask = 1 << BitPosition;
+                var bits = new BitList { Capacity = Rows * Columns };
+                var mask = 1 << BitPosition;
 
                 // Sanity check: do not collect overlay data if Overlay Bit Position is within the used pixel range. (#110)
-                if (this.BitPosition <= pixels.HighBit && this.BitPosition > pixels.HighBit - pixels.BitsStored)
+                if (BitPosition <= pixels.HighBit && BitPosition > pixels.HighBit - pixels.BitsStored)
                 {
                     // Do nothing
                 }
@@ -367,11 +386,11 @@ namespace Dicom.Imaging
                 {
                     var data = IO.ByteConverter.ToArray<byte>(frame);
 
-                    for (int y = 0; y < oh; y++)
+                    for (var y = 0; y < oh; y++)
                     {
-                        int n = (y + oy) * pixels.Width + ox;
-                        int i = y * Columns;
-                        for (int x = 0; x < ow; x++)
+                        var n = (y + oy) * pixels.Width + ox;
+                        var i = y * Columns;
+                        for (var x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;
@@ -384,11 +403,11 @@ namespace Dicom.Imaging
                     // we don't really care if the pixel data is signed or not
                     var data = IO.ByteConverter.ToArray<ushort>(frame);
 
-                    for (int y = 0; y < oh; y++)
+                    for (var y = 0; y < oh; y++)
                     {
-                        int n = (y + oy) * pixels.Width + ox;
-                        int i = y * Columns;
-                        for (int x = 0; x < ow; x++)
+                        var n = (y + oy) * pixels.Width + ox;
+                        var i = y * Columns;
+                        for (var x = 0; x < ow; x++)
                         {
                             if ((data[n] & mask) != 0) bits[i] = true;
                             n++;

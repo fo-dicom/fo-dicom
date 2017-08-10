@@ -14,17 +14,17 @@ namespace Dicom.Imaging
     /// </summary>
     public class DicomImage
     {
-        #region Private Members
+        #region FIELDS
 
         private double _scale;
 
         private readonly DicomDataset _dataset;
 
-        private readonly DicomPixelData _dcmPixelData;
+        private readonly DicomPixelData _pixelData;
 
         private DicomOverlayData[] _overlays;
 
-        private IPixelData _pixelData;
+        private IPixelData _pixels;
 
         private IPipeline _pipeline;
 
@@ -51,7 +51,7 @@ namespace Dicom.Imaging
             _encapsulatedFrameIndex = new Dictionary<int, int>();
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
-            _dcmPixelData = CreateDicomPixelData(_dataset);
+            _pixelData = CreateDicomPixelData(_dataset);
             Load(frame);
         }
 
@@ -68,10 +68,10 @@ namespace Dicom.Imaging
         #region PROPERTIES
 
         /// <summary>Width of image in pixels</summary>
-        public int Width => _dcmPixelData.Width;
+        public int Width => _pixelData.Width;
 
         /// <summary>Height of image in pixels</summary>
-        public int Height => _dcmPixelData.Height;
+        public int Height => _pixelData.Height;
 
         /// <summary>Scaling factor of the rendered image</summary>
         public double Scale
@@ -83,12 +83,16 @@ namespace Dicom.Imaging
             set
             {
                 _scale = value;
-                _pixelData = null;
+                _pixels = null;
             }
         }
 
+        // Note that the NumberOfFrames getter accesses the dataset's attribute. This is because the corresponding
+        // getter in the pixel data might not be complete in the case of encapsulated datasets, where the frames are
+        // continuously added upon request.
+
         /// <summary>Number of frames contained in image data.</summary>
-        public int NumberOfFrames => _dcmPixelData.NumberOfFrames;
+        public int NumberOfFrames => _dataset.Get(DicomTag.NumberOfFrames, (ushort)1);
 
         /// <summary>Gets or sets window width of rendered gray scale image.</summary>
         public virtual double WindowWidth
@@ -97,7 +101,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 return _renderOptions?.WindowWidth ?? 255;
@@ -106,7 +110,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 if (_renderOptions != null)
@@ -123,7 +127,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 return _renderOptions?.WindowCenter ?? 127;
@@ -132,7 +136,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 if (_renderOptions != null)
@@ -149,7 +153,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 return _renderOptions?.ColorMap;
@@ -158,7 +162,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 if (_renderOptions != null)
@@ -169,7 +173,7 @@ namespace Dicom.Imaging
                 {
                     throw new DicomImagingException(
                         "Grayscale color map not applicable for photometric interpretation: {0}",
-                        _dcmPixelData.PhotometricInterpretation);
+                        _pixelData.PhotometricInterpretation);
                 }
             }
         }
@@ -181,7 +185,7 @@ namespace Dicom.Imaging
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                    _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
                 }
 
                 return _renderOptions != null;
@@ -205,15 +209,15 @@ namespace Dicom.Imaging
         /// <returns>Rendered image</returns>
         public virtual IImage RenderImage(int frame = 0)
         {
-            if (frame != CurrentFrame || _pixelData == null) Load(frame);
+            if (frame != CurrentFrame || _pixels == null) Load(frame);
 
-            var graphic = new ImageGraphic(_pixelData);
+            var graphic = new ImageGraphic(_pixels);
 
             if (ShowOverlays)
             {
                 if (_overlays == null)
                 {
-                    _overlays = CreateOverlays(_dataset);
+                    _overlays = CreateGraphicsOverlays(_dataset);
                 }
 
                 foreach (var overlay in _overlays)
@@ -258,10 +262,10 @@ namespace Dicom.Imaging
                     var buffer = transcoder.DecodeFrame(_dataset, frame);
 
                     // Get frame/index mapping for previously unstored frame.
-                    index = _dcmPixelData.NumberOfFrames;
+                    index = _pixelData.NumberOfFrames;
                     _encapsulatedFrameIndex[frame] = index;
 
-                    _dcmPixelData.AddFrame(buffer);
+                    _pixelData.AddFrame(buffer);
                 }
             }
             else
@@ -269,16 +273,22 @@ namespace Dicom.Imaging
                 index = frame;
             }
 
-            _pixelData = PixelDataFactory.Create(_dcmPixelData, index).Rescale(_scale);
+            _pixels = PixelDataFactory.Create(_pixelData, index).Rescale(_scale);
 
             CurrentFrame = frame;
 
             if (_pipeline == null)
             {
-                _pipeline = CreatePipeline(_dataset, _dcmPixelData, ref _renderOptions);
+                _pipeline = CreatePipeline(_dataset, _pixelData, ref _renderOptions);
             }
         }
 
+        /// <summary>
+        /// Create pixel data object based on <paramref name="dataset"/>.
+        /// </summary>
+        /// <param name="dataset">Dataset containing pixel data.</param>
+        /// <returns>For non-encapsulated dataset, create pixel data object from original pixel data. For encapsulated dataset,
+        /// create "empty" pixel data object to subsequentially be filled with uncompressed data for each frame.</returns>
         private static DicomPixelData CreateDicomPixelData(DicomDataset dataset)
         {
             var inputTransferSyntax = dataset.InternalTransferSyntax;
@@ -325,7 +335,12 @@ namespace Dicom.Imaging
             return pixelData;
         }
 
-        private static DicomOverlayData[] CreateOverlays(DicomDataset dataset)
+        /// <summary>
+        /// Create array of graphics overlays from dataset.
+        /// </summary>
+        /// <param name="dataset">Dataset potentially containing overlays.</param>
+        /// <returns>Array of overlays of type <see cref="DicomOverlayType.Graphics"/>.</returns>
+        private static DicomOverlayData[] CreateGraphicsOverlays(DicomDataset dataset)
         {
             return DicomOverlayData.FromDataset(dataset)
                 .Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null)
@@ -382,7 +397,7 @@ namespace Dicom.Imaging
                 return new PaletteColorPipeline(pixelData);
             }
 
-            throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi.Value);
+            throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi);
         }
 
         #endregion
