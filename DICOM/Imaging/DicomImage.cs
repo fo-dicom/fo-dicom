@@ -4,7 +4,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+
 using Dicom.Imaging.Codec;
 using Dicom.Imaging.Render;
 
@@ -33,7 +33,7 @@ namespace Dicom.Imaging
 
         private GrayscaleRenderOptions _renderOptions;
 
-        private static readonly object _lock = new object();
+        private readonly object _lock = new object();
 
         private readonly IDictionary<int, int> _frameIndices;
 
@@ -85,8 +85,11 @@ namespace Dicom.Imaging
             }
             set
             {
-                Interlocked.Exchange(ref _scale, value);
-                Interlocked.Exchange(ref _pixels, null);
+                lock (_lock)
+                {
+                    _scale = value;
+                    _pixels = null;
+                }
             }
         }
 
@@ -194,28 +197,34 @@ namespace Dicom.Imaging
             lock (_lock) load = frame != CurrentFrame || _pixels == null;
             if (load) Load(frame);
 
-            var graphic = new ImageGraphic(_pixels);
+            if (ShowOverlays) EstablishGraphicsOverlays();
 
-            if (ShowOverlays)
-            {
-                EstablishGraphicsOverlays();
+            IImage image;
+            lock (_lock)
+            { 
+                var graphic = new ImageGraphic(_pixels);
 
-                foreach (var overlay in _overlays)
+                if (ShowOverlays)
                 {
-                    if (frame + 1 < overlay.OriginFrame
-                        || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1) continue;
+                    foreach (var overlay in _overlays)
+                    {
+                        if (frame + 1 < overlay.OriginFrame
+                            || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1) continue;
 
-                    var og = new OverlayGraphic(
-                        PixelDataFactory.Create(overlay),
-                        overlay.OriginX - 1,
-                        overlay.OriginY - 1,
-                        OverlayColor);
-                    graphic.AddOverlay(og);
-                    og.Scale(_scale);
+                        var og = new OverlayGraphic(
+                            PixelDataFactory.Create(overlay),
+                            overlay.OriginX - 1,
+                            overlay.OriginY - 1,
+                            OverlayColor);
+                        graphic.AddOverlay(og);
+                        og.Scale(_scale);
+                    }
                 }
+
+                image = graphic.RenderImage(_pipeline.LUT);
             }
 
-            return graphic.RenderImage(_pipeline.LUT);
+            return image;
         }
 
         /// <summary>
@@ -226,7 +235,7 @@ namespace Dicom.Imaging
         {
             if (frame < 0)
             {
-                Interlocked.Exchange(ref _currentFrame, frame);
+                lock (_lock) _currentFrame = frame;
                 return;
             }
 
@@ -268,10 +277,7 @@ namespace Dicom.Imaging
         private void EstablishPipeline()
         {
             bool create;
-            lock (_lock)
-            {
-                create = _pipeline == null; 
-            }
+            lock (_lock) create = _pipeline == null; 
 
             var pipeline = create ? CreatePipeline(_dataset, _pixelData, ref _renderOptions) : null;
 
@@ -284,10 +290,7 @@ namespace Dicom.Imaging
         private void EstablishGraphicsOverlays()
         {
             bool create;
-            lock (_lock)
-            {
-                create = _overlays == null;
-            }
+            lock (_lock) create = _overlays == null;
 
             var overlays = create ? CreateGraphicsOverlays(_dataset) : null;
 
