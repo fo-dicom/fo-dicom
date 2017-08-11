@@ -313,6 +313,11 @@ namespace Dicom.Imaging
             return overlays.ToArray();
         }
 
+        /// <summary>
+        /// Checks whether a dataset contains embedded overlays.
+        /// </summary>
+        /// <param name="ds">Dataset to examine.</param>
+        /// <returns>True if dataset contains embedded overlays, false otherwise.</returns>
         public static bool HasEmbeddedOverlays(DicomDataset ds)
         {
             var groups = new List<ushort>();

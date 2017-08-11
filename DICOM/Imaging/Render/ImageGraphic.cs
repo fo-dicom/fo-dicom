@@ -42,27 +42,32 @@ namespace Dicom.Imaging.Render
         #region Public Properties
 
         /// <summary>
-        /// Number of pixel componenets (samples)
+        /// Gets the number of pixel components (samples)
         /// </summary>
         public int Components => OriginalData.Components;
 
         /// <summary>
-        /// Original pixel data
+        /// Gets the original pixel data.
         /// </summary>
         public IPixelData OriginalData => _originalData;
 
+        /// <inheritdoc />
         public int OriginalWidth => _originalData.Width;
 
+        /// <inheritdoc />
         public int OriginalHeight => _originalData.Height;
 
+        /// <inheritdoc />
         public int OriginalOffsetX => _offsetX;
 
+        /// <inheritdoc />
         public int OriginalOffsetY => _offsetY;
 
+        /// <inheritdoc />
         public double ScaleFactor => _scaleFactor;
 
         /// <summary>
-        /// Scaled pixel data
+        /// Gets scaled pixel data.
         /// </summary>
         public IPixelData ScaledData
         {
@@ -79,14 +84,19 @@ namespace Dicom.Imaging.Render
             }
         }
 
+        /// <inheritdoc />
         public int ScaledWidth => ScaledData.Width;
 
+        /// <inheritdoc />
         public int ScaledHeight => ScaledData.Height;
 
+        /// <inheritdoc />
         public int ScaledOffsetX => (int)(_offsetX * _scaleFactor);
 
+        /// <inheritdoc />
         public int ScaledOffsetY => (int)(_offsetY * _scaleFactor);
 
+        /// <inheritdoc />
         public int ZOrder
         {
             get
@@ -138,6 +148,7 @@ namespace Dicom.Imaging.Render
             overlay.Scale(_scaleFactor);
         }
 
+        /// <inheritdoc />
         public void Reset()
         {
             Scale(1.0);
@@ -146,6 +157,7 @@ namespace Dicom.Imaging.Render
             _flipY = false;
         }
 
+        /// <inheritdoc />
         public void Scale(double scale)
         {
             if (Math.Abs(scale - _scaleFactor) <= double.Epsilon) return;
@@ -159,6 +171,7 @@ namespace Dicom.Imaging.Render
             }
         }
 
+        /// <inheritdoc />
         public void BestFit(int width, int height)
         {
             double xF = (double)width / OriginalWidth;
@@ -166,6 +179,7 @@ namespace Dicom.Imaging.Render
             Scale(Math.Min(xF, yF));
         }
 
+        /// <inheritdoc />
         public void Rotate(int angle)
         {
             if (angle > 0)
@@ -187,16 +201,19 @@ namespace Dicom.Imaging.Render
             }
         }
 
+        /// <inheritdoc />
         public void FlipX()
         {
             _flipX = !_flipX;
         }
 
+        /// <inheritdoc />
         public void FlipY()
         {
             _flipY = !_flipY;
         }
 
+        /// <inheritdoc />
         public void Transform(double scale, int rotation, bool flipx, bool flipy)
         {
             Scale(scale);
@@ -205,6 +222,7 @@ namespace Dicom.Imaging.Render
             _flipY = flipy;
         }
 
+        /// <inheritdoc />
         public IImage RenderImage(ILUT lut)
         {
             if (_applyLut && lut != null && !lut.IsValid)

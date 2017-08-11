@@ -260,9 +260,10 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Loads the pixel data for specified frame and set the internal dataset
+        /// If necessary, prepare new frame data, and return appropriate frame index.
         /// </summary>
-        /// <param name="frame">The frame number to create pixeldata for</param>
+        /// <param name="frame">The frame number to create pixeldata for.</param>
+        /// <returns>Index of the frame, might be diffrent than the frame number for encapsulated images.</returns>
         private int GetFrameIndex(int frame)
         {
             EstablishPipeline();
