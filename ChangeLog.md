@@ -12,6 +12,7 @@
 * DicomPixelData.BitsAllocated setter removed (#528 #564)
 * CStore-SCU always adds a PC with LEExplicit and LEImplicit (#524 #541)
 * Added Maximum Clients Allowed to restrict connection to SCP (#523 #573)
+* DicomImage is not thread safe (#522 #582)
 * Updated JPEG-LS to latest CharLS commit (#517)
 * Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
 * Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)
