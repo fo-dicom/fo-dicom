@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,13 @@ namespace Dicom.Imaging
     {
         #region FIELDS
 
+        private readonly object _lock = new object();
+
         private int _currentFrame;
 
         private double _scale;
+
+        private bool _rerender;
 
         private readonly DicomDataset _dataset;
 
@@ -32,8 +37,6 @@ namespace Dicom.Imaging
         private IPipeline _pipeline;
 
         private GrayscaleRenderOptions _renderOptions;
-
-        private readonly object _lock = new object();
 
         private readonly IDictionary<int, int> _frameIndices;
 
@@ -51,11 +54,12 @@ namespace Dicom.Imaging
             ShowOverlays = true;
 
             _scale = 1.0;
+            _rerender = true;
             _frameIndices = new ConcurrentDictionary<int, int>();
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelData = CreateDicomPixelData(_dataset);
-            Load(frame);
+            _currentFrame = frame;
         }
 
         /// <summary>Creates DICOM image object from file</summary>
@@ -69,6 +73,21 @@ namespace Dicom.Imaging
         #endregion
 
         #region PROPERTIES
+
+        /// <summary>
+        /// Gets the dataset constituting the DICOM image.
+        /// </summary>
+        [Obsolete("Dataset should not be publicly accessible from DicomImage object.")]
+        public DicomDataset Dataset => _dataset;
+
+        /// <summary>
+        /// Gets the pixel data header object associated with the image.
+        /// </summary>
+        [Obsolete("PixelData should not be publicly accessible from the DicomImage object.")]
+        public DicomPixelData PixelData => _pixelData;
+
+        [Obsolete("Use IsGrayscale to determine whether DicomImage object is grayscale or color.")]
+        public PhotometricInterpretation PhotometricInterpretation => _pixelData.PhotometricInterpretation;
 
         /// <summary>Width of image in pixels</summary>
         public int Width => _pixelData.Width;
@@ -88,7 +107,7 @@ namespace Dicom.Imaging
                 lock (_lock)
                 {
                     _scale = value;
-                    _pixels = null;
+                    _rerender = true;
                 }
             }
         }
@@ -194,8 +213,21 @@ namespace Dicom.Imaging
         public virtual IImage RenderImage(int frame = 0)
         {
             bool load;
-            lock (_lock) load = frame != CurrentFrame || _pixels == null;
-            if (load) Load(frame);
+            lock (_lock)
+            {
+                load = frame >= 0 && (frame != CurrentFrame || _rerender);
+                _currentFrame = frame;
+                _rerender = false;
+            }
+
+            var frameIndex = GetFrameIndex(frame);
+            if (load)
+            {
+                lock (_lock)
+                {
+                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                }
+            }
 
             if (ShowOverlays) EstablishGraphicsOverlays();
 
@@ -231,17 +263,13 @@ namespace Dicom.Imaging
         /// Loads the pixel data for specified frame and set the internal dataset
         /// </summary>
         /// <param name="frame">The frame number to create pixeldata for</param>
-        private void Load(int frame)
+        private int GetFrameIndex(int frame)
         {
-            if (frame < 0)
-            {
-                lock (_lock) _currentFrame = frame;
-                return;
-            }
+            EstablishPipeline();
 
-            int index;
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
+                int index;
                 if (!_frameIndices.TryGetValue(frame, out index))
                 {
                     // decompress single frame from source dataset
@@ -259,31 +287,27 @@ namespace Dicom.Imaging
                         _pixelData.AddFrame(buffer);
                     }
                 }
-            }
-            else
-            {
-                index = frame;
+
+                return index;
             }
 
-            lock (_lock)
-            {
-                _pixels = PixelDataFactory.Create(_pixelData, index).Rescale(_scale);
-                _currentFrame = frame;
-            }
-
-            EstablishPipeline();
+            return frame;
         }
 
         private void EstablishPipeline()
         {
             bool create;
-            lock (_lock) create = _pipeline == null; 
+            lock (_lock) create = _pipeline == null;
 
-            var pipeline = create ? CreatePipeline(_dataset, _pixelData, ref _renderOptions) : null;
+            var tuple = create ? CreatePipeline(_dataset, _pixelData) : null;
 
             lock (_lock)
             {
-                if (_pipeline == null) _pipeline = pipeline;
+                if (_pipeline == null)
+                {
+                    _pipeline = tuple.Item1;
+                    _renderOptions = tuple.Item2;
+                }
             }
         }
 
@@ -368,7 +392,7 @@ namespace Dicom.Imaging
         /// Create image rendering pipeline according to the <see cref="DicomPixelData.PhotometricInterpretation">photometric interpretation</see>
         /// of the pixel data.
         /// </summary>
-        private static IPipeline CreatePipeline(DicomDataset dataset, DicomPixelData pixelData, ref GrayscaleRenderOptions renderOptions)
+        private static Tuple<IPipeline, GrayscaleRenderOptions> CreatePipeline(DicomDataset dataset, DicomPixelData pixelData)
         {
             var pi = pixelData.PhotometricInterpretation;
             var samples = dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
@@ -396,25 +420,31 @@ namespace Dicom.Imaging
                 }
             }
 
+            IPipeline pipeline;
+            GrayscaleRenderOptions renderOptions = null;
             if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2)
             {
                 //Monochrome1 or Monochrome2 for grayscale image
-                if (renderOptions == null) renderOptions = GrayscaleRenderOptions.FromDataset(dataset);
-                return new GenericGrayscalePipeline(renderOptions);
+                renderOptions = GrayscaleRenderOptions.FromDataset(dataset);
+                pipeline = new GenericGrayscalePipeline(renderOptions);
             }
-            if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
+            else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
                 || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
             {
                 //RGB for color image
-                return new RgbColorPipeline();
+                pipeline = new RgbColorPipeline();
             }
-            if (pi == PhotometricInterpretation.PaletteColor)
+            else if (pi == PhotometricInterpretation.PaletteColor)
             {
                 //PALETTE COLOR for Palette image
-                return new PaletteColorPipeline(pixelData);
+                pipeline = new PaletteColorPipeline(pixelData);
+            }
+            else
+            {
+                throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi);
             }
 
-            throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi);
+            return Tuple.Create(pipeline, renderOptions);
         }
 
         #endregion
