@@ -38,9 +38,6 @@ namespace Dicom.Imaging
         /// <exception cref="DicomImagingException">Thrown if the overlay data is insufficient.</exception>
         public DicomOverlayData(DicomDataset ds, ushort group)
         {
-            if (IsOverlayDataInvalid(ds, group))
-                throw new DicomImagingException("Overlay data for group {0:X4} is invalid", group);
-
             Dataset = ds;
             Group = group;
         }
@@ -296,18 +293,14 @@ namespace Dicom.Imaging
             var overlays = new List<DicomOverlayData>();
             foreach (var group in groups)
             {
-                // ensure that 6000 group is actually an overlay group
-                if (ds.Get<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US) continue;
+                // ensure that 6000 group is actually an overlay group, including containing bare minimum of attributes.
+                if (ds.Get<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US ||
+                    string.IsNullOrEmpty(ds.Get<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
+                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
+                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0) continue;
 
-                try
-                {
-                    var overlay = new DicomOverlayData(ds, group);
-                    overlays.Add(overlay);
-                }
-                catch
-                {
-                    // bail out if not an overlay group
-                }
+                var overlay = new DicomOverlayData(ds, group);
+                overlays.Add(overlay);
             }
 
             return overlays.ToArray();
@@ -336,13 +329,6 @@ namespace Dicom.Imaging
         #endregion
 
         #region Private Methods
-
-        private static bool IsOverlayDataInvalid(DicomDataset ds, ushort group)
-        {
-            return string.IsNullOrEmpty(ds.Get<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
-                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
-                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0;
-        }
 
         private static DicomTag OverlayTag(ushort group, DicomTag tag)
         {

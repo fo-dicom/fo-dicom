@@ -281,11 +281,15 @@ namespace Dicom.Imaging
 
                     lock (_lock)
                     {
-                        // Get frame/index mapping for previously unstored frame.
-                        index = _pixelData.NumberOfFrames;
-                        _frameIndices.Add(frame, index);
+                        // Additional check to ensure that frame has not been provided by other thread.
+                        if (!_frameIndices.TryGetValue(frame, out index))
+                        { 
+                            // Get frame/index mapping for previously unstored frame.
+                            index = _pixelData.NumberOfFrames;
+                            _frameIndices.Add(frame, index);
 
-                        _pixelData.AddFrame(buffer);
+                            _pixelData.AddFrame(buffer);
+                        }
                     }
                 }
 
