@@ -16,12 +16,10 @@ namespace Dicom.Bugs
         [Fact]
         public void Open_BitsAllocated12_NonZeroPixelsInLastQuarter()
         {
-            // Add missing mandatory tag.
             var file = DicomFile.Open(@"Test Data\GH340.dcm");
-            file.Dataset.Add(DicomTag.PhotometricInterpretation, PhotometricInterpretation.Monochrome2.Value);
 
             // Loop over last quarter of pixels; if one is non-zero test passes.
-            var pixelData = PixelDataFactory.Create(new DicomImage(file.Dataset).PixelData, 0);
+            var pixelData = PixelDataFactory.Create(DicomPixelData.Create(file.Dataset), 0);
             for (var y = 3 * pixelData.Height / 4; y < pixelData.Height; ++y)
             {
                 for (var x = 0; x < pixelData.Width; ++x)

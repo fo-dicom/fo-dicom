@@ -183,7 +183,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation);
+                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null);
             }
             set
             {
@@ -236,9 +236,9 @@ namespace Dicom.Imaging
                 // Issue #471, handle special case with invalid uneven width for YBR_*_422 and YBR_PARTIAL_420 images
                 var actualWidth = Width;
                 if (actualWidth % 2 != 0 &&
-                    (PhotometricInterpretation.Equals(PhotometricInterpretation.YbrFull422) ||
-                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial422) ||
-                     PhotometricInterpretation.Equals(PhotometricInterpretation.YbrPartial420)))
+                    (PhotometricInterpretation == PhotometricInterpretation.YbrFull422 ||
+                     PhotometricInterpretation == PhotometricInterpretation.YbrPartial422 ||
+                     PhotometricInterpretation == PhotometricInterpretation.YbrPartial420))
                 {
                     ++actualWidth;
                 }

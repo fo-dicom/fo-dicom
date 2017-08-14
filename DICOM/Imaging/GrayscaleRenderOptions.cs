@@ -129,6 +129,10 @@ namespace Dicom.Imaging
         /// <returns>Grayscale render options based on window level data.</returns>
         public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset)
         {
+            if (!dataset.Contains(DicomTag.WindowWidth) ||
+                !dataset.Contains(DicomTag.WindowCenter))
+                return null;
+
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits);
 
@@ -151,6 +155,10 @@ namespace Dicom.Imaging
         /// <returns>Grayscale render options based on specified image pixel values.</returns>
         public static GrayscaleRenderOptions FromImagePixelValueTags(DicomDataset dataset)
         {
+            if (!dataset.Contains(DicomTag.SmallestImagePixelValue) ||
+                !dataset.Contains(DicomTag.LargestImagePixelValue))
+                return null;
+
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits);
 
@@ -282,7 +290,7 @@ namespace Dicom.Imaging
         /// <returns>Color map associated with the identified Photometric Interpretation.</returns>
         private static Color32[] GetColorMap(DicomDataset dataset)
         {
-            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation)
+            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null)
                    == PhotometricInterpretation.Monochrome1
                        ? ColorTable.Monochrome1
                        : ColorTable.Monochrome2;

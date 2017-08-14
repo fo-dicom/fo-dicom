@@ -1,13 +1,13 @@
 // Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Generic;
+
+using Dicom.Imaging.LUT;
+
 namespace Dicom.Imaging.Render
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Dicom.Imaging.LUT;
-
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>
@@ -42,69 +42,32 @@ namespace Dicom.Imaging.Render
         #region Public Properties
 
         /// <summary>
-        /// Number of pixel componenets (samples)
+        /// Gets the number of pixel components (samples)
         /// </summary>
-        public int Components
-        {
-            get
-            {
-                return OriginalData.Components;
-            }
-        }
+        public int Components => OriginalData.Components;
 
         /// <summary>
-        /// Original pixel data
+        /// Gets the original pixel data.
         /// </summary>
-        public IPixelData OriginalData
-        {
-            get
-            {
-                return _originalData;
-            }
-        }
+        public IPixelData OriginalData => _originalData;
 
-        public int OriginalWidth
-        {
-            get
-            {
-                return _originalData.Width;
-            }
-        }
+        /// <inheritdoc />
+        public int OriginalWidth => _originalData.Width;
 
-        public int OriginalHeight
-        {
-            get
-            {
-                return _originalData.Height;
-            }
-        }
+        /// <inheritdoc />
+        public int OriginalHeight => _originalData.Height;
 
-        public int OriginalOffsetX
-        {
-            get
-            {
-                return _offsetX;
-            }
-        }
+        /// <inheritdoc />
+        public int OriginalOffsetX => _offsetX;
 
-        public int OriginalOffsetY
-        {
-            get
-            {
-                return _offsetY;
-            }
-        }
+        /// <inheritdoc />
+        public int OriginalOffsetY => _offsetY;
 
-        public double ScaleFactor
-        {
-            get
-            {
-                return _scaleFactor;
-            }
-        }
+        /// <inheritdoc />
+        public double ScaleFactor => _scaleFactor;
 
         /// <summary>
-        /// Scaled pixel data
+        /// Gets scaled pixel data.
         /// </summary>
         public IPixelData ScaledData
         {
@@ -112,45 +75,28 @@ namespace Dicom.Imaging.Render
             {
                 if (_scaledData == null)
                 {
-                    if (Math.Abs(_scaleFactor - 1.0) <= Double.Epsilon) _scaledData = _originalData;
-                    else _scaledData = OriginalData.Rescale(_scaleFactor);
+                    _scaledData = Math.Abs(_scaleFactor - 1.0) <= double.Epsilon
+                        ? _originalData
+                        : OriginalData.Rescale(_scaleFactor);
                 }
+
                 return _scaledData;
             }
         }
 
-        public int ScaledWidth
-        {
-            get
-            {
-                return ScaledData.Width;
-            }
-        }
+        /// <inheritdoc />
+        public int ScaledWidth => ScaledData.Width;
 
-        public int ScaledHeight
-        {
-            get
-            {
-                return ScaledData.Height;
-            }
-        }
+        /// <inheritdoc />
+        public int ScaledHeight => ScaledData.Height;
 
-        public int ScaledOffsetX
-        {
-            get
-            {
-                return (int)(_offsetX * _scaleFactor);
-            }
-        }
+        /// <inheritdoc />
+        public int ScaledOffsetX => (int)(_offsetX * _scaleFactor);
 
-        public int ScaledOffsetY
-        {
-            get
-            {
-                return (int)(_offsetY * _scaleFactor);
-            }
-        }
+        /// <inheritdoc />
+        public int ScaledOffsetY => (int)(_offsetY * _scaleFactor);
 
+        /// <inheritdoc />
         public int ZOrder
         {
             get
@@ -202,6 +148,7 @@ namespace Dicom.Imaging.Render
             overlay.Scale(_scaleFactor);
         }
 
+        /// <inheritdoc />
         public void Reset()
         {
             Scale(1.0);
@@ -210,9 +157,10 @@ namespace Dicom.Imaging.Render
             _flipY = false;
         }
 
+        /// <inheritdoc />
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scaleFactor) <= Double.Epsilon) return;
+            if (Math.Abs(scale - _scaleFactor) <= double.Epsilon) return;
 
             _scaleFactor = scale;
             _scaledData = null;
@@ -223,13 +171,15 @@ namespace Dicom.Imaging.Render
             }
         }
 
+        /// <inheritdoc />
         public void BestFit(int width, int height)
         {
-            double xF = (double)width / (double)OriginalWidth;
-            double yF = (double)height / (double)OriginalHeight;
+            double xF = (double)width / OriginalWidth;
+            double yF = (double)height / OriginalHeight;
             Scale(Math.Min(xF, yF));
         }
 
+        /// <inheritdoc />
         public void Rotate(int angle)
         {
             if (angle > 0)
@@ -251,16 +201,19 @@ namespace Dicom.Imaging.Render
             }
         }
 
+        /// <inheritdoc />
         public void FlipX()
         {
             _flipX = !_flipX;
         }
 
+        /// <inheritdoc />
         public void FlipY()
         {
             _flipY = !_flipY;
         }
 
+        /// <inheritdoc />
         public void Transform(double scale, int rotation, bool flipx, bool flipy)
         {
             Scale(scale);
@@ -269,24 +222,25 @@ namespace Dicom.Imaging.Render
             _flipY = flipy;
         }
 
+        /// <inheritdoc />
         public IImage RenderImage(ILUT lut)
         {
-            if (this._applyLut && lut != null && !lut.IsValid)
+            if (_applyLut && lut != null && !lut.IsValid)
             {
                 lut.Recalculate();
             }
 
-            var image = ImageManager.CreateImage(this.ScaledWidth, this.ScaledHeight);
+            var image = ImageManager.CreateImage(ScaledWidth, ScaledHeight);
 
             var pixels = image.Pixels.Data;
-            this.ScaledData.Render(this._applyLut ? lut : null, pixels);
+            ScaledData.Render(_applyLut ? lut : null, pixels);
 
-            foreach (var overlay in this._overlays)
+            foreach (var overlay in _overlays)
             {
-                overlay.Render(pixels, this.ScaledWidth, this.ScaledHeight);
+                overlay.Render(pixels, ScaledWidth, ScaledHeight);
             }
 
-            image.Render(this.Components, this._flipX, this._flipY, this._rotation);
+            image.Render(Components, _flipX, _flipY, _rotation);
 
             return image;
         }

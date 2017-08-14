@@ -12,7 +12,7 @@ namespace Dicom.Dump
 {
     public partial class DisplayForm : Form
     {
-        private DicomFile _file;
+        private readonly DicomFile _file;
 
         private DicomImage _image;
 
@@ -24,6 +24,10 @@ namespace Dicom.Dump
 
         private int _frame;
 
+        private Image _current;
+
+        private Image _previous;
+
         public DisplayForm(DicomFile file)
         {
             _file = file;
@@ -34,27 +38,26 @@ namespace Dicom.Dump
         {
             // execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
             ThreadPool.QueueUserWorkItem(
-                delegate(object s)
+                delegate
+                {
+                    try
                     {
-                        try
+                        _image = new DicomImage(_file.Dataset);
+                        _grayscale = _image.IsGrayscale;
+                        if (_grayscale)
                         {
-                            _image = new DicomImage(_file.Dataset);
-                            _grayscale = !_image.PhotometricInterpretation.IsColor;
-                            if (_grayscale)
-                            {
-                                _windowWidth = _image.WindowWidth;
-                                _windowCenter = _image.WindowCenter;
-                            }
-                            _frame = 0;
-                            Invoke(new WaitCallback(SizeForImage), _image);
-                            Invoke(new WaitCallback(DisplayImage), _image);
+                            _windowWidth = _image.WindowWidth;
+                            _windowCenter = _image.WindowCenter;
                         }
-                        catch (Exception ex)
-                        {
-                            OnException(ex);
-                        }
-                    });
-
+                        _frame = 0;
+                        Invoke(new WaitCallback(SizeForImage), _image);
+                        Invoke(new WaitCallback(DisplayImage), _image);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnException(ex);
+                    }
+               });
         }
 
         private delegate void ExceptionHandler(Exception e);
@@ -67,7 +70,8 @@ namespace Dicom.Dump
                 return;
             }
 
-            MessageBox.Show(this, e.Message, "Image Render Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, (e.InnerException ?? e).Message, "Image Render Exception", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
             Close();
         }
 
@@ -77,15 +81,14 @@ namespace Dicom.Dump
             {
                 var image = (DicomImage)state;
 
-                pbDisplay.Image = image.RenderImage(_frame).As<Image>();
+                _previous = pbDisplay.Image;
+                pbDisplay.Image = null;
+                _current = image.RenderImage(_frame).Clone().AsBitmap();
+                pbDisplay.Image = _current;
 
-                if (_grayscale)
-                    Text = String.Format(
-                        "DICOM Image Display [scale: {0}, wc: {1}, ww: {2}]",
-                        Math.Round(image.Scale, 1),
-                        image.WindowCenter,
-                        image.WindowWidth);
-                else Text = String.Format("DICOM Image Display [scale: {0}]", Math.Round(image.Scale, 1));
+                Text = _grayscale
+                    ? $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}, wc: {image.WindowCenter}, ww: {image.WindowWidth}]"
+                    : $"DICOM Image Display [scale: {Math.Round(image.Scale, 1)}]";
             }
             catch (Exception e)
             {
@@ -97,12 +100,12 @@ namespace Dicom.Dump
         {
             var image = (DicomImage)state;
 
-            Size max = SystemInformation.WorkingArea.Size;
+            var max = SystemInformation.WorkingArea.Size;
 
-            int maxW = max.Width - (Width - pbDisplay.Width);
-            int maxH = max.Height - (Height - pbDisplay.Height);
+            var maxW = max.Width - (Width - pbDisplay.Width);
+            var maxH = max.Height - (Height - pbDisplay.Height);
 
-            if (image.Width > maxW || image.Height > maxH) image.Scale = Math.Min((double)maxW / (double)image.Width, (double)maxH / (double)image.Height);
+            if (image.Width > maxW || image.Height > maxH) image.Scale = Math.Min((double)maxW / image.Width, (double)maxH / image.Height);
             else image.Scale = 1.0;
 
             Width = (int)(image.Width * image.Scale) + (Width - pbDisplay.Width);
@@ -189,14 +192,15 @@ namespace Dicom.Dump
                 return;
             }
 
+            if (!_image.IsGrayscale) return;
             GrayscaleRenderOptions options = null;
 
-            if (e.KeyCode == Keys.D0) options = GrayscaleRenderOptions.FromDataset(_image.Dataset);
-            else if (e.KeyCode == Keys.D1) options = GrayscaleRenderOptions.FromWindowLevel(_image.Dataset);
-            else if (e.KeyCode == Keys.D2) options = GrayscaleRenderOptions.FromImagePixelValueTags(_image.Dataset);
-            else if (e.KeyCode == Keys.D3) options = GrayscaleRenderOptions.FromMinMax(_image.Dataset);
-            else if (e.KeyCode == Keys.D4) options = GrayscaleRenderOptions.FromBitRange(_image.Dataset);
-            else if (e.KeyCode == Keys.D5) options = GrayscaleRenderOptions.FromHistogram(_image.Dataset, 90);
+            if (e.KeyCode == Keys.D0) options = GrayscaleRenderOptions.FromDataset(_file.Dataset);
+            else if (e.KeyCode == Keys.D1) options = GrayscaleRenderOptions.FromWindowLevel(_file.Dataset);
+            else if (e.KeyCode == Keys.D2) options = GrayscaleRenderOptions.FromImagePixelValueTags(_file.Dataset);
+            else if (e.KeyCode == Keys.D3) options = GrayscaleRenderOptions.FromMinMax(_file.Dataset);
+            else if (e.KeyCode == Keys.D4) options = GrayscaleRenderOptions.FromBitRange(_file.Dataset);
+            else if (e.KeyCode == Keys.D5) options = GrayscaleRenderOptions.FromHistogram(_file.Dataset, 90);
 
             if (options != null)
             {
@@ -216,13 +220,13 @@ namespace Dicom.Dump
             {
                 if (pbDisplay.Width > pbDisplay.Height)
                 {
-                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Height / (double)image.Height;
-                    else image.Scale = (double)pbDisplay.Width / (double)image.Width;
+                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Height / image.Height;
+                    else image.Scale = (double)pbDisplay.Width / image.Width;
                 }
                 else
                 {
-                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Width / (double)image.Width;
-                    else image.Scale = (double)pbDisplay.Height / (double)image.Height;
+                    if (image.Width > image.Height) image.Scale = (double)pbDisplay.Width / image.Width;
+                    else image.Scale = (double)pbDisplay.Height / image.Height;
                 }
 
                 // scale viewing window to match rescaled image size
@@ -233,8 +237,8 @@ namespace Dicom.Dump
             if (WindowState == FormWindowState.Maximized)
             {
                 image.Scale = Math.Min(
-                    (double)pbDisplay.Width / (double)image.Width,
-                    (double)pbDisplay.Height / (double)image.Height);
+                    (double)pbDisplay.Width / image.Width,
+                    (double)pbDisplay.Height / image.Height);
             }
 
             DisplayImage(image);
