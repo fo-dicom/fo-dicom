@@ -1,16 +1,13 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+
+using Xunit;
 
 namespace Dicom.Network
 {
-    using System.IO;
-
-    using Xunit;
-
     [Collection("Network")]
     public class PDUTest
     {
@@ -133,7 +130,7 @@ namespace Dicom.Network
         {
             var association = new DicomAssociation();
             association.PresentationContexts.Add(
-                new DicomPresentationContext(contextId, DicomUID.ExplicitVRLittleEndian));
+                new DicomPresentationContext(contextId, DicomUID.Verification));
 
             using (var raw = new RawPDU(buffer))
             {
@@ -239,7 +236,7 @@ namespace Dicom.Network
                 }, (byte)1, DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, null
             }
         };
-        //1.2.840.10008.1.2.4.50 0x31, 0x2e, 0x32, 0x2e, 0x38, 0x34, 0x30, 0x2e 0x31, 0x30, 0x30, 0x30, 0x38, 0x2e, 0x31, 0x2e, 0x32, 0x2e, 0x34, 0x2e, 0x35, 0x30
+
         #endregion
     }
 }
