@@ -709,11 +709,12 @@ namespace Dicom.Network
                 pdu.Write("Result", (byte)pc.Result);
                 pdu.Write("Reserved", 0x00);
 
-                // Transfer Syntax
+                // Transfer Syntax (set to Implicit VR Little Endian if no accepted transfer syntax is defined)
                 pdu.Write("Item-Type", 0x40);
                 pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
-                pdu.Write("Transfer Syntax UID", pc.AcceptedTransferSyntax.UID.UID);
+                pdu.Write("Transfer Syntax UID",
+                    pc.AcceptedTransferSyntax?.UID.UID ?? DicomUID.ImplicitVRLittleEndian.UID);
                 pdu.WriteLength16();
 
                 pdu.WriteLength16();
