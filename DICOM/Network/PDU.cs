@@ -10,7 +10,6 @@ using Dicom.IO;
 
 namespace Dicom.Network
 {
-
     #region Raw PDU
 
     /// <summary>Encapsulates PDU data for reading or writing</summary>
@@ -18,17 +17,17 @@ namespace Dicom.Network
     {
         #region Private members
 
-        private byte _type;
+        private readonly byte _type;
 
         private MemoryStream _ms;
 
         private BinaryReader _br;
 
-        private BinaryWriter _bw;
+        private readonly BinaryWriter _bw;
 
-        private Stack<long> _m16;
+        private readonly Stack<long> _m16;
 
-        private Stack<long> _m32;
+        private readonly Stack<long> _m32;
 
         #endregion
 
@@ -65,22 +64,10 @@ namespace Dicom.Network
         #region Public Properties
 
         /// <summary>PDU type</summary>
-        public byte Type
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        public byte Type => _type;
 
         /// <summary>PDU length</summary>
-        public uint Length
-        {
-            get
-            {
-                return (uint)_ms.Length;
-            }
-        }
+        public uint Length => (uint)_ms.Length;
 
         #endregion
 
@@ -92,17 +79,17 @@ namespace Dicom.Network
         /// <param name="s">Output stream</param>
         public void WritePDU(Stream s)
         {
-            byte[] buffer = new byte[6];
+            var buffer = new byte[6];
 
             unchecked
             {
                 buffer[0] = _type;
 
-                uint length = (uint)_ms.Length;
+                var length = (uint)_ms.Length;
                 buffer[2] = (byte)((length & 0xff000000U) >> 24);
                 buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
                 buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
-                buffer[5] = (byte)((length & 0x000000ffU));
+                buffer[5] = (byte)(length & 0x000000ffU);
             }
 
             s.Write(buffer, 0, 6);
@@ -133,9 +120,9 @@ namespace Dicom.Network
         /// Gets string describing this PDU
         /// </summary>
         /// <returns>PDU description</returns>
-        public override String ToString()
+        public override string ToString()
         {
-            return String.Format("Pdu[type={0:X2}, length={1}]", Type, Length);
+            return $"Pdu[type={Type:X2}, length={Length}]";
         }
 
         /// <summary>
@@ -148,16 +135,12 @@ namespace Dicom.Network
 
         #region Read Methods
 
-        private void CheckOffset(int bytes, String name)
+        private void CheckOffset(int bytes, string name)
         {
-            if ((_ms.Position + bytes) > _ms.Length)
+            if (_ms.Position + bytes > _ms.Length)
             {
-                String msg = String.Format(
-                    "{0} (offset={1}, bytes={2}, field=\"{3}\") Requested offset out of range!",
-                    ToString(),
-                    _ms.Position,
-                    bytes,
-                    name);
+                var msg =
+                    $"{ToString()} (offset={_ms.Position}, bytes={bytes}, field=\"{name}\") Requested offset out of range!";
                 throw new DicomNetworkException(msg);
             }
         }
@@ -167,7 +150,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Name of field</param>
         /// <returns>Field value</returns>
-        public byte ReadByte(String name)
+        public byte ReadByte(string name)
         {
             CheckOffset(1, name);
             return _br.ReadByte();
@@ -179,7 +162,7 @@ namespace Dicom.Network
         /// <param name="name">Name of field</param>
         /// <param name="count">Number of bytes to read</param>
         /// <returns>Field value</returns>
-        public byte[] ReadBytes(String name, int count)
+        public byte[] ReadBytes(string name, int count)
         {
             CheckOffset(count, name);
             return _br.ReadBytes(count);
@@ -190,7 +173,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Name of field</param>
         /// <returns>Field value</returns>
-        public ushort ReadUInt16(String name)
+        public ushort ReadUInt16(string name)
         {
             CheckOffset(2, name);
             return _br.ReadUInt16();
@@ -201,13 +184,13 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Name of field</param>
         /// <returns>Field value</returns>
-        public uint ReadUInt32(String name)
+        public uint ReadUInt32(string name)
         {
             CheckOffset(4, name);
             return _br.ReadUInt32();
         }
 
-        private char[] trimChars = { ' ', '\0' };
+        private readonly char[] _trimChars = { ' ', '\0' };
 
         /// <summary>
         /// Reads string from PDU
@@ -215,11 +198,11 @@ namespace Dicom.Network
         /// <param name="name">Name of field</param>
         /// <param name="count">Length of string</param>
         /// <returns>Field value</returns>
-        public String ReadString(String name, int count)
+        public string ReadString(string name, int count)
         {
             CheckOffset(count, name);
-            char[] c = _br.ReadChars(count);
-            return new String(c).Trim(trimChars);
+            var c = _br.ReadChars(count);
+            return new string(c).Trim(_trimChars);
         }
 
         /// <summary>
@@ -227,7 +210,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Name of field</param>
         /// <param name="count">Number of bytes to skip</param>
-        public void SkipBytes(String name, int count)
+        public void SkipBytes(string name, int count)
         {
             CheckOffset(count, name);
             _ms.Seek(count, SeekOrigin.Current);
@@ -242,7 +225,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
-        public void Write(String name, byte value)
+        public void Write(string name, byte value)
         {
             _bw.Write(value);
         }
@@ -253,9 +236,9 @@ namespace Dicom.Network
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
         /// <param name="count">Number of times to write PDU value</param>
-        public void Write(String name, byte value, int count)
+        public void Write(string name, byte value, int count)
         {
-            for (int i = 0; i < count; i++) _bw.Write(value);
+            for (var i = 0; i < count; i++) _bw.Write(value);
         }
 
         /// <summary>
@@ -263,7 +246,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
-        public void Write(String name, byte[] value)
+        public void Write(string name, byte[] value)
         {
             _bw.Write(value);
         }
@@ -273,7 +256,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
-        public void Write(String name, ushort value)
+        public void Write(string name, ushort value)
         {
             _bw.Write(value);
         }
@@ -283,7 +266,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
-        public void Write(String name, uint value)
+        public void Write(string name, uint value)
         {
             _bw.Write(value);
         }
@@ -293,7 +276,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="name">Field name</param>
         /// <param name="value">Field value</param>
-        public void Write(String name, String value)
+        public void Write(string name, string value)
         {
             _bw.Write(value.ToCharArray());
         }
@@ -305,7 +288,7 @@ namespace Dicom.Network
         /// <param name="value">Field value</param>
         /// <param name="count">Number of characters to write</param>
         /// <param name="pad">Padding character</param>
-        public void Write(String name, String value, int count, char pad)
+        public void Write(string name, string value, int count, char pad)
         {
             _bw.Write(ToCharArray(value, count, pad));
         }
@@ -314,7 +297,7 @@ namespace Dicom.Network
         /// Marks position to write 16-bit length value
         /// </summary>
         /// <param name="name">Field name</param>
-        public void MarkLength16(String name)
+        public void MarkLength16(string name)
         {
             _m16.Push(_ms.Position);
             _bw.Write((ushort)0);
@@ -325,8 +308,8 @@ namespace Dicom.Network
         /// </summary>
         public void WriteLength16()
         {
-            long p1 = _m16.Pop();
-            long p2 = _ms.Position;
+            var p1 = _m16.Pop();
+            var p2 = _ms.Position;
             _ms.Position = p1;
             _bw.Write((ushort)(p2 - p1 - 2));
             _ms.Position = p2;
@@ -336,7 +319,7 @@ namespace Dicom.Network
         /// Marks position to write 32-bit length value
         /// </summary>
         /// <param name="name">Field name</param>
-        public void MarkLength32(String name)
+        public void MarkLength32(string name)
         {
             _m32.Push(_ms.Position);
             _bw.Write((uint)0);
@@ -347,17 +330,17 @@ namespace Dicom.Network
         /// </summary>
         public void WriteLength32()
         {
-            long p1 = _m32.Pop();
-            long p2 = _ms.Position;
+            var p1 = _m32.Pop();
+            var p2 = _ms.Position;
             _ms.Position = p1;
             _bw.Write((uint)(p2 - p1 - 4));
             _ms.Position = p2;
         }
 
-        private static char[] ToCharArray(String s, int l, char p)
+        private static char[] ToCharArray(string s, int l, char p)
         {
-            char[] c = new char[l];
-            for (int i = 0; i < l; i++)
+            var c = new char[l];
+            for (var i = 0; i < l; i++)
             {
                 if (i < s.Length) c[i] = s[i];
                 else c[i] = p;
@@ -438,7 +421,7 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x01);
+            var pdu = new RawPDU(0x01);
 
             pdu.Write("Version", (ushort)0x0001);
             pdu.Write("Reserved", 0x00, 2);
@@ -447,8 +430,8 @@ namespace Dicom.Network
             pdu.Write("Reserved", 0x00, 32);
 
             // Application Context
-            pdu.Write("Item-Type", (byte)0x10);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x10);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
             pdu.WriteLength16();
@@ -456,24 +439,24 @@ namespace Dicom.Network
             foreach (var pc in _assoc.PresentationContexts)
             {
                 // Presentation Context
-                pdu.Write("Item-Type", (byte)0x20);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Item-Type", 0x20);
+                pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
-                pdu.Write("Presentation Context ID", (byte)pc.ID);
-                pdu.Write("Reserved", (byte)0x00, 3);
+                pdu.Write("Presentation Context ID", pc.ID);
+                pdu.Write("Reserved", 0x00, 3);
 
                 // Abstract Syntax
-                pdu.Write("Item-Type", (byte)0x30);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Item-Type", 0x30);
+                pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
                 pdu.Write("Abstract Syntax UID", pc.AbstractSyntax.UID);
                 pdu.WriteLength16();
 
                 // Transfer Syntax
-                foreach (DicomTransferSyntax ts in pc.GetTransferSyntaxes())
+                foreach (var ts in pc.GetTransferSyntaxes())
                 {
-                    pdu.Write("Item-Type", (byte)0x40);
-                    pdu.Write("Reserved", (byte)0x00);
+                    pdu.Write("Item-Type", 0x40);
+                    pdu.Write("Reserved", 0x00);
                     pdu.MarkLength16("Item-Length");
                     pdu.Write("Transfer Syntax UID", ts.UID.UID);
                     pdu.WriteLength16();
@@ -483,19 +466,19 @@ namespace Dicom.Network
             }
 
             // User Data Fields
-            pdu.Write("Item-Type", (byte)0x50);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x50);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
 
             // Maximum PDU
-            pdu.Write("Item-Type", (byte)0x51);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x51);
+            pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", (uint)_assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
 
             // Implementation Class UID
-            pdu.Write("Item-Type", (byte)0x52);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x52);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Implementation Class UID", DicomImplementation.ClassUID.UID);
             pdu.WriteLength16();
@@ -503,8 +486,8 @@ namespace Dicom.Network
             // Asynchronous Operations Negotiation
             if (_assoc.MaxAsyncOpsInvoked != 1 || _assoc.MaxAsyncOpsPerformed != 1)
             {
-                pdu.Write("Item-Type", (byte)0x53);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Item-Type", 0x53);
+                pdu.Write("Reserved", 0x00);
                 pdu.Write("Item-Length", (ushort)0x0004);
                 pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
@@ -514,8 +497,8 @@ namespace Dicom.Network
             {
                 if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
                 {
-                    pdu.Write("Item-Type", (byte)0x54);
-                    pdu.Write("Reserved", (byte)0x00);
+                    pdu.Write("Item-Type", 0x54);
+                    pdu.Write("Reserved", 0x00);
                     pdu.MarkLength16("Item-Length");
                     pdu.MarkLength16("UID-Length");
                     pdu.Write("Abstract Syntax UID", pc.AbstractSyntax.UID);
@@ -527,13 +510,13 @@ namespace Dicom.Network
             }
 
             // Implementation Version
-            pdu.Write("Item-Type", (byte)0x55);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x55);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+            foreach (var exNeg in _assoc.ExtendedNegotiations)
             {
                 exNeg.Write(pdu);
             }
@@ -553,7 +536,7 @@ namespace Dicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
-            uint l = raw.Length - 6;
+            var l = raw.Length - 6;
 
             raw.ReadUInt16("Version");
             raw.SkipBytes("Reserved", 2);
@@ -564,9 +547,9 @@ namespace Dicom.Network
 
             while (l > 0)
             {
-                byte type = raw.ReadByte("Item-Type");
+                var type = raw.ReadByte("Item-Type");
                 raw.SkipBytes("Reserved", 1);
-                ushort il = raw.ReadUInt16("Item-Length");
+                var il = raw.ReadUInt16("Item-Length");
 
                 l -= 4 + (uint)il;
 
@@ -578,16 +561,16 @@ namespace Dicom.Network
                 else if (type == 0x20)
                 {
                     // Presentation Context
-                    byte id = raw.ReadByte("Presentation Context ID");
+                    var id = raw.ReadByte("Presentation Context ID");
                     raw.SkipBytes("Reserved", 3);
                     il -= 4;
 
                     while (il > 0)
                     {
-                        byte pt = raw.ReadByte("Presentation Context Item-Type");
+                        var pt = raw.ReadByte("Presentation Context Item-Type");
                         raw.SkipBytes("Reserved", 1);
-                        ushort pl = raw.ReadUInt16("Presentation Context Item-Length");
-                        string sx = raw.ReadString("Presentation Context Syntax UID", pl);
+                        var pl = raw.ReadUInt16("Presentation Context Item-Length");
+                        var sx = raw.ReadString("Presentation Context Syntax UID", pl);
                         if (pt == 0x30)
                         {
                             var pc = new DicomPresentationContext(id, DicomUID.Parse(sx));
@@ -606,9 +589,9 @@ namespace Dicom.Network
                     // User Information
                     while (il > 0)
                     {
-                        byte ut = raw.ReadByte("User Information Item-Type");
+                        var ut = raw.ReadByte("User Information Item-Type");
                         raw.SkipBytes("Reserved", 1);
-                        ushort ul = raw.ReadUInt16("User Information Item-Length");
+                        var ul = raw.ReadUInt16("User Information Item-Length");
                         il -= (ushort)(4 + ul);
                         if (ut == 0x51)
                         {
@@ -700,7 +683,7 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x02);
+            var pdu = new RawPDU(0x02);
 
             pdu.Write("Version", (ushort)0x0001);
             pdu.Write("Reserved", 0x00, 2);
@@ -709,8 +692,8 @@ namespace Dicom.Network
             pdu.Write("Reserved", 0x00, 32);
 
             // Application Context
-            pdu.Write("Item-Type", (byte)0x10);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x10);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
             pdu.WriteLength16();
@@ -718,38 +701,39 @@ namespace Dicom.Network
             foreach (var pc in _assoc.PresentationContexts)
             {
                 // Presentation Context
-                pdu.Write("Item-Type", (byte)0x21);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Item-Type", 0x21);
+                pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
-                pdu.Write("Presentation Context ID", (byte)pc.ID);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Presentation Context ID", pc.ID);
+                pdu.Write("Reserved", 0x00);
                 pdu.Write("Result", (byte)pc.Result);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Reserved", 0x00);
 
-                // Transfer Syntax
-                pdu.Write("Item-Type", (byte)0x40);
-                pdu.Write("Reserved", (byte)0x00);
+                // Transfer Syntax (set to Implicit VR Little Endian if no accepted transfer syntax is defined)
+                pdu.Write("Item-Type", 0x40);
+                pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
-                pdu.Write("Transfer Syntax UID", pc.AcceptedTransferSyntax.UID.UID);
+                pdu.Write("Transfer Syntax UID",
+                    pc.AcceptedTransferSyntax?.UID.UID ?? DicomUID.ImplicitVRLittleEndian.UID);
                 pdu.WriteLength16();
 
                 pdu.WriteLength16();
             }
 
             // User Data Fields
-            pdu.Write("Item-Type", (byte)0x50);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x50);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
 
             // Maximum PDU
-            pdu.Write("Item-Type", (byte)0x51);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x51);
+            pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", (uint)_assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
 
             // Implementation Class UID
-            pdu.Write("Item-Type", (byte)0x52);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x52);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Implementation Class UID", DicomImplementation.ClassUID.UID);
             pdu.WriteLength16();
@@ -757,8 +741,8 @@ namespace Dicom.Network
             // Asynchronous Operations Negotiation
             if (_assoc.MaxAsyncOpsInvoked != 1 || _assoc.MaxAsyncOpsPerformed != 1)
             {
-                pdu.Write("Item-Type", (byte)0x53);
-                pdu.Write("Reserved", (byte)0x00);
+                pdu.Write("Item-Type", 0x53);
+                pdu.Write("Reserved", 0x00);
                 pdu.Write("Item-Length", (ushort)0x0004);
                 pdu.Write("Asynchronous Operations Invoked", (ushort)_assoc.MaxAsyncOpsInvoked);
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
@@ -768,8 +752,8 @@ namespace Dicom.Network
             {
                 if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
                 {
-                    pdu.Write("Item-Type", (byte)0x54);
-                    pdu.Write("Reserved", (byte)0x00);
+                    pdu.Write("Item-Type", 0x54);
+                    pdu.Write("Reserved", 0x00);
                     pdu.MarkLength16("Item-Length");
                     pdu.MarkLength16("UID-Length");
                     pdu.Write("Abstract Syntax UID", pc.AbstractSyntax.UID);
@@ -781,13 +765,13 @@ namespace Dicom.Network
             }
 
             // Implementation Version
-            pdu.Write("Item-Type", (byte)0x55);
-            pdu.Write("Reserved", (byte)0x00);
+            pdu.Write("Item-Type", 0x55);
+            pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            foreach (DicomExtendedNegotiation exNeg in _assoc.ExtendedNegotiations)
+            foreach (var exNeg in _assoc.ExtendedNegotiations)
             {
                 exNeg.Write(pdu);
             }
@@ -811,8 +795,7 @@ namespace Dicom.Network
             _assoc.MaxAsyncOpsInvoked = 1;
             _assoc.MaxAsyncOpsPerformed = 1;
 
-            uint l = raw.Length - 6;
-            ushort c = 0;
+            var l = raw.Length - 6;
 
             raw.ReadUInt16("Version");
             raw.SkipBytes("Reserved", 2);
@@ -823,51 +806,59 @@ namespace Dicom.Network
 
             while (l > 0)
             {
-                byte type = raw.ReadByte("Item-Type");
+                var type = raw.ReadByte("Item-Type");
                 l -= 1;
 
                 if (type == 0x10)
                 {
                     // Application Context
                     raw.SkipBytes("Reserved", 1);
-                    c = raw.ReadUInt16("Item-Length");
-                    raw.SkipBytes("Value", (int)c);
+                    var c = raw.ReadUInt16("Item-Length");
+                    raw.SkipBytes("Value", c);
                     l -= 3 + (uint)c;
                 }
                 else if (type == 0x21)
                 {
                     // Presentation Context
                     raw.ReadByte("Reserved");
-                    ushort pl = raw.ReadUInt16("Presentation Context Item-Length");
-                    byte id = raw.ReadByte("Presentation Context ID");
+                    var pl = raw.ReadUInt16("Presentation Context Item-Length");
+                    var id = raw.ReadByte("Presentation Context ID");
                     raw.ReadByte("Reserved");
-                    byte res = raw.ReadByte("Presentation Context Result/Reason");
+                    var res = raw.ReadByte("Presentation Context Result/Reason");
                     raw.ReadByte("Reserved");
                     l -= (uint)pl + 3;
                     pl -= 4;
 
-                    // Presentation Context Transfer Syntax
-                    raw.ReadByte("Presentation Context Item-Type (0x40)");
-                    raw.ReadByte("Reserved");
-                    ushort tl = raw.ReadUInt16("Presentation Context Item-Length");
-                    string tx = raw.ReadString("Presentation Context Syntax UID", tl);
-                    pl -= (ushort)(tl + 4);
+                    if ((DicomPresentationContextResult)res == DicomPresentationContextResult.Accept)
+                    {
+                        // Presentation Context Transfer Syntax
+                        raw.ReadByte("Presentation Context Item-Type (0x40)");
+                        raw.ReadByte("Reserved");
+                        var tl = raw.ReadUInt16("Presentation Context Item-Length");
+                        var tx = raw.ReadString("Presentation Context Syntax UID", tl);
+                        pl -= (ushort)(tl + 4);
 
-                    _assoc.PresentationContexts[id].SetResult(
-                        (DicomPresentationContextResult)res,
-                        DicomTransferSyntax.Parse(tx));
+                        _assoc.PresentationContexts[id].SetResult(
+                            (DicomPresentationContextResult)res,
+                            DicomTransferSyntax.Parse(tx));
+                    }
+                    else
+                    {
+                        raw.SkipBytes("Rejected Presentation Context", pl);
+                        _assoc.PresentationContexts[id].SetResult((DicomPresentationContextResult)res);
+                    }
                 }
                 else if (type == 0x50)
                 {
                     // User Information
                     raw.ReadByte("Reserved");
-                    ushort il = raw.ReadUInt16("User Information Item-Length");
+                    var il = raw.ReadUInt16("User Information Item-Length");
                     l -= (uint)(il + 3);
                     while (il > 0)
                     {
-                        byte ut = raw.ReadByte("User Item-Type");
+                        var ut = raw.ReadByte("User Item-Type");
                         raw.ReadByte("Reserved");
-                        ushort ul = raw.ReadUInt16("User Item-Length");
+                        var ul = raw.ReadUInt16("User Item-Length");
                         il -= (ushort)(ul + 4);
                         if (ut == 0x51)
                         {
@@ -908,14 +899,14 @@ namespace Dicom.Network
                         }
                         else
                         {
-                            raw.SkipBytes("User Item Value", (int)ul);
+                            raw.SkipBytes("User Item Value", ul);
                         }
                     }
                 }
                 else
                 {
                     raw.SkipBytes("Reserved", 1);
-                    ushort il = raw.ReadUInt16("User Item-Length");
+                    var il = raw.ReadUInt16("User Item-Length");
                     raw.SkipBytes("Unknown User Item", il);
                     l -= (uint)(il + 3);
                 }
@@ -1052,8 +1043,8 @@ namespace Dicom.Network
         /// in Table 9-21 of DICOM Standard PS 3.8.</remarks>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x03);
-            pdu.Write("Reserved", (byte)0x00);
+            var pdu = new RawPDU(0x03);
+            pdu.Write("Reserved", 0x00);
             pdu.Write("Result", (byte)_rt);
             pdu.Write("Source", (byte)_so);
             pdu.Write("Reason", (byte)((byte)_rn & 0xf));
@@ -1094,7 +1085,7 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x05);
+            var pdu = new RawPDU(0x05);
             pdu.Write("Reserved", (uint)0x00000000);
             return pdu;
         }
@@ -1127,7 +1118,7 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x06);
+            var pdu = new RawPDU(0x06);
             pdu.Write("Reserved", (uint)0x00000000);
             return pdu;
         }
@@ -1239,9 +1230,9 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x07);
-            pdu.Write("Reserved", (byte)0x00);
-            pdu.Write("Reserved", (byte)0x00);
+            var pdu = new RawPDU(0x07);
+            pdu.Write("Reserved", 0x00);
+            pdu.Write("Reserved", 0x00);
             pdu.Write("Source", (byte)_s);
             pdu.Write("Reason", (byte)_r);
             return pdu;
@@ -1296,7 +1287,7 @@ namespace Dicom.Network
         public uint GetLengthOfPDVs()
         {
             uint len = 0;
-            foreach (PDV pdv in _pdvs)
+            foreach (var pdv in _pdvs)
             {
                 len += pdv.PDVLength;
             }
@@ -1305,7 +1296,7 @@ namespace Dicom.Network
 
         public override string ToString()
         {
-            var value = String.Format("P-DATA-TF [Length: {0}]", 6 + GetLengthOfPDVs());
+            var value = $"P-DATA-TF [Length: {6 + GetLengthOfPDVs()}]";
             foreach (var pdv in PDVs) value += "\n\t" + pdv.ToString();
             return value;
         }
@@ -1318,8 +1309,8 @@ namespace Dicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
-            RawPDU pdu = new RawPDU((byte)0x04);
-            foreach (PDV pdv in _pdvs)
+            var pdu = new RawPDU(0x04);
+            foreach (var pdv in _pdvs)
             {
                 pdv.Write(pdu);
             }
@@ -1336,11 +1327,11 @@ namespace Dicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
-            uint len = raw.Length - 6;
+            var len = raw.Length - 6;
             uint read = 0;
             while (read < len)
             {
-                PDV pdv = new PDV();
+                var pdv = new PDV();
                 read += pdv.Read(raw);
                 _pdvs.Add(pdv);
             }
@@ -1454,12 +1445,7 @@ namespace Dicom.Network
 
         public override string ToString()
         {
-            return String.Format(
-                "PDV [PCID: {0}; Length: {1}; Command: {2}; Last: {3}]",
-                PCID,
-                Value.Length,
-                IsCommand,
-                IsLastFragment);
+            return $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
         }
 
         #region Write
@@ -1470,10 +1456,10 @@ namespace Dicom.Network
         /// <param name="pdu">PDU buffer</param>
         public void Write(RawPDU pdu)
         {
-            byte mch = (byte)((_last ? 2 : 0) + (_command ? 1 : 0));
+            var mch = (byte)((_last ? 2 : 0) + (_command ? 1 : 0));
             pdu.MarkLength32("PDV-Length");
-            pdu.Write("Presentation Context ID", (byte)_pcid);
-            pdu.Write("Message Control Header", (byte)mch);
+            pdu.Write("Presentation Context ID", _pcid);
+            pdu.Write("Message Control Header", mch);
             pdu.Write("PDV Value", _value);
             pdu.WriteLength32();
         }
@@ -1488,9 +1474,9 @@ namespace Dicom.Network
         /// <param name="raw">PDU buffer</param>
         public uint Read(RawPDU raw)
         {
-            uint len = raw.ReadUInt32("PDV-Length");
+            var len = raw.ReadUInt32("PDV-Length");
             _pcid = raw.ReadByte("Presentation Context ID");
-            byte mch = raw.ReadByte("Message Control Header");
+            var mch = raw.ReadByte("Message Control Header");
             _value = raw.ReadBytes("PDV Value", (int)len - 2);
             _command = (mch & 0x01) != 0;
             _last = (mch & 0x02) != 0;
