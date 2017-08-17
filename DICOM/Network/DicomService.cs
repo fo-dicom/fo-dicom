@@ -71,11 +71,13 @@ namespace Dicom.Network
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
-    public abstract class DicomService : IDisposable
+    public abstract class DicomService : IDicomServiceInitialization, IDisposable
     {
         #region FIELDS
 
         private bool _disposed = false;
+
+        private bool _isInitialized;
 
         protected Stream _dimseStream;
 
@@ -129,7 +131,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            PduListener = ListenAndProcessPDUAsync();
+            _isInitialized = false;
         }
 
         #endregion
@@ -184,11 +186,6 @@ namespace Dicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
-
-        /// <summary>
-        /// Gets the <see cref="Task"/> that listens for PDUs.
-        /// </summary>
-        protected Task PduListener { get; }
 
         /// <summary>
         /// Gets or sets an event handler to handle unsupported PDU bytes.
@@ -351,9 +348,9 @@ namespace Dicom.Network
 
         private async Task ListenAndProcessPDUAsync()
         {
-            try
+            while (IsConnected)
             {
-                while (IsConnected)
+                try
                 {
                     var stream = _network.AsStream();
 
@@ -383,7 +380,7 @@ namespace Dicom.Network
                     length = Endian.Swap(length);
 
                     _readLength = length;
-                    
+
                     // Read PDU
                     using (var ms = new MemoryStream())
                     {
@@ -393,7 +390,7 @@ namespace Dicom.Network
                             int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
-                                    .ConfigureAwait(false);
+                                .ConfigureAwait(false);
 
                             if (count == 0)
                             {
@@ -518,27 +515,27 @@ namespace Dicom.Network
                             throw new DicomNetworkException("Unknown PDU type");
                     }
                 }
-            }
-            catch (ObjectDisposedException)
-            {
-                // silently ignore
-                TryCloseConnection(force: true);
-            }
-            catch (NullReferenceException)
-            {
-                // connection already closed; silently ignore
-                TryCloseConnection(force: true);
-            }
-            catch (IOException e)
-            {
-                // LogIOException returns true for underlying socket error (probably due to forcibly closed connection), 
-                // in that case discard exception
-                TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Exception processing PDU: {@error}", e);
-                TryCloseConnection(e);
+                catch (ObjectDisposedException)
+                {
+                    // silently ignore
+                    TryCloseConnection(force: true);
+                }
+                catch (NullReferenceException)
+                {
+                    // connection already closed; silently ignore
+                    TryCloseConnection(force: true);
+                }
+                catch (IOException e)
+                {
+                    // LogIOException returns true for underlying socket error (probably due to forcibly closed connection), 
+                    // in that case discard exception
+                    TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Exception processing PDU: {@error}", e);
+                    TryCloseConnection(e);
+                }
             }
         }
 
@@ -1125,18 +1122,19 @@ namespace Dicom.Network
                 }
 
                 (this as IDicomService)?.OnConnectionClosed(exception);
-                lock (_lock) IsConnected = false;
-
-                Logger.Info("Connection closed");
-
-                if (exception != null) throw exception;
-                return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Error during close attempt: {@error}", e);
                 throw;
             }
+
+            lock (_lock) IsConnected = false;
+
+            Logger.Info("Connection closed");
+
+            if (exception != null) throw exception;
+            return true;
         }
 
         #endregion
@@ -1147,13 +1145,15 @@ namespace Dicom.Network
         /// Send association request.
         /// </summary>
         /// <param name="association">DICOM association.</param>
-        protected void SendAssociationRequest(DicomAssociation association)
+        protected Task SendAssociationRequestAsync(DicomAssociation association)
         {
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
+
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
+
             Association = association;
-            this.SendPDUAsync(new AAssociateRQ(Association)).Wait();
+            return SendPDUAsync(new AAssociateRQ(Association));
         }
 
         /// <summary>
@@ -1226,6 +1226,18 @@ namespace Dicom.Network
         #endregion
 
         #region Override Methods
+
+        /// <summary>
+        /// Setup long-running operations that the DICOM service manages.
+        /// </summary>
+        /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
+        public virtual Task InitializeAsync()
+        {
+            if (_isInitialized) return Task.FromResult(false);
+            _isInitialized = true;
+
+            return ListenAndProcessPDUAsync();
+        }
 
         /// <summary>
         /// Action to perform when send queue is empty.

@@ -390,34 +390,7 @@ namespace Dicom.Network
                     service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                 }
 
-                var associated = await associateNotifier.Task.ConfigureAwait(false);
-
-                bool send;
-                lock (locker)
-                {
-                    send = associated && requests.Count > 0;
-                }
-
-                if (send)
-                {
-                    IList<DicomRequest> copy;
-                    lock (locker)
-                    {
-                        copy = new List<DicomRequest>(requests);
-                        requests.Clear();
-                    }
-
-                    foreach (var request in copy)
-                    {
-                        service.SendRequest(request);
-                    }
-                }
-                else if (associated)
-                {
-                    await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
-                }
-
-                await completeNotifier.Task.ConfigureAwait(false);
+                await Task.WhenAll(service.InitializeAsync(), PerformSendOrReleaseAsync()).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -428,6 +401,38 @@ namespace Dicom.Network
             {
                 HandleMonitoredExceptions(false);
             }
+        }
+
+        private async Task PerformSendOrReleaseAsync()
+        {
+            var associated = await associateNotifier.Task.ConfigureAwait(false);
+
+            bool send;
+            lock (locker)
+            {
+                send = associated && requests.Count > 0;
+            }
+
+            if (send)
+            {
+                IList<DicomRequest> copy;
+                lock (locker)
+                {
+                    copy = new List<DicomRequest>(requests);
+                    requests.Clear();
+                }
+
+                foreach (var request in copy)
+                {
+                    service.SendRequest(request);
+                }
+            }
+            else if (associated)
+            {
+                await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
+            }
+
+            await completeNotifier.Task.ConfigureAwait(false);
         }
 
         private void HandleMonitoredExceptions(bool cleanup)
@@ -495,6 +500,10 @@ namespace Dicom.Network
 
             private readonly DicomClient client;
 
+            private readonly DicomAssociation _association;
+
+            private bool _isInitialized;
+
             private readonly object locker = new object();
 
             #endregion
@@ -537,7 +546,8 @@ namespace Dicom.Network
                         context.GetTransferSyntaxes().ToArray());
                 }
 
-                SendAssociationRequest(association);
+                _association = association;
+                _isInitialized = false;
             }
 
             #endregion
@@ -589,6 +599,30 @@ namespace Dicom.Network
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetComplete();
+            }
+
+            /// <summary>
+            /// Setup long-running operations that the DICOM service manages.
+            /// </summary>
+            /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
+            public override async Task InitializeAsync()
+            {
+                if (_isInitialized) return;
+                _isInitialized = true;
+
+                Exception exception = null;
+                try
+                {
+                    await Task.WhenAll(base.InitializeAsync(), SendAssociationRequestAsync(_association)).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+                finally 
+                {
+                    SetComplete(exception);
+                }
             }
 
             /// <summary>
