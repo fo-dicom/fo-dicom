@@ -372,12 +372,36 @@ namespace Dicom.Network
         /// </summary>
         public void Abort()
         {
+            try
+            {
+                AbortAsync().Wait();
+            }
+            catch (AggregateException e)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                throw e.Flatten().InnerException;
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously abort DICOM service connection.
+        /// </summary>
+        public async Task AbortAsync()
+        {
             if (this.aborted) return;
 
-            this.service?.DoSendAbort();
-            this.aborted = true;
-
-            HandleMonitoredExceptions(true);
+            try
+            {
+                if (service != null)
+                {
+                    await service.DoSendAbortAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                this.aborted = true;
+                HandleMonitoredExceptions(true);
+            }
         }
 
         private async Task DoSendAsync(INetworkStream stream, DicomAssociation association)
@@ -427,7 +451,7 @@ namespace Dicom.Network
 
                 foreach (var request in copy)
                 {
-                    service.SendRequest(request);
+                    await service.SendRequestAsync(request).ConfigureAwait(false);
                 }
             }
             else if (associated)
@@ -656,8 +680,8 @@ namespace Dicom.Network
                 Exception exception = null;
                 try
                 {
-                    SendAssociationReleaseRequest();
-                    await ListenForDisconnectAsync(millisecondsTimeout, true).ConfigureAwait(false);
+                    await Task.WhenAny(SendAssociationReleaseRequestAsync(),
+                        ListenForDisconnectAsync(millisecondsTimeout, true)).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -670,12 +694,11 @@ namespace Dicom.Network
                 }
             }
 
-            internal void DoSendAbort()
+            internal Task DoSendAbortAsync()
             {
-                if (IsConnected)
-                {
-                    SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
-                }
+                return IsConnected
+                    ? SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified)
+                    : Task.FromResult(false);
             }
 
             /// <summary>
@@ -734,7 +757,7 @@ namespace Dicom.Network
 
                                 foreach (var request in copy)
                                 {
-                                    SendRequest(request);
+                                    await SendRequestAsync(request).ConfigureAwait(false);
                                 }
                             }
                         }

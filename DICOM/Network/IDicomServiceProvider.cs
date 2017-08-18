@@ -19,6 +19,6 @@ namespace Dicom.Network
         /// <summary>
         /// Callback to invoke when receiving an association release request.
         /// </summary>
-        void OnReceiveAssociationReleaseRequest();
+        Task OnReceiveAssociationReleaseRequestAsync();
     }
 }

@@ -281,7 +281,7 @@ namespace Dicom.Network
                     }
                     else
                     {
-                        await Task.Delay(10, _cancellationSource.Token).ConfigureAwait(false);
+                        await Task.Delay(1000, _cancellationSource.Token).ConfigureAwait(false);
                     }
                 }
                 catch (OperationCanceledException)

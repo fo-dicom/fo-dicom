@@ -87,9 +87,9 @@ namespace Dicom.Bugs
                 return SendAssociationAcceptAsync(association);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)

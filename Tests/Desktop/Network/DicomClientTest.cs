@@ -548,19 +548,14 @@ namespace Dicom.Network
                     remotePort = association.RemotePort;
                     return SendAssociationAcceptAsync(association);
                 }
-                else
-                {
-                    SendAssociationReject(
-                        DicomRejectResult.Permanent,
-                        DicomRejectSource.ServiceUser,
-                        DicomRejectReason.CalledAENotRecognized);
-                    return Task.FromResult(false);
-                }
+
+                return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.CalledAENotRecognized);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -599,17 +594,17 @@ namespace Dicom.Network
                 {
                     if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
                     {
-                        SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
-                        return Task.FromResult(false);
+                        return SendAssociationRejectAsync(DicomRejectResult.Permanent,
+                            DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
                     }
                 }
 
                 return SendAssociationAcceptAsync(association);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)

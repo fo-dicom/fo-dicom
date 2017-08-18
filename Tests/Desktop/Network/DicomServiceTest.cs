@@ -122,9 +122,9 @@ namespace Dicom.Network
             return SendAssociationAcceptAsync(association);
         }
 
-        public void OnReceiveAssociationReleaseRequest()
+        public Task OnReceiveAssociationReleaseRequestAsync()
         {
-            this.SendAssociationReleaseResponse();
+            return SendAssociationReleaseResponseAsync();
         }
 
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
