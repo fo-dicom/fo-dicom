@@ -71,7 +71,7 @@ namespace Dicom.Network
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
-    public abstract class DicomService : IDicomServiceInitialization, IDisposable
+    public abstract class DicomService : IDicomServiceRunner, IDisposable
     {
         #region FIELDS
 
@@ -302,10 +302,8 @@ namespace Dicom.Network
 
         private async Task SendNextPDUAsync()
         {
-            while (true)
+            while (IsConnected)
             {
-                if (!IsConnected) return;
-
                 PDU pdu;
 
                 lock (_lock)
@@ -1053,7 +1051,8 @@ namespace Dicom.Network
                     //	   element values and changes in transfer syntax.
                     msg.Dataset.RemoveGroupLengths();
 
-                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax) msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
+                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
+                        msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
                 }
 
                 Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
@@ -1171,6 +1170,7 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
+
             this.SendPDUAsync(new AAssociateAC(Association)).Wait();
         }
 
@@ -1231,7 +1231,7 @@ namespace Dicom.Network
         /// Setup long-running operations that the DICOM service manages.
         /// </summary>
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
-        public virtual Task InitializeAsync()
+        public virtual Task RunAsync()
         {
             if (_isInitialized) return Task.FromResult(false);
             _isInitialized = true;

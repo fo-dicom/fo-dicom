@@ -195,7 +195,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact(Skip = "Fail"), TestPriority(1)]
+        [Fact, TestPriority(1)]
         public void Send_PrivateNotRegisteredSOPClass_SendFails()
         {
             var port = Ports.GetNext();

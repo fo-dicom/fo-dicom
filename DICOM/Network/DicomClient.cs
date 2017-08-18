@@ -30,6 +30,8 @@ namespace Dicom.Network
 
         private DicomServiceUser service;
 
+        private Task _serviceRunnerTask;
+
         private int asyncInvoked;
 
         private int asyncPerformed;
@@ -388,9 +390,10 @@ namespace Dicom.Network
                     completeNotifier = new TaskCompletionSource<bool>();
 
                     service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                    _serviceRunnerTask = service.RunAsync();
                 }
 
-                await Task.WhenAll(service.InitializeAsync(), PerformSendOrReleaseAsync()).ConfigureAwait(false);
+                await Task.WhenAny(_serviceRunnerTask, PerformSendOrReleaseAsync()).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -605,24 +608,12 @@ namespace Dicom.Network
             /// Setup long-running operations that the DICOM service manages.
             /// </summary>
             /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
-            public override async Task InitializeAsync()
+            public override Task RunAsync()
             {
-                if (_isInitialized) return;
+                if (_isInitialized) return Task.FromResult(false);
                 _isInitialized = true;
 
-                Exception exception = null;
-                try
-                {
-                    await Task.WhenAll(base.InitializeAsync(), SendAssociationRequestAsync(_association)).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    exception = e;
-                }
-                finally 
-                {
-                    SetComplete(exception);
-                }
+                return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association));
             }
 
             /// <summary>

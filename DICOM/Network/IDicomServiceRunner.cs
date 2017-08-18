@@ -8,12 +8,12 @@ namespace Dicom.Network
     /// <summary>
     /// Interface for initializing long-running operations in a DICOM service.
     /// </summary>
-    public interface IDicomServiceInitialization
+    public interface IDicomServiceRunner
     {
         /// <summary>
         /// Setup long-running operations that the DICOM service manages.
         /// </summary>
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
-        Task InitializeAsync();
+        Task RunAsync();
     }
 }
