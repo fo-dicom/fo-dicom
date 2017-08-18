@@ -111,7 +111,7 @@ namespace Dicom.Network
         {
         }
 
-        public void OnReceiveAssociationRequest(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -119,7 +119,7 @@ namespace Dicom.Network
                 else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
             }
 
-            this.SendAssociationAccept(association);
+            return SendAssociationAcceptAsync(association);
         }
 
         public void OnReceiveAssociationReleaseRequest()

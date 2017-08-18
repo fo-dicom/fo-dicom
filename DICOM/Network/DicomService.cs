@@ -435,7 +435,8 @@ namespace Dicom.Network
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
                                 Association.ToString());
-                            (this as IDicomServiceProvider)?.OnReceiveAssociationRequest(Association);
+                            await ((this as IDicomServiceProvider)?.OnReceiveAssociationRequestAsync(Association))
+                                .ConfigureAwait(false);
                             break;
                         }
                         case 0x02:
@@ -1159,7 +1160,7 @@ namespace Dicom.Network
         /// Send association accept response.
         /// </summary>
         /// <param name="association">DICOM association.</param>
-        protected void SendAssociationAccept(DicomAssociation association)
+        protected Task SendAssociationAcceptAsync(DicomAssociation association)
         {
             Association = association;
 
@@ -1171,7 +1172,7 @@ namespace Dicom.Network
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
 
-            this.SendPDUAsync(new AAssociateAC(Association)).Wait();
+            return SendPDUAsync(new AAssociateAC(Association));
         }
 
         /// <summary>

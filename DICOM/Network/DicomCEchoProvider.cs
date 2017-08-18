@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Dicom.Network
 {
@@ -16,14 +17,15 @@ namespace Dicom.Network
         {
         }
 
-        public void OnReceiveAssociationRequest(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
             foreach (var pc in association.PresentationContexts)
             {
                 if (pc.AbstractSyntax == DicomUID.Verification) pc.SetResult(DicomPresentationContextResult.Accept);
                 else pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
             }
-            SendAssociationAccept(association);
+
+            return SendAssociationAcceptAsync(association);
         }
 
         public void OnReceiveAssociationReleaseRequest()

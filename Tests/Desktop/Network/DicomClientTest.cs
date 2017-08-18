@@ -534,7 +534,7 @@ namespace Dicom.Network
             {
             }
 
-            public void OnReceiveAssociationRequest(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -546,7 +546,7 @@ namespace Dicom.Network
                     Thread.Sleep(1000);
                     remoteHost = association.RemoteHost;
                     remotePort = association.RemotePort;
-                    SendAssociationAccept(association);
+                    return SendAssociationAcceptAsync(association);
                 }
                 else
                 {
@@ -554,6 +554,7 @@ namespace Dicom.Network
                         DicomRejectResult.Permanent,
                         DicomRejectSource.ServiceUser,
                         DicomRejectReason.CalledAENotRecognized);
+                    return Task.FromResult(false);
                 }
             }
 
@@ -592,18 +593,18 @@ namespace Dicom.Network
             {
             }
 
-            public void OnReceiveAssociationRequest(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
                     if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
                     {
                         SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
-                        return;
+                        return Task.FromResult(false);
                     }
                 }
 
-                SendAssociationAccept(association);
+                return SendAssociationAcceptAsync(association);
             }
 
             public void OnReceiveAssociationReleaseRequest()

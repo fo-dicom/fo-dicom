@@ -229,7 +229,7 @@ namespace Dicom.Network
                             scp.Options = Options;
                         }
 
-                        _services.Add(scp.InitializeAsync());
+                        _services.Add(scp.RunAsync());
                     }
                 }
 
