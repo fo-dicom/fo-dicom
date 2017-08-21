@@ -287,7 +287,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="pdu">PDU to send.</param>
         /// <returns>Awaitable task.</returns>
-        protected async Task SendPDUAsync(PDU pdu)
+        protected Task SendPDUAsync(PDU pdu)
         {
             _pduQueueWatcher.Wait();
 
@@ -297,7 +297,7 @@ namespace Dicom.Network
                 if (_pduQueue.Count >= MaximumPDUsInQueue) _pduQueueWatcher.Reset();
             }
 
-            await SendNextPDUAsync().ConfigureAwait(false);
+            return SendNextPDUAsync();
         }
 
         private async Task SendNextPDUAsync()
@@ -320,13 +320,13 @@ namespace Dicom.Network
 
                 if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-                var ms = new MemoryStream();
-                pdu.Write().WritePDU(ms);
-
-                var buffer = ms.ToArray();
-
                 try
                 {
+                    var ms = new MemoryStream();
+                    pdu.Write().WritePDU(ms);
+
+                    var buffer = ms.ToArray();
+
                     await _network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
                 }
                 catch (IOException e)
@@ -1329,10 +1329,10 @@ namespace Dicom.Network
                 if (_command != value)
                 {
                     _max = _pduMax == 0
-                               ? _service.Options.MaxCommandBuffer
-                               : Math.Min(
-                                   _pduMax,
-                                   value ? _service.Options.MaxCommandBuffer : _service.Options.MaxDataBuffer);
+                        ? _service.Options.MaxCommandBuffer
+                        : Math.Min(
+                            _pduMax,
+                            value ? _service.Options.MaxCommandBuffer : _service.Options.MaxDataBuffer);
 
                     await CreatePDVAsync(true).ConfigureAwait(false);
                     _command = value;
