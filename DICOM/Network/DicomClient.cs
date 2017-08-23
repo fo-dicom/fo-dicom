@@ -2,17 +2,17 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Dicom.Log;
+
 namespace Dicom.Network
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dicom.Log;
-
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
@@ -182,7 +182,8 @@ namespace Dicom.Network
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        public void Send(string host, int port, bool useTls, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return;
 
@@ -202,10 +203,11 @@ namespace Dicom.Network
 
             try
             {
-                DoSendAsync(this.networkStream, assoc).Wait();
+                DoSendAsync(this.networkStream, assoc, millisecondsTimeout).Wait();
             }
             catch (AggregateException e)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw e.Flatten().InnerException;
             }
         }
@@ -218,8 +220,9 @@ namespace Dicom.Network
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
-        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
+        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
@@ -237,7 +240,7 @@ namespace Dicom.Network
                 RemotePort = port
             };
 
-            return DoSendAsync(this.networkStream, assoc);
+            return DoSendAsync(this.networkStream, assoc, millisecondsTimeout);
         }
 
         /// <summary>
@@ -246,7 +249,8 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(INetworkStream stream, string callingAe, string calledAe)
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        public void Send(INetworkStream stream, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return;
 
@@ -260,7 +264,7 @@ namespace Dicom.Network
 
             try
             {
-                DoSendAsync(stream, assoc).Wait();
+                DoSendAsync(stream, assoc, millisecondsTimeout).Wait();
             }
             catch (AggregateException e)
             {
@@ -275,8 +279,9 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
-        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
+        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
@@ -288,7 +293,7 @@ namespace Dicom.Network
                 RemotePort = stream.RemotePort
             };
 
-            return DoSendAsync(stream, assoc);
+            return DoSendAsync(stream, assoc, millisecondsTimeout);
         }
 
         /// <summary>
@@ -320,7 +325,12 @@ namespace Dicom.Network
             {
                 var timedOut = false;
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
-                using (cancellationSource.Token.Register(() => timedOut = true))
+                using (cancellationSource.Token.Register(() => 
+                {
+                    this.associateNotifier?.TrySetResult(false);
+                    this.completeNotifier?.TrySetResult(false);
+                    timedOut = true;
+                }))
                 {
                     while (this.associateNotifier == null) await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
                     return await this.associateNotifier.Task.ConfigureAwait(false) && !timedOut;
@@ -404,7 +414,7 @@ namespace Dicom.Network
             }
         }
 
-        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association)
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association, int millisecondsTimeout)
         {
             try
             {
@@ -417,7 +427,7 @@ namespace Dicom.Network
                     _serviceRunnerTask = service.RunAsync();
                 }
 
-                await Task.WhenAny(_serviceRunnerTask, PerformSendOrReleaseAsync()).ConfigureAwait(false);
+                await Task.WhenAny(_serviceRunnerTask, PerformSendOrReleaseAsync(millisecondsTimeout)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -430,9 +440,9 @@ namespace Dicom.Network
             }
         }
 
-        private async Task PerformSendOrReleaseAsync()
+        private async Task PerformSendOrReleaseAsync(int millisecondsTimeout)
         {
-            var associated = await associateNotifier.Task.ConfigureAwait(false);
+            var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
 
             bool send;
             lock (locker)
