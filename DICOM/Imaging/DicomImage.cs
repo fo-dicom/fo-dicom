@@ -304,14 +304,15 @@ namespace Dicom.Imaging
             bool create;
             lock (_lock) create = _pipeline == null;
 
-            var tuple = create ? CreatePipeline(_dataset, _pixelData) : null;
+            var tuple = create ? CreatePipelineData(_dataset, _pixelData) : null;
 
             lock (_lock)
             {
                 if (_pipeline == null)
                 {
-                    _pipeline = tuple.Item1;
-                    _renderOptions = tuple.Item2;
+                    // ReSharper disable once PossibleNullReferenceException
+                    _pipeline = tuple.Pipeline;
+                    _renderOptions = tuple.RenderOptions;
                 }
             }
         }
@@ -397,7 +398,7 @@ namespace Dicom.Imaging
         /// Create image rendering pipeline according to the <see cref="DicomPixelData.PhotometricInterpretation">photometric interpretation</see>
         /// of the pixel data.
         /// </summary>
-        private static Tuple<IPipeline, GrayscaleRenderOptions> CreatePipeline(DicomDataset dataset, DicomPixelData pixelData)
+        private static PipelineData CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData)
         {
             var pi = pixelData.PhotometricInterpretation;
             var samples = dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
@@ -449,7 +450,22 @@ namespace Dicom.Imaging
                 throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi);
             }
 
-            return Tuple.Create(pipeline, renderOptions);
+            return new PipelineData { Pipeline = pipeline, RenderOptions = renderOptions };
+        }
+
+        #endregion
+
+        #region INNER TYPES
+
+        private class PipelineData
+        {
+            #region PROPERTIES
+
+            internal IPipeline Pipeline { get; set; }
+
+            internal GrayscaleRenderOptions RenderOptions { get; set; }
+
+            #endregion
         }
 
         #endregion

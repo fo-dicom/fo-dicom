@@ -406,10 +406,12 @@ namespace Dicom.Network
 
         #region EVENTS
 
+#if !NET35
         /// <summary>
         /// Event to handle unsupported PDU bytes.
         /// </summary>
         public event PDUBytesHandler HandlePDUBytes;
+#endif
 
         #endregion
 
@@ -635,6 +637,7 @@ namespace Dicom.Network
                         }
                         else
                         {
+#if !NET35
                             if (HandlePDUBytes != null)
                             {
                                 HandlePDUBytes(raw.ReadBytes("Unhandled User Item", ul));
@@ -643,6 +646,9 @@ namespace Dicom.Network
                             {
                                 raw.SkipBytes("Unhandled User Item", ul);
                             }
+#else
+                            raw.SkipBytes("Unhandled User Item", ul);
+#endif
                         }
                     }
                 }
