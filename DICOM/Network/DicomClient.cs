@@ -2,17 +2,17 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Dicom.Log;
+
 namespace Dicom.Network
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dicom.Log;
-
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
@@ -20,23 +20,25 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly object locker = new object();
+        private readonly object _lock = new object();
 
-        private TaskCompletionSource<bool> completeNotifier;
+        private TaskCompletionSource<bool> _completeNotifier;
 
-        private TaskCompletionSource<bool> associateNotifier;
+        private TaskCompletionSource<bool> _associateNotifier;
 
-        private readonly List<DicomRequest> requests;
+        private readonly List<DicomRequest> _requests;
 
-        private DicomServiceUser service;
+        private DicomServiceUser _service;
 
-        private int asyncInvoked;
+        private Task _serviceRunnerTask;
 
-        private int asyncPerformed;
+        private int _asyncInvoked;
 
-        private INetworkStream networkStream;
+        private int _asyncPerformed;
 
-        private bool aborted;
+        private INetworkStream _networkStream;
+
+        private bool _aborted;
 
         private Logger _logger;
 
@@ -49,11 +51,11 @@ namespace Dicom.Network
         /// </summary>
         public DicomClient()
         {
-            this.requests = new List<DicomRequest>();
-            this.AdditionalPresentationContexts = new List<DicomPresentationContext>();
-            this.asyncInvoked = 1;
-            this.asyncPerformed = 1;
-            this.Linger = 50;
+            _requests = new List<DicomRequest>();
+            AdditionalPresentationContexts = new List<DicomPresentationContext>();
+            _asyncInvoked = 1;
+            _asyncPerformed = 1;
+            Linger = 50;
         }
 
         #endregion
@@ -119,12 +121,12 @@ namespace Dicom.Network
             get
             {
                 int requestsCount;
-                lock (this.locker)
+                lock (_lock)
                 {
-                    requestsCount = this.requests.Count;
+                    requestsCount = _requests.Count;
                 }
 
-                return requestsCount > 0 || this.AdditionalPresentationContexts.Count > 0;
+                return requestsCount > 0 || AdditionalPresentationContexts.Count > 0;
             }
         }
 
@@ -136,9 +138,9 @@ namespace Dicom.Network
             get
             {
                 bool required;
-                lock (this.locker)
+                lock (_lock)
                 {
-                    required = this.requests.Count > 0 && (this.service == null || !this.service.IsConnected);
+                    required = _requests.Count > 0 && (_service == null || !_service.IsConnected);
                 }
 
                 return required;
@@ -156,8 +158,8 @@ namespace Dicom.Network
         /// <param name="performed">Asynchronous operations performed.</param>
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
         {
-            this.asyncInvoked = invoked;
-            this.asyncPerformed = performed;
+            _asyncInvoked = invoked;
+            _asyncPerformed = performed;
         }
 
         /// <summary>
@@ -166,9 +168,9 @@ namespace Dicom.Network
         /// <param name="request">DICOM request.</param>
         public void AddRequest(DicomRequest request)
         {
-            lock (this.locker)
+            lock (_lock)
             {
-                this.requests.Add(request);
+                _requests.Add(request);
             }
         }
 
@@ -180,7 +182,8 @@ namespace Dicom.Network
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(string host, int port, bool useTls, string callingAe, string calledAe)
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        public void Send(string host, int port, bool useTls, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return;
 
@@ -188,22 +191,23 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
                                         ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
-            this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            _networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
-                MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed,
+                MaxAsyncOpsInvoked = _asyncInvoked,
+                MaxAsyncOpsPerformed = _asyncPerformed,
                 RemoteHost = host,
                 RemotePort = port
             };
 
             try
             {
-                DoSendAsync(this.networkStream, assoc).Wait();
+                DoSendAsync(_networkStream, assoc, millisecondsTimeout).Wait();
             }
             catch (AggregateException e)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 throw e.Flatten().InnerException;
             }
         }
@@ -216,8 +220,9 @@ namespace Dicom.Network
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
-        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe)
+        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
@@ -225,17 +230,17 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
                                         ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
-            this.networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            _networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
-                MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed,
+                MaxAsyncOpsInvoked = _asyncInvoked,
+                MaxAsyncOpsPerformed = _asyncPerformed,
                 RemoteHost = host,
                 RemotePort = port
             };
 
-            return DoSendAsync(this.networkStream, assoc);
+            return DoSendAsync(_networkStream, assoc, millisecondsTimeout);
         }
 
         /// <summary>
@@ -244,21 +249,22 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public void Send(INetworkStream stream, string callingAe, string calledAe)
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        public void Send(INetworkStream stream, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return;
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
-                MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed,
+                MaxAsyncOpsInvoked = _asyncInvoked,
+                MaxAsyncOpsPerformed = _asyncPerformed,
                 RemoteHost = stream.RemoteHost,
                 RemotePort = stream.RemotePort
             };
 
             try
             {
-                DoSendAsync(stream, assoc).Wait();
+                DoSendAsync(stream, assoc, millisecondsTimeout).Wait();
             }
             catch (AggregateException e)
             {
@@ -273,20 +279,21 @@ namespace Dicom.Network
         /// <param name="stream">Established network stream.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
-        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe)
+        public Task SendAsync(INetworkStream stream, string callingAe, string calledAe, int millisecondsTimeout = 5000)
         {
             if (!CanSend) return Task.FromResult(false);   // TODO Replace with Task.CompletedTask when moving to .NET 4.6
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
-                MaxAsyncOpsInvoked = this.asyncInvoked,
-                MaxAsyncOpsPerformed = this.asyncPerformed,
+                MaxAsyncOpsInvoked = _asyncInvoked,
+                MaxAsyncOpsPerformed = _asyncPerformed,
                 RemoteHost = stream.RemoteHost,
                 RemotePort = stream.RemotePort
             };
 
-            return DoSendAsync(stream, assoc);
+            return DoSendAsync(stream, assoc, millisecondsTimeout);
         }
 
         /// <summary>
@@ -318,10 +325,15 @@ namespace Dicom.Network
             {
                 var timedOut = false;
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
-                using (cancellationSource.Token.Register(() => timedOut = true))
+                using (cancellationSource.Token.Register(() => 
                 {
-                    while (this.associateNotifier == null) await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
-                    return await this.associateNotifier.Task.ConfigureAwait(false) && !timedOut;
+                    _associateNotifier?.TrySetResult(false);
+                    _completeNotifier?.TrySetResult(false);
+                    timedOut = true;
+                }))
+                {
+                    while (_associateNotifier == null) await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
+                    return await _associateNotifier.Task.ConfigureAwait(false) && !timedOut;
                 }
             }
             catch
@@ -354,9 +366,9 @@ namespace Dicom.Network
         {
             try
             {
-                if (this.service != null)
+                if (_service != null)
                 {
-                    await this.service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
+                    await _service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
                 }
             }
             finally
@@ -370,54 +382,52 @@ namespace Dicom.Network
         /// </summary>
         public void Abort()
         {
-            if (this.aborted) return;
-
-            this.service?.DoSendAbort();
-            this.aborted = true;
-
-            HandleMonitoredExceptions(true);
+            try
+            {
+                AbortAsync().Wait();
+            }
+            catch (AggregateException e)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                throw e.Flatten().InnerException;
+            }
         }
 
-        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association)
+        /// <summary>
+        /// Asynchronously abort DICOM service connection.
+        /// </summary>
+        public async Task AbortAsync()
+        {
+            if (_aborted) return;
+
+            try
+            {
+                if (_service != null)
+                {
+                    await _service.DoSendAbortAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _aborted = true;
+                HandleMonitoredExceptions(true);
+            }
+        }
+
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association, int millisecondsTimeout)
         {
             try
             {
-                if (service == null || !service.IsConnected)
+                if (_service == null || !_service.IsConnected)
                 {
-                    associateNotifier = new TaskCompletionSource<bool>();
-                    completeNotifier = new TaskCompletionSource<bool>();
+                    _associateNotifier = new TaskCompletionSource<bool>();
+                    _completeNotifier = new TaskCompletionSource<bool>();
 
-                    service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                    _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
+                    _serviceRunnerTask = _service.RunAsync();
                 }
 
-                var associated = await associateNotifier.Task.ConfigureAwait(false);
-
-                bool send;
-                lock (locker)
-                {
-                    send = associated && requests.Count > 0;
-                }
-
-                if (send)
-                {
-                    IList<DicomRequest> copy;
-                    lock (locker)
-                    {
-                        copy = new List<DicomRequest>(requests);
-                        requests.Clear();
-                    }
-
-                    foreach (var request in copy)
-                    {
-                        service.SendRequest(request);
-                    }
-                }
-                else if (associated)
-                {
-                    await service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
-                }
-
-                await completeNotifier.Task.ConfigureAwait(false);
+                await Task.WhenAny(_serviceRunnerTask, PerformSendOrReleaseAsync(millisecondsTimeout)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -430,45 +440,77 @@ namespace Dicom.Network
             }
         }
 
+        private async Task PerformSendOrReleaseAsync(int millisecondsTimeout)
+        {
+            var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
+
+            bool send;
+            lock (_lock)
+            {
+                send = associated && _requests.Count > 0;
+            }
+
+            if (send)
+            {
+                IList<DicomRequest> copy;
+                lock (_lock)
+                {
+                    copy = new List<DicomRequest>(_requests);
+                    _requests.Clear();
+                }
+
+                foreach (var request in copy)
+                {
+                    await _service.SendRequestAsync(request).ConfigureAwait(false);
+                }
+            }
+            else if (associated)
+            {
+                await _service.DoSendAssociationReleaseRequestAsync().ConfigureAwait(false);
+            }
+
+            await _completeNotifier.Task.ConfigureAwait(false);
+        }
+
         private void HandleMonitoredExceptions(bool cleanup)
         {
-            var completedException = completeNotifier?.Task?.Exception;
-            var lingerException = this.service?.LingerTask?.Exception;
+            var completedException = _completeNotifier?.Task?.Exception;
+            var lingerException = _service?.LingerTask?.Exception;
 
             if (cleanup || completedException != null || lingerException != null)
             {
-                if (this.networkStream != null)
+                if (_networkStream != null)
                 {
                     try
                     {
-                        this.networkStream.Dispose();
+                        _networkStream.Dispose();
                     }
                     catch (Exception e)
                     {
                         Logger.Warn("Failed to dispose network stream, reason: {@error}", e);
                     }
 
-                    this.networkStream = null;
+                    _networkStream = null;
                 }
 
-                if (this.service != null)
+                if (_service != null)
                 {
                     try
                     {
-                        this.service.Dispose();
+                        _service.Dispose();
                     }
                     catch (Exception e)
                     {
                         Logger.Warn("Failed to dispose service, reason: {@error}", e);
                     }
 
-                    this.service = null;
+                    _service = null;
                 }
             }
 
             // If not already set, set notifiers here to signal completion to awaiters
-            this.associateNotifier?.TrySetResult(false);
-            this.completeNotifier?.TrySetResult(true);
+            _associateNotifier?.TrySetResult(false);
+            _completeNotifier?.TrySetResult(true);
 
             if (completedException != null)
             {
@@ -493,9 +535,13 @@ namespace Dicom.Network
 
             private const int DefaultReleaseTimeout = 2500;
 
-            private readonly DicomClient client;
+            private readonly DicomClient _client;
 
-            private readonly object locker = new object();
+            private readonly DicomAssociation _association;
+
+            private bool _isInitialized;
+
+            private readonly object _lock = new object();
 
             #endregion
 
@@ -510,7 +556,7 @@ namespace Dicom.Network
                 Logger log)
                 : base(stream, fallbackEncoding, log)
             {
-                this.client = client;
+                _client = client;
 
                 if (options != null)
                 {
@@ -518,9 +564,9 @@ namespace Dicom.Network
                 }
 
                 List<DicomRequest> requests;
-                lock (this.client.locker)
+                lock (_client._lock)
                 {
-                    requests = new List<DicomRequest>(this.client.requests);
+                    requests = new List<DicomRequest>(_client._requests);
                 }
 
                 foreach (var request in requests)
@@ -537,7 +583,8 @@ namespace Dicom.Network
                         context.GetTransferSyntaxes().ToArray());
                 }
 
-                SendAssociationRequest(association);
+                _association = association;
+                _isInitialized = false;
             }
 
             #endregion
@@ -556,7 +603,7 @@ namespace Dicom.Network
             /// <param name="association">Accepted association.</param>
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
-                foreach (var ctx in client.AdditionalPresentationContexts)
+                foreach (var ctx in _client.AdditionalPresentationContexts)
                 {
                     foreach (var item in
                         association.PresentationContexts.Where(pc => pc.AbstractSyntax == ctx.AbstractSyntax))
@@ -565,7 +612,7 @@ namespace Dicom.Network
                     }
                 }
 
-                client.associateNotifier.TrySetResult(true);
+                _client._associateNotifier.TrySetResult(true);
             }
 
             /// <summary>
@@ -579,7 +626,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                this.client.associateNotifier.TrySetResult(false);
+                _client._associateNotifier.TrySetResult(false);
                 SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
@@ -589,6 +636,18 @@ namespace Dicom.Network
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetComplete();
+            }
+
+            /// <summary>
+            /// Setup long-running operations that the DICOM service manages.
+            /// </summary>
+            /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
+            public override Task RunAsync()
+            {
+                if (_isInitialized) return Task.FromResult(false);
+                _isInitialized = true;
+
+                return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association));
             }
 
             /// <summary>
@@ -621,9 +680,9 @@ namespace Dicom.Network
             /// </returns>
             public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
             {
-                return this.client.OnCStoreRequest == null
+                return _client.OnCStoreRequest == null
                            ? new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources)
-                           : this.client.OnCStoreRequest(request);
+                           : _client.OnCStoreRequest(request);
             }
 
             internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout = DefaultReleaseTimeout)
@@ -631,8 +690,8 @@ namespace Dicom.Network
                 Exception exception = null;
                 try
                 {
-                    SendAssociationReleaseRequest();
-                    await ListenForDisconnectAsync(millisecondsTimeout, true).ConfigureAwait(false);
+                    await Task.WhenAny(SendAssociationReleaseRequestAsync(),
+                        ListenForDisconnectAsync(millisecondsTimeout, true)).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -645,12 +704,11 @@ namespace Dicom.Network
                 }
             }
 
-            internal void DoSendAbort()
+            internal Task DoSendAbortAsync()
             {
-                if (IsConnected)
-                {
-                    SendAbort(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
-                }
+                return IsConnected
+                    ? SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified)
+                    : Task.FromResult(false);
             }
 
             /// <summary>
@@ -658,7 +716,7 @@ namespace Dicom.Network
             /// </summary>
             protected override void OnSendQueueEmpty()
             {
-                lock (this.locker)
+                lock (_lock)
                 {
                     if (LingerTask == null || LingerTask.IsCompleted)
                     {
@@ -671,7 +729,7 @@ namespace Dicom.Network
             {
                 while (true)
                 {
-                    var disconnected = await ListenForDisconnectAsync(client.Linger, false).ConfigureAwait(false);
+                    var disconnected = await ListenForDisconnectAsync(_client.Linger, false).ConfigureAwait(false);
 
                     if (disconnected)
                     {
@@ -701,15 +759,15 @@ namespace Dicom.Network
                             {
                                 IList<DicomRequest> copy;
 
-                                lock (this.client.locker)
+                                lock (_client._lock)
                                 {
-                                    copy = new List<DicomRequest>(client.requests);
-                                    client.requests.Clear();
+                                    copy = new List<DicomRequest>(_client._requests);
+                                    _client._requests.Clear();
                                 }
 
                                 foreach (var request in copy)
                                 {
-                                    SendRequest(request);
+                                    await SendRequestAsync(request).ConfigureAwait(false);
                                 }
                             }
                         }
@@ -725,15 +783,15 @@ namespace Dicom.Network
 
             private void SetComplete(Exception ex = null)
             {
-                if (this.client.completeNotifier != null)
+                if (_client._completeNotifier != null)
                 {
                     if (ex == null)
                     {
-                        this.client.completeNotifier.TrySetResult(true);
+                        _client._completeNotifier.TrySetResult(true);
                     }
                     else
                     {
-                        this.client.completeNotifier.TrySetException(ex);
+                        _client._completeNotifier.TrySetException(ex);
                     }
                 }
             }

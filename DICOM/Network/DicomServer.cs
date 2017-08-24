@@ -31,7 +31,7 @@ namespace Dicom.Network
 
         private readonly CancellationTokenSource _cancellationSource;
 
-        private readonly List<T> _clients;
+        private readonly List<Task> _services;
 
         private readonly object _userState;
 
@@ -62,7 +62,7 @@ namespace Dicom.Network
             _certificateName = certificateName;
             _fallbackEncoding = fallbackEncoding;
             _cancellationSource = new CancellationTokenSource();
-            _clients = new List<T>();
+            _services = new List<Task>();
 
             Options = options;
             Logger = logger ?? LogManager.GetLogger("Dicom.Network");
@@ -113,7 +113,7 @@ namespace Dicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int DisconnectedClientsCount => _clients.Count(client => !client.IsConnected);
+        internal int CompletedServicesCount => _services.Count(service => service.IsCompleted);
 
         #endregion
 
@@ -153,7 +153,7 @@ namespace Dicom.Network
             {
                 Stop();
                 _cancellationSource.Dispose();
-                _clients.Clear();
+                _services.Clear();
             }
 
             Unregister();
@@ -229,7 +229,7 @@ namespace Dicom.Network
                             scp.Options = Options;
                         }
 
-                        _clients.Add(scp);
+                        _services.Add(scp.RunAsync());
                     }
                 }
 
@@ -259,7 +259,7 @@ namespace Dicom.Network
             var maxClientsAllowed = Options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
             if (maxClientsAllowed == 0) return;
 
-            while (!token.IsCancellationRequested && _clients.Count >= maxClientsAllowed)
+            while (!token.IsCancellationRequested && _services.Count >= maxClientsAllowed)
             {
                 await Task.Delay(10, token).ConfigureAwait(false);
             }
@@ -274,13 +274,20 @@ namespace Dicom.Network
             {
                 try
                 {
-                    await Task.Delay(1000, _cancellationSource.Token).ConfigureAwait(false);
-                    _clients.RemoveAll(client => !client.IsConnected);
+                    if (_services.Count > 0)
+                    {
+                        await Task.WhenAny(_services).ConfigureAwait(false);
+                        _services.RemoveAll(service => service.IsCompleted);
+                    }
+                    else
+                    {
+                        await Task.Delay(1000, _cancellationSource.Token).ConfigureAwait(false);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
                     Logger.Info("Disconnected client cleanup manually terminated.");
-                    _clients.RemoveAll(client => !client.IsConnected);
+                    _services.RemoveAll(service => service.IsCompleted);
                 }
                 catch (Exception e)
                 {

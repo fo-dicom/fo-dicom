@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
+
 namespace Dicom.Bugs
 {
     using System;
@@ -75,19 +77,19 @@ namespace Dicom.Bugs
             {
             }
 
-            public void OnReceiveAssociationRequest(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
                 }
 
-                SendAssociationAccept(association);
+                return SendAssociationAcceptAsync(association);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)

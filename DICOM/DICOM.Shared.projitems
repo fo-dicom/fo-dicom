@@ -223,6 +223,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCStoreProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomNServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\INetworkListener.cs" />

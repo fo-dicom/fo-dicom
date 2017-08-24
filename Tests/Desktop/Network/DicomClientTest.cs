@@ -534,7 +534,7 @@ namespace Dicom.Network
             {
             }
 
-            public void OnReceiveAssociationRequest(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -546,20 +546,16 @@ namespace Dicom.Network
                     Thread.Sleep(1000);
                     remoteHost = association.RemoteHost;
                     remotePort = association.RemotePort;
-                    SendAssociationAccept(association);
+                    return SendAssociationAcceptAsync(association);
                 }
-                else
-                {
-                    SendAssociationReject(
-                        DicomRejectResult.Permanent,
-                        DicomRejectSource.ServiceUser,
-                        DicomRejectReason.CalledAENotRecognized);
-                }
+
+                return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
+                    DicomRejectReason.CalledAENotRecognized);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -592,23 +588,23 @@ namespace Dicom.Network
             {
             }
 
-            public void OnReceiveAssociationRequest(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
                     if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
                     {
-                        SendAssociationReject(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
-                        return;
+                        return SendAssociationRejectAsync(DicomRejectResult.Permanent,
+                            DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
                     }
                 }
 
-                SendAssociationAccept(association);
+                return SendAssociationAcceptAsync(association);
             }
 
-            public void OnReceiveAssociationReleaseRequest()
+            public Task OnReceiveAssociationReleaseRequestAsync()
             {
-                SendAssociationReleaseResponse();
+                return SendAssociationReleaseResponseAsync();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)

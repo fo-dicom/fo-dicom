@@ -71,11 +71,13 @@ namespace Dicom.Network
     /// <summary>
     /// Base class for DICOM network services.
     /// </summary>
-    public abstract class DicomService : IDisposable
+    public abstract class DicomService : IDicomServiceRunner, IDisposable
     {
         #region FIELDS
 
         private bool _disposed = false;
+
+        private bool _isInitialized;
 
         protected Stream _dimseStream;
 
@@ -129,7 +131,7 @@ namespace Dicom.Network
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
-            PduListener = ListenAndProcessPDUAsync();
+            _isInitialized = false;
         }
 
         #endregion
@@ -186,11 +188,6 @@ namespace Dicom.Network
         public int MaximumPDUsInQueue { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Task"/> that listens for PDUs.
-        /// </summary>
-        protected Task PduListener { get; }
-
-        /// <summary>
         /// Gets or sets an event handler to handle unsupported PDU bytes.
         /// </summary>
         public PDUBytesHandler DoHandlePDUBytes { get; set; }
@@ -226,18 +223,18 @@ namespace Dicom.Network
         /// Send request from service.
         /// </summary>
         /// <param name="request">Request to send.</param>
-        public virtual void SendRequest(DicomRequest request)
+        public virtual Task SendRequestAsync(DicomRequest request)
         {
-            SendMessage(request);
+            return SendMessageAsync(request);
         }
 
         /// <summary>
         /// Send response from service.
         /// </summary>
         /// <param name="response">Response to send.</param>
-        protected void SendResponse(DicomResponse response)
+        protected Task SendResponseAsync(DicomResponse response)
         {
-            SendMessage(response);
+            return SendMessageAsync(response);
         }
 
         /// <summary>
@@ -290,7 +287,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="pdu">PDU to send.</param>
         /// <returns>Awaitable task.</returns>
-        protected async Task SendPDUAsync(PDU pdu)
+        protected Task SendPDUAsync(PDU pdu)
         {
             _pduQueueWatcher.Wait();
 
@@ -300,15 +297,13 @@ namespace Dicom.Network
                 if (_pduQueue.Count >= MaximumPDUsInQueue) _pduQueueWatcher.Reset();
             }
 
-            await SendNextPDUAsync().ConfigureAwait(false);
+            return SendNextPDUAsync();
         }
 
         private async Task SendNextPDUAsync()
         {
-            while (true)
+            while (IsConnected)
             {
-                if (!IsConnected) return;
-
                 PDU pdu;
 
                 lock (_lock)
@@ -325,13 +320,13 @@ namespace Dicom.Network
 
                 if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
 
-                var ms = new MemoryStream();
-                pdu.Write().WritePDU(ms);
-
-                var buffer = ms.ToArray();
-
                 try
                 {
+                    var ms = new MemoryStream();
+                    pdu.Write().WritePDU(ms);
+
+                    var buffer = ms.ToArray();
+
                     await _network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
                 }
                 catch (IOException e)
@@ -351,9 +346,9 @@ namespace Dicom.Network
 
         private async Task ListenAndProcessPDUAsync()
         {
-            try
+            while (IsConnected)
             {
-                while (IsConnected)
+                try
                 {
                     var stream = _network.AsStream();
 
@@ -383,7 +378,7 @@ namespace Dicom.Network
                     length = Endian.Swap(length);
 
                     _readLength = length;
-                    
+
                     // Read PDU
                     using (var ms = new MemoryStream())
                     {
@@ -393,7 +388,7 @@ namespace Dicom.Network
                             int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
-                                    .ConfigureAwait(false);
+                                .ConfigureAwait(false);
 
                             if (count == 0)
                             {
@@ -440,7 +435,8 @@ namespace Dicom.Network
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
                                 Association.ToString());
-                            (this as IDicomServiceProvider)?.OnReceiveAssociationRequest(Association);
+                            await ((this as IDicomServiceProvider)?.OnReceiveAssociationRequestAsync(Association))
+                                .ConfigureAwait(false);
                             break;
                         }
                         case 0x02:
@@ -477,7 +473,7 @@ namespace Dicom.Network
                             var pdu = new PDataTF();
                             pdu.Read(raw);
                             if (Options.LogDataPDUs) Logger.Info("{logId} <- {@pdu}", LogID, pdu);
-                            await this.ProcessPDataTFAsync(pdu).ConfigureAwait(false);
+                            await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
                             break;
                         }
                         case 0x05:
@@ -485,7 +481,9 @@ namespace Dicom.Network
                             var pdu = new AReleaseRQ();
                             pdu.Read(raw);
                             Logger.Info("{logId} <- Association release request", LogID);
-                            (this as IDicomServiceProvider)?.OnReceiveAssociationReleaseRequest();
+                            await ((this as IDicomServiceProvider)?.OnReceiveAssociationReleaseRequestAsync())
+                                .ConfigureAwait(false);
+
                             break;
                         }
                         case 0x06:
@@ -518,27 +516,27 @@ namespace Dicom.Network
                             throw new DicomNetworkException("Unknown PDU type");
                     }
                 }
-            }
-            catch (ObjectDisposedException)
-            {
-                // silently ignore
-                TryCloseConnection(force: true);
-            }
-            catch (NullReferenceException)
-            {
-                // connection already closed; silently ignore
-                TryCloseConnection(force: true);
-            }
-            catch (IOException e)
-            {
-                // LogIOException returns true for underlying socket error (probably due to forcibly closed connection), 
-                // in that case discard exception
-                TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Exception processing PDU: {@error}", e);
-                TryCloseConnection(e);
+                catch (ObjectDisposedException)
+                {
+                    // silently ignore
+                    TryCloseConnection(force: true);
+                }
+                catch (NullReferenceException)
+                {
+                    // connection already closed; silently ignore
+                    TryCloseConnection(force: true);
+                }
+                catch (IOException e)
+                {
+                    // LogIOException returns true for underlying socket error (probably due to forcibly closed connection), 
+                    // in that case discard exception
+                    TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Exception processing PDU: {@error}", e);
+                    TryCloseConnection(e);
+                }
             }
         }
 
@@ -683,7 +681,7 @@ namespace Dicom.Network
                                 Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
                             if (!_dimse.HasDataset)
                             {
-                                PerformDimse(this._dimse);
+                                await PerformDimseAsync(_dimse).ConfigureAwait(false);
                                 _dimse = null;
                                 return;
                             }
@@ -732,10 +730,10 @@ namespace Dicom.Network
                                 catch (Exception e)
                                 {
                                     // failed to parse received DICOM file; send error response instead of aborting connection
-                                    SendResponse(
-                                        new DicomCStoreResponse(
-                                            request,
-                                            new DicomStatus(DicomStatus.ProcessingFailure, e.Message)));
+                                    await SendResponseAsync(new DicomCStoreResponse(request,
+                                            new DicomStatus(DicomStatus.ProcessingFailure, e.Message)))
+                                        .ConfigureAwait(false);
+
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
                                     (this as IDicomCStoreProvider).OnCStoreRequestException(
                                         _dimseStreamFile != null ? _dimseStreamFile.Name : null, e);
@@ -743,7 +741,7 @@ namespace Dicom.Network
                                 }
                             }
 
-                            PerformDimse(this._dimse);
+                            await PerformDimseAsync(this._dimse).ConfigureAwait(false);
                             _dimse = null;
                         }
                     }
@@ -756,11 +754,11 @@ namespace Dicom.Network
             }
             finally
             {
-                SendNextMessage();
+                await SendNextMessageAsync().ConfigureAwait(false);
             }
         }
 
-        private void PerformDimse(DicomMessage dimse)
+        private async Task PerformDimseAsync(DicomMessage dimse)
         {
             Logger.Info("{logId} <- {dicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
 
@@ -794,63 +792,54 @@ namespace Dicom.Network
                 if (this is IDicomCStoreProvider)
                 {
                     var response = (this as IDicomCStoreProvider).OnCStoreRequest(dimse as DicomCStoreRequest);
-                    SendResponse(response);
+                    await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
-                else if (this is IDicomServiceUser)
+
+                if (this is IDicomServiceUser)
                 {
                     var response = (this as IDicomServiceUser).OnCStoreRequest(dimse as DicomCStoreRequest);
-                    SendResponse(response);
+                    await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
-                else
-                {
-                    throw new DicomNetworkException("C-Store SCP not implemented");
-                }
+
+                throw new DicomNetworkException("C-Store SCP not implemented");
             }
 
             if (dimse.Type == DicomCommandField.CFindRequest)
             {
-                if (this is IDicomCFindProvider)
-                {
-                    var responses = (this as IDicomCFindProvider).OnCFindRequest(dimse as DicomCFindRequest);
-                    foreach (var response in responses) SendResponse(response);
-                    return;
-                }
-                else throw new DicomNetworkException("C-Find SCP not implemented");
+                if (!(this is IDicomCFindProvider)) throw new DicomNetworkException("C-Find SCP not implemented");
+
+                var responses = (this as IDicomCFindProvider).OnCFindRequest(dimse as DicomCFindRequest);
+                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                return;
             }
 
             if (dimse.Type == DicomCommandField.CGetRequest)
             {
-                if (this is IDicomCGetProvider)
-                {
-                    var responses = (this as IDicomCGetProvider).OnCGetRequest(dimse as DicomCGetRequest);
-                    foreach (var response in responses) SendResponse(response);
-                    return;
-                }
-                else throw new DicomNetworkException("C-GET SCP not implemented");
+                if (!(this is IDicomCGetProvider)) throw new DicomNetworkException("C-GET SCP not implemented");
+
+                var responses = (this as IDicomCGetProvider).OnCGetRequest(dimse as DicomCGetRequest);
+                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                return;
             }
 
             if (dimse.Type == DicomCommandField.CMoveRequest)
             {
-                if (this is IDicomCMoveProvider)
-                {
-                    var responses = (this as IDicomCMoveProvider).OnCMoveRequest(dimse as DicomCMoveRequest);
-                    foreach (var response in responses) SendResponse(response);
-                    return;
-                }
-                else throw new DicomNetworkException("C-Move SCP not implemented");
+                if (!(this is IDicomCMoveProvider)) throw new DicomNetworkException("C-Move SCP not implemented");
+
+                var responses = (this as IDicomCMoveProvider).OnCMoveRequest(dimse as DicomCMoveRequest);
+                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                return;
             }
 
             if (dimse.Type == DicomCommandField.CEchoRequest)
             {
-                if (this is IDicomCEchoProvider)
-                {
-                    var response = (this as IDicomCEchoProvider).OnCEchoRequest(dimse as DicomCEchoRequest);
-                    SendResponse(response);
-                    return;
-                }
-                else throw new DicomNetworkException("C-Echo SCP not implemented");
+                if (!(this is IDicomCEchoProvider)) throw new DicomNetworkException("C-Echo SCP not implemented");
+
+                var response = (this as IDicomCEchoProvider).OnCEchoRequest(dimse as DicomCEchoRequest);
+                await SendResponseAsync(response).ConfigureAwait(false);
+                return;
             }
 
             if (dimse.Type == DicomCommandField.NActionRequest || dimse.Type == DicomCommandField.NCreateRequest
@@ -861,8 +850,10 @@ namespace Dicom.Network
                 if (!(this is IDicomNServiceProvider)) throw new DicomNetworkException("N-Service SCP not implemented");
 
                 DicomResponse response = null;
-                if (dimse.Type == DicomCommandField.NActionRequest) response = (this as IDicomNServiceProvider).OnNActionRequest(dimse as DicomNActionRequest);
-                else if (dimse.Type == DicomCommandField.NCreateRequest) response = (this as IDicomNServiceProvider).OnNCreateRequest(dimse as DicomNCreateRequest);
+                if (dimse.Type == DicomCommandField.NActionRequest)
+                    response = (this as IDicomNServiceProvider).OnNActionRequest(dimse as DicomNActionRequest);
+                else if (dimse.Type == DicomCommandField.NCreateRequest)
+                    response = (this as IDicomNServiceProvider).OnNCreateRequest(dimse as DicomNCreateRequest);
                 else if (dimse.Type == DicomCommandField.NDeleteRequest)
                     response =
                         (this as IDicomNServiceProvider).OnNDeleteRequest(dimse as DicomNDeleteRequest);
@@ -878,24 +869,24 @@ namespace Dicom.Network
                         (this as IDicomNServiceProvider).OnNSetRequest(
                             dimse as DicomNSetRequest);
 
-                SendResponse(response);
+                await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
 
             throw new DicomNetworkException("Operation not implemented");
         }
 
-        private void SendMessage(DicomMessage message)
+        private Task SendMessageAsync(DicomMessage message)
         {
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
             }
 
-            SendNextMessage();
+            return SendNextMessageAsync();
         }
 
-        private void SendNextMessage()
+        private async Task SendNextMessageAsync()
         {
             while (true)
             {
@@ -930,13 +921,13 @@ namespace Dicom.Network
                     }
                 }
 
-                DoSendMessage(msg);
+                await DoSendMessageAsync(msg).ConfigureAwait(false);
 
                 lock (_lock) _sending = false;
             }
         }
 
-        private void DoSendMessage(DicomMessage msg)
+        private async Task DoSendMessageAsync(DicomMessage msg)
         {
             DicomPresentationContext pc;
             if (msg is DicomCStoreRequest)
@@ -961,7 +952,7 @@ namespace Dicom.Network
                 {
                     pc =
                         this.Association.PresentationContexts.FirstOrDefault<DicomPresentationContext>(
-                            x => (x.Result == DicomPresentationContextResult.Accept) && (x.AbstractSyntax == msg.SOPClassUID));
+                            x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
                 }
             }
             else
@@ -1056,7 +1047,8 @@ namespace Dicom.Network
                     //	   element values and changes in transfer syntax.
                     msg.Dataset.RemoveGroupLengths();
 
-                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax) msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
+                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
+                        msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
                 }
 
                 Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
@@ -1071,11 +1063,11 @@ namespace Dicom.Network
                         new StreamByteTarget(dimse.Stream));
 
                     dimse.Walker = new DicomDatasetWalker(msg.Command);
-                    dimse.Walker.Walk(writer);
+                    await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
 
                     if (dimse.Message.HasDataset)
                     {
-                        dimse.Stream.SetIsCommandAsync(false).Wait();
+                        await dimse.Stream.SetIsCommandAsync(false).ConfigureAwait(false);
 
                         writer = new DicomWriter(
                             dimse.PresentationContext.AcceptedTransferSyntax,
@@ -1083,7 +1075,7 @@ namespace Dicom.Network
                             new StreamByteTarget(dimse.Stream));
 
                         dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                        dimse.Walker.Walk(writer);
+                        await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
@@ -1092,7 +1084,7 @@ namespace Dicom.Network
                 }
                 finally
                 {
-                    dimse.Stream.FlushAsync(true).Wait();
+                    await dimse.Stream.FlushAsync(true).ConfigureAwait(false);
                     dimse.Stream.Dispose();
                 }
             }
@@ -1125,18 +1117,19 @@ namespace Dicom.Network
                 }
 
                 (this as IDicomService)?.OnConnectionClosed(exception);
-                lock (_lock) IsConnected = false;
-
-                Logger.Info("Connection closed");
-
-                if (exception != null) throw exception;
-                return true;
             }
             catch (Exception e)
             {
                 Logger.Error("Error during close attempt: {@error}", e);
                 throw;
             }
+
+            lock (_lock) IsConnected = false;
+
+            Logger.Info("Connection closed");
+
+            if (exception != null) throw exception;
+            return true;
         }
 
         #endregion
@@ -1147,20 +1140,22 @@ namespace Dicom.Network
         /// Send association request.
         /// </summary>
         /// <param name="association">DICOM association.</param>
-        protected void SendAssociationRequest(DicomAssociation association)
+        protected Task SendAssociationRequestAsync(DicomAssociation association)
         {
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
+
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
+
             Association = association;
-            this.SendPDUAsync(new AAssociateRQ(Association)).Wait();
+            return SendPDUAsync(new AAssociateRQ(Association));
         }
 
         /// <summary>
         /// Send association accept response.
         /// </summary>
         /// <param name="association">DICOM association.</param>
-        protected void SendAssociationAccept(DicomAssociation association)
+        protected Task SendAssociationAcceptAsync(DicomAssociation association)
         {
             Association = association;
 
@@ -1171,7 +1166,8 @@ namespace Dicom.Network
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
-            this.SendPDUAsync(new AAssociateAC(Association)).Wait();
+
+            return SendPDUAsync(new AAssociateAC(Association));
         }
 
         /// <summary>
@@ -1180,36 +1176,29 @@ namespace Dicom.Network
         /// <param name="result">Rejection result.</param>
         /// <param name="source">Rejection source.</param>
         /// <param name="reason">Rejection reason.</param>
-        protected void SendAssociationReject(
-            DicomRejectResult result,
-            DicomRejectSource source,
-            DicomRejectReason reason)
+        protected Task SendAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            Logger.Info(
-                "{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]",
-                LogID,
-                result,
-                source,
-                reason);
-            this.SendPDUAsync(new AAssociateRJ(result, source, reason)).Wait();
+            Logger.Info("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID,
+                result, source, reason);
+            return SendPDUAsync(new AAssociateRJ(result, source, reason));
         }
 
         /// <summary>
         /// Send association release request.
         /// </summary>
-        protected void SendAssociationReleaseRequest()
+        protected Task SendAssociationReleaseRequestAsync()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            this.SendPDUAsync(new AReleaseRQ()).Wait();
+            return SendPDUAsync(new AReleaseRQ());
         }
 
         /// <summary>
         /// Send association release response.
         /// </summary>
-        protected void SendAssociationReleaseResponse()
+        protected Task SendAssociationReleaseResponseAsync()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            this.SendPDUAsync(new AReleaseRP()).Wait();
+            return SendPDUAsync(new AReleaseRP());
         }
 
         /// <summary>
@@ -1217,15 +1206,27 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="source">Abort source.</param>
         /// <param name="reason">Abort reason.</param>
-        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason)
+        protected Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            this.SendPDUAsync(new AAbort(source, reason)).Wait();
+            return SendPDUAsync(new AAbort(source, reason));
         }
 
         #endregion
 
         #region Override Methods
+
+        /// <summary>
+        /// Setup long-running operations that the DICOM service manages.
+        /// </summary>
+        /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
+        public virtual Task RunAsync()
+        {
+            if (_isInitialized) return Task.FromResult(false);
+            _isInitialized = true;
+
+            return ListenAndProcessPDUAsync();
+        }
 
         /// <summary>
         /// Action to perform when send queue is empty.
@@ -1328,10 +1329,10 @@ namespace Dicom.Network
                 if (_command != value)
                 {
                     _max = _pduMax == 0
-                               ? _service.Options.MaxCommandBuffer
-                               : Math.Min(
-                                   _pduMax,
-                                   value ? _service.Options.MaxCommandBuffer : _service.Options.MaxDataBuffer);
+                        ? _service.Options.MaxCommandBuffer
+                        : Math.Min(
+                            _pduMax,
+                            value ? _service.Options.MaxCommandBuffer : _service.Options.MaxDataBuffer);
 
                     await CreatePDVAsync(true).ConfigureAwait(false);
                     _command = value;
@@ -1407,29 +1408,11 @@ namespace Dicom.Network
 
             #region Stream Members
 
-            public override bool CanRead
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public override bool CanRead => false;
 
-            public override bool CanSeek
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public override bool CanSeek => false;
 
-            public override bool CanWrite
-            {
-                get
-                {
-                    return true;
-                }
-            }
+            public override bool CanWrite => true;
 
             public override void Flush()
             {
@@ -1460,6 +1443,19 @@ namespace Dicom.Network
                 throw new NotImplementedException();
             }
 
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                try
+                {
+                    WriteAsync(buffer, offset, count, CancellationToken.None).Wait();
+                }
+                catch (AggregateException e)
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    throw e.Flatten().InnerException;
+                }
+            }
+
             public override long Seek(long offset, SeekOrigin origin)
             {
                 throw new NotImplementedException();
@@ -1470,7 +1466,8 @@ namespace Dicom.Network
                 throw new NotImplementedException();
             }
 
-            public override void Write(byte[] buffer, int offset, int count)
+            public override async Task WriteAsync(byte[] buffer, int offset, int count,
+                CancellationToken cancellationToken)
             {
                 try
                 {
@@ -1481,9 +1478,9 @@ namespace Dicom.Network
                         _bytes = new byte[max];
                     }
 
-                    while (count >= (_bytes.Length - _length))
+                    while (count >= _bytes.Length - _length)
                     {
-                        int c = Math.Min(count, _bytes.Length - _length);
+                        var c = Math.Min(count, _bytes.Length - _length);
 
                         Array.Copy(buffer, offset, _bytes, _length, c);
 
@@ -1491,7 +1488,7 @@ namespace Dicom.Network
                         offset += c;
                         count -= c;
 
-                        CreatePDVAsync(false).Wait();
+                        await CreatePDVAsync(false).ConfigureAwait(false);
                     }
 
                     if (count > 0)
@@ -1499,7 +1496,7 @@ namespace Dicom.Network
                         Array.Copy(buffer, offset, _bytes, _length, count);
                         _length += count;
 
-                        if (_bytes.Length == _length) CreatePDVAsync(false).Wait();
+                        if (_bytes.Length == _length) await CreatePDVAsync(false).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
