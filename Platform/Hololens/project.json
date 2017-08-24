@@ -1,6 +1,9 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3"
+    "cscharls": "0.1.1",
+    "CSJ2K": "3.0.0-alpha",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+    "Portable.LibJpeg.NET": "1.5.1.1"
   },
   "frameworks": {
     "uap10.0": {}
