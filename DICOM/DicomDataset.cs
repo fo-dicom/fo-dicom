@@ -324,16 +324,18 @@ namespace Dicom
         /// If parameter is not provided (null), then the default TransferSyntax "ExplicitVRLittleEndian" will be applied to the dataset</param>
         /// <remarks>Use this method whenever you are attaching an external image pixel data to the dataset and provide the proper TransferSyntax</remarks>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdatePixelData (DicomVR vr, IByteBuffer pixelData, DicomTransferSyntax transferSyntax = null )
+        [Obsolete("Use DicomPixelData.AddFrame(IByteBuffer) to add pixel data to underlying dataset.")]
+        public DicomDataset AddOrUpdatePixelData(DicomVR vr, IByteBuffer pixelData,
+            DicomTransferSyntax transferSyntax = null)
         {
-            this.AddOrUpdate ( vr, DicomTag.PixelData, pixelData ) ;
+            this.AddOrUpdate(vr, DicomTag.PixelData, pixelData);
 
             if (null != transferSyntax)
             {
-                InternalTransferSyntax = transferSyntax ;
+                InternalTransferSyntax = transferSyntax;
             }
 
-            return this ;
+            return this;
         }
 
         /// <summary>
