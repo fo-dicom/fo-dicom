@@ -322,17 +322,17 @@ namespace Dicom.Imaging
         /// <returns>New instance of DicomPixelData</returns>
         public static DicomPixelData Create(DicomDataset dataset, bool newPixelData = false)
         {
-            var syntax = dataset.InternalTransferSyntax;
-
             if (newPixelData)
             {
+                var syntax = dataset.InternalTransferSyntax;
                 if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian) return new OtherWordPixelData(dataset, true);
-                if (syntax.IsEncapsulated) return new EncapsulatedPixelData(dataset, true);
 
                 var bitsAllocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
                 if (bitsAllocated > 16)
                     throw new DicomImagingException(
-                        $"Cannot represent non-encapsulated data with Bits Allocated: {bitsAllocated} > 16");
+                        $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
+
+                if (syntax.IsEncapsulated) return new EncapsulatedPixelData(dataset, bitsAllocated);
 
                 return bitsAllocated > 8
                     ? (DicomPixelData) new OtherWordPixelData(dataset, true)
@@ -344,7 +344,7 @@ namespace Dicom.Imaging
 
             if (item is DicomOtherByte) return new OtherBytePixelData(dataset, false);
             if (item is DicomOtherWord) return new OtherWordPixelData(dataset, false);
-            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset, false);
+            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset);
 
             throw new DicomImagingException("Unexpected or unhandled pixel data element type: {0}", item.GetType());
         }
@@ -479,7 +479,7 @@ namespace Dicom.Imaging
         }
 
         /// <summary>
-        /// Other Byte Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
+        /// Other Byte/Word Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
         /// pixel data
         /// </summary>
         private class EncapsulatedPixelData : DicomPixelData
@@ -487,7 +487,7 @@ namespace Dicom.Imaging
             #region FIELDS
 
             /// <summary>
-            /// The pixel data framgent sequence element
+            /// The pixel data fragment sequence element
             /// </summary>
             private readonly DicomFragmentSequence _element;
 
@@ -496,20 +496,30 @@ namespace Dicom.Imaging
             #region CONSTRUCTORS
 
             /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData
+            /// Initialize new instance of EncapsulatedPixelData with new empty pixel data.
             /// </summary>
-            /// <param name="dataset">The source dataset to extract from or create new pixel data for</param>
-            /// <param name="newPixelData">True to create new pixel data, false to read pixel data</param>
-            public EncapsulatedPixelData(DicomDataset dataset, bool newPixelData)
+            /// <param name="dataset">The source dataset where to create new pixel data.</param>
+            /// <param name="bitsAllocated">Bits allocated for the pixel data.</param>
+            public EncapsulatedPixelData(DicomDataset dataset, int bitsAllocated)
                 : base(dataset)
             {
-                if (newPixelData)
-                {
-                    NumberOfFrames = 0;
-                    _element = new DicomOtherByteFragment(DicomTag.PixelData);
-                    Dataset.AddOrUpdate(_element);
-                }
-                else _element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+                NumberOfFrames = 0;
+
+                _element = bitsAllocated > 8
+                    ? (DicomFragmentSequence)new DicomOtherWordFragment(DicomTag.PixelData)
+                    : new DicomOtherByteFragment(DicomTag.PixelData);
+
+                Dataset.AddOrUpdate(_element);
+            }
+
+            /// <summary>
+            /// Initialize new instance of EncapsulatedPixelData based on existing pixel data.
+            /// </summary>
+            /// <param name="dataset">The source dataset to extract pixel data from.</param>
+            public EncapsulatedPixelData(DicomDataset dataset)
+                : base(dataset)
+            {
+                _element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
             }
 
             #endregion
