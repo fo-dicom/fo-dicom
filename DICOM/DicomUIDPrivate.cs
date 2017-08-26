@@ -8,6 +8,8 @@ namespace Dicom
         private static void LoadPrivateUIDs()
         {
             _uids.Add(DicomUID.GEPrivateImplicitVRBigEndian.UID, DicomUID.GEPrivateImplicitVRBigEndian);
+			_uids.Add (DicomUID.PracticeBuilderReportText.UID, DicomUID.PracticeBuilderReportText);
+			_uids.Add (DicomUID.PracticeBuilderReportDictation.UID, DicomUID.PracticeBuilderReportDictation);
         }
 
         /// <summary>GE Private Implicit VR Big Endian</summary>
@@ -16,5 +18,19 @@ namespace Dicom
             "1.2.840.113619.5.2",
             "GE Private Implicit VR Big Endian",
             DicomUidType.TransferSyntax);
+
+		/// <summary>Practice Builder Report Text</summary>
+		/// <remarks>Practice Builder SOP Class for report text.</remarks>
+		public static readonly DicomUID PracticeBuilderReportText = new DicomUID (
+			"1.2.826.0.1.3680043.2.93.1.0.1",
+			"Practice Builder Report Text",
+			DicomUidType.SOPClass);
+
+		/// <summary>Practice Builder Report Dictation</summary>
+		/// <remarks>Practice Builder SOP Class for report dictation.</remarks>
+		public static readonly DicomUID PracticeBuilderReportDictation = new DicomUID (
+			"1.2.826.0.1.3680043.2.93.1.0.2",
+			"Practice Builder Report Dictation",
+			DicomUidType.SOPClass);
     }
 }
