@@ -1,4 +1,5 @@
-#### v.3.1.0 (TBD)
+#### v.4.0.0 (TBD)
+* DicomAnonymizer ignores the PatientName and PatientID in the SecurityProfile (#575 #592)
 * Private group not added to tag when private tag item is added to dataset (#570 #577)
 * ReceivingApplicationEntityTitle and SendingApplicationEntityTitle omitted during Save (#563 #569)
 * Downgrade desktop libraries to framework version 4.5 (#561 #562)

@@ -85,7 +85,7 @@ namespace Dicom
         [Fact]
         public void Anonymize_UsePredefinedPatientNameAndId_ShouldBeSetInAnonymizedDataset()
         {
-            const string fileName = "CT-MONO2-16-ankle";
+            const string fileName = "CT1_J2KI";
 #if NETFX_CORE
             var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
 #else
