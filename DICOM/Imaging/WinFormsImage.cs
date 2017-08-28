@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+
+using Dicom.Imaging.Render;
+using Dicom.IO;
+
 namespace Dicom.Imaging
 {
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-
-    using Dicom.Imaging.Render;
-    using Dicom.IO;
-
     /// <summary>
     /// Convenience class for non-generic access to <see cref="WinFormsImage"/> image objects.
     /// </summary>
@@ -28,7 +28,7 @@ namespace Dicom.Imaging
     }
 
     /// <summary>
-    /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Bitmap"/>.
+    /// <see cref="IImage"/> implementation of a <see cref="Bitmap"/> in the <code>System.Drawing</code> namespace.
     /// </summary>
     public sealed class WinFormsImage : ImageDisposableBase<Bitmap>
     {
@@ -60,19 +60,13 @@ namespace Dicom.Imaging
 
         #region METHODS
 
-        /// <summary>
-        /// Renders the image given the specified parameters.
-        /// </summary>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
+        /// <inheritdoc />
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
             var stride = GetStride(this.width, format);
 
-            this.image = new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer);
+            this.image = (Bitmap)new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer).Clone();
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
@@ -81,10 +75,7 @@ namespace Dicom.Imaging
             }
         }
 
-        /// <summary>
-        /// Draw graphics onto existing image.
-        /// </summary>
-        /// <param name="graphics">Graphics to draw.</param>
+        /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             using (var g = Graphics.FromImage(this.image))
@@ -97,10 +88,7 @@ namespace Dicom.Imaging
             }
         }
 
-        /// <summary>
-        /// Creates a deep copy of the image.
-        /// </summary>
-        /// <returns>Deep copy of this image.</returns>
+        /// <inheritdoc />
         public override IImage Clone()
         {
             return new WinFormsImage(
@@ -133,7 +121,8 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipXY;
                 }
             }
-            else if (flipX)
+
+            if (flipX)
             {
                 switch (rotation)
                 {
@@ -147,7 +136,8 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipX;
                 }
             }
-            else if (flipY)
+
+            if (flipY)
             {
                 switch (rotation)
                 {
@@ -161,19 +151,17 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipY;
                 }
             }
-            else
+
+            switch (rotation)
             {
-                switch (rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipNone;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipNone;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipNone;
-                    default:
-                        return RotateFlipType.RotateNoneFlipNone;
-                }
+                case 90:
+                    return RotateFlipType.Rotate90FlipNone;
+                case 180:
+                    return RotateFlipType.Rotate180FlipNone;
+                case 270:
+                    return RotateFlipType.Rotate270FlipNone;
+                default:
+                    return RotateFlipType.RotateNoneFlipNone;
             }
         }
 
