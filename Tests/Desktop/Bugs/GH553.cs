@@ -26,17 +26,20 @@ namespace Dicom.Bugs
 
             newPixelData.AddFrame(oldBuffer);
 
-            var oldImage = new DicomImage(oldFile.Dataset).RenderImage().AsBitmap();
-            var newImage = new DicomImage(newFile.Dataset).RenderImage().AsBitmap();
-
-            for (var j = 0; j < oldImage.Height; ++j)
+            using (var oldImage = new DicomImage(oldFile.Dataset).RenderImage().AsBitmap())
+            using (var newImage = new DicomImage(newFile.Dataset).RenderImage().AsBitmap())
             {
-                for (var i = 0; i < oldImage.Width; ++i)
+                var height = oldImage.Height;
+                var width = oldImage.Width;
+
+                for (var j = 0; j < height; ++j)
                 {
-                    Assert.Equal(oldImage.GetPixel(i, j), newImage.GetPixel(i, j));
+                    for (var i = 0; i < width; ++i)
+                    {
+                        Assert.Equal(oldImage.GetPixel(i, j), newImage.GetPixel(i, j));
+                    }
                 }
             }
-
             newFile.Save("GH553.dcm");
         }
     }
