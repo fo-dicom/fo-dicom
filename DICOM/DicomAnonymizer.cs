@@ -198,7 +198,7 @@ namespace Dicom
                         case SecurityProfileActions.D: // Dummy
                             if (vr == DicomVR.UI) ReplaceUID(dataset, element);
                             else if (vr.IsString) ReplaceString(dataset, element, "ANONYMOUS");
-                            else BlankElement(dataset, element);
+                            else BlankElement(dataset, element, true);
                             break;
                         case SecurityProfileActions.K: // Keep
                             break;
@@ -206,7 +206,7 @@ namespace Dicom
                             toRemove.Add(element);
                             break;
                         case SecurityProfileActions.Z: // Zero-length
-                            BlankElement(dataset, element);
+                            BlankElement(dataset, element, false);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -290,22 +290,29 @@ namespace Dicom
         /// <summary>Blanks an element by passing to it an empty string</summary>
         /// <param name="dataset">Reference to the dataset</param>
         /// <param name="element">The element to be altered</param>
-        private static void BlankElement(DicomDataset dataset, DicomElement element)
+        /// <param name="nonZeroLength">Require that new value is non-zero length (dummy) value?</param>
+        private static void BlankElement(DicomDataset dataset, DicomElement element, bool nonZeroLength)
         {
             // Special date/time cases
             if (element is DicomDateTime)
             {
-                dataset.AddOrUpdate(new DicomDateTime(element.Tag, DateTime.MinValue));
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomDateTime(element.Tag, DateTime.MinValue)
+                    : new DicomDateTime(element.Tag, new string[0]));
                 return;
             }
             if (element is DicomDate)
             {
-                dataset.AddOrUpdate(new DicomDate(element.Tag, DateTime.MinValue));
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomDate(element.Tag, DateTime.MinValue)
+                    : new DicomDate(element.Tag, new string[0]));
                 return;
             }
             if (element is DicomTime)
             {
-                dataset.AddOrUpdate(new DicomTime(element.Tag, new DicomDateRange()));
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomTime(element.Tag, DateTime.MinValue)
+                    : new DicomTime(element.Tag, new string[0]));
                 return;
             }
 

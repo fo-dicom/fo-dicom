@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using Xunit;
 
 namespace Dicom
@@ -124,8 +123,8 @@ namespace Dicom
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
-            var expected = string.Empty;
-            var actual = dataset.Get<string>(tag);
+            var expected = new string[0];
+            var actual = dataset.Get<string[]>(tag);
             Assert.Equal(expected, actual);
         }
 
