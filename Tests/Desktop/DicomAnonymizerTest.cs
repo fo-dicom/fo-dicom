@@ -107,6 +107,47 @@ namespace Dicom
             Assert.Equal(expectedId, actualId);
         }
 
+        [Fact]
+        public void AnonymizeInPlace_StudyDate_ShouldBeEmpty()
+        {
+            const string fileName = "CT1_J2KI";
+            var tag = DicomTag.StudyDate;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Get<string>(tag).Length > 0);
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            var expected = new string[0];
+            var actual = dataset.Get<string[]>(tag);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_SeriesDate_ShouldBeRemoved()
+        {
+            const string fileName = "CT1_J2KI";
+            var tag = DicomTag.SeriesDate;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Get<string>(tag).Length > 0);
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            var contains = dataset.Contains(tag);
+            Assert.False(contains);
+        }
+
         #endregion
     }
 }

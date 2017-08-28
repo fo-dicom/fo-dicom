@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* DicomAnonymizer blank DicomDate/DicomDateTime to DateTime.MinValue instead of empty value (#576 #593)
 * DicomAnonymizer ignores the PatientName and PatientID in the SecurityProfile (#575 #592)
 * Private group not added to tag when private tag item is added to dataset (#570 #577)
 * ReceivingApplicationEntityTitle and SendingApplicationEntityTitle omitted during Save (#563 #569)
