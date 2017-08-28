@@ -523,6 +523,31 @@ namespace Dicom.Network
             }
         }
 
+        [Theory]
+        [InlineData(200)]
+        public void Send_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            {
+                var actual = 0;
+
+                var client = new DicomClient();
+                client.NegotiateAsyncOps(expected, 1);
+
+                for (var i = 0; i < expected; ++i)
+                    client.AddRequest(new DicomCStoreRequest(@"./Test Data/CT1_J2KI")
+                    {
+                        OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
+                    });
+
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP"));
+
+                Assert.Null(exception);
+                Assert.Equal(expected, actual);
+            }
+        }
+
         #endregion
 
         #region Support classes
