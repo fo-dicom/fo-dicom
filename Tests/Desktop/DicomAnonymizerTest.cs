@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using Xunit;
 
 namespace Dicom
@@ -105,6 +106,28 @@ namespace Dicom
 
             Assert.Equal(expectedName, actualName);
             Assert.Equal(expectedId, actualId);
+        }
+
+        [Fact]
+        public void Anonymize_ClearDateTimeTags_ShouldBeEmpty()
+        {
+            const string fileName = "CT1_J2KI";
+            var tag = DicomTag.StudyDate;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Get<string>(tag).Length > 0);
+
+            var anonymizer = new DicomAnonymizer();
+
+            anonymizer.AnonymizeInPlace(dataset);
+
+            var expected = string.Empty;
+            var actual = dataset.Get<string>(DicomTag.StudyDate);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
