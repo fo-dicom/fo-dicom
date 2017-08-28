@@ -10,6 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace Dicom
 {
+    /// <summary>
+    /// Class for performing anonymization actions on DICOM file or dataset based on selected confidentiality profile.
+    /// </summary>
     public class DicomAnonymizer
     {
         #region Fields
@@ -20,8 +23,8 @@ namespace Dicom
 
         #region Embedded types
 
-        /// <summary>Profile options as described in DICOM PS 3.15-2011</summary>
-        /// <see>ftp://medical.nema.org/medical/dicom/2011/11_15pu.pdf</see>
+        /// <summary>Profile options as described in DICOM PS 3.15</summary>
+        /// <see>http://dicom.nema.org/medical/dicom/current/output/chtml/part15/PS3.15.html</see>
         /// <remarks>The order of the flags are mapped to the profile's CSV file</remarks>
         [Flags]
         public enum SecurityProfileOptions : short
@@ -47,24 +50,40 @@ namespace Dicom
             CleanGraph = 512
         }
 
-        /// <summary>Profile actions per tag as described in DICOM PS 3.15-2011</summary>
-        /// <see>ftp://medical.nema.org/medical/dicom/2011/11_15pu.pdf</see>
+        /// <summary>Profile actions per tag as described in DICOM PS 3.15</summary>
+        /// <see>http://dicom.nema.org/medical/dicom/current/output/chtml/part15/PS3.15.html</see>
+        [Flags]
         public enum SecurityProfileActions : byte
         {
-            D = 1, // Replace with a non-zero length value that may be a dummy value and consistent with the VR
+            /// <summary>
+            /// Replace with a non-zero length value that may be a dummy value and consistent with the VR
+            /// </summary>
+            D = 1,
 
+            /// <summary>
+            /// Replace with a zero length value, or a non-zero length value that may be a dummy value and consistent with the VR
+            /// </summary>
             Z = 2,
-            // Replace with a zero length value, or a non-zero length value that may be a dummy value and consistent with the VR
 
-            X = 4, // Remove
+            /// <summary>
+            /// Remove
+            /// </summary>
+            X = 4,
 
-            K = 8, // Keep (unchanged for non-sequence attributes, cleaned for sequences)
+            /// <summary>
+            /// Keep (unchanged for non-sequence attributes, cleaned for sequences)
+            /// </summary>
+            K = 8,
 
+            /// <summary>
+            /// Clean, that is replace with values of similar meaning known not to contain identifying information and consistent with the VR
+            /// </summary>
             C = 16,
-            // Clean, that is replace with values of similar meaning known not to contain identifying information and consistent with the VR
 
-            U = 32
-            // Replace with a non-zero length UID that is internally consistent within a set of Instances            
+            /// <summary>
+            /// Replace with a non-zero length UID that is internally consistent within a set of Instances
+            /// </summary>
+            U = 32           
         }
 
         /// <summary>Security profile container</summary>
@@ -429,15 +448,6 @@ namespace Dicom
 
                 if (element == null) continue;
 
-                if (element.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
-                {
-                    ReplaceString(dataset, element, Profile.PatientName);
-                }
-                else if (element.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
-                {
-                    ReplaceString(dataset, element, Profile.PatientID);
-                }
-
                 var parenthesis = new[] { '(', ')' };
                 var tag = item.Tag.ToString().Trim(parenthesis);
                 var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
@@ -465,6 +475,15 @@ namespace Dicom
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                }
+
+                if (element.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
+                {
+                    ReplaceString(dataset, element, Profile.PatientName);
+                }
+                else if (element.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
+                {
+                    ReplaceString(dataset, element, Profile.PatientID);
                 }
             }
 
