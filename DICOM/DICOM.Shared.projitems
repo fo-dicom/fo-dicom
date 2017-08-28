@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataset.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetExtensions.cs" />
