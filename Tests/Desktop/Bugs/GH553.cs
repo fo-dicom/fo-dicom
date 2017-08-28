@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Drawing;
+
 using Dicom.Imaging;
 using Dicom.IO.Buffer;
 
@@ -31,8 +33,8 @@ namespace Dicom.Bugs
             var height = oldPixelData.Height;
             var width = oldPixelData.Width;
 
-            using (var oldImage = new DicomImage(oldFile.Dataset).RenderImage().AsBitmap())
-            using (var newImage = new DicomImage(newFile.Dataset).RenderImage().AsBitmap())
+            using (var oldImage = (Bitmap)new DicomImage(oldFile.Dataset).RenderImage().AsBitmap().Clone())
+            using (var newImage = (Bitmap)new DicomImage(newFile.Dataset).RenderImage().AsBitmap().Clone())
             {
                 for (var j = 0; j < height; ++j)
                 {

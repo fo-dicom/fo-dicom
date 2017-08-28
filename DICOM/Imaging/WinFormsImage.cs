@@ -66,7 +66,7 @@ namespace Dicom.Imaging
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
             var stride = GetStride(this.width, format);
 
-            this.image = (Bitmap)new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer).Clone();
+            this.image = new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer);
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
