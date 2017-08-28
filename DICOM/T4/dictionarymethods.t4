@@ -14,6 +14,7 @@ private const string DocbookNamespace = "http://docbook.org/ns/docbook";
 #if DEBUG
 private static XmlDocument Part6Document = null;
 private static XmlDocument Part7Document = null;
+private static XmlDocument Part15Document = null;
 private static XmlNamespaceManager NsManager = null;
 private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary = null;
 
@@ -27,10 +28,12 @@ private void Init()
 
 	var part6Path = System.IO.Path.Combine(directory, "part06.xml");
 	var part7Path = System.IO.Path.Combine(directory, "part07.xml");
+	var part15Path = System.IO.Path.Combine(directory, "part15.xml");
 	var part16Path = System.IO.Path.Combine(directory, "part16.xml");
 
 	Part6Document = LoadDocument(part6Path);
 	Part7Document = LoadDocument(part7Path);
+	Part15Document = LoadDocument(part15Path);
 	NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
 	ContextGroupDictionary = GetContextGroupDictionary(part16Path);
 }
@@ -40,6 +43,9 @@ private static readonly XmlDocument Part6Document =
 
 private static readonly XmlDocument Part7Document = 
 	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml");
+
+private static readonly XmlDocument Part15Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part15/part15.xml");
 
 private static readonly XmlNamespaceManager NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
 
@@ -402,5 +408,34 @@ private static string ToDicomUidTypeString(string uidType)
 	}
 
 	return raw;
+}
+
+// Extract data from Table E-1.1 in Part 15 document and format each row to confidentiality profile format.
+private static List<string> GetConfidentialityProfileData()
+{
+#if DEBUG
+	Init();
+#endif
+
+	// Part 15, Table E.1-1 contains confidentiality profile attributes
+	var tableE11Items = Part15Document.DocumentElement.SelectNodes(
+		"//d:table[@label='E.1-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	var rows = new List<string>();
+
+	foreach (var item in tableE11Items)
+	{
+		var list = item.SelectNodes("./d:td", NsManager)
+			.OfType<XmlNode>().Select(node => node.InnerText).ToList();
+
+		// Exclude lines with invalid number of columns, or that contains masked or private tags
+		if (list.Count != 14 || list[1].Contains("x") || list[1].Contains("g")) continue;
+
+		rows.Add($"{list[1].Replace("(", "").Replace(")", "").Replace(" ", "")};" + 
+			string.Join(";", Enumerable.Range(4, 10).Select(i => $"{list[i]}")));
+	}
+
+	return rows;
 }
 #>
