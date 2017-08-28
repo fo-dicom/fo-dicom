@@ -82,6 +82,31 @@ namespace Dicom
             Assert.NotEqual(expected, actualNew);
         }
 
-#endregion
+        [Fact]
+        public void Anonymize_UsePredefinedPatientNameAndId_ShouldBeSetInAnonymizedDataset()
+        {
+            const string fileName = "CT-MONO2-16-ankle";
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            const string expectedName = "fo-dicom";
+            const string expectedId = "GH-575";
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.Profile.PatientName = expectedName;
+            anonymizer.Profile.PatientID = expectedId;
+
+            var newDataset = anonymizer.Anonymize(dataset);
+
+            var actualName = newDataset.Get<string>(DicomTag.PatientName);
+            var actualId = newDataset.Get<string>(DicomTag.PatientID);
+
+            Assert.Equal(expectedName, actualName);
+            Assert.Equal(expectedId, actualId);
+        }
+
+        #endregion
     }
 }
