@@ -3,6 +3,7 @@
 * ReceivingApplicationEntityTitle and SendingApplicationEntityTitle omitted during Save (#563 #569)
 * Downgrade desktop libraries to framework version 4.5 (#561 #562)
 * Add support for Unity 2017.1 platform (#560 #585)
+* Handle fragmented OW pixel data when creating EncapsulatedPixelData for new pixel data (#553 #586) 
 * DicomImage is not thread safe (#552 #582)
 * DicomUIDGenerator.Generate UID Collisions (Non-unique UIDs) (#546 #571)
 * Correct interpolation of rescaled overlay graphics (#545 #558)
