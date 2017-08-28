@@ -10,7 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.cs">
+      <DependentUpon>DicomAnonymizerGenerated.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataset.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetExtensions.cs" />
@@ -249,6 +253,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomStructuredReportException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)DicomTagGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)DicomUIDGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.tt" />
