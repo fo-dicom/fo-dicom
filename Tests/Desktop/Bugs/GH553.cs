@@ -13,6 +13,8 @@ namespace Dicom.Bugs
         [Fact]
         public void DicomPixelDataCreate_NewPixelDataFromOldFragmentedFile_ReproducesData()
         {
+            ImageManager.SetImplementation(WinFormsImageManager.Instance);
+
             var oldFile = DicomFile.Open(@"Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm");
             var newFile = oldFile.Clone();
 
