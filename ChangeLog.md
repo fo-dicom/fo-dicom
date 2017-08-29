@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Code generator support for anonymization data (#594 #595)
 * DicomAnonymizer blank DicomDate/DicomDateTime to DateTime.MinValue instead of empty value (#576 #593)
 * DicomAnonymizer ignores the PatientName and PatientID in the SecurityProfile (#575 #592)
 * Private group not added to tag when private tag item is added to dataset (#570 #577)

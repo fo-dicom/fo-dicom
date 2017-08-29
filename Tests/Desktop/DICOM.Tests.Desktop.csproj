@@ -113,6 +113,7 @@
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="Bugs\GH526.cs" />
     <Compile Include="Bugs\GH553.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
@@ -286,6 +287,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH340.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\test_720.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
