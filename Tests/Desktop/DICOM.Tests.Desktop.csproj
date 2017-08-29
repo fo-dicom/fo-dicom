@@ -113,6 +113,7 @@
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="Bugs\GH538.cs" />
     <Compile Include="Bugs\GH526.cs" />
     <Compile Include="Bugs\GH553.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
@@ -220,6 +221,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Test Data\GH538-jpeg14.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -290,6 +294,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\test_720.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH538-jpeg1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
