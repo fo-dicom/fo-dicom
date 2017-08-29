@@ -133,7 +133,7 @@ namespace Dicom
         #region Dicom Transfer Syntax
 
         /// <summary>Virtual transfer syntax for reading datasets improperly encoded in Big Endian format with implicit VR.</summary>
-        public static DicomTransferSyntax ImplicitVRBigEndian =
+        public static readonly DicomTransferSyntax ImplicitVRBigEndian =
             new DicomTransferSyntax(new DicomUID(DicomUID.ExplicitVRBigEndianRETIRED.UID + ".123456",
                 "Implicit VR Big Endian", DicomUidType.TransferSyntax))
             {
@@ -143,7 +143,7 @@ namespace Dicom
 
         /// <summary>GE Private Implicit VR Big Endian</summary>
         /// <remarks>Same as Implicit VR Little Endian except for big endian pixel data.</remarks>
-        public static DicomTransferSyntax GEPrivateImplicitVRBigEndian =
+        public static readonly DicomTransferSyntax GEPrivateImplicitVRBigEndian =
             new DicomTransferSyntax(DicomUID.GEPrivateImplicitVRBigEndian)
             {
                 IsExplicitVR = false,
@@ -152,14 +152,14 @@ namespace Dicom
             };
 
         /// <summary>Implicit VR Little Endian</summary>
-        public static DicomTransferSyntax ImplicitVRLittleEndian =
+        public static readonly DicomTransferSyntax ImplicitVRLittleEndian =
             new DicomTransferSyntax(DicomUID.ImplicitVRLittleEndian)
             {
                 Endian = Endian.Little
             };
 
         /// <summary>Explicit VR Little Endian</summary>
-        public static DicomTransferSyntax ExplicitVRLittleEndian =
+        public static readonly DicomTransferSyntax ExplicitVRLittleEndian =
             new DicomTransferSyntax(DicomUID.ExplicitVRLittleEndian)
             {
                 IsExplicitVR = true,
@@ -167,15 +167,16 @@ namespace Dicom
             };
 
         /// <summary>Explicit VR Big Endian</summary>
-        public static DicomTransferSyntax ExplicitVRBigEndian =
+        public static readonly DicomTransferSyntax ExplicitVRBigEndian =
             new DicomTransferSyntax(DicomUID.ExplicitVRBigEndianRETIRED)
             {
+                IsRetired = true,
                 IsExplicitVR = true,
                 Endian = Endian.Big
             };
 
         /// <summary>Deflated Explicit VR Little Endian</summary>
-        public static DicomTransferSyntax DeflatedExplicitVRLittleEndian =
+        public static readonly DicomTransferSyntax DeflatedExplicitVRLittleEndian =
             new DicomTransferSyntax(DicomUID.DeflatedExplicitVRLittleEndian)
             {
                 IsExplicitVR = true,
@@ -184,7 +185,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Baseline (Process 1)</summary>
-        public static DicomTransferSyntax JPEGProcess1 = new DicomTransferSyntax(DicomUID.JPEGBaseline1)
+        public static readonly DicomTransferSyntax JPEGProcess1 = new DicomTransferSyntax(DicomUID.JPEGBaseline1)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -194,7 +195,7 @@ namespace Dicom
         };
 
         /// <summary>JPEG Extended (Process 2 &amp; 4)</summary>
-        public static DicomTransferSyntax JPEGProcess2_4 = new DicomTransferSyntax(DicomUID.JPEGExtended24)
+        public static readonly DicomTransferSyntax JPEGProcess2_4 = new DicomTransferSyntax(DicomUID.JPEGExtended24)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -204,7 +205,7 @@ namespace Dicom
         };
 
         /// <summary>JPEG Extended (Process 3 &amp; 5) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess3_5Retired =
+        public static readonly DicomTransferSyntax JPEGProcess3_5Retired =
             new DicomTransferSyntax(DicomUID.JPEGExtended35RETIRED)
             {
                 IsRetired = true,
@@ -217,7 +218,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Spectral Selection, Non-Hierarchical (Process 6 &amp; 8) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess6_8Retired =
+        public static readonly DicomTransferSyntax JPEGProcess6_8Retired =
             new DicomTransferSyntax(DicomUID.JPEGSpectralSelectionNonHierarchical68RETIRED)
             {
                 IsRetired = true,
@@ -229,7 +230,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Spectral Selection, Non-Hierarchical (Process 7 &amp; 9) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess7_9Retired =
+        public static readonly DicomTransferSyntax JPEGProcess7_9Retired =
             new DicomTransferSyntax(DicomUID.JPEGSpectralSelectionNonHierarchical79RETIRED)
             {
                 IsRetired = true,
@@ -241,7 +242,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Full Progression, Non-Hierarchical (Process 10 &amp; 12) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess10_12Retired =
+        public static readonly DicomTransferSyntax JPEGProcess10_12Retired =
             new DicomTransferSyntax(DicomUID.JPEGFullProgressionNonHierarchical1012RETIRED)
             {
                 IsRetired = true,
@@ -253,7 +254,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Full Progression, Non-Hierarchical (Process 11 &amp; 13) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess11_13Retired =
+        public static readonly DicomTransferSyntax JPEGProcess11_13Retired =
             new DicomTransferSyntax(DicomUID.JPEGFullProgressionNonHierarchical1113RETIRED)
             {
                 IsRetired = true,
@@ -265,7 +266,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Lossless, Non-Hierarchical (Process 14)</summary>
-        public static DicomTransferSyntax JPEGProcess14 =
+        public static readonly DicomTransferSyntax JPEGProcess14 =
             new DicomTransferSyntax(DicomUID.JPEGLosslessNonHierarchical14)
             {
                 IsExplicitVR = true,
@@ -274,7 +275,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Lossless, Non-Hierarchical (Process 15) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess15Retired =
+        public static readonly DicomTransferSyntax JPEGProcess15Retired =
             new DicomTransferSyntax(DicomUID.JPEGLosslessNonHierarchical15RETIRED)
             {
                 IsRetired = true,
@@ -284,7 +285,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Extended, Hierarchical (Process 16 &amp; 18) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess16_18Retired =
+        public static readonly DicomTransferSyntax JPEGProcess16_18Retired =
             new DicomTransferSyntax(DicomUID.JPEGExtendedHierarchical1618RETIRED)
             {
                 IsRetired = true,
@@ -296,7 +297,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Extended, Hierarchical (Process 17 &amp; 19) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess17_19Retired =
+        public static readonly DicomTransferSyntax JPEGProcess17_19Retired =
             new DicomTransferSyntax(DicomUID.JPEGExtendedHierarchical1719RETIRED)
             {
                 IsRetired = true,
@@ -308,7 +309,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Spectral Selection, Hierarchical (Process 20 &amp; 22) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess20_22Retired =
+        public static readonly DicomTransferSyntax JPEGProcess20_22Retired =
             new DicomTransferSyntax(DicomUID.JPEGSpectralSelectionHierarchical2022RETIRED)
             {
                 IsRetired = true,
@@ -320,7 +321,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Spectral Selection, Hierarchical (Process 21 &amp; 23) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess21_23Retired =
+        public static readonly DicomTransferSyntax JPEGProcess21_23Retired =
             new DicomTransferSyntax(DicomUID.JPEGSpectralSelectionHierarchical2123RETIRED)
             {
                 IsRetired = true,
@@ -332,7 +333,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Full Progression, Hierarchical (Process 24 &amp; 26) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess24_26Retired =
+        public static readonly DicomTransferSyntax JPEGProcess24_26Retired =
             new DicomTransferSyntax(DicomUID.JPEGFullProgressionHierarchical2426RETIRED)
             {
                 IsRetired = true,
@@ -344,7 +345,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Full Progression, Hierarchical (Process 25 &amp; 27) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess25_27Retired =
+        public static readonly DicomTransferSyntax JPEGProcess25_27Retired =
             new DicomTransferSyntax(DicomUID.JPEGFullProgressionHierarchical2527RETIRED)
             {
                 IsRetired = true,
@@ -356,7 +357,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Lossless, Hierarchical (Process 28) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess28Retired =
+        public static readonly DicomTransferSyntax JPEGProcess28Retired =
             new DicomTransferSyntax(DicomUID.JPEGLosslessHierarchical28RETIRED)
             {
                 IsRetired = true,
@@ -366,7 +367,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Lossless, Hierarchical (Process 29) (Retired)</summary>
-        public static DicomTransferSyntax JPEGProcess29Retired =
+        public static readonly DicomTransferSyntax JPEGProcess29Retired =
             new DicomTransferSyntax(DicomUID.JPEGLosslessHierarchical29RETIRED)
             {
                 IsRetired = true,
@@ -376,7 +377,7 @@ namespace Dicom
             };
 
         /// <summary>JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1])</summary>
-        public static DicomTransferSyntax JPEGProcess14SV1 = new DicomTransferSyntax(DicomUID.JPEGLossless)
+        public static readonly DicomTransferSyntax JPEGProcess14SV1 = new DicomTransferSyntax(DicomUID.JPEGLossless)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -384,7 +385,7 @@ namespace Dicom
         };
 
         /// <summary>JPEG-LS Lossless Image Compression</summary>
-        public static DicomTransferSyntax JPEGLSLossless = new DicomTransferSyntax(DicomUID.JPEGLSLossless)
+        public static readonly DicomTransferSyntax JPEGLSLossless = new DicomTransferSyntax(DicomUID.JPEGLSLossless)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -392,25 +393,27 @@ namespace Dicom
         };
 
         /// <summary>JPEG-LS Lossy (Near-Lossless) Image Compression</summary>
-        public static DicomTransferSyntax JPEGLSNearLossless = new DicomTransferSyntax(DicomUID.JPEGLSLossyNearLossless)
-        {
-            IsExplicitVR = true,
-            IsEncapsulated = true,
-            IsLossy = true,
-            LossyCompressionMethod = "ISO_14495_1",
-            Endian = Endian.Little
-        };
+        public static readonly DicomTransferSyntax JPEGLSNearLossless =
+            new DicomTransferSyntax(DicomUID.JPEGLSLossyNearLossless)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14495_1",
+                Endian = Endian.Little
+            };
 
         /// <summary>JPEG 2000 Lossless Image Compression</summary>
-        public static DicomTransferSyntax JPEG2000Lossless = new DicomTransferSyntax(DicomUID.JPEG2000LosslessOnly)
-        {
-            IsExplicitVR = true,
-            IsEncapsulated = true,
-            Endian = Endian.Little
-        };
+        public static readonly DicomTransferSyntax JPEG2000Lossless =
+            new DicomTransferSyntax(DicomUID.JPEG2000LosslessOnly)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
 
         /// <summary>JPEG 2000 Lossy Image Compression</summary>
-        public static DicomTransferSyntax JPEG2000Lossy = new DicomTransferSyntax(DicomUID.JPEG2000)
+        public static readonly DicomTransferSyntax JPEG2000Lossy = new DicomTransferSyntax(DicomUID.JPEG2000)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -419,8 +422,44 @@ namespace Dicom
             Endian = Endian.Little
         };
 
+        ///<summary>JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)</summary>
+        public static readonly DicomTransferSyntax JPEG2000Part2MultiComponentLosslessOnly =
+            new DicomTransferSyntax(DicomUID.JPEG2000Part2MultiComponentLosslessOnly)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>JPEG 2000 Part 2 Multi-component Image Compression</summary>
+        public static readonly DicomTransferSyntax JPEG2000Part2MultiComponent =
+            new DicomTransferSyntax(DicomUID.JPEG2000Part2MultiComponent)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_15444_2",
+                Endian = Endian.Little
+            };
+
+        ///<summary>JPIP Referenced</summary>
+        public static readonly DicomTransferSyntax JPIPReferenced = new DicomTransferSyntax(DicomUID.JPIPReferenced)
+        {
+            IsExplicitVR = true,
+            Endian = Endian.Little
+        };
+
+        ///<summary>JPIP Referenced Deflate</summary>
+        public static readonly DicomTransferSyntax JPIPReferencedDeflate =
+            new DicomTransferSyntax(DicomUID.JPIPReferencedDeflate)
+            {
+                IsExplicitVR = true,
+                IsDeflate = true,
+                Endian = Endian.Little
+            };
+
         /// <summary>MPEG2 Main Profile @ Main Level</summary>
-        public static DicomTransferSyntax MPEG2 = new DicomTransferSyntax(DicomUID.MPEG2)
+        public static readonly DicomTransferSyntax MPEG2 = new DicomTransferSyntax(DicomUID.MPEG2)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
@@ -429,13 +468,111 @@ namespace Dicom
             Endian = Endian.Little
         };
 
+        ///<summary>MPEG2 Main Profile / High Level</summary>
+        public static readonly DicomTransferSyntax MPEG2MainProfileHighLevel =
+            new DicomTransferSyntax(DicomUID.MPEG2MainProfileHighLevel)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_13818_2",
+                Endian = Endian.Little
+            };
+
+        ///<summary>MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
+        public static readonly DicomTransferSyntax MPEG4AVCH264HighProfileLevel41 =
+            new DicomTransferSyntax(DicomUID.MPEG4AVCH264HighProfileLevel41)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
+        public static readonly DicomTransferSyntax MPEG4AVCH264BDCompatibleHighProfileLevel41 =
+            new DicomTransferSyntax(DicomUID.MPEG4AVCH264BDCompatibleHighProfileLevel41)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</summary>
+        public static readonly DicomTransferSyntax MPEG4AVCH264HighProfileLevel42For2DVideo =
+            new DicomTransferSyntax(DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</summary>
+        public static readonly DicomTransferSyntax MPEG4AVCH264HighProfileLevel42For3DVideo =
+            new DicomTransferSyntax(DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</summary>
+        public static readonly DicomTransferSyntax MPEG4AVCH264StereoHighProfileLevel42 =
+            new DicomTransferSyntax(DicomUID.MPEG4AVCH264StereoHighProfileLevel42)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>HEVC/H.265 Main Profile / Level 5.1</summary>
+        public static readonly DicomTransferSyntax HEVCH265MainProfileLevel51 =
+            new DicomTransferSyntax(DicomUID.HEVCH265MainProfileLevel51)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>HEVC/H.265 Main 10 Profile / Level 5.1</summary>
+        public static readonly DicomTransferSyntax HEVCH265Main10ProfileLevel51 =
+            new DicomTransferSyntax(DicomUID.HEVCH265Main10ProfileLevel51)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
         /// <summary>RLE Lossless</summary>
-        public static DicomTransferSyntax RLELossless = new DicomTransferSyntax(DicomUID.RLELossless)
+        public static readonly DicomTransferSyntax RLELossless = new DicomTransferSyntax(DicomUID.RLELossless)
         {
             IsExplicitVR = true,
             IsEncapsulated = true,
             Endian = Endian.Little
         };
+
+        ///<summary>RFC 2557 MIME encapsulation</summary>
+        public static readonly DicomTransferSyntax RFC2557MIMEEncapsulation =
+            new DicomTransferSyntax(DicomUID.RFC2557MIMEEncapsulation)
+            {
+                IsExplicitVR = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>XML Encoding</summary>
+        public static readonly DicomTransferSyntax XMLEncoding = new DicomTransferSyntax(DicomUID.XMLEncoding)
+        {
+            IsExplicitVR = true,
+            Endian = Endian.Little
+        };
+
+        ///<summary>Papyrus 3 Implicit VR Little Endian (Retired)</summary>
+        public static readonly DicomTransferSyntax Papyrus3ImplicitVRLittleEndianRetired =
+            new DicomTransferSyntax(DicomUID.Papyrus3ImplicitVRLittleEndianRETIRED)
+            {
+                IsExplicitVR = false,
+                IsRetired = true,
+                Endian = Endian.Little
+            };
 
         #endregion
 
@@ -475,8 +612,23 @@ namespace Dicom
             Entries.Add(JPEGLSNearLossless.UID, JPEGLSNearLossless);
             Entries.Add(JPEG2000Lossless.UID, JPEG2000Lossless);
             Entries.Add(JPEG2000Lossy.UID, JPEG2000Lossy);
+            Entries.Add(JPEG2000Part2MultiComponentLosslessOnly.UID, JPEG2000Part2MultiComponentLosslessOnly);
+            Entries.Add(JPEG2000Part2MultiComponent.UID, JPEG2000Part2MultiComponent);
+            Entries.Add(JPIPReferenced.UID, JPIPReferenced);
+            Entries.Add(JPIPReferencedDeflate.UID, JPIPReferencedDeflate);
             Entries.Add(MPEG2.UID, MPEG2);
+            Entries.Add(MPEG2MainProfileHighLevel.UID, MPEG2MainProfileHighLevel);
+            Entries.Add(MPEG4AVCH264HighProfileLevel41.UID, MPEG4AVCH264HighProfileLevel41);
+            Entries.Add(MPEG4AVCH264BDCompatibleHighProfileLevel41.UID, MPEG4AVCH264BDCompatibleHighProfileLevel41);
+            Entries.Add(MPEG4AVCH264HighProfileLevel42For2DVideo.UID, MPEG4AVCH264HighProfileLevel42For2DVideo);
+            Entries.Add(MPEG4AVCH264HighProfileLevel42For3DVideo.UID, MPEG4AVCH264HighProfileLevel42For3DVideo);
+            Entries.Add(MPEG4AVCH264StereoHighProfileLevel42.UID, MPEG4AVCH264StereoHighProfileLevel42);
+            Entries.Add(HEVCH265MainProfileLevel51.UID, HEVCH265MainProfileLevel51);
+            Entries.Add(HEVCH265Main10ProfileLevel51.UID, HEVCH265Main10ProfileLevel51);
             Entries.Add(RLELossless.UID, RLELossless);
+            Entries.Add(RFC2557MIMEEncapsulation.UID, RFC2557MIMEEncapsulation);
+            Entries.Add(XMLEncoding.UID, XMLEncoding);
+            Entries.Add(Papyrus3ImplicitVRLittleEndianRetired.UID, Papyrus3ImplicitVRLittleEndianRetired);
 
             #endregion
         }
