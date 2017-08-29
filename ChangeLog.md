@@ -17,6 +17,7 @@
 * JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
 * DicomDictionary.GetEnumerator() is very slow (#532 #534)
 * DicomPixelData.BitsAllocated setter removed (#528 #564)
+* Complete list of transfer syntax fields from the DICOM Standard (#526 #599)
 * DicomClient.SendAsync will never return when certain non-transient exceptions are thrown (#525 #584)
 * CStore-SCU always adds a PC with LEExplicit and LEImplicit (#524 #541)
 * Added Maximum Clients Allowed to restrict connection to SCP (#523 #573)
