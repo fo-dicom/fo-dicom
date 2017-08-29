@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+
 namespace Dicom
 {
     using System;
@@ -417,6 +419,43 @@ namespace Dicom
             this.TestDicomIntegerStringGetArray<object>();
         }
 
+        [Theory]
+        [MemberData(nameof(KnownTransferSyntaxes))]
+        public void DicomUniqueIdentifier_GetKnownTransferSyntax_ReturnsFullField(DicomUID uid, DicomTransferSyntax expected)
+        {
+            var tag = DicomTag.ReferencedTransferSyntaxUIDInFile;
+            var ui = new DicomUniqueIdentifier(tag, uid);
+            var actual = ui.Get<DicomTransferSyntax>(0);
+
+            Assert.Equal(expected.UID, actual.UID);
+            Assert.Equal(expected.Endian, actual.Endian);
+            Assert.Equal(expected.LossyCompressionMethod, actual.LossyCompressionMethod);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonTransferSyntaxUids))]
+        public void DicomUniqueIdentifier_UidTransferSyntax_DoesNotThrow(DicomUID expected)
+        {
+            var tag = DicomTag.EncryptedContentTransferSyntaxUID;
+            var ui = new DicomUniqueIdentifier(tag, expected);
+
+            DicomUID actual = null;
+            var exception = Record.Exception(() => actual = ui.Get<DicomTransferSyntax>(0).UID);
+            Assert.Null(exception);
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonTransferSyntaxUids))]
+        public void DicomUniqueIdentifier_UidNotTransferSyntax_Throws(DicomUID uid)
+        {
+            var tag = DicomTag.EncryptedContentTransferSyntaxUID;
+            var ui = new DicomUniqueIdentifier(tag, uid);
+
+            var exception = Record.Exception(() => ui.Get<DicomTransferSyntax>(0));
+            Assert.IsType<DicomDataException>(exception);
+        }
+
         #endregion
 
         #region Support methods
@@ -463,6 +502,39 @@ namespace Dicom
             One,
             Two
         }
+
+        #endregion
+
+        #region Support data
+
+        public static IEnumerable<object[]> KnownTransferSyntaxes = new[]
+        {
+            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.ImplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
+            new object[] { DicomUID.JPEGExtended24, DicomTransferSyntax.JPEGProcess2_4 },
+            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomTransferSyntax.ExplicitVRBigEndian },
+            new object[] { DicomUID.GEPrivateImplicitVRBigEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
+            new object[] { DicomUID.MPEG2, DicomTransferSyntax.MPEG2 }
+        };
+
+        public static IEnumerable<object[]> TransferSyntaxUids = new[]
+        {
+            new object[] { DicomUID.XMLEncoding },
+            new object[] { DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo },
+            new object[] { DicomUID.JPEG2000Part2MultiComponentLosslessOnly },
+            new object[] { DicomUID.JPIPReferencedDeflate },
+            new object[] { DicomUID.RFC2557MIMEEncapsulation }
+        };
+
+        public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
+        {
+            new object[] { DicomUID.AbdominalArteriesLateral12111 },
+            new object[] { DicomUID.CTImageStorage },
+            new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
+            new object[] { DicomUID.dicomTransferSyntax },
+            new object[] { DicomUID.PETColorPaletteSOPInstance }
+        };
 
         #endregion
     }
