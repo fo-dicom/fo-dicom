@@ -1,19 +1,19 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+
+using Dicom.IO.Buffer;
+
+using Xunit;
+
 
 namespace Dicom
 {
-    using System;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading;
-
-    using Dicom.IO.Buffer;
-
-    using Xunit;
-
     [Collection("General")]
     public class DicomElementTest
     {
@@ -433,7 +433,7 @@ namespace Dicom
         }
 
         [Theory]
-        [MemberData(nameof(NonTransferSyntaxUids))]
+        [MemberData(nameof(TransferSyntaxUids))]
         public void DicomUniqueIdentifier_UidTransferSyntax_DoesNotThrow(DicomUID expected)
         {
             var tag = DicomTag.EncryptedContentTransferSyntaxUID;
