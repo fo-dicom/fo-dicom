@@ -1047,17 +1047,31 @@ namespace Dicom.Network
 
                     if (msg.Dataset.InternalTransferSyntax != pc.AcceptedTransferSyntax)
                     {
+                        var changeTransferSyntax = true;
+
                         if (!TranscoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
-                            pc.AcceptedTransferSyntax))
+                                pc.AcceptedTransferSyntax) && msg.Dataset.Contains(DicomTag.PixelData))
                         {
                             Logger.Warn(
-                                "Conversion of dataset transfer syntax from: {datasetSyntax} to: {acceptedSyntax} is not supported." +
-                                "Pixel Data (7fe0,0010) is removed from dataset.",
+                                "Conversion of dataset transfer syntax from: {datasetSyntax} to: {acceptedSyntax} is not supported.",
                                 msg.Dataset.InternalTransferSyntax, pc.AcceptedTransferSyntax);
-                            msg.Dataset.Remove(DicomTag.PixelData);
+
+                            if (Options.IgnoreUnsupportedTransferSyntaxChange)
+                            {
+                                Logger.Warn("Will attempt to transfer dataset as-is.");
+                                changeTransferSyntax = false;
+                            }
+                            else
+                            {
+                                Logger.Warn("Pixel Data (7fe0,0010) is removed from dataset.");
+                                msg.Dataset = msg.Dataset.Clone().Remove(DicomTag.PixelData);
+                            }
                         }
 
-                        msg.Dataset = msg.Dataset.Clone(pc.AcceptedTransferSyntax);
+                        if (changeTransferSyntax)
+                        {
+                            msg.Dataset = msg.Dataset.Clone(pc.AcceptedTransferSyntax);
+                        }
                     }
                 }
 
