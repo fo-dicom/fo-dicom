@@ -535,7 +535,7 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
-                    TryCloseConnection(e);
+                    TryCloseConnection(e, true);
                 }
             }
         }
