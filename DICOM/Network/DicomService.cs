@@ -1033,8 +1033,6 @@ namespace Dicom.Network
             }
             else
             {
-                var dimse = new Dimse { Message = msg, PresentationContext = pc };
-
                 // force calculation of command group length as required by standard
                 msg.Command.RecalculateGroupLengths();
 
@@ -1047,35 +1045,39 @@ namespace Dicom.Network
                     //	   element values and changes in transfer syntax.
                     msg.Dataset.RemoveGroupLengths();
 
-                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
-                        msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
+                    if (msg.Dataset.InternalTransferSyntax != pc.AcceptedTransferSyntax &&
+                        TranscoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax, pc.AcceptedTransferSyntax))
+                    {
+                        msg.Dataset = msg.Dataset.Clone(pc.AcceptedTransferSyntax);
+                    }
                 }
 
                 Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
+                PDataTFStream stream = null;
                 try
                 {
-                    dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
+                    stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
                     var writer = new DicomWriter(
                         DicomTransferSyntax.ImplicitVRLittleEndian,
                         DicomWriteOptions.Default,
-                        new StreamByteTarget(dimse.Stream));
+                        new StreamByteTarget(stream));
 
-                    dimse.Walker = new DicomDatasetWalker(msg.Command);
-                    await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
+                    var commandWalker = new DicomDatasetWalker(msg.Command);
+                    await commandWalker.WalkAsync(writer).ConfigureAwait(false);
 
-                    if (dimse.Message.HasDataset)
+                    if (msg.HasDataset)
                     {
-                        await dimse.Stream.SetIsCommandAsync(false).ConfigureAwait(false);
+                        await stream.SetIsCommandAsync(false).ConfigureAwait(false);
 
                         writer = new DicomWriter(
-                            dimse.PresentationContext.AcceptedTransferSyntax,
+                            pc.AcceptedTransferSyntax,
                             DicomWriteOptions.Default,
-                            new StreamByteTarget(dimse.Stream));
+                            new StreamByteTarget(stream));
 
-                        dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                        await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
+                        var datasetWalker = new DicomDatasetWalker(msg.Dataset);
+                        await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
@@ -1084,8 +1086,11 @@ namespace Dicom.Network
                 }
                 finally
                 {
-                    await dimse.Stream.FlushAsync(true).ConfigureAwait(false);
-                    dimse.Stream.Dispose();
+                    if (stream != null)
+                    {
+                        await stream.FlushAsync(true).ConfigureAwait(false);
+                        stream.Dispose();
+                    }
                 }
             }
         }
@@ -1267,17 +1272,6 @@ namespace Dicom.Network
         #endregion
 
         #region INNER TYPES
-
-        private class Dimse
-        {
-            public DicomMessage Message;
-
-            public PDataTFStream Stream;
-
-            public DicomDatasetWalker Walker;
-
-            public DicomPresentationContext PresentationContext;
-        }
 
         private class PDataTFStream : Stream
         {

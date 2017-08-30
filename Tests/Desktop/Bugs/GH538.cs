@@ -17,7 +17,7 @@ namespace Dicom.Bugs
         public void CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
         {
             const string file1 = @"Test Data/GH538-jpeg1.dcm";
-            const string file2 = @"Test Data/GH538-jpeg14.dcm";
+            const string file2 = @"Test Data/GH538-jpeg14sv1.dcm";
             var handle1 = new ManualResetEventSlim();
             var handle2 = new ManualResetEventSlim();
             var successes = 0;
