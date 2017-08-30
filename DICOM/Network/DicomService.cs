@@ -535,7 +535,7 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
-                    TryCloseConnection(e);
+                    TryCloseConnection(e, true);
                 }
             }
         }
@@ -1033,8 +1033,6 @@ namespace Dicom.Network
             }
             else
             {
-                var dimse = new Dimse { Message = msg, PresentationContext = pc };
-
                 // force calculation of command group length as required by standard
                 msg.Command.RecalculateGroupLengths();
 
@@ -1047,35 +1045,62 @@ namespace Dicom.Network
                     //	   element values and changes in transfer syntax.
                     msg.Dataset.RemoveGroupLengths();
 
-                    if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
-                        msg.Dataset = msg.Dataset.Clone(dimse.PresentationContext.AcceptedTransferSyntax);
+                    if (msg.Dataset.InternalTransferSyntax != pc.AcceptedTransferSyntax)
+                    {
+                        var changeTransferSyntax = true;
+
+                        if (!TranscoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
+                                pc.AcceptedTransferSyntax) && msg.Dataset.Contains(DicomTag.PixelData))
+                        {
+                            Logger.Warn(
+                                "Conversion of dataset transfer syntax from: {datasetSyntax} to: {acceptedSyntax} is not supported.",
+                                msg.Dataset.InternalTransferSyntax, pc.AcceptedTransferSyntax);
+
+                            if (Options.IgnoreUnsupportedTransferSyntaxChange)
+                            {
+                                Logger.Warn("Will attempt to transfer dataset as-is.");
+                                changeTransferSyntax = false;
+                            }
+                            else
+                            {
+                                Logger.Warn("Pixel Data (7fe0,0010) is removed from dataset.");
+                                msg.Dataset = msg.Dataset.Clone().Remove(DicomTag.PixelData);
+                            }
+                        }
+
+                        if (changeTransferSyntax)
+                        {
+                            msg.Dataset = msg.Dataset.Clone(pc.AcceptedTransferSyntax);
+                        }
+                    }
                 }
 
                 Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
+                PDataTFStream stream = null;
                 try
                 {
-                    dimse.Stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
+                    stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
 
                     var writer = new DicomWriter(
                         DicomTransferSyntax.ImplicitVRLittleEndian,
                         DicomWriteOptions.Default,
-                        new StreamByteTarget(dimse.Stream));
+                        new StreamByteTarget(stream));
 
-                    dimse.Walker = new DicomDatasetWalker(msg.Command);
-                    await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
+                    var commandWalker = new DicomDatasetWalker(msg.Command);
+                    await commandWalker.WalkAsync(writer).ConfigureAwait(false);
 
-                    if (dimse.Message.HasDataset)
+                    if (msg.HasDataset)
                     {
-                        await dimse.Stream.SetIsCommandAsync(false).ConfigureAwait(false);
+                        await stream.SetIsCommandAsync(false).ConfigureAwait(false);
 
                         writer = new DicomWriter(
-                            dimse.PresentationContext.AcceptedTransferSyntax,
+                            pc.AcceptedTransferSyntax,
                             DicomWriteOptions.Default,
-                            new StreamByteTarget(dimse.Stream));
+                            new StreamByteTarget(stream));
 
-                        dimse.Walker = new DicomDatasetWalker(dimse.Message.Dataset);
-                        await dimse.Walker.WalkAsync(writer).ConfigureAwait(false);
+                        var datasetWalker = new DicomDatasetWalker(msg.Dataset);
+                        await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
@@ -1084,8 +1109,11 @@ namespace Dicom.Network
                 }
                 finally
                 {
-                    await dimse.Stream.FlushAsync(true).ConfigureAwait(false);
-                    dimse.Stream.Dispose();
+                    if (stream != null)
+                    {
+                        await stream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+                        stream.Dispose();
+                    }
                 }
             }
         }
@@ -1268,17 +1296,6 @@ namespace Dicom.Network
 
         #region INNER TYPES
 
-        private class Dimse
-        {
-            public DicomMessage Message;
-
-            public PDataTFStream Stream;
-
-            public DicomDatasetWalker Walker;
-
-            public DicomPresentationContext PresentationContext;
-        }
-
         private class PDataTFStream : Stream
         {
             #region Private Members
@@ -1309,7 +1326,7 @@ namespace Dicom.Network
                 _command = true;
                 _pcid = pcid;
                 _pduMax = Math.Min(max, Int32.MaxValue);
-                _max = (_pduMax == 0)
+                _max = _pduMax == 0
                            ? _service.Options.MaxCommandBuffer
                            : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
 
@@ -1341,16 +1358,6 @@ namespace Dicom.Network
 
             #endregion
 
-            #region Public Members
-
-            public async Task FlushAsync(bool last)
-            {
-                await CreatePDVAsync(last).ConfigureAwait(false);
-                await WritePDUAsync(last).ConfigureAwait(false);
-            }
-
-            #endregion
-
             #region Private Members
 
             private uint CurrentPduSize()
@@ -1373,8 +1380,8 @@ namespace Dicom.Network
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
                     // is the current PDU at its maximum size or do we have room for another PDV?
-                    if ((_service.Options.MaxPDVsPerPDU != 0 && _pdu.PDVs.Count >= _service.Options.MaxPDVsPerPDU)
-                        || (CurrentPduSize() + 6) >= _max || (!_command && last))
+                    if (_service.Options.MaxPDVsPerPDU != 0 && _pdu.PDVs.Count >= _service.Options.MaxPDVsPerPDU
+                        || CurrentPduSize() + 6 >= _max || !_command && last)
                     {
                         await WritePDUAsync(last).ConfigureAwait(false);
                     }
@@ -1422,7 +1429,7 @@ namespace Dicom.Network
             {
                 get
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
 
@@ -1430,17 +1437,17 @@ namespace Dicom.Network
             {
                 get
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
                 set
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
 
             public override int Read(byte[] buffer, int offset, int count)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
 
             public override void Write(byte[] buffer, int offset, int count)
@@ -1458,12 +1465,12 @@ namespace Dicom.Network
 
             public override long Seek(long offset, SeekOrigin origin)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
 
             public override void SetLength(long value)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
 
             public override async Task WriteAsync(byte[] buffer, int offset, int count,
@@ -1504,6 +1511,12 @@ namespace Dicom.Network
                     _service.Logger.Error("Exception writing data to PDV: {@error}", e);
                     throw;
                 }
+            }
+
+            public override async Task FlushAsync(CancellationToken cancellationToken)
+            {
+                await CreatePDVAsync(true).ConfigureAwait(false);
+                await WritePDUAsync(true).ConfigureAwait(false);
             }
 
             #endregion

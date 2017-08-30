@@ -113,8 +113,10 @@
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="Bugs\GH538.cs" />
     <Compile Include="Bugs\GH526.cs" />
     <Compile Include="Bugs\GH553.cs" />
+    <Compile Include="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="Log\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Network\PDVTest.cs" />
     <Compile Include="Network\Ports.cs" />
+    <Compile Include="Network\SimpleCStoreProvider.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Printing\ImageBoxTest.cs" />
     <Compile Include="Printing\PresentationLutTest.cs" />
@@ -283,6 +286,9 @@
     <None Include="Test Data\GH227.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test Data\GH538-jpeg14sv1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\minimumdict.xml.gz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -290,6 +296,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\test_720.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH538-jpeg1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
