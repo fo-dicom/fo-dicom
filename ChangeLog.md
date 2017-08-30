@@ -13,6 +13,7 @@
 * Some getters of optional sequences do not account for missing sequence (#544 #572)
 * A-ASSOCIATE-AC PDU parsing incorrect (#543 #583 #590 #591)
 * DicomCFindRequest is unsuitable for "Search for Unified Procedure Step (C-FIND)" (#540 #580)
+* DicomClient proposes wrong presentation context in .NET core with codec that does not support 16 bit encoding (#538 #600)
 * Private tag is listed out or order (#535 #566)
 * JsonDicomConverter.ParseTag is very slow for keyword lookups (#533 #531)
 * DicomDictionary.GetEnumerator() is very slow (#532 #534)
