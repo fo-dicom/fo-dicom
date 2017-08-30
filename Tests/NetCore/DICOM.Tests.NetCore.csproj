@@ -28,55 +28,42 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\Desktop\Test Data\minimumdict.xml">
-      <Link>Test Data\minimumdict.xml</Link>
+    <Content Include="..\Desktop\Test Data\minimumdict.xml" Link="Test Data\minimumdict.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\Desktop\Test Data\minimumdict.xml.gz">
-      <Link>Test Data\minimumdict.xml.gz</Link>
+    <Content Include="..\Desktop\Test Data\minimumdict.xml.gz" Link="Test Data\minimumdict.xml.gz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="..\Desktop\Test Data\CR-MONO1-10-chest" Link="Test Data\CR-MONO1-10-chest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Desktop\Test Data\CT1_J2KI" Link="Test Data\CT1_J2KI">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Desktop\Test Data\GH538-jpeg1.dcm" Link="Test Data\GH538-jpeg1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Desktop\Test Data\GH538-jpeg14.dcm" Link="Test Data\GH538-jpeg14.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\Desktop\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Desktop\Bugs\GH538.cs" Link="Bugs\GH538.cs" />
     <Compile Include="..\Desktop\Imaging\DicomPixelDataTest.cs" Link="Imaging\DicomPixelDataTest.cs" />
     <Compile Include="..\Desktop\Log\TextWriterLoggerTest.cs" Link="Log\TextWriterLoggerTest.cs" />
-    <Compile Include="..\Desktop\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\Desktop\DicomDatasetTest.cs">
-      <Link>DicomDatasetTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Desktop\DicomDictionaryTest.cs">
-      <Link>DicomDictionaryTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Desktop\DicomEncodingTest.cs">
-      <Link>DicomEncodingTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Desktop\Network\DicomClientTest.cs">
-      <Link>Network\DicomClientTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Desktop\Network\Ports.cs">
-      <Link>Network\Ports.cs</Link>
-    </Compile>
+    <Compile Include="..\Desktop\DicomDatasetTest.cs" Link="DicomDatasetTest.cs" />
+    <Compile Include="..\Desktop\DicomDictionaryTest.cs" Link="DicomDictionaryTest.cs" />
+    <Compile Include="..\Desktop\DicomEncodingTest.cs" Link="DicomEncodingTest.cs" />
+    <Compile Include="..\Desktop\Network\DicomClientTest.cs" Link="Network\DicomClientTest.cs" />
+    <Compile Include="..\Desktop\Network\Ports.cs" Link="Network\Ports.cs" />
+    <Compile Include="..\Desktop\Network\SimpleCStoreProvider.cs" Link="Network\SimpleCStoreProvider.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Log\" />
-    <Folder Include="Imaging\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\Desktop\Test Data\CR-MONO1-10-chest" Link="Test Data\CR-MONO1-10-chest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  
 </Project>

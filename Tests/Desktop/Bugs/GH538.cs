@@ -1,14 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-using Dicom.Log;
 using Dicom.Network;
 
 using Xunit;
@@ -20,7 +14,7 @@ namespace Dicom.Bugs
         #region Unit Tests
 
         [Fact]
-        public void CStoreRequestSend_VideoFileServerSupportsMPEG4_TransferSuccessful()
+        public void CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
         {
             const string file1 = @"Test Data/GH538-jpeg1.dcm";
             const string file2 = @"Test Data/GH538-jpeg14.dcm";

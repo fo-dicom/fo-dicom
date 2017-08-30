@@ -187,6 +187,7 @@
     <Compile Include="Log\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Network\PDVTest.cs" />
     <Compile Include="Network\Ports.cs" />
+    <Compile Include="Network\SimpleCStoreProvider.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Printing\ImageBoxTest.cs" />
     <Compile Include="Printing\PresentationLutTest.cs" />
