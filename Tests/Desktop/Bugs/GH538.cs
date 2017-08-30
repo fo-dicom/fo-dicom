@@ -20,7 +20,7 @@ namespace Dicom.Bugs
             const string file2 = @"Test Data/GH538-jpeg14.dcm";
             var handle1 = new ManualResetEventSlim();
             var handle2 = new ManualResetEventSlim();
-            var success = true;
+            var successes = 0;
 
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
@@ -28,16 +28,16 @@ namespace Dicom.Bugs
                 var request1 = new DicomCStoreRequest(file1);
                 request1.OnResponseReceived = (req, rsp) =>
                 {
-                    success &= req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
-                              rsp.Status == DicomStatus.Success;
+                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
+                        rsp.Status == DicomStatus.Success) ++successes;
                     handle1.Set();
                 };
 
                 var request2 = new DicomCStoreRequest(file2);
                 request2.OnResponseReceived = (req, rsp) =>
                 {
-                    success &= req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
-                              rsp.Status == DicomStatus.Success;
+                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
+                        rsp.Status == DicomStatus.Success) ++successes;
                     handle2.Set();
                 };
 
@@ -49,7 +49,7 @@ namespace Dicom.Bugs
                 handle1.Wait(10000);
                 handle2.Wait(10000);
 
-                Assert.True(success);
+                Assert.Equal(2, successes);
             }
         }
 
