@@ -53,6 +53,36 @@ namespace Dicom.Bugs
             }
         }
 
+#if NETSTANDARD
+        [Fact]
+        public void CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
+        {
+            const string file = @"Test Data/GH538-jpeg14sv1.dcm";
+            var handle = new ManualResetEventSlim();
+            var success = false;
+
+            var port = Ports.GetNext();
+            using (DicomServer.Create<VideoCStoreProvider>(port))
+            {
+                var request = new DicomCStoreRequest(file);
+                request.OnResponseReceived = (req, rsp) =>
+                {
+                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
+                        !req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success) success = true;
+                    handle.Set();
+                };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send("localhost", port, false, "STORESCU", "STORESCP");
+                handle.Wait(10000);
+
+                Assert.True(success);
+            }
+        }
+#endif
+
         #endregion
     }
 }
