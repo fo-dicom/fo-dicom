@@ -51,7 +51,7 @@ namespace Dicom.Bugs
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
         {
-            var original = DicomFile.Open(@"Test Data/CT-MONO2-16-ankle").Dataset;
+            var original = DicomFile.Open(@"Test Data/D_CLUNIE_CT1_RLE_FRAGS.dcm").Dataset;
 
             var datasets = Enumerable.Repeat(original.Clone(), filesToTranscode).ToList();
             //var transcoder = new DicomTranscoder(original.InternalTransferSyntax, syntax);
