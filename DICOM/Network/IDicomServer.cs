@@ -4,6 +4,7 @@
 #if !NET35
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 using Dicom.Log;
@@ -30,12 +31,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets the logger used by <see cref="DicomServer{T}"/>
         /// </summary>
-        Logger Logger { get; }
-
-        /// <summary>
-        /// Gets the options to control behavior of <see cref="DicomService"/> base class.
-        /// </summary>
-        DicomServiceOptions Options { get; }
+        Logger Logger { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the server is actively listening for client connections.
@@ -55,6 +51,19 @@ namespace Dicom.Network
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Starts the DICOM server.
+        /// </summary>
+        /// <param name="ipAddress">IP address(es) for the server to listen to.</param>
+        /// <param name="port">Port to which the servier should be litening.</param>
+        /// <param name="userState">User state to be shared with the connected services.</param>
+        /// <param name="certificateName">Certificate name for secure connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Encoding to apply if no encoding is identified.</param>
+        /// <returns>Await:able instance.</returns>
+        Task StartAsync(string ipAddress, int port, object userState, string certificateName,
+            DicomServiceOptions options, Encoding fallbackEncoding = null);
 
         /// <summary>
         /// Stop server from further listening.

@@ -25,15 +25,18 @@ namespace Dicom.Network
 
         private bool _disposed;
 
-        private readonly string _certificateName;
+        private DicomServiceOptions _options;
 
-        private readonly Encoding _fallbackEncoding;
+        private string _certificateName;
+
+        private Encoding _fallbackEncoding;
+
+        private object _userState;
 
         private readonly CancellationTokenSource _cancellationSource;
 
         private readonly List<Task> _services;
-
-        private readonly object _userState;
+        private Logger _logger;
 
         #endregion
 
@@ -61,8 +64,7 @@ namespace Dicom.Network
             _cancellationSource = new CancellationTokenSource();
             _services = new List<Task>();
 
-            Options = options;
-            Logger = logger ?? LogManager.GetLogger("Dicom.Network");
+            _options = options;
             IsListening = false;
             Exception = null;
 
@@ -77,25 +79,26 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        public string IPAddress { get; }
+        public string IPAddress { get; protected set; }
 
         /// <inheritdoc />
-        public int Port { get; }
+        public int Port { get; protected set; }
 
         /// <inheritdoc />
-        public Logger Logger { get; }
+        public Logger Logger
+        {
+            get { return _logger ?? (_logger = LogManager.GetLogger("Dicom.Network")); }
+            set { _logger  = value; }
+        }
 
         /// <inheritdoc />
-        public DicomServiceOptions Options { get; }
+        public bool IsListening { get; protected set; }
 
         /// <inheritdoc />
-        public bool IsListening { get; private set; }
+        public Exception Exception { get; protected set; }
 
         /// <inheritdoc />
-        public Exception Exception { get; private set; }
-
-        /// <inheritdoc />
-        public Task BackgroundWorker { get; }
+        public Task BackgroundWorker { get; protected set; }
 
         /// <summary>
         /// Gets the number of clients currently connected to the server.
@@ -106,6 +109,22 @@ namespace Dicom.Network
         #endregion
 
         #region METHODS
+
+        /// <inheritdoc />
+        public Task StartAsync(string ipAddress, int port, object userState, string certificateName, DicomServiceOptions options,
+            Encoding fallbackEncoding = null)
+        {
+            IPAddress = ipAddress;
+            Port = port;
+            _options = options;
+
+            _userState = userState;
+            _certificateName = certificateName;
+            _fallbackEncoding = fallbackEncoding;
+
+            BackgroundWorker = Task.WhenAll(ListenAsync(), OnTimerTickAsync());
+            return BackgroundWorker;
+        }
 
         /// <inheritdoc />
         public void Stop()
@@ -191,7 +210,7 @@ namespace Dicom.Network
         {
             try
             {
-                var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
+                var noDelay = _options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
                 var listener = NetworkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -208,9 +227,9 @@ namespace Dicom.Network
                     if (networkStream != null)
                     {
                         var scp = CreateScp(networkStream);
-                        if (Options != null)
+                        if (_options != null)
                         {
-                            scp.Options = Options;
+                            scp.Options = _options;
                         }
 
                         _services.Add(scp.RunAsync());
@@ -240,7 +259,7 @@ namespace Dicom.Network
 
         private async Task WaitUntilClientIsAttachableAsync(CancellationToken token)
         {
-            var maxClientsAllowed = Options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
+            var maxClientsAllowed = _options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
             if (maxClientsAllowed == 0) return;
 
             while (!token.IsCancellationRequested && _services.Count >= maxClientsAllowed)
