@@ -42,21 +42,18 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.
         /// </summary>
+        /// <param name="ipAddress"></param>
         /// <param name="port">Port to listen to.</param>
         /// <param name="userState">Optional user state object.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
         /// <param name="options">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
-        [Obsolete("Use DicomServer.Create to instantiate DICOM server object")]
-        public DicomServer(
-            int port,
-            object userState = null,
-            string certificateName = null,
-            DicomServiceOptions options = null,
-            Encoding fallbackEncoding = null,
-            Logger logger = null)
+        [Obsolete("Use DicomServer<T>.Create to instantiate DICOM server object")]
+        protected internal DicomServer(string ipAddress, int port, object userState = null, string certificateName = null,
+            DicomServiceOptions options = null, Encoding fallbackEncoding = null, Logger logger = null)
         {
+            IPAddress = ipAddress;
             Port = port;
             _userState = userState;
             _certificateName = certificateName;
@@ -79,34 +76,25 @@ namespace Dicom.Network
 
         #region PROPERTIES
 
-        /// <summary>
-        /// Gets the port to which the server is listening.
-        /// </summary>
+        /// <inheritdoc />
+        public string IPAddress { get; }
+
+        /// <inheritdoc />
         public int Port { get; }
 
-        /// <summary>
-        /// Gets the logger used by <see cref="DicomServer{T}"/>
-        /// </summary>
+        /// <inheritdoc />
         public Logger Logger { get; }
 
-        /// <summary>
-        /// Gets the options to control behavior of <see cref="DicomService"/> base class.
-        /// </summary>
+        /// <inheritdoc />
         public DicomServiceOptions Options { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether the server is actively listening for client connections.
-        /// </summary>
+        /// <inheritdoc />
         public bool IsListening { get; private set; }
 
-        /// <summary>
-        /// Gets the exception that was thrown if the server failed to listen.
-        /// </summary>
+        /// <inheritdoc />
         public Exception Exception { get; private set; }
 
-        /// <summary>
-        /// Gets the <see cref="Task"/> managing the background listening and unused client removal processes.
-        /// </summary>
+        /// <inheritdoc />
         public Task BackgroundWorker { get; }
 
         /// <summary>
@@ -119,9 +107,7 @@ namespace Dicom.Network
 
         #region METHODS
 
-        /// <summary>
-        /// Stop server from further listening.
-        /// </summary>
+        /// <inheritdoc />
         public void Stop()
         {
             if (!_cancellationSource.IsCancellationRequested)
@@ -130,9 +116,7 @@ namespace Dicom.Network
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
@@ -209,7 +193,7 @@ namespace Dicom.Network
             {
                 var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
-                var listener = NetworkManager.CreateNetworkListener(Port);
+                var listener = NetworkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
@@ -332,7 +316,7 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T>(port, null, certificateName, options, fallbackEncoding, logger);
+            return Create<T>(NetworkManager.IPv4Any, port, null, certificateName, options, fallbackEncoding, logger);
         }
 
         /// <summary>
@@ -346,9 +330,35 @@ namespace Dicom.Network
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        [Obsolete("Use suitable DicomServer<T>.Create overload instead.")]
         public static IDicomServer Create<T>(
             int port,
             object userState,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider
+        {
+            return Create<T>(NetworkManager.IPv4Any, port, userState, certificateName, options, fallbackEncoding,
+                logger);
+        }
+
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="userState">Optional optional parameters.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        public static IDicomServer Create<T>(
+            string ipAddress,
+            int port,
+            object userState = null,
             string certificateName = null,
             DicomServiceOptions options = null,
             Encoding fallbackEncoding = null,
@@ -362,7 +372,7 @@ namespace Dicom.Network
 #pragma warning disable CS0618 // Type or member is obsolete
             lock (_locker)
             {
-                return new DicomServer<T>(port, userState, certificateName, options, fallbackEncoding, logger);
+                return new DicomServer<T>(ipAddress, port, userState, certificateName, options, fallbackEncoding, logger);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }

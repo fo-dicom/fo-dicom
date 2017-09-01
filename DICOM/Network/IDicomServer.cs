@@ -18,6 +18,11 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <summary>
+        /// Gets the IP address(es) the server listens to.
+        /// </summary>
+        string IPAddress { get; }
+
+        /// <summary>
         /// Gets the port to which the server is listening.
         /// </summary>
         int Port { get; }

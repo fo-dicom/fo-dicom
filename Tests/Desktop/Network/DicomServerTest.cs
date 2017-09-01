@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Net.Sockets;
+
 using Dicom.Helpers;
 
 namespace Dicom.Network
@@ -258,6 +260,82 @@ namespace Dicom.Network
 
                 var actual = ((DicomServer<DicomCEchoProvider>) server).CompletedServicesCount;
                 Assert.Equal(0, actual);
+            }
+        }
+
+        [Fact]
+        public void Send_LoopbackListenerKnownSOPClass_SendSucceeds()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        [Fact]
+        public void Send_Ipv6AnyListenerKnownSOPClass_SendSucceeds()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        [Fact]
+        public void Send_FromIpv4ToIpv6AnyListenerKnownSOPClass_SendFails()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<SocketException>(exception);
+            }
+        }
+
+        [Fact]
+        public void Send_FromIpv6ToIpv4AnyListenerKnownSOPClass_SendFails()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<SocketException>(exception);
             }
         }
     }
