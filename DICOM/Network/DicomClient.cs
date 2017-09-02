@@ -289,10 +289,38 @@ namespace Dicom.Network
                                 MaxAsyncOpsInvoked = this.asyncInvoked,
                                 MaxAsyncOpsPerformed = this.asyncPerformed
                             };
+
+            bool hasColorPrintReq = this.requests.Count(req => req.SOPClassUID == DicomUID.BasicColorImageBoxSOPClass) > 0;
+
             foreach (var request in this.requests)
             {
-                assoc.PresentationContexts.AddFromRequest(request);
+                if (request.SOPClassUID == DicomUID.BasicFilmBoxSOPClass
+                    || request.SOPClassUID == DicomUID.BasicFilmSessionSOPClass
+                    || request.SOPClassUID == DicomUID.BasicColorImageBoxSOPClass
+                    || request.SOPClassUID == DicomUID.BasicGrayscaleImageBoxSOPClass
+                    || request.SOPClassUID == DicomUID.PrinterSOPClass)
+                {
+                    if (hasColorPrintReq)
+                    {
+                        if(assoc.PresentationContexts.Count(pc => pc.AbstractSyntax == DicomUID.BasicColorPrintManagementMetaSOPClass) == 0)
+                        {
+                            assoc.PresentationContexts.Add(DicomUID.BasicColorPrintManagementMetaSOPClass, DicomTransferSyntax.ImplicitVRLittleEndian, DicomTransferSyntax.ExplicitVRLittleEndian);
+                        }
+                    }
+                    else
+                    {
+                        if (assoc.PresentationContexts.Count(pc => pc.AbstractSyntax == DicomUID.BasicGrayscalePrintManagementMetaSOPClass) == 0)
+                        {
+                            assoc.PresentationContexts.Add(DicomUID.BasicGrayscalePrintManagementMetaSOPClass, DicomTransferSyntax.ImplicitVRLittleEndian, DicomTransferSyntax.ExplicitVRLittleEndian);
+                        }
+                    }
+                }
+                else
+                {
+                    assoc.PresentationContexts.AddFromRequest(request);
+                }
             }
+
             foreach (var context in this.AdditionalPresentationContexts)
             {
                 assoc.PresentationContexts.Add(context.AbstractSyntax, context.GetTransferSyntaxes().ToArray());

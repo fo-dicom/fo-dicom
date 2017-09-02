@@ -856,6 +856,21 @@ namespace Dicom.Network
 
                 if (pc == null)
                 {
+                    //for print related request, query meta sop classUID
+                    if (msg.SOPClassUID == DicomUID.BasicGrayscaleImageBoxSOPClass
+                        || msg.SOPClassUID == DicomUID.BasicColorImageBoxSOPClass
+                        || msg.SOPClassUID == DicomUID.BasicFilmSessionSOPClass
+                        || msg.SOPClassUID == DicomUID.BasicFilmBoxSOPClass
+                        || msg.SOPClassUID == DicomUID.PrinterSOPClass)
+                    {
+                        pc = Association.PresentationContexts.FirstOrDefault(x => x.Result == DicomPresentationContextResult.Accept &&
+                            (x.AbstractSyntax == DicomUID.BasicGrayscalePrintManagementMetaSOPClass
+                            || x.AbstractSyntax == DicomUID.BasicColorPrintManagementMetaSOPClass));
+                    }
+                }
+
+                if (pc == null)
+                {
                     pc = msg.PresentationContext;
                 }
 
