@@ -29,11 +29,6 @@ namespace Dicom.Network
         int Port { get; }
 
         /// <summary>
-        /// Gets the logger used by <see cref="DicomServer{T}"/>
-        /// </summary>
-        Logger Logger { get; set; }
-
-        /// <summary>
         /// Gets a value indicating whether the server is actively listening for client connections.
         /// </summary>
         bool IsListening { get; }
@@ -44,16 +39,16 @@ namespace Dicom.Network
         Exception Exception { get; }
 
         /// <summary>
-        /// Gets the <see cref="Task"/> managing the background listening and unused client removal processes.
+        /// Gets the logger used by <see cref="DicomServer{T}"/>
         /// </summary>
-        Task BackgroundWorker { get; }
+        Logger Logger { get; set; }
 
         #endregion
 
         #region METHODS
 
         /// <summary>
-        /// Starts the DICOM server.
+        /// Starts the DICOM server listening for connections on the specified IP address(es) and port.
         /// </summary>
         /// <param name="ipAddress">IP address(es) for the server to listen to.</param>
         /// <param name="port">Port to which the servier should be litening.</param>
@@ -61,9 +56,9 @@ namespace Dicom.Network
         /// <param name="certificateName">Certificate name for secure connections.</param>
         /// <param name="options">Service options.</param>
         /// <param name="fallbackEncoding">Encoding to apply if no encoding is identified.</param>
-        /// <returns>Await:able instance.</returns>
+        /// <returns>Awaitable <see cref="Task"/>.</returns>
         Task StartAsync(string ipAddress, int port, object userState, string certificateName,
-            DicomServiceOptions options, Encoding fallbackEncoding = null);
+            DicomServiceOptions options, Encoding fallbackEncoding);
 
         /// <summary>
         /// Stop server from further listening.
@@ -72,6 +67,15 @@ namespace Dicom.Network
 
         #endregion
     }
+
+    /// <summary>
+    /// Helper interface to ensure type safety when creating DICOM server objects via <code>DicomServer.Create</code> overloads.
+    /// </summary>
+    /// <typeparam name="T">DICOM service class consumed by the DICOM server object.</typeparam>
+    public interface IDicomServer<T> : IDicomServer where T : DicomService, IDicomServiceProvider
+    {
+    }
+
 }
 
 #endif

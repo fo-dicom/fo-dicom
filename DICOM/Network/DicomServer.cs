@@ -4,7 +4,6 @@
 #if !NET35
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,26 +18,35 @@ namespace Dicom.Network
     /// Representation of a DICOM server.
     /// </summary>
     /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
-    public class DicomServer<T> : IDicomServer
-        where T : DicomService, IDicomServiceProvider
+    public class DicomServer<T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
 
-        private bool _disposed;
-
-        private DicomServiceOptions _options;
-
-        private string _certificateName;
-
-        private Encoding _fallbackEncoding;
-
-        private object _userState;
+        private readonly List<Task> _services;
 
         private readonly CancellationTokenSource _cancellationSource;
 
-        private readonly List<Task> _services;
+        private string _ipAddress;
+
+        private int _port;
 
         private Logger _logger;
+
+        private object _userState;
+
+        private string _certificateName;
+
+        private DicomServiceOptions _options;
+
+        private Encoding _fallbackEncoding;
+
+        private bool _isIpAddressSet;
+
+        private bool _isPortSet;
+
+        private bool _wasStarted;
+
+        private bool _disposed;
 
         #endregion
 
@@ -55,8 +63,13 @@ namespace Dicom.Network
             IsListening = false;
             Exception = null;
 
+            _isIpAddressSet = false;
+            _isPortSet = false;
+            _wasStarted = false;
+
             _disposed = false;
-            Register();
+
+            DicomServer.Add(this);
         }
 
         #endregion
@@ -64,16 +77,29 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        public string IPAddress { get; protected set; }
-
-        /// <inheritdoc />
-        public int Port { get; protected set; }
-
-        /// <inheritdoc />
-        public Logger Logger
+        public virtual string IPAddress
         {
-            get { return _logger ?? (_logger = LogManager.GetLogger("Dicom.Network")); }
-            set { _logger  = value; }
+            get { return _ipAddress; }
+            protected set
+            {
+                if (_isIpAddressSet && !string.Equals(_ipAddress, value, StringComparison.OrdinalIgnoreCase))
+                    throw new DicomNetworkException("IP Address cannot be set twice. Current value: {0}", _ipAddress);
+                _ipAddress = value;
+                _isIpAddressSet = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual int Port
+        {
+            get { return _port; }
+            protected set
+            {
+                if (_isPortSet && _port != value)
+                    throw new DicomNetworkException("Port cannot be set twice. Current value: {0}", _port);
+                _port = value;
+                _isPortSet = true;
+            }
         }
 
         /// <inheritdoc />
@@ -83,7 +109,11 @@ namespace Dicom.Network
         public Exception Exception { get; protected set; }
 
         /// <inheritdoc />
-        public Task BackgroundWorker { get; protected set; }
+        public Logger Logger
+        {
+            get { return _logger ?? (_logger = LogManager.GetLogger("Dicom.Network")); }
+            set { _logger  = value; }
+        }
 
         /// <summary>
         /// Gets the number of clients currently connected to the server.
@@ -96,9 +126,15 @@ namespace Dicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public Task StartAsync(string ipAddress, int port, object userState, string certificateName, DicomServiceOptions options,
-            Encoding fallbackEncoding = null)
+        public virtual Task StartAsync(string ipAddress, int port, object userState, string certificateName,
+            DicomServiceOptions options, Encoding fallbackEncoding)
         {
+            if (_wasStarted)
+            {
+                throw new DicomNetworkException("Server has already been started once, cannot be started again.");
+            }
+            _wasStarted = true;
+
             IPAddress = ipAddress;
             Port = port;
 
@@ -107,12 +143,11 @@ namespace Dicom.Network
             _certificateName = certificateName;
             _fallbackEncoding = fallbackEncoding;
 
-            BackgroundWorker = Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
-            return BackgroundWorker;
+            return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
         }
 
         /// <inheritdoc />
-        public void Stop()
+        public virtual void Stop()
         {
             if (!_cancellationSource.IsCancellationRequested)
             {
@@ -144,29 +179,6 @@ namespace Dicom.Network
                 _services.Clear();
             }
 
-            Unregister();
-            _disposed = true;
-        }
-
-        /// <summary>
-        /// Register this server to list of registered servers.
-        /// </summary>
-        protected void Register()
-        {
-            var added = DicomServer.Add(this);
-            if (!added)
-            {
-                Logger.Warn(
-                    "Could not register DICOM server on port {0}, probably because another server is already registered on the same port.",
-                    Port);
-            }
-        }
-
-        /// <summary>
-        /// Unregister this server from list of registered servers.
-        /// </summary>
-        protected void Unregister()
-        {
             var removed = DicomServer.Remove(this);
             if (!removed)
             {
@@ -174,6 +186,8 @@ namespace Dicom.Network
                     "Could not unregister DICOM server on port {0}, either because registration failed or because server has already been unregistered once.",
                     Port);
             }
+
+            _disposed = true;
         }
 
         /// <summary>
@@ -193,11 +207,12 @@ namespace Dicom.Network
         /// </summary>
         private async Task ListenForConnectionsAsync()
         {
+            INetworkListener listener = null;
             try
             {
                 var noDelay = _options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
-                var listener = NetworkManager.CreateNetworkListener(IPAddress, Port);
+                listener = NetworkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
@@ -220,25 +235,21 @@ namespace Dicom.Network
                         _services.Add(scp.RunAsync());
                     }
                 }
-
-                listener.Stop();
-                IsListening = false;
-                Exception = null;
             }
             catch (OperationCanceledException)
             {
-                Logger.Info("Listening manually terminated");
-
-                IsListening = false;
-                Exception = null;
             }
             catch (Exception e)
             {
-                Logger.Error("Exception listening for clients, {@error}", e);
+                Logger.Error("Exception listening for DICOM services, {@error}", e);
 
                 Stop();
-                IsListening = false;
                 Exception = e;
+            }
+            finally
+            {
+                listener?.Stop();
+                IsListening = false;
             }
         }
 
@@ -290,14 +301,16 @@ namespace Dicom.Network
     /// <summary>
     /// Support class for managing multiple DICOM server instances.
     /// </summary>
+    /// <remarks>Controls that only one DICOM server per <see cref="IDicomServer.Port"/> is initialized. Current implementation
+    /// only allows one server per port. It is not possible to initialize multiple servers listening to different network interfaces 
+    /// (for example IPv4 vs. IPv6) via these methods if the port is the same.</remarks>
     public static class DicomServer
     {
         #region FIELDS
 
-        private static readonly ConcurrentDictionary<IDicomServer, Task> Servers =
-            new ConcurrentDictionary<IDicomServer, Task>(DicomServerPortComparer.Default);
+        private static readonly IDictionary<IDicomServer, Task> _servers = new Dictionary<IDicomServer, Task>();
 
-        private static readonly object _locker = new object();
+        private static readonly object _lock = new object();
 
         #endregion
 
@@ -320,7 +333,8 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, options, fallbackEncoding, logger);
+            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, options,
+                fallbackEncoding, logger);
         }
 
         /// <summary>
@@ -343,7 +357,8 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, options, fallbackEncoding, logger);
+            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, options,
+                fallbackEncoding, logger);
         }
 
         /// <summary>
@@ -367,7 +382,8 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, options, fallbackEncoding, logger);
+            return Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, options, fallbackEncoding,
+                logger);
         }
 
         /// <summary>
@@ -382,7 +398,7 @@ namespace Dicom.Network
         /// <param name="options">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
-        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T, TServer>(
             string ipAddress,
             int port,
@@ -390,23 +406,31 @@ namespace Dicom.Network
             string certificateName = null,
             DicomServiceOptions options = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null) where T : DicomService, IDicomServiceProvider where TServer : DicomServer<T>, new()
+            Logger logger = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>, new()
         {
-            if (Servers.Any(server => server.Key.Port == port))
+            bool portInUse;
+            lock (_lock)
             {
-                throw new DicomNetworkException("There is already a DICOM server registered on port {0}", port);
+                portInUse = _servers.Any(s => s.Key.Port == port);
             }
 
-            lock (_locker)
+            if (portInUse)
             {
-                var server = new TServer();
-                if (logger != null) server.Logger = logger;
-
-                var runner = server.StartAsync(ipAddress, port, userState, certificateName, options, fallbackEncoding);
-                Servers.TryUpdate(server, runner, null);
-
-                return server;
+                throw new DicomNetworkException("There is already a DICOM server registered on port: {0}", port);
             }
+
+            var server = new TServer();
+            if (logger != null) server.Logger = logger;
+
+            var runner = server.StartAsync(string.IsNullOrEmpty(ipAddress) ? NetworkManager.IPv4Any : ipAddress, port,
+                userState, certificateName, options, fallbackEncoding);
+
+            lock (_lock)
+            {
+                _servers[server] = runner;
+            }
+
+            return server;
         }
 
         /// <summary>
@@ -416,7 +440,13 @@ namespace Dicom.Network
         /// <returns>Registered DICOM server for <paramref name="port"/>.</returns>
         public static IDicomServer GetInstance(int port)
         {
-            return Servers.SingleOrDefault(server => server.Key.Port == port).Key;
+            IDicomServer server;
+            lock (_lock)
+            {
+                server = _servers.SingleOrDefault(s => s.Key.Port == port).Key;
+            }
+
+            return server;
         }
 
         /// <summary>
@@ -430,13 +460,22 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Adds a DICOM server to the list of registered servers.
+        /// Add a DICOM server to the list of registered servers.
         /// </summary>
         /// <param name="server">Server to add.</param>
-        /// <returns>True if <paramref name="server"/> could be added, false otherwise.</returns>
-        internal static bool Add(IDicomServer server)
+        public static void Add(IDicomServer server)
         {
-            return Servers.TryAdd(server, null);
+            lock (_lock)
+            {
+                if (_servers.Any(s => s.Key.Port == server.Port))
+                {
+                    throw new DicomNetworkException(
+                        "Could not register DICOM server on port {0}, probably because another server simultaneously registered on the same port.",
+                        server.Port);
+                }
+
+                _servers.Add(server, null);
+            }
         }
 
         /// <summary>
@@ -446,38 +485,13 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
         internal static bool Remove(IDicomServer server)
         {
-            Task runner;
-            return Servers.TryRemove(server, out runner);
-        }
-
-        #endregion
-
-        #region INNER TYPES
-
-        /// <summary>
-        /// Equality comparer implementation with respect to <see cref="IDicomServer"/> <see cref="IDicomServer.Port">port number</see>.
-        /// </summary>
-        private class DicomServerPortComparer : IEqualityComparer<IDicomServer>
-        {
-            public static readonly IEqualityComparer<IDicomServer> Default = new DicomServerPortComparer();
-
-            private DicomServerPortComparer()
+            bool removed;
+            lock (_lock)
             {
+                removed = _servers.Remove(server);
             }
 
-            public bool Equals(IDicomServer x, IDicomServer y)
-            {
-                return x != null && y != null && x.Port == y.Port;
-            }
-
-            public int GetHashCode(IDicomServer obj)
-            {
-                if (obj == null)
-                {
-                    throw new ArgumentNullException(nameof(obj));
-                }
-                return obj.Port;
-            }
+            return removed;
         }
 
         #endregion
