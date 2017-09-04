@@ -4,6 +4,7 @@
 #if !NET35
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,7 @@ namespace Dicom.Network
         private readonly CancellationTokenSource _cancellationSource;
 
         private readonly List<Task> _services;
+
         private Logger _logger;
 
         #endregion
@@ -43,32 +45,15 @@ namespace Dicom.Network
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.
+        /// Initializes an instance of the <see cref="DicomServer{T}"/> class.
         /// </summary>
-        /// <param name="ipAddress"></param>
-        /// <param name="port">Port to listen to.</param>
-        /// <param name="userState">Optional user state object.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        /// <param name="options">Service options.</param>
-        /// <param name="fallbackEncoding">Fallback encoding.</param>
-        /// <param name="logger">Logger, if null default logger will be applied.</param>
-        [Obsolete("Use DicomServer<T>.Create to instantiate DICOM server object")]
-        protected internal DicomServer(string ipAddress, int port, object userState = null, string certificateName = null,
-            DicomServiceOptions options = null, Encoding fallbackEncoding = null, Logger logger = null)
+        public DicomServer()
         {
-            IPAddress = ipAddress;
-            Port = port;
-            _userState = userState;
-            _certificateName = certificateName;
-            _fallbackEncoding = fallbackEncoding;
             _cancellationSource = new CancellationTokenSource();
             _services = new List<Task>();
 
-            _options = options;
             IsListening = false;
             Exception = null;
-
-            BackgroundWorker = Task.WhenAll(ListenAsync(), OnTimerTickAsync());
 
             _disposed = false;
             Register();
@@ -116,13 +101,13 @@ namespace Dicom.Network
         {
             IPAddress = ipAddress;
             Port = port;
-            _options = options;
 
+            _options = options;
             _userState = userState;
             _certificateName = certificateName;
             _fallbackEncoding = fallbackEncoding;
 
-            BackgroundWorker = Task.WhenAll(ListenAsync(), OnTimerTickAsync());
+            BackgroundWorker = Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
             return BackgroundWorker;
         }
 
@@ -206,7 +191,7 @@ namespace Dicom.Network
         /// <summary>
         /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        private async Task ListenAsync()
+        private async Task ListenForConnectionsAsync()
         {
             try
             {
@@ -271,7 +256,7 @@ namespace Dicom.Network
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
-        private async Task OnTimerTickAsync()
+        private async Task RemoveUnusedServicesAsync()
         {
             while (!_cancellationSource.IsCancellationRequested)
             {
@@ -309,8 +294,8 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private static readonly HashSet<IDicomServer> Servers =
-            new HashSet<IDicomServer>(DicomServerPortComparer.Default);
+        private static readonly ConcurrentDictionary<IDicomServer, Task> Servers =
+            new ConcurrentDictionary<IDicomServer, Task>(DicomServerPortComparer.Default);
 
         private static readonly object _locker = new object();
 
@@ -335,7 +320,7 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T>(NetworkManager.IPv4Any, port, null, certificateName, options, fallbackEncoding, logger);
+            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, options, fallbackEncoding, logger);
         }
 
         /// <summary>
@@ -349,7 +334,7 @@ namespace Dicom.Network
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
-        [Obsolete("Use suitable DicomServer<T>.Create overload instead.")]
+        [Obsolete("Use suitable DicomServer.Create overload instead.")]
         public static IDicomServer Create<T>(
             int port,
             object userState,
@@ -358,8 +343,7 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            return Create<T>(NetworkManager.IPv4Any, port, userState, certificateName, options, fallbackEncoding,
-                logger);
+            return Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, options, fallbackEncoding, logger);
         }
 
         /// <summary>
@@ -383,17 +367,46 @@ namespace Dicom.Network
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider
         {
-            if (Servers.Any(server => server.Port == port))
+            return Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, options, fallbackEncoding, logger);
+        }
+
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <typeparam name="TServer">Concrete DICOM server type to be returned.</typeparam>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="userState">Optional optional parameters.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="options">Service options.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        public static IDicomServer Create<T, TServer>(
+            string ipAddress,
+            int port,
+            object userState = null,
+            string certificateName = null,
+            DicomServiceOptions options = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider where TServer : DicomServer<T>, new()
+        {
+            if (Servers.Any(server => server.Key.Port == port))
             {
                 throw new DicomNetworkException("There is already a DICOM server registered on port {0}", port);
             }
 
-#pragma warning disable CS0618 // Type or member is obsolete
             lock (_locker)
             {
-                return new DicomServer<T>(ipAddress, port, userState, certificateName, options, fallbackEncoding, logger);
+                var server = new TServer();
+                if (logger != null) server.Logger = logger;
+
+                var runner = server.StartAsync(ipAddress, port, userState, certificateName, options, fallbackEncoding);
+                Servers.TryUpdate(server, runner, null);
+
+                return server;
             }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -403,7 +416,7 @@ namespace Dicom.Network
         /// <returns>Registered DICOM server for <paramref name="port"/>.</returns>
         public static IDicomServer GetInstance(int port)
         {
-            return Servers.SingleOrDefault(server => server.Port == port);
+            return Servers.SingleOrDefault(server => server.Key.Port == port).Key;
         }
 
         /// <summary>
@@ -423,10 +436,7 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be added, false otherwise.</returns>
         internal static bool Add(IDicomServer server)
         {
-            lock (_locker)
-            {
-                return Servers.Add(server);
-            }
+            return Servers.TryAdd(server, null);
         }
 
         /// <summary>
@@ -436,10 +446,8 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
         internal static bool Remove(IDicomServer server)
         {
-            lock (_locker)
-            {
-                return Servers.Remove(server);
-            }
+            Task runner;
+            return Servers.TryRemove(server, out runner);
         }
 
         #endregion
