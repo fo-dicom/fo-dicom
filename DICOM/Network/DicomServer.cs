@@ -68,8 +68,6 @@ namespace Dicom.Network
             _wasStarted = false;
 
             _disposed = false;
-
-            DicomServer.Add(this);
         }
 
         #endregion
@@ -126,8 +124,8 @@ namespace Dicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, object userState, string certificateName,
-            DicomServiceOptions options, Encoding fallbackEncoding)
+        public virtual Task StartAsync(string ipAddress, int port, string certificateName, Encoding fallbackEncoding,
+            DicomServiceOptions options, object userState)
         {
             if (_wasStarted)
             {
@@ -391,7 +389,7 @@ namespace Dicom.Network
         /// </summary>
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <typeparam name="TServer">Concrete DICOM server type to be returned.</typeparam>
-        /// <param name="ipAddress">IP address(es) to listen to.</param>
+        /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
         /// <param name="port">Port to listen to.</param>
         /// <param name="userState">Optional optional parameters.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
@@ -423,11 +421,18 @@ namespace Dicom.Network
             if (logger != null) server.Logger = logger;
 
             var runner = server.StartAsync(string.IsNullOrEmpty(ipAddress) ? NetworkManager.IPv4Any : ipAddress, port,
-                userState, certificateName, options, fallbackEncoding);
+                certificateName, fallbackEncoding, options, userState);
 
             lock (_lock)
             {
-                _servers[server] = runner;
+                if (_servers.Any(s => s.Key.Port == port))
+                {
+                    throw new DicomNetworkException(
+                        "Could not register DICOM server on port {0}, probably because another server simultaneously registered on the same port.",
+                        port);
+                }
+
+                _servers.Add(server, runner);
             }
 
             return server;
@@ -457,25 +462,6 @@ namespace Dicom.Network
         public static bool IsListening(int port)
         {
             return GetInstance(port)?.IsListening ?? false;
-        }
-
-        /// <summary>
-        /// Add a DICOM server to the list of registered servers.
-        /// </summary>
-        /// <param name="server">Server to add.</param>
-        public static void Add(IDicomServer server)
-        {
-            lock (_lock)
-            {
-                if (_servers.Any(s => s.Key.Port == server.Port))
-                {
-                    throw new DicomNetworkException(
-                        "Could not register DICOM server on port {0}, probably because another server simultaneously registered on the same port.",
-                        server.Port);
-                }
-
-                _servers.Add(server, null);
-            }
         }
 
         /// <summary>

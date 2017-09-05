@@ -1,20 +1,21 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
+
+using Xunit;
 
 using Dicom.Helpers;
 
 namespace Dicom.Network
 {
-    using System.Linq;
-    using System.Threading;
-
-    using Xunit;
-
     [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("Dicom.Helpers.PriorityOrderer", "DICOM [Unit Tests]")]
     public class DicomServerTest
     {
+        #region Unit Tests
+
         [Fact]
         public void Constructor_EstablishTwoWithSamePort_ShouldYieldAccessibleException()
         {
@@ -338,5 +339,48 @@ namespace Dicom.Network
                 Assert.IsType<SocketException>(exception);
             }
         }
+
+        [Fact]
+        public void Create_SubclassedServer_SufficientlyCreated()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider, DicomCEchoProviderServer>(null, port))
+            {
+                Assert.IsType<DicomCEchoProviderServer>(server);
+                Assert.Equal(DicomServer.GetInstance(port), server);
+
+                var status = DicomStatus.UnrecognizedOperation;
+                var handle = new ManualResetEventSlim();
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest
+                {
+                    OnResponseReceived = (req, rsp) =>
+                    {
+                        status = rsp.Status;
+                        handle.Set();
+                    }
+                });
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                handle.Wait(1000);
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        #endregion
+
+        #region Support Types
+
+        public class DicomCEchoProviderServer : DicomServer<DicomCEchoProvider>
+        {
+            protected override DicomCEchoProvider CreateScp(INetworkStream stream)
+            {
+                return new DicomCEchoProvider(stream, null, null);
+            }
+        }
+
+        #endregion
     }
 }
