@@ -406,7 +406,14 @@ namespace Dicom.Network
 
                 if (this.client.requests.Count > 0)
                 {
-                    foreach (var request in this.client.requests) this.SendRequest(request);
+                    foreach (var request in this.client.requests)
+                    {
+                        if (client.aborted)
+                            break;
+
+                        this.SendRequest(request);
+                    }
+
                     this.client.requests.Clear();
                 }
                 else

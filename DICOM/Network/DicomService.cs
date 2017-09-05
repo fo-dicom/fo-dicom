@@ -891,15 +891,55 @@ namespace Dicom.Network
                         else if (msg is DicomCFindRequest)
                             (msg as DicomCFindRequest).PostResponse(
                                 this,
-                                new DicomCFindResponse(msg as DicomCFindRequest, DicomStatus.SOPClassNotSupported));
+                                new DicomCFindResponse(
+                                    msg as DicomCFindRequest,
+                                    DicomStatus.SOPClassNotSupported));
                         else if (msg is DicomCMoveRequest)
                             (msg as DicomCMoveRequest).PostResponse(
                                 this,
                                 new DicomCMoveResponse(
                                     msg as DicomCMoveRequest,
                                     DicomStatus.SOPClassNotSupported));
-
-                        //TODO: add N services
+                        else if (msg is DicomNActionRequest)
+                            (msg as DicomNActionRequest).PostResponse(
+                                this,
+                                new DicomNActionResponse(
+                                    msg as DicomNActionRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNCreateRequest)
+                            (msg as DicomNCreateRequest).PostResponse(
+                                this,
+                                new DicomNCreateResponse(
+                                    msg as DicomNCreateRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNDeleteRequest)
+                            (msg as DicomNDeleteRequest).PostResponse(
+                                this,
+                                new DicomNDeleteResponse(
+                                    msg as DicomNDeleteRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNEventReportRequest)
+                            (msg as DicomNEventReportRequest).PostResponse(
+                                this,
+                                new DicomNEventReportResponse(
+                                    msg as DicomNEventReportRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNGetRequest)
+                            (msg as DicomNGetRequest).PostResponse(
+                                this,
+                                new DicomNGetResponse(
+                                    msg as DicomNGetRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else if (msg is DicomNSetRequest)
+                            (msg as DicomNSetRequest).PostResponse(
+                                this,
+                                new DicomNSetResponse(
+                                    msg as DicomNSetRequest,
+                                    DicomStatus.SOPClassNotSupported));
+                        else
+                        {
+                            Logger.Warn("Unknown message type: {type}", msg.Type);
+                        }
                     }
                     catch
                     {
