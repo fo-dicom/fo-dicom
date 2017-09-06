@@ -48,6 +48,10 @@ namespace Dicom.Network
 
         private bool _disposed;
 
+        private readonly AsyncManualResetEvent _hasServicesFlag;
+
+        private readonly AsyncManualResetEvent _hasNonMaxServicesFlag;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -68,6 +72,9 @@ namespace Dicom.Network
             _wasStarted = false;
 
             _disposed = false;
+
+            _hasServicesFlag = new AsyncManualResetEvent(false);
+            _hasNonMaxServicesFlag = new AsyncManualResetEvent(true);
         }
 
         #endregion
@@ -119,6 +126,18 @@ namespace Dicom.Network
         /// <remarks>Included for testing purposes only.</remarks>
         internal int CompletedServicesCount => _services.Count(service => service.IsCompleted);
 
+        /// <summary>
+        /// Gets whether the list of services contains the maximum number of services or not.
+        /// </summary>
+        private bool IsServicesAtMax
+        {
+            get
+            {
+                var maxClientsAllowed = _options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
+                return maxClientsAllowed > 0 && _services.Count >= maxClientsAllowed;
+            }
+        }
+
         #endregion
 
         #region METHODS
@@ -133,7 +152,7 @@ namespace Dicom.Network
             }
             _wasStarted = true;
 
-            IPAddress = ipAddress;
+            IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress;
             Port = port;
 
             _options = options;
@@ -174,14 +193,15 @@ namespace Dicom.Network
             {
                 Stop();
                 _cancellationSource.Dispose();
-                _services.Clear();
             }
 
-            var removed = DicomServer.Remove(this);
+            ClearServices();
+
+            var removed = DicomServer.Unregister(this);
             if (!removed)
             {
                 Logger.Warn(
-                    "Could not unregister DICOM server on port {0}, either because registration failed or because server has already been unregistered once.",
+                    "Could not unregister DICOM server on port {0}, either because never registered or because has already been unregistered once.",
                     Port);
             }
 
@@ -216,10 +236,10 @@ namespace Dicom.Network
 
                 while (!_cancellationSource.IsCancellationRequested)
                 {
-                    var token = _cancellationSource.Token;
-                    await WaitUntilClientIsAttachableAsync(token).ConfigureAwait(false);
+                    await _hasNonMaxServicesFlag.WaitAsync().ConfigureAwait(false);
 
-                    var networkStream = await listener.AcceptNetworkStreamAsync(_certificateName, noDelay, token)
+                    var networkStream = await listener
+                        .AcceptNetworkStreamAsync(_certificateName, noDelay, _cancellationSource.Token)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
@@ -231,6 +251,9 @@ namespace Dicom.Network
                         }
 
                         _services.Add(scp.RunAsync());
+
+                        _hasServicesFlag.Set();
+                        if (IsServicesAtMax) _hasNonMaxServicesFlag.Reset();
                     }
                 }
             }
@@ -251,17 +274,6 @@ namespace Dicom.Network
             }
         }
 
-        private async Task WaitUntilClientIsAttachableAsync(CancellationToken token)
-        {
-            var maxClientsAllowed = _options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
-            if (maxClientsAllowed == 0) return;
-
-            while (!token.IsCancellationRequested && _services.Count >= maxClientsAllowed)
-            {
-                await Task.Delay(10, token).ConfigureAwait(false);
-            }
-        }
-
         /// <summary>
         /// Remove no longer used client connections.
         /// </summary>
@@ -271,24 +283,73 @@ namespace Dicom.Network
             {
                 try
                 {
-                    if (_services.Count > 0)
-                    {
-                        await Task.WhenAny(_services).ConfigureAwait(false);
-                        _services.RemoveAll(service => service.IsCompleted);
-                    }
-                    else
-                    {
-                        await Task.Delay(1000, _cancellationSource.Token).ConfigureAwait(false);
-                    }
+                    await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
+                    await Task.WhenAny(_services).ConfigureAwait(false);
+
+                    _services.RemoveAll(service => service.IsCompleted);
+
+                    if (_services.Count == 0) _hasServicesFlag.Reset();
+                    if (!IsServicesAtMax) _hasNonMaxServicesFlag.Set();
                 }
                 catch (OperationCanceledException)
                 {
                     Logger.Info("Disconnected client cleanup manually terminated.");
-                    _services.RemoveAll(service => service.IsCompleted);
+                    ClearServices();
                 }
                 catch (Exception e)
                 {
                     Logger.Warn("Exception removing disconnected clients, {@error}", e);
+                }
+            }
+        }
+
+        private void ClearServices()
+        {
+            _services.Clear();
+            _hasServicesFlag.Reset();
+            _hasNonMaxServicesFlag.Set();
+        }
+
+        #endregion
+
+        #region INNER TYPES
+
+        private sealed class AsyncManualResetEvent
+        {
+            private TaskCompletionSource<object> _tcs;
+
+            private readonly object _lock = new object();
+
+            internal AsyncManualResetEvent(bool isSet)
+            {
+                _tcs = new TaskCompletionSource<object>();
+
+                if (isSet)
+                    _tcs.TrySetResult(null);
+            }
+
+            internal void Set()
+            {
+                lock (_lock)
+                {
+                    _tcs.TrySetResult(null);
+                }
+            }
+
+            internal void Reset()
+            {
+                lock (_lock)
+                {
+                    if (_tcs.Task.IsCompleted)
+                        _tcs = new TaskCompletionSource<object>();
+                }
+            }
+
+            internal Task WaitAsync()
+            {
+                lock (_lock)
+                {
+                    return _tcs.Task;
                 }
             }
         }
@@ -409,7 +470,7 @@ namespace Dicom.Network
             bool portInUse;
             lock (_lock)
             {
-                portInUse = _servers.Any(s => s.Key.Port == port);
+                portInUse = _servers.Any(IsMatching(port));
             }
 
             if (portInUse)
@@ -420,15 +481,14 @@ namespace Dicom.Network
             var server = new TServer();
             if (logger != null) server.Logger = logger;
 
-            var runner = server.StartAsync(string.IsNullOrEmpty(ipAddress) ? NetworkManager.IPv4Any : ipAddress, port,
-                certificateName, fallbackEncoding, options, userState);
+            var runner = server.StartAsync(ipAddress, port, certificateName, fallbackEncoding, options, userState);
 
             lock (_lock)
             {
-                if (_servers.Any(s => s.Key.Port == port))
+                if (_servers.Any(IsMatching(port)))
                 {
                     throw new DicomNetworkException(
-                        "Could not register DICOM server on port {0}, probably because another server simultaneously registered on the same port.",
+                        "Could not register DICOM server on port {0}, probably because another server just registered to the same port.",
                         port);
                 }
 
@@ -448,10 +508,26 @@ namespace Dicom.Network
             IDicomServer server;
             lock (_lock)
             {
-                server = _servers.SingleOrDefault(s => s.Key.Port == port).Key;
+                server = _servers.SingleOrDefault(IsMatching(port)).Key;
             }
 
             return server;
+        }
+
+        /// <summary>
+        /// Gets service listener for the DICOM server instance registered to <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which the service listener is requested.</param>
+        /// <returns>Service listener for the <paramref name="port"/> DICOM server.</returns>
+        public static Task GetListener(int port)
+        {
+            Task listener;
+            lock (_lock)
+            {
+                listener = _servers.SingleOrDefault(IsMatching(port)).Value;
+            }
+
+            return listener;
         }
 
         /// <summary>
@@ -469,7 +545,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="server">Server to remove.</param>
         /// <returns>True if <paramref name="server"/> could be removed, false otherwise.</returns>
-        internal static bool Remove(IDicomServer server)
+        internal static bool Unregister(IDicomServer server)
         {
             bool removed;
             lock (_lock)
@@ -478,6 +554,16 @@ namespace Dicom.Network
             }
 
             return removed;
+        }
+
+        /// <summary>
+        /// Gets the function to be used in LINQ queries when searching for server matches.
+        /// </summary>
+        /// <param name="port">Matching port.</param>
+        /// <returns>Function to be used in LINQ queries when searching for server matches.</returns>
+        private static Func<KeyValuePair<IDicomServer, Task>, bool> IsMatching(int port)
+        {
+            return s => s.Key.Port == port;
         }
 
         #endregion

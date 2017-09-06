@@ -310,7 +310,6 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
             {
-                DicomStatus status = null;
                 var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
 
                 var client = new DicomClient();
@@ -328,7 +327,6 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
             {
-                DicomStatus status = null;
                 var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
 
                 var client = new DicomClient();
