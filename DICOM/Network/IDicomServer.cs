@@ -39,6 +39,12 @@ namespace Dicom.Network
         Exception Exception { get; }
 
         /// <summary>
+        /// Gets the options to control behavior of <see cref="DicomService"/> base class.
+        /// Gets the port to which the server is listening.
+        /// </summary>
+        DicomServiceOptions Options { get; }
+
+        /// <summary>
         /// Gets the logger used by <see cref="DicomServer{T}"/>
         /// </summary>
         Logger Logger { get; set; }

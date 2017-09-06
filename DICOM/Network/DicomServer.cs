@@ -36,8 +36,6 @@ namespace Dicom.Network
 
         private string _certificateName;
 
-        private DicomServiceOptions _options;
-
         private Encoding _fallbackEncoding;
 
         private bool _isIpAddressSet;
@@ -113,6 +111,8 @@ namespace Dicom.Network
         /// <inheritdoc />
         public Exception Exception { get; protected set; }
 
+        public DicomServiceOptions Options { get; protected set; }
+
         /// <inheritdoc />
         public Logger Logger
         {
@@ -133,7 +133,7 @@ namespace Dicom.Network
         {
             get
             {
-                var maxClientsAllowed = _options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
+                var maxClientsAllowed = Options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
                 return maxClientsAllowed > 0 && _services.Count >= maxClientsAllowed;
             }
         }
@@ -155,7 +155,8 @@ namespace Dicom.Network
             IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress;
             Port = port;
 
-            _options = options;
+            Options = options;
+
             _userState = userState;
             _certificateName = certificateName;
             _fallbackEncoding = fallbackEncoding;
@@ -228,7 +229,7 @@ namespace Dicom.Network
             INetworkListener listener = null;
             try
             {
-                var noDelay = _options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
+                var noDelay = Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
 
                 listener = NetworkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -245,9 +246,9 @@ namespace Dicom.Network
                     if (networkStream != null)
                     {
                         var scp = CreateScp(networkStream);
-                        if (_options != null)
+                        if (Options != null)
                         {
-                            scp.Options = _options;
+                            scp.Options = Options;
                         }
 
                         _services.Add(scp.RunAsync());
