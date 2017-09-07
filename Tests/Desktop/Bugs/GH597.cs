@@ -31,6 +31,8 @@ namespace Dicom.Bugs
                 var file = new DicomFile(dataset);
                 file.Save(stream);
 
+                // Checking that UN value representation has been written to raw stream;
+                // when DICOM file is re-read, the value representation is automatically set to the known tag's VR.
                 stream.Seek(0, SeekOrigin.Begin);
                 var streamString = Encoding.UTF8.GetString(stream.GetBuffer());
                 Assert.True(streamString.Contains("UN"), "streamString.Contains('UN')");

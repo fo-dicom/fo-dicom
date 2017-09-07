@@ -1,5 +1,6 @@
 #### v.4.0.0 (TBD)
 * Subclassing DicomServer (#602 #604)
+* Support CP-1066 (#597 #606)
 * Code generator support for anonymization data (#594 #595)
 * DicomServer to listen on IPv6 socket (#588 #604)
 * DicomAnonymizer blank DicomDate/DicomDateTime to DateTime.MinValue instead of empty value (#576 #593)
