@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Windows.Networking;
+
 namespace Dicom.Network
 {
     using System;
@@ -17,13 +19,15 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly string port;
+        private readonly HostName _ipAddress;
 
-        private readonly ManualResetEventSlim handle;
+        private readonly string _port;
 
-        private StreamSocketListener listener;
+        private readonly ManualResetEventSlim _handle;
 
-        private StreamSocket socket;
+        private StreamSocketListener _listener;
+
+        private StreamSocket _socket;
 
         #endregion
 
@@ -32,48 +36,49 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsNetworkListener"/> class. 
         /// </summary>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">TCP/IP port to listen to.</param>
-        internal WindowsNetworkListener(int port)
+        internal WindowsNetworkListener(string ipAddress, int port)
         {
-            this.port = port.ToString(CultureInfo.InvariantCulture);
-            this.handle = new ManualResetEventSlim(false);
+            HostName addr;
+            try
+            {
+                addr = new HostName(ipAddress);
+            }
+            catch
+            {
+                addr = new HostName(NetworkManager.IPv4Any);
+            }
+            _ipAddress = addr;
+
+            _port = port.ToString(CultureInfo.InvariantCulture);
+            _handle = new ManualResetEventSlim(false);
         }
 
         #endregion
 
         #region METHODS
 
-        /// <summary>
-        /// Start listening.
-        /// </summary>
-        /// <returns>An await:able <see cref="Task"/>.</returns>
+        /// <inheritdoc />
         public async Task StartAsync()
         {
-            this.listener = new StreamSocketListener();
-            this.listener.ConnectionReceived += this.OnConnectionReceived;
+            _listener = new StreamSocketListener();
+            _listener.ConnectionReceived += OnConnectionReceived;
 
-            this.socket = null;
-            this.handle.Reset();
-            await this.listener.BindServiceNameAsync(this.port).AsTask().ConfigureAwait(false);
+            _socket = null;
+            _handle.Reset();
+            await _listener.BindEndpointAsync(_ipAddress, _port).AsTask().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Stop listening.
-        /// </summary>
+        /// <inheritdoc />
         public void Stop()
         {
-            this.listener.ConnectionReceived -= this.OnConnectionReceived;
-            this.listener.Dispose();
-            this.handle.Set();
+            _listener.ConnectionReceived -= OnConnectionReceived;
+            _listener.Dispose();
+            _handle.Set();
         }
 
-        /// <summary>
-        /// Wait until a network stream is trying to connect, and return the accepted stream.
-        /// </summary>
-        /// <param name="certificateName">Certificate name of authenticated connections.</param>
-        /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
-        /// <param name="token">Cancellation token.</param>
-        /// <returns>Connected network stream.</returns>
+        /// <inheritdoc />
         public Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
@@ -88,15 +93,15 @@ namespace Dicom.Network
             INetworkStream networkStream;
             try
             {
-                this.handle.Wait(token);
-                networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
+                _handle.Wait(token);
+                networkStream = _socket == null ? null : new WindowsNetworkStream(_socket);
             }
             catch
             {
                 networkStream = null;
             }
 
-            this.handle.Reset();
+            _handle.Reset();
 
             return Task.FromResult(networkStream);
         }
@@ -109,8 +114,8 @@ namespace Dicom.Network
         /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            this.socket = args.Socket;
-            this.handle.Set();
+            _socket = args.Socket;
+            _handle.Set();
         }
 
         #endregion
