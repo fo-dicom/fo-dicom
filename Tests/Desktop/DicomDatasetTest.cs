@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Text;
+
+using Dicom.IO.Buffer;
+
 namespace Dicom
 {
     using System;
@@ -454,6 +458,36 @@ namespace Dicom
 
             var thirdItem = dataset.ElementAt(2);
             Assert.Equal(thirdItem, contained);
+        }
+
+        [Fact]
+        public void Get_ByteArrayFromStringElement_ReturnsValidArray()
+        {
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset
+            {
+                new DicomLongText(tag, encoding, expected)
+            };
+
+            var actual = encoding.GetString(dataset.Get<byte[]>(tag));
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void AddOrUpdate_NonDefaultEncodedStringElement_StringIsPreserved()
+        {
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(tag, /* encoding, */ expected);
+
+            var actual = encoding.GetString(dataset.Get<byte[]>(tag));
+            Assert.Equal(expected, actual);
         }
 
         #endregion
