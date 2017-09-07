@@ -484,7 +484,7 @@ namespace Dicom
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 
             var dataset = new DicomDataset();
-            dataset.AddOrUpdate(tag, /* encoding, */ expected);
+            dataset.AddOrUpdate(tag, encoding, expected);
 
             var actual = encoding.GetString(dataset.Get<byte[]>(tag));
             Assert.Equal(expected, actual);
