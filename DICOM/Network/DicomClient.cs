@@ -14,6 +14,17 @@ using Dicom.Log;
 
 namespace Dicom.Network
 {
+    #region DELEGATES
+
+    /// <summary>
+    /// Delegate for client handling the C-STORE request immediately.
+    /// </summary>
+    /// <param name="request">C-STORE request subject to handling.</param>
+    /// <returns>Response from handling the C-STORE <paramref name="request"/>.</returns>
+    public delegate DicomCStoreResponse CStoreRequestHandler(DicomCStoreRequest request);
+
+    #endregion
+
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
@@ -68,14 +79,17 @@ namespace Dicom.Network
 
         #endregion
 
-        #region DELEGATES
+        #region EVENTS
 
         /// <summary>
-        /// Delegate for client handling the C-STORE request immediately.
+        /// Representation of the DICOM association accepted event.
         /// </summary>
-        /// <param name="request">C-STORE request subject to handling.</param>
-        /// <returns>Response from handling the C-STORE <paramref name="request"/>.</returns>
-        public delegate DicomCStoreResponse CStoreRequestHandler(DicomCStoreRequest request);
+        public event EventHandler DicomAssociationAccepted = delegate { };
+
+        /// <summary>
+        /// Representation of the DICOM association rejected event.
+        /// </summary>
+        public event EventHandler DicomAssociationRejected = delegate { };
 
         #endregion
 
@@ -609,10 +623,7 @@ namespace Dicom.Network
 
             #region METHODS
 
-            /// <summary>
-            /// Callback for handling association accept scenarios.
-            /// </summary>
-            /// <param name="association">Accepted association.</param>
+            /// <inheritdoc />
             public void OnReceiveAssociationAccept(DicomAssociation association)
             {
                 foreach (var ctx in _client.AdditionalPresentationContexts)
@@ -625,14 +636,11 @@ namespace Dicom.Network
                 }
 
                 SetAssociationFlag(true);
+
+                _client.DicomAssociationAccepted(_client, EventArgs.Empty);
             }
 
-            /// <summary>
-            /// Callback for handling association reject scenarios.
-            /// </summary>
-            /// <param name="result">Specification of rejection result.</param>
-            /// <param name="source">Source of rejection.</param>
-            /// <param name="reason">Detailed reason for rejection.</param>
+            /// <inheritdoc />
             public void OnReceiveAssociationReject(
                 DicomRejectResult result,
                 DicomRejectSource source,
@@ -640,20 +648,17 @@ namespace Dicom.Network
             {
                 SetAssociationFlag(false);
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
+
+                _client.DicomAssociationRejected(_client, EventArgs.Empty);
             }
 
-            /// <summary>
-            /// Callback on response from an association release.
-            /// </summary>
+            /// <inheritdoc />
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetCompletionFlag();
             }
 
-            /// <summary>
-            /// Setup long-running operations that the DICOM service manages.
-            /// </summary>
-            /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
+            /// <inheritdoc />
             public override Task RunAsync()
             {
                 if (_isInitialized) return Task.FromResult(false);
@@ -662,34 +667,19 @@ namespace Dicom.Network
                 return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association));
             }
 
-            /// <summary>
-            /// Callback on recieving an abort message.
-            /// </summary>
-            /// <param name="source">Abort source.</param>
-            /// <param name="reason">Detailed reason for abort.</param>
+            /// <inheritdoc />
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
                 SetCompletionFlag(new DicomAssociationAbortedException(source, reason));
             }
 
-            /// <summary>
-            /// Callback when connection is closed.
-            /// </summary>
-            /// <param name="exception">Exception, if any, that forced connection to close.</param>
+            /// <inheritdoc />
             public void OnConnectionClosed(Exception exception)
             {
                 SetCompletionFlag(exception);
             }
 
-            /// <summary>
-            /// Callback for handling a client related C-STORE request, typically emanating from the client's C-GET request.
-            /// </summary>
-            /// <param name="request">
-            /// C-STORE request.
-            /// </param>
-            /// <returns>
-            /// The <see cref="DicomCStoreResponse"/> related to the C-STORE <paramref name="request"/>.
-            /// </returns>
+            /// <inheritdoc />
             public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
             {
                 return _client.OnCStoreRequest == null
@@ -702,7 +692,7 @@ namespace Dicom.Network
                 Exception exception = null;
                 try
                 {
-                    await Task.WhenAny(SendAssociationReleaseRequestAsync(),
+                    await Task.WhenAll(SendAssociationReleaseRequestAsync(),
                         ListenForDisconnectAsync(millisecondsTimeout, true)).ConfigureAwait(false);
                 }
                 catch (Exception e)
@@ -726,9 +716,7 @@ namespace Dicom.Network
                 }
             }
 
-            /// <summary>
-            /// Action to perform when send queue is empty.
-            /// </summary>
+            /// <inheritdoc />
             protected override void OnSendQueueEmpty()
             {
                 lock (_lock)
