@@ -331,6 +331,43 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void AssociationAccepted_SuccessfulSend_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+
+                var accepted = false;
+                client.AssociationAccepted += (sender, args) => accepted = true;
+
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.True(accepted);
+            }
+        }
+
+        [Fact]
+        public void AssociationRejected_AssociationNotAllowed_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<MockCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+
+                var rejected = false;
+                client.AssociationRejected += (sender, args) => rejected = true;
+
+                client.AddRequest(new DicomCEchoRequest());
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "NOTACCEPTEDSCP"));
+
+                Assert.True(rejected);
+                Assert.NotNull(exception);
+            }
+        }
+
+        [Fact]
         public void Release_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();

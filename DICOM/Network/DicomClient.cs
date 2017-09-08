@@ -84,12 +84,12 @@ namespace Dicom.Network
         /// <summary>
         /// Representation of the DICOM association accepted event.
         /// </summary>
-        public event EventHandler DicomAssociationAccepted = delegate { };
+        public event EventHandler AssociationAccepted = delegate { };
 
         /// <summary>
         /// Representation of the DICOM association rejected event.
         /// </summary>
-        public event EventHandler DicomAssociationRejected = delegate { };
+        public event EventHandler AssociationRejected = delegate { };
 
         #endregion
 
@@ -328,7 +328,7 @@ namespace Dicom.Network
         /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
         /// <returns>True if association is established, false otherwise.</returns>
         [Obsolete(
-            "Use DicomAssociationAccepted and DicomAssociationRejected events to be notified of association status change.")]
+            "Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
         public bool WaitForAssociation(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             try
@@ -347,8 +347,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
         /// <returns>True if association is established, false otherwise.</returns>
-        [Obsolete(
-            "Use DicomAssociationAccepted and DicomAssociationRejected events to be notified of association status change.")]
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             try
@@ -474,9 +472,7 @@ namespace Dicom.Network
 
         private async Task DoSendAsync(int millisecondsTimeout)
         {
-#pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
-#pragma warning restore 618
 
             bool send;
             lock (_lock)
@@ -641,7 +637,7 @@ namespace Dicom.Network
 
                 SetAssociationFlag(true);
 
-                _client.DicomAssociationAccepted(_client, EventArgs.Empty);
+                _client.AssociationAccepted(_client, EventArgs.Empty);
             }
 
             /// <inheritdoc />
@@ -653,7 +649,7 @@ namespace Dicom.Network
                 SetAssociationFlag(false);
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
 
-                _client.DicomAssociationRejected(_client, EventArgs.Empty);
+                _client.AssociationRejected(_client, EventArgs.Empty);
             }
 
             /// <inheritdoc />
