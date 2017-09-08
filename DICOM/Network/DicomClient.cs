@@ -24,7 +24,7 @@ namespace Dicom.Network
 
         private TaskCompletionSource<bool> _completeNotifier;
 
-        private TaskCompletionSource<bool> _associateNotifier;
+        private readonly AsyncManualResetEvent<bool> _associationFlag;
 
         private readonly List<DicomRequest> _requests;
 
@@ -56,6 +56,8 @@ namespace Dicom.Network
             _asyncInvoked = 1;
             _asyncPerformed = 1;
             Linger = 50;
+
+            _associationFlag = new AsyncManualResetEvent<bool>();
         }
 
         #endregion
@@ -327,13 +329,12 @@ namespace Dicom.Network
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
                 using (cancellationSource.Token.Register(() => 
                 {
-                    _associateNotifier?.TrySetResult(false);
+                    _associationFlag.Set(false);
                     _completeNotifier?.TrySetResult(false);
                     timedOut = true;
                 }))
                 {
-                    while (_associateNotifier == null) await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
-                    return await _associateNotifier.Task.ConfigureAwait(false) && !timedOut;
+                    return await _associationFlag.WaitAsync().ConfigureAwait(false) && !timedOut;
                 }
             }
             catch
@@ -420,7 +421,7 @@ namespace Dicom.Network
             {
                 if (_service == null || !_service.IsConnected)
                 {
-                    _associateNotifier = new TaskCompletionSource<bool>();
+                    _associationFlag.Reset();
                     _completeNotifier = new TaskCompletionSource<bool>();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
@@ -509,7 +510,7 @@ namespace Dicom.Network
             }
 
             // If not already set, set notifiers here to signal completion to awaiters
-            _associateNotifier?.TrySetResult(false);
+            _associationFlag.Set(false);
             _completeNotifier?.TrySetResult(true);
 
             if (completedException != null)
@@ -612,7 +613,7 @@ namespace Dicom.Network
                     }
                 }
 
-                _client._associateNotifier.TrySetResult(true);
+                _client._associationFlag.Set(true);
             }
 
             /// <summary>
@@ -626,7 +627,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                _client._associateNotifier.TrySetResult(false);
+                _client._associationFlag.Set(false);
                 SetComplete(new DicomAssociationRejectedException(result, source, reason));
             }
 
@@ -775,7 +776,7 @@ namespace Dicom.Network
                         return true;
                     }
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                     return false;
                 }
