@@ -11,7 +11,7 @@ namespace Dicom.Network
     /// Asynchronous manual reset event class, enabling the possibility to set a return value of <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of value that the event can be set to.</typeparam>
-    internal class AsyncManualResetEvent<T>
+    public class AsyncManualResetEvent<T>
     {
         #region FIELDS
 
@@ -52,6 +52,24 @@ namespace Dicom.Network
         internal AsyncManualResetEvent()
             : this(false, default(T))
         {
+        }
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Gets whether the event is set or not.
+        /// </summary>
+        internal bool IsSet
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _tcs.Task.IsCompleted;
+                }
+            }
         }
 
         #endregion
@@ -111,7 +129,7 @@ namespace Dicom.Network
     /// <summary>
     /// Asynchronous parameterless manual reset event class.
     /// </summary>
-    internal sealed class AsyncManualResetEvent : AsyncManualResetEvent<object>
+    public sealed class AsyncManualResetEvent : AsyncManualResetEvent<object>
     {
         #region CONSTRUCTORS
 
@@ -125,7 +143,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="AsyncManualResetEvent{T}"/> class.
+        /// Initializes an instance of the <see cref="AsyncManualResetEvent"/> class.
         /// Event is reset upon initialization.
         /// </summary>
         internal AsyncManualResetEvent()

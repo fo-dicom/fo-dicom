@@ -75,13 +75,11 @@ namespace Dicom.Network
     {
         #region FIELDS
 
+        private const int MaxBytesToRead = 16384;
+
         private bool _disposed = false;
 
         private bool _isInitialized;
-
-        protected Stream _dimseStream;
-
-        protected IFileReference _dimseStreamFile;
 
         private readonly INetworkStream _network;
 
@@ -105,7 +103,11 @@ namespace Dicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
-        private const int MaxBytesToRead = 16384;
+        protected readonly AsyncManualResetEvent _isDisconnectedFlag;
+
+        protected Stream _dimseStream;
+
+        protected IFileReference _dimseStreamFile;
 
         #endregion
 
@@ -119,15 +121,17 @@ namespace Dicom.Network
         /// <param name="log">Logger</param>
         protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
         {
+            _isDisconnectedFlag = new AsyncManualResetEvent();
+
             _network = stream;
             _lock = new object();
             _pduQueue = new Queue<PDU>();
             _pduQueueWatcher = new ManualResetEventSlim(true);
-            MaximumPDUsInQueue = 16;
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            IsConnected = true;
             _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
+
+            MaximumPDUsInQueue = 16;
             Logger = log ?? LogManager.GetLogger("Dicom.Network");
             Options = new DicomServiceOptions();
 
@@ -166,7 +170,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets whether or not the service is connected.
         /// </summary>
-        public bool IsConnected { get; private set; }
+        public bool IsConnected => !_isDisconnectedFlag.IsSet;
 
         /// <summary>
         /// Gets whether or not the send queue is empty.
@@ -1152,7 +1156,7 @@ namespace Dicom.Network
                 throw;
             }
 
-            lock (_lock) IsConnected = false;
+            lock (_lock) _isDisconnectedFlag.Set();
 
             Logger.Info("Connection closed");
 

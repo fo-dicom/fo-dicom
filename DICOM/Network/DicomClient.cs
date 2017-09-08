@@ -327,7 +327,8 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
         /// <returns>True if association is established, false otherwise.</returns>
-        [Obsolete("Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
+        [Obsolete(
+            "Use DicomAssociationAccepted and DicomAssociationRejected events to be notified of association status change.")]
         public bool WaitForAssociation(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             try
@@ -347,7 +348,7 @@ namespace Dicom.Network
         /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
         /// <returns>True if association is established, false otherwise.</returns>
         [Obsolete(
-            "Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
+            "Use DicomAssociationAccepted and DicomAssociationRejected events to be notified of association status change.")]
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             try
@@ -357,7 +358,7 @@ namespace Dicom.Network
                 using (cancellationSource.Token.Register(() =>
                 {
                     _associationFlag.Set(false);
-                    _completionFlag.Set(null);
+                    _completionFlag.Set();
                     timedOut = true;
                 }, false))
                 {
@@ -460,6 +461,9 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 Logger.Error("Failed to send due to: {@error}", e);
+                _associationFlag.Set();
+                _completionFlag.Set();
+
                 throw;
             }
             finally
@@ -693,7 +697,7 @@ namespace Dicom.Network
                 try
                 {
                     await Task.WhenAll(SendAssociationReleaseRequestAsync(),
-                        ListenForDisconnectAsync(millisecondsTimeout, true)).ConfigureAwait(false);
+                        WaitForDisconnectAsync(millisecondsTimeout)).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -712,8 +716,9 @@ namespace Dicom.Network
                 {
                     await SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified)
                         .ConfigureAwait(false);
-                    SetCompletionFlag();
                 }
+
+                SetCompletionFlag();
             }
 
             /// <inheritdoc />
@@ -745,6 +750,20 @@ namespace Dicom.Network
                         await DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout).ConfigureAwait(false);
                         break;
                     }
+                }
+            }
+
+            private async Task WaitForDisconnectAsync(int millisecondsTimeout)
+            {
+                try
+                {
+                    using (new CancellationTokenSource(millisecondsTimeout))
+                    {
+                        await _isDisconnectedFlag.WaitAsync().ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
                 }
             }
 

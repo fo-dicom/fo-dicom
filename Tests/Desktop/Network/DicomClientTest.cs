@@ -272,10 +272,10 @@ namespace Dicom.Network
             {
                 var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
-                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 client.Abort();
-                var actual = client.WaitForAssociation(500);
+                var actual = client.WaitForAssociation(1000);
 
                 Assert.Equal(false, actual);
             }
