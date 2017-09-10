@@ -237,6 +237,20 @@ namespace Dicom.Printing
 
             var filmBox = new FilmBox(this, uid, dataset);
 
+            //client request may not contain this tag, but this tag is must per dicom standard.
+            if(!filmBox.Contains(DicomTag.ReferencedFilmSessionSequence))
+            {
+                var seq = new DicomSequence(DicomTag.ReferencedFilmSessionSequence);
+
+                var item = new DicomDataset();
+                item.Add(DicomTag.ReferencedSOPClassUID, this.SOPClassUID);
+                item.Add(DicomTag.ReferencedSOPInstanceUID, this.SOPInstanceUID);
+
+                seq.Items.Add(item);
+
+                filmBox.Add(seq);
+            }
+
             BasicFilmBoxes.Add(filmBox);
 
             return filmBox;
