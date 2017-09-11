@@ -892,6 +892,8 @@ namespace Dicom.Network
 
         private async Task SendNextMessageAsync()
         {
+            var sendQueueEmpty = false;
+
             while (true)
             {
                 DicomMessage msg;
@@ -904,7 +906,7 @@ namespace Dicom.Network
 
                     if (_msgQueue.Count == 0)
                     {
-                        if (_pending.Count == 0) OnSendQueueEmpty();
+                        if (_pending.Count == 0) sendQueueEmpty = true;
                         break;
                     }
 
@@ -928,6 +930,11 @@ namespace Dicom.Network
                 await DoSendMessageAsync(msg).ConfigureAwait(false);
 
                 lock (_lock) _sending = false;
+            }
+
+            if (sendQueueEmpty)
+            {
+                await OnSendQueueEmptyAsync().ConfigureAwait(false);
             }
         }
 
@@ -1263,8 +1270,9 @@ namespace Dicom.Network
         /// <summary>
         /// Action to perform when send queue is empty.
         /// </summary>
-        protected virtual void OnSendQueueEmpty()
+        protected virtual Task OnSendQueueEmptyAsync()
         {
+            return Task.FromResult(false);
         }
 
         #endregion

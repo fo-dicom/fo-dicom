@@ -413,6 +413,8 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="millisecondsTimeout">Milliseconds to wait for association to occur.</param>
         /// <returns>True if association is established, false otherwise.</returns>
+        [Obsolete(
+            "Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             try
@@ -538,7 +540,9 @@ namespace Dicom.Network
 
         private async Task DoSendAsync(int millisecondsTimeout)
         {
+ #pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
+ #pragma warning restore 618
 
             bool send;
             lock (_lock)
@@ -565,14 +569,13 @@ namespace Dicom.Network
             {
                 copy = new List<DicomRequest>(_requests);
                 _requests.Clear();
+                _hasRequestsFlag.Reset();
             }
 
             foreach (var request in copy)
             {
                 await _service.SendRequestAsync(request).ConfigureAwait(false);
             }
-
-            _hasRequestsFlag.Reset();
         }
 
         private async Task HandleMonitoredExceptionsAsync(bool cleanup)
@@ -790,18 +793,7 @@ namespace Dicom.Network
             }
 
             /// <inheritdoc />
-            protected override void OnSendQueueEmpty()
-            {
-                lock (_lock)
-                {
-                    if (LingerTask == null || LingerTask.IsCompleted)
-                    {
-                        LingerTask = LingerAsync();
-                    }
-                }
-            }
-
-            private async Task LingerAsync()
+            protected override async Task OnSendQueueEmptyAsync()
             {
                 while (true)
                 {
