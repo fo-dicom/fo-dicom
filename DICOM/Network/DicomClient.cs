@@ -25,6 +25,65 @@ namespace Dicom.Network
 
     #endregion
 
+    #region EVENT ARGS CLASSES
+
+    /// <summary>
+    /// Container class for arguments associated with the <see cref="DicomClient.AssociationAccepted"/> event.
+    /// </summary>
+    public class AssociationAcceptedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes an instance of the <see cref="AssociationAcceptedEventArgs"/> class.
+        /// </summary>
+        /// <param name="association">Accepted association.</param>
+        public AssociationAcceptedEventArgs(DicomAssociation association)
+        {
+            Association = association;
+        }
+
+        /// <summary>
+        /// Gets the accepted association.
+        /// </summary>
+        public DicomAssociation Association { get; }
+    }
+
+    /// <summary>
+    /// Container class for arguments associated with the <see cref="DicomClient.AssociationRejected"/> event.
+    /// </summary>
+    public class AssociationRejectedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes an instance of the <see cref="AssociationRejectedEventArgs"/> class.
+        /// </summary>
+        /// <param name="result">Association rejection result.</param>
+        /// <param name="source">Source of association rejection.</param>
+        /// <param name="reason">Reason for association rejection.</param>
+        public AssociationRejectedEventArgs(DicomRejectResult result, DicomRejectSource source,
+            DicomRejectReason reason)
+        {
+            Result = result;
+            Source = source;
+            Reason = reason;
+        }
+
+        /// <summary>
+        /// Gets the association rejection result.
+        /// </summary>
+        public DicomRejectResult Result { get; }
+
+        /// <summary>
+        /// Gets the source of the association rejection.
+        /// </summary>
+        public DicomRejectSource Source { get; }
+
+        /// <summary>
+        /// Gets the reason for the association rejection.
+        /// </summary>
+        public DicomRejectReason Reason { get; }
+    }
+
+    #endregion
+
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
@@ -32,11 +91,15 @@ namespace Dicom.Network
     {
         #region FIELDS
 
+        private const int DefaultLinger = 50;
+
         private const int DefaultAssociationTimeout = 5000;
 
         private const int DefaultReleaseTimeout = 10000;
 
         private readonly object _lock = new object();
+
+        private readonly AsyncManualResetEvent _hasRequestsFlag;
 
         private readonly AsyncManualResetEvent<bool> _associationFlag;
 
@@ -67,12 +130,14 @@ namespace Dicom.Network
         /// </summary>
         public DicomClient()
         {
-            _requests = new List<DicomRequest>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
+
+            _requests = new List<DicomRequest>();
             _asyncInvoked = 1;
             _asyncPerformed = 1;
-            Linger = 50;
+            Linger = DefaultLinger;
 
+            _hasRequestsFlag = new AsyncManualResetEvent();
             _associationFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
         }
@@ -84,12 +149,12 @@ namespace Dicom.Network
         /// <summary>
         /// Representation of the DICOM association accepted event.
         /// </summary>
-        public event EventHandler AssociationAccepted = delegate { };
+        public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted = delegate { };
 
         /// <summary>
         /// Representation of the DICOM association rejected event.
         /// </summary>
-        public event EventHandler AssociationRejected = delegate { };
+        public event EventHandler<AssociationRejectedEventArgs> AssociationRejected = delegate { };
 
         #endregion
 
@@ -193,6 +258,7 @@ namespace Dicom.Network
             lock (_lock)
             {
                 _requests.Add(request);
+                _hasRequestsFlag.Set();
             }
         }
 
@@ -482,17 +548,7 @@ namespace Dicom.Network
 
             if (send)
             {
-                IList<DicomRequest> copy;
-                lock (_lock)
-                {
-                    copy = new List<DicomRequest>(_requests);
-                    _requests.Clear();
-                }
-
-                foreach (var request in copy)
-                {
-                    await _service.SendRequestAsync(request).ConfigureAwait(false);
-                }
+                await SendRequestsAsync().ConfigureAwait(false);
             }
             else if (associated)
             {
@@ -500,6 +556,23 @@ namespace Dicom.Network
             }
 
             await _completionFlag.WaitAsync().ConfigureAwait(false);
+        }
+
+        private async Task SendRequestsAsync()
+        {
+            IList<DicomRequest> copy;
+            lock (_lock)
+            {
+                copy = new List<DicomRequest>(_requests);
+                _requests.Clear();
+            }
+
+            foreach (var request in copy)
+            {
+                await _service.SendRequestAsync(request).ConfigureAwait(false);
+            }
+
+            _hasRequestsFlag.Reset();
         }
 
         private async Task HandleMonitoredExceptionsAsync(bool cleanup)
@@ -636,8 +709,7 @@ namespace Dicom.Network
                 }
 
                 SetAssociationFlag(true);
-
-                _client.AssociationAccepted(_client, EventArgs.Empty);
+                _client.AssociationAccepted(_client, new AssociationAcceptedEventArgs(association));
             }
 
             /// <inheritdoc />
@@ -647,9 +719,9 @@ namespace Dicom.Network
                 DicomRejectReason reason)
             {
                 SetAssociationFlag(false);
-                SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
+                _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
-                _client.AssociationRejected(_client, EventArgs.Empty);
+                SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
             }
 
             /// <inheritdoc />
@@ -733,7 +805,7 @@ namespace Dicom.Network
             {
                 while (true)
                 {
-                    var disconnected = await ListenForDisconnectAsync(_client.Linger, false).ConfigureAwait(false);
+                    var disconnected = await DoLingerAsync(_client.Linger).ConfigureAwait(false);
 
                     if (disconnected)
                     {
@@ -749,6 +821,24 @@ namespace Dicom.Network
                 }
             }
 
+            private async Task<bool> DoLingerAsync(int millisecondsLinger)
+            {
+                try
+                {
+                    using (var cancellationSource = new CancellationTokenSource(millisecondsLinger))
+                    {
+                        await Task.WhenAny(_isDisconnectedFlag.WaitAsync(),
+                            _client._hasRequestsFlag.WaitAsync().ContinueWith(task => _client.SendRequestsAsync(),
+                                cancellationSource.Token)).ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                }
+
+                return IsConnected;
+            }
+
             private async Task WaitForDisconnectAsync(int millisecondsTimeout)
             {
                 try
@@ -760,42 +850,6 @@ namespace Dicom.Network
                 }
                 catch (OperationCanceledException)
                 {
-                }
-            }
-
-            private async Task<bool> ListenForDisconnectAsync(int millisecondsDelay, bool releaseRequested)
-            {
-                try
-                {
-                    using (var cancellationSource = new CancellationTokenSource(millisecondsDelay))
-                    {
-                        while (IsConnected)
-                        {
-                            await Task.Delay(1, cancellationSource.Token).ConfigureAwait(false);
-
-                            if (IsConnected && !releaseRequested)
-                            {
-                                IList<DicomRequest> copy;
-
-                                lock (_client._lock)
-                                {
-                                    copy = new List<DicomRequest>(_client._requests);
-                                    _client._requests.Clear();
-                                }
-
-                                foreach (var request in copy)
-                                {
-                                    await SendRequestAsync(request).ConfigureAwait(false);
-                                }
-                            }
-                        }
-
-                        return true;
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    return false;
                 }
             }
 

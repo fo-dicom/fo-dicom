@@ -356,13 +356,13 @@ namespace Dicom.Network
             {
                 var client = new DicomClient();
 
-                var rejected = false;
-                client.AssociationRejected += (sender, args) => rejected = true;
+                var reason = DicomRejectReason.NoReasonGiven;
+                client.AssociationRejected += (sender, args) => reason = args.Reason;
 
                 client.AddRequest(new DicomCEchoRequest());
                 var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "NOTACCEPTEDSCP"));
 
-                Assert.True(rejected);
+                Assert.Equal(DicomRejectReason.CalledAENotRecognized, reason);
                 Assert.NotNull(exception);
             }
         }
@@ -487,13 +487,13 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new DicomClient();
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+                var client = new DicomClient { Linger = 0 };
+                client.AddRequest(new DicomCEchoRequest());
                 Assert.True(client.IsSendRequired);
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 Thread.Sleep(100);
-                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+                client.AddRequest(new DicomCEchoRequest());
 
                 Assert.True(client.IsSendRequired);
             }
