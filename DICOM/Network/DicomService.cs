@@ -1164,7 +1164,6 @@ namespace Dicom.Network
             }
 
             lock (_lock) _isDisconnectedFlag.Set();
-
             Logger.Info("Connection closed");
 
             if (exception != null) throw exception;

@@ -487,13 +487,13 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new DicomClient { Linger = 0 };
+                var client = new DicomClient();
                 client.AddRequest(new DicomCEchoRequest());
                 Assert.True(client.IsSendRequired);
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                Thread.Sleep(100);
 
                 client.AddRequest(new DicomCEchoRequest());
-                Thread.Sleep(100);
 
                 Assert.True(client.IsSendRequired);
             }

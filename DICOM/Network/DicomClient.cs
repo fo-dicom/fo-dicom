@@ -581,9 +581,8 @@ namespace Dicom.Network
         private async Task HandleMonitoredExceptionsAsync(bool cleanup)
         {
             var completedException = await _completionFlag.WaitAsync().ConfigureAwait(false);
-            var lingerException = _service?.LingerTask?.Exception;
 
-            if (cleanup || completedException != null || lingerException != null)
+            if (cleanup || completedException != null)
             {
                 if (_networkStream != null)
                 {
@@ -621,12 +620,6 @@ namespace Dicom.Network
             {
                 throw completedException;
             }
-
-            if (lingerException != null)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                throw lingerException.Flatten().InnerException;
-            }
         }
 
         #endregion
@@ -642,6 +635,8 @@ namespace Dicom.Network
             private readonly DicomAssociation _association;
 
             private bool _isInitialized;
+
+            private bool _releaseRequested;
 
             private readonly object _lock = new object();
 
@@ -687,13 +682,8 @@ namespace Dicom.Network
 
                 _association = association;
                 _isInitialized = false;
+                _releaseRequested = false;
             }
-
-            #endregion
-
-            #region PROPERTIES
-
-            internal Task LingerTask { get; private set; }
 
             #endregion
 
@@ -764,20 +754,25 @@ namespace Dicom.Network
 
             internal async Task DoSendAssociationReleaseRequestAsync(int millisecondsTimeout)
             {
-                Exception exception = null;
                 try
                 {
-                    await Task.WhenAll(SendAssociationReleaseRequestAsync(),
-                        WaitForDisconnectAsync(millisecondsTimeout)).ConfigureAwait(false);
+                    bool requestRelease;
+                    lock (_lock) requestRelease = !_releaseRequested;
+
+                    if (requestRelease)
+                    {
+                        lock (_lock) _releaseRequested = true;
+                        await Task.WhenAny(SendAssociationReleaseRequestAsync(), _isDisconnectedFlag.WaitAsync(),
+                            Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+
+                        SetCompletionFlag();
+                    }
+
                 }
                 catch (Exception e)
                 {
                     Logger.Warn("Attempt to send association release request failed due to: {@error}", e);
-                    exception = e;
-                }
-                finally
-                {
-                    SetCompletionFlag(exception);
+                    SetCompletionFlag(e);
                 }
             }
 
@@ -795,54 +790,14 @@ namespace Dicom.Network
             /// <inheritdoc />
             protected override async Task OnSendQueueEmptyAsync()
             {
-                while (true)
-                {
-                    var disconnected = await DoLingerAsync(_client.Linger).ConfigureAwait(false);
-
-                    if (disconnected)
-                    {
-                        SetCompletionFlag();
-                        break;
-                    }
-
-                    if (IsSendQueueEmpty)
-                    {
-                        await DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout).ConfigureAwait(false);
-                        break;
-                    }
-                }
-            }
-
-            private async Task<bool> DoLingerAsync(int millisecondsLinger)
-            {
-                try
-                {
-                    using (var cancellationSource = new CancellationTokenSource(millisecondsLinger))
-                    {
-                        await Task.WhenAny(_isDisconnectedFlag.WaitAsync(),
-                            _client._hasRequestsFlag.WaitAsync().ContinueWith(task => _client.SendRequestsAsync(),
-                                cancellationSource.Token)).ConfigureAwait(false);
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                }
-
-                return IsConnected;
-            }
-
-            private async Task WaitForDisconnectAsync(int millisecondsTimeout)
-            {
-                try
-                {
-                    using (new CancellationTokenSource(millisecondsTimeout))
-                    {
-                        await _isDisconnectedFlag.WaitAsync().ConfigureAwait(false);
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                }
+                await Task.WhenAny(
+                    _client._hasRequestsFlag.WaitAsync()
+                        .ContinueWith(_ => _client.SendRequestsAsync(), TaskContinuationOptions.OnlyOnRanToCompletion),
+                    _isDisconnectedFlag.WaitAsync()
+                        .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion),
+                    Task.Delay(_client.Linger)
+                        .ContinueWith(_ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
+                            TaskContinuationOptions.OnlyOnRanToCompletion)).ConfigureAwait(false);
             }
 
             private void SetAssociationFlag(bool isAssociated)
