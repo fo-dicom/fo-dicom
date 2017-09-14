@@ -544,38 +544,18 @@ namespace Dicom.Network
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
  #pragma warning restore 618
 
-            bool send;
+            bool associateOnly;
             lock (_lock)
             {
-                send = associated && _requests.Count > 0;
+                associateOnly = associated && _requests.Count == 0;
             }
 
-            if (send)
-            {
-                await SendRequestsAsync().ConfigureAwait(false);
-            }
-            else if (associated)
+            if (associateOnly)
             {
                 await _service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
 
             await _completionFlag.WaitAsync().ConfigureAwait(false);
-        }
-
-        private async Task SendRequestsAsync()
-        {
-            IList<DicomRequest> copy;
-            lock (_lock)
-            {
-                copy = new List<DicomRequest>(_requests);
-                _requests.Clear();
-                _hasRequestsFlag.Reset();
-            }
-
-            foreach (var request in copy)
-            {
-                await _service.SendRequestAsync(request).ConfigureAwait(false);
-            }
         }
 
         private async Task HandleMonitoredExceptionsAsync(bool cleanup)
@@ -620,6 +600,28 @@ namespace Dicom.Network
             {
                 throw completedException;
             }
+        }
+
+        private async Task<IList<DicomRequest>> GetRequestsAsync()
+        {
+            await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
+
+            IList<DicomRequest> requests;
+            if (await _associationFlag.WaitAsync().ConfigureAwait(false))
+            {
+                lock (_lock)
+                {
+                    requests = new List<DicomRequest>(_requests);
+                    _requests.Clear();
+                    _hasRequestsFlag.Reset();
+                }
+            }
+            else
+            {
+                requests = new List<DicomRequest>();
+            }
+
+            return requests;
         }
 
         #endregion
@@ -729,7 +731,7 @@ namespace Dicom.Network
                 if (_isInitialized) return Task.FromResult(false);
                 _isInitialized = true;
 
-                return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association));
+                return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association), SendRequestsAsync());
             }
 
             /// <inheritdoc />
@@ -791,13 +793,25 @@ namespace Dicom.Network
             protected override async Task OnSendQueueEmptyAsync()
             {
                 await Task.WhenAny(
-                    _client._hasRequestsFlag.WaitAsync()
-                        .ContinueWith(_ => _client.SendRequestsAsync(), TaskContinuationOptions.OnlyOnRanToCompletion),
+                    _client._hasRequestsFlag.WaitAsync(),
                     _isDisconnectedFlag.WaitAsync()
                         .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion),
                     Task.Delay(_client.Linger)
                         .ContinueWith(_ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
                             TaskContinuationOptions.OnlyOnRanToCompletion)).ConfigureAwait(false);
+            }
+
+            private async Task SendRequestsAsync()
+            {
+                while (IsConnected)
+                {
+                    var requests = await _client.GetRequestsAsync().ConfigureAwait(false);
+
+                    foreach (var request in requests)
+                    {
+                        await SendRequestAsync(request).ConfigureAwait(false);
+                    }
+                }
             }
 
             private void SetAssociationFlag(bool isAssociated)
