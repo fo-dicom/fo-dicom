@@ -419,16 +419,14 @@ namespace Dicom.Network
         {
             try
             {
-                var timedOut = false;
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
                 using (cancellationSource.Token.Register(() =>
                 {
                     _associationFlag.Set(false);
                     _completionFlag.Set();
-                    timedOut = true;
                 }, false))
                 {
-                    return await _associationFlag.WaitAsync().ConfigureAwait(false) && !timedOut;
+                    return await _associationFlag.WaitAsync().ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException)
