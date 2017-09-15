@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Deprecate DicomClient.WaitForAssociation and provide association events (#605 #609)
 * Subclassing DicomServer (#602 #604)
 * Support CP-1066 (#597 #606)
 * DicomDataset.Add and .AddOrUpdate overloads with Encoding parameter (#596 #607)
