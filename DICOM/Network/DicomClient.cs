@@ -207,13 +207,13 @@ namespace Dicom.Network
         {
             get
             {
-                int requestsCount;
+                bool canSend;
                 lock (_lock)
                 {
-                    requestsCount = _requests.Count;
+                    canSend = _requests.Count > 0 || AdditionalPresentationContexts.Count > 0;
                 }
 
-                return requestsCount > 0 || AdditionalPresentationContexts.Count > 0;
+                return canSend;
             }
         }
 
@@ -224,13 +224,27 @@ namespace Dicom.Network
         {
             get
             {
-                bool required;
+                bool hasRequests;
                 lock (_lock)
                 {
-                    required = _requests.Count > 0 && (_service == null || !_service.IsConnected);
+                    hasRequests = _requests.Count > 0;
                 }
 
-                return required;
+                return hasRequests && !IsConnected;
+            }
+        }
+
+        private bool IsConnected
+        {
+            get
+            {
+                bool connected;
+                lock (_lock)
+                {
+                    connected =_service != null && _service.IsConnected;
+                }
+
+                return connected;
             }
         }
 
@@ -459,14 +473,14 @@ namespace Dicom.Network
         {
             try
             {
-                if (_service != null)
+                if (IsConnected)
                 {
                     await _service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
                 }
             }
             finally
             {
-                await HandleMonitoredExceptionsAsync(true).ConfigureAwait(false);
+                await CleanupAsync(true).ConfigureAwait(false);
             }
         }
 
@@ -503,7 +517,7 @@ namespace Dicom.Network
             finally
             {
                 _aborted = true;
-                await HandleMonitoredExceptionsAsync(true).ConfigureAwait(false);
+                await CleanupAsync(true).ConfigureAwait(false);
             }
         }
 
@@ -511,7 +525,7 @@ namespace Dicom.Network
         {
             try
             {
-                if (_service == null || !_service.IsConnected)
+                if (!IsConnected)
                 {
                     _associationFlag.Reset();
                     _completionFlag.Reset();
@@ -532,7 +546,7 @@ namespace Dicom.Network
             }
             finally
             {
-                await HandleMonitoredExceptionsAsync(false).ConfigureAwait(false);
+                await CleanupAsync(false).ConfigureAwait(false);
             }
         }
 
@@ -564,7 +578,7 @@ namespace Dicom.Network
 
             foreach (var request in requests)
             {
-                if (_service != null && _service.IsConnected)
+                if (IsConnected)
                 {
                     await _service.SendRequestAsync(request).ConfigureAwait(false);
                 }
@@ -590,11 +604,11 @@ namespace Dicom.Network
             return requests;
         }
 
-        private async Task HandleMonitoredExceptionsAsync(bool cleanup)
+        private async Task CleanupAsync(bool force)
         {
             var completedException = await _completionFlag.WaitAsync().ConfigureAwait(false);
 
-            if (cleanup || completedException != null)
+            if (completedException != null && force)
             {
                 if (_networkStream != null)
                 {
