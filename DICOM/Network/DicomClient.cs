@@ -4,6 +4,7 @@
 #if !NET35
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -105,7 +106,7 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
-        private readonly List<DicomRequest> _requests;
+        private readonly ConcurrentQueue<DicomRequest> _requests;
 
         private DicomServiceUser _service;
 
@@ -132,7 +133,7 @@ namespace Dicom.Network
         {
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
 
-            _requests = new List<DicomRequest>();
+            _requests = new ConcurrentQueue<DicomRequest>();
             _asyncInvoked = 1;
             _asyncPerformed = 1;
             Linger = DefaultLinger;
@@ -155,6 +156,11 @@ namespace Dicom.Network
         /// Representation of the DICOM association rejected event.
         /// </summary>
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected = delegate { };
+
+        /// <summary>
+        /// Representation of the DICOM association released event.
+        /// </summary>
+        public event EventHandler AssociationReleased = delegate { };
 
         #endregion
 
@@ -269,11 +275,8 @@ namespace Dicom.Network
         /// <param name="request">DICOM request.</param>
         public void AddRequest(DicomRequest request)
         {
-            lock (_lock)
-            {
-                _requests.Add(request);
-                _hasRequestsFlag.Set();
-            }
+            _requests.Enqueue(request);
+            _hasRequestsFlag.Set();
         }
 
         /// <summary>
@@ -539,7 +542,7 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 Logger.Error("Failed to send due to: {@error}", e);
-                _associationFlag.Set();
+                _associationFlag.Set(false);
                 _completionFlag.Set();
 
                 throw;
@@ -574,41 +577,22 @@ namespace Dicom.Network
 
         private async Task SendQueuedRequestsAsync()
         {
-            var requests = await GetQueuedRequestsAsync().ConfigureAwait(false);
-
-            foreach (var request in requests)
-            {
-                if (IsConnected)
-                {
-                    await _service.SendRequestAsync(request).ConfigureAwait(false);
-                }
-                else
-                {
-                    AddRequest(request);
-                }
-            }
-        }
-
-        private async Task<IList<DicomRequest>> GetQueuedRequestsAsync()
-        {
             await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
 
-            IList<DicomRequest> requests;
-            lock (_lock)
+            DicomRequest request;
+            while (IsConnected && _requests.TryDequeue(out request))
             {
-                requests = new List<DicomRequest>(_requests);
-                _requests.Clear();
-                _hasRequestsFlag.Reset();
+                await _service.SendRequestAsync(request).ConfigureAwait(false);
             }
 
-            return requests;
+            if (_requests.IsEmpty) _hasRequestsFlag.Reset();
         }
 
         private async Task CleanupAsync(bool force)
         {
             var completedException = await _completionFlag.WaitAsync().ConfigureAwait(false);
 
-            if (completedException != null && force)
+            if (completedException != null || force)
             {
                 if (_networkStream != null)
                 {
@@ -747,6 +731,7 @@ namespace Dicom.Network
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetCompletionFlag();
+                _client.AssociationReleased(_client, EventArgs.Empty);
             }
 
             /// <inheritdoc />

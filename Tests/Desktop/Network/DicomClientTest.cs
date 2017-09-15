@@ -368,6 +368,26 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void AssociationReleased_SuccessfulSend_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var client = new DicomClient();
+
+                var released = false;
+                var handle = new ManualResetEventSlim();
+                client.AssociationReleased += (sender, args) => { released = true; handle.Set(); };
+
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                handle.Wait(1000);
+                Assert.True(released);
+            }
+        }
+
+        [Fact]
         public void Release_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();
