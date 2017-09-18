@@ -180,10 +180,6 @@ namespace Dicom
 
             foreach (var item in itemList)
             {
-                var element = item as DicomElement;
-
-                if (element == null) continue;
-
                 var parenthesis = new[] { '(', ')' };
                 var tag = item.Tag.ToString().Trim(parenthesis);
                 var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
@@ -196,30 +192,30 @@ namespace Dicom
                         case SecurityProfileActions.U: // UID
                         case SecurityProfileActions.C: // Clean
                         case SecurityProfileActions.D: // Dummy
-                            if (vr == DicomVR.UI) ReplaceUID(dataset, element);
-                            else if (vr.IsString) ReplaceString(dataset, element, "ANONYMOUS");
-                            else BlankElement(dataset, element, true);
+                            if (vr == DicomVR.UI) ReplaceUID(dataset, item);
+                            else if (vr.IsString) ReplaceString(dataset, item, "ANONYMOUS");
+                            else BlankItem(dataset, item, true);
                             break;
                         case SecurityProfileActions.K: // Keep
                             break;
                         case SecurityProfileActions.X: // Remove
-                            toRemove.Add(element);
+                            toRemove.Add(item);
                             break;
                         case SecurityProfileActions.Z: // Zero-length
-                            BlankElement(dataset, element, false);
+                            BlankItem(dataset, item, false);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
 
-                if (element.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
+                if (item.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
                 {
-                    ReplaceString(dataset, element, Profile.PatientName);
+                    ReplaceString(dataset, item, Profile.PatientName);
                 }
-                else if (element.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
+                else if (item.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
                 {
-                    ReplaceString(dataset, element, Profile.PatientID);
+                    ReplaceString(dataset, item, Profile.PatientID);
                 }
             }
 
@@ -261,15 +257,16 @@ namespace Dicom
 
         #region Private methods
 
-
         /// <string>Replaces the content of a UID with a random one</string>
         /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="element">The element to be altered</param>
-        private void ReplaceUID(DicomDataset dataset, DicomElement element)
+        /// <param name="item"></param>
+        private void ReplaceUID(DicomDataset dataset, DicomItem item)
         {
+            if (!(item is DicomElement)) return;
+
             string rep;
             DicomUID uid;
-            var old = element.Get<string>();
+            var old = ((DicomElement)item).Get<string>();
 
             if (ReplacedUIDs.ContainsKey(old))
             {
@@ -283,79 +280,87 @@ namespace Dicom
                 ReplacedUIDs[old] = rep;
             }
 
-            var newItem = new DicomUniqueIdentifier(element.Tag, uid);
+            var newItem = new DicomUniqueIdentifier(item.Tag, uid);
             dataset.AddOrUpdate(newItem);
         }
 
-        /// <summary>Blanks an element by passing to it an empty string</summary>
+        /// <summary>Blanks an item to value suitable for the concrete item type.</summary>
         /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="element">The element to be altered</param>
+        /// <param name="item">DICOM item subject to blanking.</param>
         /// <param name="nonZeroLength">Require that new value is non-zero length (dummy) value?</param>
-        private static void BlankElement(DicomDataset dataset, DicomElement element, bool nonZeroLength)
+        private static void BlankItem(DicomDataset dataset, DicomItem item, bool nonZeroLength)
         {
-            // Special date/time cases
-            if (element is DicomDateTime)
+            var tag = item.Tag;
+
+            if (item is DicomSequence)
             {
-                dataset.AddOrUpdate(nonZeroLength
-                    ? new DicomDateTime(element.Tag, DateTime.MinValue)
-                    : new DicomDateTime(element.Tag, new string[0]));
-                return;
-            }
-            if (element is DicomDate)
-            {
-                dataset.AddOrUpdate(nonZeroLength
-                    ? new DicomDate(element.Tag, DateTime.MinValue)
-                    : new DicomDate(element.Tag, new string[0]));
-                return;
-            }
-            if (element is DicomTime)
-            {
-                dataset.AddOrUpdate(nonZeroLength
-                    ? new DicomTime(element.Tag, DateTime.MinValue)
-                    : new DicomTime(element.Tag, new string[0]));
+                dataset.AddOrUpdate<DicomDataset>(tag);
                 return;
             }
 
-            var stringElement = element as DicomStringElement;
+            // Special date/time cases
+            if (item is DicomDateTime)
+            {
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomDateTime(tag, DateTime.MinValue)
+                    : new DicomDateTime(tag, new string[0]));
+                return;
+            }
+            if (item is DicomDate)
+            {
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomDate(tag, DateTime.MinValue)
+                    : new DicomDate(tag, new string[0]));
+                return;
+            }
+            if (item is DicomTime)
+            {
+                dataset.AddOrUpdate(nonZeroLength
+                    ? new DicomTime(tag, DateTime.MinValue)
+                    : new DicomTime(tag, new string[0]));
+                return;
+            }
+
+            var stringElement = item as DicomStringElement;
             if (stringElement != null)
             {
-                dataset.AddOrUpdate(element.Tag, string.Empty);
+                dataset.AddOrUpdate(tag, string.Empty);
                 return;
             }
 
-            if (IsOtherElement(element)) // Replaces with an empty array
+            if (IsOtherElement(item)) // Replaces with an empty array
             {
-                var ctor = GetConstructor(element, typeof(DicomTag));
-                var item = (DicomItem)ctor.Invoke(new object[] { element.Tag });
-                dataset.AddOrUpdate(element.Tag, item);
+                var ctor = GetConstructor(item, typeof(DicomTag));
+                var updated = (DicomItem)ctor.Invoke(new object[] { tag });
+                dataset.AddOrUpdate(tag, updated);
                 return;
             }
 
-            var valueType = ElementValueType(element); // Replace with the default value
+            var valueType = ElementValueType(item); // Replace with the default value
             if (valueType != null)
             {
-                var ctor = GetConstructor(element, typeof(DicomTag), valueType);
-                var item = (DicomItem)ctor.Invoke(new[] { element.Tag, Activator.CreateInstance(valueType) });
-                dataset.AddOrUpdate(element.Tag, item);
+                var ctor = GetConstructor(item, typeof(DicomTag), valueType);
+                var updated = (DicomItem)ctor.Invoke(new[] { tag, Activator.CreateInstance(valueType) });
+                dataset.AddOrUpdate(tag, updated);
             }
         }
 
-        /// <summary>Evaluates whether an element is of type Other*</summary>
-        /// <param name="element">The element to be evaluated</param>
-        /// <returns>A boolean flag indicating whether the element is of the expected type, otherwise false</returns>
-        private static bool IsOtherElement(DicomElement element)
+        /// <summary>Evaluates whether a DICOM item is of type Other*</summary>
+        /// <param name="item"></param>
+        /// <returns>A boolean flag indicating whether the item is of the expected type, otherwise false</returns>
+        private static bool IsOtherElement(DicomItem item)
         {
-            var t = element.GetType();
+            var t = item.GetType();
             return t == typeof(DicomOtherByte) || t == typeof(DicomOtherDouble) || t == typeof(DicomOtherFloat)
                    || t == typeof(DicomOtherLong) || t == typeof(DicomOtherWord) || t == typeof(DicomUnknown);
         }
 
         /// <summary>Evaluates whether an element has a generic valueType</summary>
-        /// <param name="element">The element to be evaluated</param>
+        /// <param name="item"></param>
         /// <returns>The data type if found, otherwise null</returns>
-        private static Type ElementValueType(DicomElement element)
+        private static Type ElementValueType(DicomItem item)
         {
-            var t = element.GetType();
+            var t = item.GetType();
 #if NET35
             if (t.IsGenericType && !t.ContainsGenericParameters && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GetGenericArguments()[0];
 #else
@@ -364,32 +369,32 @@ namespace Dicom
             return null;
         }
 
-        /// <string>Replaces the content of an element</string>
+        /// <string>Replaces the content of an item.</string>
         /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="element">The element to be altered</param>
-        /// <param name="newString">The replacement string</param>
-        private static void ReplaceString(DicomDataset dataset, DicomElement element, string newString)
+        /// <param name="item">DICOM item for which the string value should be replaced.</param>
+        /// <param name="newString">The replacement string.</param>
+        private static void ReplaceString(DicomDataset dataset, DicomItem item, string newString)
         {
-            dataset.AddOrUpdate(element.Tag, newString);
+            dataset.AddOrUpdate(item.Tag, newString);
         }
 
         /// <summary>
-        /// Use reflection to get strongly-typed constructor info from <paramref name="element"/>.
+        /// Use reflection to get strongly-typed constructor info from <paramref name="item"/>.
         /// </summary>
-        /// <param name="element">DICOM element for which constructor info should be obtained.</param>
+        /// <param name="item">DICOM item for which to get constructor.</param>
         /// <param name="parameterTypes">Expected parameter types in the requested constructor.</param>
-        /// <returns>Constructor info corresponding to <paramref name="element"/> and <paramref name="parameterTypes"/>.</returns>
-        private static ConstructorInfo GetConstructor(DicomElement element, params Type[] parameterTypes)
+        /// <returns>Constructor info corresponding to <paramref name="item"/> and <paramref name="parameterTypes"/>.</returns>
+        private static ConstructorInfo GetConstructor(DicomItem item, params Type[] parameterTypes)
         {
 #if PORTABLE || NETSTANDARD || NETFX_CORE
-            return element.GetType().GetTypeInfo().DeclaredConstructors.Single(
+            return item.GetType().GetTypeInfo().DeclaredConstructors.Single(
                 ci =>
                     {
                         var pars = ci.GetParameters().Select(par => par.ParameterType);
                         return pars.SequenceEqual(parameterTypes);
                     });
 #else
-            return element.GetType().GetConstructor(parameterTypes);
+            return item.GetType().GetConstructor(parameterTypes);
 #endif
         }
 

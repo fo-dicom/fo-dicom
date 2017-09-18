@@ -5,40 +5,40 @@ using System.Collections.Generic;
 
 namespace Dicom
 {
+    /// <summary>
+    /// Representation of a DICOM sequence of items.
+    /// </summary>
     public class DicomSequence : DicomItem, IEnumerable<DicomDataset>
     {
-        private IList<DicomDataset> _items;
-
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomSequence"/> class.
+        /// </summary>
+        /// <param name="tag">DICOM sequence tag.</param>
+        /// <param name="items">Dataset items constituting the sequence.</param>
         public DicomSequence(DicomTag tag, params DicomDataset[] items)
             : base(tag)
         {
-            _items = new List<DicomDataset>(items);
+            Items = new List<DicomDataset>(items);
         }
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.SQ;
-            }
-        }
+        /// <inheritdoc />
+        public override DicomVR ValueRepresentation => DicomVR.SQ;
 
-        public IList<DicomDataset> Items
-        {
-            get
-            {
-                return _items;
-            }
-        }
+        /// <summary>
+        /// Gets the dataset items constituting the sequence.
+        /// </summary>
+        public IList<DicomDataset> Items { get; }
 
+        /// <inheritdoc />
         public IEnumerator<DicomDataset> GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return Items.GetEnumerator();
         }
 
+        /// <inheritdoc />
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return Items.GetEnumerator();
         }
     }
 }
