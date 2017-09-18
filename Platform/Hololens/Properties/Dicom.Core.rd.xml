@@ -25,9 +25,10 @@
     http://go.microsoft.com/fwlink/?LinkID=391919
 -->
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
-  <Library Name="DICOM.Hololens">
-
-  	<!-- add directives for your library here -->
-
+  <Library Name="Dicom.Core">
+    <Type Name="System.Collections.Generic.IDictionary{Dicom.DicomTag, Dicom.DicomItem}" MarshalStructure="Excluded" />
+    <Type Name="System.Collections.Generic.IList{Dicom.DicomDataset}" MarshalStructure="Excluded" />
+    <Type Name="System.Collections.Generic.IList{Dicom.IO.Buffer.IByteBuffer}" MarshalStructure="Excluded" />
+    <Type Name="System.Collections.Generic.IList{System.UInt32}" MarshalStructure="Excluded" />
   </Library>
 </Directives>
