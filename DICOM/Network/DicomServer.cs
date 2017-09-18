@@ -315,46 +315,6 @@ namespace Dicom.Network
 
         #region INNER TYPES
 
-        private sealed class AsyncManualResetEvent
-        {
-            private TaskCompletionSource<object> _tcs;
-
-            private readonly object _lock = new object();
-
-            internal AsyncManualResetEvent(bool isSet)
-            {
-                _tcs = new TaskCompletionSource<object>();
-
-                if (isSet)
-                    _tcs.TrySetResult(null);
-            }
-
-            internal void Set()
-            {
-                lock (_lock)
-                {
-                    _tcs.TrySetResult(null);
-                }
-            }
-
-            internal void Reset()
-            {
-                lock (_lock)
-                {
-                    if (_tcs.Task.IsCompleted)
-                        _tcs = new TaskCompletionSource<object>();
-                }
-            }
-
-            internal Task WaitAsync()
-            {
-                lock (_lock)
-                {
-                    return _tcs.Task;
-                }
-            }
-        }
-
         #endregion
     }
 
