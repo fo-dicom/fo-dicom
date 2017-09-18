@@ -167,6 +167,29 @@ namespace Dicom
             Assert.False(dataset.Contains(tag));
         }
 
+        [Fact]
+        public void AnonymizeInPlace_ClearableSequence_ShouldBeCleared()
+        {
+            const string fileName = "GH610.dcm";
+            var tag = DicomTag.PersonIdentificationCodeSequence;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            dataset.Add(new DicomSequence(tag,
+                new DicomDataset(new DicomLongString(DicomTag.CodeMeaning, "SOME MEANING"))));
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            Assert.True(dataset.Contains(tag));
+
+            var sequence = dataset.Get<DicomSequence>(tag);
+            Assert.Equal(0, sequence.Items.Count);
+        }
+
         #endregion
     }
 }
