@@ -159,6 +159,11 @@ namespace Dicom.Dump
             }
         }
 
+        private void OnClickExit(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         private class DumpWalker : IDicomDatasetWalker
         {
             private int _level = 0;
