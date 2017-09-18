@@ -65,17 +65,26 @@ namespace Dicom.Network
         [InlineData(1000)]
         public void Send_MultipleRequests_AllRecognized(int expected)
         {
-            int port = Ports.GetNext();
+            var port = Ports.GetNext();
+            var flag = new ManualResetEventSlim();
+
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
                 var actual = 0;
+                DicomCEchoRequest.ResponseDelegate callback = (req, res) =>
+                {
+                    Interlocked.Increment(ref actual);
+                    if (actual == expected) flag.Set();
+                };
 
                 var client = new DicomClient();
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+                for (var i = 0; i < expected; ++i)
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = callback });
 
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                flag.Wait(10000);
 
                 Assert.Equal(expected, actual);
             }
