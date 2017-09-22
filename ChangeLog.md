@@ -1,5 +1,6 @@
 #### v.4.0.1 (TBD)
 * Update Json DS validation regex (#643)
+* DicomFileMetaInformation now uses pre-existing SourceAET where possible 
 
 #### v.4.0.0-rc1 (5/22/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
