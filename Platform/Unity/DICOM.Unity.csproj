@@ -35,6 +35,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\External\LibJpeg.NET\BitMiracle.LibJpeg.Unity.dll</HintPath>
     </Reference>
+    <Reference Include="cscharls.Unity">
+      <HintPath>..\..\External\cscharls\cscharls.Unity.dll</HintPath>
+    </Reference>
     <Reference Include="CSJ2K.Unity, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\External\CSJ2K\CSJ2K.Unity.dll</HintPath>
@@ -136,20 +139,20 @@
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegCodecImpl.cs">
       <Link>Imaging\Codec\DicomJpegCodecImpl.cs</Link>
     </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsCodecImpl.cs">
+      <Link>Imaging\Codec\DicomJpegLsCodecImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsLosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpegLsLosslessCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegLsNearLosslessCodec.cs">
+      <Link>Imaging\Codec\DicomJpegLsNearLosslessCodec.cs</Link>
+    </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess1Codec.Mono.cs">
       <Link>Imaging\Codec\DicomJpegProcess1Codec.Mono.cs</Link>
     </Compile>
     <Compile Include="..\..\DICOM\Imaging\Codec\DicomJpegProcess4Codec.Mono.cs">
       <Link>Imaging\Codec\DicomJpegProcess4Codec.Mono.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkListener.cs">
-      <Link>Network\UnityNetworkListener.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkManager.cs">
-      <Link>Network\UnityNetworkManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkStream.cs">
-      <Link>Network\UnityNetworkStream.cs</Link>
     </Compile>
     <Compile Include="..\..\Platform\Desktop\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
@@ -204,7 +207,9 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Network\" />
+  </ItemGroup>
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
