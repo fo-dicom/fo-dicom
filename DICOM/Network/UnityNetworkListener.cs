@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Net;
-using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
+
+using UnityEngine.Networking;
 
 namespace Dicom.Network
 {
@@ -14,7 +16,11 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly TcpListener _listener;
+        private readonly ListenerImpl _listener;
+
+        private readonly string _ipAddress;
+
+        private readonly int _port;
 
         private X509Certificate _certificate = null;
 
@@ -25,58 +31,52 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="UnityNetworkListener"/> class. 
         /// </summary>
-        /// <param name="port">
-        /// TCP/IP port to listen to.
-        /// </param>
-        internal UnityNetworkListener(int port)
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
+        /// <param name="port">TCP/IP port to listen to.</param>
+        internal UnityNetworkListener(string ipAddress, int port)
         {
-            _listener = new TcpListener(IPAddress.Any, port);
+            _listener = new ListenerImpl();
+            _ipAddress = ipAddress;
+            _port = port;
         }
 
         #endregion
 
         #region METHODS
 
-        /// <summary>
-        /// Start listening.
-        /// </summary>
-        public void Start()
+        /// <inheritdoc />
+        public Task StartAsync()
         {
-            _listener.Start();
+            return Task.FromResult(_listener.Listen(_ipAddress, _port));
         }
 
-        /// <summary>
-        /// Stop listening.
-        /// </summary>
+        /// <inheritdoc />
         public void Stop()
         {
             _listener.Stop();
         }
 
-        /// <summary>
-        /// Wait until a network stream is trying to connect, and return the accepted stream.
-        /// </summary>
-        /// <param name="certificateName">Certificate name of authenticated connections.</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <returns>Connected network stream.</returns>
-        public INetworkStream AcceptNetworkStream(string certificateName, bool noDelay)
+        /// <inheritdoc />
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token)
         {
+            INetworkStream stream = null;
             try
             {
-                var tcpClient = _listener.AcceptTcpClient();
-                tcpClient.NoDelay = noDelay;
+                var connection = await _listener.AcceptNetworkConnectionAsync().ConfigureAwait(false);
+                if (noDelay) connection.SetMaxDelay(0);
 
                 if (!string.IsNullOrEmpty(certificateName) && _certificate == null)
                 {
                     _certificate = GetX509Certificate(certificateName);
                 }
 
-                return new UnityNetworkStream(tcpClient, _certificate);
+                stream = new UnityNetworkStream(connection, _certificate);
             }
             catch
             {
-                return null;
             }
+
+            return stream;
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Dicom.Network
 
             store.Open(OpenFlags.ReadOnly);
             var certs = store.Certificates.Find(X509FindType.FindBySubjectName, certificateName, false);
-            store.Close();
+            store.Dispose();
 
             if (certs.Count == 0)
             {
@@ -98,6 +98,29 @@ namespace Dicom.Network
             }
 
             return certs[0];
+        }
+
+        #endregion
+
+        #region INNER TYPES
+
+        private class ListenerImpl : NetworkServerSimple
+        {
+            private readonly AsyncManualResetEvent<NetworkConnection> _awaiter =
+                new AsyncManualResetEvent<NetworkConnection>();
+
+            internal Task<NetworkConnection> AcceptNetworkConnectionAsync()
+            {
+                return _awaiter.WaitAsync();
+            }
+
+            public override void OnConnected(NetworkConnection conn)
+            {
+                base.OnConnected(conn);
+
+                _awaiter.Set(conn);
+                _awaiter.Reset();
+            }
         }
 
         #endregion
