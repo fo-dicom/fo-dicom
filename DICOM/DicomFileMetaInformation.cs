@@ -36,7 +36,8 @@ namespace Dicom
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var aet = CreateSourceApplicationEntityTitle();
+            var aet = dataset.Contains(DicomTag.SourceApplicationEntityTitle) ?
+                dataset.Get<string>(DicomTag.SourceApplicationEntityTitle) : CreateSourceApplicationEntityTitle();
             if (aet != null) SourceApplicationEntityTitle = aet;
 
             if (dataset.Contains(DicomTag.SendingApplicationEntityTitle))
@@ -64,7 +65,8 @@ namespace Dicom
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var aet = CreateSourceApplicationEntityTitle();
+            var aet = metaInfo.Contains(DicomTag.SourceApplicationEntityTitle) ?
+                metaInfo.SourceApplicationEntityTitle : CreateSourceApplicationEntityTitle();
             if (aet != null) SourceApplicationEntityTitle = aet;
 
             if (metaInfo.Contains(DicomTag.SendingApplicationEntityTitle))
