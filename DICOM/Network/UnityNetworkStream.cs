@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
+using UnityEngine.Networking;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -20,7 +22,7 @@ namespace Dicom.Network
 
         private bool _disposed = false;
 
-        private readonly TcpClient _tcpClient;
+        private readonly NetworkClient _networkClient;
 
         private readonly Stream _networkStream;
 
@@ -40,9 +42,10 @@ namespace Dicom.Network
         {
             RemoteHost = host;
             RemotePort = port;
-            _tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
+            _networkClient = new NetworkClient();
+            _networkClient.Connect(host, port);
 
-            Stream stream = _tcpClient.GetStream();
+            Stream stream = _networkClient.GetStream();
             if (useTls)
             {
                 var ssl = new SslStream(
@@ -54,8 +57,8 @@ namespace Dicom.Network
                 stream = ssl;
             }
 
-            LocalHost = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Address.ToString();
-            LocalPort = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Port;
+            LocalHost = _networkClient.connection.address;
+            LocalPort = _networkClient.hostPort;
 
             _networkStream = stream;
         }
@@ -63,19 +66,19 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes a server instance of <see cref="UnityNetworkStream"/>.
         /// </summary>
-        /// <param name="tcpClient">TCP client.</param>
+        /// <param name="connection">TCP client.</param>
         /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <remarks>Ownership of <paramref name="tcpClient"/> remains with the caller, including responsibility for
-        /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="UnityNetworkStream"/>
+        /// <remarks>Ownership of <paramref name="connection"/> remains with the caller, including responsibility for
+        /// disposal. Therefore, a handle to <paramref name="connection"/> is <em>not</em> stored when <see cref="UnityNetworkStream"/>
         /// is initialized with this server-side constructor.</remarks>
-        internal UnityNetworkStream(TcpClient tcpClient, X509Certificate certificate)
+        internal UnityNetworkStream(NetworkConnection connection, X509Certificate certificate)
         {
-            LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
-            LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
-            RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+            LocalHost = ((IPEndPoint)connection.Client.LocalEndPoint).Address.ToString();
+            LocalPort = ((IPEndPoint)connection.Client.LocalEndPoint).Port;
+            RemoteHost = ((IPEndPoint)connection.Client.RemoteEndPoint).Address.ToString();
+            RemotePort = ((IPEndPoint)connection.Client.RemoteEndPoint).Port;
 
-            Stream stream = tcpClient.GetStream();
+            Stream stream = connection.GetStream();
             if (certificate != null)
             {
                 var ssl = new SslStream(stream, false);
@@ -150,9 +153,9 @@ namespace Dicom.Network
         {
             if (_disposed) return;
 
-            if (_tcpClient != null)
+            if (_networkClient != null && _networkClient.isConnected)
             {
-                _tcpClient.Close();
+                _networkClient.Disconnect();
             }
 
             _disposed = true;
