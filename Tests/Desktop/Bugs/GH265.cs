@@ -73,7 +73,7 @@ namespace Dicom.Bugs
 
                 Assert.NotEqual(expected.ImplementationClassUID.UID, actual.ImplementationClassUID.UID);
                 Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
-                Assert.NotEqual(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
+                Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
             }
         }
 

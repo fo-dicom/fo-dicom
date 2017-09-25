@@ -76,7 +76,7 @@ namespace Dicom
                         new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"))
                         .Add(DicomTag.SourceApplicationEntityTitle, "ABCDEFG"));
 
-            var exception = Record.Exception(() => { Assert.Equal(metaInfo.SourceApplicationEntityTitle, "ABGDEFG"); });
+            var exception = Record.Exception(() => { Assert.Equal(metaInfo.SourceApplicationEntityTitle, "ABCDEFG"); });
             Assert.Null(exception);
         }
 
