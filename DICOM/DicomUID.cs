@@ -190,7 +190,7 @@ namespace Dicom
         {
             get
             {
-                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
+                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage") || !UID.StartsWith("1.2.840.10008")) return DicomStorageCategory.None;
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
 
