@@ -53,7 +53,9 @@ namespace Dicom
 
         Raw,
 
-        Other
+        Other,
+
+        Private
     }
 
     public sealed partial class DicomUID : DicomParseable
@@ -190,7 +192,9 @@ namespace Dicom
         {
             get
             {
-                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage") || !UID.StartsWith("1.2.840.10008")) return DicomStorageCategory.None;
+                if (!UID.StartsWith("1.2.840.10008") && Type == DicomUidType.SOPClass) return DicomStorageCategory.Private;
+
+                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
 

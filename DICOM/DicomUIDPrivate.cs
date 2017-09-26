@@ -160,7 +160,7 @@ namespace Dicom
         public static readonly DicomUID PrivatePhilips3DObjectStorage = new DicomUID("1.3.46.670589.5.0.2.1", "Private Philips 3D Object Storage", DicomUidType.SOPClass);
 
         /// <summary>Private Philips 3D Object Storage (Retired)</summary>
-        public static readonly DicomUID PrivatePhilips3DObjectStorageRetired = new DicomUID("1.3.46.670589.5.0.2", "Private Philips 3D Object Storage (Retired)", DicomUidType.SOPClass);
+        public static readonly DicomUID PrivatePhilips3DObjectStorageRetired = new DicomUID("1.3.46.670589.5.0.2", "Private Philips 3D Object Storage (Retired)", DicomUidType.SOPClass, true);
 
         /// <summary>Private Philips 3D Presentation State Storage</summary>
         public static readonly DicomUID PrivatePhilips3DPresentationStateStorage = new DicomUID("1.3.46.670589.2.5.1.1", "Private Philips 3D Presentation State Storage", DicomUidType.SOPClass);
@@ -181,7 +181,7 @@ namespace Dicom
         public static readonly DicomUID PrivatePhilipsMRCardioAnalysisStorage = new DicomUID("1.3.46.670589.5.0.11.1", "Private Philips MR Cardio Analysis Storage", DicomUidType.SOPClass);
 
         /// <summary>Private Philips MR Cardio Analysis Storage (Retired)</summary>
-        public static readonly DicomUID PrivatePhilipsMRCardioAnalysisStorageRetired = new DicomUID("1.3.46.670589.5.0.11", "Private Philips MR Cardio Analysis Storage (Retired)", DicomUidType.SOPClass);
+        public static readonly DicomUID PrivatePhilipsMRCardioAnalysisStorageRetired = new DicomUID("1.3.46.670589.5.0.11", "Private Philips MR Cardio Analysis Storage (Retired)", DicomUidType.SOPClass, true);
 
         /// <summary>Private Philips MR Cardio Profile Storage</summary>
         public static readonly DicomUID PrivatePhilipsMRCardioProfileStorage = new DicomUID("1.3.46.670589.5.0.7", "Private Philips MR Cardio Profile Storage", DicomUidType.SOPClass);
@@ -190,7 +190,7 @@ namespace Dicom
         public static readonly DicomUID PrivatePhilipsMRCardioStorage = new DicomUID("1.3.46.670589.5.0.8.1", "Private Philips MR Cardio Storage", DicomUidType.SOPClass);
 
         /// <summary>Private Philips MR Cardio Storage (Retired)</summary>
-        public static readonly DicomUID PrivatePhilipsMRCardioStorageRetired = new DicomUID("1.3.46.670589.5.0.8", "Private Philips MR Cardio Storage (Retired)", DicomUidType.SOPClass);
+        public static readonly DicomUID PrivatePhilipsMRCardioStorageRetired = new DicomUID("1.3.46.670589.5.0.8", "Private Philips MR Cardio Storage (Retired)", DicomUidType.SOPClass, true);
 
         /// <summary>Private Philips MR Examcard Storage</summary>
         public static readonly DicomUID PrivatePhilipsMRExamcardStorage = new DicomUID("1.3.46.670589.11.0.0.12.4", "Private Philips MR Examcard Storage", DicomUidType.SOPClass);
@@ -217,7 +217,7 @@ namespace Dicom
         public static readonly DicomUID PrivatePhilipsSurfaceStorage = new DicomUID("1.3.46.670589.5.0.3.1", "Private Philips Surface Storage", DicomUidType.SOPClass);
 
         /// <summary>Private Philips Surface Storage (Retired)</summary>
-        public static readonly DicomUID PrivatePhilipsSurfaceStorageRetired = new DicomUID("1.3.46.670589.5.0.3", "Private Philips Surface Storage (Retired)", DicomUidType.SOPClass);
+        public static readonly DicomUID PrivatePhilipsSurfaceStorageRetired = new DicomUID("1.3.46.670589.5.0.3", "Private Philips Surface Storage (Retired)", DicomUidType.SOPClass, true);
 
         /// <summary>Private Philips Volume Set Storage</summary>
         public static readonly DicomUID PrivatePhilipsVolumeSetStorage = new DicomUID("1.3.46.670589.2.11.1.1", "Private Philips Volume Set Storage", DicomUidType.SOPClass);
@@ -226,7 +226,7 @@ namespace Dicom
         public static readonly DicomUID PrivatePhilipsVolumeStorage = new DicomUID("1.3.46.670589.5.0.1.1", "Private Philips Volume Storage", DicomUidType.SOPClass);
 
         /// <summary>Private Philips Volume Storage (Retired)</summary>
-        public static readonly DicomUID PrivatePhilipsVolumeStorageRetired = new DicomUID("1.3.46.670589.5.0.1", "Private Philips Volume Storage (Retired)", DicomUidType.SOPClass);
+        public static readonly DicomUID PrivatePhilipsVolumeStorageRetired = new DicomUID("1.3.46.670589.5.0.1", "Private Philips Volume Storage (Retired)", DicomUidType.SOPClass, true);
 
         /// <summary>Private Philips VRML Storage</summary>
         public static readonly DicomUID PrivatePhilipsVRMLStorage = new DicomUID("1.3.46.670589.2.8.1.1", "Private Philips VRML Storage", DicomUidType.SOPClass);
