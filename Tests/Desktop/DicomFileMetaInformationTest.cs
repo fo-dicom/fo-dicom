@@ -67,6 +67,20 @@ namespace Dicom
         }
 
         [Fact]
+        public void SourceApplicationEntityTitle_GetterWhenAttributeAlreadyExists_ReturnsValue()
+        {
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                        new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"))
+                        .Add(DicomTag.SourceApplicationEntityTitle, "ABCDEFG"));
+
+            var exception = Record.Exception(() => { Assert.Equal(metaInfo.SourceApplicationEntityTitle, "ABCDEFG"); });
+            Assert.Null(exception);
+        }
+
+        [Fact]
         public void Constructor_FromFileMetaInformation_ShouldNotThrow()
         {
             var metaInfo = new DicomFileMetaInformation();

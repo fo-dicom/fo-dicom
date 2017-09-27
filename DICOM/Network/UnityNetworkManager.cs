@@ -6,6 +6,8 @@ using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
+using UnityEngine;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -37,7 +39,7 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        protected override string MachineNameImpl => Environment.MachineName;
+        protected override string MachineNameImpl => SystemInfo.deviceName;
 
         #endregion
 
@@ -46,7 +48,7 @@ namespace Dicom.Network
         /// <inheritdoc />
         protected override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
         {
-            return new UnityNetworkListener(port);
+            return new UnityNetworkListener(ipAddress, port);
         }
 
         /// <inheritdoc />
@@ -61,8 +63,8 @@ namespace Dicom.Network
             var socketEx = exception as SocketException;
             if (socketEx != null)
             {
-                errorCode = socketEx.ErrorCode;
-                errorDescriptor = socketEx.SocketErrorCode.ToString();
+                errorCode = (int)socketEx.SocketErrorCode;
+                errorDescriptor = socketEx.Message;
                 return true;
             }
 
