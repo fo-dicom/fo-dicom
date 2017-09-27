@@ -147,7 +147,7 @@ namespace Dicom
                             DicomVR.UL));
                     try
                     {
-#if NET35
+#if NET35 || HOLOLENS
                         using (
                             var stream =
                                 new MemoryStream(
