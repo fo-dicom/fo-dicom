@@ -158,15 +158,6 @@
     <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkListener.cs">
-      <Link>Network\UnityNetworkListener.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkManager.cs">
-      <Link>Network\UnityNetworkManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkStream.cs">
-      <Link>Network\UnityNetworkStream.cs</Link>
-    </Compile>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
