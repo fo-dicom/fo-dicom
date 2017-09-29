@@ -67,7 +67,8 @@ namespace Dicom.Imaging.Codec
         /// false otherwise.</returns>
         public static bool CanTranscode(DicomTransferSyntax inSyntax, DicomTransferSyntax outSyntax)
         {
-            return Codecs.ContainsKey(inSyntax) && Codecs.ContainsKey(outSyntax);
+            return (!inSyntax.IsEncapsulated || Codecs.ContainsKey(inSyntax)) &&
+                   (!outSyntax.IsEncapsulated || Codecs.ContainsKey(outSyntax));
         }
 
         /// <summary>

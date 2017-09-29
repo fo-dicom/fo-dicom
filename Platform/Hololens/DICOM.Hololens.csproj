@@ -158,15 +158,6 @@
     <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkListener.cs">
-      <Link>Network\UnityNetworkListener.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkManager.cs">
-      <Link>Network\UnityNetworkManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\UnityNetworkStream.cs">
-      <Link>Network\UnityNetworkStream.cs</Link>
-    </Compile>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
@@ -177,9 +168,6 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Program Files\Unity 2017.1.0f3\Editor\Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Unity 2017.1.0f3\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
