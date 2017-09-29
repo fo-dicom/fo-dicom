@@ -216,9 +216,12 @@ namespace Dicom.IO.Writer
 
                     uncompressed.Seek(0, SeekOrigin.Begin);
                     using (var compressed = new MemoryStream())
-                    using (var compressor = new DeflateStream(compressed, CompressionMode.Compress))
                     {
-                        uncompressed.CopyTo(compressor);
+                        using (var compressor = new DeflateStream(compressed, CompressionMode.Compress, true))
+                        {
+                            uncompressed.CopyTo(compressor);
+                        }
+
                         target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
                     }
                 }
