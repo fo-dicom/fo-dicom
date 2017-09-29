@@ -38,8 +38,8 @@
       <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
     </Reference>
     <Reference Include="CSJ2K, Version=2.8.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\net40-client\CSJ2K.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\portable-net4+sl5+netcore45+wpa81+wp8\CSJ2K.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
