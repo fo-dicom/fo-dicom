@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Saving a file with deflated transfer syntax occasionally fails (#621)
 * Anonymizer not removing Sequences (#610 #611)
 * Deprecate DicomClient.WaitForAssociation and provide association events (#605 #609)
 * Subclassing DicomServer (#602 #604)
