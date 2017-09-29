@@ -93,6 +93,36 @@ namespace Dicom.Bugs
             }
         }
 
+        [Fact]
+        public async Task SaveAsync_DeflatedFile_CorrectlyCompressed()
+        {
+            var deflated = DicomFile.Open(@"Test Data\GH227.dcm");
+
+            using (var stream = new MemoryStream())
+            {
+                await deflated.SaveAsync(stream);
+                File.WriteAllBytes("GH227_dfldump.dcm", stream.ToArray());
+                stream.Seek(0, SeekOrigin.Begin);
+
+                var file = await DicomFile.OpenAsync(stream);
+                const int expected = 512;
+                var actual = file.Dataset.Get<int>(DicomTag.Columns);
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public void Clone_DeflateFile_NewTransferSyntaxPixelDataMaintained()
+        {
+            var deflated = DicomFile.Open(@"Test Data\GH227.dcm");
+
+            Assert.True(TranscoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
+                DicomTransferSyntax.ExplicitVRLittleEndian));
+
+            var clone = deflated.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
+            Assert.True(clone.Dataset.Contains(DicomTag.PixelData));
+        }
+
         #endregion
     }
 }
