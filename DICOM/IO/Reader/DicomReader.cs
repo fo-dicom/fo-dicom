@@ -280,13 +280,14 @@ namespace Dicom.IO.Reader
 
                     compressed.Seek(0, SeekOrigin.Begin);
 
-                    using (var decompressor = new DeflateStream(compressed, CompressionMode.Decompress))
+                    var decompressed = new MemoryStream();
+                    using (var decompressor = new DeflateStream(compressed, CompressionMode.Decompress, true))
                     {
-                        var decompressed = new MemoryStream();
                         decompressor.CopyTo(decompressed);
-                        decompressed.Seek(0, SeekOrigin.Begin);
-                        return new StreamByteSource(decompressed);
                     }
+
+                    decompressed.Seek(0, SeekOrigin.Begin);
+                    return new StreamByteSource(decompressed);
                 }
             }
 
