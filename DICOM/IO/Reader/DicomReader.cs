@@ -148,6 +148,8 @@ namespace Dicom.IO.Reader
 
             private bool badPrivateSequence;
 
+            private int badPrivateSequenceDepth;
+
             private int fragmentItem;
 
             private readonly object locker;
@@ -564,6 +566,9 @@ namespace Dicom.IO.Reader
                         if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
+                            // store the depth of the bad sequence, we only want to switch back once we've processed
+                            // the entire sequence, regardless of any sub-sequences.
+                            this.badPrivateSequenceDepth = this.sequenceDepth;
                             this.isExplicitVR = !this.isExplicitVR;
                         }
                         break;
@@ -705,6 +710,9 @@ namespace Dicom.IO.Reader
                         if (IsPrivateSequenceBad(source, this.length, this.isExplicitVR))
                         {
                             this.badPrivateSequence = true;
+                            // store the depth of the bad sequence, we only want to switch back once we've processed
+                            // the entire sequence, regardless of any sub-sequences.
+                            this.badPrivateSequenceDepth = this.sequenceDepth;
                             this.isExplicitVR = !this.isExplicitVR;
                         }
                         break;
@@ -859,7 +867,9 @@ namespace Dicom.IO.Reader
                             source.PopMilestone();
                         }
                         this.observer.OnEndSequence();
-                        if (this.badPrivateSequence)
+                        // #565 Only reset the badPrivate sequence if we're in the correct depth
+                        // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
+                        if (this.badPrivateSequence && this.sequenceDepth == this.badPrivateSequenceDepth)
                         {
                             this.isExplicitVR = !this.isExplicitVR;
                             this.badPrivateSequence = false;
@@ -880,7 +890,9 @@ namespace Dicom.IO.Reader
 
                         // end of sequence
                         this.observer.OnEndSequence();
-                        if (this.badPrivateSequence)
+                        // #565 Only reset the badPrivate sequence if we're in the correct depth
+                        // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
+                        if (this.badPrivateSequence && this.sequenceDepth == this.badPrivateSequenceDepth)
                         {
                             this.isExplicitVR = !this.isExplicitVR;
                             this.badPrivateSequence = false;
@@ -925,7 +937,9 @@ namespace Dicom.IO.Reader
                     {
                         // end of sequence
                         this.observer.OnEndSequence();
-                        if (this.badPrivateSequence)
+                        // #565 Only reset the badPrivate sequence if we're in the correct depth
+                        // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
+                        if (this.badPrivateSequence && this.sequenceDepth == this.badPrivateSequenceDepth)
                         {
                             this.isExplicitVR = !this.isExplicitVR;
                             this.badPrivateSequence = false;
@@ -969,7 +983,9 @@ namespace Dicom.IO.Reader
                     {
                         // end of sequence
                         this.observer.OnEndSequence();
-                        if (this.badPrivateSequence)
+                        // #565 Only reset the badPrivate sequence if we're in the correct depth
+                        // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
+                        if (this.badPrivateSequence && this.sequenceDepth == this.badPrivateSequenceDepth)
                         {
                             this.isExplicitVR = !this.isExplicitVR;
                             this.badPrivateSequence = false;
@@ -991,7 +1007,9 @@ namespace Dicom.IO.Reader
                 }
 
                 this.observer.OnEndSequence();
-                if (this.badPrivateSequence)
+                // #565 Only reset the badPrivate sequence if we're in the correct depth
+                // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
+                if (this.badPrivateSequence && this.sequenceDepth == this.badPrivateSequenceDepth)
                 {
                     this.isExplicitVR = !this.isExplicitVR;
                     this.badPrivateSequence = false;
