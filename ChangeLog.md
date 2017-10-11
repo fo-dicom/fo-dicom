@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* DicomReader: Prevent premature exit from privateBadSequence when private sequence contains sub-sequence (#565 #626)
 * Saving a file with deflated transfer syntax occasionally fails (#621)
 * Anonymizer not removing Sequences (#610 #611)
 * Deprecate DicomClient.WaitForAssociation and provide association events (#605 #609)
