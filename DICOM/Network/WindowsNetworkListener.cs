@@ -24,8 +24,11 @@ namespace Dicom.Network
         private readonly string _port;
 
         private TaskCompletionSource<INetworkStream> _streamTcs;
+        private CancellationTokenRegistration _tokenRegistration;
 
         private StreamSocketListener _listener;
+
+        private StreamSocket _socket;
 
         #endregion
 
@@ -70,12 +73,15 @@ namespace Dicom.Network
         {
             _streamTcs?.TrySetCanceled();
             _streamTcs = null;
+            _tokenRegistration.Dispose();
             _listener.ConnectionReceived -= OnConnectionReceived;
             _listener.Dispose();
+            _socket?.Dispose();
+            _socket = null;
         }
 
         /// <inheritdoc />
-        public Task<INetworkStream> AcceptNetworkStreamAsync(
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
             CancellationToken token)
@@ -86,12 +92,13 @@ namespace Dicom.Network
                     "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
-            _streamTcs?.TrySetCanceled();
+            await (_streamTcs?.Task ?? Task.FromResult(default(INetworkStream))).ConfigureAwait(false);
+            _tokenRegistration.Dispose();
 
             _streamTcs = new TaskCompletionSource<INetworkStream>();
-            token.Register(() => _streamTcs?.TrySetCanceled());
+            _tokenRegistration = token.Register(() => _streamTcs?.TrySetCanceled(token), false);
 
-            return _streamTcs.Task;
+            return await _streamTcs.Task;
         }
 
         /// <summary>
@@ -102,8 +109,10 @@ namespace Dicom.Network
         /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            _streamTcs?.TrySetResult(new WindowsNetworkStream(args.Socket));
-            _streamTcs = null;
+            _socket?.Dispose();
+            _socket = args.Socket;
+            _tokenRegistration.Dispose();
+            _streamTcs?.TrySetResult(new WindowsNetworkStream(_socket));
         }
 
         #endregion
