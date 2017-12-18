@@ -41,7 +41,7 @@ namespace C_Store_SCU
             DicomCStoreRequest cstoreReq = new DicomCStoreRequest(file);
             DicomClient client = new DicomClient();
             client.AddRequest(cstoreReq);
-            client.Send("127.0.0.1", 104, false, string.Format("ZSSURE_{0}",index), "STORESCP");
+            client.Send("192.168.0.101",11112, false, string.Format("ZSSURE_{0}",index), "STORESCP");
         }
     }
 }

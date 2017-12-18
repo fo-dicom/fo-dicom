@@ -59,13 +59,19 @@ namespace Dicom.Network {
 						tx.AddRange(cstore.AdditionalTransferSyntaxes);
 					tx.Add(DicomTransferSyntax.ExplicitVRLittleEndian);
 					tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
+                    foreach (var t in tx)
+                    {
+                        Add(cstore.SOPClassUID, t);
+                    }
 					
-					Add(cstore.SOPClassUID, tx.ToArray());
 				}
 			} else {
 				var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
-				if (pc == null)
-					Add(request.SOPClassUID, DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian);
+                if (pc == null)
+                {
+                    Add(request.SOPClassUID, DicomTransferSyntax.ExplicitVRLittleEndian);
+                    Add(request.SOPClassUID, DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
 			}
 		}
 
