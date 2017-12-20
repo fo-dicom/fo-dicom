@@ -846,6 +846,17 @@ namespace Dicom.Network
                                     x.Result == DicomPresentationContextResult.Accept &&
                                     x.AbstractSyntax == msg.SOPClassUID);
                 }
+                else if (msg is DicomResponse)
+                {
+                    //the presentation context should be set already from the request object
+                    pc = msg.PresentationContext;
+
+                    //fail safe if no presentation context is already assigned to the response (is this going to happen)
+                    if (pc == null)
+                    {
+                        pc = this.Association.PresentationContexts.FirstOrDefault<DicomPresentationContext>(x => (x.Result == DicomPresentationContextResult.Accept) && (x.AbstractSyntax == msg.SOPClassUID));
+                    }
+                }
                 else
                 {
                     pc =
@@ -993,7 +1004,7 @@ namespace Dicom.Network
                             dimse.Stream.IsCommand = false;
 
                             writer = new DicomWriter(
-                                dimse.PresentationContext.AcceptedTransferSyntax,
+                                pc.AcceptedTransferSyntax,
                                 DicomWriteOptions.Default,
                                 new StreamByteTarget(dimse.Stream));
 
