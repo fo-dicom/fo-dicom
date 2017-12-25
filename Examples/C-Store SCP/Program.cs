@@ -20,7 +20,7 @@ namespace Dicom.CStoreSCP
 
 
             // start DICOM server on port 11112
-            var server = new DicomServer<CStoreSCP>(11112);
+            var server = new DicomServer<CStoreSCP>(11112, null, new DicomServiceOptions() { OnePDVPerPDU = true });
 
 
             // end process

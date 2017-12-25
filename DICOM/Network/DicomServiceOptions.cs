@@ -22,6 +22,7 @@ namespace Dicom.Network
             ThreadPoolLinger = 200;
             IgnoreSslPolicyErrors = false;
             TcpNoDelay = true;
+            OnePDVPerPDU = false;
         }
 
         /// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
@@ -47,5 +48,8 @@ namespace Dicom.Network
 
         /// <summary>Enable or disable TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
+
+        /// <summary>Write one PDV per PDU regardless of whether another PDV would fit in the PDU. Works around common bugs in other implementations.</summary>
+        public bool OnePDVPerPDU { get; set; }
     }
 }

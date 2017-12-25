@@ -23,20 +23,21 @@ namespace Print_SCU
             var printJob = new PrintJob("DICOM PRINT JOB")
                                {
                                    RemoteAddress = "localhost",
-                                   RemotePort = 8000,
+                                   RemotePort = 8431,
                                    CallingAE = "PRINTSCU",
                                    CalledAE = "PRINTSCP"
                                };
 
+            printJob.FilmSession.IsColor = true; //set to true to print in color
+
             printJob.StartFilmBox("STANDARD\\1,1", "PORTRAIT", "A4");
 
-            printJob.FilmSession.IsColor = false; //set to true to print in color
 
             //greyscale
-            var dicomImage = new DicomImage(@"Data\1.3.51.5155.1353.20020423.1100947.1.0.0.dcm");
+            //var dicomImage = new DicomImage(@"Data\1.3.51.5155.1353.20020423.1100947.1.0.0.dcm");
 
             //color
-            //var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
+            var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
 
             var bitmap = dicomImage.RenderImage().As<Bitmap>();
 

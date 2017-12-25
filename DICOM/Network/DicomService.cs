@@ -980,9 +980,9 @@ namespace Dicom.Network
                         //	   element values and changes in transfer syntax.
                         msg.Dataset.RemoveGroupLengths();
 
-                        if (msg.Dataset.InternalTransferSyntax != dimse.PresentationContext.AcceptedTransferSyntax)
+                        if (msg.Dataset.InternalTransferSyntax != pc.AcceptedTransferSyntax)
                             msg.Dataset =
-                                msg.Dataset.ChangeTransferSyntax(dimse.PresentationContext.AcceptedTransferSyntax);
+                                msg.Dataset.ChangeTransferSyntax(pc.AcceptedTransferSyntax);
                     }
 
                     Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
@@ -1264,7 +1264,7 @@ namespace Dicom.Network
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
                     // is the current PDU at its maximum size or do we have room for another PDV?
-                    if ((CurrentPduSize() + 6) >= _max || (!_command && last)) await this.WritePDUAsync(last).ConfigureAwait(false);
+                    if (_service.Options.OnePDVPerPDU || (CurrentPduSize() + 6) >= _max || (!_command && last)) await this.WritePDUAsync(last).ConfigureAwait(false);
 
                     // Max PDU Size - Current Size - Size of PDV header
                     uint max = _max - CurrentPduSize() - 6;
