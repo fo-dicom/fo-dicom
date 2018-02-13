@@ -1260,7 +1260,7 @@ namespace Dicom.Network
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
         public virtual Task RunAsync()
         {
-            if (_isInitialized) return Task.FromResult(false);
+            if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
             _isInitialized = true;
 
             return ListenAndProcessPDUAsync();
@@ -1271,7 +1271,7 @@ namespace Dicom.Network
         /// </summary>
         protected virtual Task OnSendQueueEmptyAsync()
         {
-            return Task.FromResult(false);
+            return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
         }
 
         #endregion
