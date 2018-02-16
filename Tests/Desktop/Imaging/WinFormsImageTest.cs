@@ -32,6 +32,44 @@ namespace Dicom.Imaging
             Assert.Throws(typeof(DicomImagingException), () => image.As<ImageSource>());
         }
 
+
+        /// <summary>
+        /// bitmap should be good after disposing WinFormsImage
+        /// see issue #634.
+        /// </summary>
+        [Fact]
+        public void Disposing_WinFormsImage_DoesNot_Harm_Acquired_Bitmap()
+        {
+            Bitmap bitmap;
+            using (var image = new WinFormsImage(100, 100))
+            {
+                image.Render(3, false, false, 0);
+                bitmap = image.AsBitmap();
+            }
+            Assert.Equal(100, bitmap.Width);
+        }
+
+        /// <summary>
+        /// bitmap should be good after disposing WinFormsImage
+        /// see issue #634.
+        /// </summary>
+        [Fact]
+        public void Disposing_Bitmap_DoesNot_Harm_WinFormsImage()
+        {
+            Bitmap bitmap;
+            using (var image = new WinFormsImage(100, 100))
+            {
+                image.Render(3, false, false, 0);
+
+                //  acquire bitmap #1, dispose immediately.
+                using (image.AsBitmap()) { }
+
+                //  acquire bitmap #2.
+                bitmap = image.AsBitmap();
+            }
+            Assert.Equal(100, bitmap.Width);
+        }
+
         #endregion
     }
 }
