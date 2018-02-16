@@ -41,22 +41,27 @@ namespace Dicom.Imaging
         public void Disposing_WinFormsImage_DoesNot_Harm_Acquired_Bitmap()
         {
             Bitmap bitmap;
+
             using (var image = new WinFormsImage(100, 100))
             {
+                //  render and acquire bitmap
                 image.Render(3, false, false, 0);
                 bitmap = image.AsBitmap();
             }
+
+            //  bitmap should be in good shape after disposing WinFormsImage.
             Assert.Equal(100, bitmap.Width);
         }
 
         /// <summary>
-        /// bitmap should be good after disposing WinFormsImage
+        /// WinFormsImage should be good after disposing acquired bitmap.
         /// see issue #634.
         /// </summary>
         [Fact]
         public void Disposing_Bitmap_DoesNot_Harm_WinFormsImage()
         {
             Bitmap bitmap;
+
             using (var image = new WinFormsImage(100, 100))
             {
                 image.Render(3, false, false, 0);
@@ -64,10 +69,47 @@ namespace Dicom.Imaging
                 //  acquire bitmap #1, dispose immediately.
                 using (image.AsBitmap()) { }
 
-                //  acquire bitmap #2.
+                //  acquire bitmap #2. must not fail.
                 bitmap = image.AsBitmap();
             }
+
+            //  bitmap #2 should be in good shape.
             Assert.Equal(100, bitmap.Width);
+        }
+
+        /// <summary>
+        /// Bitmap does not crash each other.
+        /// see issue #634.
+        /// </summary>
+        [Fact]
+        public void Disposing_Bitmap_DoesNot_Harm_Bitmap()
+        {
+            Bitmap bitmap1;
+            Bitmap bitmap2;
+
+            using (var image = new WinFormsImage(100, 100))
+            {
+                image.Render(3, false, false, 0);
+
+                //  acquire bitmap #1.
+                bitmap1 = image.AsBitmap();
+
+                //  acquire bitmap #2.
+                bitmap2 = image.AsBitmap();
+
+            }
+
+            //  bitmap #1 should be in good shape.
+            Assert.Equal(100, bitmap1.Width);
+
+            //  bitmap #2 should be in good shape.
+            Assert.Equal(100, bitmap2.Width);
+
+            //  dispose bitmap #1
+            bitmap1.Dispose();
+
+            //  bitmap #2 should be still in good shape.
+            Assert.Equal(100, bitmap2.Width);
         }
 
         #endregion
