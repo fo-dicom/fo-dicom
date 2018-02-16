@@ -165,6 +165,31 @@ namespace Dicom.Imaging
             }
         }
 
+        /// <summary>
+        /// return cloned bitmap
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <remarks>this.image must not be exposed (in)directly. see issue #634.</remarks>
+        public override T As<T>()
+        {
+            //  invoke base implementation and clone.
+            //  as we inherits ImageDisposableBase<Bitmap> specifically,
+            //  base return value could be casted to Bitmap safely.
+            return (T)(object)CloneBitmap(base.As<T>() as Bitmap);
+        }
+
+        /// <summary>
+        /// clone given bitmap
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <returns>Cloned bitmap. null returns null.</returns>
+        private static Bitmap CloneBitmap(Bitmap bitmap)
+        {
+            //  Clone returns object. we want Bitmap.
+            return (Bitmap)bitmap?.Clone();
+        }
+
         #endregion
     }
 }
