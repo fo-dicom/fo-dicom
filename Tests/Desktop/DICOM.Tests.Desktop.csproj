@@ -118,6 +118,7 @@
     <Compile Include="Bugs\GH549.cs" />
     <Compile Include="Bugs\GH553.cs" />
     <Compile Include="Bugs\GH597.cs" />
+    <Compile Include="Bugs\GH625.cs" />
     <Compile Include="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
