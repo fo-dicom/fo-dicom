@@ -406,7 +406,10 @@ namespace Dicom.Network
                 {
                     await reader.LoadAsync((uint)count).AsTask().ConfigureAwait(false);
                     var length = Math.Min((int)reader.UnconsumedBufferLength, count);
-                    reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
+                    if (length > 0)
+                    {
+                        reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
+                    }
                     reader.DetachStream();
                     return length;
                 }

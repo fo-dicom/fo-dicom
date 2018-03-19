@@ -23,7 +23,8 @@ namespace Dicom.Network
 
         private readonly string _port;
 
-        private readonly ManualResetEventSlim _handle;
+        private TaskCompletionSource<INetworkStream> _streamTcs;
+        private CancellationTokenRegistration _tokenRegistration;
 
         private StreamSocketListener _listener;
 
@@ -49,10 +50,9 @@ namespace Dicom.Network
             {
                 addr = new HostName(NetworkManager.IPv4Any);
             }
-            _ipAddress = addr;
+            _ipAddress = addr.CanonicalName == NetworkManager.IPv4Any ? null : addr;
 
             _port = port.ToString(CultureInfo.InvariantCulture);
-            _handle = new ManualResetEventSlim(false);
         }
 
         #endregion
@@ -65,21 +65,23 @@ namespace Dicom.Network
             _listener = new StreamSocketListener();
             _listener.ConnectionReceived += OnConnectionReceived;
 
-            _socket = null;
-            _handle.Reset();
             await _listener.BindEndpointAsync(_ipAddress, _port).AsTask().ConfigureAwait(false);
         }
 
         /// <inheritdoc />
         public void Stop()
         {
+            _streamTcs?.TrySetCanceled();
+            _streamTcs = null;
+            _tokenRegistration.Dispose();
             _listener.ConnectionReceived -= OnConnectionReceived;
             _listener.Dispose();
-            _handle.Set();
+            _socket?.Dispose();
+            _socket = null;
         }
 
         /// <inheritdoc />
-        public Task<INetworkStream> AcceptNetworkStreamAsync(
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
             CancellationToken token)
@@ -90,20 +92,13 @@ namespace Dicom.Network
                     "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
-            INetworkStream networkStream;
-            try
-            {
-                _handle.Wait(token);
-                networkStream = _socket == null ? null : new WindowsNetworkStream(_socket);
-            }
-            catch
-            {
-                networkStream = null;
-            }
+            await (_streamTcs?.Task ?? Task.FromResult(default(INetworkStream))).ConfigureAwait(false);
+            _tokenRegistration.Dispose();
 
-            _handle.Reset();
+            _streamTcs = new TaskCompletionSource<INetworkStream>();
+            _tokenRegistration = token.Register(() => _streamTcs?.TrySetCanceled(token), false);
 
-            return Task.FromResult(networkStream);
+            return await _streamTcs.Task;
         }
 
         /// <summary>
@@ -114,8 +109,10 @@ namespace Dicom.Network
         /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
+            _socket?.Dispose();
             _socket = args.Socket;
-            _handle.Set();
+            _tokenRegistration.Dispose();
+            _streamTcs?.TrySetResult(new WindowsNetworkStream(_socket));
         }
 
         #endregion
