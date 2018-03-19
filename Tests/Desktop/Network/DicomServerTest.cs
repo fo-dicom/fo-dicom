@@ -201,11 +201,15 @@ namespace Dicom.Network
         [Fact, TestPriority(1)]
         public void Send_PrivateNotRegisteredSOPClass_SendFails()
         {
+            var uid = new DicomUID("1.1.1.1", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
+            DicomDataset ds = new DicomDataset(
+               new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
+               new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\GH355.dcm");
+                var request = new DicomCStoreRequest(new DicomFile(ds));
                 request.OnResponseReceived = (req, res) =>
                     { status = res.Status; };
 
@@ -221,14 +225,17 @@ namespace Dicom.Network
         [Fact, TestPriority(2)]
         public void Send_PrivateRegisteredSOPClass_SendSucceeds()
         {
-            var uid = new DicomUID("1.3.46.670589.11.0.0.12.1", "Private MR Spectrum Storage", DicomUidType.SOPClass);
+            var uid = new DicomUID("1.1.1.1", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
             DicomUID.Register(uid);
+            DicomDataset ds = new DicomDataset(
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
 
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\GH355.dcm");
+                var request = new DicomCStoreRequest(new DicomFile(ds));
                 request.OnResponseReceived = (req, res) =>
                     { status = res.Status; };
 
