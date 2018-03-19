@@ -7,38 +7,54 @@ using System.Linq;
 
 namespace Dicom.IO.Buffer
 {
+    /// <summary>
+    /// Implementation of an <see cref="IByteBuffer"/> consisting of a collection of <see cref="IByteBuffer"/> instances.
+    /// </summary>
     public class CompositeByteBuffer : IByteBuffer
     {
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="CompositeByteBuffer"/> class.
+        /// </summary>
+        /// <param name="buffers">Collection of buffers to initially constitute the <see cref="CompositeByteBuffer"/> instance.</param>
+        public CompositeByteBuffer(IEnumerable<IByteBuffer> buffers)
+        {
+            Buffers = new List<IByteBuffer>(buffers);
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="CompositeByteBuffer"/> class.
+        /// </summary>
+        /// <param name="buffers">Array of buffers to initially constitute the <see cref="CompositeByteBuffer"/> instance.</param>
         public CompositeByteBuffer(params IByteBuffer[] buffers)
         {
             Buffers = new List<IByteBuffer>(buffers);
         }
 
-        public IList<IByteBuffer> Buffers { get; private set; }
+        #endregion
 
-        public bool IsMemory
-        {
-            get
-            {
-                return true;
-            }
-        }
+        #region PROPERTIES
 
-        public uint Size
-        {
-            get
-            {
-                return (uint)Buffers.Sum(x => x.Size);
-            }
-        }
+        /// <summary>
+        /// Gets the collection of <see cref="IByteBuffer"/> constituting the <see cref="CompositeByteBuffer"/>.
+        /// </summary>
+        public IList<IByteBuffer> Buffers { get; }
 
+        /// <inheritdoc />
+        public bool IsMemory => true;
+
+        /// <inheritdoc />
+        public uint Size => (uint)Buffers.Sum(x => x.Size);
+
+        /// <inheritdoc />
         public byte[] Data
         {
             get
             {
-                byte[] data = new byte[Size];
-                int offset = 0;
-                foreach (IByteBuffer buffer in Buffers)
+                var data = new byte[Size];
+                var offset = 0;
+                foreach (var buffer in Buffers)
                 {
                     System.Buffer.BlockCopy(buffer.Data, 0, data, offset, (int)buffer.Size);
                     offset += (int)buffer.Size;
@@ -47,16 +63,21 @@ namespace Dicom.IO.Buffer
             }
         }
 
+        #endregion
+
+        #region METHODS
+
+        /// <inheritdoc />
         public byte[] GetByteRange(int offset, int count)
         {
-            int pos = 0;
+            var pos = 0;
             for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++) offset -= (int)Buffers[pos].Size;
 
-            int offset2 = 0;
-            byte[] data = new byte[count];
+            var offset2 = 0;
+            var data = new byte[count];
             for (; pos < Buffers.Count && count > 0; pos++)
             {
-                int remain = Math.Min((int)Buffers[pos].Size - offset, count);
+                var remain = Math.Min((int)Buffers[pos].Size - offset, count);
 
                 if (Buffers[pos].IsMemory)
                 {
@@ -73,7 +94,7 @@ namespace Dicom.IO.Buffer
 
                 else
                 {
-                    byte[] temp = Buffers[pos].GetByteRange(offset, remain);
+                    var temp = Buffers[pos].GetByteRange(offset, remain);
                     System.Buffer.BlockCopy(temp, 0, data, offset2, remain);
                 }
 
@@ -84,5 +105,7 @@ namespace Dicom.IO.Buffer
 
             return data;
         }
+
+        #endregion
     }
 }

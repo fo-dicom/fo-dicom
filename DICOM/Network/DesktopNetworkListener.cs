@@ -16,9 +16,9 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly TcpListener listener;
+        private readonly TcpListener _listener;
 
-        private X509Certificate certificate = null;
+        private X509Certificate _certificate = null;
 
         #endregion
 
@@ -27,43 +27,36 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="DesktopNetworkListener"/> class. 
         /// </summary>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">
         /// TCP/IP port to listen to.
         /// </param>
-        internal DesktopNetworkListener(int port)
+        internal DesktopNetworkListener(string ipAddress, int port)
         {
-            this.listener = new TcpListener(IPAddress.Any, port);
+            IPAddress addr;
+            if (!IPAddress.TryParse(ipAddress, out addr)) addr = IPAddress.Any;
+
+            _listener = new TcpListener(addr, port);
         }
 
         #endregion
 
         #region METHODS
 
-        /// <summary>
-        /// Start listening.
-        /// </summary>
-        /// <returns>An await:able <see cref="Task"/>.</returns>
+        /// <inheritdoc />
         public Task StartAsync()
         {
-            this.listener.Start();
+            _listener.Start();
             return Task.FromResult(0);
         }
 
-        /// <summary>
-        /// Stop listening.
-        /// </summary>
+        /// <inheritdoc />
         public void Stop()
         {
-            this.listener.Stop();
+            _listener.Stop();
         }
 
-        /// <summary>
-        /// Wait until a network stream is trying to connect, and return the accepted stream.
-        /// </summary>
-        /// <param name="certificateName">Certificate name of authenticated connections.</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <param name="token">Cancellation token.</param>
-        /// <returns>Connected network stream.</returns>
+        /// <inheritdoc />
         public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
@@ -73,7 +66,7 @@ namespace Dicom.Network
             {
                 var awaiter =
                     await
-                    Task.WhenAny(this.listener.AcceptTcpClientAsync(), Task.Delay(-1, token)).ConfigureAwait(false);
+                    Task.WhenAny(_listener.AcceptTcpClientAsync(), Task.Delay(-1, token)).ConfigureAwait(false);
 
                 var tcpClientTask = awaiter as Task<TcpClient>;
                 if (tcpClientTask != null)
@@ -81,12 +74,12 @@ namespace Dicom.Network
                     var tcpClient = tcpClientTask.Result;
                     tcpClient.NoDelay = noDelay;
 
-                    if (!string.IsNullOrEmpty(certificateName) && this.certificate == null)
+                    if (!string.IsNullOrEmpty(certificateName) && _certificate == null)
                     {
-                        this.certificate = GetX509Certificate(certificateName);
+                        _certificate = GetX509Certificate(certificateName);
                     }
 
-                    return new DesktopNetworkStream(tcpClient, this.certificate);
+                    return new DesktopNetworkStream(tcpClient, _certificate);
                 }
 
                 return null;

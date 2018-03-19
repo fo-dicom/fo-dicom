@@ -280,6 +280,12 @@ namespace Dicom.IO.Writer
 
             if (_syntax.IsExplicitVR && vr != DicomVR.NONE)
             {
+                // Comply with CP-1066 (#597)
+                if (vr.Is16bitLength && length > 0xfffe)
+                {
+                    vr = DicomVR.UN;
+                }
+
                 _target.Write((byte)vr.Code[0]);
                 _target.Write((byte)vr.Code[1]);
 

@@ -322,17 +322,17 @@ namespace Dicom.Imaging
         /// <returns>New instance of DicomPixelData</returns>
         public static DicomPixelData Create(DicomDataset dataset, bool newPixelData = false)
         {
-            var syntax = dataset.InternalTransferSyntax;
-
             if (newPixelData)
             {
+                var syntax = dataset.InternalTransferSyntax;
                 if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian) return new OtherWordPixelData(dataset, true);
-                if (syntax.IsEncapsulated) return new EncapsulatedPixelData(dataset, true);
 
                 var bitsAllocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
                 if (bitsAllocated > 16)
                     throw new DicomImagingException(
-                        $"Cannot represent non-encapsulated data with Bits Allocated: {bitsAllocated} > 16");
+                        $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
+
+                if (syntax.IsEncapsulated) return new EncapsulatedPixelData(dataset, bitsAllocated);
 
                 return bitsAllocated > 8
                     ? (DicomPixelData) new OtherWordPixelData(dataset, true)
@@ -344,7 +344,7 @@ namespace Dicom.Imaging
 
             if (item is DicomOtherByte) return new OtherBytePixelData(dataset, false);
             if (item is DicomOtherWord) return new OtherWordPixelData(dataset, false);
-            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset, false);
+            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset);
 
             throw new DicomImagingException("Unexpected or unhandled pixel data element type: {0}", item.GetType());
         }
@@ -354,6 +354,17 @@ namespace Dicom.Imaging
         /// </summary>
         private class OtherBytePixelData : DicomPixelData
         {
+            #region FIELDS
+
+            /// <summary>
+            /// The pixel data other byte (OB) element
+            /// </summary>
+            private readonly DicomOtherByte _element;
+
+            #endregion
+
+            #region CONSTRUCTORS
+
             /// <summary>
             /// Initialize new instance of OtherBytePixelData
             /// </summary>
@@ -365,34 +376,39 @@ namespace Dicom.Imaging
                 if (newPixelData)
                 {
                     NumberOfFrames = 0;
-                    Element = new DicomOtherByte(DicomTag.PixelData, new CompositeByteBuffer());
-                    Dataset.AddOrUpdate(Element);
+                    _element = new DicomOtherByte(DicomTag.PixelData, new CompositeByteBuffer());
+                    Dataset.AddOrUpdate(_element);
                 }
-                else Element = dataset.Get<DicomOtherByte>(DicomTag.PixelData);
+                else _element = dataset.Get<DicomOtherByte>(DicomTag.PixelData);
             }
 
-            /// <summary>
-            /// The pixel data other byte (OB) element
-            /// </summary>
-            private DicomOtherByte Element { get; }
+            #endregion
 
+            #region METODS
+
+            /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
             {
-                if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
 
                 var offset = UncompressedFrameSize * frame;
-                return new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                return new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
             }
 
+            /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
-                if (!(Element.Buffer is CompositeByteBuffer)) throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
+                if (!(_element.Buffer is CompositeByteBuffer))
+                    throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
 
-                var buffer = (CompositeByteBuffer)Element.Buffer;
+                var buffer = (CompositeByteBuffer)_element.Buffer;
                 buffer.Buffers.Add(data);
 
                 NumberOfFrames++;
             }
+
+            #endregion
         }
 
         /// <summary>
@@ -400,6 +416,17 @@ namespace Dicom.Imaging
         /// </summary>
         private class OtherWordPixelData : DicomPixelData
         {
+            #region FIELDS
+
+            /// <summary>
+            /// The pixel data other word (OW) element
+            /// </summary>
+            private readonly DicomOtherWord _element;
+
+            #endregion
+
+            #region CONSTRUCTORS
+
             /// <summary>
             /// Initialize new instance of OtherWordPixelData
             /// </summary>
@@ -411,23 +438,23 @@ namespace Dicom.Imaging
                 if (newPixelData)
                 {
                     NumberOfFrames = 0;
-                    Element = new DicomOtherWord(DicomTag.PixelData, new CompositeByteBuffer());
-                    Dataset.AddOrUpdate(Element);
+                    _element = new DicomOtherWord(DicomTag.PixelData, new CompositeByteBuffer());
+                    Dataset.AddOrUpdate(_element);
                 }
-                else Element = dataset.Get<DicomOtherWord>(DicomTag.PixelData);
+                else _element = dataset.Get<DicomOtherWord>(DicomTag.PixelData);
             }
 
-            /// <summary>
-            /// The pixel data other word (OW) element
-            /// </summary>
-            private DicomOtherWord Element { get; }
+            #endregion
 
+            #region METHODS
+
+            /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
             {
                 if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
 
                 var offset = UncompressedFrameSize * frame;
-                IByteBuffer buffer = new RangeByteBuffer(Element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
 
                 // mainly for GE Private Implicit VR Big Endian
                 if (Syntax.SwapPixelData) buffer = new SwapByteBuffer(buffer, 2);
@@ -435,86 +462,111 @@ namespace Dicom.Imaging
                 return buffer;
             }
 
+            /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
-                if (!(Element.Buffer is CompositeByteBuffer)) throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
+                if (!(_element.Buffer is CompositeByteBuffer)) throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
 
-                var buffer = (CompositeByteBuffer)Element.Buffer;
+                var buffer = (CompositeByteBuffer)_element.Buffer;
 
                 if (Syntax.SwapPixelData) data = new SwapByteBuffer(data, 2);
 
                 buffer.Buffers.Add(data);
                 NumberOfFrames++;
             }
+
+            #endregion
         }
 
         /// <summary>
-        /// Other Byte Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
+        /// Other Byte/Word Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
         /// pixel data
         /// </summary>
         private class EncapsulatedPixelData : DicomPixelData
         {
+            #region FIELDS
+
             /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData
+            /// The pixel data fragment sequence element
             /// </summary>
-            /// <param name="dataset">The source dataset to extract from or create new pixel data for</param>
-            /// <param name="newPixelData">True to create new pixel data, false to read pixel data</param>
-            public EncapsulatedPixelData(DicomDataset dataset, bool newPixelData)
+            private readonly DicomFragmentSequence _element;
+
+            #endregion
+
+            #region CONSTRUCTORS
+
+            /// <summary>
+            /// Initialize new instance of EncapsulatedPixelData with new empty pixel data.
+            /// </summary>
+            /// <param name="dataset">The source dataset where to create new pixel data.</param>
+            /// <param name="bitsAllocated">Bits allocated for the pixel data.</param>
+            public EncapsulatedPixelData(DicomDataset dataset, int bitsAllocated)
                 : base(dataset)
             {
-                if (newPixelData)
-                {
-                    NumberOfFrames = 0;
-                    Element = new DicomOtherByteFragment(DicomTag.PixelData);
-                    Dataset.AddOrUpdate(Element);
-                }
-                else Element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+                NumberOfFrames = 0;
+
+                _element = bitsAllocated > 8
+                    ? (DicomFragmentSequence)new DicomOtherWordFragment(DicomTag.PixelData)
+                    : new DicomOtherByteFragment(DicomTag.PixelData);
+
+                Dataset.AddOrUpdate(_element);
             }
 
             /// <summary>
-            /// The pixel data framgent sequence element
+            /// Initialize new instance of EncapsulatedPixelData based on existing pixel data.
             /// </summary>
-            private DicomFragmentSequence Element { get; }
+            /// <param name="dataset">The source dataset to extract pixel data from.</param>
+            public EncapsulatedPixelData(DicomDataset dataset)
+                : base(dataset)
+            {
+                _element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+            }
 
+            #endregion
+
+            #region METHODS
+
+            /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
             {
                 if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
 
-                IByteBuffer buffer = null;
+                IByteBuffer buffer;
 
                 if (NumberOfFrames == 1)
                 {
-                    if (Element.Fragments.Count == 1) buffer = Element.Fragments[0];
-                    else buffer = new CompositeByteBuffer(Element.Fragments.ToArray());
+                    buffer = _element.Fragments.Count == 1
+                        ? _element.Fragments[0]
+                        : new CompositeByteBuffer(_element.Fragments);
                 }
-                else if (Element.Fragments.Count == NumberOfFrames) buffer = Element.Fragments[frame];
-                else if (Element.OffsetTable.Count == NumberOfFrames)
+                else if (_element.Fragments.Count == NumberOfFrames) buffer = _element.Fragments[frame];
+                else if (_element.OffsetTable.Count == NumberOfFrames)
                 {
-                    var start = Element.OffsetTable[frame];
-                    var stop = (Element.OffsetTable.Count == (frame + 1))
+                    var start = _element.OffsetTable[frame];
+                    var stop = _element.OffsetTable.Count == frame + 1
                                     ? uint.MaxValue
-                                    : Element.OffsetTable[frame + 1];
+                                    : _element.OffsetTable[frame + 1];
 
                     var composite = new CompositeByteBuffer();
 
                     uint pos = 0;
                     var frag = 0;
 
-                    while (pos < start && frag < Element.Fragments.Count)
+                    while (pos < start && frag < _element.Fragments.Count)
                     {
                         pos += 8;
-                        pos += Element.Fragments[frag].Size;
+                        pos += _element.Fragments[frag].Size;
                         frag++;
                     }
 
                     if (pos != start) throw new DicomImagingException("Fragment start position does not match offset table.");
 
-                    while (pos < stop && frag < Element.Fragments.Count)
+                    while (pos < stop && frag < _element.Fragments.Count)
                     {
-                        composite.Buffers.Add(Element.Fragments[frag]);
+                        composite.Buffers.Add(_element.Fragments[frag]);
 
                         pos += 8;
-                        pos += Element.Fragments[frag].Size;
+                        pos += _element.Fragments[frag].Size;
                         frag++;
                     }
 
@@ -534,24 +586,27 @@ namespace Dicom.Imaging
                 return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
             }
 
+            /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
                 NumberOfFrames++;
 
-                var pos = Element.Fragments.Sum(x => (long)x.Size + 8);
+                var pos = _element.Fragments.Sum(x => (long)x.Size + 8);
                 if (pos < uint.MaxValue)
                 {
-                    Element.OffsetTable.Add((uint)pos);
+                    _element.OffsetTable.Add((uint)pos);
                 }
                 else
                 {
                     // do not create an offset table for very large datasets
-                    Element.OffsetTable.Clear();
+                    _element.OffsetTable.Clear();
                 }
 
                 data = EndianByteBuffer.Create(data, Syntax.Endian, BytesAllocated);
-                Element.Fragments.Add(data);
+                _element.Fragments.Add(data);
             }
+
+            #endregion
         }
     }
 }

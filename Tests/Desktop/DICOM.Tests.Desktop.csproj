@@ -31,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>CS0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,6 +41,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>CS0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -111,6 +113,13 @@
     <Compile Include="Bugs\GH364.cs" />
     <Compile Include="Bugs\GH426.cs" />
     <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="Bugs\GH538.cs" />
+    <Compile Include="Bugs\GH526.cs" />
+    <Compile Include="Bugs\GH549.cs" />
+    <Compile Include="Bugs\GH553.cs" />
+    <Compile Include="Bugs\GH597.cs" />
+    <Compile Include="Bugs\GH626.cs" />
+    <Compile Include="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
@@ -182,6 +191,7 @@
     <Compile Include="Log\MessageNameFormatToOrdinalFormatTests.cs" />
     <Compile Include="Network\PDVTest.cs" />
     <Compile Include="Network\Ports.cs" />
+    <Compile Include="Network\SimpleCStoreProvider.cs" />
     <Compile Include="Printing\FilmBoxTest.cs" />
     <Compile Include="Printing\ImageBoxTest.cs" />
     <Compile Include="Printing\PresentationLutTest.cs" />
@@ -215,6 +225,9 @@
   <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH487.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -276,10 +289,25 @@
     <None Include="Test Data\GH227.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test Data\GH538-jpeg14sv1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH610.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH626.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\minimumdict.xml.gz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH340.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\test_720.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH538-jpeg1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

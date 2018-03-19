@@ -1,36 +1,34 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Text;
+
+using Dicom.IO.Buffer;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Dicom.Serialization
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Reflection;
-    using System.Text;
-
-    using Dicom;
-    using IO.Buffer;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
-    using Xunit;
-    using Xunit.Abstractions;
-
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
     public class JsonDicomConverterTest
     {
-        private ITestOutputHelper output_;
+        private readonly ITestOutputHelper _output;
 
         public JsonDicomConverterTest(ITestOutputHelper output)
         {
-            output_ = output;
+            _output = output;
         }
 
         /// <summary>
@@ -96,16 +94,16 @@ namespace Dicom.Serialization
                 }
             });
 
-            output_.WriteLine(
+            _output.WriteLine(
                 $"Looking up keyword with pre-built dictionary: {millisecondsPerCallA} ms for {DicomDictionary.Default.Count()} tests");
 
-            output_.WriteLine(
+            _output.WriteLine(
                 $"Looking up keyword with LINQ: {millisecondsPerCallB} ms for {DicomDictionary.Default.Count()} tests");
 
-            output_.WriteLine(
+            _output.WriteLine(
                 $"Looking up keyword with one dictionary built for all calls: {millisecondsPerCallC} ms for {DicomDictionary.Default.Count()} tests");
 
-            output_.WriteLine(
+            _output.WriteLine(
                 $"Parsing tag with JsonDicomConverter.ParseTag: {millisecondsPerCallD} ms for {DicomDictionary.Default.Count()} tests");
 
             Assert.InRange(millisecondsPerCallD / (1 + millisecondsPerCallC), 0, 4);
@@ -129,8 +127,8 @@ namespace Dicom.Serialization
 
             var includedVRs = target.Select(item => item.ValueRepresentation).ToArray();
 
-            Assert.True(allVRs.All(includedVRs.Contains));
-            Assert.True(includedVRs.All(allVRs.Contains));
+            Assert.Empty(allVRs.Except(includedVRs));
+            Assert.Empty(includedVRs.Except(allVRs));
 
             VerifyJsonTripleTrip(target);
         }
@@ -535,7 +533,7 @@ namespace Dicom.Serialization
                              { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } },
                            };
 
-            target.Add<DicomSequence>(DicomTag.ControlPointSequence, null);
+            target.Add<DicomSequence>(DicomTag.ControlPointSequence, (DicomSequence[])null);
             var beams = new[] { 1, 2, 3 }.Select(beamNumber =>
             {
                 var beam = new DicomDataset();

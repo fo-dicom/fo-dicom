@@ -158,15 +158,6 @@
     <Compile Include="..\..\DICOM\IO\DesktopPath.cs">
       <Link>IO\DesktopPath.cs</Link>
     </Compile>
-    <Compile Include="..\..\DICOM\Network\WindowsNetworkListener.cs">
-      <Link>Network\WindowsNetworkListener.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\WindowsNetworkManager.cs">
-      <Link>Network\WindowsNetworkManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\DICOM\Network\WindowsNetworkStream.cs">
-      <Link>Network\WindowsNetworkStream.cs</Link>
-    </Compile>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
@@ -174,11 +165,11 @@
     <EmbeddedResource Include="Properties\Dicom.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Unity 2017.1.0f3\Editor\Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

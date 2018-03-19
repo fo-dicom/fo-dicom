@@ -112,7 +112,7 @@ namespace Dicom.Network
                 }
                 else
                 {
-                    pcs = pcs.Where(x => x.AcceptedTransferSyntax == cstore.TransferSyntax);
+                    pcs = pcs.Where(x => x.HasTransferSyntax(cstore.TransferSyntax));
                 }
 
                 var pc = pcs.FirstOrDefault();

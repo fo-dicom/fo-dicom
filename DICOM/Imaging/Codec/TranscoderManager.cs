@@ -1,10 +1,10 @@
 // Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+
 namespace Dicom.Imaging.Codec
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Abstract manager class for DICOM transcoder operations.
     /// </summary>
@@ -46,6 +46,29 @@ namespace Dicom.Imaging.Codec
         public static void SetImplementation(TranscoderManager impl)
         {
             implementation = impl;
+        }
+
+        /// <summary>
+        /// Checks whether transcoder provides codec for specified <paramref name="syntax">transfer syntax</paramref>.
+        /// </summary>
+        /// <param name="syntax">Transfer syntax.</param>
+        /// <returns>True if transcoder provides codec for <paramref name="syntax"/>, false otherwise.</returns>
+        public static bool HasCodec(DicomTransferSyntax syntax)
+        {
+            return Codecs.ContainsKey(syntax);
+        }
+
+        /// <summary>
+        /// Checks whether transcoder can convert from <paramref name="inSyntax"/> to <paramref name="outSyntax"/>.
+        /// </summary>
+        /// <param name="inSyntax">Input (decode) transfer syntax.</param>
+        /// <param name="outSyntax">Output (encode) transfer syntax.</param>
+        /// <returns>True if transcoder can convert from <paramref name="inSyntax"/> to <paramref name="outSyntax"/>, 
+        /// false otherwise.</returns>
+        public static bool CanTranscode(DicomTransferSyntax inSyntax, DicomTransferSyntax outSyntax)
+        {
+            return (!inSyntax.IsEncapsulated || Codecs.ContainsKey(inSyntax)) &&
+                   (!outSyntax.IsEncapsulated || Codecs.ContainsKey(outSyntax));
         }
 
         /// <summary>

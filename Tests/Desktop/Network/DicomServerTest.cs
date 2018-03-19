@@ -1,18 +1,21 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
+
+using Xunit;
+
 using Dicom.Helpers;
 
 namespace Dicom.Network
 {
-    using System.Linq;
-    using System.Threading;
-
-    using Xunit;
-
     [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("Dicom.Helpers.PriorityOrderer", "DICOM [Unit Tests]")]
     public class DicomServerTest
     {
+        #region Unit Tests
+
         [Fact]
         public void Constructor_EstablishTwoWithSamePort_ShouldYieldAccessibleException()
         {
@@ -267,5 +270,122 @@ namespace Dicom.Network
                 Assert.Equal(0, actual);
             }
         }
+
+        [Fact]
+        public void Send_LoopbackListenerKnownSOPClass_SendSucceeds()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        [Fact]
+        public void Send_Ipv6AnyListenerKnownSOPClass_SendSucceeds()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
+            {
+                DicomStatus status = null;
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                request.OnResponseReceived = (req, res) =>
+                    { status = res.Status; };
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        [Fact]
+        public void Send_FromIpv4ToIpv6AnyListenerKnownSOPClass_SendFails()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
+            {
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<SocketException>(exception);
+            }
+        }
+
+        [Fact]
+        public void Send_FromIpv6ToIpv4AnyListenerKnownSOPClass_SendFails()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
+            {
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+
+                var client = new DicomClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<SocketException>(exception);
+            }
+        }
+
+        [Fact]
+        public void Create_SubclassedServer_SufficientlyCreated()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<DicomCEchoProvider, DicomCEchoProviderServer>(null, port))
+            {
+                Assert.IsType<DicomCEchoProviderServer>(server);
+                Assert.Equal(DicomServer.GetInstance(port), server);
+
+                var status = DicomStatus.UnrecognizedOperation;
+                var handle = new ManualResetEventSlim();
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCEchoRequest
+                {
+                    OnResponseReceived = (req, rsp) =>
+                    {
+                        status = rsp.Status;
+                        handle.Set();
+                    }
+                });
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                handle.Wait(1000);
+                Assert.Equal(DicomStatus.Success, status);
+            }
+        }
+
+        #endregion
+
+        #region Support Types
+
+        public class DicomCEchoProviderServer : DicomServer<DicomCEchoProvider>
+        {
+            protected override DicomCEchoProvider CreateScp(INetworkStream stream)
+            {
+                return new DicomCEchoProvider(stream, null, null);
+            }
+        }
+
+        #endregion
     }
 }

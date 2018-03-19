@@ -82,6 +82,114 @@ namespace Dicom
             Assert.NotEqual(expected, actualNew);
         }
 
-#endregion
+        [Fact]
+        public void Anonymize_UsePredefinedPatientNameAndId_ShouldBeSetInAnonymizedDataset()
+        {
+            const string fileName = "CT1_J2KI";
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            const string expectedName = "fo-dicom";
+            const string expectedId = "GH-575";
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.Profile.PatientName = expectedName;
+            anonymizer.Profile.PatientID = expectedId;
+
+            var newDataset = anonymizer.Anonymize(dataset);
+
+            var actualName = newDataset.Get<string>(DicomTag.PatientName);
+            var actualId = newDataset.Get<string>(DicomTag.PatientID);
+
+            Assert.Equal(expectedName, actualName);
+            Assert.Equal(expectedId, actualId);
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_StudyDate_ShouldBeEmpty()
+        {
+            const string fileName = "CT1_J2KI";
+            var tag = DicomTag.StudyDate;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Get<string>(tag).Length > 0);
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            var expected = new string[0];
+            var actual = dataset.Get<string[]>(tag);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_SeriesDate_ShouldBeRemoved()
+        {
+            const string fileName = "CT1_J2KI";
+            var tag = DicomTag.SeriesDate;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Get<string>(tag).Length > 0);
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            var contains = dataset.Contains(tag);
+            Assert.False(contains);
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_RemovableSequence_ShouldBeRemoved()
+        {
+            const string fileName = "GH610.dcm";
+            var tag = DicomTag.OriginalAttributesSequence;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            Assert.True(dataset.Contains(tag));
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            Assert.False(dataset.Contains(tag));
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_ClearableSequence_ShouldBeCleared()
+        {
+            const string fileName = "GH610.dcm";
+            var tag = DicomTag.PersonIdentificationCodeSequence;
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+            dataset.Add(new DicomSequence(tag,
+                new DicomDataset(new DicomLongString(DicomTag.CodeMeaning, "SOME MEANING"))));
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            Assert.True(dataset.Contains(tag));
+
+            var sequence = dataset.Get<DicomSequence>(tag);
+            Assert.Equal(0, sequence.Items.Count);
+        }
+
+        #endregion
     }
 }
