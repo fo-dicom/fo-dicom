@@ -15,7 +15,7 @@ namespace Dicom
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>
-    public class DicomDataset : IEnumerable<DicomItem>
+    public partial class DicomDataset : IEnumerable<DicomItem>
     {
         #region FIELDS
 
