@@ -737,7 +737,7 @@ namespace Dicom.Network
             /// <inheritdoc />
             public override Task RunAsync()
             {
-                if (_isInitialized) return Task.FromResult(false);
+                if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
                 _isInitialized = true;
 
                 return Task.WhenAll(base.RunAsync(),
