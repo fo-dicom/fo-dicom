@@ -111,6 +111,230 @@ namespace Dicom
 
         #endregion
 
+
+        #region Get-Methods
+
+
+        /// <summary>
+        /// Returns the number of values in the tag item.
+        /// Throws if tag does not exist in the dataset.
+        /// </summary>
+        public int GetValueCount(DicomTag tag)
+        {
+            DicomItem item;
+
+            ValidateDicomTag(tag, out item);
+
+            if (item is DicomElement element)
+            {
+                return element.Count;
+            }
+            else
+            {
+                //TODO: check if this is the correct. 
+                //Are there any other cases where this method can be called for non DicomElement types?
+                throw new DicomDataException("DicomTag doesn't support values.");
+            }
+        }
+
+
+        /// <summary>
+        /// (n is not optional) for obtaining single-value data at index n in a single- or multivalued item.
+        /// n should be non-negative, -1 is not a valid option.
+        /// If tag does not exist, is empty or if n is greater than or equal to the value count, method throws.
+        /// T cannot be an array type.
+        /// </summary>
+        public T GetValue<T>(DicomTag tag, int index)
+        {
+            if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
+            if (index >= GetValueCount(tag)) { throw new ArgumentOutOfRangeException("index", "index must be less than value count"); }
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
+
+
+            return Get(tag, index, false, default(T));
+        }
+
+
+        /// <summary>
+        /// (n is not optional) for obtaining single-value data at index n in a single- or multivalued item.
+        /// n should be non-negative, -1 is not a valid option.
+        /// If tag does not exist, is empty or if n is greater than or equal to the value count, method returns false.
+        /// T cannot be an array type.
+        /// </summary>
+        public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)
+        {
+            if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
+
+            if (!Contains(tag))
+            {
+                elementValue = default(T);
+
+                return false;
+            }
+
+            try
+            {
+                elementValue = Get(tag, index, false, default(T));
+
+                return true;
+            }
+            catch (DicomDataException)
+            {
+                elementValue = default(T);
+
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// for obtaining a full array T[] of values for the tag.
+        /// Throws if the tag does not exist,
+        /// returns empty array if the tag exists but is empty.
+        /// </summary>
+        public T[] GetValues<T>(DicomTag tag)
+        {
+            //TODO: are there cases when this could be valid? byte[][]??
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
+
+            object[] values = new object[0];
+
+            values = Get(tag, -1, false, values);
+
+            return values.Cast<T>().ToArray();
+        }
+
+
+        /// <summary>
+        /// for obtaining a full array T[] of values for the tag.
+        /// returns false if the tag does not exist,
+        /// returns empty array if the tag exists but is empty.
+        /// </summary>
+        public bool TryGetValues<T>(DicomTag tag, out T[] values)
+        {
+            try
+            {
+                values = GetValues<T>(tag);
+
+                return true;
+            }
+            catch (DicomDataException)
+            {
+                values = null;
+
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// for obtaining the single value associated with the tag.
+        /// Throws if the tag does not exist, is empty or multi-valued.
+        /// </summary>
+        public T GetSingleValue<T>(DicomTag tag)
+        {
+            int count = GetValueCount(tag);
+
+            if (count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
+
+            return Get<T>(tag, 0, false, default(T));
+        }
+
+
+        /// <summary>
+        /// for obtaining the single value associated with the tag.
+        /// returns false if the tag does not exist, is empty or multi-valued.
+        /// </summary>
+        public bool TryGetSingleValue<T>(DicomTag tag, out T value)
+        {
+            value = default(T);
+
+            //This check must precede "GetValueCount" as the later will throw if tag doesn't exists
+            if (!Contains(tag))
+            {
+                return false;
+            }
+
+            int count = GetValueCount(tag);
+
+            if (count > 1) { throw new DicomDataException("DICOM element must contains a single value"); }
+
+            if (count == 0)
+            {
+                return false;
+            }
+
+            value = GetSingleValue<T>(tag);
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// Returns whole content if the Tag
+        /// Returns string.empty when tag exists but is empty
+        /// Throws is tag does not exist
+        /// </summary>
+        public string GetString(DicomTag tag)
+        {
+            DicomItem item;
+            ValidateDicomTag(tag, out item);
+
+            // TODO: GetString should always return a string, also for integers, doubles etc ...
+            if (item is DicomStringElement || item is DicomMultiStringElement)
+            {
+                if (((DicomElement)item).Count == 0)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    string[] values;
+
+                    values = Get<string[]>(tag, -1, false, null);
+
+                    return string.Join("\\", values);
+                }
+            }
+            else
+            {
+                throw new DicomDataException("DicomTag must be a string based element");
+            }
+        }
+
+
+        /// <summary>
+        /// Tries to return one whole string containing the complete data.
+        /// returns string.empty when tag exists but is empty
+        /// </summary>
+        public bool TryGetString(DicomTag tag, out string stringValue)
+        {
+            stringValue = null;
+
+            if (!Contains(tag))
+            {
+                return false;
+            }
+
+            stringValue = GetString(tag);
+
+            return true;
+        }
+
+
+        private void ValidateDicomTag(DicomTag tag, out DicomItem item)
+        {
+            if (!_items.TryGetValue(tag, out item))
+            {
+                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+            }
+        }
+
+
+        #endregion
+
+
         #region METHODS
 
         /// <summary>
@@ -122,6 +346,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
         /// <paramref name="n">item index</paramref> is out-of-range.</exception>
+        [Obsolete("Use GetValue or GetValues instead")]
         public T Get<T>(DicomTag tag, int n = 0)
         {
             return Get<T>(tag, n, false, default(T));
@@ -134,6 +359,7 @@ namespace Dicom
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the element corresponding to <paramref name="tag"/> cannot be converted to an integer.</exception>
+        [Obsolete("Use GetValue or GetValues instead")]
         public int Get(DicomTag tag, int defaultValue)
         {
             return Get<int>(tag, 0, true, defaultValue);
@@ -148,6 +374,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <remarks>In code, consider to use this method with implicit type specification, since <typeparamref name="T"/> can be inferred from
         /// <paramref name="defaultValue"/>, e.g. prefer <code>dataset.Get(tag, "Default")</code> over <code>dataset.Get&lt;string&gt;(tag, "Default")</code>.</remarks>
+        [Obsolete("Use GetValue or GetValues instead")]
         public T Get<T>(DicomTag tag, T defaultValue)
         {
             return Get<T>(tag, 0, true, defaultValue);
@@ -161,6 +388,7 @@ namespace Dicom
         /// <param name="n">Item index (for multi-valued elements).</param>
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
+        [Obsolete("Use GetValue or GetValues instead")]
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
             return Get<T>(tag, n, true, defaultValue);

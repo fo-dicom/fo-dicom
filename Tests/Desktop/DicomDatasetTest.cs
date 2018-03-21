@@ -14,7 +14,7 @@ namespace Dicom
     using Xunit;
 
     [Collection("General")]
-    public partial class DicomDatasetTest
+    public class DicomDatasetTest
     {
         #region Unit tests
 

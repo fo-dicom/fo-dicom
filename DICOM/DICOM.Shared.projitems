@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataset.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetGetValueMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetWalker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDateRange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDictionary.cs" />

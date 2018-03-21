@@ -1,19 +1,16 @@
 ﻿// Copyright (c) 2012-2017 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Text;
-
 using Dicom.IO.Buffer;
+using Xunit;
 
 namespace Dicom
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
-    using Xunit;
-
-    public partial class DicomDatasetTest
+    [Collection("General")]
+    public class DicomDatasetGetValuesTest
     {
         #region Unit tests
         [Fact]
