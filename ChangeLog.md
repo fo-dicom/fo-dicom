@@ -49,6 +49,7 @@
 * Pass through unsupported user data during PDU parsing (#242 #443)
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466 #574 #584)
+* WinFormsImage may throw exception on Dispose or on GC (#634)
 
 #### v.3.0.2 (4/20/2017)
 * DicomRejectReason enumerables should be parsed w.r.t. source (#516 #521)
