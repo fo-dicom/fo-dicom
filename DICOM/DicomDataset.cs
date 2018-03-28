@@ -261,7 +261,6 @@ namespace Dicom
                 return false;
             }
 
-
             if (item is DicomElement element)
             {
                 try
@@ -355,25 +354,13 @@ namespace Dicom
         {
             ValidateDicomTag(tag, out DicomItem item);
 
-            // TODO: GetString should always return a string, also for integers, doubles etc ...
-            if (item is DicomStringElement || item is DicomMultiStringElement)
+            if (item is DicomElement element)
             {
-                if (((DicomElement)item).Count == 0)
-                {
-                    return string.Empty;
-                }
-                else
-                {
-                    string[] values;
-
-                    values = Get<string[]>(tag, -1, false, null);
-
-                    return string.Join("\\", values);
-                }
+                return element.Get<string>(-1);
             }
             else
             {
-                throw new DicomDataException("DicomTag must be a string based element");
+                throw new DicomDataException("DicomTag doesn't support values.");
             }
         }
 
@@ -384,16 +371,30 @@ namespace Dicom
         /// </summary>
         public bool TryGetString(DicomTag tag, out string stringValue)
         {
-            stringValue = null;
-
-            if (!Contains(tag))
+            if (!_items.TryGetValue(tag, out DicomItem item))
             {
+                stringValue = null;
                 return false;
             }
 
-            stringValue = GetString(tag);
-
-            return true;
+            if (item is DicomElement element)
+            {
+                try
+                {
+                    stringValue = element.Get<string>(-1);
+                    return true;
+                }
+                catch (DicomDataException)
+                {
+                    stringValue = null;
+                    return false;
+                }
+            }
+            else
+            {
+                stringValue = null;
+                return false;
+            }
         }
 
 
