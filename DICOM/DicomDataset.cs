@@ -115,15 +115,26 @@ namespace Dicom
         #region Get-Methods
 
 
+        public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
+        {
+            if (_items.TryGetValue(tag, out DicomItem dummyItem))
+            {
+                return dummyItem as T;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
         /// <summary>
         /// Returns the number of values in the tag item.
         /// Throws if tag does not exist in the dataset.
         /// </summary>
         public int GetValueCount(DicomTag tag)
         {
-            DicomItem item;
-
-            ValidateDicomTag(tag, out item);
+            ValidateDicomTag(tag, out DicomItem item);
 
             if (item is DicomElement element)
             {
@@ -147,11 +158,25 @@ namespace Dicom
         public T GetValue<T>(DicomTag tag, int index)
         {
             if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
-            if (index >= GetValueCount(tag)) { throw new ArgumentOutOfRangeException("index", "index must be less than value count"); }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
+            ValidateDicomTag(tag, out DicomItem item);
 
-            return Get(tag, index, false, default(T));
+            if (item is DicomElement element)
+            {
+                if (index >= element.Count )
+                {
+                    throw new ArgumentOutOfRangeException("index", "index must be less than value count");
+                }
+                else
+                {
+                    return element.Get<T>(index);
+                }
+            }
+            else
+            {
+                throw new DicomDataException("DicomTag doesn't support values.");
+            }
         }
 
 
@@ -163,26 +188,34 @@ namespace Dicom
         /// </summary>
         public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)
         {
-            if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
-            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
-
-            if (!Contains(tag))
+            if (index < 0 || typeof(T).GetTypeInfo().IsArray)
             {
                 elementValue = default(T);
-
                 return false;
             }
 
-            try
-            {
-                elementValue = Get(tag, index, false, default(T));
-
-                return true;
-            }
-            catch (DicomDataException)
+            if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 elementValue = default(T);
+                return false;
+            }
 
+            if (item is DicomElement element && index < element.Count)
+            {
+                try
+                {
+                    elementValue = element.Get<T>(index);
+                    return true;
+                }
+                catch (DicomDataException)
+                {
+                    elementValue = default(T);
+                    return false;
+                }
+            }
+            else
+            {
+                elementValue = default(T);
                 return false;
             }
         }
@@ -195,14 +228,18 @@ namespace Dicom
         /// </summary>
         public T[] GetValues<T>(DicomTag tag)
         {
-            //TODO: are there cases when this could be valid? byte[][]??
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
 
-            object[] values = new object[0];
+            ValidateDicomTag(tag, out DicomItem item);
 
-            values = Get(tag, -1, false, values);
-
-            return values.Cast<T>().ToArray();
+            if (item is DicomElement element)
+            {
+                return element.Get<T[]>(-1);
+            }
+            else
+            {
+                throw new DicomDataException("DicomTag doesn't support values.");
+            }
         }
 
 
@@ -213,16 +250,34 @@ namespace Dicom
         /// </summary>
         public bool TryGetValues<T>(DicomTag tag, out T[] values)
         {
-            try
-            {
-                values = GetValues<T>(tag);
-
-                return true;
+            if (typeof(T).GetTypeInfo().IsArray) {
+                values = null;
+                return false;
             }
-            catch (DicomDataException)
+
+            if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 values = null;
+                return false;
+            }
 
+
+            if (item is DicomElement element)
+            {
+                try
+                {
+                    values = element.Get<T[]>(-1);
+                    return true;
+                }
+                catch(DicomDataException)
+                {
+                    values = null;
+                    return false;
+                }
+            }
+            else
+            {
+                values = null;
                 return false;
             }
         }
@@ -234,11 +289,20 @@ namespace Dicom
         /// </summary>
         public T GetSingleValue<T>(DicomTag tag)
         {
-            int count = GetValueCount(tag);
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
-            if (count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
+            ValidateDicomTag(tag, out DicomItem item);
 
-            return Get<T>(tag, 0, false, default(T));
+            if (item is DicomElement element)
+            {
+                if (element.Count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
+
+                return element.Get<T>(0);
+            }
+            else
+            {
+                throw new DicomDataException("DicomTag doesn't support values.");
+            }
         }
 
 
@@ -248,26 +312,37 @@ namespace Dicom
         /// </summary>
         public bool TryGetSingleValue<T>(DicomTag tag, out T value)
         {
-            value = default(T);
-
-            //This check must precede "GetValueCount" as the later will throw if tag doesn't exists
-            if (!Contains(tag))
+            if (typeof(T).GetTypeInfo().IsArray)
             {
+                value = default(T);
                 return false;
             }
 
-            int count = GetValueCount(tag);
-
-            if (count > 1) { throw new DicomDataException("DICOM element must contains a single value"); }
-
-            if (count == 0)
+            if (!_items.TryGetValue(tag, out DicomItem item))
             {
+                value = default(T);
                 return false;
             }
 
-            value = GetSingleValue<T>(tag);
+            if (item is DicomElement element && element.Count == 1)
+            {
+                try
+                {
+                    value = element.Get<T>(0);
+                    return true;
+                }
+                catch (DicomDataException)
+                {
+                    value = default(T);
+                    return false;
+                }
+            }
+            else
+            {
+                value = default(T);
+                return false;
+            }
 
-            return true;
         }
 
 
@@ -278,8 +353,7 @@ namespace Dicom
         /// </summary>
         public string GetString(DicomTag tag)
         {
-            DicomItem item;
-            ValidateDicomTag(tag, out item);
+            ValidateDicomTag(tag, out DicomItem item);
 
             // TODO: GetString should always return a string, also for integers, doubles etc ...
             if (item is DicomStringElement || item is DicomMultiStringElement)
@@ -437,7 +511,7 @@ namespace Dicom
                     return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
                 }
 
-                var value = Get(creator, string.Empty);
+                var value = TryGetSingleValue(creator, out string tmpValue) ? tmpValue : string.Empty;
                 if (tag.PrivateCreator.Creator == value) return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
             }
 
