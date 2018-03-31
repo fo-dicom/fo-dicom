@@ -106,6 +106,9 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Desktop\Bugs\GH625.cs">
+      <Link>Bugs\GH625.cs</Link>
+    </Compile>
     <Compile Include="..\Desktop\DicomAnonymizerTest.cs">
       <Link>DicomAnonymizerTest.cs</Link>
     </Compile>

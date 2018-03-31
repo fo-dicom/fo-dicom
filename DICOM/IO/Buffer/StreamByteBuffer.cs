@@ -41,8 +41,6 @@ namespace Dicom.IO.Buffer
 
         public byte[] GetByteRange(int offset, int count)
         {
-            if (offset == 0 && count == Size) return Data;
-
             byte[] buffer = new byte[count];
             Stream.Position = Position + offset;
             Stream.Read(buffer, 0, count);
