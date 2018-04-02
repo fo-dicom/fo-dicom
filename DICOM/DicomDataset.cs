@@ -235,6 +235,19 @@ namespace Dicom
 
 
         /// <summary>
+        /// Gets the <paramref name="index"/>-th element value of the specified <paramref name="tag"/> or the provided <paramref name="defaultValue"/> if the requested value is not contained in the dataset.
+        /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="index">Item index (for multi-valued elements).</param>
+        /// <param name="defaultValue">Value that is returned if the requested element value does not exist.</param>
+        public T GetValueOrDefault<T>(DicomTag tag, int index, T defaultValue)
+        {
+            return TryGetValue<T>(tag, index, out T dummy) ? dummy : defaultValue;
+        }
+
+
+        /// <summary>
         /// Gets the array of element values of the specified <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
@@ -326,7 +339,7 @@ namespace Dicom
 
 
         /// <summary>
-        /// Tries to get the array of element values of the specified <paramref name="tag"/>, whose value multiplicity has to be 1.
+        /// Tries to get the element value of the specified <paramref name="tag"/>, whose value multiplicity has to be 1.
         /// </summary>
         /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
@@ -364,7 +377,18 @@ namespace Dicom
                 value = default(T);
                 return false;
             }
+        }
 
+
+        /// <summary>
+        /// Gets the element value of the specified <paramref name="tag"/>, whose value multiplicity has to be 1, or the provided <paramref name="defaultValue"/> if the element value does not exist.
+        /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="defaultValue">Value that is returned if the requested element value does not exist.</param>
+        public T GetSingleValueOrDefault<T>(DicomTag tag, T defaultValue)
+        {
+            return TryGetSingleValue<T>(tag, out T dummy) ? dummy : defaultValue;
         }
 
 
