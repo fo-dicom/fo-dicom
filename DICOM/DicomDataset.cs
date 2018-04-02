@@ -90,10 +90,7 @@ namespace Dicom
         /// <summary>Gets the DICOM transfer syntax of this dataset.</summary>
         public DicomTransferSyntax InternalTransferSyntax
         {
-            get
-            {
-                return _syntax;
-            }
+            get => _syntax;
             internal set
             {
                 _syntax = value;
@@ -115,6 +112,12 @@ namespace Dicom
         #region Get-Methods
 
 
+        /// <summary>
+        /// Gets the <see cref="DicomItem"/> of the specified <paramref name="tag"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the return value. Must inherit from <see cref="DicomItem"/>.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
         public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
         {
             if (_items.TryGetValue(tag, out DicomItem dummyItem))
@@ -127,11 +130,12 @@ namespace Dicom
             }
         }
 
-
-        /// <summary>
-        /// Returns the number of values in the tag item.
-        /// Throws if tag does not exist in the dataset.
+ 
+        /// <summary>        
+        /// Returns the number of values in the specified <paramref name="tag"/>.
         /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public int GetValueCount(DicomTag tag)
         {
             ValidateDicomTag(tag, out DicomItem item);
@@ -139,6 +143,10 @@ namespace Dicom
             if (item is DicomElement element)
             {
                 return element.Count;
+            }
+            else if (item is DicomSequence sequence)
+            {
+                return sequence.Items.Count;
             }
             else
             {
@@ -150,11 +158,14 @@ namespace Dicom
 
 
         /// <summary>
-        /// (n is not optional) for obtaining single-value data at index n in a single- or multivalued item.
-        /// n should be non-negative, -1 is not a valid option.
-        /// If tag does not exist, is empty or if n is greater than or equal to the value count, method throws.
-        /// T cannot be an array type.
+        /// Gets the <paramref name="index"/>-th element value of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="index">Item index (for multi-valued elements).</param>
+        /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
+        /// <paramref name="index">item index</paramref> is out-of-range.</exception>
         public T GetValue<T>(DicomTag tag, int index)
         {
             if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
@@ -181,11 +192,13 @@ namespace Dicom
 
 
         /// <summary>
-        /// (n is not optional) for obtaining single-value data at index n in a single- or multivalued item.
-        /// n should be non-negative, -1 is not a valid option.
-        /// If tag does not exist, is empty or if n is greater than or equal to the value count, method returns false.
-        /// T cannot be an array type.
+        /// Tries to get the <paramref name="index"/>-th element value of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="index">Item index (for multi-valued elements).</param>
+        /// <param name="elementValue">Element value corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the element value could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)
         {
             if (index < 0 || typeof(T).GetTypeInfo().IsArray)
@@ -222,10 +235,12 @@ namespace Dicom
 
 
         /// <summary>
-        /// for obtaining a full array T[] of values for the tag.
-        /// Throws if the tag does not exist,
-        /// returns empty array if the tag exists but is empty.
+        /// Gets the array of element values of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <returns>Element values corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public T[] GetValues<T>(DicomTag tag)
         {
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
@@ -244,10 +259,12 @@ namespace Dicom
 
 
         /// <summary>
-        /// for obtaining a full array T[] of values for the tag.
-        /// returns false if the tag does not exist,
-        /// returns empty array if the tag exists but is empty.
+        /// Tries to get the array of element values of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="elementValue">Element values corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetValues<T>(DicomTag tag, out T[] values)
         {
             if (typeof(T).GetTypeInfo().IsArray) {
@@ -283,9 +300,12 @@ namespace Dicom
 
 
         /// <summary>
-        /// for obtaining the single value associated with the tag.
-        /// Throws if the tag does not exist, is empty or multi-valued.
+        /// Gets the element value of the specified <paramref name="tag"/>, whose value multiplicity has to be 1.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <returns>Element values corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>, is empty or is multi-valued.</exception>
         public T GetSingleValue<T>(DicomTag tag)
         {
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
@@ -306,9 +326,12 @@ namespace Dicom
 
 
         /// <summary>
-        /// for obtaining the single value associated with the tag.
-        /// returns false if the tag does not exist, is empty or multi-valued.
+        /// Tries to get the array of element values of the specified <paramref name="tag"/>, whose value multiplicity has to be 1.
         /// </summary>
+        /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="elementValue">Element value corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetSingleValue<T>(DicomTag tag, out T value)
         {
             if (typeof(T).GetTypeInfo().IsArray)
@@ -346,10 +369,11 @@ namespace Dicom
 
 
         /// <summary>
-        /// Returns whole content if the Tag
-        /// Returns string.empty when tag exists but is empty
-        /// Throws is tag does not exist
+        /// Gets a string representation of the value of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <returns>String representing the element value corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public string GetString(DicomTag tag)
         {
             ValidateDicomTag(tag, out DicomItem item);
@@ -366,9 +390,11 @@ namespace Dicom
 
 
         /// <summary>
-        /// Tries to return one whole string containing the complete data.
-        /// returns string.empty when tag exists but is empty
+        /// Tries to get a string representation of the value of the specified <paramref name="tag"/>.
         /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="stringValue">String representing the element value corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>false</code> if the dataset does not contain the tag.</returns>
         public bool TryGetString(DicomTag tag, out string stringValue)
         {
             if (!_items.TryGetValue(tag, out DicomItem item))
