@@ -120,6 +120,7 @@ namespace Dicom
         /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
         public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
         {
+            tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem dummyItem))
             {
                 return dummyItem as T;
@@ -127,6 +128,59 @@ namespace Dicom
             else
             {
                 return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the sequence of the specified <paramref name="tag"/>.
+        /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <returns>Sequence of datasets corresponding to <paramref name="tag"/>.</returns>
+        /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or this is not a sequence.</exception>
+        public DicomSequence GetSequence(DicomTag tag)
+        {
+            tag = ValidatePrivate(tag);
+            if (_items.TryGetValue(tag, out DicomItem item))
+            {
+                if (item is DicomSequence sequence)
+                {
+                    return sequence;
+                }
+                else
+                {
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                }
+            }
+            else
+            {
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the sequence of the specified <paramref name="tag"/>.
+        /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="sequence">Sequence of datasets corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the <paramref name="tag"/> could be returned as sequence, <code>false</code> otherwise.</returns>
+        public bool TryGetSequence(DicomTag tag, out DicomSequence sequence)
+        {
+            if (!TryValidatePrivate(ref tag))
+            {
+                sequence = null;
+                return false;
+            }
+            if (_items.TryGetValue(tag, out DicomItem item) && item is DicomSequence dummySequence)
+            {
+                sequence = dummySequence;
+                return true;
+            }
+            else
+            {
+                sequence = null;
+                return false;
             }
         }
 
@@ -138,6 +192,7 @@ namespace Dicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public int GetValueCount(DicomTag tag)
         {
+            tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
             if (item is DicomElement element)
@@ -168,6 +223,7 @@ namespace Dicom
         /// <paramref name="index">item index</paramref> is out-of-range.</exception>
         public T GetValue<T>(DicomTag tag, int index)
         {
+            tag = ValidatePrivate(tag);
             if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
@@ -177,7 +233,7 @@ namespace Dicom
             {
                 if (index >= element.Count )
                 {
-                    throw new ArgumentOutOfRangeException("index", "index must be less than value count");
+                    throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}");
                 }
                 else
                 {
@@ -207,6 +263,11 @@ namespace Dicom
                 return false;
             }
 
+            if (!TryValidatePrivate(ref tag))
+            {
+                elementValue = default(T);
+                return false;
+            }
             if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 elementValue = default(T);
@@ -258,6 +319,7 @@ namespace Dicom
         {
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
 
+            tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
             if (item is DicomElement element)
@@ -285,6 +347,11 @@ namespace Dicom
                 return false;
             }
 
+            if (!TryValidatePrivate(ref tag))
+            {
+                values = null;
+                return false;
+            }
             if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 values = null;
@@ -323,6 +390,7 @@ namespace Dicom
         {
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
+            tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
             if (item is DicomElement element)
@@ -353,6 +421,11 @@ namespace Dicom
                 return false;
             }
 
+            if (!TryValidatePrivate(ref tag))
+            {
+                value = default(T);
+                return false;
+            }
             if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 value = default(T);
@@ -400,6 +473,7 @@ namespace Dicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public string GetString(DicomTag tag)
         {
+            tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
             if (item is DicomElement element)
@@ -421,6 +495,11 @@ namespace Dicom
         /// <returns>Returns <code>false</code> if the dataset does not contain the tag.</returns>
         public bool TryGetString(DicomTag tag, out string stringValue)
         {
+            if (!TryValidatePrivate(ref tag))
+            {
+                stringValue = null;
+                return false;
+            }
             if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 stringValue = null;
@@ -445,6 +524,34 @@ namespace Dicom
                 stringValue = null;
                 return false;
             }
+        }
+
+
+        private DicomTag ValidatePrivate(DicomTag tag)
+        {
+            if (TryValidatePrivate(ref tag))
+            {
+                return tag;
+            }
+            else
+            {
+                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+            }
+        }
+
+
+        private bool TryValidatePrivate(ref DicomTag tag)
+        {
+            if (tag.IsPrivate)
+            {
+                var privateTag = GetPrivateTag(tag, false);
+                if (privateTag == null)
+                {
+                    return false;
+                }
+                tag = privateTag;
+            }
+            return true;
         }
 
 
