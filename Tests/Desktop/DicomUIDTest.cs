@@ -20,7 +20,7 @@ namespace Dicom
         #region Unit tests
 
         [Theory]
-        [MemberData("Uids")]
+        [MemberData(nameof(Uids))]
         public void Enumerate_TestKnownUids_TypeAndRetirementShouldMatch(
             DicomUID uid,
             DicomUidType type,

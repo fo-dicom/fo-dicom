@@ -29,7 +29,7 @@ namespace Dicom.Imaging
         {
             var image = new WPFImage(100, 100);
             image.Render(3, false, false, 0);
-            Assert.Throws(typeof(DicomImagingException), () => image.As<Bitmap>());
+            Assert.Throws<DicomImagingException>(() => image.As<Bitmap>());
         }
 
         #endregion

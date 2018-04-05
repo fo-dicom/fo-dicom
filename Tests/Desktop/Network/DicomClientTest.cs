@@ -244,7 +244,7 @@ namespace Dicom.Network
 
                 var actual = client.WaitForAssociation(10000);
                 task.Wait(10000);
-                Assert.Equal(true, actual);
+                Assert.True(actual);
             }
         }
 
@@ -260,7 +260,7 @@ namespace Dicom.Network
 
                 var actual = client.WaitForAssociation(1);
                 task.Wait(1000);
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -277,7 +277,7 @@ namespace Dicom.Network
                 client.Abort();
                 var actual = client.WaitForAssociation(500);
 
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -293,7 +293,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(10000);
                 task.Wait(10000);
-                Assert.Equal(true, actual);
+                Assert.True(actual);
             }
         }
 
@@ -309,7 +309,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(1);
                 task.Wait(1000);
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -326,7 +326,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(500);
 
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 

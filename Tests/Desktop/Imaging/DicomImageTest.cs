@@ -32,6 +32,7 @@ namespace Dicom.Imaging
             }
         }
 
+        [Fact]
         public void RenderImage_WinFormsManager_AsReturnsBitmap()
         {
             lock (_lock)
