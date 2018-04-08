@@ -141,6 +141,7 @@
     <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
     <Compile Include="Imaging\ImageManagerTest.cs" />
     <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
+    <Compile Include="Imaging\Mathematics\Vector3DTest.cs" />
     <Compile Include="Imaging\LUT\PrecalculatedLUTTest.cs" />
     <Compile Include="Imaging\Mathematics\RectFTest.cs" />
     <Compile Include="Imaging\Render\PixelDataTest.cs" />
