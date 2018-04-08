@@ -295,17 +295,17 @@ namespace Dicom.Imaging.Mathematics
 
         public static Vector3D operator *(double a, Vector3D b)
         {
-            return a * b;
+            return b * a;
         }
 
         public static Vector3D operator *(float a, Vector3D b)
         {
-            return a * b;
+            return b * a;
         }
 
         public static Vector3D operator *(int a, Vector3D b)
         {
-            return a * b;
+            return b * a;
         }
 
         public static Vector3D operator /(Vector3D a, double b)
@@ -590,6 +590,12 @@ namespace Dicom.Imaging.Mathematics
         {
             _point = p.Clone();
             _vector = v.Clone();
+        }
+
+        public Line3D(Point3D p1, Point3D p2)
+        {
+            _point = p1.Clone();
+            _vector = new Vector3D(p2.X - p1.X, p2.Y - p1.Y, p2.Z - p1.Z);
         }
 
         public Line3D(Line3D line)
