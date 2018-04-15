@@ -43,8 +43,11 @@ namespace Dicom.Network
         public void Lookup_WithWarning_ReturnsCorrectStatusClass()
         {
             var statusTest = DicomStatus.Lookup(UPSIsAlreadyCompleted.Code);
+            // Code B306 is not in the known list. So the DicomStatus.Lookup shall return
+            // the original code, but a status and Description that matches best one of
+            // the known states.
             Assert.Equal(UPSIsAlreadyCompleted.State, statusTest.State);
-            Assert.NotEqual(UPSIsAlreadyCompleted.Code, statusTest.Code);
+            Assert.Equal(UPSIsAlreadyCompleted.Code, statusTest.Code);
             Assert.NotEqual(UPSIsAlreadyCompleted.Description, statusTest.Description);
         }
 

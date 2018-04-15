@@ -49,6 +49,7 @@
 * Pass through unsupported user data during PDU parsing (#242 #443)
 * Remove warning messages during build (#33 #438)
 * Online and NuGet packages API documentation (#28 #459 #466 #574 #584)
+* Status code in respose got lost and mapped to an internally known status code (#616)
 * WinFormsImage may throw exception on Dispose or on GC (#634)
 * Fix StackOverflowException in Vector3D multiplication (#640)
 
