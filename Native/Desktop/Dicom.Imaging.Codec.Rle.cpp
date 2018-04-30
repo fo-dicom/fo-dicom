@@ -304,8 +304,9 @@ namespace Dicom {
 								}
 							}
 						}
-
-						if ((i + 2) >= end)
+						// The above uses the postfix i++ operator to increment i. The next run-length is
+						// then {i,i+1} so we need to stop if this is not available and i+1 >= end
+						if ((i + 1) >= end)
 							break;
 					}
 				}
