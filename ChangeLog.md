@@ -1,4 +1,5 @@
 #### v.4.0.0 (TBD)
+* Demonstrate and fix error in RLELossless Transfer Syntax Codec
 * Fixing 2 UWP Networking Bugs (#636, #637)
 * Add List of known Private UID's (#589)
 * DicomReader: Prevent premature exit from privateBadSequence when private sequence contains sub-sequence (#565 #626)
