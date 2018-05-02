@@ -75,7 +75,10 @@ namespace Dicom.Network
             Logger.Info(tempName);
             request.File.Save(tempName);
 
-            return new DicomCStoreResponse(request, DicomStatus.Success);
+            return new DicomCStoreResponse(request, DicomStatus.Success)
+            {
+                Dataset = request.Dataset
+            };
         }
 
         public void OnCStoreRequestException(string tempFileName, Exception e)
