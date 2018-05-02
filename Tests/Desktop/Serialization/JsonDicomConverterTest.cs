@@ -582,5 +582,28 @@ namespace Dicom.Serialization
             var x = BuildAllTypesNullDataset_();
             VerifyJsonTripleTrip(x);
         }
+
+
+        [Fact]
+        public static void TestPrivateTagsDeserialization()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privTag1 = new DicomTag(4013, 0x008, privateCreator);
+            var privTag2 = new DicomTag(4013, 0x009, privateCreator);
+
+            var ds = new DicomDataset
+            {
+                { DicomTag.Modality, "CT" },
+                new DicomCodeString(privTag1, "test1"),
+                { privTag2, "test2" },
+            };
+
+            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
+            var ds2 = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.Equal(ds.Get<string>(privTag1), ds2.Get<string>(privTag1));
+            Assert.Equal(ds.Get<string>(privTag2), ds2.Get<string>(privTag2));
+        }
+
     }
 }
