@@ -800,6 +800,7 @@ namespace Dicom
                 {
                     _formats = new[]
                     {
+                        "yyyyMMddHHmmss",
                         "yyyyMMddHHmmsszzz",
                         "yyyyMMddHHmmsszz",
                         "yyyyMMddHHmmssz",
@@ -809,7 +810,6 @@ namespace Dicom
                         "yyyyMMddHHmmss.fff",
                         "yyyyMMddHHmmss.ff",
                         "yyyyMMddHHmmss.f",
-                        "yyyyMMddHHmmss",
                         "yyyyMMddHHmm",
                         "yyyyMMddHH",
                         "yyyyMMdd",
