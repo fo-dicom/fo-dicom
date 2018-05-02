@@ -11,10 +11,12 @@ namespace Dicom.Network
         [Fact]
         public void SOPInstanceUIDGetter_SOPInstanceUIDNotDefinedInConstruction_IsNotDefinedInRequest()
         {
-            var command = new DicomDataset();
-            command.Add(DicomTag.CommandField, (ushort)DicomCommandField.NCreateRequest);
-            command.Add(DicomTag.MessageID, (ushort)1);
-            command.Add(DicomTag.AffectedSOPClassUID, "1.2.3");
+            var command = new DicomDataset
+            {
+                { DicomTag.CommandField, (ushort)DicomCommandField.NCreateRequest },
+                { DicomTag.MessageID, (ushort)1 },
+                { DicomTag.AffectedSOPClassUID, "1.2.3" }
+            };
 
             var request = new DicomNCreateRequest(command);
             var expected = request.SOPInstanceUID;

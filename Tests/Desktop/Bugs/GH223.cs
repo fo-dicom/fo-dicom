@@ -19,7 +19,7 @@ namespace Dicom.Bugs
             var seq = file.Dataset.Get<DicomSequence>(new DicomTag(0x01f3, 0x1011, "ELSCINT1"));
 
             Assert.Equal(2, seq.Items.Count);
-            Assert.Equal(0, seq.Items[0].Count());
+            Assert.Empty(seq.Items[0]);
             Assert.True(seq.Items[1].Contains(new DicomTag(0x01f3, 0x1024, "ELSCINT1")));
         }
     }

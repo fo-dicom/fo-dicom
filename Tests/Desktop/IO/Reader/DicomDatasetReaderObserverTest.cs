@@ -18,7 +18,7 @@ namespace Dicom.IO.Reader
         #region Unit tests
 
         [Theory]
-        [MemberData("TestData")]
+        [MemberData(nameof(TestData))]
         public void OnElement_ValidData_AddsCorrectTypeToDataset(DicomTag tag, DicomVR vr, string data, Type expected)
         {
             var dataset = new DicomDataset();

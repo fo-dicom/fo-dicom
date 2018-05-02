@@ -81,7 +81,7 @@ namespace Dicom
 
         #region Helper methods
 
-        public static void Get_SingleItem_ReturnsCorrectValue<T>(int index, T expected)
+        internal static void Get_SingleItem_ReturnsCorrectValue<T>(int index, T expected)
         {
             var element = new DicomOtherByte(
                 DicomTag.PixelData,
@@ -90,7 +90,7 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
-        public static void Get_Array_ReturnsCorrectValue<T>(int index, T expected, int expectedLength)
+        internal static void Get_Array_ReturnsCorrectValue<T>(int index, T expected, int expectedLength)
         {
             var element = new DicomOtherByte(
                 DicomTag.PixelData,

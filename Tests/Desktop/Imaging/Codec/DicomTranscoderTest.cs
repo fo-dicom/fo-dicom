@@ -13,7 +13,7 @@ namespace Dicom.Imaging.Codec
         #region Unit tests
 
         [Theory]
-        [MemberData("TransferSyntaxesNames")]
+        [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
             var codec = TranscoderManager.GetCodec(transferSyntax);

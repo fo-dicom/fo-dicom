@@ -123,6 +123,7 @@
     <Compile Include="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
+    <Compile Include="DicomDatasetGetValuesTest.cs" />
     <Compile Include="DicomDatasetTest.cs" />
     <Compile Include="DicomDatasetWalkerTest.cs" />
     <Compile Include="DicomDateRangeTest.cs" />
