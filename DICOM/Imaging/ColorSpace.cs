@@ -36,7 +36,7 @@ namespace Dicom
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
             var other = obj as ColorSpace;
             return other != null && Equals(other);
@@ -44,7 +44,7 @@ namespace Dicom
 
         public override int GetHashCode()
         {
-            return (Name != null ? Name.GetHashCode() : 0);
+            return Name?.GetHashCode() ?? 0;
         }
 
         public override string ToString()

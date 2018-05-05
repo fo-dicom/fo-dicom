@@ -9,7 +9,7 @@ namespace Dicom.Media
     {
         #region Properties and Attributes
 
-        private DicomDirectoryRecord _firstRecord;
+        private readonly DicomDirectoryRecord _firstRecord;
 
         #endregion
 

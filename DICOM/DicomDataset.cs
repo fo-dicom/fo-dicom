@@ -224,7 +224,7 @@ namespace Dicom
         public T GetValue<T>(DicomTag tag, int index)
         {
             tag = ValidatePrivate(tag);
-            if (index < 0) { throw new ArgumentOutOfRangeException("n", "index must be a non-negative value"); }
+            if (index < 0) { throw new ArgumentOutOfRangeException(nameof(index), "index must be a non-negative value"); }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
             ValidateDicomTag(tag, out DicomItem item);
@@ -1012,9 +1012,7 @@ namespace Dicom
                 tag = privateTag;
             }
 
-            DicomItem item = null;
-
-            if (!_items.TryGetValue(tag, out item))
+            if (!_items.TryGetValue(tag, out DicomItem item))
             {
                 if (useDefault) return defaultValue;
                 throw new DicomDataException("Tag: {0} not found in dataset", tag);
