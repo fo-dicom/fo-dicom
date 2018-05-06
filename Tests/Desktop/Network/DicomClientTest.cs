@@ -162,7 +162,7 @@ namespace Dicom.Network
                 for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await Task.WhenAny(task, Task.Delay(10000));
+                await Task.WhenAny(task, Task.Delay(30000));
 
                 Assert.Equal(expected, actual);
             }
