@@ -262,17 +262,31 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public DicomRange<double> GetMinMax(int padding)
         {
-            var min = double.MaxValue;
-            var max = double.MinValue;
+            if (Data == null || Data.Length == 0)
+            {
+                return default(DicomRange<double>);
+            }
+
+            var min = Data[0];
+            var max = Data[0];
 
             var data = Data;
             var length = data.Length;
-            for (var i = 0; i < length; i++)
+            for (var i = 1; i < length; i++)
             {
                 var value = data[i];
-                if (value == padding) continue;
-                if (value > max) max = value;
-                else if (value < min) min = value;
+                if (value == padding)
+                {
+                    continue;
+                }
+                if (value > max)
+                {
+                    max = value;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
             }
 
             return new DicomRange<double>(min, max);
@@ -516,17 +530,31 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public DicomRange<double> GetMinMax(int padding)
         {
-            var min = double.MaxValue;
-            var max = double.MinValue;
+            if (Data == null || Data.Length == 0)
+            {
+                return default(DicomRange<double>);
+            }
+
+            var min = Data[0];
+            var max = Data[0];
 
             var data = Data;
             var length = data.Length;
-            for (var i = 0; i < length; i++)
+            for (var i = 1; i < length; i++)
             {
                 var value = data[i];
-                if (value == padding) continue;
-                if (value > max) max = value;
-                else if (value < min) min = value;
+                if (value == padding)
+                {
+                    continue;
+                }
+                if (value > max)
+                {
+                    max = value;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
             }
 
             return new DicomRange<double>(min, max);
@@ -703,17 +731,31 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public DicomRange<double> GetMinMax(int padding)
         {
-            var min = double.MaxValue;
-            var max = double.MinValue;
+            if (Data == null || Data.Length == 0)
+            {
+                return default(DicomRange<double>);
+            }
+
+            var min = Data[0];
+            var max = Data[0];
 
             var data = Data;
             var length = data.Length;
-            for (var i = 0; i < length; i++)
+            for (var i = 1; i < length; i++)
             {
                 var value = data[i];
-                if (value == padding) continue;
-                if (value > max) max = value;
-                else if (value < min) min = value;
+                if (value == padding)
+                {
+                    continue;
+                }
+                if (value > max)
+                {
+                    max = value;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
             }
 
             return new DicomRange<double>(min, max);
@@ -883,17 +925,31 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public DicomRange<double> GetMinMax(int padding)
         {
-            var min = double.MaxValue;
-            var max = double.MinValue;
+            if (Data == null || Data.Length == 0)
+            {
+                return default(DicomRange<double>);
+            }
+
+            var min = Data[0];
+            var max = Data[0];
 
             var data = Data;
             var length = data.Length;
-            for (var i = 0; i < length; i++)
+            for (var i = 1; i < length; i++)
             {
                 var value = data[i];
-                if (value == padding) continue;
-                if (value > max) max = value;
-                else if (value < min) min = value;
+                if (value == padding)
+                {
+                    continue;
+                }
+                if (value > max)
+                {
+                    max = value;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
             }
 
             return new DicomRange<double>(min, max);
@@ -1059,17 +1115,31 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public DicomRange<double> GetMinMax(int padding)
         {
-            var min = double.MaxValue;
-            var max = double.MinValue;
+            if (Data == null || Data.Length == 0)
+            {
+                return default(DicomRange<double>);
+            }
+
+            var min = Data[0];
+            var max = Data[0];
 
             var data = Data;
             var length = data.Length;
-            for (var i = 0; i < length; i++)
+            for (var i = 1; i < length; i++)
             {
                 var value = data[i];
-                if (value == padding) continue;
-                if (value > max) max = value;
-                else if (value < min) min = value;
+                if (value == padding)
+                {
+                    continue;
+                }
+                if (value > max)
+                {
+                    max = value;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
             }
 
             return new DicomRange<double>(min, max);
