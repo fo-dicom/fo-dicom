@@ -88,8 +88,8 @@ namespace Dicom
 
                     for (int i = 0; i < Parameters.Count; i++)
                     {
-                        var str = dataset.Get<string>(Parameters[i], -1, String.Empty);
-                        SqlParameter prm = new SqlParameter(String.Format("@{0}", i), str);
+                        var str = dataset.TryGetString(Parameters[i], out var dummy) ? dummy : String.Empty;
+                        SqlParameter prm = new SqlParameter($"@{i}", str);
                         command.Parameters.Add(prm);
                     }
 
@@ -130,10 +130,6 @@ namespace Dicom
             }
         }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
 
         #endregion
     }

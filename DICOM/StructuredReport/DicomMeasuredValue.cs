@@ -34,15 +34,13 @@ namespace Dicom.StructuredReport
 
         public decimal Value
         {
-            get
-            {
-                return Get<decimal>(DicomTag.NumericValue);
-            }
+            get => GetSingleValue<decimal>(DicomTag.NumericValue);
         }
 
         public override string ToString()
         {
-            return String.Format("{0} {1}", Value, Code.Value);
+            return $"{Value} {Code.Value}";
         }
+
     }
 }

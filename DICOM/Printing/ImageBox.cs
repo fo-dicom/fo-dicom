@@ -7,6 +7,7 @@ namespace Dicom.Printing
 
     using Dicom.IO;
     using Dicom.Log;
+    using System.Linq;
 
     /// <summary>
     /// Color or gray scale basic image box
@@ -50,19 +51,14 @@ namespace Dicom.Printing
                 DicomSequence seq = null;
                 if (SOPClassUID == ColorSOPClassUID || this.Contains(DicomTag.BasicColorImageSequence))
                 {
-                    seq = this.Get<DicomSequence>(DicomTag.BasicColorImageSequence, null);
+                    seq = TryGetSequence(DicomTag.BasicColorImageSequence, out var dummy) ? dummy : null;
                 }
                 if (seq == null)
                 {
-                    seq = this.Get<DicomSequence>(DicomTag.BasicGrayscaleImageSequence, null);
+                    seq = TryGetSequence(DicomTag.BasicGrayscaleImageSequence, out var dummy) ? dummy : null;
                 }
 
-                if (seq != null && seq.Items.Count > 0)
-                {
-                    return seq.Items[0];
-                }
-
-                return null;
+                return seq?.Items?.FirstOrDefault();
             }
             set
             {
@@ -86,10 +82,7 @@ namespace Dicom.Printing
             {
                 return this.Get<ushort>(DicomTag.ImageBoxPosition, 1);
             }
-            set
-            {
-                this.AddOrUpdate(DicomTag.ImageBoxPosition, value);
-            }
+            set => AddOrUpdate(DicomTag.ImageBoxPosition, value);
         }
 
         /// <summary>
@@ -112,14 +105,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string Polarity
         {
-            get
-            {
-                return this.Get(DicomTag.Polarity, "NORMAL");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.Polarity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.Polarity, "NORMAL");
+            set => AddOrUpdate(DicomTag.Polarity, value);
         }
 
         /// <summary>
@@ -137,14 +124,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string MagnificationType
         {
-            get
-            {
-                return this.Get(DicomTag.MagnificationType, FilmBox.MagnificationType);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MagnificationType, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MagnificationType, FilmBox.MagnificationType);
+            set => AddOrUpdate(DicomTag.MagnificationType, value);
         }
 
         /// <summary>
@@ -153,14 +134,8 @@ namespace Dicom.Printing
         /// </summary>
         public string SmoothingType
         {
-            get
-            {
-                return this.Get(DicomTag.SmoothingType, FilmBox.SmoothingType);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.SmoothingType, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.SmoothingType, FilmBox.SmoothingType);
+            set => AddOrUpdate(DicomTag.SmoothingType, value);
         }
 
         /// <summary>
@@ -169,14 +144,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MaxDensity
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.MaxDensity, FilmBox.MaxDensity);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MaxDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MaxDensity, FilmBox.MaxDensity);
+            set => AddOrUpdate(DicomTag.MaxDensity, value);
         }
 
         /// <summary>
@@ -185,14 +154,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MinDensity
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.MinDensity, FilmBox.MinDensity);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MinDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MinDensity, FilmBox.MinDensity);
+            set => AddOrUpdate(DicomTag.MinDensity, value);
         }
 
         /// <summary>
@@ -214,14 +177,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string ConfigurationInformation
         {
-            get
-            {
-                return this.Get(DicomTag.ConfigurationInformation, FilmBox.ConfigurationInformation);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.ConfigurationInformation, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.ConfigurationInformation, FilmBox.ConfigurationInformation);
+            set => AddOrUpdate(DicomTag.ConfigurationInformation, value);
         }
 
         /// <summary>
@@ -230,14 +187,8 @@ namespace Dicom.Printing
         /// </summary>
         public double RequestedImageSize
         {
-            get
-            {
-                return this.Get<double>(DicomTag.RequestedImageSize, 0.0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.RequestedImageSize, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.RequestedImageSize, 0.0);
+            set => AddOrUpdate(DicomTag.RequestedImageSize, value);
         }
 
         /// <summary>
@@ -270,14 +221,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string RequestedDecimateCropBehavior
         {
-            get
-            {
-                return this.Get(DicomTag.RequestedDecimateCropBehavior, "DECIMATE");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.RequestedDecimateCropBehavior, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.RequestedDecimateCropBehavior, "DECIMATE");
+            set => AddOrUpdate(DicomTag.RequestedDecimateCropBehavior, value);
         }
 
         #endregion

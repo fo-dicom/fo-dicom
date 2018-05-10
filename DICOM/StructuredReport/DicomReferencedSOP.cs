@@ -24,18 +24,13 @@ namespace Dicom.StructuredReport
 
         public DicomUID Instance
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
         }
 
         public DicomUID Class
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ReferencedSOPClassUID);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID);
         }
+
     }
 }

@@ -195,7 +195,7 @@ namespace Dicom.StructuredReport
         {
             get
             {
-                var type = Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN");
+                var type = Dataset.GetValueOrDefault(DicomTag.ValueType, 0, "UNKNOWN");
                 switch (type)
                 {
                     case "CONTAINER":
@@ -286,7 +286,7 @@ namespace Dicom.StructuredReport
         {
             get
             {
-                var type = Dataset.Get<string>(DicomTag.RelationshipType, 0, "UNKNOWN");
+                var type = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, "UNKNOWN");
                 switch (type)
                 {
                     case "CONTAINS":
@@ -340,31 +340,24 @@ namespace Dicom.StructuredReport
 
         public DicomContinuity Continuity
         {
-            get
-            {
-                return Dataset.Get<DicomContinuity>(DicomTag.ContinuityOfContent, 0, DicomContinuity.None);
-            }
-            private set
-            {
-                Dataset.AddOrUpdate(DicomTag.ContinuityOfContent, value.ToString().ToUpper());
-            }
+            get => Dataset.GetValueOrDefault(DicomTag.ContinuityOfContent, 0, DicomContinuity.None);
+            private set => Dataset.AddOrUpdate(DicomTag.ContinuityOfContent, value.ToString().ToUpper());
         }
 
         public IEnumerable<DicomContentItem> Children()
         {
-            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence, 0, null);
-
-            // silence exceptions for items without a content sequence
-            if (sequence == null) sequence = new DicomSequence(DicomTag.ContentSequence);
-
-            foreach (var item in sequence) yield return new DicomContentItem(item);
+            if (Dataset.TryGetSequence(DicomTag.ContentSequence, out var sequence))
+            {
+                foreach (var item in sequence)
+                {
+                    yield return new DicomContentItem(item);
+                }
+            }
         }
 
         public DicomContentItem Add(DicomContentItem item)
         {
-            var sequence = Dataset.Get<DicomSequence>(DicomTag.ContentSequence, 0, null);
-
-            if (sequence == null)
+            if (! Dataset.TryGetSequence(DicomTag.ContentSequence, out var sequence))
             {
                 sequence = new DicomSequence(DicomTag.ContentSequence);
                 Dataset.Add(sequence);
@@ -430,18 +423,18 @@ namespace Dicom.StructuredReport
         {
             if (typeof(T) == typeof(string))
             {
-                if (Type == DicomValueType.Text) return (T)(object)Dataset.Get<string>(DicomTag.TextValue, 0, String.Empty);
-                if (Type == DicomValueType.PersonName) return (T)(object)Dataset.Get<string>(DicomTag.PersonName, 0, String.Empty);
+                if (Type == DicomValueType.Text) return (T)(object)Dataset.GetValueOrDefault(DicomTag.TextValue, 0, String.Empty);
+                if (Type == DicomValueType.PersonName) return (T)(object)Dataset.GetValueOrDefault(DicomTag.PersonName, 0, String.Empty);
                 if (Type == DicomValueType.Numeric)
                 {
                     var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)mv.ToString();
                 }
-                if (Type == DicomValueType.Date) return (T)(object)Dataset.Get<string>(DicomTag.Date, 0, String.Empty);
-                if (Type == DicomValueType.Time) return (T)(object)Dataset.Get<string>(DicomTag.Time, 0, String.Empty);
-                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.Get<string>(DicomTag.DateTime, 0, String.Empty);
-                if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.Get<string>(DicomTag.UID);
+                if (Type == DicomValueType.Date) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Date, 0, String.Empty);
+                if (Type == DicomValueType.Time) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Time, 0, String.Empty);
+                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.GetValueOrDefault(DicomTag.DateTime, 0, String.Empty);
+                if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.GetSingleValue<string>(DicomTag.UID);
                 if (Type == DicomValueType.Code)
                 {
                     var c = Dataset.Get<DicomCodeItem>(DicomTag.ConceptCodeSequence);
@@ -452,9 +445,9 @@ namespace Dicom.StructuredReport
 
             if (typeof(T) == typeof(DateTime))
             {
-                if (Type == DicomValueType.Date) return (T)(object)Dataset.Get<DateTime>(DicomTag.Date, 0, DateTime.Today);
-                if (Type == DicomValueType.Time) return (T)(object)Dataset.Get<DateTime>(DicomTag.Time, 0, DateTime.Today);
-                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.Get<DateTime>(DicomTag.DateTime, 0, DateTime.Today);
+                if (Type == DicomValueType.Date) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Date, 0, DateTime.Today);
+                if (Type == DicomValueType.Time) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Time, 0, DateTime.Today);
+                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.GetValueOrDefault(DicomTag.DateTime, 0, DateTime.Today);
             }
 
             if (typeof(T) == typeof(decimal))
@@ -525,7 +518,7 @@ namespace Dicom.StructuredReport
 
         public override string ToString()
         {
-            var s = Dataset.Get<string>(DicomTag.RelationshipType, 0, String.Empty);
+            var s = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, String.Empty);
             if (!String.IsNullOrEmpty(s)) s += " ";
             else s = String.Empty;
             if (Code != null) s += String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
@@ -533,13 +526,14 @@ namespace Dicom.StructuredReport
                 s += String.Format(
                     "{0} {1}",
                     "(no code provided)",
-                    Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+                    Dataset.GetValueOrDefault(DicomTag.ValueType, 0, "UNKNOWN"));
             try
             {
                 s += String.Format(" [{0}]", Get<string>());
             }
             catch
             {
+                // silently catch the exception
             }
             return s;
         }

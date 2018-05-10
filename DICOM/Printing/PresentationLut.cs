@@ -74,7 +74,7 @@ namespace Dicom.Printing
         {
             get
             {
-                var lutSequence = Get<DicomSequence>(DicomTag.PresentationLUTSequence);
+                var lutSequence = GetSequence(DicomTag.PresentationLUTSequence);
                 return lutSequence.Items[0];
             }
         }
@@ -89,8 +89,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort[] LutDescriptor
         {
-            get { return LutSequence.Get(DicomTag.LUTDescriptor, new ushort[0]); }
-            set { LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value); }
+            get => LutSequence.TryGetValues(DicomTag.LUTDescriptor, out ushort[] dummy) ? dummy : new ushort[0];
+            set => LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace Dicom.Printing
         /// </summary>
         public string LutExplanation
         {
-            get { return LutSequence.Get(DicomTag.LUTExplanation, string.Empty); }
-            set { LutSequence.AddOrUpdate(DicomTag.LUTExplanation, value); }
+            get => LutSequence.GetSingleValueOrDefault(DicomTag.LUTExplanation, string.Empty);
+            set => LutSequence.AddOrUpdate(DicomTag.LUTExplanation, value);
         }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort[] LutData
         {
-            get { return LutSequence.Get(DicomTag.LUTData, new ushort[0]); }
-            set { LutSequence.AddOrUpdate(DicomTag.LUTData, value); }
+            get => LutSequence.TryGetValues(DicomTag.LUTData, out ushort[] dummy) ? dummy : new ushort[0];
+            set => LutSequence.AddOrUpdate(DicomTag.LUTData, value);
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace Dicom.Printing
         /// </summary>
         public string PresentationLutShape
         {
-            get { return Get(DicomTag.PresentationLUTShape, string.Empty); }
-            set { AddOrUpdate(DicomTag.PresentationLUTShape, value); }
+            get => GetSingleValueOrDefault(DicomTag.PresentationLUTShape, string.Empty);
+            set => AddOrUpdate(DicomTag.PresentationLUTShape, value);
         }
 
         #endregion
