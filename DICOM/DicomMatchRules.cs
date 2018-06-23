@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Dicom
 {
@@ -26,9 +27,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomMatchOperator _operator;
+        private readonly DicomMatchOperator _operator;
 
-        private IList<IDicomMatchRule> _rules;
+        private readonly IList<IDicomMatchRule> _rules;
 
         #endregion
 
@@ -62,17 +63,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public DicomMatchOperator Operator
-        {
-            get
-            {
-                return _operator;
-            }
-            set
-            {
-                _operator = value;
-            }
-        }
+        public DicomMatchOperator Operator { get => _operator; }
 
         #endregion
 
@@ -87,17 +78,13 @@ namespace Dicom
         {
             if (_rules.Count == 0) return true;
 
-            if (_operator == DicomMatchOperator.Or)
+            if (Operator == DicomMatchOperator.Or)
             {
-                foreach (var rule in _rules) if (rule.Match(dataset)) return true;
-
-                return false;
+                return _rules.Any(rule => rule.Match(dataset));
             }
             else
             {
-                foreach (var rule in _rules) if (!rule.Match(dataset)) return false;
-
-                return true;
+                return _rules.All(rule => rule.Match(dataset));
             }
         }
 
@@ -123,7 +110,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private IDicomMatchRule _rule;
+        private readonly IDicomMatchRule _rule;
 
         #endregion
 
@@ -158,7 +145,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
         #endregion
 
@@ -193,7 +180,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
         #endregion
 
@@ -210,12 +197,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            if (dataset.Contains(_tag))
-            {
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
-                return String.IsNullOrEmpty(value);
-            }
-            return true;
+            return !dataset.TryGetString(_tag, out string dummy) || string.IsNullOrEmpty(dummy);
         }
 
         public override string ToString()
@@ -233,9 +215,17 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _value;
+        private readonly string _value;
+
+        #endregion
+
+        #region Public Properties
+
+        public DicomTag Tag => _tag;
+
+        public string Value => _value;
 
         #endregion
 
@@ -253,7 +243,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return _value == value;
         }
 
@@ -272,9 +262,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _value;
+        private readonly string _value;
 
         #endregion
 
@@ -292,7 +282,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return value.StartsWith(_value);
         }
 
@@ -311,9 +301,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _value;
+        private readonly string _value;
 
         #endregion
 
@@ -331,7 +321,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return value.EndsWith(_value);
         }
 
@@ -350,9 +340,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _value;
+        private readonly string _value;
 
         #endregion
 
@@ -370,7 +360,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return value.Contains(_value);
         }
 
@@ -389,9 +379,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _pattern;
+        private readonly string _pattern;
 
         #endregion
 
@@ -409,7 +399,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return value.Wildcard(_pattern);
         }
 
@@ -451,7 +441,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             return _regex.IsMatch(value);
         }
 
@@ -470,9 +460,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string[] _values;
+        private readonly string[] _values;
 
         #endregion
 
@@ -490,7 +480,7 @@ namespace Dicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.Get<string>(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
             foreach (string v in _values) if (v == value) return true;
             return false;
         }
@@ -498,12 +488,9 @@ namespace Dicom
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("{0} is one of ['", _tag);
-            for (int i = 0; i < _values.Length; i++)
-            {
-                if (i > 0) sb.Append("', '");
-                sb.Append(_values[i]);
-            }
+            sb.Append(_tag);
+            sb.Append(" is one of ['");
+            sb.Append(string.Join("', '", _values));
             sb.Append("']");
             return sb.ToString();
         }
@@ -518,7 +505,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private bool _value;
+        private readonly bool _value;
 
         #endregion
 

@@ -19,7 +19,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private List<IDicomTransformRule> _transformRules;
+        private readonly List<IDicomTransformRule> _transformRules;
 
         private DicomMatchRuleSet _conditions;
 
@@ -71,7 +71,7 @@ namespace Dicom
 
         public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
         {
-            if (_conditions != null) if (!_conditions.Match(dataset)) return;
+            if (_conditions != null && !_conditions.Match(dataset)) return;
 
             foreach (IDicomTransformRule rule in _transformRules) rule.Transform(dataset);
         }
@@ -86,7 +86,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomMaskedTag _mask;
+        private readonly DicomMaskedTag _mask;
 
         #endregion
 
@@ -127,9 +127,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _value;
+        private readonly string _value;
 
         #endregion
 
@@ -167,11 +167,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly EqualsDicomMatchRule _match;
 
-        private string _match;
-
-        private string _value;
+        private readonly string _value;
 
         #endregion
 
@@ -179,8 +177,7 @@ namespace Dicom
 
         public MapValueDicomTransformRule(DicomTag tag, string match, string value)
         {
-            _tag = tag;
-            _match = match;
+            _match = new EqualsDicomMatchRule(tag, match);
             _value = value;
         }
 
@@ -190,17 +187,17 @@ namespace Dicom
 
         public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
         {
-            if (dataset.Contains(_tag) && dataset.Get<string>(_tag, -1, String.Empty) == _match)
+            if (_match.Match(dataset))
             {
-                dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                dataset.AddOrUpdate(_tag, _value);
+                dataset.CopyTo(modifiedAttributesSequenceItem, _match.Tag);
+                dataset.AddOrUpdate(_match.Tag, _value);
             }
         }
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' map '{1}' -> '{2}'", name, _match, _value);
+            string name = String.Format("{0} {1}", _match.Tag, _match.Tag.DictionaryEntry.Name);
+            return String.Format("'{0}' map '{1}' -> '{2}'", name, _match.Value, _value);
         }
 
         #endregion
@@ -213,9 +210,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _src;
+        private readonly DicomTag _src;
 
-        private DicomTag _dst;
+        private readonly DicomTag _dst;
 
         #endregion
 
@@ -257,11 +254,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _pattern;
+        private readonly string _pattern;
 
-        private string _replacement;
+        private readonly string _replacement;
 
         #endregion
 
@@ -305,9 +302,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _prefix;
+        private readonly string _prefix;
 
         #endregion
 
@@ -349,9 +346,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _append;
+        private readonly string _append;
 
         #endregion
 
@@ -402,11 +399,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private string _trim;
+        private readonly string _trim;
 
-        private DicomTrimPosition _position;
+        private readonly DicomTrimPosition _position;
 
         #endregion
 
@@ -451,11 +448,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private char[] _trim;
+        private readonly char[] _trim;
 
-        private DicomTrimPosition _position;
+        private readonly DicomTrimPosition _position;
 
         #endregion
 
@@ -526,11 +523,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private char _paddingChar;
+        private readonly char _paddingChar;
 
-        private int _totalLength;
+        private readonly int _totalLength;
 
         #endregion
 
@@ -575,9 +572,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private int _length;
+        private readonly int _length;
 
         #endregion
 
@@ -625,11 +622,11 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private char[] _seperators;
+        private readonly char[] _seperators;
 
-        private string _format;
+        private readonly string _format;
 
         #endregion
 
@@ -674,7 +671,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
         #endregion
 
@@ -715,7 +712,7 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
         #endregion
 
@@ -756,9 +753,9 @@ namespace Dicom
     {
         #region Private Members
 
-        private DicomTag _tag;
+        private readonly DicomTag _tag;
 
-        private DicomUIDGenerator _generator;
+        private readonly DicomUIDGenerator _generator;
 
         #endregion
 

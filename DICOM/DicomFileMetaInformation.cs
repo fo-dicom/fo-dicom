@@ -39,14 +39,22 @@ namespace Dicom
             var aet = CreateSourceApplicationEntityTitle();
             if (aet != null) SourceApplicationEntityTitle = aet;
 
-            if (dataset.Contains(DicomTag.SendingApplicationEntityTitle))
-                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.SendingApplicationEntityTitle);
-            if (dataset.Contains(DicomTag.ReceivingApplicationEntityTitle))
-                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.ReceivingApplicationEntityTitle);
-            if (dataset.Contains(DicomTag.PrivateInformationCreatorUID))
-                PrivateInformationCreatorUID = dataset.Get<DicomUID>(DicomTag.PrivateInformationCreatorUID);
-            if (dataset.Contains(DicomTag.PrivateInformation))
-                PrivateInformation = dataset.Get<byte[]>(DicomTag.PrivateInformation);
+            if (dataset.TryGetSingleValue(DicomTag.SendingApplicationEntityTitle, out string sendingAETVal))
+            {
+                SendingApplicationEntityTitle = sendingAETVal;
+            }
+            if (dataset.TryGetSingleValue(DicomTag.ReceivingApplicationEntityTitle, out string receivingAETVal))
+            {
+                ReceivingApplicationEntityTitle = receivingAETVal;
+            }
+            if (dataset.TryGetSingleValue(DicomTag.PrivateInformationCreatorUID, out DicomUID privInfoCreator))
+            {
+                PrivateInformationCreatorUID = privInfoCreator;
+            }
+            if (dataset.TryGetValues(DicomTag.PrivateInformation, out byte[] privInfo))
+            {
+                PrivateInformation = privInfo;
+            }
         }
 
         /// <summary>
@@ -86,14 +94,8 @@ namespace Dicom
         /// </summary>
         public byte[] Version
         {
-            get
-            {
-                return Get<byte[]>(DicomTag.FileMetaInformationVersion);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
-            }
+            get => GetValues<byte>(DicomTag.FileMetaInformationVersion);
+            set => AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
         }
 
         /// <summary>
@@ -161,14 +163,8 @@ namespace Dicom
         /// </summary>
         public string ImplementationVersionName
         {
-            get
-            {
-                return Get<string>(DicomTag.ImplementationVersionName, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ImplementationVersionName, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.ImplementationVersionName, null);
+            set => AddOrUpdate(DicomTag.ImplementationVersionName, value);
         }
 
         /// <summary>
@@ -176,14 +172,8 @@ namespace Dicom
         /// </summary>
         public string SourceApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.SourceApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.SourceApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
         }
 
         /// <summary>
@@ -191,14 +181,8 @@ namespace Dicom
         /// </summary>
         public string SendingApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.SendingApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.SendingApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.SendingApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.SendingApplicationEntityTitle, value);
         }
 
         /// <summary>
@@ -206,14 +190,8 @@ namespace Dicom
         /// </summary>
         public string ReceivingApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.ReceivingApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ReceivingApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.ReceivingApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.ReceivingApplicationEntityTitle, value);
         }
 
         /// <summary>
