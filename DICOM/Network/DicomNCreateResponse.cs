@@ -40,10 +40,7 @@ namespace Dicom.Network
         /// <remarks>In the N-CREATE response, Affected SOP Instance UID is optional, and <code>null</code> can thus be returned.</remarks>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
-            }
+            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
             private set
             {
                 if (value == null)

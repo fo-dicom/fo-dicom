@@ -103,7 +103,7 @@ namespace Dicom.Serialization
 
                     if (dataset.Contains(privateCreatorTag))
                     {
-                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.Get<string>(privateCreatorTag));
+                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
                     }
                 }
             }

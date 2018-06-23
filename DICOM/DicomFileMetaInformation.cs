@@ -29,8 +29,8 @@ namespace Dicom
         {
             Version = new byte[] { 0x00, 0x01 };
 
-            MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
-            MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            MediaStorageSOPClassUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID);
+            MediaStorageSOPInstanceUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             TransferSyntax = dataset.InternalTransferSyntax;
 
             ImplementationClassUID = DicomImplementation.ClassUID;
@@ -103,14 +103,8 @@ namespace Dicom
         /// </summary>
         public DicomUID MediaStorageSOPClassUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.MediaStorageSOPClassUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPClassUID);
+            set => AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
         }
 
         /// <summary>
@@ -118,14 +112,8 @@ namespace Dicom
         /// </summary>
         public DicomUID MediaStorageSOPInstanceUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPInstanceUID);
+            set => AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -133,14 +121,8 @@ namespace Dicom
         /// </summary>
         public DicomTransferSyntax TransferSyntax
         {
-            get
-            {
-                return Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
-            }
+            get => GetSingleValue<DicomTransferSyntax>(DicomTag.TransferSyntaxUID);
+            set => AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
         }
 
         /// <summary>
@@ -148,14 +130,8 @@ namespace Dicom
         /// </summary>
         public DicomUID ImplementationClassUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ImplementationClassUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ImplementationClassUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ImplementationClassUID);
+            set => AddOrUpdate(DicomTag.ImplementationClassUID, value);
         }
 
         /// <summary>
@@ -199,14 +175,8 @@ namespace Dicom
         /// </summary>
         public DicomUID PrivateInformationCreatorUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.PrivateInformationCreatorUID, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.PrivateInformationCreatorUID, value);
-            }
+            get => GetSingleValueOrDefault<DicomUID>(DicomTag.PrivateInformationCreatorUID, null);
+            set => AddOrUpdate(DicomTag.PrivateInformationCreatorUID, value);
         }
 
         /// <summary>
@@ -215,14 +185,8 @@ namespace Dicom
         /// </summary>
         public byte[] PrivateInformation
         {
-            get
-            {
-                return Get<byte[]>(DicomTag.PrivateInformation, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.PrivateInformation, value);
-            }
+            get => TryGetValues(DicomTag.PrivateInformation, out byte[] dummy) ? dummy : null;
+            set => AddOrUpdate(DicomTag.PrivateInformation, value);
         }
 
         #endregion

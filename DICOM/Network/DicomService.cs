@@ -574,8 +574,7 @@ namespace Dicom.Network
 
                                 var file = new DicomFile();
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
-                                file.FileMetaInfo.MediaStorageSOPInstanceUID =
-                                    _dimse.Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                                file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
                                 file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID;
                                 file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
@@ -608,7 +607,7 @@ namespace Dicom.Network
                             _dimseStream = null;
                             _dimseStreamFile = null;
 
-                            var type = command.Get<DicomCommandField>(DicomTag.CommandField);
+                            var type = command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
                             switch (type)
                             {
                                 case DicomCommandField.CStoreRequest:

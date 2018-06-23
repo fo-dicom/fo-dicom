@@ -150,8 +150,10 @@ namespace Dicom
         public void Get_NonGenericIntArgumentEmptyElement_ShouldNotThrow()
         {
             var tag = DicomTag.SelectorISValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, new int[0]);
+            var dataset = new DicomDataset
+            {
+                { tag, new int[0] }
+            };
 
             var e = Record.Exception(() => Assert.Equal(10, dataset.GetSingleValueOrDefault(tag, 10)));
             Assert.Null(e);
@@ -164,7 +166,7 @@ namespace Dicom
             const uint expected = 100u;
             var dataset = new DicomDataset { { tag, expected } };
 
-            var actual = dataset.Get<uint?>(tag).Value;
+            var actual = dataset.GetSingleValue<uint>(tag);
             Assert.Equal(expected, actual);
         }
 

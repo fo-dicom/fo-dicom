@@ -51,26 +51,14 @@ namespace Dicom.Printing
         /// </remarks>
         public string FilmDestination
         {
-            get
-            {
-                return this.Get(DicomTag.FilmDestination, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.FilmDestination, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.FilmDestination, string.Empty);
+            set => AddOrUpdate(DicomTag.FilmDestination, value);
         }
 
         public string FilmSessionLabel
         {
-            get
-            {
-                return this.Get(DicomTag.FilmSessionLabel, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.FilmSessionLabel, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.FilmSessionLabel, string.Empty);
+            set => AddOrUpdate(DicomTag.FilmSessionLabel, value);
         }
 
         /// <summary>
@@ -78,14 +66,8 @@ namespace Dicom.Printing
         /// </summary>
         public int MemoryAllocation
         {
-            get
-            {
-                return this.Get(DicomTag.MemoryAllocation, 0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MemoryAllocation, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MemoryAllocation, 0);
+            set => AddOrUpdate(DicomTag.MemoryAllocation, value);
         }
 
         /// <summary>
@@ -103,14 +85,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string MediumType
         {
-            get
-            {
-                return this.Get(DicomTag.MediumType, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MediumType, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MediumType, string.Empty);
+            set => AddOrUpdate(DicomTag.MediumType, value);
         }
 
         /// <summary>
@@ -126,14 +102,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string PrintPriority
         {
-            get
-            {
-                return this.Get(DicomTag.PrintPriority, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.PrintPriority, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.PrintPriority, string.Empty);
+            set => AddOrUpdate(DicomTag.PrintPriority, value);
         }
 
         /// <summary>
@@ -141,14 +111,8 @@ namespace Dicom.Printing
         /// </summary>
         public int NumberOfCopies
         {
-            get
-            {
-                return this.Get(DicomTag.NumberOfCopies, 1);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.NumberOfCopies, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.NumberOfCopies, 1);
+            set => AddOrUpdate(DicomTag.NumberOfCopies, value);
         }
 
         /// <summary>
@@ -174,12 +138,7 @@ namespace Dicom.Printing
         public FilmSession(DicomUID sopClassUID, DicomUID sopInstance = null, bool isColor = false)
         {
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
-
-            if (sopClassUID == null)
-            {
-                throw new ArgumentNullException(nameof(sopClassUID));
-            }
-            SOPClassUID = sopClassUID;
+            SOPClassUID = sopClassUID ?? throw new ArgumentNullException(nameof(sopClassUID));
 
             if (sopInstance == null || sopInstance.UID == string.Empty)
             {
@@ -235,7 +194,7 @@ namespace Dicom.Printing
         public FilmBox CreateFilmBox(DicomUID sopInstance, DicomDataset dataset)
         {
             DicomUID uid = sopInstance;
-            if (uid == null || uid.UID == string.Empty)
+            if (string.IsNullOrEmpty(uid?.UID))
             {
                 uid = DicomUID.Generate();
             }

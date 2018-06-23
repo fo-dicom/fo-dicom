@@ -47,14 +47,8 @@ namespace Dicom.Network
         /// </summary>
         public int Remaining
         {
-            get
-            {
-                return Command.Get(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
         }
 
         /// <summary>
@@ -62,14 +56,8 @@ namespace Dicom.Network
         /// </summary>
         public int Completed
         {
-            get
-            {
-                return Command.Get(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
         }
 
         /// <summary>
@@ -77,14 +65,8 @@ namespace Dicom.Network
         /// </summary>
         public int Warnings
         {
-            get
-            {
-                return Command.Get(DicomTag.NumberOfWarningSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfWarningSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfWarningSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfWarningSuboperations, (ushort)value);
         }
 
         /// <summary>
@@ -92,14 +74,8 @@ namespace Dicom.Network
         /// </summary>
         public int Failures
         {
-            get
-            {
-                return Command.Get(DicomTag.NumberOfFailedSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfFailedSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfFailedSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfFailedSuboperations, (ushort)value);
         }
 
         #endregion
@@ -123,7 +99,7 @@ namespace Dicom.Network
                 if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.Get<string[]>(DicomTag.OffendingElement);
+                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:		");

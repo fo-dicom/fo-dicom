@@ -46,14 +46,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort RequestMessageID
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.MessageIDBeingRespondedTo, value);
-            }
+            get => Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo);
+            set => Command.AddOrUpdate(DicomTag.MessageIDBeingRespondedTo, value);
         }
 
         /// <summary>
@@ -63,9 +57,11 @@ namespace Dicom.Network
         {
             get
             {
-                var status = DicomStatus.Lookup(Command.Get<ushort>(DicomTag.Status));
-                var comment = Command.Get<string>(DicomTag.ErrorComment, null);
-                if (comment != null) return new DicomStatus(status, comment);
+                var status = DicomStatus.Lookup(Command.GetSingleValue<ushort>(DicomTag.Status));
+                if ( Command.TryGetSingleValue(DicomTag.ErrorComment, out string comment))
+                {
+                    return new DicomStatus(status, comment);
+                }
                 return status;
             }
             set
@@ -97,7 +93,7 @@ namespace Dicom.Network
                 if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.Get<string[]>(DicomTag.OffendingElement);
+                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:		");

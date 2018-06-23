@@ -233,7 +233,7 @@ namespace Dicom
             if (dataset.Contains(_src))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _dst);
-                dataset.AddOrUpdate(_dst, dataset.Get<IByteBuffer>(_src));
+                dataset.AddOrUpdate(_dst, dataset.GetDicomItem<DicomElement>(_src).Buffer);
             }
         }
 
@@ -280,7 +280,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 value = Regex.Replace(value, _pattern, _replacement);
                 dataset.AddOrUpdate(_tag, value);
             }
@@ -325,7 +325,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 dataset.AddOrUpdate(_tag, _prefix + value);
             }
         }
@@ -369,7 +369,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 dataset.AddOrUpdate(_tag, value + _append);
             }
         }
@@ -425,7 +425,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 if (_position == DicomTrimPosition.Start || _position == DicomTrimPosition.Both) while (value.StartsWith(_trim)) value = value.Substring(_trim.Length);
                 if (_position == DicomTrimPosition.End || _position == DicomTrimPosition.Both) while (value.EndsWith(_trim)) value = value.Substring(0, value.Length - _trim.Length);
                 dataset.AddOrUpdate(_tag, value);
@@ -481,7 +481,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 if (_position == DicomTrimPosition.Both)
                 {
                     if (_trim != null) value = value.Trim(_trim);
@@ -510,7 +510,7 @@ namespace Dicom
                     name,
                     new string(_trim),
                     _position.ToString().ToLower());
-            else return String.Format("'{0}' trim whitespace from {2}", name, _position.ToString().ToLower());
+            else return String.Format("'{0}' trim whitespace from {1}", name, _position.ToString().ToLower());
         }
 
         #endregion
@@ -549,7 +549,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 if (_totalLength < 0) value = value.PadLeft(-_totalLength, _paddingChar);
                 else value = value.PadRight(_totalLength, _paddingChar);
                 dataset.AddOrUpdate(_tag, value);
@@ -595,7 +595,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 string[] parts = value.Split('\\');
                 for (int i = 0; i < parts.Length; i++)
                 {
@@ -648,7 +648,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 string[] parts = value.Split(_seperators);
                 value = String.Format(_format, parts);
                 dataset.AddOrUpdate(_tag, value);
@@ -691,7 +691,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 dataset.AddOrUpdate(_tag, value.ToUpper());
             }
         }
@@ -732,7 +732,7 @@ namespace Dicom
             if (dataset.Contains(_tag))
             {
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-                var value = dataset.Get<string>(_tag, -1, String.Empty);
+                var value = dataset.GetString(_tag);
                 dataset.AddOrUpdate(_tag, value.ToLower());
             }
         }
@@ -774,7 +774,7 @@ namespace Dicom
         public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
         {
             dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
-            var uid = dataset.Get<DicomUID>(_tag);
+            var uid = dataset.GetSingleValue<DicomUID>(_tag);
             dataset.AddOrUpdate(_tag, _generator.Generate(uid));
         }
 

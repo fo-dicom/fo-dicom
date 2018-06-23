@@ -82,7 +82,7 @@ namespace Dicom
         {
             foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray())
             {
-                var uid = dataset.Get<DicomUID>(ui.Tag);
+                var uid = dataset.GetSingleValue<DicomUID>(ui.Tag);
                 if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown) dataset.AddOrUpdate(ui.Tag, Generate(uid));
             }
 

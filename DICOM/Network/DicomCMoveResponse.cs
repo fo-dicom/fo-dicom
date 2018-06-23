@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Text;
+
 namespace Dicom.Network
 {
-    using System;
-    using System.Text;
-
     public sealed class DicomCMoveResponse : DicomResponse
     {
         public DicomCMoveResponse(DicomDataset command)
@@ -20,50 +20,26 @@ namespace Dicom.Network
 
         public int Remaining
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfRemainingSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfRemainingSuboperations, (ushort)value);
         }
 
         public int Completed
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfCompletedSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfCompletedSuboperations, (ushort)value);
         }
 
         public int Warnings
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.NumberOfWarningSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfWarningSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfWarningSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfWarningSuboperations, (ushort)value);
         }
 
         public int Failures
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.NumberOfFailedSuboperations, (ushort)0);
-            }
-            set
-            {
-                Command.AddOrUpdate(DicomTag.NumberOfFailedSuboperations, (ushort)value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.NumberOfFailedSuboperations, (ushort)0);
+            set => Command.AddOrUpdate(DicomTag.NumberOfFailedSuboperations, (ushort)value);
         }
 
         public override string ToString()
@@ -79,7 +55,7 @@ namespace Dicom.Network
                 if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.Get<string[]>(DicomTag.OffendingElement);
+                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:		");

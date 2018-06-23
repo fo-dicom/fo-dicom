@@ -28,34 +28,22 @@ namespace Dicom.StructuredReport
 
         public string Value
         {
-            get
-            {
-                return Get<string>(DicomTag.CodeValue, 0, String.Empty);
-            }
+            get => GetValueOrDefault(DicomTag.CodeValue, 0, String.Empty);
         }
 
         public string Scheme
         {
-            get
-            {
-                return Get<string>(DicomTag.CodingSchemeDesignator, 0, String.Empty);
-            }
+            get => GetValueOrDefault(DicomTag.CodingSchemeDesignator, 0, String.Empty);
         }
 
         public string Meaning
         {
-            get
-            {
-                return Get<string>(DicomTag.CodeMeaning, 0, String.Empty);
-            }
+            get => GetValueOrDefault(DicomTag.CodeMeaning, 0, String.Empty);
         }
 
         public string Version
         {
-            get
-            {
-                return Get<string>(DicomTag.CodingSchemeVersion, 0, String.Empty);
-            }
+            get => GetValueOrDefault(DicomTag.CodingSchemeVersion, 0, String.Empty);
         }
 
         public override bool Equals(object obj)
@@ -78,12 +66,9 @@ namespace Dicom.StructuredReport
             return !(a == b);
         }
 
-        private int _hash = 0;
-
         public override int GetHashCode()
         {
-            if (_hash == 0) _hash = ToString().GetHashCode();
-            return _hash;
+            return ToString().GetHashCode();
         }
 
         public override string ToString()

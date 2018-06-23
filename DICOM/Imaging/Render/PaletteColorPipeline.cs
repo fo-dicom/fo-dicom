@@ -10,7 +10,6 @@ namespace Dicom.Imaging.Render
     /// </summary>
     public class PaletteColorPipeline : IPipeline
     {
-        private ILUT _lut;
 
         /// <summary>
         /// Initialize new instance of <seealso cref="PaletteColorPipeline"/> containing palette color LUT extracted from
@@ -20,20 +19,14 @@ namespace Dicom.Imaging.Render
         public PaletteColorPipeline(DicomPixelData pixelData)
         {
             var lut = pixelData.PaletteColorLUT;
-            var first = pixelData.Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
+            var first = pixelData.Dataset.GetSingleValueOrDefault(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
 
-            _lut = new PaletteColorLUT(first, lut);
+            LUT = new PaletteColorLUT(first, lut);
         }
 
         /// <summary>
         /// Get the <seealso cref="PaletteColorLUT"/>
         /// </summary>
-        public ILUT LUT
-        {
-            get
-            {
-                return _lut;
-            }
-        }
+        public ILUT LUT { get; private set; }
     }
 }

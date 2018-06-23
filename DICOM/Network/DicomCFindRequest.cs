@@ -60,10 +60,7 @@ namespace Dicom.Network
         /// </summary>
         public DicomQueryRetrieveLevel Level
         {
-            get
-            {
-                return Dataset.Get(DicomTag.QueryRetrieveLevel, DicomQueryRetrieveLevel.NotApplicable);
-            }
+            get => Dataset.GetSingleValueOrDefault(DicomTag.QueryRetrieveLevel, DicomQueryRetrieveLevel.NotApplicable);
             private set
             {
                 switch (value)
@@ -110,11 +107,10 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCFindResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCFindResponse)response);
             }
             catch
-            {
-            }
+            { /* ignore exception */ }
         }
 
         /// <summary>
@@ -301,6 +297,7 @@ namespace Dicom.Network
                 case DicomQueryRetrieveLevel.Image:
                     return DicomUID.StudyRootQueryRetrieveInformationModelFIND;
                 case DicomQueryRetrieveLevel.Worklist:
+                case DicomQueryRetrieveLevel.NotApplicable:
                     return DicomUID.ModalityWorklistInformationModelFIND;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), level, null);

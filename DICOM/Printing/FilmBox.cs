@@ -101,14 +101,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string ImageDisplayFormat
         {
-            get
-            {
-                return this.Get<string>(DicomTag.ImageDisplayFormat);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.ImageDisplayFormat, value);
-            }
+            get => GetSingleValue<string>(DicomTag.ImageDisplayFormat);
+            set => AddOrUpdate(DicomTag.ImageDisplayFormat, value);
         }
 
         /// <summary>
@@ -129,14 +123,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string FilmOrientation
         {
-            get
-            {
-                return this.Get<string>(DicomTag.FilmOrientation, "PORTRAIT");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.FilmOrientation, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.FilmOrientation, "PORTRAIT");
+            set => AddOrUpdate(DicomTag.FilmOrientation, value);
         }
 
         /// <summary>
@@ -166,14 +154,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string FilmSizeID
         {
-            get
-            {
-                return this.Get<string>(DicomTag.FilmSizeID, "A4");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.FilmSizeID, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.FilmSizeID, "A4");
+            set => AddOrUpdate(DicomTag.FilmSizeID, value);
         }
 
         /// <summary>
@@ -191,14 +173,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string MagnificationType
         {
-            get
-            {
-                return this.Get<string>(DicomTag.MagnificationType, "BILINEAR");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MagnificationType, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MagnificationType, "BILINEAR");
+            set => AddOrUpdate(DicomTag.MagnificationType, value);
         }
 
         /// <summary>
@@ -207,14 +183,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MaxDensity
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.MaxDensity, (ushort)0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MaxDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MaxDensity, (ushort)0);
+            set => AddOrUpdate(DicomTag.MaxDensity, value);
         }
 
 
@@ -224,14 +194,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort MinDensity
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.MinDensity, (ushort)0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.MinDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.MinDensity, (ushort)0);
+            set => AddOrUpdate(DicomTag.MinDensity, value);
         }
 
         /// <summary>
@@ -255,14 +219,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string ConfigurationInformation
         {
-            get
-            {
-                return this.Get(DicomTag.ConfigurationInformation, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.ConfigurationInformation, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.ConfigurationInformation, string.Empty);
+            set => AddOrUpdate(DicomTag.ConfigurationInformation, value);
         }
 
         /// <summary>
@@ -272,14 +230,8 @@ namespace Dicom.Printing
         /// </summary>
         public string AnnotationDisplayFormatID
         {
-            get
-            {
-                return this.Get(DicomTag.AnnotationDisplayFormatID, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.AnnotationDisplayFormatID, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.AnnotationDisplayFormatID, string.Empty);
+            set => AddOrUpdate(DicomTag.AnnotationDisplayFormatID, value);
         }
 
         /// <summary>
@@ -288,14 +240,8 @@ namespace Dicom.Printing
         /// </summary>
         public string SmoothingType
         {
-            get
-            {
-                return this.Get(DicomTag.SmoothingType, string.Empty);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.SmoothingType, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.SmoothingType, string.Empty);
+            set => AddOrUpdate(DicomTag.SmoothingType, value);
         }
 
         /// <summary>
@@ -315,14 +261,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string BorderDensity
         {
-            get
-            {
-                return this.Get(DicomTag.BorderDensity, "BLACK");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.BorderDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.BorderDensity, "BLACK");
+            set => AddOrUpdate(DicomTag.BorderDensity, value);
         }
 
 
@@ -342,14 +282,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string EmptyImageDensity
         {
-            get
-            {
-                return this.Get(DicomTag.EmptyImageDensity, "BLACK");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.EmptyImageDensity, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.EmptyImageDensity, "BLACK");
+            set => AddOrUpdate(DicomTag.EmptyImageDensity, value);
         }
 
         /// <summary>
@@ -364,14 +298,8 @@ namespace Dicom.Printing
         /// </remarks>
         public string Trim
         {
-            get
-            {
-                return this.Get(DicomTag.Trim, "NO");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.Trim, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.Trim, "NO");
+            set => AddOrUpdate(DicomTag.Trim, value);
         }
 
         /// <summary>
@@ -381,14 +309,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort Illumination
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.Illumination, (ushort)0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.Illumination, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.Illumination, (ushort)0);
+            set => AddOrUpdate(DicomTag.Illumination, value);
         }
 
         /// <summary>
@@ -397,14 +319,8 @@ namespace Dicom.Printing
         /// </summary>
         public ushort ReflectedAmbientLight
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.ReflectedAmbientLight, (ushort)0);
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.ReflectedAmbientLight, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.ReflectedAmbientLight, (ushort)0);
+            set => AddOrUpdate(DicomTag.ReflectedAmbientLight, value);
         }
 
         /// <summary>
@@ -425,22 +341,13 @@ namespace Dicom.Printing
         /// </remarks>
         public string RequestedResolutionID
         {
-            get
-            {
-                return this.Get(DicomTag.RequestedResolutionID, "STANDARD");
-            }
-            set
-            {
-                this.AddOrUpdate(DicomTag.RequestedResolutionID, value);
-            }
+            get => GetSingleValueOrDefault(DicomTag.RequestedResolutionID, "STANDARD");
+            set => AddOrUpdate(DicomTag.RequestedResolutionID, value);
         }
 
         public DicomSequence ReferencedPresentationLutSequence
         {
-            get
-            {
-                return this.Get<DicomSequence>(DicomTag.ReferencedPresentationLUTSequence, null);
-            }
+            get => TryGetSequence(DicomTag.ReferencedPresentationLUTSequence, out DicomSequence dummy) ? dummy : null;
             set
             {
                 if (value.Tag.Equals(DicomTag.ReferencedPresentationLUTSequence))
@@ -448,7 +355,7 @@ namespace Dicom.Printing
                     throw new InvalidOperationException(
                         $"Added sequence must be Referenced Presentation LUT Sequence, is: {value.Tag}");
                 }
-                this.AddOrUpdate(value);
+                AddOrUpdate(value);
             }
         }
 
@@ -456,10 +363,10 @@ namespace Dicom.Printing
         {
             get
             {
-                if (ReferencedPresentationLutSequence != null && ReferencedPresentationLutSequence.Items.Count > 0)
+                if (ReferencedPresentationLutSequence?.Items.Count > 0)
                 {
                     var sopInstanceUid =
-                        ReferencedPresentationLutSequence.Items[0].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
+                        ReferencedPresentationLutSequence.Items[0].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
                     return _filmSession.FindPresentationLut(sopInstanceUid);
                 }
                 else
@@ -481,7 +388,7 @@ namespace Dicom.Printing
         /// <param name="transferSyntax">Requested internal transfer syntax.</param>
         public FilmBox(FilmSession filmSession, DicomUID sopInstance, DicomTransferSyntax transferSyntax)
         {
-            this.InternalTransferSyntax = transferSyntax;
+            InternalTransferSyntax = transferSyntax;
             _filmSession = filmSession;
             if (sopInstance == null || sopInstance.UID == string.Empty)
             {
@@ -491,8 +398,8 @@ namespace Dicom.Printing
             {
                 SOPInstanceUID = sopInstance;
             }
-            this.Add(DicomTag.SOPClassUID, SOPClassUID);
-            this.Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
+            Add(DicomTag.SOPClassUID, SOPClassUID);
+            Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
 
 
             BasicImageBoxes = new List<ImageBox>();
@@ -502,7 +409,7 @@ namespace Dicom.Printing
             : this(filmSession, sopInstance, dataset.InternalTransferSyntax)
         {
             dataset.CopyTo(this);
-            this.InternalTransferSyntax = dataset.InternalTransferSyntax;
+            InternalTransferSyntax = dataset.InternalTransferSyntax;
         }
 
         /// <summary>
@@ -525,41 +432,41 @@ namespace Dicom.Printing
         public bool Initialize()
         {
             //initialization
-            this.AddOrUpdate(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
+            AddOrUpdate(new DicomSequence(DicomTag.ReferencedImageBoxSequence));
 
-            if (!this.Contains(DicomTag.FilmOrientation))
+            if (!Contains(DicomTag.FilmOrientation))
             {
                 FilmOrientation = "PORTRAIT";
             }
-            if (!this.Contains(DicomTag.FilmSizeID))
+            if (!Contains(DicomTag.FilmSizeID))
             {
                 FilmSizeID = "A4";
             }
-            if (!this.Contains(DicomTag.MagnificationType))
+            if (!Contains(DicomTag.MagnificationType))
             {
                 MagnificationType = "BILINEAR";
             }
-            if (!this.Contains(DicomTag.MaxDensity))
+            if (!Contains(DicomTag.MaxDensity))
             {
                 MaxDensity = 0;
             }
-            if (!this.Contains(DicomTag.MinDensity))
+            if (!Contains(DicomTag.MinDensity))
             {
                 MinDensity = 0;
             }
-            if (!this.Contains(DicomTag.BorderDensity))
+            if (!Contains(DicomTag.BorderDensity))
             {
                 BorderDensity = "BLACK";
             }
-            if (!this.Contains(DicomTag.EmptyImageDensity))
+            if (!Contains(DicomTag.EmptyImageDensity))
             {
                 EmptyImageDensity = "BLACK";
             }
-            if (!this.Contains(DicomTag.Trim))
+            if (!Contains(DicomTag.Trim))
             {
                 Trim = "NO";
             }
-            if (!this.Contains(DicomTag.RequestedResolutionID))
+            if (!Contains(DicomTag.RequestedResolutionID))
             {
                 RequestedResolutionID = "STANDARD";
             }
@@ -664,11 +571,13 @@ namespace Dicom.Printing
 
             BasicImageBoxes.Add(imageBox);
 
-            var item = new DicomDataset();
-            item.Add(DicomTag.ReferencedSOPClassUID, classUid);
-            item.Add(DicomTag.ReferencedSOPInstanceUID, sopInstance);
+            var item = new DicomDataset
+            {
+                { DicomTag.ReferencedSOPClassUID, classUid },
+                { DicomTag.ReferencedSOPInstanceUID, sopInstance }
+            };
 
-            var seq = Get<DicomSequence>(DicomTag.ReferencedImageBoxSequence);
+            var seq = GetSequence(DicomTag.ReferencedImageBoxSequence);
             seq.Items.Add(item);
         }
 

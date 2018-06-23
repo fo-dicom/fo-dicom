@@ -239,7 +239,7 @@ namespace Dicom
             AnonymizeInPlace(file.Dataset);
             if (file.FileMetaInfo != null)
             {
-                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             }
         }
 

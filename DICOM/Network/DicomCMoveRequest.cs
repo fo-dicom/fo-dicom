@@ -91,10 +91,7 @@ namespace Dicom.Network
         /// </summary>
         public DicomQueryRetrieveLevel Level
         {
-            get
-            {
-                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
-            }
+            get => Dataset.GetSingleValue<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
             private set
             {
                 switch (value)
@@ -117,14 +114,8 @@ namespace Dicom.Network
         /// </summary>
         public string DestinationAE
         {
-            get
-            {
-                return Command.Get<string>(DicomTag.MoveDestination);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.MoveDestination, value);
-            }
+            get => Command.GetSingleValue<string>(DicomTag.MoveDestination);
+            private set => Command.AddOrUpdate(DicomTag.MoveDestination, value);
         }
 
         #endregion
@@ -156,10 +147,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCMoveResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCMoveResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

@@ -34,14 +34,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomPriority Priority
         {
-            get
-            {
-                return Command.Get<DicomPriority>(DicomTag.Priority);
-            }
-            protected set
-            {
-                Command.AddOrUpdate(DicomTag.Priority, (ushort)value);
-            }
+            get => Command.GetSingleValue<DicomPriority>(DicomTag.Priority);
+            protected set => Command.AddOrUpdate(DicomTag.Priority, (ushort)value);
         }
     }
 }

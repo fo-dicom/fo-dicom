@@ -149,7 +149,7 @@ namespace Dicom.Imaging.Codec
             //DCMTK djcodecd.cxx
             public static int ScanJpegForBitDepth(DicomPixelData pixelData)
             {
-                DicomItem item = pixelData.Dataset.Get<DicomItem>(DicomTag.PixelData);
+                DicomItem item = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
                 IByteBuffer buffer;
                 if (item is DicomFragmentSequence) buffer = (item as DicomFragmentSequence).Fragments[0];
                 else buffer = (item as DicomElement).Buffer;

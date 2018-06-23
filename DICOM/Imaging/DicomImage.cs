@@ -117,7 +117,7 @@ namespace Dicom.Imaging
         // continuously added upon request.
 
         /// <summary>Number of frames contained in image data.</summary>
-        public int NumberOfFrames => _dataset.Get(DicomTag.NumberOfFrames, (ushort)1);
+        public int NumberOfFrames => _dataset.GetSingleValueOrDefault(DicomTag.NumberOfFrames, (ushort)1);
 
         /// <summary>Gets or sets window width of rendered gray scale image.</summary>
         public virtual double WindowWidth
@@ -401,7 +401,7 @@ namespace Dicom.Imaging
         private static PipelineData CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData)
         {
             var pi = pixelData.PhotometricInterpretation;
-            var samples = dataset.Get<ushort>(DicomTag.SamplesPerPixel, 0, 0);
+            var samples = dataset.GetSingleValueOrDefault(DicomTag.SamplesPerPixel, (ushort)0);
 
             // temporary fix for JPEG compressed YBR images
             if ((dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1

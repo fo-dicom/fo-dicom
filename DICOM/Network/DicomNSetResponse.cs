@@ -39,14 +39,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
+            private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
         #endregion

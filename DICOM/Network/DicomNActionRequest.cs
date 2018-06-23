@@ -46,14 +46,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -61,14 +55,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort ActionTypeID
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.ActionTypeID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.ActionTypeID, value);
-            }
+            get => Command.GetSingleValue<ushort>(DicomTag.ActionTypeID);
+            private set => Command.AddOrUpdate(DicomTag.ActionTypeID, value);
         }
 
         #endregion
@@ -100,10 +88,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomNActionResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomNActionResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

@@ -159,6 +159,69 @@ namespace Dicom
         }
 
 
+        public DicomCodeItem GetCodeItem(DicomTag tag)
+        {
+            tag = ValidatePrivate(tag);
+            if (_items.TryGetValue(tag, out DicomItem item))
+            {
+                if (item is DicomSequence sequence)
+                {
+                    return new DicomCodeItem(sequence);
+                }
+                else
+                {
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                }
+            }
+            else
+            {
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
+            }
+        }
+
+
+        public DicomMeasuredValue GetMeasuredValue(DicomTag tag)
+        {
+            tag = ValidatePrivate(tag);
+            if (_items.TryGetValue(tag, out DicomItem item))
+            {
+                if (item is DicomSequence sequence)
+                {
+                    return new DicomMeasuredValue(sequence);
+                }
+                else
+                {
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                }
+            }
+            else
+            {
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
+            }
+        }
+
+
+        public DicomReferencedSOP GetReferencedSOP(DicomTag tag)
+        {
+            tag = ValidatePrivate(tag);
+            if (_items.TryGetValue(tag, out DicomItem item))
+            {
+                if (item is DicomSequence sequence)
+                {
+                    return new DicomReferencedSOP(sequence);
+                }
+                else
+                {
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                }
+            }
+            else
+            {
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
+            }
+        }
+
+
         /// <summary>
         /// Gets the sequence of the specified <paramref name="tag"/>.
         /// </summary>
@@ -942,7 +1005,7 @@ namespace Dicom
         {
             if (destination != null)
             {
-                foreach (var tag in tags) destination.AddOrUpdate(Get<DicomItem>(tag));
+                foreach (var tag in tags) destination.AddOrUpdate(GetDicomItem<DicomItem>(tag));
             }
             return this;
         }
@@ -1184,8 +1247,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomAttributeTag(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(DicomTag)) return DoAdd(new DicomAttributeTag(tag, values.Cast<DicomTag>().ToArray()), allowUpdate);
 
-                IEnumerable<DicomTag> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out IEnumerable<DicomTag> parsedValues))
                 {
                     return DoAdd(new DicomAttributeTag(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1233,8 +1295,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomFloatingPointDouble(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()), allowUpdate);
 
-                IEnumerable<double> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out IEnumerable<double> parsedValues))
                 {
                     return DoAdd(new DicomFloatingPointDouble(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1245,8 +1306,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomFloatingPointSingle(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()), allowUpdate);
 
-                IEnumerable<float> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out IEnumerable<float> parsedValues))
                 {
                     return DoAdd(new DicomFloatingPointSingle(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1343,8 +1403,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomSignedLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(int)) return DoAdd(new DicomSignedLong(tag, values.Cast<int>().ToArray()), allowUpdate);
 
-                IEnumerable<int> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out IEnumerable<int> parsedValues))
                 {
                     return DoAdd(new DicomSignedLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1363,8 +1422,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomSignedShort(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(short)) return DoAdd(new DicomSignedShort(tag, values.Cast<short>().ToArray()), allowUpdate);
 
-                IEnumerable<short> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out IEnumerable<short> parsedValues))
                 {
                     return DoAdd(new DicomSignedShort(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1405,8 +1463,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomUnsignedLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(uint)) return DoAdd(new DicomUnsignedLong(tag, values.Cast<uint>().ToArray()), allowUpdate);
 
-                IEnumerable<uint> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out IEnumerable<uint> parsedValues))
                 {
                     return DoAdd(new DicomUnsignedLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1434,8 +1491,7 @@ namespace Dicom
                 if (values == null) return DoAdd(new DicomUnsignedShort(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(ushort)) return DoAdd(new DicomUnsignedShort(tag, values.Cast<ushort>().ToArray()), allowUpdate);
 
-                IEnumerable<ushort> parsedValues;
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out IEnumerable<ushort> parsedValues))
                 {
                     return DoAdd(new DicomUnsignedShort(tag, parsedValues.ToArray()), allowUpdate);
                 }

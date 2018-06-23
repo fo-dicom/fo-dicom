@@ -259,7 +259,7 @@ namespace Dicom.Imaging.Codec
 
                 var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
-                    methods.AddRange(newDataset.Get<string[]>(DicomTag.LossyImageCompressionMethod));
+                    methods.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionMethod));
                 methods.Add(outSyntax.LossyCompressionMethod);
                 newDataset.AddOrUpdate(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
 
@@ -288,7 +288,7 @@ namespace Dicom.Imaging.Codec
                 if (output.Contains(dataTag)) continue;
 
                 // If embedded overlay, Overlay Bits Allocated should equal Bits Allocated (#110).
-                var bitsAlloc = output.Get(DicomTag.BitsAllocated, (ushort)0);
+                var bitsAlloc = output.GetSingleValueOrDefault(DicomTag.BitsAllocated, (ushort)0);
                 output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
 
                 var data = overlay.Data;

@@ -50,11 +50,11 @@ namespace Dicom.Network
         /// <param name="file">DICOM file to be sent</param>
         /// <param name="priority">Priority of request</param>
         public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.CStoreRequest, file.Dataset.Get<DicomUID>(DicomTag.SOPClassUID), priority)
+            : base(DicomCommandField.CStoreRequest, file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID), priority)
         {
             File = file;
             Dataset = file.Dataset;
-            SOPInstanceUID = File.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
         }
 
         /// <summary>
@@ -73,23 +73,17 @@ namespace Dicom.Network
         /// <summary>Gets the SOP Instance UID of the DICOM file associated with this DICOM C-Store request.</summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
         /// <summary>Gets the transfer syntax of the DICOM file associated with this DICOM C-Store request.</summary>
         public DicomTransferSyntax TransferSyntax
             =>
-                this.File != null
-                    ? (this.File.FileMetaInfo.Contains(DicomTag.TransferSyntaxUID)
-                           ? this.File.FileMetaInfo.TransferSyntax
-                           : this.File.Dataset.InternalTransferSyntax)
+                File != null
+                    ? (File.FileMetaInfo.Contains(DicomTag.TransferSyntaxUID)
+                           ? File.FileMetaInfo.TransferSyntax
+                           : File.Dataset.InternalTransferSyntax)
                     : null;
 
         /// <summary>
@@ -118,11 +112,13 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCStoreResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCStoreResponse)response);
             }
             catch
             {
+                // ignore exceptions
             }
         }
+
     }
 }

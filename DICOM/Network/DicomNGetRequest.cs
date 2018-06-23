@@ -41,14 +41,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -56,14 +50,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomTag[] Attributes
         {
-            get
-            {
-                return Command.Get<DicomTag[]>(DicomTag.AttributeIdentifierList, null);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.AttributeIdentifierList, value);
-            }
+            get => Command.TryGetValues<DicomTag>(DicomTag.AttributeIdentifierList, out DicomTag[] dummy) ? dummy : null;
+            private set => Command.AddOrUpdate(DicomTag.AttributeIdentifierList, value);
         }
 
         #endregion
@@ -95,10 +83,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomNGetResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomNGetResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

@@ -64,11 +64,11 @@ namespace Dicom.Printing
             {
                 if (SOPClassUID == ColorSOPClassUID)
                 {
-                    this.AddOrUpdate(DicomTag.BasicColorImageSequence, value);
+                    AddOrUpdate(DicomTag.BasicColorImageSequence, value);
                 }
                 else
                 {
-                    this.AddOrUpdate(DicomTag.BasicGrayscaleImageSequence, value);
+                    AddOrUpdate(DicomTag.BasicGrayscaleImageSequence, value);
                 }
             }
         }
@@ -78,10 +78,7 @@ namespace Dicom.Printing
         /// </summary>
         public ushort ImageBoxPosition
         {
-            get
-            {
-                return this.Get<ushort>(DicomTag.ImageBoxPosition, 1);
-            }
+            get => GetSingleValueOrDefault(DicomTag.ImageBoxPosition, (ushort)1);
             set => AddOrUpdate(DicomTag.ImageBoxPosition, value);
         }
 

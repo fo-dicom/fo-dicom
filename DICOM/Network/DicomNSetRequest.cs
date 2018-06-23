@@ -20,14 +20,8 @@ namespace Dicom.Network
 
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
         }
 
         public delegate void ResponseDelegate(DicomNSetRequest request, DicomNSetResponse response);
@@ -38,10 +32,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomNSetResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomNSetResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
     }

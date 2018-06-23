@@ -43,14 +43,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomCommandField Type
         {
-            get
-            {
-                return Command.Get<DicomCommandField>(DicomTag.CommandField);
-            }
-            protected set
-            {
-                Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
-            }
+            get => Command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
+            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
         }
 
         /// <summary>
@@ -66,7 +60,7 @@ namespace Dicom.Network
                     case DicomCommandField.NSetRequest:
                     case DicomCommandField.NActionRequest:
                     case DicomCommandField.NDeleteRequest:
-                        return Command.Get<DicomUID>(DicomTag.RequestedSOPClassUID);
+                        return Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPClassUID);
                     case DicomCommandField.CStoreRequest:
                     case DicomCommandField.CFindRequest:
                     case DicomCommandField.CGetRequest:
@@ -74,9 +68,9 @@ namespace Dicom.Network
                     case DicomCommandField.CEchoRequest:
                     case DicomCommandField.NEventReportRequest:
                     case DicomCommandField.NCreateRequest:
-                        return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID);
+                        return Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPClassUID);
                     default:
-                        return Command.Get<DicomUID>(DicomTag.AffectedSOPClassUID, null);
+                        return Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPClassUID, null);
                 }
             }
             protected set
@@ -99,7 +93,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets a value indicating whether the message contains a dataset.
         /// </summary>
-        public bool HasDataset => Command.Get<ushort>(DicomTag.CommandDataSetType, 0, 0x0101) != 0x0101;
+        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort)0x0101) != 0x0101;
 
         /// <summary>
         /// Gets or sets the presentation Context.
@@ -116,10 +110,7 @@ namespace Dicom.Network
         /// </summary>
         public DicomDataset Dataset
         {
-            get
-            {
-                return _dataset;
-            }
+            get => _dataset;
             set
             {
                 _dataset = value;
@@ -139,7 +130,7 @@ namespace Dicom.Network
         public override string ToString()
         {
             return
-                $"{ToString(Type)} [{(IsRequest(Type) ? Command.Get<ushort>(DicomTag.MessageID) : Command.Get<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
+                $"{ToString(Type)} [{(IsRequest(Type) ? Command.GetSingleValue<ushort>(DicomTag.MessageID) : Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
         }
 
         /// <summary>

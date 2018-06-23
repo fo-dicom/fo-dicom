@@ -26,10 +26,7 @@ namespace Dicom.StructuredReport
 
         public DicomCodeItem Code
         {
-            get
-            {
-                return Get<DicomCodeItem>(DicomTag.MeasurementUnitsCodeSequence);
-            }
+            get => GetCodeItem(DicomTag.MeasurementUnitsCodeSequence);
         }
 
         public decimal Value

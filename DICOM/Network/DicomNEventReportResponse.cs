@@ -49,14 +49,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
+            private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -64,14 +58,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort EventTypeID
         {
-            get
-            {
-                return Command.Get(DicomTag.EventTypeID, (ushort)0);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.EventTypeID, value);
-            }
+            get => Command.GetSingleValueOrDefault(DicomTag.EventTypeID, (ushort)0);
+            private set => Command.AddOrUpdate(DicomTag.EventTypeID, value);
         }
 
         #endregion

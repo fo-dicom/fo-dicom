@@ -53,14 +53,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort MessageID
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.MessageID);
-            }
-            protected set
-            {
-                Command.AddOrUpdate(DicomTag.MessageID, value);
-            }
+            get => Command.GetSingleValue<ushort>(DicomTag.MessageID);
+            protected set => Command.AddOrUpdate(DicomTag.MessageID, value);
         }
 
         #endregion

@@ -109,7 +109,7 @@ namespace Dicom.Imaging.Render
 
             if (pixelData.BitsStored == 1)
             {
-                if (pixelData.Dataset.Get<DicomUID>(DicomTag.SOPClassUID)
+                if (pixelData.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID)
                     == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
                     // Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
                     return new SingleBitPixelData(

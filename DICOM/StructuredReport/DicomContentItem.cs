@@ -169,26 +169,14 @@ namespace Dicom.StructuredReport
 
         public DicomDataset Dataset
         {
-            get
-            {
-                return _dataset;
-            }
-            private set
-            {
-                _dataset = value;
-            }
+            get => _dataset;
+            private set => _dataset = value;
         }
 
         public DicomCodeItem Code
         {
-            get
-            {
-                return Dataset.Get<DicomCodeItem>(DicomTag.ConceptNameCodeSequence);
-            }
-            private set
-            {
-                Dataset.AddOrUpdate(DicomTag.ConceptNameCodeSequence, value);
-            }
+            get => Dataset.GetCodeItem(DicomTag.ConceptNameCodeSequence);
+            private set => Dataset.AddOrUpdate(DicomTag.ConceptNameCodeSequence, value);
         }
 
         public DicomValueType Type
@@ -427,7 +415,7 @@ namespace Dicom.StructuredReport
                 if (Type == DicomValueType.PersonName) return (T)(object)Dataset.GetValueOrDefault(DicomTag.PersonName, 0, String.Empty);
                 if (Type == DicomValueType.Numeric)
                 {
-                    var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+                    var mv = Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)mv.ToString();
                 }
@@ -437,7 +425,7 @@ namespace Dicom.StructuredReport
                 if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.GetSingleValue<string>(DicomTag.UID);
                 if (Type == DicomValueType.Code)
                 {
-                    var c = Dataset.Get<DicomCodeItem>(DicomTag.ConceptCodeSequence);
+                    var c = Dataset.GetCodeItem(DicomTag.ConceptCodeSequence);
                     if (c == null) return default(T);
                     return (T)(object)c.ToString();
                 }
@@ -454,7 +442,7 @@ namespace Dicom.StructuredReport
             {
                 if (Type == DicomValueType.Numeric)
                 {
-                    var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+                    var mv = Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)mv.Value;
                 }
@@ -464,7 +452,7 @@ namespace Dicom.StructuredReport
             {
                 if (Type == DicomValueType.Numeric)
                 {
-                    var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+                    var mv = Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)(double)mv.Value;
                 }
@@ -474,7 +462,7 @@ namespace Dicom.StructuredReport
             {
                 if (Type == DicomValueType.Numeric)
                 {
-                    var mv = Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+                    var mv = Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)(int)mv.Value;
                 }
@@ -482,22 +470,22 @@ namespace Dicom.StructuredReport
 
             if (typeof(T) == typeof(DicomUID))
             {
-                if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.Get<DicomUID>(DicomTag.UID);
+                if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.GetSingleValue<DicomUID>(DicomTag.UID);
             }
 
             if (typeof(T) == typeof(DicomCodeItem))
             {
-                if (Type == DicomValueType.Code) return (T)(object)Dataset.Get<DicomCodeItem>(DicomTag.ConceptCodeSequence);
+                if (Type == DicomValueType.Code) return (T)(object)Dataset.GetCodeItem(DicomTag.ConceptCodeSequence);
             }
 
             if (typeof(T) == typeof(DicomMeasuredValue))
             {
-                if (Type == DicomValueType.Numeric) return (T)(object)Dataset.Get<DicomMeasuredValue>(DicomTag.MeasuredValueSequence);
+                if (Type == DicomValueType.Numeric) return (T)(object)Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
             }
 
             if (typeof(T) == typeof(DicomReferencedSOP))
             {
-                if (Type == DicomValueType.Composite || Type == DicomValueType.Image || Type == DicomValueType.Waveform) return (T)(object)Dataset.Get<DicomReferencedSOP>(DicomTag.ReferencedSOPSequence);
+                if (Type == DicomValueType.Composite || Type == DicomValueType.Image || Type == DicomValueType.Waveform) return (T)(object)Dataset.GetReferencedSOP(DicomTag.ReferencedSOPSequence);
             }
 
             throw new DicomStructuredReportException(
@@ -521,7 +509,7 @@ namespace Dicom.StructuredReport
             var s = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, String.Empty);
             if (!String.IsNullOrEmpty(s)) s += " ";
             else s = String.Empty;
-            if (Code != null) s += String.Format("{0} {1}", Code.ToString(), Dataset.Get<string>(DicomTag.ValueType, 0, "UNKNOWN"));
+            if (Code != null) s += String.Format("{0} {1}", Code.ToString(), Dataset.GetSingleValueOrDefault(DicomTag.ValueType, "UNKNOWN"));
             else
                 s += String.Format(
                     "{0} {1}",
