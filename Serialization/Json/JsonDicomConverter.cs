@@ -320,21 +320,18 @@ namespace Dicom.Serialization
                 writer.WriteStartArray();
                 foreach (var val in elem.Get<string[]>())
                 {
-                    if (val == null || val.Equals("")) writer.WriteNull();
+                    if (string.IsNullOrEmpty(val))
+                        writer.WriteNull();
                     else
                     {
-                        ulong xulong;
-                        long xlong;
-                        decimal xdecimal;
-                        double xdouble;
                         var fix = FixDecimalString(val);
-                        if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out xulong))
+                        if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out ulong xulong))
                             writer.WriteValue(xulong);
-                        else if (long.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out xlong))
+                        else if (long.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out long xlong))
                             writer.WriteValue(xlong);
-                        else if (decimal.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out xdecimal))
+                        else if (decimal.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal xdecimal))
                             writer.WriteValue(xdecimal);
-                        else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out xdouble))
+                        else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out double xdouble))
                             writer.WriteValue(xdouble);
                         else
                             throw new FormatException(string.Format("Cannot write dicom number {0} to json", val));
@@ -347,7 +344,7 @@ namespace Dicom.Serialization
         private static bool IsValidJsonNumber(string val)
         {
             // This is not very inefficient - uses .NET regex caching
-            return Regex.IsMatch(val, "^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][-+]?[0-9]+)?$");
+            return Regex.IsMatch(val, "^[+-]?((0|[1-9][0-9]*)([.][0-9]+)?|[.][0-9]+)([eE][-+]?[0-9]+)?$");
         }
 
         /// <summary>
@@ -426,8 +423,7 @@ namespace Dicom.Serialization
 
         private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
         {
-            var buffer = elem.Buffer as IBulkDataUriByteBuffer;
-            if (buffer != null)
+            if (elem.Buffer is IBulkDataUriByteBuffer buffer)
             {
                 writer.WritePropertyName("BulkDataURI");
                 writer.WriteValue(buffer.BulkDataUri);

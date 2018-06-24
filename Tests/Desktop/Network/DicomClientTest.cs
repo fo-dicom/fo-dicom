@@ -420,15 +420,19 @@ namespace Dicom.Network
             int port = Ports.GetNext();
             using (DicomServer.Create<MockCEchoProvider>(port))
             {
+                Task task = null;
                 var client = new DicomClient();
+                client.AssociationAccepted += HandleAssociationAccepted;
                 client.AddRequest(new DicomCEchoRequest());
-                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                client.WaitForAssociation();
+                void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
+                {
+                    (sender as DicomClient).ReleaseAsync().Wait();
+                    Thread.Sleep(10);
+                    Assert.True(task.IsCompleted);
+                }
 
-                await client.ReleaseAsync();
-                Thread.Sleep(10);
-                Assert.True(task.IsCompleted);
             }
         }
 
