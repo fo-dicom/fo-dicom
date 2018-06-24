@@ -1,4 +1,7 @@
-#### v.4.0.0 (TBD)
+#### v.4.0.1 (TBD)
+* Update Json DS validation regex (#643)
+
+#### v.4.0.0-rc1 (5/22/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
 * Fixing 2 UWP Networking Bugs (#636, #637)
 * Add List of known Private UID's (#589)
