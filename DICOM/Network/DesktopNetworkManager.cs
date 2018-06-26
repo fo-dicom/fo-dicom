@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -36,9 +36,7 @@ namespace Dicom.Network
 
         #region PROPERTIES
 
-        /// <summary>
-        /// Implementation of the machine name getter.
-        /// </summary>
+        /// <inheritdoc />
         protected override string MachineNameImpl
         {
             get
@@ -55,37 +53,19 @@ namespace Dicom.Network
 
         #region METHODS
 
-        /// <summary>
-        /// Platform-specific implementation to create a network listener object.
-        /// </summary>
-        /// <param name="port">Network port to listen to.</param>
-        /// <returns>Network listener implementation.</returns>
-        protected override INetworkListener CreateNetworkListenerImpl(int port)
+        /// <inheritdoc />
+        protected override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
         {
-            return new DesktopNetworkListener(port);
+            return new DesktopNetworkListener(ipAddress, port);
         }
 
-        /// <summary>
-        /// Platform-specific implementation to create a network stream object.
-        /// </summary>
-        /// <param name="host">Network host.</param>
-        /// <param name="port">Network port.</param>
-        /// <param name="useTls">Use TLS layer?</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        /// <returns>Network stream implementation.</returns>
+        /// <inheritdoc />
         protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
         {
             return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
         }
 
-        /// <summary>
-        /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
-        /// </summary>
-        /// <param name="exception">Exception to validate.</param>
-        /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
-        /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
-        /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
+        /// <inheritdoc />
         protected override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
         {
             var socketEx = exception as SocketException;
@@ -105,11 +85,7 @@ namespace Dicom.Network
             return false;
         }
 
-        /// <summary>
-        /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
-        /// </summary>
-        /// <param name="identifier">Unique network identifier, if found.</param>
-        /// <returns>True if network identifier could be obtained, false otherwise.</returns>
+        /// <inheritdoc />
         protected override bool TryGetNetworkIdentifierImpl(out DicomUID identifier)
         {
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();

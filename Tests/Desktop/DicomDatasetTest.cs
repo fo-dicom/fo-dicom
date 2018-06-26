@@ -1,5 +1,9 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System.Text;
+
+using Dicom.IO.Buffer;
 
 namespace Dicom
 {
@@ -30,7 +34,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, 3.45, 6.78, 9.01);
             Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal(3, dataset.Get<double[]>(tag).Length);
+            Assert.Equal(3, dataset.GetValues<double>(tag).Length);
         }
 
         [Fact]
@@ -40,7 +44,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, "abc");
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("abc", dataset.Get<string>(tag));
+            Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
         }
 
         [Fact]
@@ -50,7 +54,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, "a", "b", "c");
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("c", dataset.Get<string>(tag, 2));
+            Assert.Equal("c", dataset.GetValue<string>(tag, 2));
         }
 
         [Fact]
@@ -60,7 +64,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, "abc");
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("abc", dataset.Get<string>(tag));
+            Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
         }
 
         [Fact]
@@ -71,8 +75,8 @@ namespace Dicom
             dataset.Add(tag, "a", "b", "c");
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
 
-            var data = dataset.Get<string[]>(tag);
-            Assert.Equal(1, data.Length);
+            var data = dataset.GetValues<string>(tag);
+            Assert.Single(data);
             Assert.Equal("a", data.First());
         }
 
@@ -88,13 +92,13 @@ namespace Dicom
                 "Desouky^Hesham",
                 "Horn^Chris");
 
-            var data = dataset.Get<string[]>(tag);
+            var data = dataset.GetValues<string>(tag);
             Assert.Equal(4, data.Length);
             Assert.Equal("Desouky^Hesham", data[2]);
         }
 
         [Theory]
-        [MemberData("MultiVMStringTags")]
+        [MemberData(nameof(MultiVMStringTags))]
         public void Add_MultiVMStringTags_YieldsMultipleValues(DicomTag tag, string[] values, Type expectedType)
         {
             var dataset = new DicomDataset();
@@ -102,7 +106,7 @@ namespace Dicom
 
             Assert.IsType(expectedType, dataset.First(item => item.Tag.Equals(tag)));
 
-            var data = dataset.Get<string[]>(tag);
+            var data = dataset.GetValues<string>(tag);
             Assert.Equal(values.Length, data.Length);
             Assert.Equal(values.Last(), data.Last());
         }
@@ -111,7 +115,7 @@ namespace Dicom
         public void Get_IntWithoutArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
-            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate));
+            var e = Record.Exception(() => dataset.GetSingleValue<int>(DicomTag.MetersetRate));
             Assert.IsType<DicomDataException>(e);
         }
 
@@ -119,7 +123,7 @@ namespace Dicom
         public void Get_IntWithIntArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
-            var e = Record.Exception(() => dataset.Get<int>(DicomTag.MetersetRate, 20));
+            var e = Record.Exception(() => dataset.GetValue<int>(DicomTag.MetersetRate, 20));
             Assert.IsType<DicomDataException>(e);
         }
 
@@ -127,7 +131,7 @@ namespace Dicom
         public void Get_NonGenericWithIntArgumentTagNonExisting_ShouldNotThrow()
         {
             var dataset = new DicomDataset();
-            var e = Record.Exception(() => Assert.Equal(20, dataset.Get(DicomTag.MetersetRate, 20)));
+            var e = Record.Exception(() => Assert.Equal(20, dataset.GetSingleValueOrDefault(DicomTag.MetersetRate, 20)));
             Assert.Null(e);
         }
 
@@ -138,7 +142,7 @@ namespace Dicom
             var dataset = new DicomDataset();
             dataset.Add(tag, 3, 4, 5);
 
-            var e = Record.Exception(() => dataset.Get<int>(tag, 10));
+            var e = Record.Exception(() => dataset.GetValue<int>(tag, 10));
             Assert.IsType<DicomDataException>(e);
         }
 
@@ -146,10 +150,12 @@ namespace Dicom
         public void Get_NonGenericIntArgumentEmptyElement_ShouldNotThrow()
         {
             var tag = DicomTag.SelectorISValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, new int[0]);
+            var dataset = new DicomDataset
+            {
+                { tag, new int[0] }
+            };
 
-            var e = Record.Exception(() => Assert.Equal(10, dataset.Get(tag, 10)));
+            var e = Record.Exception(() => Assert.Equal(10, dataset.GetSingleValueOrDefault(tag, 10)));
             Assert.Null(e);
         }
 
@@ -160,7 +166,7 @@ namespace Dicom
             const uint expected = 100u;
             var dataset = new DicomDataset { { tag, expected } };
 
-            var actual = dataset.Get<uint?>(tag).Value;
+            var actual = dataset.GetSingleValue<uint>(tag);
             Assert.Equal(expected, actual);
         }
 
@@ -219,7 +225,7 @@ namespace Dicom
 
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, testValues);
 
-            TestAddElementToDatasetAsByteBuffer<double>(element, testValues);
+            TestAddElementToDatasetAsByteBuffer(element, testValues);
         }
 
         [Fact]
@@ -245,27 +251,25 @@ namespace Dicom
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             ds.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            Assert.Equal("1", ds.Get<string>(DicomTag.PatientID));
+            Assert.Equal("1", ds.GetString(DicomTag.PatientID));
             Assert.Equal(
                 "1",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<string>(
-                    DicomTag.ScheduledStationName));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetString(DicomTag.ScheduledStationName));
             Assert.Equal(
                 "2",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[1].Get<string>(
-                    DicomTag.ScheduledStationName));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).Items[1].GetString(DicomTag.ScheduledStationName));
             Assert.Equal(
                 "1",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
-                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetSequence(
+                    DicomTag.ScheduledProtocolCodeSequence).First().GetString(DicomTag.ContextIdentifier));
             Assert.Equal(
                 "2",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
-                    DicomTag.ScheduledProtocolCodeSequence).Items[1].Get<string>(DicomTag.ContextIdentifier));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetSequence(
+                    DicomTag.ScheduledProtocolCodeSequence).Items[1].GetString(DicomTag.ContextIdentifier));
             Assert.Equal(
                 "3",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[1].Get<DicomSequence>(
-                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).Items[1].GetSequence(
+                    DicomTag.ScheduledProtocolCodeSequence).First().GetString(DicomTag.ContextIdentifier));
         }
 
         [Fact]
@@ -279,19 +283,18 @@ namespace Dicom
 
             var ds2 = new DicomDataset(ds);
             ds2.AddOrUpdate(DicomTag.PatientID, "2");
-            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].AddOrUpdate(DicomTag.ScheduledStationName, "2");
-            ds2.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+            ds2.GetSequence(DicomTag.ScheduledProcedureStepSequence).Items[0].AddOrUpdate(DicomTag.ScheduledStationName, "2");
+            ds2.GetSequence(DicomTag.ScheduledProcedureStepSequence).Items[0].GetSequence(
                 DicomTag.ScheduledProtocolCodeSequence).Items[0].AddOrUpdate(DicomTag.ContextIdentifier, "2");
 
-            Assert.Equal("1", ds.Get<string>(DicomTag.PatientID));
+            Assert.Equal("1", ds.GetSingleValue<string>(DicomTag.PatientID));
             Assert.Equal(
                 "1",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<string>(
-                    DicomTag.ScheduledStationName));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetString(DicomTag.ScheduledStationName));
             Assert.Equal(
                 "1",
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
-                    DicomTag.ScheduledProtocolCodeSequence).Items[0].Get<string>(DicomTag.ContextIdentifier));
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetSequence(
+                    DicomTag.ScheduledProtocolCodeSequence).First().GetString(DicomTag.ContextIdentifier));
         }
 
         [Fact]
@@ -308,10 +311,10 @@ namespace Dicom
             Assert.Equal(newSyntax, ds.InternalTransferSyntax);
             Assert.Equal(
                 newSyntax,
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].InternalTransferSyntax);
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().InternalTransferSyntax);
             Assert.Equal(
                 newSyntax,
-                ds.Get<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).Items[0].Get<DicomSequence>(
+                ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetSequence(
                     DicomTag.ScheduledProtocolCodeSequence).Items[0].InternalTransferSyntax);
         }
 
@@ -339,8 +342,8 @@ namespace Dicom
             var ds = new DicomDataset();
             ds.Add(tag, (string[])null);
 
-            var array = ds.Get<string[]>(tag);
-            Assert.Equal(0, array.Length);
+            var array = ds.GetValues<string>(tag);
+            Assert.Empty(array);
         }
 
         [Fact]
@@ -357,7 +360,133 @@ namespace Dicom
 
             var ds = new DicomDataset();
             ds.Add(dictEntry.Tag, "VAL1");
-            Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(dictEntry.Tag));
+            Assert.Equal(DicomVR.CS, ds.GetDicomItem<DicomItem>(dictEntry.Tag).ValueRepresentation);
+        }
+
+        /// <summary>
+        /// Associated with Github issue #535.
+        /// </summary>
+        [Theory]
+        [InlineData(0x0016, 0x1106, 0x1053)]
+        [InlineData(0x0016, 0x1053, 0x1006)]
+        public void Add_RegularTags_ShouldBeSortedInGroupElementOrder(ushort group, ushort hiElem, ushort loElem)
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(new DicomTag(group, hiElem), 2);
+            dataset.Add(new DicomTag(group, loElem), 1);
+
+            var firstElem = dataset.First().Tag.Element;
+            Assert.Equal(loElem, firstElem);
+        }
+
+        /// <summary>
+        /// Associated with Github issue #535.
+        /// </summary>
+        [Theory]
+        [InlineData(0x0019, 0x1153, 0x1006, "", "PRIVATE")]
+        [InlineData(0x0019, 0x1053, 0x1006, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1106, 0x1053, "PRIVATE", "")]
+        [InlineData(0x0019, 0x1053, 0x1006, "ALSOPRIVATE", "PRIVATE")]
+        [InlineData(0x0019, 0x1006, 0x1006, "PRIVATE", "ALSOPRIVATE")]
+        public void Add_PrivateTags_ShouldBeSortedInGroupByteElementCreatorOrder(ushort group, ushort hiElem,
+            ushort loElem, string hiCreator, string loCreator)
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(new DicomTag(group, hiElem, hiCreator), 2);
+            dataset.Add(new DicomTag(group, loElem, loCreator), 1);
+
+            var firstElem = dataset.First().Tag.Element;
+            var firstCreator = dataset.First().Tag.PrivateCreator.Creator;
+            Assert.Equal(loElem, firstElem);
+            Assert.Equal(loCreator, firstCreator);
+        }
+
+        [Fact]
+        public void Add_DicomItemOnNonExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
+        {
+            var dataset = new DicomDataset();
+
+            var tag1 = new DicomTag(0x3001, 0x08, "PRIVATE");
+            var tag2 = new DicomTag(0x3001, 0x12, "PRIVATE");
+            var tag3 = new DicomTag(0x3001, 0x08, "ALSOPRIVATE");
+
+            // By using the .Add(DicomTag, ...) method, private tags get automatically updated so that a private
+            // creator group number is generated (if private creator is new) and inserted into the tag element.
+            dataset.Add(tag1, 1);
+            dataset.Add(tag2, 3.14);
+
+            // Should confirm that element of the tag is not updated to include the private creator group number.
+            dataset.Add(new DicomIntegerString(tag3, 50));
+
+            var tag3Private = dataset.GetPrivateTag(tag3);
+            var contained = dataset.SingleOrDefault(item => item.Tag.Group == tag3Private.Group &&
+                                                        item.Tag.Element == tag3Private.Element);
+            Assert.NotNull(contained);
+
+            var fifthItem = dataset.ElementAt(4);
+            Assert.Equal(fifthItem, contained);
+        }
+
+        [Fact]
+        public void AddOrUpdate_DicomItemOnExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
+        {
+            var dataset = new DicomDataset();
+
+            var tag1 = new DicomTag(0x3001, 0x08, "PRIVATE");
+            var tag2 = new DicomTag(0x3001, 0x12, "PRIVATE");
+            var tag3 = new DicomTag(0x3001, 0x08, "ALSOPRIVATE");
+
+            // By using the .Add(DicomTag, ...) method, private tags get automatically updated so that a private
+            // creator group number is generated (if private creator is new) and inserted into the tag element.
+            dataset.Add(tag1, 1);
+            dataset.Add(tag2, 3.14);
+            dataset.Add(tag3, "COOL");
+
+            var tag1Private = dataset.GetPrivateTag(tag1);
+            var contained = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
+                                                            item.Tag.Element == tag1Private.Element);
+            Assert.NotNull(contained);
+
+            // Should confirm that element of the tag is not updated to include the private creator group number.
+            dataset.AddOrUpdate(new DicomIntegerString(tag1, 50));
+
+            contained = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
+                                                        item.Tag.Element == tag1Private.Element);
+            Assert.NotNull(contained);
+
+            var thirdItem = dataset.ElementAt(2);
+            Assert.Equal(thirdItem, contained);
+        }
+
+        [Fact]
+        public void Get_ByteArrayFromStringElement_ReturnsValidArray()
+        {
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset
+            {
+                new DicomLongText(tag, encoding, expected)
+            };
+
+            var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void AddOrUpdate_NonDefaultEncodedStringElement_StringIsPreserved()
+        {
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(tag, encoding, expected);
+
+            var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -421,7 +550,7 @@ namespace Dicom
             }
             else
             {
-                val = ds.Get<string>(element.Tag, index);
+                val = ds.GetValue<string>(element.Tag, index);
             }
 
             return val;
@@ -429,14 +558,14 @@ namespace Dicom
 
         private static string GetATElementValue(DicomElement element, DicomDataset ds, int index)
         {
-            var atElement = ds.Get<DicomElement>(element.Tag, null);
+            var atElement = ds.GetDicomItem<DicomElement>(element.Tag);
 
             var testValue = atElement.Get<DicomTag>(index);
 
             return testValue.ToString("J", null);
         }
 
-        private void TestAddElementToDatasetAsByteBuffer<T>(DicomElement element, T[] testValues)
+        private static void TestAddElementToDatasetAsByteBuffer<T>(DicomElement element, T[] testValues)
         {
             DicomDataset ds = new DicomDataset();
 
@@ -445,7 +574,7 @@ namespace Dicom
 
             for (int index = 0; index < testValues.Count(); index++)
             {
-                Assert.Equal(testValues[index], ds.Get<T>(element.Tag, index));
+                Assert.Equal(testValues[index], ds.GetValue<T>(element.Tag, index));
             }
         }
 

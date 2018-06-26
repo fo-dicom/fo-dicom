@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -106,6 +106,22 @@ namespace Dicom.Network
             : this(String.Format("{0:x4}", status.Code), status.State, status.Description, comment)
         {
         }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomStatus"/> class.
+        /// </summary>
+        internal DicomStatus(ushort code, DicomStatus baseStatus)
+        {
+            // set the code given by param code...
+            Code = code;
+            // ... and copy all other values from baseStatus 
+            Description = baseStatus.Description;
+            ErrorComment = baseStatus.ErrorComment;
+            Mask = baseStatus.Mask;
+            State = baseStatus.State;
+        }
+
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -254,7 +270,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Looks up the specified code.
+        /// Looks up the specified code and returns a new instance
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
@@ -262,7 +278,7 @@ namespace Dicom.Network
         {
             foreach (DicomStatus status in Entries)
             {
-                if (status.Code == (code & status.Mask)) return status;
+                if (status.Code == (code & status.Mask)) return new DicomStatus(code, status);
             }
             return ProcessingFailure;
         }

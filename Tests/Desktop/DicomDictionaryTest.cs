@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -6,19 +6,45 @@ using System;
 namespace Dicom
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     [Collection("General")]
     public class DicomDictionaryTest : IDisposable
     {
+        #region Fields
+
+#if !NETSTANDARD
+        private static int _index = 0;
+        private readonly AppDomain _testDomain;
+#endif
+        private readonly ITestOutputHelper _output;
+
+        #endregion
+
+        #region Constructors
+
+        public DicomDictionaryTest(ITestOutputHelper output)
+        {
+#if !NETSTANDARD
+            var name = string.Concat("DicomDictionary test appdomain #", ++_index);
+            _testDomain = AppDomain.CreateDomain(name, AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation);
+            Trace.WriteLine($"[{_testDomain.FriendlyName}] Created.");
+#endif
+            _output = output;
+        }
+
+        #endregion
+
         #region Unit tests
 
         [Theory]
-        [MemberData("Tags")]
+        [MemberData(nameof(Tags))]
         public void Default_Item_ExistingTag_EntryFound(DicomTag tag)
         {
             var entry = DicomDictionary.Default[tag];
@@ -26,7 +52,7 @@ namespace Dicom
         }
 
         [Theory]
-        [MemberData("Tags")]
+        [MemberData(nameof(Tags))]
         public void Constructor_NoExplicitLoading_TagsNotFound(DicomTag tag)
         {
             var dict = new DicomDictionary();
@@ -56,12 +82,40 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
+        private double TimeCall(int numCalls, Action call)
+        {
+            var start = Process.GetCurrentProcess().TotalProcessorTime;
+
+            for (int i = 0; i < numCalls; i++) call();
+
+            var end = Process.GetCurrentProcess().TotalProcessorTime;
+
+            var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
+
+            return millisecondsPerCall;
+        }
+
+        [Fact]
+        public void GetEnumerator_ExecutionTime_IsNotSlow()
+        {
+            DicomDictionary.EnsureDefaultDictionariesLoaded();
+
+            var millisecondsPerCall = TimeCall(100, () => Assert.NotNull(DicomDictionary.Default.Last()));
+
+            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).ToDictionary(i => 2 * i).Values.Last()));
+
+            _output.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
+
+            Assert.InRange(millisecondsPerCall, 0, (1 + referenceTime) * 5);
+        }
+
+
 #if !NETSTANDARD
 
         [Fact]
         public void Throws_If_Already_Loaded()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
@@ -71,7 +125,7 @@ namespace Dicom
         [Fact]
         public void Throw_If_Already_Loaded_Implicitly_Via_Getter()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 var dict = DicomDictionary.Default;
                 Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
@@ -81,7 +135,7 @@ namespace Dicom
         [Fact]
         public void Ensure_MultiThreaded_Init_Runs_Once()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 var release = new ManualResetEvent(initialState: false);
 
@@ -105,7 +159,7 @@ namespace Dicom
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Including_Private()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
@@ -117,7 +171,7 @@ namespace Dicom
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Excluding_Private()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
@@ -129,7 +183,7 @@ namespace Dicom
         [Fact]
         public void Throws_If_EnsureLoaded_Called_With_And_Without_Private()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(false));
@@ -140,7 +194,7 @@ namespace Dicom
         [Fact]
         public void Throws_If_EnsureLoaded_Called_Without_And_With_Private()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
@@ -150,7 +204,7 @@ namespace Dicom
         [Fact]
         public void EnsureLoaded_Assumes_Loading_Private_Dictionary_Data_By_Default()
         {
-            this.testDomain.DoCallBack(() =>
+            _testDomain.DoCallBack(() =>
             {
                 var dict = DicomDictionary.EnsureDefaultDictionariesLoaded();
                 var secondEnsurCall = DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: true);
@@ -253,34 +307,19 @@ namespace Dicom
 
         #endregion
 
-#if NETSTANDARD
-        public void Dispose() { }
-#else
-        #region appDomain Stuff
-
-        private static int index = 0;
-        private readonly AppDomain testDomain;
+        #region IDisposable implementation
 
         public void Dispose()
         {
-
-            if (testDomain != null)
+#if !NETSTANDARD
+            if (_testDomain != null)
             {
-                System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Unloading.", testDomain.FriendlyName));
-                AppDomain.Unload(testDomain);
+                Trace.WriteLine($"[{_testDomain.FriendlyName}] unloading.");
+                AppDomain.Unload(_testDomain);
             }
-        }
-
-        public DicomDictionaryTest()
-        {
-            var name = string.Concat("DicomDictionary test appdomain #", ++index);
-            testDomain = AppDomain.CreateDomain(name, AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation);
-            System.Diagnostics.Trace.WriteLine(string.Format("[{0}] Created.", testDomain.FriendlyName));
-
+#endif
         }
 
         #endregion
-
-#endif
     }
-}
+    }

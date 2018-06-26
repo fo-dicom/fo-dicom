@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -34,14 +34,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomPriority Priority
         {
-            get
-            {
-                return Command.Get<DicomPriority>(DicomTag.Priority);
-            }
-            protected set
-            {
-                Command.AddOrUpdate(DicomTag.Priority, (ushort)value);
-            }
+            get => Command.GetSingleValue<DicomPriority>(DicomTag.Priority);
+            protected set => Command.AddOrUpdate(DicomTag.Priority, (ushort)value);
         }
     }
 }

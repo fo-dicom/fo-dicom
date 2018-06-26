@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging.Codec
@@ -13,7 +13,7 @@ namespace Dicom.Imaging.Codec
         #region Unit tests
 
         [Theory]
-        [MemberData("TransferSyntaxesNames")]
+        [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
             var codec = TranscoderManager.GetCodec(transferSyntax);

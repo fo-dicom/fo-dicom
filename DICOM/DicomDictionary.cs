@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 
@@ -77,10 +77,9 @@ namespace Dicom
 
         private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
-        private object _maskedLock;
-        private List<DicomDictionaryEntry> _masked;
+        private ConcurrentDictionary<string, DicomTag> _keywords;
 
-        private bool _maskedNeedsSort;
+        private ConcurrentBag<DicomDictionaryEntry> _masked;
 
         #endregion
 
@@ -91,18 +90,16 @@ namespace Dicom
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
-            _masked = new List<DicomDictionaryEntry>();
-            _maskedLock = new object();
-            _maskedNeedsSort = false;
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
+            _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
         {
             _privateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
-            _masked = new List<DicomDictionaryEntry>();
-            _maskedLock = new object();
-            _maskedNeedsSort = false;
+            _keywords = new ConcurrentDictionary<string, DicomTag>();
+            _masked = new ConcurrentBag<DicomDictionaryEntry>();
         }
 
         #endregion
@@ -150,7 +147,7 @@ namespace Dicom
                             DicomVR.UL));
                     try
                     {
-#if NET35
+#if NET35 || HOLOLENS
                         using (
                             var stream =
                                 new MemoryStream(
@@ -181,7 +178,7 @@ namespace Dicom
                     {
                         try
                         {
-#if NET35
+#if NET35 || HOLOLENS
                             using (
                                 var stream =
                                     new MemoryStream(
@@ -280,12 +277,9 @@ namespace Dicom
                 if (_entries.TryGetValue(tag, out entry)) return entry;
 
                 // this is faster than LINQ query
-                lock (_maskedLock)
+                foreach (var x in _masked)
                 {
-                    foreach (var x in _masked)
-                    {
-                        if (x.MaskTag.IsMatch(tag)) return x;
-                    }
+                    if (x.MaskTag.IsMatch(tag)) return x;
                 }
 
                 return UnknownTag;
@@ -299,6 +293,31 @@ namespace Dicom
                 return _private.GetOrAdd(creator, _ => new DicomDictionary(creator));
             }
         }
+
+        /// <summary>
+        /// Gets the DIcomTag for a given keyword.
+        /// </summary>
+        /// <param name="keyword">The attribute keyword that we look for.</param>
+        /// <returns>A matching DicomTag or null if none is found.</returns>
+        public DicomTag this[string keyword]
+        {
+            get
+            {
+                DicomTag result;
+                if (_keywords.TryGetValue(keyword, out result)) return result;
+
+                foreach (var privDict in _private.Values)
+                {
+                    var r = privDict[keyword];
+                    if (r != null)
+                        return r;
+                }
+
+                return null;
+            }
+        }
+
+
 
         #endregion
 
@@ -316,14 +335,12 @@ namespace Dicom
             {
                 // allow overwriting of existing entries
                 _entries[entry.Tag] = entry;
+                _keywords[entry.Keyword] = entry.Tag;
             }
             else
             {
-                lock (_maskedLock)
-                {
-                    _masked.Add(entry);
-                    _maskedNeedsSort = true;
-                }
+                _masked.Add(entry);
+                _keywords[entry.Keyword] = entry.Tag;
             }
         }
 
@@ -352,26 +369,13 @@ namespace Dicom
                 reader.Process();
             }
         }
-
         #endregion
 
         #region IEnumerable Members
 
         public IEnumerator<DicomDictionaryEntry> GetEnumerator()
         {
-            List<DicomDictionaryEntry> items = new List<DicomDictionaryEntry>();
-            items.AddRange(_entries.Values.OrderBy(x => x.Tag));
-
-            lock (_maskedLock)
-            {
-                if (_maskedNeedsSort)
-                {
-                    _masked.Sort((a, b) => a.MaskTag.Mask.CompareTo(b.MaskTag.Mask));
-                    _maskedNeedsSort = false;
-                }
-                items.AddRange(_masked);
-            }
-            return items.GetEnumerator();
+            return _entries.Values.Concat(_masked).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

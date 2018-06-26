@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -91,14 +91,21 @@ namespace Dicom.Network
         /// </summary>
         public DicomQueryRetrieveLevel Level
         {
-            get
-            {
-                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
-            }
+            get => Dataset.GetSingleValue<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
             private set
             {
-                Dataset.Remove(DicomTag.QueryRetrieveLevel);
-                if (value != DicomQueryRetrieveLevel.Worklist) Dataset.Add(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                switch (value)
+                {
+                    case DicomQueryRetrieveLevel.Patient:
+                    case DicomQueryRetrieveLevel.Study:
+                    case DicomQueryRetrieveLevel.Series:
+                    case DicomQueryRetrieveLevel.Image:
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        break;
+                    default:
+                        Dataset.Remove(DicomTag.QueryRetrieveLevel);
+                        break;
+                }
             }
         }
 
@@ -107,14 +114,8 @@ namespace Dicom.Network
         /// </summary>
         public string DestinationAE
         {
-            get
-            {
-                return Command.Get<string>(DicomTag.MoveDestination);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.MoveDestination, value);
-            }
+            get => Command.GetSingleValue<string>(DicomTag.MoveDestination);
+            private set => Command.AddOrUpdate(DicomTag.MoveDestination, value);
         }
 
         #endregion
@@ -146,10 +147,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCMoveResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCMoveResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

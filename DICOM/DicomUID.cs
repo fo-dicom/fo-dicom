@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -53,7 +53,9 @@ namespace Dicom
 
         Raw,
 
-        Other
+        Other,
+
+        Private
     }
 
     public sealed partial class DicomUID : DicomParseable
@@ -128,7 +130,7 @@ namespace Dicom
         public static DicomUID Generate()
         {
             var generator = new DicomUIDGenerator();
-            return generator.Generate();
+            return DicomUIDGenerator.GenerateNew();
         }
 
         public static DicomUID Append(DicomUID baseUid, long nextSeq)
@@ -190,6 +192,8 @@ namespace Dicom
         {
             get
             {
+                if (!UID.StartsWith("1.2.840.10008") && Type == DicomUidType.SOPClass) return DicomStorageCategory.Private;
+
                 if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;

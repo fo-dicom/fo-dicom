@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.IO.Writer;
@@ -152,7 +152,7 @@ namespace Dicom
         [Fact]
         public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
         {
-            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
             var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
         }

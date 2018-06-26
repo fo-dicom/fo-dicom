@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -112,7 +112,7 @@ namespace Dicom.Network
                 }
                 else
                 {
-                    pcs = pcs.Where(x => x.AcceptedTransferSyntax == cstore.TransferSyntax);
+                    pcs = pcs.Where(x => x.HasTransferSyntax(cstore.TransferSyntax));
                 }
 
                 var pc = pcs.FirstOrDefault();
@@ -121,7 +121,6 @@ namespace Dicom.Network
                     var tx = new List<DicomTransferSyntax>();
                     if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian) tx.Add(cstore.TransferSyntax);
                     if (cstore.AdditionalTransferSyntaxes != null) tx.AddRange(cstore.AdditionalTransferSyntaxes);
-                    tx.Add(DicomTransferSyntax.ExplicitVRLittleEndian);
                     tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
 
                     Add(cstore.SOPClassUID, tx.ToArray());
@@ -141,7 +140,7 @@ namespace Dicom.Network
                     {
                         var transferSyntaxes = request.PresentationContext.GetTransferSyntaxes().ToArray();
                         if (!transferSyntaxes.Any())
-                            transferSyntaxes = new[] { DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian };
+                            transferSyntaxes = new[] { DicomTransferSyntax.ImplicitVRLittleEndian };
                         Add(
                             request.PresentationContext.AbstractSyntax,
                             request.PresentationContext.UserRole,
@@ -153,10 +152,7 @@ namespace Dicom.Network
                 {
                     var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
                     if (pc == null)
-                        Add(
-                            request.SOPClassUID,
-                            DicomTransferSyntax.ExplicitVRLittleEndian,
-                            DicomTransferSyntax.ImplicitVRLittleEndian);
+                        Add(request.SOPClassUID, DicomTransferSyntax.ImplicitVRLittleEndian);
                 }
             }
         }

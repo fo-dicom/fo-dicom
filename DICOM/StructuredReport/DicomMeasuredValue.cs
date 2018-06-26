@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -26,23 +26,18 @@ namespace Dicom.StructuredReport
 
         public DicomCodeItem Code
         {
-            get
-            {
-                return Get<DicomCodeItem>(DicomTag.MeasurementUnitsCodeSequence);
-            }
+            get => GetCodeItem(DicomTag.MeasurementUnitsCodeSequence);
         }
 
         public decimal Value
         {
-            get
-            {
-                return Get<decimal>(DicomTag.NumericValue);
-            }
+            get => GetSingleValue<decimal>(DicomTag.NumericValue);
         }
 
         public override string ToString()
         {
-            return String.Format("{0} {1}", Value, Code.Value);
+            return $"{Value} {Code.Value}";
         }
+
     }
 }

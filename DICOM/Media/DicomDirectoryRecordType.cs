@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -11,15 +11,7 @@ namespace Dicom.Media
 
         private readonly string _recordName;
 
-        private readonly ICollection<DicomTag> _tags = new HashSet<DicomTag>();
-
-        public ICollection<DicomTag> Tags
-        {
-            get
-            {
-                return _tags;
-            }
-        }
+        public ICollection<DicomTag> Tags { get; } = new HashSet<DicomTag>();
 
         public static readonly DicomDirectoryRecordType Patient = new DicomDirectoryRecordType("PATIENT");
 
@@ -40,29 +32,29 @@ namespace Dicom.Media
             switch (recordName)
             {
                 case "PATIENT":
-                    _tags.Add(DicomTag.PatientID);
-                    _tags.Add(DicomTag.PatientName);
-                    _tags.Add(DicomTag.PatientBirthDate);
-                    _tags.Add(DicomTag.PatientSex);
+                    Tags.Add(DicomTag.PatientID);
+                    Tags.Add(DicomTag.PatientName);
+                    Tags.Add(DicomTag.PatientBirthDate);
+                    Tags.Add(DicomTag.PatientSex);
                     break;
                 case "STUDY":
-                    _tags.Add(DicomTag.StudyInstanceUID);
-                    _tags.Add(DicomTag.StudyID);
-                    _tags.Add(DicomTag.StudyDate);
-                    _tags.Add(DicomTag.StudyTime);
-                    _tags.Add(DicomTag.AccessionNumber);
-                    _tags.Add(DicomTag.StudyDescription);
+                    Tags.Add(DicomTag.StudyInstanceUID);
+                    Tags.Add(DicomTag.StudyID);
+                    Tags.Add(DicomTag.StudyDate);
+                    Tags.Add(DicomTag.StudyTime);
+                    Tags.Add(DicomTag.AccessionNumber);
+                    Tags.Add(DicomTag.StudyDescription);
                     break;
                 case "SERIES":
-                    _tags.Add(DicomTag.SeriesInstanceUID);
-                    _tags.Add(DicomTag.Modality);
-                    _tags.Add(DicomTag.SeriesDate);
-                    _tags.Add(DicomTag.SeriesTime);
-                    _tags.Add(DicomTag.SeriesNumber);
-                    _tags.Add(DicomTag.SeriesDescription);
+                    Tags.Add(DicomTag.SeriesInstanceUID);
+                    Tags.Add(DicomTag.Modality);
+                    Tags.Add(DicomTag.SeriesDate);
+                    Tags.Add(DicomTag.SeriesTime);
+                    Tags.Add(DicomTag.SeriesNumber);
+                    Tags.Add(DicomTag.SeriesDescription);
                     break;
                 case "IMAGE":
-                    _tags.Add(DicomTag.InstanceNumber);
+                    Tags.Add(DicomTag.InstanceNumber);
                     break;
                 default:
                     break;

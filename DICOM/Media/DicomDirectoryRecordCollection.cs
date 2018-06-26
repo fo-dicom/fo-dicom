@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace Dicom.Media
     {
         #region Properties and Attributes
 
-        private DicomDirectoryRecord _firstRecord;
+        private readonly DicomDirectoryRecord _firstRecord;
 
         #endregion
 

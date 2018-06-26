@@ -10,6 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.cs">
+      <DependentUpon>DicomAnonymizerGenerated.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDataset.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DicomDatasetExtensions.cs" />
@@ -56,6 +61,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DicomVRCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IClassifiedManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\BilinearInterpolation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\Algorithms\NearestNeighborInterpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\BitDepth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Codec\DicomCodecException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Codec\DicomCodecExtensions.cs" />
@@ -165,12 +171,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Log\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\LogLevel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log\LogManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Log\TextWriterLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryReaderObserver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomFileScanner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncManualResetEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationAbortedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationRejectedException.cs" />
@@ -221,6 +229,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCStoreProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomNServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\INetworkListener.cs" />
@@ -244,6 +254,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomStructuredReportException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)DicomTagGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)DicomUIDGenerated.tt" />
     <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.tt" />
@@ -251,25 +262,25 @@
   </ItemGroup>
   <Choose>
     <When Condition="$(DefineConstants.Contains('NET35'))">
-	  <ItemGroup>
-	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
-		  <DependentUpon>DICOM Dictionary.tt</DependentUpon>
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    </None>
-	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	  </ItemGroup>
+      <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
+          <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
     </When>
     <Otherwise>
-	  <ItemGroup>
-	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
-		  <DependentUpon>DICOM Dictionary.tt</DependentUpon>
-	    </None>
-	    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOMDictionary.xml.gz" />
-	    <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
-	    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\PrivateDictionary.xml.gz" />
-	  </ItemGroup>
+      <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)Dictionaries\DICOM Dictionary.xml">
+          <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+        </None>
+        <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\DICOMDictionary.xml.gz" />
+        <None Include="$(MSBuildThisFileDirectory)Dictionaries\Private Dictionary.xml" />
+        <EmbeddedResource Include="$(MSBuildThisFileDirectory)Dictionaries\PrivateDictionary.xml.gz" />
+      </ItemGroup>
     </Otherwise>
   </Choose>
 </Project>

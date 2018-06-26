@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -20,7 +20,7 @@ namespace Dicom
         #region Unit tests
 
         [Theory]
-        [MemberData("Uids")]
+        [MemberData(nameof(Uids))]
         public void Enumerate_TestKnownUids_TypeAndRetirementShouldMatch(
             DicomUID uid,
             DicomUidType type,

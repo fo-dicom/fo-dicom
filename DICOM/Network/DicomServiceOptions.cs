@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -28,6 +28,10 @@ namespace Dicom.Network
             public static readonly bool TcpNoDelay = true;
 
             public static readonly int MaxPDVsPerPDU = 0;
+
+            public static readonly int MaxClientsAllowed = 0;
+
+            public static readonly bool IgnoreUnsupportedTransferSyntaxChange = false;
         }
 
         #endregion
@@ -45,35 +49,49 @@ namespace Dicom.Network
             IgnoreSslPolicyErrors = Default.IgnoreSslPolicyErrors;
             TcpNoDelay = Default.TcpNoDelay;
             MaxPDVsPerPDU = Default.MaxPDVsPerPDU;
+            MaxClientsAllowed = Default.MaxClientsAllowed;
+            IgnoreUnsupportedTransferSyntaxChange = Default.IgnoreUnsupportedTransferSyntaxChange;
         }
 
         #endregion
 
         #region PROPERTIES
 
-        /// <summary>Write message to log for each P-Data-TF PDU sent or received.</summary>
+        /// <summary>Gets or sets whether or not to write message to log for each P-Data-TF PDU sent or received.</summary>
         public bool LogDataPDUs { get; set; }
 
-        /// <summary>Write command and data datasets to log.</summary>
+        /// <summary>Gets or sets whether or not to write command and data datasets to log.</summary>
         public bool LogDimseDatasets { get; set; }
 
-        /// <summary>Use the AE Title of the remote host as the log name.</summary>
+        /// <summary>Gets or sets whether or not to use the AE Title of the remote host as the log name.</summary>
         public bool UseRemoteAEForLogName { get; set; }
 
-        /// <summary>Maximum buffer length for command PDVs when generating P-Data-TF PDUs.</summary>
+        /// <summary>Gets or sets maximum buffer length for command PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxCommandBuffer { get; set; }
 
-        /// <summary>Maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
+        /// <summary>Gets or sets maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; }
 
-        /// <summary>DICOM client should ignore SSL certificate errors.</summary>
+        /// <summary>Gets or sets whether DICOM client should ignore SSL certificate errors.</summary>
         public bool IgnoreSslPolicyErrors { get; set; }
 
-        /// <summary>Enable or disable TCP Nagle algorithm.</summary>
+        /// <summary>Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
 
-        /// <summary>The maximum number of PDVs per PDU, or unlimited if set to zero. Setting this to 1 can work around common bugs in other implementations.</summary>
+        /// <summary>Gets or sets the maximum number of PDVs per PDU, or unlimited if set to zero. 
+        /// Setting this to 1 can work around common bugs in other implementations.</summary>
         public int MaxPDVsPerPDU { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of clients allowed for a specific server. Unlimited if set to zero.
+        /// </summary>
+        public int MaxClientsAllowed { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to ignore transfer syntax change when DICOM dataset cannot be transcoded from
+        /// its own transfer syntax to the negotiated Accepted Transfer Syntax.
+        /// </summary>
+        public bool IgnoreUnsupportedTransferSyntaxChange { get; set; }
 
         #endregion
     }

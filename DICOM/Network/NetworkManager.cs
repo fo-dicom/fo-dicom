@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -11,6 +11,26 @@ namespace Dicom.Network
     public abstract class NetworkManager
     {
         #region FIELDS
+
+        /// <summary>
+        /// String representation of the "Any" IPv4 address, i.e. specifying the listener to listen to all applicable IPv4 addresses.
+        /// </summary>
+        public const string IPv4Any = "0.0.0.0";
+
+        /// <summary>
+        /// String representation of the "Any" IPv6 address, i.e. specifying the listener to listen to all applicable IPv6 addresses.
+        /// </summary>
+        public const string IPv6Any = "::";
+
+        /// <summary>
+        /// String representation of the "Loopback" IPv4 address, i.e. specifying the listener to listen to the local IPv4 host.
+        /// </summary>
+        public const string IPv4Loopback = "127.0.0.1";
+
+        /// <summary>
+        /// String representation of the "Loopback" IPv6 address, i.e. specifying the listener to listen to the local IPv6 host.
+        /// </summary>
+        public const string IPv6Loopback = "::1";
 
         /// <summary>
         /// Network manager implementation in current use.
@@ -57,13 +77,25 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Create a network listener object.
+        /// Create a network listener object, listening to all IPv4 addressess.
         /// </summary>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
+        [Obsolete("Use the CreateNetworkListener(string, int) overload with IPv4Any in string argument.")]
         public static INetworkListener CreateNetworkListener(int port)
         {
-            return _implementation.CreateNetworkListenerImpl(port);
+            return CreateNetworkListener(IPv4Any, port);
+        }
+
+        /// <summary>
+        /// Create a network listener object.
+        /// </summary>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
+        /// <param name="port">Network port to listen to.</param>
+        /// <returns>Network listener implementation.</returns>
+        public static INetworkListener CreateNetworkListener(string ipAddress, int port)
+        {
+            return _implementation.CreateNetworkListenerImpl(ipAddress, port);
         }
 
         /// <summary>
@@ -105,9 +137,10 @@ namespace Dicom.Network
         /// <summary>
         /// Platform-specific implementation to create a network listener object.
         /// </summary>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
-        protected abstract INetworkListener CreateNetworkListenerImpl(int port);
+        protected abstract INetworkListener CreateNetworkListenerImpl(string ipAddress, int port);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.

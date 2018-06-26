@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Dump
@@ -22,6 +22,7 @@ namespace Dicom.Dump
     public partial class MainForm : Form
     {
         private DicomFile _file;
+        private DicomAnonymizer _anonymizer;
 
         public MainForm()
         {
@@ -31,6 +32,7 @@ namespace Dicom.Dump
         protected override void OnLoad(EventArgs e)
         {
             DicomDictionary.EnsureDefaultDictionariesLoaded(ModifierKeys != Keys.Shift);
+            _anonymizer = new DicomAnonymizer();
 
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -45,6 +47,7 @@ namespace Dicom.Dump
         {
             lvDicom.Items.Clear();
             menuItemView.Enabled = false;
+            menuItemAnonymize.Enabled = false;
         }
 
         private delegate void AddItemDelegate(string tag, string vr, string length, string value);
@@ -63,9 +66,9 @@ namespace Dicom.Dump
             lvi.SubItems.Add(value);
         }
 
-        private bool IsStructuredReport => this._file != null
-                                           && this._file.Dataset.Get<DicomUID>(DicomTag.SOPClassUID, null)?.StorageCategory
-                                           == DicomStorageCategory.StructuredReport;
+        private bool IsStructuredReport => _file != null
+                                           && _file.Dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID dummy)
+                                           && dummy.StorageCategory == DicomStorageCategory.StructuredReport;
 
         public void OpenFile(string fileName)
         {
@@ -102,11 +105,15 @@ namespace Dicom.Dump
                 new DicomDatasetWalker(_file.FileMetaInfo).Walk(new DumpWalker(this));
                 new DicomDatasetWalker(_file.Dataset).Walk(new DumpWalker(this));
 
-                if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport) menuItemView.Enabled = true;
+                if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport)
+                {
+                    menuItemView.Enabled = true;
+                    menuItemAnonymize.Enabled = true;
+                }
                 menuItemSyntax.Enabled = true;
                 menuItemSave.Enabled = true;
 
-                menuItemJpegLossy.Enabled = _file.Dataset.Get<int>(DicomTag.BitsStored, 0, 16) <= 12;
+                menuItemJpegLossy.Enabled = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsStored, 16) <= 12;
             }
             catch (Exception ex)
             {
@@ -150,6 +157,11 @@ namespace Dicom.Dump
                 var image = new DicomImage(_file.Dataset);
                 image.RenderImage().As<Image>().Save(sfd.FileName);
             }
+        }
+
+        private void OnClickExit(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private class DumpWalker : IDicomDatasetWalker
@@ -371,7 +383,7 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality100(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 100 });
@@ -379,7 +391,7 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality90(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 90 });
@@ -387,7 +399,7 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality80(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 80 });
@@ -395,7 +407,7 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality75(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 75 });
@@ -403,16 +415,15 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality70(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
-            ;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 70 });
         }
 
         private void OnClickJPEGLossyQuality60(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 60 });
@@ -420,7 +431,7 @@ namespace Dicom.Dump
 
         private void OnClickJPEGLossyQuality50(object sender, EventArgs e)
         {
-            var bits = _file.Dataset.Get<int>(DicomTag.BitsAllocated, 0, 8);
+            var bits = _file.Dataset.GetSingleValueOrDefault(DicomTag.BitsAllocated, 8);
             var syntax = DicomTransferSyntax.JPEGProcess1;
             if (bits == 16) syntax = DicomTransferSyntax.JPEGProcess2_4;
             ChangeSyntax(syntax, new DicomJpegParams { Quality = 50 });
@@ -534,6 +545,12 @@ namespace Dicom.Dump
             {
                 e.Effect = DragDropEffects.None;
             }
+        }
+
+        private void OnClickAnonymize(object sender, EventArgs e)
+        {
+            var file = _anonymizer.Anonymize(_file);
+            OpenFile(file);
         }
     }
 }

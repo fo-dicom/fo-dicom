@@ -1,5 +1,7 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using Windows.Networking;
 
 namespace Dicom.Network
 {
@@ -17,13 +19,16 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly string port;
+        private readonly HostName _ipAddress;
 
-        private readonly ManualResetEventSlim handle;
+        private readonly string _port;
 
-        private StreamSocketListener listener;
+        private TaskCompletionSource<INetworkStream> _streamTcs;
+        private CancellationTokenRegistration _tokenRegistration;
 
-        private StreamSocket socket;
+        private StreamSocketListener _listener;
+
+        private StreamSocket _socket;
 
         #endregion
 
@@ -32,49 +37,51 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsNetworkListener"/> class. 
         /// </summary>
+        /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">TCP/IP port to listen to.</param>
-        internal WindowsNetworkListener(int port)
+        internal WindowsNetworkListener(string ipAddress, int port)
         {
-            this.port = port.ToString(CultureInfo.InvariantCulture);
-            this.handle = new ManualResetEventSlim(false);
+            HostName addr;
+            try
+            {
+                addr = new HostName(ipAddress);
+            }
+            catch
+            {
+                addr = new HostName(NetworkManager.IPv4Any);
+            }
+            _ipAddress = addr.CanonicalName == NetworkManager.IPv4Any ? null : addr;
+
+            _port = port.ToString(CultureInfo.InvariantCulture);
         }
 
         #endregion
 
         #region METHODS
 
-        /// <summary>
-        /// Start listening.
-        /// </summary>
-        /// <returns>An await:able <see cref="Task"/>.</returns>
+        /// <inheritdoc />
         public async Task StartAsync()
         {
-            this.listener = new StreamSocketListener();
-            this.listener.ConnectionReceived += this.OnConnectionReceived;
+            _listener = new StreamSocketListener();
+            _listener.ConnectionReceived += OnConnectionReceived;
 
-            this.socket = null;
-            this.handle.Reset();
-            await this.listener.BindServiceNameAsync(this.port).AsTask().ConfigureAwait(false);
+            await _listener.BindEndpointAsync(_ipAddress, _port).AsTask().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Stop listening.
-        /// </summary>
+        /// <inheritdoc />
         public void Stop()
         {
-            this.listener.ConnectionReceived -= this.OnConnectionReceived;
-            this.listener.Dispose();
-            this.handle.Set();
+            _streamTcs?.TrySetCanceled();
+            _streamTcs = null;
+            _tokenRegistration.Dispose();
+            _listener.ConnectionReceived -= OnConnectionReceived;
+            _listener.Dispose();
+            _socket?.Dispose();
+            _socket = null;
         }
 
-        /// <summary>
-        /// Wait until a network stream is trying to connect, and return the accepted stream.
-        /// </summary>
-        /// <param name="certificateName">Certificate name of authenticated connections.</param>
-        /// <param name="noDelay">No delay? Not applicable here, since no delay flag needs to be set before connection is established.</param>
-        /// <param name="token">Cancellation token.</param>
-        /// <returns>Connected network stream.</returns>
-        public Task<INetworkStream> AcceptNetworkStreamAsync(
+        /// <inheritdoc />
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
             CancellationToken token)
@@ -85,20 +92,13 @@ namespace Dicom.Network
                     "Authenticated server connections not supported on Windows Universal Platform.");
             }
 
-            INetworkStream networkStream;
-            try
-            {
-                this.handle.Wait(token);
-                networkStream = this.socket == null ? null : new WindowsNetworkStream(this.socket);
-            }
-            catch
-            {
-                networkStream = null;
-            }
+            await (_streamTcs?.Task ?? Task.FromResult(default(INetworkStream))).ConfigureAwait(false);
+            _tokenRegistration.Dispose();
 
-            this.handle.Reset();
+            _streamTcs = new TaskCompletionSource<INetworkStream>();
+            _tokenRegistration = token.Register(() => _streamTcs?.TrySetCanceled(token), false);
 
-            return Task.FromResult(networkStream);
+            return await _streamTcs.Task;
         }
 
         /// <summary>
@@ -109,8 +109,10 @@ namespace Dicom.Network
         /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            this.socket = args.Socket;
-            this.handle.Set();
+            _socket?.Dispose();
+            _socket = args.Socket;
+            _tokenRegistration.Dispose();
+            _streamTcs?.TrySetResult(new WindowsNetworkStream(_socket));
         }
 
         #endregion

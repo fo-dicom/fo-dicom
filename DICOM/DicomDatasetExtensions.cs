@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -33,8 +33,8 @@ namespace Dicom
         /// <returns>Composite <see cref="DateTime"/>.</returns>
         public static DateTime GetDateTime(this DicomDataset dataset, DicomTag date, DicomTag time)
         {
-            var dd = dataset.Contains(date) ? dataset.Get<DicomDate>(date) : null;
-            var dt = dataset.Contains(time) ? dataset.Get<DicomTime>(time) : null;
+            var dd = dataset.GetDicomItem<DicomDate>(date);
+            var dt = dataset.GetDicomItem<DicomTime>(time);
 
             var da = dd != null && dd.Count > 0 ? dd.Get<DateTime>(0) : DateTime.MinValue;
             var tm = dt != null && dt.Count > 0 ? dt.Get<DateTime>(0) : DateTime.MinValue;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.StructuredReport
@@ -24,18 +24,13 @@ namespace Dicom.StructuredReport
 
         public DicomUID Instance
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
         }
 
         public DicomUID Class
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ReferencedSOPClassUID);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID);
         }
+
     }
 }

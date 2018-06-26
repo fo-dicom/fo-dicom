@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -20,14 +20,8 @@ namespace Dicom.Network
 
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.RequestedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
         }
 
         public delegate void ResponseDelegate(DicomNSetRequest request, DicomNSetResponse response);
@@ -38,10 +32,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomNSetResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomNSetResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
     }

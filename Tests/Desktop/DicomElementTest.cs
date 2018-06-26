@@ -1,17 +1,19 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+
+using Dicom.IO.Buffer;
+
+using Xunit;
+
 
 namespace Dicom
 {
-    using System;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading;
-
-    using Dicom.IO.Buffer;
-
-    using Xunit;
-
     [Collection("General")]
     public class DicomElementTest
     {
@@ -95,7 +97,7 @@ namespace Dicom
         {
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, 12.345);
             var actual = element.Get<object>();
-            Assert.Equal(actual, 12.345);
+            Assert.Equal(12.345, actual);
         }
 
         [Fact]
@@ -103,7 +105,7 @@ namespace Dicom
         {
             var element = new DicomFloatingPointDouble(DicomTag.XRayTubeCurrentInmA, 12.345);
             var actual = element.Get<object>();
-            Assert.Equal(actual, 12.345);
+            Assert.Equal(12.345, actual);
         }
 
         [Fact]
@@ -417,11 +419,48 @@ namespace Dicom
             this.TestDicomIntegerStringGetArray<object>();
         }
 
+        [Theory]
+        [MemberData(nameof(KnownTransferSyntaxes))]
+        public void DicomUniqueIdentifier_GetKnownTransferSyntax_ReturnsFullField(DicomUID uid, DicomTransferSyntax expected)
+        {
+            var tag = DicomTag.ReferencedTransferSyntaxUIDInFile;
+            var ui = new DicomUniqueIdentifier(tag, uid);
+            var actual = ui.Get<DicomTransferSyntax>(0);
+
+            Assert.Equal(expected.UID, actual.UID);
+            Assert.Equal(expected.Endian, actual.Endian);
+            Assert.Equal(expected.LossyCompressionMethod, actual.LossyCompressionMethod);
+        }
+
+        [Theory]
+        [MemberData(nameof(TransferSyntaxUids))]
+        public void DicomUniqueIdentifier_UidTransferSyntax_DoesNotThrow(DicomUID expected)
+        {
+            var tag = DicomTag.EncryptedContentTransferSyntaxUID;
+            var ui = new DicomUniqueIdentifier(tag, expected);
+
+            DicomUID actual = null;
+            var exception = Record.Exception(() => actual = ui.Get<DicomTransferSyntax>(0).UID);
+            Assert.Null(exception);
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonTransferSyntaxUids))]
+        public void DicomUniqueIdentifier_UidNotTransferSyntax_Throws(DicomUID uid)
+        {
+            var tag = DicomTag.EncryptedContentTransferSyntaxUID;
+            var ui = new DicomUniqueIdentifier(tag, uid);
+
+            var exception = Record.Exception(() => ui.Get<DicomTransferSyntax>(0));
+            Assert.IsType<DicomDataException>(exception);
+        }
+
         #endregion
 
         #region Support methods
 
-        public void TestDicomDecimalStringGetItem<T>()
+        internal void TestDicomDecimalStringGetItem<T>()
         {
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
@@ -429,7 +468,7 @@ namespace Dicom
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        public void TestDicomDecimalStringGetArray<T>()
+        internal void TestDicomDecimalStringGetArray<T>()
         {
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
@@ -437,7 +476,7 @@ namespace Dicom
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
-        public void TestDicomIntegerStringGetItem<T>()
+        internal void TestDicomIntegerStringGetItem<T>()
         {
             var expected = 45;
             var element = new DicomIntegerString(DicomTag.AttachedContours, 35, expected, 55);
@@ -445,7 +484,7 @@ namespace Dicom
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        public void TestDicomIntegerStringGetArray<T>()
+        internal void TestDicomIntegerStringGetArray<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContours, expected);
@@ -463,6 +502,39 @@ namespace Dicom
             One,
             Two
         }
+
+        #endregion
+
+        #region Support data
+
+        public static IEnumerable<object[]> KnownTransferSyntaxes = new[]
+        {
+            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.ImplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
+            new object[] { DicomUID.JPEGExtended24, DicomTransferSyntax.JPEGProcess2_4 },
+            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomTransferSyntax.ExplicitVRBigEndian },
+            new object[] { DicomUID.GEPrivateImplicitVRBigEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
+            new object[] { DicomUID.MPEG2, DicomTransferSyntax.MPEG2 }
+        };
+
+        public static IEnumerable<object[]> TransferSyntaxUids = new[]
+        {
+            new object[] { DicomUID.XMLEncoding },
+            new object[] { DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo },
+            new object[] { DicomUID.JPEG2000Part2MultiComponentLosslessOnly },
+            new object[] { DicomUID.JPIPReferencedDeflate },
+            new object[] { DicomUID.RFC2557MIMEEncapsulation }
+        };
+
+        public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
+        {
+            new object[] { DicomUID.AbdominalArteriesLateral12111 },
+            new object[] { DicomUID.CTImageStorage },
+            new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
+            new object[] { DicomUID.dicomTransferSyntax },
+            new object[] { DicomUID.PETColorPaletteSOPInstance }
+        };
 
         #endregion
     }

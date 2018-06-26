@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -7,35 +7,51 @@ using Dicom.IO.Buffer;
 
 namespace Dicom
 {
+    /// <summary>
+    /// Abstract class for representing fragment sequences of DICOM pixel data.
+    /// </summary>
     public abstract class DicomFragmentSequence : DicomItem, IEnumerable<IByteBuffer>
     {
+        #region FIELDS
+
         private IList<uint> _offsetTable;
 
-        private IList<IByteBuffer> _fragments;
+        #endregion
 
+        #region CONSTRUCTORS
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomFragmentSequence"/> abstract class.
+        /// </summary>
+        /// <param name="tag"></param>
         protected DicomFragmentSequence(DicomTag tag)
             : base(tag)
         {
-            _fragments = new List<IByteBuffer>();
+            Fragments = new List<IByteBuffer>();
         }
 
-        public IList<uint> OffsetTable
-        {
-            get
-            {
-                if (_offsetTable == null) _offsetTable = new List<uint>();
-                return _offsetTable;
-            }
-        }
+        #endregion
 
-        public IList<IByteBuffer> Fragments
-        {
-            get
-            {
-                return _fragments;
-            }
-        }
+        #region PROPERTIES
 
+        /// <summary>
+        /// Gets the fragment offset table.
+        /// </summary>
+        public IList<uint> OffsetTable => _offsetTable ?? (_offsetTable = new List<uint>());
+
+        /// <summary>
+        /// Gets the collection of fragments.
+        /// </summary>
+        public IList<IByteBuffer> Fragments { get; }
+
+        #endregion
+
+        #region METHODS
+
+        /// <summary>
+        /// Adds a fragment to the collection of fragments.
+        /// </summary>
+        /// <param name="fragment">Fragment to be added to this sequence.</param>
         internal void Add(IByteBuffer fragment)
         {
             if (_offsetTable == null)
@@ -44,57 +60,49 @@ namespace Dicom
                 _offsetTable = new List<uint>(en);
                 return;
             }
-            _fragments.Add(fragment);
+            Fragments.Add(fragment);
         }
 
+        /// <inheritdoc />
         public IEnumerator<IByteBuffer> GetEnumerator()
         {
-            return _fragments.GetEnumerator();
+            return Fragments.GetEnumerator();
         }
 
+        /// <inheritdoc />
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return _fragments.GetEnumerator();
+            return GetEnumerator();
         }
+
+        #endregion
     }
 
-    public abstract class DicomFragmentSequenceT<T> : DicomFragmentSequence
-    {
-        protected DicomFragmentSequenceT(DicomTag tag)
-            : base(tag)
-        {
-        }
-    }
-
-    public class DicomOtherByteFragment : DicomFragmentSequenceT<byte>
+    /// <summary>
+    /// Class representing a fragment sequence of Other Byte (OB) items.
+    /// </summary>
+    public class DicomOtherByteFragment : DicomFragmentSequence
     {
         public DicomOtherByteFragment(DicomTag tag)
             : base(tag)
         {
         }
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OB;
-            }
-        }
+        /// <inheritdoc />
+        public override DicomVR ValueRepresentation => DicomVR.OB;
     }
 
-    public class DicomOtherWordFragment : DicomFragmentSequenceT<ushort>
+    /// <summary>
+    /// Class representing a fragment sequence of Other Word (OW) items.
+    /// </summary>
+    public class DicomOtherWordFragment : DicomFragmentSequence
     {
         public DicomOtherWordFragment(DicomTag tag)
             : base(tag)
         {
         }
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OW;
-            }
-        }
+        /// <inheritdoc />
+        public override DicomVR ValueRepresentation => DicomVR.OW;
     }
 }

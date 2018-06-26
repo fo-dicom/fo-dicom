@@ -59,6 +59,7 @@
             this.error5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.error10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rLELosslessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAnonymize = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPixelDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvDicom = new System.Windows.Forms.ListView();
             this.columnHeaderTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -68,6 +69,7 @@
             this.cmDicom = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cmDicom.SuspendLayout();
             this.SuspendLayout();
@@ -87,7 +89,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.menuItemSave});
+            this.menuItemSave,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
@@ -95,7 +98,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OnClickOpen);
             // 
@@ -103,7 +106,7 @@
             // 
             this.menuItemSave.Enabled = false;
             this.menuItemSave.Name = "menuItemSave";
-            this.menuItemSave.Size = new System.Drawing.Size(103, 22);
+            this.menuItemSave.Size = new System.Drawing.Size(152, 22);
             this.menuItemSave.Text = "&Save";
             this.menuItemSave.Click += new System.EventHandler(this.OnClickSave);
             // 
@@ -112,6 +115,7 @@
             this.menuItemTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemView,
             this.menuItemSyntax,
+            this.menuItemAnonymize,
             this.exportPixelDataToolStripMenuItem});
             this.menuItemTools.Name = "menuItemTools";
             this.menuItemTools.Size = new System.Drawing.Size(47, 20);
@@ -357,6 +361,14 @@
             this.rLELosslessToolStripMenuItem.Text = "RLE Lossless";
             this.rLELosslessToolStripMenuItem.Click += new System.EventHandler(this.OnClickRLELossless);
             // 
+            // menuItemAnonymize
+            // 
+            this.menuItemAnonymize.Enabled = false;
+            this.menuItemAnonymize.Name = "menuItemAnonymize";
+            this.menuItemAnonymize.Size = new System.Drawing.Size(161, 22);
+            this.menuItemAnonymize.Text = "&Anonymize";
+            this.menuItemAnonymize.Click += new System.EventHandler(this.OnClickAnonymize);
+            // 
             // exportPixelDataToolStripMenuItem
             // 
             this.exportPixelDataToolStripMenuItem.Name = "exportPixelDataToolStripMenuItem";
@@ -423,6 +435,13 @@
             this.copyTagToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.copyTagToolStripMenuItem.Text = "Copy &Tag";
             this.copyTagToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyTag);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.OnClickExit);
             // 
             // MainForm
             // 
@@ -491,6 +510,8 @@
         private System.Windows.Forms.ToolStripMenuItem quality50ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTagToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportPixelDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItemAnonymize;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -34,8 +34,6 @@ namespace Dicom.IO.Buffer
 
         public byte[] GetByteRange(int offset, int count)
         {
-            if (offset == 0 && count == Size) return Data;
-
             byte[] buffer = new byte[count];
             Array.Copy(Data, offset, buffer, 0, count);
             return buffer;

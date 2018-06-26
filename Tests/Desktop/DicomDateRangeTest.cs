@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -86,8 +86,7 @@ namespace Dicom
                 DicomTag.AcquisitionDateTime,
                 new DicomDateRange(new DateTime(2016, 4, 20, 10, 20, 30), new DateTime(2016, 4, 21, 8, 50, 5)));
 
-            var zone = new DateTime(2016, 4, 20).ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
-            var expected = $"20160420102030{zone}-20160421085005{zone}";
+            var expected = $"20160420102030-20160421085005";
             var actual = dataset.Get<string>(DicomTag.AcquisitionDateTime);
 
             Assert.Equal(expected, actual);

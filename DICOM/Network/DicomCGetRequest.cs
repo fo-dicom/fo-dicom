@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -102,14 +102,21 @@ namespace Dicom.Network
         /// </summary>
         public DicomQueryRetrieveLevel Level
         {
-            get
+            get => Dataset.GetSingleValue<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
+            private set
             {
-                return Dataset.Get<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
-            }
-            set
-            {
-                Dataset.Remove(DicomTag.QueryRetrieveLevel);
-                if (value != DicomQueryRetrieveLevel.Worklist) Dataset.Add(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                switch (value)
+                {
+                    case DicomQueryRetrieveLevel.Patient:
+                    case DicomQueryRetrieveLevel.Study:
+                    case DicomQueryRetrieveLevel.Series:
+                    case DicomQueryRetrieveLevel.Image:
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        break;
+                    default:
+                        Dataset.Remove(DicomTag.QueryRetrieveLevel);
+                        break;
+                }
             }
         }
 
@@ -146,10 +153,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCGetResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCGetResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

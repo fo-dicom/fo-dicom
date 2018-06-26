@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Writer
@@ -164,9 +164,12 @@ namespace Dicom.IO.Writer
 
                     uncompressed.Seek(0, SeekOrigin.Begin);
                     using (var compressed = new MemoryStream())
-                    using (var compressor = new DeflateStream(compressed, CompressionMode.Compress))
                     {
-                        uncompressed.CopyTo(compressor);
+                        using (var compressor = new DeflateStream(compressed, CompressionMode.Compress, true))
+                        {
+                            uncompressed.CopyTo(compressor);
+                        }
+
                         target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
                     }
                 }
@@ -213,9 +216,12 @@ namespace Dicom.IO.Writer
 
                     uncompressed.Seek(0, SeekOrigin.Begin);
                     using (var compressed = new MemoryStream())
-                    using (var compressor = new DeflateStream(compressed, CompressionMode.Compress))
                     {
-                        uncompressed.CopyTo(compressor);
+                        using (var compressor = new DeflateStream(compressed, CompressionMode.Compress, true))
+                        {
+                            uncompressed.CopyTo(compressor);
+                        }
+
                         target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
                     }
                 }

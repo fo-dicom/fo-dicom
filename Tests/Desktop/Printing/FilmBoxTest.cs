@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Printing
@@ -48,6 +48,15 @@ namespace Dicom.Printing
             var actual = loaded.SOPInstanceUID;
             Assert.Equal(expected, actual);
             Assert.True(loaded.BasicImageBoxes.Count > 0);
+        }
+
+        [Fact]
+        private void PresentationLut_NoReferencedPresentationLutSequence_GetterReturnsNull()
+        {
+            var session = new FilmSession(DicomUID.BasicFilmSessionSOPClass);
+            var box = new FilmBox(session, null, DicomTransferSyntax.ImplicitVRLittleEndian);
+
+            Assert.Null(box.PresentationLut);
         }
 
         #endregion

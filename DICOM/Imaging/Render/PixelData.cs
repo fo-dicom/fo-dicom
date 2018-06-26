@@ -1,20 +1,21 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.Collections;
+
+#if !NET35
+using System.Threading.Tasks;
+#endif
+
+using Dicom.Imaging.Algorithms;
+using Dicom.Imaging.LUT;
+using Dicom.Imaging.Mathematics;
+using Dicom.IO;
+using Dicom.IO.Buffer;
 
 namespace Dicom.Imaging.Render
 {
-    using System;
-    using System.Collections;
-
-#if !NET35
-    using System.Threading.Tasks;
-#endif
-
-    using Dicom.Imaging.Algorithms;
-    using Dicom.Imaging.LUT;
-    using Dicom.Imaging.Mathematics;
-    using Dicom.IO.Buffer;
-
     /// <summary>
     /// Pixel data interface implemented by various pixel format classes
     /// </summary>
@@ -95,8 +96,9 @@ namespace Dicom.Imaging.Render
                 var samples = pixelData.SamplesPerPixel;
                 if (samples == 0 || samples == 1)
                 {
-                    if (pixelData.Dataset.Contains(DicomTag.RedPaletteColorLookupTableData)) pi = PhotometricInterpretation.PaletteColor;
-                    else pi = PhotometricInterpretation.Monochrome2;
+                    pi = pixelData.Dataset.Contains(DicomTag.RedPaletteColorLookupTableData)
+                        ? PhotometricInterpretation.PaletteColor
+                        : PhotometricInterpretation.Monochrome2;
                 }
                 else
                 {
@@ -107,7 +109,7 @@ namespace Dicom.Imaging.Render
 
             if (pixelData.BitsStored == 1)
             {
-                if (pixelData.Dataset.Get<DicomUID>(DicomTag.SOPClassUID)
+                if (pixelData.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID)
                     == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
                     // Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
                     return new SingleBitPixelData(
@@ -227,7 +229,7 @@ namespace Dicom.Imaging.Render
         /// <param name="width">Pixel data width.</param>
         /// <param name="height">Pixel data height.</param>
         /// <param name="data">Data byte array.</param>
-        protected GrayscalePixelDataU8(int width, int height, byte[] data)
+        protected internal GrayscalePixelDataU8(int width, int height, byte[] data)
         {
             Width = width;
             Height = height;
@@ -284,11 +286,12 @@ namespace Dicom.Imaging.Render
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public virtual IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
             var data = BilinearInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
             return new GrayscalePixelDataU8(w, h, data);
         }
@@ -391,6 +394,17 @@ namespace Dicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
+        public override IPixelData Rescale(double scale)
+        {
+            var w = (int)(Width * scale);
+            var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
+            var data = NearestNeighborInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
+            return new GrayscalePixelDataU8(w, h, data);
+        }
+
+        /// <inheritdoc />
         public override Histogram GetHistogram(int channel)
         {
             if (channel != 0) throw new ArgumentOutOfRangeException(nameof(channel), channel, "Expected channel 0 for grayscale image.");
@@ -432,7 +446,7 @@ namespace Dicom.Imaging.Render
             Width = width;
             Height = height;
 
-            var shortData = Dicom.IO.ByteConverter.ToArray<short>(data, bitDepth.BitsAllocated);
+            var shortData = ByteConverter.ToArray<short>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 16)
             {
@@ -528,9 +542,9 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
 
             var data = BilinearInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
             return new GrayscalePixelDataS16(w, h, data);
@@ -619,7 +633,7 @@ namespace Dicom.Imaging.Render
             Width = width;
             Height = height;
 
-            var ushortData = Dicom.IO.ByteConverter.ToArray<ushort>(data, bitDepth.BitsAllocated);
+            var ushortData = ByteConverter.ToArray<ushort>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 16)
             {
@@ -715,11 +729,10 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
-
-
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
             var data = BilinearInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
             return new GrayscalePixelDataU16(w, h, data);
         }
@@ -803,7 +816,7 @@ namespace Dicom.Imaging.Render
             Width = width;
             Height = height;
 
-            var intData = Dicom.IO.ByteConverter.ToArray<int>(data, bitDepth.BitsAllocated);
+            var intData = ByteConverter.ToArray<int>(data, bitDepth.BitsAllocated);
 
             // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
             // shifts in the loop below just replaces the top shift bits by the sign bit.
@@ -895,9 +908,10 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
             var data = BilinearInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
             return new GrayscalePixelDataS32(w, h, data);
         }
@@ -975,7 +989,7 @@ namespace Dicom.Imaging.Render
             Width = width;
             Height = height;
 
-            var uintData = Dicom.IO.ByteConverter.ToArray<uint>(data, bitDepth.BitsAllocated);
+            var uintData = ByteConverter.ToArray<uint>(data, bitDepth.BitsAllocated);
 
             if (bitDepth.BitsStored != 32)
             {
@@ -995,8 +1009,8 @@ namespace Dicom.Imaging.Render
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         // Remove masked high and low bits by shifting them out of the data type. 
-                        var d = (uint)(uintData[i] << shiftLeft);
-                        uintData[i] = (uint)(d >> shiftRight);
+                        var d = uintData[i] << shiftLeft;
+                        uintData[i] = d >> shiftRight;
                     }
                 }
 #if !NET35
@@ -1070,9 +1084,10 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
             var data = BilinearInterpolation.RescaleGrayscale(Data, Width, Height, w, h);
             return new GrayscalePixelDataU32(w, h, data);
         }
@@ -1203,9 +1218,10 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public IPixelData Rescale(double scale)
         {
-            if (scale == 1.0) return this;
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
+            if (w == Width && h == Height) return this;
+
             var data = BilinearInterpolation.RescaleColor24(Data, Width, Height, w, h);
             return new ColorPixelData24(w, h, data);
         }
@@ -1213,7 +1229,7 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public void Render(ILUT lut, int[] output)
         {
-            const int AlphaFF = 0xff << 24;
+            const int alphaFF = 0xff << 24;
 
             var data = Data;
             if (lut == null)
@@ -1226,7 +1242,7 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
-                        output[i] = AlphaFF | (data[p++] << 16) | (data[p++] << 8) | data[p++];
+                        output[i] = alphaFF | (data[p++] << 16) | (data[p++] << 8) | data[p++];
                     }
                 }
 #if !NET35
@@ -1243,7 +1259,7 @@ namespace Dicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
-                        output[i] = AlphaFF | (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                        output[i] = alphaFF | (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
                     }
                 }
 #if !NET35

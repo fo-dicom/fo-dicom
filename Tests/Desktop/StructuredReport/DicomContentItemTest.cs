@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Dicom.StructuredReport
                 DicomRelationship.Contains,
                 new DicomCodeItem("113805", "DCM", "Constant Angle Acquisition"));
 
-            Assert.Equal(0, contentItem.Children().Count());
+            Assert.Empty(contentItem.Children());
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace Dicom.StructuredReport
                 DicomRelationship.Contains, new DicomCodeItem("113962", "DCM", "Filtered Back Projection"));
 
             var children = contentItem.Children().ToList();
-            Assert.Equal(1, children.Count);
+            Assert.Single(children);
             Assert.Equal(new DicomCodeItem("113961", "DCM", null), children[0].Code);
             Assert.Equal(DicomRelationship.Contains, children[0].Relationship);
             Assert.Equal(new DicomCodeItem("113962", "DCM", null), children[0].Get<DicomCodeItem>());

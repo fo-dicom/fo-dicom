@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Imaging.Codec
@@ -12,7 +12,7 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE
+#if NETFX_CORE && !HOLOLENS
             DicomJpeg2000NativeCodec.Encode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),
@@ -27,7 +27,7 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE
+#if NETFX_CORE && !HOLOLENS
             DicomJpeg2000NativeCodec.Decode(
                 oldPixelData.ToNativePixelData(),
                 newPixelData.ToNativePixelData(),

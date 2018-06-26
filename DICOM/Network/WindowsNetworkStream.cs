@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -406,7 +406,10 @@ namespace Dicom.Network
                 {
                     await reader.LoadAsync((uint)count).AsTask().ConfigureAwait(false);
                     var length = Math.Min((int)reader.UnconsumedBufferLength, count);
-                    reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
+                    if (length > 0)
+                    {
+                        reader.ReadBuffer((uint)length).CopyTo(0, buffer, offset, length);
+                    }
                     reader.DetachStream();
                     return length;
                 }

@@ -1,15 +1,16 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+
+using Dicom.Imaging.Render;
+using Dicom.IO;
 
 namespace Dicom.Imaging
 {
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-
-    using Dicom.Imaging.Render;
-    using Dicom.IO;
-
     /// <summary>
     /// Convenience class for non-generic access to <see cref="WinFormsImage"/> image objects.
     /// </summary>
@@ -21,14 +22,42 @@ namespace Dicom.Imaging
         /// </summary>
         /// <param name="image"><see cref="IImage"/> object.</param>
         /// <returns><see cref="Bitmap"/> contents of <paramref name="image"/>.</returns>
+        [Obsolete("use AsClonedBitmap or AsSharedBitmap instead.")]
         public static Bitmap AsBitmap(this IImage image)
         {
             return image.As<Bitmap>();
         }
+
+        /// <summary>
+        /// Convenience method to access WinForms <see cref="IImage"/> instance as WinForms <see cref="Bitmap"/>.
+        /// The returned <see cref="Bitmap"/> is cloned and must be disposed by caller.
+        /// </summary>
+        /// <param name="iimage"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="Bitmap"/> contents of <paramref name="image"/>.</returns>
+        public static Bitmap AsClonedBitmap(this IImage iimage)
+        {
+#pragma warning disable 618
+            return iimage.As<Bitmap>()?.Clone() as Bitmap;
+#pragma warning restore 618
+        }
+
+        /// <summary>
+        /// Convenience method to access WinForms <see cref="IImage"/> instance as WinForms <see cref="Bitmap"/>.
+        /// The returned <see cref="Bitmap"/> will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <param name="iimage"><see cref="IImage"/> object.</param>
+        /// <returns><see cref="Bitmap"/> contents of <paramref name="image"/>.</returns>
+        public static Bitmap AsSharedBitmap(this IImage iimage)
+        {
+#pragma warning disable 618
+            return iimage.As<Bitmap>();
+#pragma warning restore 618
+        }
+
     }
 
     /// <summary>
-    /// <see cref="IImage"/> implementation of a Windows Forms <see cref="Bitmap"/>.
+    /// <see cref="IImage"/> implementation of a <see cref="Bitmap"/> in the <code>System.Drawing</code> namespace.
     /// </summary>
     public sealed class WinFormsImage : ImageDisposableBase<Bitmap>
     {
@@ -60,13 +89,7 @@ namespace Dicom.Imaging
 
         #region METHODS
 
-        /// <summary>
-        /// Renders the image given the specified parameters.
-        /// </summary>
-        /// <param name="components">Number of components.</param>
-        /// <param name="flipX">Flip image in X direction?</param>
-        /// <param name="flipY">Flip image in Y direction?</param>
-        /// <param name="rotation">Image rotation.</param>
+        /// <inheritdoc />
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
@@ -81,26 +104,22 @@ namespace Dicom.Imaging
             }
         }
 
-        /// <summary>
-        /// Draw graphics onto existing image.
-        /// </summary>
-        /// <param name="graphics">Graphics to draw.</param>
+        /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
             using (var g = Graphics.FromImage(this.image))
             {
                 foreach (var graphic in graphics)
                 {
+#pragma warning disable 618
                     var layer = graphic.RenderImage(null).As<Image>();
+#pragma warning restore 618
                     g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
                 }
             }
         }
 
-        /// <summary>
-        /// Creates a deep copy of the image.
-        /// </summary>
-        /// <returns>Deep copy of this image.</returns>
+        /// <inheritdoc />
         public override IImage Clone()
         {
             return new WinFormsImage(
@@ -133,7 +152,8 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipXY;
                 }
             }
-            else if (flipX)
+
+            if (flipX)
             {
                 switch (rotation)
                 {
@@ -147,7 +167,8 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipX;
                 }
             }
-            else if (flipY)
+
+            if (flipY)
             {
                 switch (rotation)
                 {
@@ -161,20 +182,33 @@ namespace Dicom.Imaging
                         return RotateFlipType.RotateNoneFlipY;
                 }
             }
-            else
+
+            switch (rotation)
             {
-                switch (rotation)
-                {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipNone;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipNone;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipNone;
-                    default:
-                        return RotateFlipType.RotateNoneFlipNone;
-                }
+                case 90:
+                    return RotateFlipType.Rotate90FlipNone;
+                case 180:
+                    return RotateFlipType.Rotate180FlipNone;
+                case 270:
+                    return RotateFlipType.Rotate270FlipNone;
+                default:
+                    return RotateFlipType.RotateNoneFlipNone;
             }
+        }
+
+        /// <summary>
+        /// Cast <see cref="IImage"/> object to specific (real image) type.
+        /// The returned bitmap will be disposed when the <see cref="IImage"/> is disposed.
+        /// </summary>
+        /// <typeparam name="T">Real image type to cast to.</typeparam>
+        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
+        /// <remarks>overridden only for obsolete warning</remarks>
+        [Obsolete("do NOT invoke this method directly, use extention methods GetClonedBitmap, GetSharedBitmap, GetClonedWriteableBitmap instead.")]
+#pragma warning disable 0809
+        public override T As<T>()
+#pragma warning restore 0809
+        {
+            return base.As<T>();
         }
 
         #endregion

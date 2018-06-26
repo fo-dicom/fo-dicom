@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -800,6 +800,7 @@ namespace Dicom
                 {
                     _formats = new[]
                     {
+                        "yyyyMMddHHmmss",
                         "yyyyMMddHHmmsszzz",
                         "yyyyMMddHHmmsszz",
                         "yyyyMMddHHmmssz",
@@ -809,7 +810,6 @@ namespace Dicom
                         "yyyyMMddHHmmss.fff",
                         "yyyyMMddHHmmss.ff",
                         "yyyyMMddHHmmss.f",
-                        "yyyyMMddHHmmss",
                         "yyyyMMddHHmm",
                         "yyyyMMddHH",
                         "yyyyMMdd",
@@ -1723,7 +1723,7 @@ namespace Dicom
         {
             if (_values == null)
             {
-                _values = base.Get<string[]>().Select(x => DicomUID.Parse(x)).ToArray();
+                _values = base.Get<string[]>().Select(DicomUID.Parse).ToArray();
             }
 
             if (typeof(T) == typeof(DicomTransferSyntax))
@@ -1733,7 +1733,7 @@ namespace Dicom
 
             if (typeof(T) == typeof(DicomTransferSyntax[]))
             {
-                return (T)(object)_values.Select(x => DicomTransferSyntax.Lookup(x)).ToArray();
+                return (T)(object)_values.Select(DicomTransferSyntax.Lookup).ToArray();
             }
 
             if (typeof(T) == typeof(DicomUID) || typeof(T) == typeof(object))

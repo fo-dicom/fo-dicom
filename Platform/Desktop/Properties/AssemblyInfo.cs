@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Reflection;
@@ -7,8 +7,8 @@ using System.Runtime.CompilerServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dicom.Platform")]
-[assembly: AssemblyDescription(".NET specific assembly for fo-dicom")]
+[assembly: AssemblyTitle("Dicom.Core")]
+[assembly: AssemblyDescription("Platform specific assembly for fo-dicom")]
 [assembly: AssemblyConfiguration("")]
 
 [assembly: InternalsVisibleTo("DICOM [Unit Tests], PublicKey=" +

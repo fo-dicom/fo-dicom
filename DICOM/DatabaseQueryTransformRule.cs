@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -25,17 +25,8 @@ namespace Dicom
     /// </summary>
     public class DatabaseQueryTransformRule : IDicomTransformRule
     {
+
         #region Private Members
-
-        private string _connectionString;
-
-        private DatabaseType _dbType;
-
-        private string _query;
-
-        private List<DicomTag> _output;
-
-        private List<DicomTag> _params;
 
         #endregion
 
@@ -43,9 +34,9 @@ namespace Dicom
 
         public DatabaseQueryTransformRule()
         {
-            _dbType = DatabaseType.MsSql;
-            _output = new List<DicomTag>();
-            _params = new List<DicomTag>();
+            ConnectionType = DatabaseType.MsSql;
+            Output = new List<DicomTag>();
+            Parameters = new List<DicomTag>();
         }
 
         public DatabaseQueryTransformRule(
@@ -55,106 +46,56 @@ namespace Dicom
             DicomTag[] outputTags,
             DicomTag[] paramTags)
         {
-            _connectionString = connectionString;
-            _dbType = dbType;
-            _query = query;
-            _output = new List<DicomTag>(outputTags);
-            _params = new List<DicomTag>(paramTags);
+            ConnectionString = connectionString;
+            ConnectionType = dbType;
+            Query = query;
+            Output = new List<DicomTag>(outputTags);
+            Parameters = new List<DicomTag>(paramTags);
         }
 
-        #endregion
+      #endregion
 
-        #region Public Properties
+      #region Public Properties
 
-        public string ConnectionString
-        {
-            get
-            {
-                return _connectionString;
-            }
-            set
-            {
-                _connectionString = value;
-            }
-        }
+      public string ConnectionString { get; set; }
 
-        public DatabaseType ConnectionType
-        {
-            get
-            {
-                return _dbType;
-            }
-            set
-            {
-                _dbType = value;
-            }
-        }
+      public DatabaseType ConnectionType { get; set; }
 
-        public string Query
-        {
-            get
-            {
-                return _query;
-            }
-            set
-            {
-                _query = value;
-            }
-        }
+      public string Query { get; set; }
 
-        public List<DicomTag> Output
-        {
-            get
-            {
-                return _output;
-            }
-            set
-            {
-                _output = value;
-            }
-        }
+      public List<DicomTag> Output { get; set; }
 
-        public List<DicomTag> Parameters
-        {
-            get
-            {
-                return _params;
-            }
-            set
-            {
-                _params = value;
-            }
-        }
+      public List<DicomTag> Parameters { get; set; }
 
-        #endregion
+      #endregion
 
-        #region Public Methods
+      #region Public Methods
 
-        public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
+      public void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null)
         {
             IDbConnection connection = null;
 
             try
             {
-                if (_dbType == DatabaseType.MsSql) connection = new SqlConnection(_connectionString);
+                if (ConnectionType == DatabaseType.MsSql) connection = new SqlConnection(ConnectionString);
 #if !__IOS__ && !__ANDROID__ && !NETSTANDARD
-                else if (_dbType == DatabaseType.Odbc) connection = new OdbcConnection(_connectionString);
+                else if (ConnectionType == DatabaseType.Odbc) connection = new OdbcConnection(ConnectionString);
 #endif
                 using (IDbCommand command = connection.CreateCommand())
                 {
                     command.Connection = connection;
-                    command.CommandText = _query;
+                    command.CommandText = Query;
 
-                    for (int i = 0; i < _params.Count; i++)
+                    for (int i = 0; i < Parameters.Count; i++)
                     {
-                        var str = dataset.Get<string>(_params[i], -1, String.Empty);
-                        SqlParameter prm = new SqlParameter(String.Format("@{0}", i), str);
+                        var str = dataset.TryGetString(Parameters[i], out var dummy) ? dummy : String.Empty;
+                        SqlParameter prm = new SqlParameter($"@{i}", str);
                         command.Parameters.Add(prm);
                     }
 
                     connection.Open();
 
-                    if (_output.Count == 0)
+                    if (Output.Count == 0)
                     {
                         command.ExecuteNonQuery();
                     }
@@ -164,11 +105,11 @@ namespace Dicom
                         {
                             if (reader.Read())
                             {
-                                for (int i = 0; i < _output.Count; i++)
+                                for (int i = 0; i < Output.Count; i++)
                                 {
-                                    dataset.CopyTo(modifiedAttributesSequenceItem, _output[i]);
+                                    dataset.CopyTo(modifiedAttributesSequenceItem, Output[i]);
                                     string str = reader.GetString(i);
-                                    dataset.AddOrUpdate(_output[i], str);
+                                    dataset.AddOrUpdate(Output[i], str);
                                 }
                             }
                         }
@@ -189,10 +130,6 @@ namespace Dicom
             }
         }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
 
         #endregion
     }
