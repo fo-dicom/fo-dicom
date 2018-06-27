@@ -28,7 +28,7 @@ namespace Dicom.IO.Reader
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             _datasets = new Stack<DicomDataset>();
             _datasets.Push(dataset);

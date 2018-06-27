@@ -1,19 +1,20 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom
-{
-    using System;
-    using System.IO;
-    using System.Text;
+using System;
+using System.IO;
+using System.Text;
 
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
 
-    using Dicom.IO;
-    using Dicom.IO.Reader;
-    using Dicom.IO.Writer;
+using Dicom.IO;
+using Dicom.IO.Reader;
+using Dicom.IO.Writer;
+
+namespace Dicom
+{
 
     /// <summary>
     /// Container class for DICOM file parsing states.
@@ -40,6 +41,7 @@ namespace Dicom
     /// </summary>
     public class DicomFile
     {
+
         #region CONSTRUCTORS
 
         public DicomFile()
@@ -98,17 +100,17 @@ namespace Dicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(string fileName, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation();
 
-            this.File = IOManager.CreateFileReference(fileName);
-            this.File.Delete();
+            File = IOManager.CreateFileReference(fileName);
+            File.Delete();
 
-            this.OnSave();
+            OnSave();
 
-            using (var target = new FileByteTarget(this.File))
+            using (var target = new FileByteTarget(File))
             {
                 var writer = new DicomFileWriter(options);
-                writer.Write(target, this.FileMetaInfo, this.Dataset);
+                writer.Write(target, FileMetaInfo, Dataset);
             }
         }
 
@@ -119,12 +121,12 @@ namespace Dicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(Stream stream, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
-            this.OnSave();
+            PreprocessFileMetaInformation();
+            OnSave();
 
             var target = new StreamByteTarget(stream);
             var writer = new DicomFileWriter(options);
-            writer.Write(target, this.FileMetaInfo, this.Dataset);
+            writer.Write(target, FileMetaInfo, Dataset);
         }
 
 #if !NET35
@@ -136,17 +138,17 @@ namespace Dicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public async Task SaveAsync(string fileName, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation();
 
-            this.File = IOManager.CreateFileReference(fileName);
-            this.File.Delete();
+            File = IOManager.CreateFileReference(fileName);
+            File.Delete();
 
-            this.OnSave();
+            OnSave();
 
-            using (var target = new FileByteTarget(this.File))
+            using (var target = new FileByteTarget(File))
             {
                 var writer = new DicomFileWriter(options);
-                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
+                await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
             }
         }
 
@@ -158,12 +160,12 @@ namespace Dicom
         /// <returns>Awaitable task.</returns>
         public async Task SaveAsync(Stream stream, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
-            this.OnSave();
+            PreprocessFileMetaInformation();
+            OnSave();
 
             var target = new StreamByteTarget(stream);
             var writer = new DicomFileWriter(options);
-            await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
+            await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
         }
 #endif
 
@@ -192,7 +194,7 @@ namespace Dicom
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             DicomFile df = new DicomFile();
 
@@ -253,7 +255,7 @@ namespace Dicom
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
@@ -316,7 +318,7 @@ namespace Dicom
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
@@ -378,7 +380,7 @@ namespace Dicom
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
@@ -462,7 +464,7 @@ namespace Dicom
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             DicomFile df = new DicomFile();
 

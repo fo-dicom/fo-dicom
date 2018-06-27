@@ -172,7 +172,7 @@ namespace Dicom.IO
         {
             IByteBuffer buffer = null;
             if (count == 0) buffer = EmptyBuffer.Value;
-            else if (count >= this.LargeObjectSize)
+            else if (count >= LargeObjectSize)
             {
                 buffer = new FileByteBuffer(_file, _stream.Position, count);
                 _stream.Seek((int)count, SeekOrigin.Current);
@@ -273,8 +273,7 @@ namespace Dicom.IO
                 _stream.Dispose();
             }
             catch
-            {
-            }
+            { /* ignore exception */ }
 
             _disposed = true;
         }

@@ -30,8 +30,8 @@ namespace Dicom
 
         public int CompareTo(object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
-            if (!(obj is DicomPrivateCreator)) throw new ArgumentException("Passed non-DicomPrivateCreator to comparer", "obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (!(obj is DicomPrivateCreator)) throw new ArgumentException("Passed non-DicomPrivateCreator to comparer", nameof(obj));
             return CompareTo(obj as DicomPrivateCreator);
         }
 

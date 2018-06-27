@@ -14,6 +14,26 @@ namespace Dicom.IO.Reader
         #region Unit tests
 
         [Fact]
+        public void ReadLargeFileFromStream()
+        {
+            DicomFile dcm = null;
+            string filename = @".\Test Data\GH355.dcm";
+            if (File.Exists(filename))
+            {
+                byte[] buff = File.ReadAllBytes(filename);
+                using (MemoryStream stream = new MemoryStream(buff))
+                {
+                    dcm = DicomFile.Open(stream);
+                }
+            }
+
+            // this will save the image without pixels and generate an ObjectDisposedException
+            string tmpFile = Path.GetTempFileName();
+            dcm.Save(tmpFile);
+            if (File.Exists(tmpFile)) File.Delete(tmpFile);
+        }
+
+        [Fact]
         public void Read_ValidSource_ReturnsSuccess()
         {
             using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))

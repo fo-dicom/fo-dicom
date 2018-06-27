@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Reader
-{
-    using System;
-    using System.Text;
+using System;
+using System.Text;
 
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+
+namespace Dicom.IO.Reader
+{
 
     /// <summary>
     /// Class for reading DICOM file objects.
@@ -45,16 +46,16 @@ namespace Dicom.IO.Reader
 
         #region FIELDS
 
-        private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
+        private static readonly DicomTag _FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private static readonly Func<ParseState, bool> FileMetaInfoStopCriterion =
-            state => state.Tag.CompareTo(FileMetaInfoStopTag) >= 0;
+        private static readonly Func<ParseState, bool> _FileMetaInfoStopCriterion =
+            state => state.Tag.CompareTo(_FileMetaInfoStopTag) >= 0;
 
-        private DicomFileFormat fileFormat;
+        private DicomFileFormat _fileFormat;
 
-        private DicomTransferSyntax syntax;
+        private DicomTransferSyntax _syntax;
 
-        private readonly object locker;
+        private readonly object _locker;
 
         #endregion
 
@@ -65,9 +66,9 @@ namespace Dicom.IO.Reader
         /// </summary>
         public DicomFileReader()
         {
-            this.fileFormat = DicomFileFormat.Unknown;
-            this.syntax = null;
-            this.locker = new object();
+            _fileFormat = DicomFileFormat.Unknown;
+            _syntax = null;
+            _locker = new object();
         }
 
         #endregion
@@ -79,10 +80,7 @@ namespace Dicom.IO.Reader
         /// </summary>
         public DicomFileFormat FileFormat
         {
-            get
-            {
-                return this.fileFormat;
-            }
+            get => _fileFormat;
         }
 
         /// <summary>
@@ -90,10 +88,7 @@ namespace Dicom.IO.Reader
         /// </summary>
         public DicomTransferSyntax Syntax
         {
-            get
-            {
-                return this.syntax;
-            }
+            get => _syntax;
         }
 
         #endregion
@@ -115,10 +110,10 @@ namespace Dicom.IO.Reader
             Func<ParseState, bool> stop = null)
         {
             var parse = Parse(source, fileMetaInfo, dataset, stop);
-            lock (this.locker)
+            lock (_locker)
             {
-                this.fileFormat = parse.Format;
-                this.syntax = parse.Syntax;
+                _fileFormat = parse.Format;
+                _syntax = parse.Syntax;
             }
 
             return parse.Result;
@@ -140,10 +135,10 @@ namespace Dicom.IO.Reader
             Func<ParseState, bool> stop = null)
         {
             var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
-            lock (this.locker)
+            lock (_locker)
             {
-                this.fileFormat = parse.Item2;
-                this.syntax = parse.Item3;
+                _fileFormat = parse.Item2;
+                _syntax = parse.Item3;
             }
             return parse.Item1;
         }
@@ -331,7 +326,7 @@ namespace Dicom.IO.Reader
             }
             else
             {
-                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), FileMetaInfoStopCriterion)
+                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _FileMetaInfoStopCriterion)
                     != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
@@ -408,7 +403,7 @@ namespace Dicom.IO.Reader
                     reader.ReadAsync(
                         source,
                         new DicomReaderMultiObserver(obs, fileMetasetInfoObserver),
-                        FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
+                        _FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }
