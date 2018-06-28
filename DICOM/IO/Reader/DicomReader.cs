@@ -287,7 +287,7 @@ namespace Dicom.IO.Reader
                     }
 
                     decompressed.Seek(0, SeekOrigin.Begin);
-                    return new StreamByteSource(decompressed);
+                    return new StreamByteSource(decompressed, FileReadOption.LargeOnDemand);
                 }
             }
 

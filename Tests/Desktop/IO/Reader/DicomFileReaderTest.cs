@@ -23,7 +23,7 @@ namespace Dicom.IO.Reader
                 byte[] buff = File.ReadAllBytes(filename);
                 using (MemoryStream stream = new MemoryStream(buff))
                 {
-                    dcm = DicomFile.Open(stream);
+                    dcm = DicomFile.Open(stream, FileReadOption.ReadAll);
                 }
             }
 
