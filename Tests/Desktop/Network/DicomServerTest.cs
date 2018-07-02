@@ -361,8 +361,6 @@ namespace Dicom.Network
                     });
                 Assert.Null(e);
             }
-
-
         }
 
         [Fact]
