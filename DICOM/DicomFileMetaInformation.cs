@@ -37,7 +37,7 @@ namespace Dicom
             ImplementationVersionName = DicomImplementation.Version;
 
             var aet = dataset.Contains(DicomTag.SourceApplicationEntityTitle) ?
-                dataset.Get<string>(DicomTag.SourceApplicationEntityTitle) : CreateSourceApplicationEntityTitle();
+                dataset.Get<string>(DicomTag.SourceApplicationEntityTitle) : null;
             if (aet != null) SourceApplicationEntityTitle = aet;
 
             if (dataset.TryGetSingleValue(DicomTag.SendingApplicationEntityTitle, out string sendingAETVal))
@@ -74,7 +74,7 @@ namespace Dicom
             ImplementationVersionName = DicomImplementation.Version;
 
             var aet = metaInfo.Contains(DicomTag.SourceApplicationEntityTitle) ?
-                metaInfo.SourceApplicationEntityTitle : CreateSourceApplicationEntityTitle();
+                metaInfo.SourceApplicationEntityTitle : null;
             if (aet != null) SourceApplicationEntityTitle = aet;
 
             if (metaInfo.Contains(DicomTag.SendingApplicationEntityTitle))
@@ -213,7 +213,7 @@ namespace Dicom
         /// <returns>
         /// The machine name truncated to a maximum of 16 characters.
         /// </returns>
-        private static string CreateSourceApplicationEntityTitle()
+        public static string CreateSourceApplicationEntityTitle()
         {
             var machine = NetworkManager.MachineName;
             if (machine != null && machine.Length > 16)
