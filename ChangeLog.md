@@ -1,4 +1,5 @@
 #### v.4.0.1 (TBD)
+* internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * Update Json DS validation regex (#643)
 
 #### v.4.0.0-rc1 (5/22/2018)
