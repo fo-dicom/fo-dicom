@@ -134,7 +134,7 @@ namespace Dicom.Media
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -186,7 +186,7 @@ namespace Dicom.Media
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -236,7 +236,7 @@ namespace Dicom.Media
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -290,7 +290,7 @@ namespace Dicom.Media
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {

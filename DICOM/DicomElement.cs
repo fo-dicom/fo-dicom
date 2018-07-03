@@ -97,7 +97,7 @@ namespace Dicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)(new string[] { StringValue });
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(StringValue);
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return DicomParseable.Parse<T>(StringValue);
 
             if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), StringValue.Replace("\0", string.Empty), true);
 
@@ -163,7 +163,7 @@ namespace Dicom
             if (item == -1) item = 0;
             if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return (T)DicomParseable.Parse<T>(_values[item]);
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return DicomParseable.Parse<T>(_values[item]);
 
             var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
             if (t.GetTypeInfo().IsEnum) return (T)Enum.Parse(t, _values[item].Replace("\0", string.Empty), true);
@@ -1320,11 +1320,11 @@ namespace Dicom
             get
             {
                 string[] s = Get<string>().Split('\\');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('=');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('^');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 return s[0];
             }
         }
@@ -1334,9 +1334,9 @@ namespace Dicom
             get
             {
                 string[] s = Get<string>().Split('\\');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('=');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('^');
                 if (s.Count() < 2) return "";
                 return s[1];
@@ -1348,9 +1348,9 @@ namespace Dicom
             get
             {
                 string[] s = Get<string>().Split('\\');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('=');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('^');
                 if (s.Count() < 3) return "";
                 return s[2];
@@ -1363,9 +1363,9 @@ namespace Dicom
             get
             {
                 string[] s = Get<string>().Split('\\');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('=');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('^');
                 if (s.Count() < 4) return "";
                 return s[3];
@@ -1377,9 +1377,9 @@ namespace Dicom
             get
             {
                 string[] s = Get<string>().Split('\\');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('=');
-                if (s.Count() < 1) return "";
+                if (!s.Any()) return "";
                 s = s[0].Split('^');
                 if (s.Count() < 5) return "";
                 return s[4];

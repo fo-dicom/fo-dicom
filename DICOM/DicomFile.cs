@@ -42,10 +42,14 @@ namespace Dicom
     public enum FileReadOption
     {
         /// <summary>
+        /// Default behaviour. 
+        /// </summary>
+        Default,
+        /// <summary>
         /// Reads only small tags, but keeps the stream to read the large tags on demand.
         /// The stream has to stay open.
         /// </summary>
-        LargeOnDemand,
+        ReadLargeOnDemand,
         /// <summary>
         /// Large tags are not read. The stream can be closed.
         /// </summary>
@@ -55,6 +59,7 @@ namespace Dicom
         /// </summary>
         ReadAll
     }
+
 
     /// <summary>
     /// Representation of one DICOM file.
@@ -197,7 +202,7 @@ namespace Dicom
         /// <param name="fileName">The filename of the DICOM file</param>
         /// <param name="readOption">An option how to deal with large dicom tags like pixel data.</param>
         /// <returns>DicomFile instance</returns>
-        public static DicomFile Open(string fileName, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static DicomFile Open(string fileName, FileReadOption readOption = FileReadOption.Default)
         {
             return Open(fileName, DicomEncoding.Default, readOption: readOption);
         }
@@ -211,7 +216,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>DicomFile instance</returns>
-        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -261,7 +266,7 @@ namespace Dicom
         /// <param name="stream">Stream to read.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
-        public static DicomFile Open(Stream stream, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static DicomFile Open(Stream stream, FileReadOption readOption = FileReadOption.Default)
         {
             return Open(stream, DicomEncoding.Default, readOption: readOption);
         }
@@ -274,7 +279,7 @@ namespace Dicom
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tag like pixel data</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
-        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -324,7 +329,7 @@ namespace Dicom
         /// <param name="fileName">The filename of the DICOM file</param>
         /// <param name="readOption">The option how to deal with large dicom tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(string fileName, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static Task<DicomFile> OpenAsync(string fileName, FileReadOption readOption = FileReadOption.Default)
         {
             return OpenAsync(fileName, DicomEncoding.Default, readOption: readOption);
         }
@@ -338,7 +343,7 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -389,7 +394,7 @@ namespace Dicom
         /// <param name="stream">Stream to read.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(Stream stream, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static Task<DicomFile> OpenAsync(Stream stream, FileReadOption readOption = FileReadOption.Default)
         {
             return OpenAsync(stream, DicomEncoding.Default, readOption: readOption);
         }
@@ -402,7 +407,7 @@ namespace Dicom
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -486,7 +491,7 @@ namespace Dicom
         /// <param name="file">The file reference of the DICOM file</param>
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <returns>DicomFile instance</returns>
-        internal static DicomFile Open(IFileReference file, Encoding fallbackEncoding, FileReadOption readOption = FileReadOption.LargeOnDemand)
+        internal static DicomFile Open(IFileReference file, Encoding fallbackEncoding, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {

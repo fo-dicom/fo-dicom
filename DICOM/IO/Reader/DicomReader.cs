@@ -287,7 +287,7 @@ namespace Dicom.IO.Reader
                     }
 
                     decompressed.Seek(0, SeekOrigin.Begin);
-                    return new StreamByteSource(decompressed, FileReadOption.LargeOnDemand);
+                    return new StreamByteSource(decompressed, FileReadOption.Default);
                 }
             }
 
@@ -640,11 +640,14 @@ namespace Dicom.IO.Reader
 
                     var buffer = source.GetBuffer(_length);
 
-                    if (!_vr.IsString)
+                    if (buffer != null)
                     {
-                        buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
+                        if (!_vr.IsString)
+                        {
+                            buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
+                        }
+                        _observer.OnElement(source, _tag, _vr, buffer);
                     }
-                    _observer.OnElement(source, _tag, _vr, buffer);
 
                     // parse private creator value and add to lookup table
                     if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff)

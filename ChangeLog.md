@@ -1,5 +1,6 @@
 #### v.4.0.1 (TBD)
 * Update Json DS validation regex (#643)
+* Add option to DicomFile.Open how to deal with large tags (#617)
 
 #### v.4.0.0-rc1 (5/22/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec

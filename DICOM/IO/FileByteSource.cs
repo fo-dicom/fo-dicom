@@ -51,7 +51,8 @@ namespace Dicom.IO
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian);
             Marker = 0;
-            _readOption = readOption;
+            // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
+            _readOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
             LargeObjectSize = 64 * 1024;
 
@@ -173,14 +174,14 @@ namespace Dicom.IO
             {
                 buffer = EmptyBuffer.Value;
             }
-            else if (count >= LargeObjectSize && _readOption == FileReadOption.LargeOnDemand)
+            else if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
             {
                 buffer = new FileByteBuffer(_file, _stream.Position, count);
                 _stream.Seek((int)count, SeekOrigin.Current);
             }
             else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
             {
-                buffer = EmptyBuffer.Value;
+                buffer = null;
             }
             else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
             {
@@ -193,7 +194,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
-            return Task.FromResult(this.GetBuffer(count));
+            return Task.FromResult(GetBuffer(count));
         }
 #endif
 
