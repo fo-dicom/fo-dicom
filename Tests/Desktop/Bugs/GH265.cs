@@ -31,7 +31,6 @@ namespace Dicom.Bugs
             {
                 var file = DicomFile.Open(stream);
                 Assert.Equal(DicomFileFormat.DICOM3, file.Format);
-                Assert.True(file.FileMetaInfo.Contains(DicomTag.SourceApplicationEntityTitle));
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
             }

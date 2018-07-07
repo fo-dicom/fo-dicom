@@ -69,11 +69,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.Universal", "Nativ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM.Native.Universal", "Native\Universal\DICOM.Native.Universal.vcxproj", "{0A648368-9B9A-49BF-8C11-EBA79F241B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.NetCore", "Platform\NetCore\DICOM.NetCore.csproj", "{BBDC8264-1E12-4EE0-9C23-4ED6243BD06D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.NetCore", "Platform\NetCore\DICOM.NetCore.csproj", "{BBDC8264-1E12-4EE0-9C23-4ED6243BD06D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Tests.NetCore", "Tests\NetCore\DICOM.Tests.NetCore.csproj", "{5F3B2995-B244-4046-B724-D232D5265292}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.Tests.NetCore", "Tests\NetCore\DICOM.Tests.NetCore.csproj", "{5F3B2995-B244-4046-B724-D232D5265292}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Drawing.NetCore", "Drawing\NetCore\DICOM.Drawing.NetCore.csproj", "{A228D38A-5BE0-471F-8FB2-2ED1E711F29C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.Drawing.NetCore", "Drawing\NetCore\DICOM.Drawing.NetCore.csproj", "{A228D38A-5BE0-471F-8FB2-2ED1E711F29C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x64", "Native\Desktop\libijg8.x64.vcxproj", "{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}"
 EndProject
@@ -408,7 +408,6 @@ Global
 		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Release|x64.ActiveCfg = Release|x64
 		{FA9C7678-B9D9-46BC-8921-8152FD6787CA}.Release|x86.ActiveCfg = Release|x64
 		{A0EDD6F1-A4B7-41D1-B609-B050F0A7B40D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0EDD6F1-A4B7-41D1-B609-B050F0A7B40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0EDD6F1-A4B7-41D1-B609-B050F0A7B40D}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{A0EDD6F1-A4B7-41D1-B609-B050F0A7B40D}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{A0EDD6F1-A4B7-41D1-B609-B050F0A7B40D}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -476,6 +475,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
+		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

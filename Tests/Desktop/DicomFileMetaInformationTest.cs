@@ -40,19 +40,6 @@ namespace Dicom
         }
 
         [Fact]
-        public void SourceApplicationEntityTitle_GetterWhenAttributeIncluded_ReturnsValue()
-        {
-            var metaInfo =
-                new DicomFileMetaInformation(
-                    new DicomDataset(
-                        new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
-                        new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3")));
-
-            var exception = Record.Exception(() => { Assert.NotNull(metaInfo.SourceApplicationEntityTitle); });
-            Assert.Null(exception);
-        }
-
-        [Fact]
         public void SourceApplicationEntityTitle_GetterWhenAttributeMissing_ReturnsNull()
         {
             var metaInfo =
