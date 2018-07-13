@@ -31,3 +31,4 @@
 * [Nick Nelson](https://github.com/npnelson)
 * [Bob Woods](https://github.com/BobSter3000)
 * [Joost van Griethuysen](https://github.com/JoostJM)
+* [Jamie Bruce](https://github.com/jwbruce93)

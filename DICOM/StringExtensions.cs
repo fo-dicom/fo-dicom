@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
 
 namespace Dicom
 {
@@ -111,5 +112,18 @@ namespace Dicom
 
             return j >= pattern.Length;
         }
+    }
+
+    public static class EnumerableExtensions
+    {
+
+        public static void Each<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            foreach(T item in source)
+            {
+                action(item);
+            }
+        }
+
     }
 }
