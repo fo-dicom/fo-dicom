@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Xunit;
@@ -21,9 +21,9 @@ namespace Dicom
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
-            Assert.Equal(0, dataset.Get<string[]>(DicomTag.PatientName).Length);
-            Assert.Equal(0, dataset.Get<string[]>(DicomTag.PatientID).Length);
-            Assert.Equal(0, dataset.Get<string[]>(DicomTag.PatientSex).Length);
+            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientName));
+            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientID));
+            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientSex));
         }
 
         [Fact]
@@ -34,11 +34,11 @@ namespace Dicom
 #else
             var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
 #endif
-            var old = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            var old = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(file);
 
-            var expected = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            var expected = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             var actual = file.FileMetaInfo.MediaStorageSOPInstanceUID;
             Assert.NotEqual(expected, old);
             Assert.Equal(expected, actual);
@@ -70,13 +70,13 @@ namespace Dicom
 #else
             var dataset = DicomFile.Open(@"./Test Data/CT-MONO2-16-ankle").Dataset;
 #endif
-            var expected = dataset.Get<DicomUID>(DicomTag.StudyInstanceUID);
+            var expected = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
 
             var anonymizer = new DicomAnonymizer();
             var newDataset = anonymizer.Anonymize(dataset);
 
-            var actual = dataset.Get<DicomUID>(DicomTag.StudyInstanceUID);
-            var actualNew = newDataset.Get<DicomUID>(DicomTag.StudyInstanceUID);
+            var actual = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
+            var actualNew = newDataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
 
             Assert.Equal(expected, actual);
             Assert.NotEqual(expected, actualNew);
@@ -100,8 +100,8 @@ namespace Dicom
 
             var newDataset = anonymizer.Anonymize(dataset);
 
-            var actualName = newDataset.Get<string>(DicomTag.PatientName);
-            var actualId = newDataset.Get<string>(DicomTag.PatientID);
+            var actualName = newDataset.GetSingleValue<string>(DicomTag.PatientName);
+            var actualId = newDataset.GetSingleValue<string>(DicomTag.PatientID);
 
             Assert.Equal(expectedName, actualName);
             Assert.Equal(expectedId, actualId);
@@ -118,13 +118,13 @@ namespace Dicom
 #else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
 #endif
-            Assert.True(dataset.Get<string>(tag).Length > 0);
+            Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
 
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
             var expected = new string[0];
-            var actual = dataset.Get<string[]>(tag);
+            var actual = dataset.GetValues<string>(tag);
             Assert.Equal(expected, actual);
         }
 
@@ -139,7 +139,7 @@ namespace Dicom
 #else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
 #endif
-            Assert.True(dataset.Get<string>(tag).Length > 0);
+            Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
 
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);

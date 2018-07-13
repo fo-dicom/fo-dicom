@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
     using System;
@@ -162,7 +162,7 @@ namespace Dicom.Network
                 for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await Task.WhenAny(task, Task.Delay(10000));
+                await Task.WhenAny(task, Task.Delay(30000));
 
                 Assert.Equal(expected, actual);
             }
@@ -253,7 +253,7 @@ namespace Dicom.Network
 
                 var actual = client.WaitForAssociation(10000);
                 task.Wait(10000);
-                Assert.Equal(true, actual);
+                Assert.True(actual);
             }
         }
 
@@ -269,7 +269,7 @@ namespace Dicom.Network
 
                 var actual = client.WaitForAssociation(1);
                 task.Wait(1000);
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -286,7 +286,7 @@ namespace Dicom.Network
                 client.Abort();
                 var actual = client.WaitForAssociation(1000);
 
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -302,7 +302,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(10000);
                 task.Wait(10000);
-                Assert.Equal(true, actual);
+                Assert.True(actual);
             }
         }
 
@@ -318,7 +318,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(1);
                 task.Wait(1000);
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -335,7 +335,7 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(500);
 
-                Assert.Equal(false, actual);
+                Assert.False(actual);
             }
         }
 
@@ -420,15 +420,19 @@ namespace Dicom.Network
             int port = Ports.GetNext();
             using (DicomServer.Create<MockCEchoProvider>(port))
             {
+                Task task = null;
                 var client = new DicomClient();
+                client.AssociationAccepted += HandleAssociationAccepted;
                 client.AddRequest(new DicomCEchoRequest());
-                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                client.WaitForAssociation();
+                void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
+                {
+                    (sender as DicomClient).ReleaseAsync().Wait();
+                    Thread.Sleep(10);
+                    Assert.True(task.IsCompleted);
+                }
 
-                await client.ReleaseAsync();
-                Thread.Sleep(10);
-                Assert.True(task.IsCompleted);
             }
         }
 

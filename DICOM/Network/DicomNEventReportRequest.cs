@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -46,14 +46,8 @@ namespace Dicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get
-            {
-                return Command.Get<DicomUID>(DicomTag.AffectedSOPInstanceUID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
-            }
+            get => Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+            private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -61,14 +55,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort EventTypeID
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.EventTypeID);
-            }
-            private set
-            {
-                Command.AddOrUpdate(DicomTag.EventTypeID, value);
-            }
+            get => Command.GetSingleValue<ushort>(DicomTag.EventTypeID);
+            private set => Command.AddOrUpdate(DicomTag.EventTypeID, value);
         }
 
         #endregion
@@ -100,10 +88,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomNEventReportResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomNEventReportResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Reader
@@ -17,7 +17,7 @@ namespace Dicom.IO.Reader
         #region Unit tests
 
         [Theory]
-        [MemberData("ValidExplicitVRData")]
+        [MemberData(nameof(ValidExplicitVRData))]
         public void Read_ValidExplicitVRData_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
@@ -34,7 +34,7 @@ namespace Dicom.IO.Reader
         }
 
         [Theory]
-        [MemberData("ValidExplicitVRSequences")]
+        [MemberData(nameof(ValidExplicitVRSequences))]
         public void Read_ValidExplicitVRSequence_YieldsSuccess(byte[] bytes)
         {
             var stream = new MemoryStream(bytes);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.Network;
@@ -29,24 +29,33 @@ namespace Dicom
         {
             Version = new byte[] { 0x00, 0x01 };
 
-            MediaStorageSOPClassUID = dataset.Get<DicomUID>(DicomTag.SOPClassUID);
-            MediaStorageSOPInstanceUID = dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+            MediaStorageSOPClassUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID);
+            MediaStorageSOPInstanceUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             TransferSyntax = dataset.InternalTransferSyntax;
 
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var aet = CreateSourceApplicationEntityTitle();
+            var aet = dataset.Contains(DicomTag.SourceApplicationEntityTitle) ?
+                dataset.Get<string>(DicomTag.SourceApplicationEntityTitle) : null;
             if (aet != null) SourceApplicationEntityTitle = aet;
 
-            if (dataset.Contains(DicomTag.SendingApplicationEntityTitle))
-                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.SendingApplicationEntityTitle);
-            if (dataset.Contains(DicomTag.ReceivingApplicationEntityTitle))
-                SendingApplicationEntityTitle = dataset.Get<string>(DicomTag.ReceivingApplicationEntityTitle);
-            if (dataset.Contains(DicomTag.PrivateInformationCreatorUID))
-                PrivateInformationCreatorUID = dataset.Get<DicomUID>(DicomTag.PrivateInformationCreatorUID);
-            if (dataset.Contains(DicomTag.PrivateInformation))
-                PrivateInformation = dataset.Get<byte[]>(DicomTag.PrivateInformation);
+            if (dataset.TryGetSingleValue(DicomTag.SendingApplicationEntityTitle, out string sendingAETVal))
+            {
+                SendingApplicationEntityTitle = sendingAETVal;
+            }
+            if (dataset.TryGetSingleValue(DicomTag.ReceivingApplicationEntityTitle, out string receivingAETVal))
+            {
+                ReceivingApplicationEntityTitle = receivingAETVal;
+            }
+            if (dataset.TryGetSingleValue(DicomTag.PrivateInformationCreatorUID, out DicomUID privInfoCreator))
+            {
+                PrivateInformationCreatorUID = privInfoCreator;
+            }
+            if (dataset.TryGetValues(DicomTag.PrivateInformation, out byte[] privInfo))
+            {
+                PrivateInformation = privInfo;
+            }
         }
 
         /// <summary>
@@ -64,7 +73,8 @@ namespace Dicom
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var aet = CreateSourceApplicationEntityTitle();
+            var aet = metaInfo.Contains(DicomTag.SourceApplicationEntityTitle) ?
+                metaInfo.SourceApplicationEntityTitle : null;
             if (aet != null) SourceApplicationEntityTitle = aet;
 
             if (metaInfo.Contains(DicomTag.SendingApplicationEntityTitle))
@@ -86,14 +96,8 @@ namespace Dicom
         /// </summary>
         public byte[] Version
         {
-            get
-            {
-                return Get<byte[]>(DicomTag.FileMetaInformationVersion);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
-            }
+            get => GetValues<byte>(DicomTag.FileMetaInformationVersion);
+            set => AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
         }
 
         /// <summary>
@@ -101,14 +105,8 @@ namespace Dicom
         /// </summary>
         public DicomUID MediaStorageSOPClassUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.MediaStorageSOPClassUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPClassUID);
+            set => AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
         }
 
         /// <summary>
@@ -116,14 +114,8 @@ namespace Dicom
         /// </summary>
         public DicomUID MediaStorageSOPInstanceUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPInstanceUID);
+            set => AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
         }
 
         /// <summary>
@@ -131,14 +123,8 @@ namespace Dicom
         /// </summary>
         public DicomTransferSyntax TransferSyntax
         {
-            get
-            {
-                return Get<DicomTransferSyntax>(DicomTag.TransferSyntaxUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
-            }
+            get => GetSingleValue<DicomTransferSyntax>(DicomTag.TransferSyntaxUID);
+            set => AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
         }
 
         /// <summary>
@@ -146,14 +132,8 @@ namespace Dicom
         /// </summary>
         public DicomUID ImplementationClassUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.ImplementationClassUID);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ImplementationClassUID, value);
-            }
+            get => GetSingleValue<DicomUID>(DicomTag.ImplementationClassUID);
+            set => AddOrUpdate(DicomTag.ImplementationClassUID, value);
         }
 
         /// <summary>
@@ -161,14 +141,8 @@ namespace Dicom
         /// </summary>
         public string ImplementationVersionName
         {
-            get
-            {
-                return Get<string>(DicomTag.ImplementationVersionName, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ImplementationVersionName, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.ImplementationVersionName, null);
+            set => AddOrUpdate(DicomTag.ImplementationVersionName, value);
         }
 
         /// <summary>
@@ -176,14 +150,8 @@ namespace Dicom
         /// </summary>
         public string SourceApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.SourceApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.SourceApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.SourceApplicationEntityTitle, value);
         }
 
         /// <summary>
@@ -191,14 +159,8 @@ namespace Dicom
         /// </summary>
         public string SendingApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.SendingApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.SendingApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.SendingApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.SendingApplicationEntityTitle, value);
         }
 
         /// <summary>
@@ -206,14 +168,8 @@ namespace Dicom
         /// </summary>
         public string ReceivingApplicationEntityTitle
         {
-            get
-            {
-                return Get<string>(DicomTag.ReceivingApplicationEntityTitle, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.ReceivingApplicationEntityTitle, value);
-            }
+            get => GetSingleValueOrDefault<string>(DicomTag.ReceivingApplicationEntityTitle, null);
+            set => AddOrUpdate(DicomTag.ReceivingApplicationEntityTitle, value);
         }
 
         /// <summary>
@@ -221,14 +177,8 @@ namespace Dicom
         /// </summary>
         public DicomUID PrivateInformationCreatorUID
         {
-            get
-            {
-                return Get<DicomUID>(DicomTag.PrivateInformationCreatorUID, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.PrivateInformationCreatorUID, value);
-            }
+            get => GetSingleValueOrDefault<DicomUID>(DicomTag.PrivateInformationCreatorUID, null);
+            set => AddOrUpdate(DicomTag.PrivateInformationCreatorUID, value);
         }
 
         /// <summary>
@@ -237,14 +187,8 @@ namespace Dicom
         /// </summary>
         public byte[] PrivateInformation
         {
-            get
-            {
-                return Get<byte[]>(DicomTag.PrivateInformation, null);
-            }
-            set
-            {
-                AddOrUpdate(DicomTag.PrivateInformation, value);
-            }
+            get => TryGetValues(DicomTag.PrivateInformation, out byte[] dummy) ? dummy : null;
+            set => AddOrUpdate(DicomTag.PrivateInformation, value);
         }
 
         #endregion
@@ -269,7 +213,7 @@ namespace Dicom
         /// <returns>
         /// The machine name truncated to a maximum of 16 characters.
         /// </returns>
-        private static string CreateSourceApplicationEntityTitle()
+        public static string CreateSourceApplicationEntityTitle()
         {
             var machine = NetworkManager.MachineName;
             if (machine != null && machine.Length > 16)

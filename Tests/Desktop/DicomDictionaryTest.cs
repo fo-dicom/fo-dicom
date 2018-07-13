@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -44,7 +44,7 @@ namespace Dicom
         #region Unit tests
 
         [Theory]
-        [MemberData("Tags")]
+        [MemberData(nameof(Tags))]
         public void Default_Item_ExistingTag_EntryFound(DicomTag tag)
         {
             var entry = DicomDictionary.Default[tag];
@@ -52,7 +52,7 @@ namespace Dicom
         }
 
         [Theory]
-        [MemberData("Tags")]
+        [MemberData(nameof(Tags))]
         public void Constructor_NoExplicitLoading_TagsNotFound(DicomTag tag)
         {
             var dict = new DicomDictionary();

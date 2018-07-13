@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -63,6 +63,20 @@ namespace Dicom
             metaInfo.Remove(DicomTag.SourceApplicationEntityTitle);
 
             var exception = Record.Exception(() => { Assert.Null(metaInfo.SourceApplicationEntityTitle); });
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void SourceApplicationEntityTitle_GetterWhenAttributeAlreadyExists_ReturnsValue()
+        {
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                        new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"))
+                        .Add(DicomTag.SourceApplicationEntityTitle, "ABCDEFG"));
+
+            var exception = Record.Exception(() => { Assert.Equal(metaInfo.SourceApplicationEntityTitle, "ABCDEFG"); });
             Assert.Null(exception);
         }
 

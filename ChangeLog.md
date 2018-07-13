@@ -1,4 +1,9 @@
-#### v.4.0.0 (TBD)
+#### v.4.0.1 (TBD)
+* Update Json DS validation regex (#643)
+* DicomFileMetaInformation now uses pre-existing SourceAET where possible 
+
+#### v.4.0.0-rc1 (5/22/2018)
+* Demonstrate and fix error in RLELossless Transfer Syntax Codec
 * Fixing 2 UWP Networking Bugs (#636, #637)
 * Add List of known Private UID's (#589)
 * DicomReader: Prevent premature exit from privateBadSequence when private sequence contains sub-sequence (#565 #626)
@@ -36,7 +41,7 @@
 * Support for anonymization, deflated and compressed transfer syntaxes on Unity (#496)
 * Support for up to 16 bit JPEG 2000 codecs on Android, iOS, Mono and .NET Core (#496)
 * Added missing encodings for .NET Core (#481 #486)
-* Update to latest DICOM Standard 2017c (#480 #482 #536 #537 #555 #559)
+* Update to latest DICOM Standard 2018b (#480 #482 #536 #537 #555 #559 #619 #676)
 * Convert .NET Core projects to use VS 2017 .csproj project files (#470 #473)
 * Add TextWriterLogger (#461 #542)
 * Call to DicomServer.Stop does not remove all clients (#456 #464)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -356,6 +356,9 @@ namespace Dicom
         ///<summary>(0008,0062) VR=UI VM=1-n SOP Classes in Study</summary>
         public readonly static DicomTag SOPClassesInStudy = new DicomTag(0x0008, 0x0062);
 
+        ///<summary>(0008,0063) VR=SQ VM=1 Anatomic Regions in Study Code Sequence</summary>
+        public readonly static DicomTag AnatomicRegionsInStudyCodeSequence = new DicomTag(0x0008, 0x0063);
+
         ///<summary>(0008,0064) VR=CS VM=1 Conversion Type</summary>
         public readonly static DicomTag ConversionType = new DicomTag(0x0008, 0x0064);
 
@@ -641,6 +644,9 @@ namespace Dicom
         ///<summary>(0008,1155) VR=UI VM=1 Referenced SOP Instance UID</summary>
         public readonly static DicomTag ReferencedSOPInstanceUID = new DicomTag(0x0008, 0x1155);
 
+        ///<summary>(0008,1156) VR=SQ VM=1 Definition Source Sequence</summary>
+        public readonly static DicomTag DefinitionSourceSequence = new DicomTag(0x0008, 0x1156);
+
         ///<summary>(0008,115A) VR=UI VM=1-n SOP Classes Supported</summary>
         public readonly static DicomTag SOPClassesSupported = new DicomTag(0x0008, 0x115A);
 
@@ -761,8 +767,8 @@ namespace Dicom
         ///<summary>(0008,2228) VR=SQ VM=1 Primary Anatomic Structure Sequence</summary>
         public readonly static DicomTag PrimaryAnatomicStructureSequence = new DicomTag(0x0008, 0x2228);
 
-        ///<summary>(0008,2229) VR=SQ VM=1 Anatomic Structure, Space or Region Sequence</summary>
-        public readonly static DicomTag AnatomicStructureSpaceOrRegionSequence = new DicomTag(0x0008, 0x2229);
+        ///<summary>(0008,2229) VR=SQ VM=1 Anatomic Structure, Space or Region Sequence (RETIRED)</summary>
+        public readonly static DicomTag AnatomicStructureSpaceOrRegionSequenceRETIRED = new DicomTag(0x0008, 0x2229);
 
         ///<summary>(0008,2230) VR=SQ VM=1 Primary Anatomic Structure Modifier Sequence</summary>
         public readonly static DicomTag PrimaryAnatomicStructureModifierSequence = new DicomTag(0x0008, 0x2230);
@@ -1126,6 +1132,12 @@ namespace Dicom
 
         ///<summary>(0012,0051) VR=ST VM=1 Clinical Trial Time Point Description</summary>
         public readonly static DicomTag ClinicalTrialTimePointDescription = new DicomTag(0x0012, 0x0051);
+
+        ///<summary>(0012,0052) VR=FD VM=1 Longitudinal Temporal Offset from Event</summary>
+        public readonly static DicomTag LongitudinalTemporalOffsetFromEvent = new DicomTag(0x0012, 0x0052);
+
+        ///<summary>(0012,0053) VR=CS VM=1 Longitudinal Temporal Event Type</summary>
+        public readonly static DicomTag LongitudinalTemporalEventType = new DicomTag(0x0012, 0x0053);
 
         ///<summary>(0012,0060) VR=LO VM=1 Clinical Trial Coordinating Center Name</summary>
         public readonly static DicomTag ClinicalTrialCoordinatingCenterName = new DicomTag(0x0012, 0x0060);
@@ -2243,8 +2255,14 @@ namespace Dicom
         ///<summary>(0018,11A2) VR=DS VM=1 Compression Force</summary>
         public readonly static DicomTag CompressionForce = new DicomTag(0x0018, 0x11A2);
 
+        ///<summary>(0018,11A3) VR=DS VM=1 Compression Pressure</summary>
+        public readonly static DicomTag CompressionPressure = new DicomTag(0x0018, 0x11A3);
+
         ///<summary>(0018,11A4) VR=LO VM=1 Paddle Description</summary>
         public readonly static DicomTag PaddleDescription = new DicomTag(0x0018, 0x11A4);
+
+        ///<summary>(0018,11A5) VR=DS VM=1 Compression Contact Area</summary>
+        public readonly static DicomTag CompressionContactArea = new DicomTag(0x0018, 0x11A5);
 
         ///<summary>(0018,1200) VR=DA VM=1-n Date of Last Calibration</summary>
         public readonly static DicomTag DateOfLastCalibration = new DicomTag(0x0018, 0x1200);
@@ -6473,11 +6491,11 @@ namespace Dicom
         ///<summary>(0040,0296) VR=SQ VM=1 Billing Item Sequence</summary>
         public readonly static DicomTag BillingItemSequence = new DicomTag(0x0040, 0x0296);
 
-        ///<summary>(0040,0300) VR=US VM=1 Total Time of Fluoroscopy</summary>
-        public readonly static DicomTag TotalTimeOfFluoroscopy = new DicomTag(0x0040, 0x0300);
+        ///<summary>(0040,0300) VR=US VM=1 Total Time of Fluoroscopy (RETIRED)</summary>
+        public readonly static DicomTag TotalTimeOfFluoroscopyRETIRED = new DicomTag(0x0040, 0x0300);
 
-        ///<summary>(0040,0301) VR=US VM=1 Total Number of Exposures</summary>
-        public readonly static DicomTag TotalNumberOfExposures = new DicomTag(0x0040, 0x0301);
+        ///<summary>(0040,0301) VR=US VM=1 Total Number of Exposures (RETIRED)</summary>
+        public readonly static DicomTag TotalNumberOfExposuresRETIRED = new DicomTag(0x0040, 0x0301);
 
         ///<summary>(0040,0302) VR=US VM=1 Entrance Dose</summary>
         public readonly static DicomTag EntranceDose = new DicomTag(0x0040, 0x0302);
@@ -6491,8 +6509,8 @@ namespace Dicom
         ///<summary>(0040,0307) VR=DS VM=1 Distance Source to Support (RETIRED)</summary>
         public readonly static DicomTag DistanceSourceToSupportRETIRED = new DicomTag(0x0040, 0x0307);
 
-        ///<summary>(0040,030E) VR=SQ VM=1 Exposure Dose Sequence</summary>
-        public readonly static DicomTag ExposureDoseSequence = new DicomTag(0x0040, 0x030E);
+        ///<summary>(0040,030E) VR=SQ VM=1 Exposure Dose Sequence (RETIRED)</summary>
+        public readonly static DicomTag ExposureDoseSequenceRETIRED = new DicomTag(0x0040, 0x030E);
 
         ///<summary>(0040,0310) VR=ST VM=1 Comments on Radiation Dose</summary>
         public readonly static DicomTag CommentsOnRadiationDose = new DicomTag(0x0040, 0x0310);
@@ -6604,6 +6622,9 @@ namespace Dicom
 
         ///<summary>(0040,06FA) VR=LO VM=1 Slide Identifier (RETIRED)</summary>
         public readonly static DicomTag SlideIdentifierRETIRED = new DicomTag(0x0040, 0x06FA);
+
+        ///<summary>(0040,0710) VR=SQ VM=1 Whole Slide Microscopy Image Frame Type Sequence</summary>
+        public readonly static DicomTag WholeSlideMicroscopyImageFrameTypeSequence = new DicomTag(0x0040, 0x0710);
 
         ///<summary>(0040,071A) VR=SQ VM=1 Image Center Point Coordinates Sequence</summary>
         public readonly static DicomTag ImageCenterPointCoordinatesSequence = new DicomTag(0x0040, 0x071A);
@@ -6743,8 +6764,11 @@ namespace Dicom
         ///<summary>(0040,4006) VR=CS VM=1 Multiple Copies Flag (RETIRED)</summary>
         public readonly static DicomTag MultipleCopiesFlagRETIRED = new DicomTag(0x0040, 0x4006);
 
-        ///<summary>(0040,4007) VR=SQ VM=1 Performed Processing Applications Code Sequence</summary>
-        public readonly static DicomTag PerformedProcessingApplicationsCodeSequence = new DicomTag(0x0040, 0x4007);
+        ///<summary>(0040,4007) VR=SQ VM=1 Performed Processing Applications Code Sequence (RETIRED)</summary>
+        public readonly static DicomTag PerformedProcessingApplicationsCodeSequenceRETIRED = new DicomTag(0x0040, 0x4007);
+
+        ///<summary>(0040,4008) VR=DT VM=1 Scheduled Procedure Step Expiration DateTime</summary>
+        public readonly static DicomTag ScheduledProcedureStepExpirationDateTime = new DicomTag(0x0040, 0x4008);
 
         ///<summary>(0040,4009) VR=SQ VM=1 Human Performer Code Sequence</summary>
         public readonly static DicomTag HumanPerformerCodeSequence = new DicomTag(0x0040, 0x4009);
@@ -7703,6 +7727,12 @@ namespace Dicom
         ///<summary>(0048,0301) VR=CS VM=1 Pixel Origin Interpretation</summary>
         public readonly static DicomTag PixelOriginInterpretation = new DicomTag(0x0048, 0x0301);
 
+        ///<summary>(0048,0302) VR=UL VM=1 Number of Optical Paths</summary>
+        public readonly static DicomTag NumberOfOpticalPaths = new DicomTag(0x0048, 0x0302);
+
+        ///<summary>(0048,0303) VR=UL VM=1 Total Pixel Matrix Focal Planes</summary>
+        public readonly static DicomTag TotalPixelMatrixFocalPlanes = new DicomTag(0x0048, 0x0303);
+
         ///<summary>(0050,0004) VR=CS VM=1 Calibration Image</summary>
         public readonly static DicomTag CalibrationImage = new DicomTag(0x0050, 0x0004);
 
@@ -8588,6 +8618,15 @@ namespace Dicom
         ///<summary>(0068,6620) VR=FD VM=3 3D Plane Normal</summary>
         public readonly static DicomTag ThreeDPlaneNormal = new DicomTag(0x0068, 0x6620);
 
+        ///<summary>(0068,7001) VR=CS VM=1 Model Modification</summary>
+        public readonly static DicomTag ModelModification = new DicomTag(0x0068, 0x7001);
+
+        ///<summary>(0068,7002) VR=CS VM=1 Model Mirroring</summary>
+        public readonly static DicomTag ModelMirroring = new DicomTag(0x0068, 0x7002);
+
+        ///<summary>(0068,7003) VR=SQ VM=1 Model Usage Code Sequence</summary>
+        public readonly static DicomTag ModelUsageCodeSequence = new DicomTag(0x0068, 0x7003);
+
         ///<summary>(0070,0001) VR=SQ VM=1 Graphic Annotation Sequence</summary>
         public readonly static DicomTag GraphicAnnotationSequence = new DicomTag(0x0070, 0x0001);
 
@@ -8887,6 +8926,9 @@ namespace Dicom
 
         ///<summary>(0070,031A) VR=UI VM=1 Fiducial UID</summary>
         public readonly static DicomTag FiducialUID = new DicomTag(0x0070, 0x031A);
+
+        ///<summary>(0070,031B) VR=UI VM=1 Referenced Fiducial UID</summary>
+        public readonly static DicomTag ReferencedFiducialUID = new DicomTag(0x0070, 0x031B);
 
         ///<summary>(0070,031C) VR=SQ VM=1 Fiducial Set Sequence</summary>
         public readonly static DicomTag FiducialSetSequence = new DicomTag(0x0070, 0x031C);
@@ -9527,6 +9569,9 @@ namespace Dicom
         ///<summary>(0074,1006) VR=ST VM=1 Procedure Step Progress Description</summary>
         public readonly static DicomTag ProcedureStepProgressDescription = new DicomTag(0x0074, 0x1006);
 
+        ///<summary>(0074,1007) VR=SQ VM=1 Procedure Step Progress Parameters Sequence</summary>
+        public readonly static DicomTag ProcedureStepProgressParametersSequence = new DicomTag(0x0074, 0x1007);
+
         ///<summary>(0074,1008) VR=SQ VM=1 Procedure Step Communications URI Sequence</summary>
         public readonly static DicomTag ProcedureStepCommunicationsURISequence = new DicomTag(0x0074, 0x1008);
 
@@ -9878,10 +9923,10 @@ namespace Dicom
         ///<summary>(0080,0009) VR=SH VM=1 Texture Label</summary>
         public readonly static DicomTag TextureLabel = new DicomTag(0x0080, 0x0009);
 
-        ///<summary>(0080,0010) VR=OF VM=1-n U Value Data</summary>
+        ///<summary>(0080,0010) VR=OF VM=1 U Value Data</summary>
         public readonly static DicomTag UValueData = new DicomTag(0x0080, 0x0010);
 
-        ///<summary>(0080,0011) VR=OF VM=1-n V Value Data</summary>
+        ///<summary>(0080,0011) VR=OF VM=1 V Value Data</summary>
         public readonly static DicomTag VValueData = new DicomTag(0x0080, 0x0011);
 
         ///<summary>(0080,0012) VR=SQ VM=1 Referenced Texture Sequence</summary>
@@ -11198,14 +11243,14 @@ namespace Dicom
         ///<summary>(300A,0086) VR=DS VM=1 Beam Meterset</summary>
         public readonly static DicomTag BeamMeterset = new DicomTag(0x300A, 0x0086);
 
-        ///<summary>(300A,0088) VR=FL VM=1 Beam Dose Point Depth (RETIRED)</summary>
-        public readonly static DicomTag BeamDosePointDepthRETIRED = new DicomTag(0x300A, 0x0088);
+        ///<summary>(300A,0088) VR=FL VM=1 Beam Dose Point Depth</summary>
+        public readonly static DicomTag BeamDosePointDepth = new DicomTag(0x300A, 0x0088);
 
-        ///<summary>(300A,0089) VR=FL VM=1 Beam Dose Point Equivalent Depth (RETIRED)</summary>
-        public readonly static DicomTag BeamDosePointEquivalentDepthRETIRED = new DicomTag(0x300A, 0x0089);
+        ///<summary>(300A,0089) VR=FL VM=1 Beam Dose Point Equivalent Depth</summary>
+        public readonly static DicomTag BeamDosePointEquivalentDepth = new DicomTag(0x300A, 0x0089);
 
-        ///<summary>(300A,008A) VR=FL VM=1 Beam Dose Point SSD (RETIRED)</summary>
-        public readonly static DicomTag BeamDosePointSSDRETIRED = new DicomTag(0x300A, 0x008A);
+        ///<summary>(300A,008A) VR=FL VM=1 Beam Dose Point SSD</summary>
+        public readonly static DicomTag BeamDosePointSSD = new DicomTag(0x300A, 0x008A);
 
         ///<summary>(300A,008B) VR=CS VM=1 Beam Dose Meaning</summary>
         public readonly static DicomTag BeamDoseMeaning = new DicomTag(0x300A, 0x008B);
@@ -11213,14 +11258,14 @@ namespace Dicom
         ///<summary>(300A,008C) VR=SQ VM=1 Beam Dose Verification Control Point Sequence</summary>
         public readonly static DicomTag BeamDoseVerificationControlPointSequence = new DicomTag(0x300A, 0x008C);
 
-        ///<summary>(300A,008D) VR=FL VM=1 Average Beam Dose Point Depth</summary>
-        public readonly static DicomTag AverageBeamDosePointDepth = new DicomTag(0x300A, 0x008D);
+        ///<summary>(300A,008D) VR=FL VM=1 Average Beam Dose Point Depth (RETIRED)</summary>
+        public readonly static DicomTag AverageBeamDosePointDepthRETIRED = new DicomTag(0x300A, 0x008D);
 
-        ///<summary>(300A,008E) VR=FL VM=1 Average Beam Dose Point Equivalent Depth</summary>
-        public readonly static DicomTag AverageBeamDosePointEquivalentDepth = new DicomTag(0x300A, 0x008E);
+        ///<summary>(300A,008E) VR=FL VM=1 Average Beam Dose Point Equivalent Depth (RETIRED)</summary>
+        public readonly static DicomTag AverageBeamDosePointEquivalentDepthRETIRED = new DicomTag(0x300A, 0x008E);
 
-        ///<summary>(300A,008F) VR=FL VM=1 Average Beam Dose Point SSD</summary>
-        public readonly static DicomTag AverageBeamDosePointSSD = new DicomTag(0x300A, 0x008F);
+        ///<summary>(300A,008F) VR=FL VM=1 Average Beam Dose Point SSD (RETIRED)</summary>
+        public readonly static DicomTag AverageBeamDosePointSSDRETIRED = new DicomTag(0x300A, 0x008F);
 
         ///<summary>(300A,0090) VR=CS VM=1 Beam Dose Type</summary>
         public readonly static DicomTag BeamDoseType = new DicomTag(0x300A, 0x0090);
@@ -11230,6 +11275,9 @@ namespace Dicom
 
         ///<summary>(300A,0092) VR=CS VM=1 Alternate Beam Dose Type</summary>
         public readonly static DicomTag AlternateBeamDoseType = new DicomTag(0x300A, 0x0092);
+
+        ///<summary>(300A,0093) VR=CS VM=1 Depth Value Averaging Flag</summary>
+        public readonly static DicomTag DepthValueAveragingFlag = new DicomTag(0x300A, 0x0093);
 
         ///<summary>(300A,00A0) VR=IS VM=1 Number of Brachy Application Setups</summary>
         public readonly static DicomTag NumberOfBrachyApplicationSetups = new DicomTag(0x300A, 0x00A0);
@@ -11779,6 +11827,18 @@ namespace Dicom
 
         ///<summary>(300A,026C) VR=DS VM=1 Brachy Accessory Device Nominal Transmission</summary>
         public readonly static DicomTag BrachyAccessoryDeviceNominalTransmission = new DicomTag(0x300A, 0x026C);
+
+        ///<summary>(300A,0271) VR=DS VM=1 Channel Effective Length</summary>
+        public readonly static DicomTag ChannelEffectiveLength = new DicomTag(0x300A, 0x0271);
+
+        ///<summary>(300A,0272) VR=DS VM=1 Channel Inner Length</summary>
+        public readonly static DicomTag ChannelInnerLength = new DicomTag(0x300A, 0x0272);
+
+        ///<summary>(300A,0273) VR=SH VM=1 Afterloader Channel ID</summary>
+        public readonly static DicomTag AfterloaderChannelID = new DicomTag(0x300A, 0x0273);
+
+        ///<summary>(300A,0274) VR=DS VM=1 Source Applicator Tip Length</summary>
+        public readonly static DicomTag SourceApplicatorTipLength = new DicomTag(0x300A, 0x0274);
 
         ///<summary>(300A,0280) VR=SQ VM=1 Channel Sequence</summary>
         public readonly static DicomTag ChannelSequence = new DicomTag(0x300A, 0x0280);

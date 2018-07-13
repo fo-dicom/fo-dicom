@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -61,14 +61,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int Rows
         {
-            get
-            {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayRows));
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayRows), (ushort)value);
-            }
+            get => Dataset.GetSingleValue<ushort>(OverlayTag(DicomTag.OverlayRows));
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayRows), (ushort)value);
         }
 
         /// <summary>
@@ -76,14 +70,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int Columns
         {
-            get
-            {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayColumns));
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayColumns), (ushort)value);
-            }
+            get => Dataset.GetSingleValue<ushort>(OverlayTag(DicomTag.OverlayColumns));
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayColumns), (ushort)value);
         }
 
         /// <summary>
@@ -93,7 +81,7 @@ namespace Dicom.Imaging
         {
             get
             {
-                var type = Dataset.Get<string>(OverlayTag(DicomTag.OverlayType));
+                var type = Dataset.GetSingleValue<string>(OverlayTag(DicomTag.OverlayType));
                 if (type.StartsWith("R")) return DicomOverlayType.ROI;
                 if (type.StartsWith("G")) return DicomOverlayType.Graphics;
                 throw new DicomImagingException("Unsupported overlay type: {0}", type);
@@ -111,14 +99,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int BitsAllocated
         {
-            get
-            {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayBitsAllocated), 0, 1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitsAllocated), (ushort)value);
-            }
+            get => Dataset.GetValueOrDefault<ushort>(OverlayTag(DicomTag.OverlayBitsAllocated), 0, 1);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitsAllocated), (ushort)value);
         }
 
         /// <summary>
@@ -126,14 +108,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int BitPosition
         {
-            get
-            {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0, 0);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitPosition), (ushort)value);
-            }
+            get => Dataset.GetValueOrDefault<ushort>(OverlayTag(DicomTag.OverlayBitPosition), 0, 0);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayBitPosition), (ushort)value);
         }
 
         /// <summary>
@@ -141,14 +117,8 @@ namespace Dicom.Imaging
         /// </summary>
         public string Description
         {
-            get
-            {
-                return Dataset.Get(OverlayTag(DicomTag.OverlayDescription), string.Empty);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayDescription), value);
-            }
+            get => Dataset.GetSingleValueOrDefault(OverlayTag(DicomTag.OverlayDescription), string.Empty);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayDescription), value);
         }
 
         /// <summary>
@@ -156,14 +126,8 @@ namespace Dicom.Imaging
         /// </summary>
         public string Subtype
         {
-            get
-            {
-                return Dataset.Get(OverlayTag(DicomTag.OverlaySubtype), string.Empty);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlaySubtype), value);
-            }
+            get => Dataset.GetSingleValueOrDefault(OverlayTag(DicomTag.OverlaySubtype), string.Empty);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlaySubtype), value);
         }
 
         /// <summary>
@@ -171,14 +135,8 @@ namespace Dicom.Imaging
         /// </summary>
         public string Label
         {
-            get
-            {
-                return Dataset.Get(OverlayTag(DicomTag.OverlayLabel), string.Empty);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayLabel), value);
-            }
+            get => Dataset.GetSingleValueOrDefault(OverlayTag(DicomTag.OverlayLabel), string.Empty);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayLabel), value);
         }
 
         /// <summary>
@@ -186,14 +144,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int NumberOfFrames
         {
-            get
-            {
-                return Dataset.Get(OverlayTag(DicomTag.NumberOfFramesInOverlay), 0, 1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.NumberOfFramesInOverlay), value);
-            }
+            get => Dataset.GetValueOrDefault(OverlayTag(DicomTag.NumberOfFramesInOverlay), 0, 1);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.NumberOfFramesInOverlay), value);
         }
 
         /// <summary>
@@ -201,14 +153,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int OriginFrame
         {
-            get
-            {
-                return Dataset.Get<ushort>(OverlayTag(DicomTag.ImageFrameOrigin), 0, 1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.ImageFrameOrigin), (ushort)value);
-            }
+            get => Dataset.GetValueOrDefault<ushort>(OverlayTag(DicomTag.ImageFrameOrigin), 0, 1);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.ImageFrameOrigin), (ushort)value);
         }
 
         /// <summary>
@@ -216,14 +162,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int OriginX
         {
-            get
-            {
-                return Dataset.Get<short>(OverlayTag(DicomTag.OverlayOrigin), 0, 1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginY);
-            }
+            get => Dataset.GetValueOrDefault<short>(OverlayTag(DicomTag.OverlayOrigin), 0, 1);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginY);
         }
 
         /// <summary>
@@ -231,14 +171,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int OriginY
         {
-            get
-            {
-                return Dataset.Get<short>(OverlayTag(DicomTag.OverlayOrigin), 1, 1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)OriginX, (short)value);
-            }
+            get => Dataset.GetValueOrDefault<short>(OverlayTag(DicomTag.OverlayOrigin), 1, 1);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)OriginX, (short)value);
         }
 
         /// <summary>
@@ -246,14 +180,8 @@ namespace Dicom.Imaging
         /// </summary>
         public IByteBuffer Data
         {
-            get
-            {
-                return Load();
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomOtherWord(OverlayTag(DicomTag.OverlayData), value));
-            }
+            get => Load();
+            set => Dataset.AddOrUpdate(new DicomOtherWord(OverlayTag(DicomTag.OverlayData), value));
         }
 
         #endregion
@@ -294,10 +222,10 @@ namespace Dicom.Imaging
             foreach (var group in groups)
             {
                 // ensure that 6000 group is actually an overlay group, including containing bare minimum of attributes.
-                if (ds.Get<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US ||
-                    string.IsNullOrEmpty(ds.Get<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
-                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
-                   ds.Get<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0) continue;
+                if (ds.GetDicomItem<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US ||
+                    string.IsNullOrEmpty(ds.GetSingleValueOrDefault<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
+                   ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
+                   ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0) continue;
 
                 var overlay = new DicomOverlayData(ds, group);
                 overlays.Add(overlay);

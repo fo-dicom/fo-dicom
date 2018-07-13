@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Media
@@ -36,7 +36,7 @@ namespace Dicom.Media
         /// Gets the root directory record collection.
         /// </summary>
         public DicomDirectoryRecordCollection RootDirectoryRecordCollection
-            => new DicomDirectoryRecordCollection(this.RootDirectoryRecord);
+            => new DicomDirectoryRecordCollection(RootDirectoryRecord);
 
         /// <summary>
         /// Gets or sets the file set ID.
@@ -44,13 +44,10 @@ namespace Dicom.Media
         /// <exception cref="ArgumentException">If applied file set ID is null or empty.</exception>
         public string FileSetID
         {
-            get
-            {
-                return Dataset.Get<string>(DicomTag.FileSetID);
-            }
+            get => Dataset.GetSingleValue<string>(DicomTag.FileSetID);
             set
             {
-                if (!string.IsNullOrEmpty(value?.Trim()))
+                if (!string.IsNullOrWhiteSpace(value))
                 {
                     Dataset.AddOrUpdate(DicomTag.FileSetID, value);
                 }
@@ -66,14 +63,8 @@ namespace Dicom.Media
         /// </summary>
         public string SourceApplicationEntityTitle
         {
-            get
-            {
-                return FileMetaInfo.SourceApplicationEntityTitle;
-            }
-            set
-            {
-                FileMetaInfo.SourceApplicationEntityTitle = value;
-            }
+            get => FileMetaInfo.SourceApplicationEntityTitle;
+            set => FileMetaInfo.SourceApplicationEntityTitle = value;
         }
 
         /// <summary>
@@ -81,14 +72,8 @@ namespace Dicom.Media
         /// </summary>
         public DicomUID MediaStorageSOPInstanceUID
         {
-            get
-            {
-                return FileMetaInfo.MediaStorageSOPInstanceUID;
-            }
-            set
-            {
-                FileMetaInfo.MediaStorageSOPInstanceUID = value;
-            }
+            get => FileMetaInfo.MediaStorageSOPInstanceUID;
+            set => FileMetaInfo.MediaStorageSOPInstanceUID = value;
         }
 
         #endregion
@@ -112,10 +97,10 @@ namespace Dicom.Media
 
             _directoryRecordSequence = new DicomSequence(DicomTag.DirectoryRecordSequence);
 
-            Dataset.Add<string>(DicomTag.FileSetID, string.Empty)
+            Dataset.Add(DicomTag.FileSetID, string.Empty)
                 .Add<ushort>(DicomTag.FileSetConsistencyFlag, 0)
-                .Add<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0)
-                .Add<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0)
+                .Add(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U)
+                .Add(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U)
                 .Add(_directoryRecordSequence);
         }
 
@@ -369,7 +354,7 @@ namespace Dicom.Media
 
                 SetOffsets(RootDirectoryRecord);
 
-                Dataset.AddOrUpdate<uint>(
+                Dataset.AddOrUpdate(
                     DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity,
                     RootDirectoryRecord.Offset);
 
@@ -377,12 +362,12 @@ namespace Dicom.Media
 
                 while (lastRoot.NextDirectoryRecord != null) lastRoot = lastRoot.NextDirectoryRecord;
 
-                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
+                Dataset.AddOrUpdate(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
             }
             else
             {
-                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0);
-                Dataset.AddOrUpdate<uint>(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0);
+                Dataset.AddOrUpdate(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U);
+                Dataset.AddOrUpdate(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U);
             }
         }
 
@@ -392,7 +377,7 @@ namespace Dicom.Media
 
         private void CalculateOffsets(DicomWriteLengthCalculator calculator)
         {
-            foreach (var item in Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence))
+            foreach (var item in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence))
             {
                 var record = item as DicomDirectoryRecord;
                 if (record == null) throw new InvalidOperationException("Unexpected type for directory record: " + item.GetType());
@@ -413,24 +398,24 @@ namespace Dicom.Media
         {
             if (record.NextDirectoryRecord != null)
             {
-                record.AddOrUpdate<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
+                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
                 SetOffsets(record.NextDirectoryRecord);
             }
             else
             {
-                record.AddOrUpdate<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, 0);
+                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, 0U);
             }
 
             if (record.LowerLevelDirectoryRecord != null)
             {
-                record.AddOrUpdate<uint>(
+                record.AddOrUpdate(
                     DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity,
                     record.LowerLevelDirectoryRecord.Offset);
                 SetOffsets(record.LowerLevelDirectoryRecord);
             }
             else
             {
-                record.AddOrUpdate<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0);
+                record.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U);
             }
         }
 
@@ -465,12 +450,11 @@ namespace Dicom.Media
             string referencedFileId)
         {
             var currentImage = seriesRecord.LowerLevelDirectoryRecord;
-            var imageInstanceUid = dataset.Get<string>(DicomTag.SOPInstanceUID);
-
+            var imageInstanceUid = dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
 
             while (currentImage != null)
             {
-                if (currentImage.Get<string>(DicomTag.ReferencedSOPInstanceUIDInFile) == imageInstanceUid)
+                if (currentImage.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile) == imageInstanceUid)
                 {
                     return;
                 }
@@ -506,12 +490,11 @@ namespace Dicom.Media
         private DicomDirectoryRecord CreateSeriesRecord(DicomDataset dataset, DicomDirectoryRecord studyRecord)
         {
             var currentSeries = studyRecord.LowerLevelDirectoryRecord;
-            var seriesInstanceUid = dataset.Get<string>(DicomTag.SeriesInstanceUID);
-
+            var seriesInstanceUid = dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID);
 
             while (currentSeries != null)
             {
-                if (currentSeries.Get<string>(DicomTag.SeriesInstanceUID) == seriesInstanceUid)
+                if (currentSeries.GetSingleValue<string>(DicomTag.SeriesInstanceUID) == seriesInstanceUid)
                 {
                     return currentSeries;
                 }
@@ -544,12 +527,11 @@ namespace Dicom.Media
         private DicomDirectoryRecord CreateStudyRecord(DicomDataset dataset, DicomDirectoryRecord patientRecord)
         {
             var currentStudy = patientRecord.LowerLevelDirectoryRecord;
-            var studyInstanceUid = dataset.Get<string>(DicomTag.StudyInstanceUID);
-
+            var studyInstanceUid = dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID);
 
             while (currentStudy != null)
             {
-                if (currentStudy.Get<string>(DicomTag.StudyInstanceUID) == studyInstanceUid)
+                if (currentStudy.GetSingleValue<string>(DicomTag.StudyInstanceUID) == studyInstanceUid)
                 {
                     return currentStudy;
                 }
@@ -580,15 +562,15 @@ namespace Dicom.Media
 
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
-            var patientId = dataset.Get(DicomTag.PatientID, string.Empty);
-            var patientName = dataset.Get(DicomTag.PatientName, string.Empty);
+            var patientId = dataset.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
+            var patientName = dataset.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
 
             var currentPatient = RootDirectoryRecord;
 
             while (currentPatient != null)
             {
-                var currPatId = currentPatient.Get(DicomTag.PatientID, string.Empty);
-                var currPatName = currentPatient.Get(DicomTag.PatientName, string.Empty);
+                var currPatId = currentPatient.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
+                var currPatName = currentPatient.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
 
                 if (currPatId == patientId && currPatName == patientName)
                 {
@@ -629,10 +611,10 @@ namespace Dicom.Media
             var sequenceItem = new DicomDirectoryRecord();
 
             //add record item attributes
-            sequenceItem.Add<uint>(DicomTag.OffsetOfTheNextDirectoryRecord, 0);
+            sequenceItem.Add(DicomTag.OffsetOfTheNextDirectoryRecord, 0U);
             sequenceItem.Add<ushort>(DicomTag.RecordInUseFlag, 0xFFFF);
-            sequenceItem.Add<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0);
-            sequenceItem.Add<string>(DicomTag.DirectoryRecordType, recordType.ToString());
+            sequenceItem.Add(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U);
+            sequenceItem.Add(DicomTag.DirectoryRecordType, recordType.ToString());
 
             //copy the current dataset character set
             sequenceItem.Add(dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet));
@@ -641,7 +623,7 @@ namespace Dicom.Media
             {
                 if (dataset.Contains(tag))
                 {
-                    sequenceItem.Add(dataset.Get<DicomItem>(tag));
+                    sequenceItem.Add(dataset.GetDicomItem<DicomItem>(tag));
                 }
                 else
                 {
@@ -672,7 +654,7 @@ namespace Dicom.Media
 
             df.Dataset.InternalTransferSyntax = reader.Syntax;
 
-            df._directoryRecordSequence = df.Dataset.Get<DicomSequence>(DicomTag.DirectoryRecordSequence);
+            df._directoryRecordSequence = df.Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence);
             df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
 
             return df;

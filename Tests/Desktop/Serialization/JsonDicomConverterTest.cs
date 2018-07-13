@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -139,7 +139,7 @@ namespace Dicom.Serialization
         [Fact]
         public void DecimalStringValuesShouldPass()
         {
-            var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000" } } };
+            var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000", ".03", "-.03" } } };
             VerifyJsonTripleTrip(ds);
         }
 
@@ -184,9 +184,7 @@ namespace Dicom.Serialization
             Assert.Equal("0", (string)obj["00200032"].Value[2]);
 
             // Would be nice, but Json.NET mangles the parsed json. Verify string instead:
-            // Assert.Equal("-0", (string)obj["00200032"].Value[3]);
-            //Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000E+00,-0.0000E+00]}}");
-            Assert.Equal(json, "{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000,0.0000]}}");
+            Assert.Equal("{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000,0.0000]}}", json);
         }
 
         /// <summary>
@@ -199,7 +197,7 @@ namespace Dicom.Serialization
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             dynamic obj = JObject.Parse(json);
             Assert.Equal("1Y", (string)obj["00101010"].Value[0]);
-            Assert.Equal(null, (string)obj["00101010"].Value[1]);
+            Assert.Null((string)obj["00101010"].Value[1]);
             Assert.NotEqual("", (string)obj["00101010"].Value[1]);
             Assert.Equal("3Y", (string)obj["00101010"].Value[2]);
         }
@@ -212,7 +210,7 @@ namespace Dicom.Serialization
         {
             const string json = "{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\" }] } }";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            Assert.Equal("Kalle", reconstituated.Get<string>(DicomTag.PatientName));
+            Assert.Equal("Kalle", reconstituated.GetString(DicomTag.PatientName));
         }
 
         /// <summary>
@@ -375,11 +373,10 @@ namespace Dicom.Serialization
             {
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
             }
-            else if (a is IBulkDataUriByteBuffer)
+            else if (a is IBulkDataUriByteBuffer bufferA)
             {
-                var buffer = b as IBulkDataUriByteBuffer;
-                if (buffer != null)
-                    return ((IBulkDataUriByteBuffer)a).BulkDataUri == buffer.BulkDataUri;
+                if (b is IBulkDataUriByteBuffer bufferB)
+                    return bufferA.BulkDataUri == bufferB.BulkDataUri;
                 else
                     return false;
             }
@@ -533,12 +530,14 @@ namespace Dicom.Serialization
                              { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } },
                            };
 
-            target.Add<DicomSequence>(DicomTag.ControlPointSequence, (DicomSequence[])null);
+            target.Add(DicomTag.ControlPointSequence, (DicomSequence[])null);
             var beams = new[] { 1, 2, 3 }.Select(beamNumber =>
             {
-                var beam = new DicomDataset();
-                beam.Add(DicomTag.BeamNumber, beamNumber);
-                beam.Add(DicomTag.BeamName, string.Format("Beam #{0}", beamNumber));
+                var beam = new DicomDataset
+                {
+                    { DicomTag.BeamNumber, beamNumber },
+                    { DicomTag.BeamName, $"Beam #{beamNumber}" }
+                };
                 return beam;
             }).ToList();
             beams.Insert(1, null);
@@ -582,5 +581,28 @@ namespace Dicom.Serialization
             var x = BuildAllTypesNullDataset_();
             VerifyJsonTripleTrip(x);
         }
+
+
+        [Fact]
+        public static void TestPrivateTagsDeserialization()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privTag1 = new DicomTag(4013, 0x008, privateCreator);
+            var privTag2 = new DicomTag(4013, 0x009, privateCreator);
+
+            var ds = new DicomDataset
+            {
+                { DicomTag.Modality, "CT" },
+                new DicomCodeString(privTag1, "test1"),
+                { privTag2, "test2" },
+            };
+
+            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
+            var ds2 = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.Equal(ds.Get<string>(privTag1), ds2.Get<string>(privTag1));
+            Assert.Equal(ds.Get<string>(privTag2), ds2.Get<string>(privTag2));
+        }
+
     }
 }

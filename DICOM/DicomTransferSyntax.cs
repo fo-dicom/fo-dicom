@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -86,10 +86,20 @@ namespace Dicom
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (obj is DicomTransferSyntax) return ((DicomTransferSyntax)obj).UID.Equals(UID);
-            if (obj is DicomUID) return ((DicomUID)obj).Equals(UID);
-            if (obj is string) return UID.UID.Equals((string)obj);
-            return false;
+            switch(obj)
+            {
+                case DicomTransferSyntax ts:
+                    return ts.UID.Equals(UID);
+
+                case DicomUID uid:
+                    return uid.Equals(UID);
+
+                case string str:
+                    return UID.UID.Equals(str);
+
+                default:
+                    return false;
+            }
         }
 
         /// <inheritdoc />
@@ -657,8 +667,7 @@ namespace Dicom
         {
             if (uid == null) throw new ArgumentNullException(nameof(uid));
 
-            DicomTransferSyntax tx;
-            if (Entries.TryGetValue(uid, out tx)) return tx;
+            if (Entries.TryGetValue(uid, out DicomTransferSyntax tx)) return tx;
 
             if (uid.Type == DicomUidType.TransferSyntax)
             {

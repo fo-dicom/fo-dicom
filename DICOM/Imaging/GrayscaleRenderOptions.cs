@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -69,10 +69,7 @@ namespace Dicom.Imaging
         /// </summary>
         public Color32[] ColorMap
         {
-            get
-            {
-                return _colorMap;
-            }
+            get => _colorMap;
             set
             {
                 if (value == null || value.Length != 256) throw new DicomImagingException("Expected 256 entry color map");
@@ -101,16 +98,16 @@ namespace Dicom.Imaging
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset)
         {
-            if (dataset.Contains(DicomTag.WindowWidth) && dataset.Get<double>(DicomTag.WindowWidth) >= 1.0
+            if (dataset.TryGetSingleValue(DicomTag.WindowWidth, out double windowWidth) && windowWidth >= 1.0
                 && dataset.Contains(DicomTag.WindowCenter))
             {
                 //If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 return FromWindowLevel(dataset);
             }
 
-            if (dataset.Contains(DicomTag.SmallestImagePixelValue) && dataset.Contains(DicomTag.LargestImagePixelValue)
-                && dataset.Get<int>(DicomTag.SmallestImagePixelValue)
-                < dataset.Get<int>(DicomTag.LargestImagePixelValue))
+            if (dataset.TryGetSingleValue(DicomTag.SmallestImagePixelValue, out int smallest) &&
+                dataset.TryGetSingleValue(DicomTag.LargestImagePixelValue, out int largest)
+                && smallest < largest)
             {
                 //If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
                 //WindowWidth and WindowCenter
@@ -134,16 +131,17 @@ namespace Dicom.Imaging
                 return null;
 
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
+            var options = new GrayscaleRenderOptions(bits)
+            {
+                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
+                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0),
 
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
+                WindowWidth = dataset.GetSingleValue<double>(DicomTag.WindowWidth),
+                WindowCenter = dataset.GetSingleValue<double>(DicomTag.WindowCenter),
 
-            options.WindowWidth = dataset.Get<double>(DicomTag.WindowWidth);
-            options.WindowCenter = dataset.Get<double>(DicomTag.WindowCenter);
-
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
-            options.ColorMap = GetColorMap(dataset);
+                VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR"),
+                ColorMap = GetColorMap(dataset)
+            };
 
             return options;
         }
@@ -160,24 +158,25 @@ namespace Dicom.Imaging
                 return null;
 
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
+            var options = new GrayscaleRenderOptions(bits)
+            {
+                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
+                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+            };
 
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
-
-            int smallValue = dataset.Get<int>(DicomTag.SmallestImagePixelValue);
-            int largeValue = dataset.Get<int>(DicomTag.LargestImagePixelValue);
+            int smallValue = dataset.GetSingleValue<int>(DicomTag.SmallestImagePixelValue);
+            int largeValue = dataset.GetSingleValue<int>(DicomTag.LargestImagePixelValue);
 
             if (smallValue >= largeValue)
             {
                 throw new DicomImagingException(
-                    string.Format("Smallest Image Pixel Value ({0}) > Largest Value ({1})", smallValue, largeValue));
+                    $"Smallest Image Pixel Value ({smallValue}) > Largest Value ({largeValue})");
             }
 
             options.WindowWidth = Math.Abs(largeValue - smallValue);
             options.WindowCenter = (largeValue + smallValue) / 2.0;
 
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
+            options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
             return options;
@@ -191,12 +190,13 @@ namespace Dicom.Imaging
         public static GrayscaleRenderOptions FromMinMax(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
+            var options = new GrayscaleRenderOptions(bits)
+            {
+                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
+                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+            };
 
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
-
-            int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
+            int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
 
             var transcoder = new DicomTranscoder(
                 dataset.InternalTransferSyntax,
@@ -214,7 +214,7 @@ namespace Dicom.Imaging
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
+            options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
             return options;
@@ -228,10 +228,11 @@ namespace Dicom.Imaging
         public static GrayscaleRenderOptions FromBitRange(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
-
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
+            var options = new GrayscaleRenderOptions(bits)
+            {
+                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
+                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+            };
 
             var min = bits.MinimumValue * options.RescaleSlope + options.RescaleIntercept;
             var max = bits.MaximumValue * options.RescaleSlope + options.RescaleIntercept;
@@ -239,7 +240,7 @@ namespace Dicom.Imaging
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
+            options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
             return options;
@@ -254,10 +255,11 @@ namespace Dicom.Imaging
         public static GrayscaleRenderOptions FromHistogram(DicomDataset dataset, int percent = 90)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits);
-
-            options.RescaleSlope = dataset.Get<double>(DicomTag.RescaleSlope, 1.0);
-            options.RescaleIntercept = dataset.Get<double>(DicomTag.RescaleIntercept, 0.0);
+            var options = new GrayscaleRenderOptions(bits)
+            {
+                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
+                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+            };
 
             var transcoder = new DicomTranscoder(
                 dataset.InternalTransferSyntax,
@@ -266,8 +268,10 @@ namespace Dicom.Imaging
             var pixels = transcoder.DecodePixelData(dataset, 0);
             var histogram = pixels.GetHistogram(0);
 
-            int padding = dataset.Get<int>(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
-            if (padding != Int32.MinValue) histogram.Clear(padding);
+            if (dataset.TryGetValue(DicomTag.PixelPaddingValue, 0, out int padding))
+            {
+                histogram.Clear(padding);
+            }
 
             histogram.ApplyWindow(percent);
 
@@ -277,7 +281,7 @@ namespace Dicom.Imaging
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
-            options.VOILUTFunction = dataset.Get<string>(DicomTag.VOILUTFunction, "LINEAR");
+            options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
             return options;
@@ -290,7 +294,7 @@ namespace Dicom.Imaging
         /// <returns>Color map associated with the identified Photometric Interpretation.</returns>
         private static Color32[] GetColorMap(DicomDataset dataset)
         {
-            return dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null)
+            return dataset.GetSingleValueOrDefault<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null)
                    == PhotometricInterpretation.Monochrome1
                        ? ColorTable.Monochrome1
                        : ColorTable.Monochrome2;

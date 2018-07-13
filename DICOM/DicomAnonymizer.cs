@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2017 fo-dicom contributors.
+// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -239,7 +239,7 @@ namespace Dicom
             AnonymizeInPlace(file.Dataset);
             if (file.FileMetaInfo != null)
             {
-                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.Get<DicomUID>(DicomTag.SOPInstanceUID);
+                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             }
         }
 

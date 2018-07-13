@@ -1,4 +1,4 @@
-﻿// // Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// // Copyright (c) 2012-2018 fo-dicom contributors.
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
@@ -22,14 +22,14 @@ namespace Dicom.Printing
         [MemberData(nameof(PresentationLuts))]
         public void LutDescriptor_InitialObject_IsEmpty(PresentationLut presentationLut)
         {
-            Assert.Equal(0, presentationLut.LutDescriptor.Length);
+            Assert.Empty(presentationLut.LutDescriptor);
         }
 
         [Theory]
         [MemberData(nameof(PresentationLuts))]
         public void LutData_InitialObject_IsEmpty(PresentationLut presentationLut)
         {
-            Assert.Equal(0, presentationLut.LutData.Length);
+            Assert.Empty(presentationLut.LutData);
         }
 
         [Theory]

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -117,9 +117,9 @@ namespace Dicom.Imaging
         /// <returns>New <seealso cref="BitDepth"/> instance</returns>
         public static BitDepth FromDataset(DicomDataset dataset)
         {
-            var allocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
-            var stored = dataset.Get<ushort>(DicomTag.BitsStored);
-            var signed = dataset.Get<PixelRepresentation>(DicomTag.PixelRepresentation) == PixelRepresentation.Signed;
+            var allocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+            var stored = dataset.GetSingleValue<ushort>(DicomTag.BitsStored);
+            var signed = dataset.GetSingleValue<PixelRepresentation>(DicomTag.PixelRepresentation) == PixelRepresentation.Signed;
             return new BitDepth(allocated, stored, GetHighBit(stored, signed), signed);
         }
 

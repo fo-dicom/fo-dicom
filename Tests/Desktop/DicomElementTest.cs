@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -97,7 +97,7 @@ namespace Dicom
         {
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, 12.345);
             var actual = element.Get<object>();
-            Assert.Equal(actual, 12.345);
+            Assert.Equal(12.345, actual);
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace Dicom
         {
             var element = new DicomFloatingPointDouble(DicomTag.XRayTubeCurrentInmA, 12.345);
             var actual = element.Get<object>();
-            Assert.Equal(actual, 12.345);
+            Assert.Equal(12.345, actual);
         }
 
         [Fact]
@@ -460,7 +460,7 @@ namespace Dicom
 
         #region Support methods
 
-        public void TestDicomDecimalStringGetItem<T>()
+        internal void TestDicomDecimalStringGetItem<T>()
         {
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
@@ -468,7 +468,7 @@ namespace Dicom
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        public void TestDicomDecimalStringGetArray<T>()
+        internal void TestDicomDecimalStringGetArray<T>()
         {
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
@@ -476,7 +476,7 @@ namespace Dicom
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
-        public void TestDicomIntegerStringGetItem<T>()
+        internal void TestDicomIntegerStringGetItem<T>()
         {
             var expected = 45;
             var element = new DicomIntegerString(DicomTag.AttachedContours, 35, expected, 55);
@@ -484,7 +484,7 @@ namespace Dicom
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        public void TestDicomIntegerStringGetArray<T>()
+        internal void TestDicomIntegerStringGetArray<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContours, expected);

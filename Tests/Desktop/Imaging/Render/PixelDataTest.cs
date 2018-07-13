@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.IO.Buffer;
@@ -48,8 +48,8 @@ namespace Dicom.Imaging.Render
                 pixelRepresentation,
                 BitConverter.GetBytes);
 
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataS32), pixelData);
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataS32), pixelData2);
+            Assert.IsType<GrayscalePixelDataS32>(pixelData);
+            Assert.IsType<GrayscalePixelDataS32>(pixelData2);
             var grayscaleData = (GrayscalePixelDataS32)pixelData;
             var grayscaleData2 = (GrayscalePixelDataS32)pixelData2;
             Assert.Equal(origData.Length, grayscaleData.Data.Length);
@@ -91,8 +91,8 @@ namespace Dicom.Imaging.Render
                 pixelRepresentation,
                 BitConverter.GetBytes);
 
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataS16), pixelData);
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataS16), pixelData2);
+            Assert.IsType<GrayscalePixelDataS16>(pixelData);
+            Assert.IsType<GrayscalePixelDataS16>(pixelData2);
             var grayscaleData = (GrayscalePixelDataS16)pixelData;
             var grayscaleData2 = (GrayscalePixelDataS16)pixelData2;
             Assert.Equal(origData.Length, grayscaleData.Data.Length);
@@ -134,8 +134,8 @@ namespace Dicom.Imaging.Render
                 pixelRepresentation,
                 BitConverter.GetBytes);
 
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataU16), pixelData);
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataU16), pixelData2);
+            Assert.IsType<GrayscalePixelDataU16>(pixelData);
+            Assert.IsType<GrayscalePixelDataU16>(pixelData2);
             var grayscaleData = (GrayscalePixelDataU16)pixelData;
             var grayscaleData2 = (GrayscalePixelDataU16)pixelData2;
             Assert.Equal(origData.Length, grayscaleData.Data.Length);
@@ -176,8 +176,8 @@ namespace Dicom.Imaging.Render
                 pixelRepresentation,
                 BitConverter.GetBytes);
 
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataU32), pixelData);
-            Assert.IsAssignableFrom(typeof(GrayscalePixelDataU32), pixelData2);
+            Assert.IsType<GrayscalePixelDataU32>(pixelData);
+            Assert.IsType<GrayscalePixelDataU32>(pixelData2);
             var grayscaleData = (GrayscalePixelDataU32)pixelData;
             var grayscaleData2 = (GrayscalePixelDataU32)pixelData2;
             Assert.Equal(origData.Length, grayscaleData.Data.Length);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Dicom.Media
 
         private Dictionary<uint, DicomDataset> _lookup = new Dictionary<uint, DicomDataset>();
 
-        private DicomDataset _dataset;
+        private readonly DicomDataset _dataset;
 
         public DicomDirectoryReaderObserver(DicomDataset dataset)
         {
@@ -28,7 +28,7 @@ namespace Dicom.Media
         public DicomDirectoryRecord BuildDirectoryRecords()
         {
             uint offset = 0;
-            offset = _dataset.Get<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
+            offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
 
             return ParseDirectoryRecord(offset);
         }
@@ -42,10 +42,10 @@ namespace Dicom.Media
                 record.Offset = offset;
 
                 record.NextDirectoryRecord =
-                    ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
+                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
 
                 record.LowerLevelDirectoryRecord =
-                    ParseDirectoryRecord(record.Get<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity));
+                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity));
             }
 
             return record;
@@ -62,7 +62,7 @@ namespace Dicom.Media
             _currentSequenceTag.Push(tag);
             if (tag == DicomTag.DirectoryRecordSequence)
             {
-                _directoryRecordSequence = _dataset.Get<DicomSequence>(tag);
+                _directoryRecordSequence = _dataset.GetDicomItem<DicomSequence>(tag);
             }
         }
 

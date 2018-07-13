@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -117,7 +117,7 @@ namespace Dicom.Imaging.Render
 
             if (pixelData.BitsStored == 1)
             {
-                if (pixelData.Dataset.Get<DicomUID>(DicomTag.SOPClassUID)
+                if (pixelData.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID)
                     == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
                     // Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
                     return new SingleBitPixelData(

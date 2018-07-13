@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -102,10 +102,7 @@ namespace Dicom.Network
         /// </summary>
         public DicomQueryRetrieveLevel Level
         {
-            get
-            {
-                return Dataset.Get <DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
-            }
+            get => Dataset.GetSingleValue<DicomQueryRetrieveLevel>(DicomTag.QueryRetrieveLevel);
             private set
             {
                 switch (value)
@@ -156,10 +153,11 @@ namespace Dicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCGetResponse)response);
+                OnResponseReceived?.Invoke(this, (DicomCGetResponse)response);
             }
             catch
             {
+                // ignore exception
             }
         }
 

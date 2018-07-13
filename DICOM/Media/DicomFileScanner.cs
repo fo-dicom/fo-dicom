@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Media
@@ -26,13 +26,6 @@ namespace Dicom.Media
         private readonly bool _recursive;
 
         private bool _stop;
-
-        private bool _progressOnDirectory;
-
-        private int _progressAfterCount;
-
-        private bool _checkForValidHeader;
-
         private int _count;
 
         #endregion
@@ -43,8 +36,8 @@ namespace Dicom.Media
         {
             _pattern = null;
             _recursive = true;
-            _progressOnDirectory = true;
-            _progressAfterCount = 10;
+            ProgressOnDirectoryChange = true;
+            ProgressFilesCount = 10;
         }
 
         #endregion
@@ -55,49 +48,19 @@ namespace Dicom.Media
 
         public event DicomScanCompleteCallback Complete;
 
-        #region Public Properties
+      #region Public Properties
 
-        public bool ProgressOnDirectoryChange
-        {
-            get
-            {
-                return _progressOnDirectory;
-            }
-            set
-            {
-                _progressOnDirectory = value;
-            }
-        }
+      public bool ProgressOnDirectoryChange { get; set; }
 
-        public int ProgressFilesCount
-        {
-            get
-            {
-                return _progressAfterCount;
-            }
-            set
-            {
-                _progressAfterCount = value;
-            }
-        }
+      public int ProgressFilesCount { get; set; }
 
-        public bool CheckForValidHeader
-        {
-            get
-            {
-                return _checkForValidHeader;
-            }
-            set
-            {
-                _checkForValidHeader = value;
-            }
-        }
+      public bool CheckForValidHeader { get; set; }
 
-        #endregion
+      #endregion
 
-        #region Public Methods
+      #region Public Methods
 
-        public void Start(string directory)
+      public void Start(string directory)
         {
             _stop = false;
             _count = 0;
@@ -120,14 +83,14 @@ namespace Dicom.Media
         private void ScanProc(string directory)
         {
             ScanDirectory(directory);
-            if (Complete != null) Complete(this);
+            Complete?.Invoke(this);
         }
 
         private void ScanDirectory(string path)
         {
             if (_stop) return;
 
-            if (Progress != null && _progressOnDirectory) Progress(this, path, _count);
+            if (Progress != null && ProgressOnDirectoryChange) Progress(this, path, _count);
 
             try
             {
@@ -141,7 +104,7 @@ namespace Dicom.Media
                     ScanFile(file);
 
                     _count++;
-                    if ((_count % _progressAfterCount) == 0 && Progress != null) Progress(this, path, _count);
+                    if ((_count % ProgressFilesCount) == 0 && Progress != null) Progress(this, path, _count);
                 }
 
                 if (!_recursive) return;
@@ -167,7 +130,7 @@ namespace Dicom.Media
 
                 var df = DicomFile.Open(file);
 
-                if (FileFound != null) FileFound(this, df, file);
+                FileFound?.Invoke(this, df, file);
             }
             catch
             {

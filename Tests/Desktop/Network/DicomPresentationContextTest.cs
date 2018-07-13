@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -92,14 +92,14 @@ namespace Dicom.Network
 
         #region Support Data
 
-        public static readonly IEnumerable<object> ResultsAcceptedTransferSyntaxes = new[]
+        public static readonly IEnumerable<object[]> ResultsAcceptedTransferSyntaxes = new object[][]
         {
             new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.DeflatedExplicitVRLittleEndian },
-            new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEG2000Lossless },
-            new object[] { DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, DicomTransferSyntax.ExplicitVRLittleEndian },
-            new object[] { DicomPresentationContextResult.RejectNoReason, null },
-            new object[] { DicomPresentationContextResult.RejectTransferSyntaxesNotSupported, null },
-            new object[] { DicomPresentationContextResult.RejectUser, DicomTransferSyntax.ExplicitVRLittleEndian }
+           new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEG2000Lossless },
+           new object[] { DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, DicomTransferSyntax.ExplicitVRLittleEndian },
+           new object[] { DicomPresentationContextResult.RejectNoReason, null },
+           new object[] { DicomPresentationContextResult.RejectTransferSyntaxesNotSupported, null },
+           new object[] { DicomPresentationContextResult.RejectUser, DicomTransferSyntax.ExplicitVRLittleEndian }
         };
 
         #endregion

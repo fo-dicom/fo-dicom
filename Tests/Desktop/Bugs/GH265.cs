@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Bugs
@@ -73,7 +73,7 @@ namespace Dicom.Bugs
 
                 Assert.NotEqual(expected.ImplementationClassUID.UID, actual.ImplementationClassUID.UID);
                 Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
-                Assert.NotEqual(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
+                Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
             }
         }
 

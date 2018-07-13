@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -53,14 +53,8 @@ namespace Dicom.Network
         /// </summary>
         public ushort MessageID
         {
-            get
-            {
-                return Command.Get<ushort>(DicomTag.MessageID);
-            }
-            protected set
-            {
-                Command.AddOrUpdate(DicomTag.MessageID, value);
-            }
+            get => Command.GetSingleValue<ushort>(DicomTag.MessageID);
+            protected set => Command.AddOrUpdate(DicomTag.MessageID, value);
         }
 
         #endregion

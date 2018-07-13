@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2017 fo-dicom contributors.
+﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -38,14 +38,8 @@ namespace Dicom.Imaging
         /// </summary>
         public ushort Width
         {
-            get
-            {
-                return Dataset.Get<ushort>(DicomTag.Columns);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Columns, value));
-            }
+            get => Dataset.GetSingleValue<ushort>(DicomTag.Columns);
+            set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Columns, value));
         }
 
         /// <summary>
@@ -53,14 +47,8 @@ namespace Dicom.Imaging
         /// </summary>
         public ushort Height
         {
-            get
-            {
-                return Dataset.Get<ushort>(DicomTag.Rows);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Rows, value));
-            }
+            get => Dataset.GetSingleValue<ushort>(DicomTag.Rows);
+            set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Rows, value));
         }
 
 
@@ -69,14 +57,8 @@ namespace Dicom.Imaging
         /// </summary>
         public int NumberOfFrames
         {
-            get
-            {
-                return Dataset.Get(DicomTag.NumberOfFrames, (ushort)1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomIntegerString(DicomTag.NumberOfFrames, value));
-            }
+            get => Dataset.GetSingleValueOrDefault(DicomTag.NumberOfFrames, 1);
+            set => Dataset.AddOrUpdate(new DicomIntegerString(DicomTag.NumberOfFrames, value));
         }
 
         /// <summary>
@@ -91,17 +73,14 @@ namespace Dicom.Imaging
         /// <summary>
         /// Gets number of bits allocated per pixel sample (0028,0100).
         /// </summary>
-        public ushort BitsAllocated => Dataset.Get<ushort>(DicomTag.BitsAllocated);
+        public ushort BitsAllocated => Dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
 
         /// <summary>
         /// Gets or sets number of bits stored per pixel sample (0028,0101).
         /// </summary>
         public ushort BitsStored
         {
-            get
-            {
-                return Dataset.Get<ushort>(DicomTag.BitsStored);
-            }
+            get => Dataset.GetSingleValue<ushort>(DicomTag.BitsStored);
             set
             {
                 if (value > BitsAllocated)
@@ -116,15 +95,11 @@ namespace Dicom.Imaging
         /// </summary>
         public ushort HighBit
         {
-            get
-            {
-                return Dataset.Get<ushort>(DicomTag.HighBit);
-            }
+            get => Dataset.GetSingleValue<ushort>(DicomTag.HighBit);
             set
             {
                 if (value >= BitsAllocated)
-                    throw new DicomImagingException(
-                        $"Value: {value} >= Bits Allocated: {BitsAllocated}");
+                    throw new DicomImagingException($"Value: {value} >= Bits Allocated: {BitsAllocated}");
 
                 Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.HighBit, value));
             }
@@ -135,14 +110,8 @@ namespace Dicom.Imaging
         /// </summary> 
         public ushort SamplesPerPixel
         {
-            get
-            {
-                return Dataset.Get(DicomTag.SamplesPerPixel, (ushort)1);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.SamplesPerPixel, value));
-            }
+            get => Dataset.GetSingleValueOrDefault(DicomTag.SamplesPerPixel, (ushort)1);
+            set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.SamplesPerPixel, value));
         }
 
         /// <summary>
@@ -150,14 +119,8 @@ namespace Dicom.Imaging
         /// </summary>
         public PixelRepresentation PixelRepresentation
         {
-            get
-            {
-                return Dataset.Get<PixelRepresentation>(DicomTag.PixelRepresentation);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PixelRepresentation, (ushort)value));
-            }
+            get => Dataset.GetSingleValue<PixelRepresentation>(DicomTag.PixelRepresentation);
+            set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PixelRepresentation, (ushort)value));
         }
 
         /// <summary>
@@ -166,14 +129,8 @@ namespace Dicom.Imaging
         /// </summary>
         public PlanarConfiguration PlanarConfiguration
         {
-            get
-            {
-                return Dataset.Get(DicomTag.PlanarConfiguration, PlanarConfiguration.Interleaved);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PlanarConfiguration, (ushort)value));
-            }
+            get => Dataset.GetSingleValueOrDefault(DicomTag.PlanarConfiguration, PlanarConfiguration.Interleaved);
+            set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.PlanarConfiguration, (ushort)value));
         }
 
         /// <summary>
@@ -181,30 +138,24 @@ namespace Dicom.Imaging
         /// </summary>
         public PhotometricInterpretation PhotometricInterpretation
         {
-            get
-            {
-                return Dataset.Get<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null);
-            }
-            set
-            {
-                Dataset.AddOrUpdate(new DicomCodeString(DicomTag.PhotometricInterpretation, value.Value));
-            }
+            get => Dataset.GetSingleValueOrDefault<PhotometricInterpretation>(DicomTag.PhotometricInterpretation, null);
+            set => Dataset.AddOrUpdate(new DicomCodeString(DicomTag.PhotometricInterpretation, value.Value));
         }
 
         /// <summary>
         /// Gets lossy image compression (0028,2110) status, returns true if stored value is "01".
         /// </summary>
-        public bool IsLossy => Dataset.Get<string>(DicomTag.LossyImageCompression, "00") == "01";
+        public bool IsLossy => Dataset.TryGetSingleValue(DicomTag.LossyImageCompression, out string dummy) && dummy == "01";
 
         /// <summary>
         /// Gets lossy image compression method (0028,2114).
         /// </summary>
-        public string LossyCompressionMethod => Dataset.Get<string>(DicomTag.LossyImageCompressionMethod);
+        public string LossyCompressionMethod => Dataset.GetSingleValue<string>(DicomTag.LossyImageCompressionMethod);
 
         /// <summary>
         /// Gets lossy image compression ratio (0028,2112).
         /// </summary>
-        public decimal LossyCompressionRatio => Dataset.Get<decimal>(DicomTag.LossyImageCompressionRatio);
+        public decimal LossyCompressionRatio => Dataset.GetSingleValue<decimal>(DicomTag.LossyImageCompressionRatio);
 
         /// <summary>
         /// Gets number of bytes allocated per pixel sample.
@@ -265,12 +216,12 @@ namespace Dicom.Imaging
 
             if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor)) throw new DicomImagingException("Palette Color LUT missing from dataset.");
 
-            var size = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
-            var bits = Dataset.Get<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
+            var size = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
+            var bits = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
 
-            var r = Dataset.Get<byte[]>(DicomTag.RedPaletteColorLookupTableData);
-            var g = Dataset.Get<byte[]>(DicomTag.GreenPaletteColorLookupTableData);
-            var b = Dataset.Get<byte[]>(DicomTag.BluePaletteColorLookupTableData);
+            var r = Dataset.GetValues<byte>(DicomTag.RedPaletteColorLookupTableData);
+            var g = Dataset.GetValues<byte>(DicomTag.GreenPaletteColorLookupTableData);
+            var b = Dataset.GetValues<byte>(DicomTag.BluePaletteColorLookupTableData);
 
             // If the LUT size is 0, that means it's 65536 in size.
             if (size == 0) size = 65536;
@@ -327,7 +278,7 @@ namespace Dicom.Imaging
                 var syntax = dataset.InternalTransferSyntax;
                 if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian) return new OtherWordPixelData(dataset, true);
 
-                var bitsAllocated = dataset.Get<ushort>(DicomTag.BitsAllocated);
+                var bitsAllocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
                 if (bitsAllocated > 16)
                     throw new DicomImagingException(
                         $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
@@ -339,14 +290,14 @@ namespace Dicom.Imaging
                     : new OtherBytePixelData(dataset, true);
             }
 
-            var item = dataset.Get<DicomItem>(DicomTag.PixelData);
+            var item = dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
             if (item == null) throw new DicomImagingException("DICOM dataset is missing pixel data element.");
 
             if (item is DicomOtherByte) return new OtherBytePixelData(dataset, false);
             if (item is DicomOtherWord) return new OtherWordPixelData(dataset, false);
             if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset);
 
-            throw new DicomImagingException("Unexpected or unhandled pixel data element type: {0}", item.GetType());
+            throw new DicomImagingException($"Unexpected or unhandled pixel data element type: {item.GetType()}");
         }
 
         /// <summary>
@@ -379,7 +330,10 @@ namespace Dicom.Imaging
                     _element = new DicomOtherByte(DicomTag.PixelData, new CompositeByteBuffer());
                     Dataset.AddOrUpdate(_element);
                 }
-                else _element = dataset.Get<DicomOtherByte>(DicomTag.PixelData);
+                else
+                {
+                    _element = dataset.GetDicomItem<DicomOtherByte>(DicomTag.PixelData);
+                }
             }
 
             #endregion
@@ -441,7 +395,10 @@ namespace Dicom.Imaging
                     _element = new DicomOtherWord(DicomTag.PixelData, new CompositeByteBuffer());
                     Dataset.AddOrUpdate(_element);
                 }
-                else _element = dataset.Get<DicomOtherWord>(DicomTag.PixelData);
+                else
+                {
+                    _element = dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
+                }
             }
 
             #endregion
@@ -519,7 +476,7 @@ namespace Dicom.Imaging
             public EncapsulatedPixelData(DicomDataset dataset)
                 : base(dataset)
             {
-                _element = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+                _element = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
             }
 
             #endregion
