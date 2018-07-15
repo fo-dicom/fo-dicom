@@ -431,7 +431,7 @@ namespace Dicom.Network
             bool portInUse;
             lock (_lock)
             {
-                portInUse = _servers.Any(IsMatching(port));
+                portInUse = _servers.Any(IsMatching(port, ipAddress));
             }
 
             if (portInUse)
@@ -446,7 +446,7 @@ namespace Dicom.Network
 
             lock (_lock)
             {
-                if (_servers.Any(IsMatching(port)))
+                if (_servers.Any(IsMatching(port, ipAddress)))
                 {
                     throw new DicomNetworkException(
                         "Could not register DICOM server on port {0}, probably because another server just registered to the same port.",
@@ -463,16 +463,45 @@ namespace Dicom.Network
         /// Gets DICOM server instance registered to <paramref name="port"/>.
         /// </summary>
         /// <param name="port">Port number for which DICOM server is requested.</param>
+        /// <param name="ipAddress">IP Address for which the service listener is requested.</param>
         /// <returns>Registered DICOM server for <paramref name="port"/>.</returns>
-        public static IDicomServer GetInstance(int port)
+        public static IDicomServer GetInstance(int port, string ipAddress)
         {
             IDicomServer server;
             lock (_lock)
             {
-                server = _servers.SingleOrDefault(IsMatching(port)).Key;
+                server = _servers.SingleOrDefault(IsMatching(port, ipAddress)).Key;
             }
 
             return server;
+        }
+
+        /// <summary>
+        /// Gets DICOM server instance registered to <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which DICOM server is requested.</param>
+        /// <returns>Registered DICOM server for <paramref name="port"/>.</returns>
+        public static IDicomServer GetInstance(int port)
+        {
+            return GetInstance(port, NetworkManager.IPv4Any);
+        }
+
+
+        /// <summary>
+        /// Gets service listener for the DICOM server instance registered to <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which the service listener is requested.</param>
+        /// <param name="ipAddress">IP Address for which the service listener is requested.</param>
+        /// <returns>Service listener for the <paramref name="port"/> DICOM server.</returns>
+        public static Task GetListener(int port, string ipAddress)
+        {
+            Task listener;
+            lock (_lock)
+            {
+                listener = _servers.SingleOrDefault(IsMatching(port, ipAddress)).Value;
+            }
+
+            return listener;
         }
 
         /// <summary>
@@ -482,13 +511,7 @@ namespace Dicom.Network
         /// <returns>Service listener for the <paramref name="port"/> DICOM server.</returns>
         public static Task GetListener(int port)
         {
-            Task listener;
-            lock (_lock)
-            {
-                listener = _servers.SingleOrDefault(IsMatching(port)).Value;
-            }
-
-            return listener;
+            return GetListener(port, NetworkManager.IPv4Any);
         }
 
         /// <summary>
@@ -498,7 +521,18 @@ namespace Dicom.Network
         /// <returns>True if DICOM server on <paramref name="port"/> is registered and listening, false otherwise.</returns>
         public static bool IsListening(int port)
         {
-            return GetInstance(port)?.IsListening ?? false;
+            return IsListening(port, NetworkManager.IPv4Any);
+        }
+
+        /// <summary>
+        /// Gets an indicator of whether a DICOM server is registered and listening on the specified <paramref name="port"/>.
+        /// </summary>
+        /// <param name="port">Port number for which listening status is requested.</param>
+        /// <param name="ipAddress">IP Address for which listening status is requested.</param>
+        /// <returns>True if DICOM server on <paramref name="port"/> is registered and listening, false otherwise.</returns>
+        public static bool IsListening(int port, string ipAddress)
+        {
+            return GetInstance(port, ipAddress)?.IsListening ?? false;
         }
 
         /// <summary>
@@ -521,10 +555,11 @@ namespace Dicom.Network
         /// Gets the function to be used in LINQ queries when searching for server matches.
         /// </summary>
         /// <param name="port">Matching port.</param>
+        /// <param name="ipAddress">Matching IP Address</param>
         /// <returns>Function to be used in LINQ queries when searching for server matches.</returns>
-        private static Func<KeyValuePair<IDicomServer, Task>, bool> IsMatching(int port)
+        private static Func<KeyValuePair<IDicomServer, Task>, bool> IsMatching(int port, string ipAddress)
         {
-            return s => s.Key.Port == port;
+            return (s => s.Key.Port == port && s.Key.IPAddress == ipAddress);
         }
 
         #endregion

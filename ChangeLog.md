@@ -1,4 +1,5 @@
 #### v.4.0.1 (TBD)
+* internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * Update Json DS validation regex (#643)
 * DicomFileMetaInformation now uses pre-existing SourceAET where possible 
 
