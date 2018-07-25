@@ -5,19 +5,17 @@ namespace Dicom.IO.Buffer
 {
     public sealed class FileByteBuffer : IByteBuffer
     {
-        public FileByteBuffer(IFileReference file, long Position, uint Length)
+
+        public FileByteBuffer(IFileReference file, long position, uint length)
         {
-            this.File = file;
-            this.Position = Position;
-            this.Size = Length;
+            File = file;
+            Position = position;
+            Size = length;
         }
 
         public bool IsMemory
         {
-            get
-            {
-                return false;
-            }
+            get => false;
         }
 
         public IFileReference File { get; private set; }
@@ -38,5 +36,6 @@ namespace Dicom.IO.Buffer
         {
             return File.GetByteRange((int)Position + offset, count);
         }
+
     }
 }

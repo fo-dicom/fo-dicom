@@ -7,20 +7,15 @@ namespace Dicom.IO.Buffer
 {
     public sealed class StreamByteBuffer : IByteBuffer
     {
-        public StreamByteBuffer(Stream Stream, long Position, uint Length)
+
+        public StreamByteBuffer(Stream stream, long position, uint length)
         {
-            this.Stream = Stream;
-            this.Position = Position;
-            this.Size = Length;
+            Stream = stream;
+            Position = position;
+            Size = length;
         }
 
-        public bool IsMemory
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsMemory => false;
 
         public Stream Stream { get; private set; }
 
@@ -32,6 +27,7 @@ namespace Dicom.IO.Buffer
         {
             get
             {
+                if (!Stream.CanRead) throw new DicomIoException("cannot read from stream - maybe closed");
                 byte[] data = new byte[Size];
                 Stream.Position = Position;
                 Stream.Read(data, 0, (int)Size);
@@ -41,6 +37,7 @@ namespace Dicom.IO.Buffer
 
         public byte[] GetByteRange(int offset, int count)
         {
+            if (!Stream.CanRead) throw new DicomIoException("cannot read from stream - maybe closed");
             byte[] buffer = new byte[count];
             Stream.Position = Position + offset;
             Stream.Read(buffer, 0, count);

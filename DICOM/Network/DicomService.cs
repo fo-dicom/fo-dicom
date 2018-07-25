@@ -602,7 +602,7 @@ namespace Dicom.Network
 
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
-                            reader.Read(new StreamByteSource(_dimseStream), new DicomDatasetReaderObserver(command));
+                            reader.Read(new StreamByteSource(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
                             _dimseStreamFile = null;
@@ -700,7 +700,7 @@ namespace Dicom.Network
                                 _dimse.Dataset = new DicomDataset();
                                 _dimse.Dataset.InternalTransferSyntax = pc.AcceptedTransferSyntax;
 
-                                var source = new StreamByteSource(_dimseStream);
+                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default);
                                 source.Endian = pc.AcceptedTransferSyntax.Endian;
 
                                 var reader = new DicomReader();

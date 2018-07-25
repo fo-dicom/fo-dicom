@@ -1,19 +1,20 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom
-{
-    using System;
-    using System.IO;
-    using System.Text;
+using System;
+using System.IO;
+using System.Text;
 
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
 
-    using Dicom.IO;
-    using Dicom.IO.Reader;
-    using Dicom.IO.Writer;
+using Dicom.IO;
+using Dicom.IO.Reader;
+using Dicom.IO.Writer;
+
+namespace Dicom
+{
 
     /// <summary>
     /// Container class for DICOM file parsing states.
@@ -36,10 +37,36 @@ namespace Dicom
     }
 
     /// <summary>
+    /// Option for reading a DICOM file from a stream
+    /// </summary>
+    public enum FileReadOption
+    {
+        /// <summary>
+        /// Default behaviour. 
+        /// </summary>
+        Default,
+        /// <summary>
+        /// Reads only small tags, but keeps the stream to read the large tags on demand.
+        /// The stream has to stay open.
+        /// </summary>
+        ReadLargeOnDemand,
+        /// <summary>
+        /// Large tags are not read. The stream can be closed.
+        /// </summary>
+        SkipLargeTags,
+        /// <summary>
+        /// Read all tags so that the stream can be closed.
+        /// </summary>
+        ReadAll
+    }
+
+
+    /// <summary>
     /// Representation of one DICOM file.
     /// </summary>
     public class DicomFile
     {
+
         #region CONSTRUCTORS
 
         public DicomFile()
@@ -98,17 +125,17 @@ namespace Dicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(string fileName, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation();
 
-            this.File = IOManager.CreateFileReference(fileName);
-            this.File.Delete();
+            File = IOManager.CreateFileReference(fileName);
+            File.Delete();
 
-            this.OnSave();
+            OnSave();
 
-            using (var target = new FileByteTarget(this.File))
+            using (var target = new FileByteTarget(File))
             {
                 var writer = new DicomFileWriter(options);
-                writer.Write(target, this.FileMetaInfo, this.Dataset);
+                writer.Write(target, FileMetaInfo, Dataset);
             }
         }
 
@@ -119,12 +146,12 @@ namespace Dicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(Stream stream, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
-            this.OnSave();
+            PreprocessFileMetaInformation();
+            OnSave();
 
             var target = new StreamByteTarget(stream);
             var writer = new DicomFileWriter(options);
-            writer.Write(target, this.FileMetaInfo, this.Dataset);
+            writer.Write(target, FileMetaInfo, Dataset);
         }
 
 #if !NET35
@@ -136,17 +163,17 @@ namespace Dicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public async Task SaveAsync(string fileName, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation();
 
-            this.File = IOManager.CreateFileReference(fileName);
-            this.File.Delete();
+            File = IOManager.CreateFileReference(fileName);
+            File.Delete();
 
-            this.OnSave();
+            OnSave();
 
-            using (var target = new FileByteTarget(this.File))
+            using (var target = new FileByteTarget(File))
             {
                 var writer = new DicomFileWriter(options);
-                await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
+                await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
             }
         }
 
@@ -158,12 +185,12 @@ namespace Dicom
         /// <returns>Awaitable task.</returns>
         public async Task SaveAsync(Stream stream, DicomWriteOptions options = null)
         {
-            this.PreprocessFileMetaInformation();
-            this.OnSave();
+            PreprocessFileMetaInformation();
+            OnSave();
 
             var target = new StreamByteTarget(stream);
             var writer = new DicomFileWriter(options);
-            await writer.WriteAsync(target, this.FileMetaInfo, this.Dataset).ConfigureAwait(false);
+            await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
         }
 #endif
 
@@ -173,10 +200,11 @@ namespace Dicom
         /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
         /// </summary>
         /// <param name="fileName">The filename of the DICOM file</param>
+        /// <param name="readOption">An option how to deal with large dicom tags like pixel data.</param>
         /// <returns>DicomFile instance</returns>
-        public static DicomFile Open(string fileName)
+        public static DicomFile Open(string fileName, FileReadOption readOption = FileReadOption.Default)
         {
-            return Open(fileName, DicomEncoding.Default);
+            return Open(fileName, DicomEncoding.Default, readOption: readOption);
         }
 
         /// <summary>
@@ -188,11 +216,11 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>DicomFile instance</returns>
-        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static DicomFile Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             DicomFile df = new DicomFile();
 
@@ -200,7 +228,7 @@ namespace Dicom
             {
                 df.File = IOManager.CreateFileReference(fileName);
 
-                using (var source = new FileByteSource(df.File))
+                using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
                     var result = reader.Read(
@@ -236,10 +264,11 @@ namespace Dicom
         /// Read a DICOM file from stream.
         /// </summary>
         /// <param name="stream">Stream to read.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
-        public static DicomFile Open(Stream stream)
+        public static DicomFile Open(Stream stream, FileReadOption readOption = FileReadOption.Default)
         {
-            return Open(stream, DicomEncoding.Default);
+            return Open(stream, DicomEncoding.Default, readOption: readOption);
         }
 
         /// <summary>
@@ -248,18 +277,19 @@ namespace Dicom
         /// <param name="stream">Stream to read.</param>
         /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tag like pixel data</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
-        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static DicomFile Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
             try
             {
-                var source = new StreamByteSource(stream);
+                var source = new StreamByteSource(stream, readOption);
 
                 var reader = new DicomFileReader();
                 var result = reader.Read(
@@ -297,10 +327,11 @@ namespace Dicom
         /// are determined by their size in bytes - see the default value for this in the FileByteSource._largeObjectSize
         /// </summary>
         /// <param name="fileName">The filename of the DICOM file</param>
+        /// <param name="readOption">The option how to deal with large dicom tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(string fileName)
+        public static Task<DicomFile> OpenAsync(string fileName, FileReadOption readOption = FileReadOption.Default)
         {
-            return OpenAsync(fileName, DicomEncoding.Default);
+            return OpenAsync(fileName, DicomEncoding.Default, readOption: readOption);
         }
 
         /// <summary>
@@ -312,11 +343,11 @@ namespace Dicom
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static async Task<DicomFile> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
@@ -324,7 +355,7 @@ namespace Dicom
             {
                 df.File = IOManager.CreateFileReference(fileName);
 
-                using (var source = new FileByteSource(df.File))
+                using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
                     var result =
@@ -361,10 +392,11 @@ namespace Dicom
         /// Asynchronously read a DICOM file from stream.
         /// </summary>
         /// <param name="stream">Stream to read.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static Task<DicomFile> OpenAsync(Stream stream)
+        public static Task<DicomFile> OpenAsync(Stream stream, FileReadOption readOption = FileReadOption.Default)
         {
-            return OpenAsync(stream, DicomEncoding.Default);
+            return OpenAsync(stream, DicomEncoding.Default, readOption: readOption);
         }
 
         /// <summary>
@@ -373,18 +405,19 @@ namespace Dicom
         /// <param name="stream">Stream to read.</param>
         /// <param name="fallbackEncoding">Encoding to use if encoding cannot be obtained from DICOM file.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
-        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static async Task<DicomFile> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             var df = new DicomFile();
 
             try
             {
-                var source = new StreamByteSource(stream);
+                var source = new StreamByteSource(stream, readOption);
 
                 var reader = new DicomFileReader();
                 var result =
@@ -458,11 +491,11 @@ namespace Dicom
         /// <param name="file">The file reference of the DICOM file</param>
         /// <param name="fallbackEncoding">Encoding to apply when attribute Specific Character Set is not available.</param>
         /// <returns>DicomFile instance</returns>
-        internal static DicomFile Open(IFileReference file, Encoding fallbackEncoding)
+        internal static DicomFile Open(IFileReference file, Encoding fallbackEncoding, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             DicomFile df = new DicomFile();
 
@@ -470,7 +503,7 @@ namespace Dicom
             {
                 df.File = file;
 
-                using (var source = new FileByteSource(file))
+                using (var source = new FileByteSource(file, readOption))
                 {
                     DicomFileReader reader = new DicomFileReader();
                     var result = reader.Read(

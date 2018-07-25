@@ -121,7 +121,7 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="fileName">File name.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName)
+        public static DicomDirectory Open(string fileName)
         {
             return Open(fileName, DicomEncoding.Default);
         }
@@ -132,8 +132,9 @@ namespace Dicom.Media
         /// <param name="fileName">File name.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -145,7 +146,7 @@ namespace Dicom.Media
             {
                 df.File = IOManager.CreateFileReference(fileName);
 
-                using (var source = new FileByteSource(df.File))
+                using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
                     var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
@@ -172,7 +173,7 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="stream">Stream to read.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(Stream stream)
+        public static DicomDirectory Open(Stream stream)
         {
             return Open(stream, DicomEncoding.Default);
         }
@@ -183,8 +184,9 @@ namespace Dicom.Media
         /// <param name="stream">Stream to read.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -194,7 +196,7 @@ namespace Dicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream);
+                var source = new StreamByteSource(stream, readOption);
 
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
@@ -221,7 +223,7 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="fileName">File name.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new Task<DicomDirectory> OpenAsync(string fileName)
+        public static Task<DicomDirectory> OpenAsync(string fileName)
         {
             return OpenAsync(fileName, DicomEncoding.Default);
         }
@@ -232,8 +234,9 @@ namespace Dicom.Media
         /// <param name="fileName">File name.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -245,7 +248,7 @@ namespace Dicom.Media
             {
                 df.File = IOManager.CreateFileReference(fileName);
 
-                using (var source = new FileByteSource(df.File))
+                using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
                     var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
@@ -274,7 +277,7 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="stream">Stream to read.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new Task<DicomDirectory> OpenAsync(Stream stream)
+        public static Task<DicomDirectory> OpenAsync(Stream stream)
         {
             return OpenAsync(stream, DicomEncoding.Default);
         }
@@ -285,8 +288,9 @@ namespace Dicom.Media
         /// <param name="stream">Stream to read.</param>
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
+        /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null)
+        public static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
         {
             if (fallbackEncoding == null)
             {
@@ -296,7 +300,7 @@ namespace Dicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream);
+                var source = new StreamByteSource(stream, readOption);
 
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
@@ -379,12 +383,11 @@ namespace Dicom.Media
         {
             foreach (var item in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence))
             {
-                var record = item as DicomDirectoryRecord;
-                if (record == null) throw new InvalidOperationException("Unexpected type for directory record: " + item.GetType());
+                if (!(item is DicomDirectoryRecord record)) throw new InvalidOperationException("Unexpected type for directory record: " + item.GetType());
 
                 record.Offset = _fileOffset;
 
-                _fileOffset += 4 + 4; //Sequence item tag;
+                _fileOffset += 4 + 4; //Sequence item tag
 
                 _fileOffset += calculator.Calculate(record);
 
@@ -608,16 +611,17 @@ namespace Dicom.Media
             if (recordType == null) throw new ArgumentNullException(nameof(recordType));
             if (dataset == null) throw new ArgumentNullException(nameof(dataset));
 
-            var sequenceItem = new DicomDirectoryRecord();
+            var sequenceItem = new DicomDirectoryRecord
+            {
+                //add record item attributes
+                { DicomTag.OffsetOfTheNextDirectoryRecord, 0U },
+                { DicomTag.RecordInUseFlag, (ushort)0xFFFF },
+                { DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U },
+                { DicomTag.DirectoryRecordType, recordType.ToString() },
 
-            //add record item attributes
-            sequenceItem.Add(DicomTag.OffsetOfTheNextDirectoryRecord, 0U);
-            sequenceItem.Add<ushort>(DicomTag.RecordInUseFlag, 0xFFFF);
-            sequenceItem.Add(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U);
-            sequenceItem.Add(DicomTag.DirectoryRecordType, recordType.ToString());
-
-            //copy the current dataset character set
-            sequenceItem.Add(dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet));
+                //copy the current dataset character set
+                dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet)
+            };
 
             foreach (var tag in recordType.Tags)
             {
@@ -642,7 +646,7 @@ namespace Dicom.Media
         {
             if (result == DicomReaderResult.Processing)
             {
-                throw new DicomFileException(df, "Invalid read return state: {state}", result);
+                throw new DicomFileException(df, $"Invalid read return state: {result}");
             }
             if (result == DicomReaderResult.Error)
             {

@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Reader
-{
-    using System;
-    using System.Text;
+using System;
+using System.Text;
 
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+
+namespace Dicom.IO.Reader
+{
 
     /// <summary>
     /// Class for reading DICOM file objects.
@@ -23,9 +24,9 @@ namespace Dicom.IO.Reader
 
             public ParseResult(DicomReaderResult result, DicomFileFormat format, DicomTransferSyntax syntax)
             {
-                this.Result = result;
-                this.Format = format;
-                this.Syntax = syntax;
+                Result = result;
+                Format = format;
+                Syntax = syntax;
             }
 
             #endregion
@@ -45,16 +46,12 @@ namespace Dicom.IO.Reader
 
         #region FIELDS
 
-        private static readonly DicomTag FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
+        private static readonly DicomTag _FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private static readonly Func<ParseState, bool> FileMetaInfoStopCriterion =
-            state => state.Tag.CompareTo(FileMetaInfoStopTag) >= 0;
+        private static readonly Func<ParseState, bool> _FileMetaInfoStopCriterion =
+            state => state.Tag.CompareTo(_FileMetaInfoStopTag) >= 0;
 
-        private DicomFileFormat fileFormat;
-
-        private DicomTransferSyntax syntax;
-
-        private readonly object locker;
+        private readonly object _locker;
 
         #endregion
 
@@ -65,60 +62,48 @@ namespace Dicom.IO.Reader
         /// </summary>
         public DicomFileReader()
         {
-            this.fileFormat = DicomFileFormat.Unknown;
-            this.syntax = null;
-            this.locker = new object();
+            FileFormat = DicomFileFormat.Unknown;
+            Syntax = null;
+            _locker = new object();
         }
 
-        #endregion
+      #endregion
 
-        #region PROPERTIES
+      #region PROPERTIES
 
-        /// <summary>
-        /// Gets file format of latest read.
-        /// </summary>
-        public DicomFileFormat FileFormat
-        {
-            get
-            {
-                return this.fileFormat;
-            }
-        }
+      /// <summary>
+      /// Gets file format of latest read.
+      /// </summary>
+      public DicomFileFormat FileFormat { get; private set; }
 
-        /// <summary>
-        /// Gets the transfer syntax of latest read.
-        /// </summary>
-        public DicomTransferSyntax Syntax
-        {
-            get
-            {
-                return this.syntax;
-            }
-        }
+      /// <summary>
+      /// Gets the transfer syntax of latest read.
+      /// </summary>
+      public DicomTransferSyntax Syntax { get; private set; }
 
-        #endregion
+      #endregion
 
-        #region METHODS
+      #region METHODS
 
-        /// <summary>
-        /// Read DICOM file object.
-        /// </summary>
-        /// <param name="source">Byte source to read.</param>
-        /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
-        /// <param name="dataset">Reader observer for dataset.</param>
-        /// <param name="stop">Stop criterion in dataset.</param>
-        /// <returns>Reader result.</returns>
-        public DicomReaderResult Read(
+      /// <summary>
+      /// Read DICOM file object.
+      /// </summary>
+      /// <param name="source">Byte source to read.</param>
+      /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
+      /// <param name="dataset">Reader observer for dataset.</param>
+      /// <param name="stop">Stop criterion in dataset.</param>
+      /// <returns>Reader result.</returns>
+      public DicomReaderResult Read(
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
             Func<ParseState, bool> stop = null)
         {
             var parse = Parse(source, fileMetaInfo, dataset, stop);
-            lock (this.locker)
+            lock (_locker)
             {
-                this.fileFormat = parse.Format;
-                this.syntax = parse.Syntax;
+                FileFormat = parse.Format;
+                Syntax = parse.Syntax;
             }
 
             return parse.Result;
@@ -140,10 +125,10 @@ namespace Dicom.IO.Reader
             Func<ParseState, bool> stop = null)
         {
             var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
-            lock (this.locker)
+            lock (_locker)
             {
-                this.fileFormat = parse.Item2;
-                this.syntax = parse.Item3;
+                FileFormat = parse.Item2;
+                Syntax = parse.Item3;
             }
             return parse.Item1;
         }
@@ -331,7 +316,7 @@ namespace Dicom.IO.Reader
             }
             else
             {
-                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), FileMetaInfoStopCriterion)
+                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _FileMetaInfoStopCriterion)
                     != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
@@ -408,7 +393,7 @@ namespace Dicom.IO.Reader
                     reader.ReadAsync(
                         source,
                         new DicomReaderMultiObserver(obs, fileMetasetInfoObserver),
-                        FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
+                        _FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }

@@ -123,8 +123,8 @@ namespace Dicom
 
         public int CompareTo(object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
-            if (!(obj is DicomTag)) throw new ArgumentException("Passed non-DicomTag to comparer", "obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (!(obj is DicomTag)) throw new ArgumentException("Passed non-DicomTag to comparer", nameof(obj));
             return CompareTo(obj as DicomTag);
         }
 

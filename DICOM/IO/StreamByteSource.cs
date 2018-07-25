@@ -31,6 +31,8 @@ namespace Dicom.IO
 
         private readonly object _lock;
 
+        private readonly FileReadOption _readOption;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -39,12 +41,14 @@ namespace Dicom.IO
         /// Initializes a new instance of <see cref="StreamByteSource"/>.
         /// </summary>
         /// <param name="stream">Stream to read from.</param>
-        public StreamByteSource(Stream stream)
+        public StreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default)
         {
             _stream = stream;
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian);
             _mark = 0;
+            // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
+            _readOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
             LargeObjectSize = 64 * 1024;
 
@@ -59,10 +63,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public Endian Endian
         {
-            get
-            {
-                return _endian;
-            }
+            get => _endian;
             set
             {
                 if (_endian != value)
@@ -164,13 +165,23 @@ namespace Dicom.IO
         public IByteBuffer GetBuffer(uint count)
         {
             IByteBuffer buffer = null;
-            if (count == 0) buffer = EmptyBuffer.Value;
-            else if (count >= this.LargeObjectSize)
+            if (count == 0)
+            {
+                buffer = EmptyBuffer.Value;
+            }
+            else if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
             {
                 buffer = new StreamByteBuffer(_stream, _stream.Position, count);
                 _stream.Seek((int)count, SeekOrigin.Current);
             }
-            else buffer = new MemoryByteBuffer(GetBytes((int)count));
+            else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
+            {
+                buffer = null;
+            }
+            else // count < LargeOpjectSize || _readOption == FileReadOption.ReadAll
+            {
+                buffer = new MemoryByteBuffer(GetBytes((int)count));
+            }
             return buffer;
         }
 

@@ -18,6 +18,7 @@ namespace Dicom.IO
     /// </summary>
     public class FileByteSource : IByteSource, IDisposable
     {
+
         #region FIELDS
 
         private readonly IFileReference _file;
@@ -27,14 +28,13 @@ namespace Dicom.IO
         private Endian _endian;
 
         private BinaryReader _reader;
-
-        private long _mark;
-
         private readonly Stack<long> _milestones;
 
         private readonly object _lock;
 
         private bool _disposed;
+
+        private readonly FileReadOption _readOption;
 
         #endregion
 
@@ -44,13 +44,15 @@ namespace Dicom.IO
         /// Initializes an instance of <see cref="FileByteSource"/>.
         /// </summary>
         /// <param name="file">File to read from.</param>
-        public FileByteSource(IFileReference file)
+        public FileByteSource(IFileReference file, FileReadOption readOption)
         {
             _file = file;
             _stream = _file.OpenRead();
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian);
-            _mark = 0;
+            Marker = 0;
+            // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
+            _readOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
             LargeObjectSize = 64 * 1024;
 
@@ -66,10 +68,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public Endian Endian
         {
-            get
-            {
-                return _endian;
-            }
+            get => _endian;
             set
             {
                 if (_endian != value)
@@ -86,11 +85,11 @@ namespace Dicom.IO
         /// <inheritdoc />
         public long Position => _stream.Position;
 
-        /// <inheritdoc />
-        public long Marker => _mark;
+      /// <inheritdoc />
+      public long Marker { get; private set; }
 
-        /// <inheritdoc />
-        public bool IsEOF => _stream.Position >= _stream.Length;
+      /// <inheritdoc />
+      public bool IsEOF => _stream.Position >= _stream.Length;
 
         /// <inheritdoc />
         public bool CanRewind => _stream.CanSeek;
@@ -171,13 +170,23 @@ namespace Dicom.IO
         public IByteBuffer GetBuffer(uint count)
         {
             IByteBuffer buffer = null;
-            if (count == 0) buffer = EmptyBuffer.Value;
-            else if (count >= this.LargeObjectSize)
+            if (count == 0)
+            {
+                buffer = EmptyBuffer.Value;
+            }
+            else if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
             {
                 buffer = new FileByteBuffer(_file, _stream.Position, count);
                 _stream.Seek((int)count, SeekOrigin.Current);
             }
-            else buffer = new MemoryByteBuffer(GetBytes((int)count));
+            else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
+            {
+                buffer = null;
+            }
+            else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
+            {
+                buffer = new MemoryByteBuffer(GetBytes((int)count));
+            }
             return buffer;
         }
 
@@ -185,7 +194,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
-            return Task.FromResult(this.GetBuffer(count));
+            return Task.FromResult(GetBuffer(count));
         }
 #endif
 
@@ -199,13 +208,13 @@ namespace Dicom.IO
         /// <inheritdoc />
         public void Mark()
         {
-            _mark = _stream.Position;
+            Marker = _stream.Position;
         }
 
         /// <inheritdoc />
         public void Rewind()
         {
-            _stream.Position = _mark;
+            _stream.Position = Marker;
         }
 
         /// <inheritdoc />
@@ -248,7 +257,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -273,8 +282,7 @@ namespace Dicom.IO
                 _stream.Dispose();
             }
             catch
-            {
-            }
+            { /* ignore exception */ }
 
             _disposed = true;
         }

@@ -266,7 +266,7 @@ namespace Dicom.IO.Buffer
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
-            return Task.FromResult(this.GetBuffer(count));
+            return Task.FromResult(GetBuffer(count));
         }
 #endif
 

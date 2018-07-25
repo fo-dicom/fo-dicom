@@ -11,13 +11,15 @@ namespace Dicom.IO.Reader
 {
     public class DicomDatasetReaderObserver : IDicomReaderObserver
     {
-        private Stack<DicomDataset> _datasets;
 
-        private Stack<Encoding> _encodings;
+        private readonly Stack<DicomDataset> _datasets;
 
-        private Stack<DicomSequence> _sequences;
+        private readonly Stack<Encoding> _encodings;
+
+        private readonly Stack<DicomSequence> _sequences;
 
         private DicomFragmentSequence _fragment;
+
 
         public DicomDatasetReaderObserver(DicomDataset dataset)
             : this(dataset, DicomEncoding.Default)
@@ -28,7 +30,7 @@ namespace Dicom.IO.Reader
         {
             if (fallbackEncoding == null)
             {
-                throw new ArgumentNullException("fallbackEncoding");
+                throw new ArgumentNullException(nameof(fallbackEncoding));
             }
             _datasets = new Stack<DicomDataset>();
             _datasets.Push(dataset);
@@ -202,5 +204,6 @@ namespace Dicom.IO.Reader
         {
             _fragment = null;
         }
+
     }
 }

@@ -1,17 +1,79 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.IO;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace Dicom.IO.Reader
 {
-    using System.IO;
-    using System.Threading.Tasks;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomFileReaderTest
     {
+
         #region Unit tests
+
+        [Fact]
+        public void ReadLargeFileFromStream()
+        {
+            DicomFile dcm = null;
+            string filename = @".\Test Data\GH355.dcm";
+            if (File.Exists(filename))
+            {
+                byte[] buff = File.ReadAllBytes(filename);
+                using (MemoryStream stream = new MemoryStream(buff))
+                {
+                    dcm = DicomFile.Open(stream, FileReadOption.ReadAll);
+                }
+            }
+
+            // the file shall be completely read in memory, so writing it should be possible even if the stream has been colsed
+            string tmpFile = Path.GetTempFileName();
+            dcm.Save(tmpFile);
+            if (File.Exists(tmpFile)) File.Delete(tmpFile);
+        }
+
+
+        [Fact]
+        public void ReadLargeFileFromStream_Error()
+        {
+            DicomFile dcm = null;
+            string filename = @".\Test Data\GH355.dcm";
+            if (File.Exists(filename))
+            {
+                byte[] buff = File.ReadAllBytes(filename);
+                using (MemoryStream stream = new MemoryStream(buff))
+                {
+                    dcm = DicomFile.Open(stream, FileReadOption.ReadLargeOnDemand);
+                }
+            }
+
+            // this will save the image without pixels and generate an ObjectDisposedException
+            string tmpFile = Path.GetTempFileName();
+            Assert.Throws<DicomIoException>(() => dcm.Save(tmpFile));
+            if (File.Exists(tmpFile)) File.Delete(tmpFile);
+        }
+
+
+        [Fact]
+        public void ReadLargeFileFromStream_WithoutPixeldata()
+        {
+            DicomFile dcm = null;
+            string filename = @".\Test Data\GH355.dcm";
+            if (File.Exists(filename))
+            {
+                byte[] buff = File.ReadAllBytes(filename);
+                using (MemoryStream stream = new MemoryStream(buff))
+                {
+                    dcm = DicomFile.Open(stream, FileReadOption.SkipLargeTags);
+                }
+            }
+
+            // verify that the pixel data are not loaded from stream
+            Assert.False(dcm.Dataset.Contains(DicomTag.PixelData));
+        }
+
 
         [Fact]
         public void Read_ValidSource_ReturnsSuccess()
@@ -37,6 +99,7 @@ namespace Dicom.IO.Reader
             }
         }
 
+
         [Fact]
         public void Read_CompressedImage_RecognizeTransferSyntax()
         {
@@ -58,6 +121,7 @@ namespace Dicom.IO.Reader
                 Assert.Equal(expected, actual);
             }
         }
+
 
         [Fact]
         public async Task ReadAsync_CompressedImage_RecognizeTransferSyntax()
@@ -82,6 +146,8 @@ namespace Dicom.IO.Reader
             }
         }
 
+
         #endregion
+
     }
 }
