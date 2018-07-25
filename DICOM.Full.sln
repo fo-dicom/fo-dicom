@@ -481,7 +481,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True
-		SolutionGuid = {DCC05C4E-2BFA-4A0C-A528-C04793647046}
+		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

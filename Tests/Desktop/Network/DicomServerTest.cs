@@ -346,6 +346,24 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void CanCreateIpv4AndIpv6()
+        {
+            var port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var e = Record.Exception(
+                    () =>
+                    {
+                        using (DicomServer.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, port))
+                        {
+
+                        }
+                    });
+                Assert.Null(e);
+            }
+        }
+
+        [Fact]
         public void Create_SubclassedServer_SufficientlyCreated()
         {
             var port = Ports.GetNext();
