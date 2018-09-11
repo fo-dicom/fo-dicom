@@ -561,15 +561,15 @@ namespace Dicom
         };
 
         ///<summary>RFC 2557 MIME encapsulation</summary>
-        public static readonly DicomTransferSyntax RFC2557MIMEEncapsulation =
-            new DicomTransferSyntax(DicomUID.RFC2557MIMEEncapsulation)
+        public static readonly DicomTransferSyntax RFC2557MIMEEncapsulationRetired =
+            new DicomTransferSyntax(DicomUID.RFC2557MIMEEncapsulationRETIRED)
             {
                 IsExplicitVR = true,
                 Endian = Endian.Little
             };
 
         ///<summary>XML Encoding</summary>
-        public static readonly DicomTransferSyntax XMLEncoding = new DicomTransferSyntax(DicomUID.XMLEncoding)
+        public static readonly DicomTransferSyntax XMLEncodingRetired = new DicomTransferSyntax(DicomUID.XMLEncodingRETIRED)
         {
             IsExplicitVR = true,
             Endian = Endian.Little
@@ -636,8 +636,8 @@ namespace Dicom
             Entries.Add(HEVCH265MainProfileLevel51.UID, HEVCH265MainProfileLevel51);
             Entries.Add(HEVCH265Main10ProfileLevel51.UID, HEVCH265Main10ProfileLevel51);
             Entries.Add(RLELossless.UID, RLELossless);
-            Entries.Add(RFC2557MIMEEncapsulation.UID, RFC2557MIMEEncapsulation);
-            Entries.Add(XMLEncoding.UID, XMLEncoding);
+            Entries.Add(RFC2557MIMEEncapsulationRetired.UID, RFC2557MIMEEncapsulationRetired);
+            Entries.Add(XMLEncodingRetired.UID, XMLEncodingRetired);
             Entries.Add(Papyrus3ImplicitVRLittleEndianRetired.UID, Papyrus3ImplicitVRLittleEndianRetired);
 
             #endregion
