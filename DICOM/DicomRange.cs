@@ -22,5 +22,18 @@ namespace Dicom
         {
             return Minimum.CompareTo(value) <= 0 && Maximum.CompareTo(value) >= 0;
         }
+
+        public void Join(T value)
+        {
+            if (Minimum.CompareTo(value) > 0)
+            {
+                Minimum = value;
+            }
+            if (Maximum.CompareTo(value) < 0)
+            {
+                Maximum = value;
+            }
+        }
+
     }
 }
