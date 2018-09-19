@@ -111,7 +111,7 @@ namespace Dicom.Network
                     case DicomQueryRetrieveLevel.Study:
                     case DicomQueryRetrieveLevel.Series:
                     case DicomQueryRetrieveLevel.Image:
-                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpperInvariant());
                         break;
                     default:
                         Dataset.Remove(DicomTag.QueryRetrieveLevel);
