@@ -37,9 +37,8 @@
       <HintPath>..\..\packages\cscharls.0.1.1\lib\net20\cscharls.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CSJ2K">
-      <HintPath>..\..\packages\CSJ2K.3.0.0-alpha\lib\net40-client\CSJ2K.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CSJ2K, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0ca7be2ec378a773, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CSJ2K.3.0.0\lib\net40-client\CSJ2K.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -139,14 +138,14 @@
   <Import Project="..\..\DICOM\DICOM.Shared.projitems" Label="Shared" Condition="Exists('..\..\DICOM\DICOM.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-	<DictionaryFolder>Dictionaries</DictionaryFolder>
+    <DictionaryFolder>Dictionaries</DictionaryFolder>
   </PropertyGroup>
   <ItemGroup>
-	<DictionaryFiles Include="..\..\DICOM\Dictionaries\*.xml.gz" />
+    <DictionaryFiles Include="..\..\DICOM\Dictionaries\*.xml.gz" />
   </ItemGroup>
   <Target Name="BeforeBuild">
-	<MakeDir Directories="$(DictionaryFolder)"/>
-	<Copy SourceFiles="@(DictionaryFiles)" DestinationFolder="$(DictionaryFolder)"/>
+    <MakeDir Directories="$(DictionaryFolder)" />
+    <Copy SourceFiles="@(DictionaryFiles)" DestinationFolder="$(DictionaryFolder)" />
   </Target>
   <ItemGroup>
     <None Include="packages.config" />
