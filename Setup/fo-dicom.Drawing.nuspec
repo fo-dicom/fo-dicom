@@ -13,12 +13,12 @@
         <language>en-US</language>
 		<dependencies>
 			<dependency id="fo-dicom.NetCore" version="$version$" />
-			<dependency id="CoreCompat.System.Drawing" version="1.0.0-beta006" />
+			<dependency id="System.Drawing.Common" version="4.5.0" />
 		</dependencies>
     </metadata>
     <files>
-        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.dll" target="lib\netstandard1.3" />
-        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.pdb" target="lib\netstandard1.3" />
-        <file src="..\Drawing\NetCore\bin\Release\netstandard1.3\Dicom.Drawing.xml" target="lib\netstandard1.3" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard2.0\Dicom.Drawing.dll" target="lib\netstandard2.0" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard2.0\Dicom.Drawing.pdb" target="lib\netstandard2.0" />
+        <file src="..\Drawing\NetCore\bin\Release\netstandard2.0\Dicom.Drawing.xml" target="lib\netstandard2.0" />
     </files>
 </package>

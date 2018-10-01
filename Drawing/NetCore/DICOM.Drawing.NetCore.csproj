@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Dicom.Drawing</AssemblyName>
     <RootNamespace>Dicom</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -18,10 +18,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETSTANDARD</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CoreCompat.System.Drawing" Version="1.0.0-beta006" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\NetCore\DICOM.NetCore.csproj" />
@@ -46,6 +42,10 @@
     <Compile Include="..\..\DICOM\Printing\ImageBoxExtensions.cs">
       <Link>Printing\ImageBoxExtensions.cs</Link>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
   </ItemGroup>
   
   </Project>
