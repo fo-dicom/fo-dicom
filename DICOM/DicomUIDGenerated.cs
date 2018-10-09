@@ -53,8 +53,8 @@ namespace Dicom
             _uids.Add(DicomUID.HEVCH265MainProfileLevel51.UID, DicomUID.HEVCH265MainProfileLevel51);
             _uids.Add(DicomUID.HEVCH265Main10ProfileLevel51.UID, DicomUID.HEVCH265Main10ProfileLevel51);
             _uids.Add(DicomUID.RLELossless.UID, DicomUID.RLELossless);
-            _uids.Add(DicomUID.RFC2557MIMEEncapsulation.UID, DicomUID.RFC2557MIMEEncapsulation);
-            _uids.Add(DicomUID.XMLEncoding.UID, DicomUID.XMLEncoding);
+            _uids.Add(DicomUID.RFC2557MIMEEncapsulationRETIRED.UID, DicomUID.RFC2557MIMEEncapsulationRETIRED);
+            _uids.Add(DicomUID.XMLEncodingRETIRED.UID, DicomUID.XMLEncodingRETIRED);
             _uids.Add(DicomUID.MediaStorageDirectoryStorage.UID, DicomUID.MediaStorageDirectoryStorage);
             _uids.Add(DicomUID.TalairachBrainAtlasFrameOfReference.UID, DicomUID.TalairachBrainAtlasFrameOfReference);
             _uids.Add(DicomUID.SPM2T1FrameOfReference.UID, DicomUID.SPM2T1FrameOfReference);
@@ -1511,6 +1511,7 @@ namespace Dicom
             _uids.Add(DicomUID.PurposeOfReferenceToPredecessor3DModel7062.UID, DicomUID.PurposeOfReferenceToPredecessor3DModel7062);
             _uids.Add(DicomUID.ModelScaleUnits7063.UID, DicomUID.ModelScaleUnits7063);
             _uids.Add(DicomUID.ModelUsage7064.UID, DicomUID.ModelUsage7064);
+            _uids.Add(DicomUID.RadiationDoseUnits10071.UID, DicomUID.RadiationDoseUnits10071);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1636,11 +1637,11 @@ namespace Dicom
         ///<summary>Transfer Syntax: RLE Lossless</summary>
         public static readonly DicomUID RLELossless = new DicomUID("1.2.840.10008.1.2.5", "RLE Lossless", DicomUidType.TransferSyntax, false);
 
-        ///<summary>Transfer Syntax: RFC 2557 MIME encapsulation</summary>
-        public static readonly DicomUID RFC2557MIMEEncapsulation = new DicomUID("1.2.840.10008.1.2.6.1", "RFC 2557 MIME encapsulation", DicomUidType.TransferSyntax, false);
+        ///<summary>Transfer Syntax: RFC 2557 MIME encapsulation (Retired)</summary>
+        public static readonly DicomUID RFC2557MIMEEncapsulationRETIRED = new DicomUID("1.2.840.10008.1.2.6.1", "RFC 2557 MIME encapsulation (Retired)", DicomUidType.TransferSyntax, true);
 
-        ///<summary>Transfer Syntax: XML Encoding</summary>
-        public static readonly DicomUID XMLEncoding = new DicomUID("1.2.840.10008.1.2.6.2", "XML Encoding", DicomUidType.TransferSyntax, false);
+        ///<summary>Transfer Syntax: XML Encoding (Retired)</summary>
+        public static readonly DicomUID XMLEncodingRETIRED = new DicomUID("1.2.840.10008.1.2.6.2", "XML Encoding (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>SOP Class: Media Storage Directory Storage</summary>
         public static readonly DicomUID MediaStorageDirectoryStorage = new DicomUID("1.2.840.10008.1.3.10", "Media Storage Directory Storage", DicomUidType.SOPClass, false);
@@ -6009,6 +6010,9 @@ namespace Dicom
 
         ///<summary>Context Group Name: Model Usage (7064)</summary>
         public static readonly DicomUID ModelUsage7064 = new DicomUID("1.2.840.10008.6.1.1205", "Model Usage (7064)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiation Dose Units (10071)</summary>
+        public static readonly DicomUID RadiationDoseUnits10071 = new DicomUID("1.2.840.10008.6.1.1206", "Radiation Dose Units (10071)", DicomUidType.ContextGroupName, false);
 
     }
 }

@@ -1,4 +1,5 @@
 #### v.4.0.1 (TBD)
+* Upgrade DICOM dictionary to 2018c (#712)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * Update Json DS validation regex (#643)
 * Add option to DicomFile.Open how to deal with large tags (#617)

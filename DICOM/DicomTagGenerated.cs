@@ -10112,6 +10112,9 @@ namespace Dicom
         ///<summary>(0400,0565) VR=CS VM=1 Reason for the Attribute Modification</summary>
         public readonly static DicomTag ReasonForTheAttributeModification = new DicomTag(0x0400, 0x0565);
 
+        ///<summary>(0400,0600) VR=CS VM=1 Instance Origin Status</summary>
+        public readonly static DicomTag InstanceOriginStatus = new DicomTag(0x0400, 0x0600);
+
         ///<summary>(1000,xxx0) VR=US VM=3 Escape Triplet (RETIRED)</summary>
         public readonly static DicomTag EscapeTripletRETIRED = new DicomTag(0x1000, 0x0000);
 
@@ -11278,6 +11281,9 @@ namespace Dicom
 
         ///<summary>(300A,0093) VR=CS VM=1 Depth Value Averaging Flag</summary>
         public readonly static DicomTag DepthValueAveragingFlag = new DicomTag(0x300A, 0x0093);
+
+        ///<summary>(300A,0094) VR=DS VM=1 Beam Dose Point Source to External Contour Distance</summary>
+        public readonly static DicomTag BeamDosePointSourceToExternalContourDistance = new DicomTag(0x300A, 0x0094);
 
         ///<summary>(300A,00A0) VR=IS VM=1 Number of Brachy Application Setups</summary>
         public readonly static DicomTag NumberOfBrachyApplicationSetups = new DicomTag(0x300A, 0x00A0);
