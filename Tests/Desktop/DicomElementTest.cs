@@ -465,7 +465,7 @@ namespace Dicom
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
             var actual = element.Get<T>(1);
-            Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
+            Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture), actual);
         }
 
         internal void TestDicomDecimalStringGetArray<T>()
@@ -473,7 +473,7 @@ namespace Dicom
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
             var actual = element.Get<T[]>();
-            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture)), actual);
         }
 
         internal void TestDicomIntegerStringGetItem<T>()

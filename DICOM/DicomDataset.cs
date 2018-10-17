@@ -23,6 +23,8 @@ namespace Dicom
 
         private DicomTransferSyntax _syntax;
 
+        private bool _validateItems = true;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -59,8 +61,18 @@ namespace Dicom
         /// </summary>
         /// <param name="items">A collection of DICOM items.</param>
         public DicomDataset(IEnumerable<DicomItem> items)
+            : this(items, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
+        /// <param name="items">A collection of DICOM items.</param>
+        internal DicomDataset(IEnumerable<DicomItem> items, bool validate)
             : this()
         {
+            _validateItems = validate;
             if (items != null)
             {
                 foreach (var item in items.Where(item => item != null))
@@ -77,10 +89,12 @@ namespace Dicom
                     }
                     else
                     {
+                        if (_validateItems) item.Validate();
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
             }
+            _validateItems = true;
         }
 
         #endregion
@@ -104,6 +118,13 @@ namespace Dicom
                     }
                 }
             }
+        }
+
+
+        internal bool ValidateItems
+        {
+            get => _validateItems;
+            set => _validateItems = value;
         }
 
         #endregion
@@ -1146,6 +1167,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
+                        if (_validateItems) item.Validate();
                         _items[tag] = item;
                     }
                 }
@@ -1160,6 +1182,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
+                        if (_validateItems) item.Validate();
                         _items.Add(tag, item);
                     }
                 }
@@ -1183,6 +1206,7 @@ namespace Dicom
                     tag = GetPrivateTag(tag);
                     item.Tag = tag;
                 }
+                if (_validateItems) item.Validate();
 
                 if (allowUpdate)
                 {

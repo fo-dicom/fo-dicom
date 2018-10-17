@@ -187,7 +187,9 @@ namespace Dicom.Serialization
         [Fact]
         public void NonJsonDecimalStringValuesGetFixed()
         {
-            var ds = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } } };
+            var ds = new DicomDataset { ValidateItems = false };
+            // have to turn off validation, since we want to add invalid DS values
+            ds.Add( new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } ));
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             dynamic obj = JObject.Parse(json);
 
@@ -205,7 +207,10 @@ namespace Dicom.Serialization
         [Fact]
         public void EmptyStringsShouldSerializeAsNull()
         {
-            var ds = new DicomDataset { { DicomTag.PatientAge, new[] { "1Y", "", "3Y" } } };
+            var ds = new DicomDataset { ValidateItems = false };
+            // have to turn off validation, since DicomTag.PatientAge has Value Multiplicity 1, so
+            // this dataset cannot be constructed without validation exception
+            ds.Add( new DicomAgeString( DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             dynamic obj = JObject.Parse(json);
             Assert.Equal("1Y", (string)obj["00101010"].Value[0]);
@@ -725,7 +730,7 @@ namespace Dicom.Serialization
             var ds = new DicomDataset();
 
             ds.Add(new DicomApplicationEntity(ds.GetPrivateTag(new DicomTag(3, 0x0002, privateCreator)), "AETITLE"));
-            ds.Add(new DicomAgeString(ds.GetPrivateTag(new DicomTag(3, 0x0003, privateCreator)), "34y"));
+            ds.Add(new DicomAgeString(ds.GetPrivateTag(new DicomTag(3, 0x0003, privateCreator)), "034Y"));
             ds.Add(new DicomAttributeTag(ds.GetPrivateTag(new DicomTag(3, 0x0004, privateCreator)), new[] { DicomTag.SOPInstanceUID }));
             ds.Add(new DicomCodeString(ds.GetPrivateTag(new DicomTag(3, 0x0005, privateCreator)), "FOOBAR"));
             ds.Add(new DicomDate(ds.GetPrivateTag(new DicomTag(3, 0x0006, privateCreator)), "20000229"));
@@ -806,7 +811,7 @@ namespace Dicom.Serialization
                              { DicomTag.SOPClassUID, DicomUID.RTPlanStorage },
                              { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateNew() },
                              { DicomTag.SeriesInstanceUID, new DicomUID[] { } },
-                             { DicomTag.DoseType, new[] { "HEJ", null, "BLA" } },
+                             { DicomTag.DoseType, new[] { "HEJ" } },
                            };
 
             target.Add(DicomTag.ControlPointSequence, (DicomSequence[])null);
@@ -872,8 +877,8 @@ namespace Dicom.Serialization
             var ds = new DicomDataset
             {
                 { DicomTag.Modality, "CT" },
-                new DicomCodeString(privTag1, "test1"),
-                { privTag2, "test2" },
+                new DicomCodeString(privTag1, "TESTA"),
+                { privTag2, "TESTB" },
             };
 
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());

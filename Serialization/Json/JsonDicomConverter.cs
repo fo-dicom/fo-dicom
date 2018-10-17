@@ -8,12 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+ using System.Text.RegularExpressions;
 
 
 namespace Dicom.Serialization
 {
-    using Newtonsoft.Json.Linq;
-    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Converts a DicomDataset object to and from JSON using the NewtonSoft Json.NET library
@@ -457,8 +456,15 @@ namespace Dicom.Serialization
 
         private static bool IsValidJsonNumber(string val)
         {
-            // This is not very inefficient - uses .NET regex caching
-            return Regex.IsMatch(val, "^[+-]?((0|[1-9][0-9]*)([.][0-9]+)?|[.][0-9]+)([eE][-+]?[0-9]+)?$");
+            try
+            {
+                DicomValidation.ValidateDS(val);
+                return true;
+            }
+            catch(DicomValidationException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
