@@ -329,7 +329,7 @@ namespace Dicom.StructuredReport
         public DicomContinuity Continuity
         {
             get => Dataset.GetValueOrDefault(DicomTag.ContinuityOfContent, 0, DicomContinuity.None);
-            private set => Dataset.AddOrUpdate(DicomTag.ContinuityOfContent, value.ToString().ToUpper());
+            private set => Dataset.AddOrUpdate(DicomTag.ContinuityOfContent, value.ToString().ToUpperInvariant());
         }
 
         public IEnumerable<DicomContentItem> Children()

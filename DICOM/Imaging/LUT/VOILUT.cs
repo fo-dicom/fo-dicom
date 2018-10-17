@@ -159,7 +159,7 @@ namespace Dicom.Imaging.LUT
         /// <returns></returns>
         public static VOILUT Create(GrayscaleRenderOptions options)
         {
-            switch (options.VOILUTFunction.ToUpper())
+            switch (options.VOILUTFunction.ToUpperInvariant())
             {
                 case "SIGMOID":
                     return new VOISigmoidLUT(options);
