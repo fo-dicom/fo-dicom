@@ -19,9 +19,10 @@ namespace Dicom
         /// <returns>Clone of dataset.</returns>
         public static DicomDataset Clone(this DicomDataset dataset)
         {
-            var ds = new DicomDataset(dataset);
-            ds.InternalTransferSyntax = dataset.InternalTransferSyntax;
-            return ds;
+            return new DicomDataset(dataset, false)
+            {
+                InternalTransferSyntax = dataset.InternalTransferSyntax
+            };
         }
 
         /// <summary>

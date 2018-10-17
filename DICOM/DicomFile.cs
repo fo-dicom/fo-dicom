@@ -228,6 +228,9 @@ namespace Dicom
             {
                 df.File = IOManager.CreateFileReference(fileName);
 
+                df.Dataset.ValidateItems = false;
+                df.FileMetaInfo.ValidateItems = false;
+
                 using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
@@ -250,6 +253,9 @@ namespace Dicom
                     df.Format = reader.FileFormat;
 
                     df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                    df.Dataset.ValidateItems = true;
+                    df.FileMetaInfo.ValidateItems = true;
 
                     return df;
                 }
@@ -290,6 +296,8 @@ namespace Dicom
             try
             {
                 var source = new StreamByteSource(stream, readOption);
+                df.Dataset.ValidateItems = false;
+                df.FileMetaInfo.ValidateItems = false;
 
                 var reader = new DicomFileReader();
                 var result = reader.Read(
@@ -312,6 +320,8 @@ namespace Dicom
 
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
+                df.Dataset.ValidateItems = true;
+                df.FileMetaInfo.ValidateItems = true;
                 return df;
             }
             catch (Exception e)
@@ -354,6 +364,8 @@ namespace Dicom
             try
             {
                 df.File = IOManager.CreateFileReference(fileName);
+                df.Dataset.ValidateItems = false;
+                df.FileMetaInfo.ValidateItems = false;
 
                 using (var source = new FileByteSource(df.File, readOption))
                 {
@@ -379,6 +391,8 @@ namespace Dicom
                     df.Format = reader.FileFormat;
                     df.Dataset.InternalTransferSyntax = reader.Syntax;
 
+                    df.FileMetaInfo.ValidateItems = true;
+                    df.Dataset.ValidateItems = true;
                     return df;
                 }
             }
@@ -418,6 +432,8 @@ namespace Dicom
             try
             {
                 var source = new StreamByteSource(stream, readOption);
+                df.Dataset.ValidateItems = false;
+                df.FileMetaInfo.ValidateItems = false;
 
                 var reader = new DicomFileReader();
                 var result =
@@ -441,6 +457,8 @@ namespace Dicom
                 df.Format = reader.FileFormat;
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
+                df.Dataset.ValidateItems = true;
+                df.FileMetaInfo.ValidateItems = true;
                 return df;
             }
             catch (Exception e)

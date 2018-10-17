@@ -40,5 +40,10 @@ namespace Dicom
         {
             return Items.GetEnumerator();
         }
+
+        public override void Validate()
+        {
+            // nothing to validate so far. this is a list of DicomDatasets and validation of the containing DicomElements is done within the DicomDatasets.
+        }
     }
 }

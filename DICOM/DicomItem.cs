@@ -67,5 +67,9 @@ namespace Dicom
                 ? $"{Tag} {ValueRepresentation} {Tag.DictionaryEntry.Name}"
                 : $"{Tag} {ValueRepresentation} Unknown";
         }
+
+        public virtual void Validate()
+        { }
+
     }
 }

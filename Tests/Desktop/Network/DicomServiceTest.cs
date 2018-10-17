@@ -63,8 +63,8 @@ namespace Dicom.Network
 
                 request.Dataset = new DicomDataset();
                 request.Dataset.Add(DicomTag.Modality, "CT");
-                request.Dataset.Add(privTag1, "test1");
-                request.Dataset.Add(new DicomCodeString(privTag2, "test2"));
+                request.Dataset.Add(privTag1, "TESTA");
+                request.Dataset.Add(new DicomCodeString(privTag2, "TESTB"));
                 //{
                 //    { DicomTag.Modality, "CT" },
                 //    new DicomCodeString(privTag1, "test1"),
@@ -86,13 +86,13 @@ namespace Dicom.Network
                 Assert.Equal((ushort)1, command.Get<ushort>(DicomTag.CommandField));
 
                 Assert.Equal("CT", requestDataset.Get<string>(DicomTag.Modality));
-                Assert.Equal("test2", requestDataset.Get<string>(privTag2, null));
-                Assert.Equal("test1", requestDataset.Get<string>(privTag1, null));
+                Assert.Equal("TESTB", requestDataset.Get<string>(privTag2, null));
+                Assert.Equal("TESTA", requestDataset.Get<string>(privTag1, null));
 
                 Assert.Equal("CT", responseDataset.Get<string>(DicomTag.Modality));
                // Assert.Equal("test1", responseDataset.Get<DicomCodeString>(privTag1).Get<string>());
-                Assert.Equal("test2", responseDataset.Get<string>(privTag2,-1, null));
-                Assert.Equal("test1", responseDataset.Get<string>(privTag1, null));
+                Assert.Equal("TESTB", responseDataset.Get<string>(privTag2,-1, null));
+                Assert.Equal("TESTA", responseDataset.Get<string>(privTag1, null));
             }
         }
 

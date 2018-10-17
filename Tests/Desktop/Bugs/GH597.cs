@@ -20,9 +20,13 @@ namespace Dicom.Bugs
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.4")
             };
 
-            const uint expectedLength = 0x10000;
+            const int expectedLength = 0x10000;
             var sb = new StringBuilder();
-            sb.Append('0', (int)expectedLength);
+            for (int i = 0; i < expectedLength-1; i++)
+            {
+                sb.Append("0\\");
+            }
+            sb.Append("0");
             var expectedValue = sb.ToString();
             dataset.Add(DicomTag.ContourData, expectedValue);
 
@@ -40,8 +44,8 @@ namespace Dicom.Bugs
                 var newDataset = DicomFile.Open(stream).Dataset;
                 var contourDataItem = (DicomElement)newDataset.ElementAt(2);
 
-                var actualLength = contourDataItem.Length;
-                var actualValue = contourDataItem.Get<string>(0);
+                var actualLength = contourDataItem.Count;
+                var actualValue = contourDataItem.Get<string>(-1);
 
                 Assert.Equal(expectedLength, actualLength);
                 Assert.Equal(expectedValue, actualValue);
