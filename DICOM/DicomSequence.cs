@@ -45,7 +45,7 @@ namespace Dicom
 
         public override void Validate()
         {
-            Items?.Each(ds => ds.Validate());
+            Items?.Each(ds => ds?.Validate());
         }
 
     }
