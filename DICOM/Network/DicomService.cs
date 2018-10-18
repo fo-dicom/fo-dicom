@@ -697,15 +697,17 @@ namespace Dicom.Network
 
                                 var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
-                                _dimse.Dataset = new DicomDataset();
-                                _dimse.Dataset.InternalTransferSyntax = pc.AcceptedTransferSyntax;
+                                _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
                                 var source = new StreamByteSource(_dimseStream, FileReadOption.Default);
                                 source.Endian = pc.AcceptedTransferSyntax.Endian;
 
-                                var reader = new DicomReader();
-                                reader.IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR;
+                                var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
+
+                                // when receiving data via network, accept it and dont validate
+                                _dimse.Dataset.ValidateItems = false;
                                 reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
+                                _dimse.Dataset.ValidateItems = true;
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;

@@ -523,6 +523,8 @@ namespace Dicom
 
                 using (var source = new FileByteSource(file, readOption))
                 {
+                    df.FileMetaInfo.ValidateItems = false;
+                    df.Dataset.ValidateItems = false;
                     DicomFileReader reader = new DicomFileReader();
                     var result = reader.Read(
                         source,
@@ -543,6 +545,8 @@ namespace Dicom
 
                     df.Dataset.InternalTransferSyntax = reader.Syntax;
 
+                    df.Dataset.ValidateItems = true;
+                    df.FileMetaInfo.ValidateItems = true;
                     return df;
                 }
             }
