@@ -5,11 +5,13 @@ using System.Collections.Generic;
 
 namespace Dicom
 {
+
     /// <summary>
     /// Representation of a DICOM sequence of items.
     /// </summary>
     public class DicomSequence : DicomItem, IEnumerable<DicomDataset>
     {
+
         /// <summary>
         /// Initializes an instance of the <see cref="DicomSequence"/> class.
         /// </summary>
@@ -43,7 +45,10 @@ namespace Dicom
 
         public override void Validate()
         {
-            // nothing to validate so far. this is a list of DicomDatasets and validation of the containing DicomElements is done within the DicomDatasets.
+            foreach (var ds in Items)
+            {
+                ds.Validate();
+            }
         }
     }
 }
