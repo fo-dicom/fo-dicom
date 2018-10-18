@@ -23,8 +23,6 @@ namespace Dicom
 
         private DicomTransferSyntax _syntax;
 
-        private bool _validateItems = true;
-
         #endregion
 
         #region CONSTRUCTORS
@@ -72,7 +70,7 @@ namespace Dicom
         internal DicomDataset(IEnumerable<DicomItem> items, bool validate)
             : this()
         {
-            _validateItems = validate;
+            ValidateItems = validate;
             if (items != null)
             {
                 foreach (var item in items.Where(item => item != null))
@@ -89,12 +87,12 @@ namespace Dicom
                     }
                     else
                     {
-                        if (_validateItems) item.Validate();
+                        if (ValidateItems) item.Validate();
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
             }
-            _validateItems = true;
+            ValidateItems = true;
         }
 
         #endregion
@@ -121,10 +119,16 @@ namespace Dicom
         }
 
 
-        internal bool ValidateItems
+        internal bool ValidateItems { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset
+        /// </summary>
+        [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you need to set this property.", false)]
+        public bool AutoValidate
         {
-            get => _validateItems;
-            set => _validateItems = value;
+            get => ValidateItems;
+            set => ValidateItems = value;
         }
 
         #endregion
@@ -654,6 +658,18 @@ namespace Dicom
         #region METHODS
 
         /// <summary>
+        /// Performs a validation of all DICOM items that are contained in this DicomDataset
+        /// </summary>
+        /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
+        public void Validate()
+        {
+            foreach(var item in this)
+            {
+                item.Validate();
+            }
+        }
+
+        /// <summary>
         /// Gets the item or element value of the specified <paramref name="tag"/>.
         /// </summary>
         /// <typeparam name="T">Type of the return value.</typeparam>
@@ -1161,7 +1177,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
-                        if (_validateItems) item.Validate();
+                        if (ValidateItems) item.Validate();
                         _items[tag] = item;
                     }
                 }
@@ -1176,7 +1192,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
-                        if (_validateItems) item.Validate();
+                        if (ValidateItems) item.Validate();
                         _items.Add(tag, item);
                     }
                 }
@@ -1200,7 +1216,7 @@ namespace Dicom
                     tag = GetPrivateTag(tag);
                     item.Tag = tag;
                 }
-                if (_validateItems) item.Validate();
+                if (ValidateItems) item.Validate();
 
                 if (allowUpdate)
                 {
