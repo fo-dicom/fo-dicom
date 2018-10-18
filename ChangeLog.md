@@ -5,6 +5,7 @@
 * DicomFileMetaInformation now uses pre-existing SourceAET where possible
 * PixelData.GetMinMax now has 2 overloads, one that takes padding into account and one wihtout the padding parameter (#675)
 * string.ToUpper() is replaced by string.ToUpperInvariant() to prevent bad character conversion on turkish system
+* Added appveyor.yml file for ci by this setting (#729)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
