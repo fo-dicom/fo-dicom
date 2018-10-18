@@ -45,10 +45,8 @@ namespace Dicom
 
         public override void Validate()
         {
-            foreach (var ds in Items)
-            {
-                ds.Validate();
-            }
+            Items?.Each(ds => ds.Validate());
         }
+
     }
 }
