@@ -1146,7 +1146,7 @@ namespace Dicom
 
         protected override void ValidateVM()
         {
-            // do not check length of items;
+            // do not check length of items
         }
 
     }
@@ -1176,7 +1176,7 @@ namespace Dicom
 
         protected override void ValidateVM()
         {
-            // do not check length of items;
+            // do not check length of items
         }
 
     }
@@ -1230,7 +1230,7 @@ namespace Dicom
 
         protected override void ValidateVM()
         {
-            // do not check length of items;
+            // do not check length of items
         }
 
     }
