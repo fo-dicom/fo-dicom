@@ -293,7 +293,6 @@ namespace Dicom
             }
             else
             {
-                //TODO: check if this is the correct. 
                 //Are there any other cases where this method can be called for non DicomElement types?
                 throw new DicomDataException("DicomTag doesn't support values.");
             }
