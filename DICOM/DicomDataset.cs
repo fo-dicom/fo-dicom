@@ -641,7 +641,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
         /// <paramref name="n">item index</paramref> is out-of-range.</exception>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, int n = 0)
         {
             return Get<T>(tag, n, false, default(T));
@@ -654,7 +654,7 @@ namespace Dicom
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the element corresponding to <paramref name="tag"/> cannot be converted to an integer.</exception>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public int Get(DicomTag tag, int defaultValue)
         {
             return Get<int>(tag, 0, true, defaultValue);
@@ -669,7 +669,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <remarks>In code, consider to use this method with implicit type specification, since <typeparamref name="T"/> can be inferred from
         /// <paramref name="defaultValue"/>, e.g. prefer <code>dataset.Get(tag, "Default")</code> over <code>dataset.Get&lt;string&gt;(tag, "Default")</code>.</remarks>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, T defaultValue)
         {
             return Get<T>(tag, 0, true, defaultValue);
@@ -683,7 +683,7 @@ namespace Dicom
         /// <param name="n">Item index (for multi-valued elements).</param>
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
             return Get<T>(tag, n, true, defaultValue);
