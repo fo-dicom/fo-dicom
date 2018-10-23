@@ -294,6 +294,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+
                 if (index >= element.Count )
                 {
                     throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}");
@@ -387,6 +389,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(T[]) == typeof(byte[])) { return (T[])(object)element.Buffer.Data; }
+
                 return element.Get<T[]>(-1);
             }
             else
@@ -458,6 +462,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+
                 if (element.Count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
 
                 return element.Get<T>(0);

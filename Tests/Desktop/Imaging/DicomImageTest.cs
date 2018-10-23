@@ -75,6 +75,20 @@ namespace Dicom.Imaging
             }
         }
 
+
+        [Fact]
+        public void RenderImage_ColorPalette()
+        {
+            lock (_lock)
+            {
+                ImageManager.SetImplementation(WinFormsImageManager.Instance);
+                var file = new DicomImage(@".\Test Data\10200904.dcm");
+                var image = file.RenderImage(0);
+                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+            }
+        }
+
+
         #endregion
     }
 }
