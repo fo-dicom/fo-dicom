@@ -98,7 +98,7 @@ namespace Dicom.Imaging
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset)
         {
-            if (dataset.TryGetSingleValue(DicomTag.WindowWidth, out double windowWidth) && windowWidth >= 1.0
+            if (dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) && windowWidth >= 1.0
                 && dataset.Contains(DicomTag.WindowCenter))
             {
                 //If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
@@ -136,8 +136,8 @@ namespace Dicom.Imaging
                 RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
                 RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0),
 
-                WindowWidth = dataset.GetSingleValue<double>(DicomTag.WindowWidth),
-                WindowCenter = dataset.GetSingleValue<double>(DicomTag.WindowCenter),
+                WindowWidth = dataset.GetValue<double>(DicomTag.WindowWidth, 0),
+                WindowCenter = dataset.GetValue<double>(DicomTag.WindowCenter, 0),
 
                 VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR"),
                 ColorMap = GetColorMap(dataset)

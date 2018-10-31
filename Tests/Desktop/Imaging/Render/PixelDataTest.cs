@@ -2,19 +2,40 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.IO.Buffer;
+using System;
+using System.Linq;
 
-using Xunit.Sdk;
+using Xunit;
 
 namespace Dicom.Imaging.Render
 {
-    using System;
-    using System.Linq;
-
-    using Xunit;
 
     public class PixelDataTest
     {
         #region Unit tests
+
+        [Fact]
+        public void DicomPixelData_TestDefaultWindowing()
+        {
+            // an image, that contains several values in 0028,1050 and 0028,1051
+            var img = new DicomImage(@"Test Data\IM-0001-0001-0001.dcm");
+            img.RenderImage(0);
+            Assert.Equal(img.Dataset.GetValue<double>(DicomTag.WindowWidth, 0), img.WindowWidth);
+            Assert.Equal(img.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
+
+            // an image, that contains one windowing-setting
+            img = new DicomImage(@"Test Data\CR-MONO1-10-chest");
+            img.RenderImage(0);
+            Assert.Equal(img.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
+            Assert.Equal(img.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
+
+            // an image with no windowing-setting
+            img = new DicomImage(@"Test Data\GH227.dcm");
+            img.RenderImage(0);
+            Assert.Equal(255, img.WindowWidth);
+            Assert.Equal(127.5, img.WindowCenter);
+        }
+
 
         [Fact]
         public void DicomPixelData_CreateSignedGrayscale32_12BitMaskWorks()
@@ -24,14 +45,14 @@ namespace Dicom.Imaging.Render
             ushort highBit = 11;
             ushort pixelRepresentation = 1; // signed
 
-            var mask = (int)((1 << (highBit + 1)) - 1);
+            int mask = (1 << (highBit + 1)) - 1;
 
             var origData = new int[] { -2048, -1, 0, 1, 0x7ff };
 
             // Bits outside bitsStored should be ignored. Try setting them to zeros and ones, respectively, and verify that the
             // output is unchanged:
-            var equivalentData = origData.Select(x => (int)(x & mask)).ToArray();
-            var equivalentData2 = origData.Select(x => (int)(x | ~mask)).ToArray();
+            var equivalentData = origData.Select(x => x & mask).ToArray();
+            var equivalentData2 = origData.Select(x => x | ~mask).ToArray();
 
             var pixelData = CreatePixelData_(
                 equivalentData,
@@ -152,14 +173,14 @@ namespace Dicom.Imaging.Render
             const ushort highBit = 11;
             const ushort pixelRepresentation = 0; // unsigned
 
-            var mask = (uint)((1 << (highBit + 1)) - 1);
+            uint mask = (1 << (highBit + 1)) - 1;
 
             var origData = new uint[] { 0, 1, 2047, 2048, 2049, 4095 };
 
             // Bits outside bitsStored should be ignored. Try setting them to zeros and ones, respectively, and verify that the
             // output is unchanged:
-            var equivalentData = origData.Select(x => (uint)(x & mask)).ToArray();
-            var equivalentData2 = origData.Select(x => (uint)(x | ~mask)).ToArray();
+            var equivalentData = origData.Select(x => x & mask).ToArray();
+            var equivalentData2 = origData.Select(x => x | ~mask).ToArray();
 
             var pixelData = CreatePixelData_(
                 equivalentData,
