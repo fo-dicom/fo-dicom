@@ -222,12 +222,16 @@ namespace Dicom.Imaging
 
         private static int[] Flip(int w, int h, bool flipX, bool flipY, int[] p)
         {
-            var i = 0;
+            // TODO: optimize this method, so that the image is not processed twice
+            // if both flipX and flipY are set.
+            // maybe int xStart, xEnd, xStep, yStart, yEnd, yStep. and then one loop with these parameters
+            // is some parallell execution allowed here?
             int[] tmp, result;
 
             if (flipX)
             {
                 tmp = new int[w * h];
+                var i = 0;
                 for (var y = 0; y < h; y++)
                 {
                     for (var x = w - 1; x >= 0; x--, i++)
@@ -242,6 +246,7 @@ namespace Dicom.Imaging
             }
             if (flipY)
             {
+                var i = 0;
                 result = new int[w * h];
                 for (var y = h - 1; y >= 0; y--)
                 {

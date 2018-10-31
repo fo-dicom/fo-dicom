@@ -26,6 +26,15 @@ namespace Dicom.Imaging
             Assert.False(transform.IsTransformed);
         }
 
+        [Fact]
+        public void RotateAndFlipImage()
+        {
+            DicomFile myDicomFile = DicomFile.Open(@"Test Data\CR-MONO1-10-chest");
+            var myDicomImage = new DicomImage(myDicomFile.Dataset);
+            IImage myImg = myDicomImage.RenderImage(0);
+            myImg.Render(3, true, true, 0);
+        }
+
         #endregion
     }
 }
