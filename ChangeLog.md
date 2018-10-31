@@ -7,6 +7,7 @@
 * string.ToUpper() is replaced by string.ToUpperInvariant() to prevent bad character conversion on turkish system
 * Fix detecting default windowing if a dataset contains several windows configurations (#741)
 * Fix bug in .net core when a image is both flipped in x and y direction (#721)
+* Pass through the timeout parameter from DicomClient.Send to the constructor of DesktopNetworkStream (#732)
 * Added appveyor.yml file for ci by this setting (#729)
 
 #### v.4.0.0 (9/24/2018)

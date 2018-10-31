@@ -37,6 +37,8 @@ namespace Dicom.Network
         /// </summary>
         private static NetworkManager _implementation;
 
+        private const int DefaultAssociationTimeout = 5000;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -106,10 +108,11 @@ namespace Dicom.Network
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
+        /// <param name="millisecondsTimeout">a timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
-        public static INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
+        public static INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout = DefaultAssociationTimeout)
         {
-            return _implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            return _implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
         /// <summary>
@@ -150,8 +153,9 @@ namespace Dicom.Network
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
+        /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
-        protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors);
+        protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.

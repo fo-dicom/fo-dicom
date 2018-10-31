@@ -95,9 +95,9 @@ namespace Dicom.Network
         }
 
         /// <inheritdoc />
-        protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
+        protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
         {
-            return new WindowsNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            return new WindowsNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
         /// <inheritdoc />
