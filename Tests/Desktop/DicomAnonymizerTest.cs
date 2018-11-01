@@ -190,6 +190,27 @@ namespace Dicom
             Assert.Equal(0, sequence.Items.Count);
         }
 
+        [Fact]
+        public void AnonymizeInPlace_BasicProfile()
+        {
+            const string fileName = "CT1_J2KI";
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+
+            var profile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
+            var anony = new DicomAnonymizer(profile);
+
+            var anonymized = anony.Anonymize(dataset);
+
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientName), anonymized.GetString(DicomTag.PatientName));
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientAge), anonymized.GetSingleValueOrDefault(DicomTag.PatientAge, string.Empty));
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientID), anonymized.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty));
+        }
+
         #endregion
     }
 }
