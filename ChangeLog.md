@@ -9,6 +9,7 @@
 * Fix bug in .net core when a image is both flipped in x and y direction (#721)
 * Pass through the timeout parameter from DicomClient.Send to the constructor of DesktopNetworkStream (#732)
 * Added appveyor.yml file for ci by this setting (#729)
+* Bug Fix : anonymized patient name is now encoded with same character set as the original Dicom.
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
