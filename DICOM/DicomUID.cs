@@ -208,6 +208,8 @@ namespace Dicom
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
 
+                if (Name.Contains("Volume Storage")) return DicomStorageCategory.Volume;
+
                 if (this == DicomUID.BlendingSoftcopyPresentationStateStorage
                     || this == DicomUID.ColorSoftcopyPresentationStateStorage
                     || this == DicomUID.GrayscaleSoftcopyPresentationStateStorage
