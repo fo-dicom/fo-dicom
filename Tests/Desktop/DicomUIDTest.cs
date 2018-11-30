@@ -36,15 +36,6 @@ namespace Dicom
         {
             Assert.False(DicomUID.EnhancedUSVolumeStorage.IsImageStorage);
             Assert.True(DicomUID.EnhancedUSVolumeStorage.IsVolumeStorage);
-
-            Assert.False(DicomUID.PrivatePhilipsVolumeStorage.IsImageStorage);
-            Assert.True(DicomUID.PrivatePhilipsVolumeStorage.IsVolumeStorage);
-
-            Assert.False(DicomUID.PrivatePhilipsVolumeStorageRetired.IsImageStorage);
-            Assert.True(DicomUID.PrivatePhilipsVolumeStorageRetired.IsVolumeStorage);
-
-            Assert.False(DicomUID.PrivateSiemensCTMRVolumeStorage.IsImageStorage);
-            Assert.True(DicomUID.PrivateSiemensCTMRVolumeStorage.IsVolumeStorage);
         }
 
         #endregion
