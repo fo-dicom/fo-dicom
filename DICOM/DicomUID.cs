@@ -55,7 +55,9 @@ namespace Dicom
 
         Other,
 
-        Private
+        Private,
+
+        Volume
     }
 
     public sealed partial class DicomUID : DicomParseable
