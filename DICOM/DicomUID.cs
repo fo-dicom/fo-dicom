@@ -190,6 +190,14 @@ namespace Dicom
             }
         }
 
+        public bool IsVolumeStorage
+        {
+            get
+            {
+                return StorageCategory == DicomStorageCategory.Volume;
+            }
+        }
+
         public DicomStorageCategory StorageCategory
         {
             get
