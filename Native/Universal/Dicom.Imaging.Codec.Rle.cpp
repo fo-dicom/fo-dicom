@@ -335,7 +335,7 @@ private:
 				}
 			}
 
-			if ((i + 2) >= end)
+			if ((i + 1) >= end)
 				break;
 		}
 	}
