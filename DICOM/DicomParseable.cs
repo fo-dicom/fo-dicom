@@ -16,7 +16,7 @@ namespace Dicom
                 throw new DicomDataException("DicomParseable.Parse expects a class derived from DicomParseable");
             }
 
-            var method = typeof(T).GetTypeInfo().GetDeclaredMethods("Parse").Single(m => m.IsPublic && m.IsStatic);
+            var method = typeof(T).GetTypeInfo().GetDeclaredMethods("Parse").Single(m => m.IsPublic && m.IsStatic && m.GetParameters().Length == 1 && m.GetParameters().Single().ParameterType == typeof(string));
             return (T)method.Invoke(null, new object[] { value });
         }
     }
