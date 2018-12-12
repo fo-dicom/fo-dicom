@@ -652,7 +652,7 @@ namespace Dicom
         public static DicomTransferSyntax Parse(string uid)
         {
             if (uid == null) throw new ArgumentNullException(nameof(uid));
-            return Lookup(DicomUID.Parse(uid));
+            return Lookup(DicomUID.Parse(s:uid, type: DicomUidType.TransferSyntax));
         }
 
         /// <summary>

@@ -2,6 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Dicom.IO.Buffer;
 using Xunit;
 
@@ -31,6 +34,68 @@ namespace Dicom.Imaging.Codec
                     () =>
                     file.Dataset.Clone(DicomTransferSyntax.JPEGProcess14, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
+        }
+
+
+        [Fact]
+        public void EncodeDecodeRLE16()
+        {
+            var files = Directory.GetFiles(@"Test Data");
+            foreach (var testFile in files)
+            {
+                try
+                {
+                    var myOriginalDicomFilePath = testFile;
+                    DicomFile myOriginalDicomFile = DicomFile.Open(myOriginalDicomFilePath);
+                    DicomFile myNewFile = myOriginalDicomFile.Clone(DicomTransferSyntax.RLELossless);
+                    DicomFile myResFile = myNewFile.Clone(myOriginalDicomFile.Dataset.InternalTransferSyntax);
+
+                    // Supporting 16bit encoded images
+                    var myBitsAllocated = myResFile.Dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+                    if (myBitsAllocated == 16)
+                    {
+                        byte[] myOriginalBytes = DicomPixelData.Create(myOriginalDicomFile.Dataset).GetFrame(0).Data;
+                        byte[] myResBytes = DicomPixelData.Create(myResFile.Dataset).GetFrame(0).Data;
+
+                        if (!myOriginalBytes.SequenceEqual(myResBytes))
+                        {
+                            // Number of different bytes
+                            int myDiffCount = myResBytes.Where((inT, inI) => inT != myOriginalBytes[inI]).Count();
+                            Assert.Equal(0, myDiffCount);
+                            Trace.WriteLine("Diff count " + myDiffCount);
+
+                            // Run through all image
+                            for (var myIndex = 0; myIndex < myOriginalBytes.Length; myIndex += 2)
+                            {
+                                // Get Pixel value from Original image
+                                byte myOriginalByte1 = myOriginalBytes[myIndex];
+                                byte myOrginalByte2 = myOriginalBytes[myIndex + 1];
+                                ushort myOriginalPixelValue =
+                                    BitConverter.ToUInt16(new byte[] { myOriginalByte1, myOrginalByte2 }, 0);
+
+                                // Get Pixel value from RoundTrip image
+                                byte myResByte1 = myResBytes[myIndex];
+                                byte myResByte2 = myResBytes[myIndex + 1];
+                                ushort myResPixelValue = BitConverter.ToUInt16(new byte[] { myResByte1, myResByte2 }, 0);
+
+                                // If Value are different
+                                if (myOriginalPixelValue != myResPixelValue)
+                                {
+                                    Trace.Write("Diff:" + Math.Abs(myOriginalPixelValue - myResPixelValue));
+                                    Trace.Write(
+                                        $" Original Value: {myOriginalPixelValue} ({myOriginalByte1}, {myOrginalByte2})");
+                                    Trace.WriteLine($" Res Value: {myResPixelValue} ({myResByte1}, {myResByte2})");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignore
+                }
+            }
         }
 
         /// <summary>

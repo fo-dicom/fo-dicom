@@ -155,6 +155,11 @@ namespace Dicom
 
         public static DicomUID Parse(string s)
         {
+            return Parse(s, "Unknown", DicomUidType.Unknown);
+        }
+
+        public static DicomUID Parse(string s, string name = "Unknown", DicomUidType type = DicomUidType.Unknown)
+        {
             string u = s.TrimEnd(' ', '\0');
 
             DicomUID uid = null;
@@ -163,7 +168,7 @@ namespace Dicom
             //if (!IsValid(u))
             //	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
 
-            return new DicomUID(u, "Unknown", DicomUidType.Unknown);
+            return new DicomUID(u, name, type);
         }
 
         private static IDictionary<string, DicomUID> _uids;

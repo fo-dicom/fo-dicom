@@ -31,6 +31,90 @@ namespace Dicom
             Assert.Equal(isRetired, found.IsRetired);
         }
 
+        /// <summary>
+        /// Parse can parse string UID.
+        /// </summary>
+        [Fact]
+        public void CanParse()
+        {
+            var uid = DicomUID.Parse("1.2.3.4.5.6.7.8.9.0");
+            Assert.Equal("Unknown", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse string with trailing space into UID
+        /// </summary>
+        [Fact]
+        public void CanParseStringWithTrailingBlank()
+        {
+            var uid = DicomUID.Parse("1.2.3.4.5.6.7.8.9.0 ");
+            Assert.Equal("Unknown", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse string with trailing null into UID
+        /// </summary>
+        [Fact]
+        public void CanParseStringWithTrailingNull()
+        {
+            var uid = DicomUID.Parse("1.2.3.4.5.6.7.8.9.0\0");
+            Assert.Equal("Unknown", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse UID with name.
+        /// </summary>
+        [Fact]
+        public void CanParseWithName()
+        {
+            var uid = DicomUID.Parse(s: "1.2.3.4.5.6.7.8.9.0", name: "UidName");
+            Assert.Equal("UidName", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse UID with type.
+        /// </summary>
+        [Fact]
+        public void CanParseWithType()
+        {
+            var uid = DicomUID.Parse(s: "1.2.3.4.5.6.7.8.9.0", type: DicomUidType.TransferSyntax);
+            Assert.Equal("Unknown", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.TransferSyntax, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse UID with type.
+        /// </summary>
+        [Fact]
+        public void CanParseWithNameAndType()
+        {
+            var uid = DicomUID.Parse(s: "1.2.3.4.5.6.7.8.9.0", name: "UidName", type: DicomUidType.TransferSyntax);
+            Assert.Equal("UidName", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.TransferSyntax, uid.Type);
+        }
+
+        /// <summary>
+        /// Parse can parse UID with type.
+        /// </summary>
+        [Fact]
+        public void CanParseGeneric()
+        {
+            var uid = DicomUID.Parse<DicomUID>("1.2.3.4.5.6.7.8.9.0");
+            Assert.Equal("Unknown", uid.Name);
+            Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
+            Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
         #endregion
 
         #region Support data

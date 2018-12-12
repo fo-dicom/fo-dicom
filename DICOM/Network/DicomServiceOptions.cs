@@ -90,6 +90,8 @@ namespace Dicom.Network
         /// <summary>
         /// Gets or sets whether to ignore transfer syntax change when DICOM dataset cannot be transcoded from
         /// its own transfer syntax to the negotiated Accepted Transfer Syntax.
+        /// If set to true then the transcoding is ignored and the DICOM dataset is sent as is, if set to false
+        /// then the pixeldata is removed from the DICOM dataset.
         /// </summary>
         public bool IgnoreUnsupportedTransferSyntaxChange { get; set; }
 
