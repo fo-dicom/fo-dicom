@@ -11,6 +11,7 @@
 * Added appveyor.yml file for ci by this setting (#729)
 * Bug Fix : anonymized patient name is now encoded with same character set as the original Dicom.
 * Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
+* allow Query/Register/Unregister transfer syntax.
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
