@@ -140,7 +140,7 @@ namespace Dicom.Imaging.Codec
 
             private int _count;
 
-            private readonly int[] _offsets;
+            private readonly uint[] _offsets;
 
             private readonly MemoryStream _stream;
 
@@ -162,14 +162,14 @@ namespace Dicom.Imaging.Codec
             {
                 this.Length = 0;
                 _count = 0;
-                _offsets = new int[15];
+                _offsets = new uint[15];
                 _stream = new MemoryStream();
                 _writer = EndianBinaryWriter.Create(_stream, Endian.Little);
                 _buffer = new byte[132];
 
                 // Write header
                 AppendUInt32((uint)_count);
-                for (var i = 0; i < 15; i++) AppendUInt32((uint)_offsets[i]);
+                for (var i = 0; i < 15; i++) AppendUInt32(_offsets[i]);
 
                 _prevByte = -1;
                 _repeatCount = 0;
@@ -209,20 +209,20 @@ namespace Dicom.Imaging.Codec
                 _writer.Write((uint)_count);
                 for (var i = 0; i < 15; i++)
                 {
-                    this._writer.Write((uint)_offsets[i]);
+                    _writer.Write(_offsets[i]);
                 }
 
-                return new MemoryByteBuffer(this._stream.ToArray());
+                return new MemoryByteBuffer(_stream.ToArray());
             }
 
             internal void NextSegment()
             {
                 Flush();
-                if ((this.Length & 1) == 1)
+                if ((Length & 1) == 1)
                 {
-                    this.AppendByte(0x00);
+                    AppendByte(0x00);
                 }
-                _offsets[_count++] = (int)this.Length;
+                _offsets[_count++] = (uint)Length;
             }
 
             internal void Encode(byte b)
@@ -293,7 +293,7 @@ namespace Dicom.Imaging.Codec
 
             internal void MakeEvenLength()
             {
-                if ((this.Length & 1) == 1) AppendByte(0x00);
+                if ((Length & 1) == 1) { AppendByte(0x00); }
             }
 
             internal void Flush()
@@ -343,19 +343,19 @@ namespace Dicom.Imaging.Codec
             private void AppendBytes(byte[] bytes, int offset, int count)
             {
                 _writer.Write(bytes, offset, count);
-                this.Length += count;
+                Length += count;
             }
 
             private void AppendByte(byte value)
             {
                 _writer.Write(value);
-                ++this.Length;
+                ++Length;
             }
 
             private void AppendUInt32(uint value)
             {
                 _writer.Write(value);
-                this.Length += 4;
+                Length += 4;
             }
 
             #endregion
@@ -365,9 +365,9 @@ namespace Dicom.Imaging.Codec
         {
             #region FIELDS
 
-            private readonly int[] offsets;
+            private readonly int[] _offsets;
 
-            private readonly byte[] data;
+            private readonly byte[] _data;
 
             #endregion
 
@@ -376,15 +376,15 @@ namespace Dicom.Imaging.Codec
             internal RLEDecoder(IByteBuffer data)
             {
                 var source = new ByteBufferByteSource(data) { Endian = Endian.Little };
-                this.NumberOfSegments = source.GetInt32();
+                NumberOfSegments = source.GetInt32();
 
-                this.offsets = new int[15];
+                _offsets = new int[15];
                 for (var i = 0; i < 15; ++i)
                 {
-                    this.offsets[i] = source.GetInt32();
+                    _offsets[i] = source.GetInt32();
                 }
 
-                this.data = data.Data;
+                _data = data.Data;
             }
 
             #endregion
@@ -399,15 +399,15 @@ namespace Dicom.Imaging.Codec
 
             internal void DecodeSegment(int segment, IByteBuffer buffer, int start, int sampleOffset)
             {
-                if (segment < 0 || segment >= this.NumberOfSegments)
+                if (segment < 0 || segment >= NumberOfSegments)
                 {
                     throw new ArgumentOutOfRangeException("Segment number out of range");
                 }
 
-                var offset = this.GetSegmentOffset(segment);
-                var length = this.GetSegmentLength(segment);
+                var offset = GetSegmentOffset(segment);
+                var length = GetSegmentLength(segment);
 
-                Decode(buffer, start, sampleOffset, this.data, offset, length);
+                Decode(buffer, start, sampleOffset, _data, offset, length);
             }
 
             private static void Decode(IByteBuffer buffer, int start, int sampleOffset, byte[] rleData, int offset, int count)
@@ -477,7 +477,7 @@ namespace Dicom.Imaging.Codec
                         }
                     }
 
-                    if ((i + 2) >= end)
+                    if ((i + 1) >= end)
                     {
                         break;
                     }
@@ -486,19 +486,19 @@ namespace Dicom.Imaging.Codec
 
             private int GetSegmentOffset(int segment)
             {
-                return this.offsets[segment];
+                return _offsets[segment];
             }
 
             private int GetSegmentLength(int segment)
             {
-                var offset = this.GetSegmentOffset(segment);
-                if (segment < (this.NumberOfSegments - 1))
+                var offset = GetSegmentOffset(segment);
+                if (segment < (NumberOfSegments - 1))
                 {
-                    var next = this.GetSegmentOffset(segment + 1);
+                    var next = GetSegmentOffset(segment + 1);
                     return next - offset;
                 }
 
-                return this.data.Length - offset;
+                return _data.Length - offset;
             }
 
             #endregion
