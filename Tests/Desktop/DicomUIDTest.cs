@@ -31,6 +31,13 @@ namespace Dicom
             Assert.Equal(isRetired, found.IsRetired);
         }
 
+        [Fact]
+        public void IsVolumeStorage()
+        {
+            Assert.False(DicomUID.EnhancedUSVolumeStorage.IsImageStorage);
+            Assert.True(DicomUID.EnhancedUSVolumeStorage.IsVolumeStorage);
+        }
+
         /// <summary>
         /// Parse can parse string UID.
         /// </summary>

@@ -55,7 +55,9 @@ namespace Dicom
 
         Other,
 
-        Private
+        Private,
+
+        Volume
     }
 
     public sealed partial class DicomUID : DicomParseable
@@ -193,6 +195,14 @@ namespace Dicom
             }
         }
 
+        public bool IsVolumeStorage
+        {
+            get
+            {
+                return StorageCategory == DicomStorageCategory.Volume;
+            }
+        }
+
         public DicomStorageCategory StorageCategory
         {
             get
@@ -202,6 +212,8 @@ namespace Dicom
                 if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
 
                 if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
+
+                if (Name.Contains("Volume Storage")) return DicomStorageCategory.Volume;
 
                 if (this == DicomUID.BlendingSoftcopyPresentationStateStorage
                     || this == DicomUID.ColorSoftcopyPresentationStateStorage
