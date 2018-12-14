@@ -16,7 +16,7 @@ namespace Dicom.IO.Buffer
         /// <summary>
         /// Gets the size of the buffered data.
         /// </summary>
-        uint Size { get; }
+        long Size { get; }
 
         /// <summary>
         /// Gets the data.
@@ -29,6 +29,6 @@ namespace Dicom.IO.Buffer
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        byte[] GetByteRange(int offset, int count);
+        byte[] GetByteRange(long offset, int count);
     }
 }

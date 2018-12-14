@@ -346,8 +346,8 @@ namespace Dicom.Imaging
                 if (frame < 0 || frame >= NumberOfFrames)
                     throw new IndexOutOfRangeException("Requested frame out of range!");
 
-                var offset = UncompressedFrameSize * frame;
-                return new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                var offset = (long)UncompressedFrameSize * frame;
+                return new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
             }
 
             /// <inheritdoc />
@@ -411,7 +411,7 @@ namespace Dicom.Imaging
                 if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
 
                 var offset = UncompressedFrameSize * frame;
-                IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
 
                 // mainly for GE Private Implicit VR Big Endian
                 if (Syntax.SwapPixelData) buffer = new SwapByteBuffer(buffer, 2);
@@ -506,7 +506,7 @@ namespace Dicom.Imaging
 
                     var composite = new CompositeByteBuffer();
 
-                    uint pos = 0;
+                    long pos = 0;
                     var frag = 0;
 
                     while (pos < start && frag < _element.Fragments.Count)
@@ -548,7 +548,7 @@ namespace Dicom.Imaging
             {
                 NumberOfFrames++;
 
-                var pos = _element.Fragments.Sum(x => (long)x.Size + 8);
+                var pos = _element.Fragments.Sum(x => x.Size + 8);
                 if (pos < uint.MaxValue)
                 {
                     _element.OffsetTable.Add((uint)pos);

@@ -1,4 +1,5 @@
 #### v.4.0.1 (TBD)
+* change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * Update Json DS validation regex (#643)
 * Add option to DicomFile.Open how to deal with large tags (#617)
