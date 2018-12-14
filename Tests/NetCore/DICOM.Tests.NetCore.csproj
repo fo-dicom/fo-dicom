@@ -54,6 +54,7 @@
     <Compile Include="..\Desktop\Bugs\VideoCStoreProvider.cs" Link="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="..\Desktop\Bugs\GH538.cs" Link="Bugs\GH538.cs" />
     <Compile Include="..\Desktop\Imaging\DicomPixelDataTest.cs" Link="Imaging\DicomPixelDataTest.cs" />
+    <Compile Include="..\Desktop\Imaging\Codec\DicomCodecExtensionsTest.cs" Link="Imaging\DicomCodecExtensionsTest.cs"/>
     <Compile Include="..\Desktop\Log\TextWriterLoggerTest.cs" Link="Log\TextWriterLoggerTest.cs" />
     <Compile Include="..\Desktop\DicomDatasetTest.cs" Link="DicomDatasetTest.cs" />
     <Compile Include="..\Desktop\DicomDictionaryTest.cs" Link="DicomDictionaryTest.cs" />

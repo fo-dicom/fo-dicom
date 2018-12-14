@@ -652,7 +652,7 @@ namespace Dicom
         public static DicomTransferSyntax Parse(string uid)
         {
             if (uid == null) throw new ArgumentNullException(nameof(uid));
-            return Lookup(DicomUID.Parse(uid));
+            return Lookup(DicomUID.Parse(s:uid, type: DicomUidType.TransferSyntax));
         }
 
         /// <summary>
@@ -681,6 +681,85 @@ namespace Dicom
             }
 
             throw new DicomDataException("UID: {0} is not a transfer syntax type.", uid);
+        }
+
+        /// <summary>
+        /// register transfer syntax into internal dictionary, assuming Little Endian and Explicit VR.
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static DicomTransferSyntax Register(DicomUID uid)
+        {
+            return Register(uid, Endian.Little, true, true);
+        }
+
+        /// <summary>
+        /// register transfer syntax into internal dictionary.
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="endian"></param>
+        /// <param name="isExplicitVR"></param>
+        /// <returns></returns>
+        public static DicomTransferSyntax Register(DicomUID uid, Endian endian, bool isExplicitVR = true, bool isEncapsulated = true)
+        {
+            lock (Entries)
+            {
+                DicomTransferSyntax tx;
+
+                //  return cached transfer syntax from internal dictionary.
+                if (Entries.TryGetValue(uid, out tx)) return tx;
+
+                if (uid == null) throw new ArgumentNullException(nameof(uid));
+                if (uid.Type != DicomUidType.TransferSyntax) throw new DicomDataException("UID: {0} is not a transfer syntax type.", uid);
+
+                //  cache transfer syntax into internal dictionary.
+                tx = new DicomTransferSyntax(uid)
+                {
+                    IsRetired = uid.IsRetired,
+                    IsExplicitVR = isExplicitVR,
+                    IsEncapsulated = isEncapsulated,
+                    Endian = endian
+                };
+                Entries.Add(uid, tx);
+
+                return tx;
+            }
+        }
+
+        /// <summary>
+        /// unregister transfer syntax from internal dictionary.
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static bool Unregister(DicomUID uid)
+        {
+            lock (Entries)
+            {
+                return Entries.Remove(uid);
+            }
+        }
+
+        /// <summary>
+        /// unregister transfer syntax from internal dictionary.
+        /// </summary>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        public static bool Unregister(DicomTransferSyntax ts)
+        {
+            return Unregister(ts.UID);
+        }
+
+        /// <summary>
+        /// Query DicomTransferSyntax by UID. returns null if not found.
+        /// </summary>
+        public static DicomTransferSyntax Query(DicomUID uid)
+        {
+            lock (Entries)
+            {
+                DicomTransferSyntax ts;
+                Entries.TryGetValue(uid, out ts);
+                return ts;
+            }
         }
 
         #endregion
