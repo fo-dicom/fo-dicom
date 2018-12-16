@@ -157,8 +157,7 @@ namespace Dicom.Log
         /// <returns>True if <paramref name="s"/> could be interpreted as integer value, false otherwise.</returns>
         internal static bool IsNumber(string s)
         {
-            int dummy;
-            return int.TryParse(s, out dummy);
+            return int.TryParse(s, out _);
         }
     }
 }
