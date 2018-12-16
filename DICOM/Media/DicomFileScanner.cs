@@ -48,26 +48,26 @@ namespace Dicom.Media
 
         public event DicomScanCompleteCallback Complete;
 
-      #region Public Properties
+        #region Public Properties
 
-      public bool ProgressOnDirectoryChange { get; set; }
+        public bool ProgressOnDirectoryChange { get; set; }
 
-      public int ProgressFilesCount { get; set; }
+        public int ProgressFilesCount { get; set; }
 
-      public bool CheckForValidHeader { get; set; }
+        public bool CheckForValidHeader { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public void Start(string directory)
+        public void Start(string directory)
         {
             _stop = false;
             _count = 0;
 #if NET35
-            this.ScanProc(directory);
+            ScanProc(directory);
 #else
-            Task.Run(() => this.ScanProc(directory));
+            Task.Run(() => ScanProc(directory));
 #endif
         }
 
@@ -119,6 +119,7 @@ namespace Dicom.Media
             }
             catch
             {
+                // ignore exceptions?
             }
         }
 

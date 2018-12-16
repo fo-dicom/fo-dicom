@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2018 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Dicom.Media
@@ -29,9 +31,6 @@ namespace Dicom.Media
             #region Properties and Attributes
 
             private readonly DicomDirectoryRecord _head;
-
-            private DicomDirectoryRecord _current;
-
             private bool _atEnd;
 
             #endregion
@@ -47,13 +46,7 @@ namespace Dicom.Media
 
             #region IEnumerator<DirectoryRecordSequenceItem> Members
 
-            public DicomDirectoryRecord Current
-            {
-                get
-                {
-                    return _current;
-                }
-            }
+            public DicomDirectoryRecord Current { get; private set; }
 
             #endregion
 
@@ -61,20 +54,20 @@ namespace Dicom.Media
 
             public void Dispose()
             {
-                _current = null;
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                Current = null;
             }
 
             #endregion
 
             #region IEnumerator Members
 
-            object System.Collections.IEnumerator.Current
-            {
-                get
-                {
-                    return _current;
-                }
-            }
+            object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
@@ -82,26 +75,26 @@ namespace Dicom.Media
 
                 if (_atEnd) return false;
 
-                if (_current == null)
+                if (Current == null)
                 {
-                    _current = _head;
+                    Current = _head;
                     return true;
                 }
 
-                if (_current.NextDirectoryRecord == null)
+                if (Current.NextDirectoryRecord == null)
                 {
                     _atEnd = true;
                     return false;
                 }
 
-                _current = _current.NextDirectoryRecord;
+                Current = Current.NextDirectoryRecord;
 
                 return true;
             }
 
             public void Reset()
             {
-                _current = null;
+                Current = null;
                 _atEnd = false;
             }
 
@@ -121,7 +114,7 @@ namespace Dicom.Media
 
         #region IEnumerable Members
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
