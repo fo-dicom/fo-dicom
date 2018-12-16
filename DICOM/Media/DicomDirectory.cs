@@ -16,6 +16,21 @@ namespace Dicom.Media
     using Dicom.IO.Reader;
     using Dicom.IO.Writer;
 
+
+    /// <summary>
+    /// Class that holds the Record entries of an entry across the different levels 
+    /// </summary>
+    public class DicomDirectoryEntry
+    {
+
+        public DicomDirectoryRecord PatientRecord { get; set; }
+        public DicomDirectoryRecord StudyRecord { get; set; }
+        public DicomDirectoryRecord SeriesRecord { get; set; }
+        public DicomDirectoryRecord InstanceRecord { get; set; }
+
+    }
+
+
     /// <summary>
     /// Class for managing DICOM directory objects.
     /// </summary>
@@ -431,22 +446,29 @@ namespace Dicom.Media
         /// </summary>
         /// <param name="dicomFile">DICOM file to add.</param>
         /// <param name="referencedFileId">Referenced file ID.</param>
-        public void AddFile(DicomFile dicomFile, string referencedFileId = "")
+        public DicomDirectoryEntry AddFile(DicomFile dicomFile, string referencedFileId = "")
         {
             if (dicomFile == null) throw new ArgumentNullException(nameof(dicomFile));
 
-            this.AddNewRecord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId);
+            return AddNewRecord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId);
         }
 
-        private void AddNewRecord(DicomFileMetaInformation metaFileInfo, DicomDataset dataset, string referencedFileId)
+        private DicomDirectoryEntry AddNewRecord(DicomFileMetaInformation metaFileInfo, DicomDataset dataset, string referencedFileId)
         {
-            var patientRecord = this.CreatePatientRecord(dataset);
-            var studyRecord = this.CreateStudyRecord(dataset, patientRecord);
-            var seriesRecord = this.CreateSeriesRecord(dataset, studyRecord);
-            CreateImageRecord(metaFileInfo, dataset, seriesRecord, referencedFileId);
+            var patientRecord = CreatePatientRecord(dataset);
+            var studyRecord = CreateStudyRecord(dataset, patientRecord);
+            var seriesRecord = CreateSeriesRecord(dataset, studyRecord);
+            var imageRecord = CreateImageRecord(metaFileInfo, dataset, seriesRecord, referencedFileId);
+            return new DicomDirectoryEntry
+            {
+                PatientRecord = patientRecord,
+                StudyRecord = studyRecord,
+                SeriesRecord = seriesRecord,
+                InstanceRecord = imageRecord
+            };
         }
 
-        private void CreateImageRecord(
+        private DicomDirectoryRecord CreateImageRecord(
             DicomFileMetaInformation metaFileInfo,
             DicomDataset dataset,
             DicomDirectoryRecord seriesRecord,
@@ -459,7 +481,7 @@ namespace Dicom.Media
             {
                 if (currentImage.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile) == imageInstanceUid)
                 {
-                    return;
+                    return currentImage;
                 }
 
                 if (currentImage.NextDirectoryRecord != null)
@@ -488,6 +510,8 @@ namespace Dicom.Media
                 //no studies record found under patient record
                 seriesRecord.LowerLevelDirectoryRecord = newImage;
             }
+
+            return newImage;
         }
 
         private DicomDirectoryRecord CreateSeriesRecord(DicomDataset dataset, DicomDirectoryRecord studyRecord)
