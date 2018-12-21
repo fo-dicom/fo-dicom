@@ -346,7 +346,7 @@ namespace Dicom
                     elementValue = element.Get<T>(index);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     elementValue = default(T);
                     return false;
