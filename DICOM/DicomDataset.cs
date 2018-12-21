@@ -432,7 +432,7 @@ namespace Dicom
                     values = element.Get<T[]>(-1);
                     return true;
                 }
-                catch(DicomDataException)
+                catch
                 {
                     values = null;
                     return false;
