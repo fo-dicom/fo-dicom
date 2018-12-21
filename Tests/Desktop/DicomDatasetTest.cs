@@ -519,6 +519,21 @@ namespace Dicom
             Assert.False(dataset.TryGetValues(DicomTag.SeriesNumber, out int[] _));
         }
 
+        [Fact]
+        public void TryGetSingleValue_MustNotThrowOnVRViolation()
+        {
+            //  #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+                        Encoding.Default.GetBytes("1.0")
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetSingleValue(DicomTag.SeriesNumber, out int _));
+        }
+
         #endregion
 
         #region Support methods
