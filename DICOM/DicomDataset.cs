@@ -508,7 +508,7 @@ namespace Dicom
                     value = element.Get<T>(0);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     value = default(T);
                     return false;
