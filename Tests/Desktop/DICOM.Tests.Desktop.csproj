@@ -151,6 +151,7 @@
     <Compile Include="Imaging\WinFormsImageTest.cs" />
     <Compile Include="Imaging\WPFImageTest.cs" />
     <Compile Include="IO\Buffer\EvenLengthBufferTest.cs" />
+    <Compile Include="IO\Buffer\MemoryByteBufferTest.cs" />
     <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
     <Compile Include="IO\DesktopFileReferenceTest.cs" />
     <Compile Include="IO\DesktopPathTest.cs" />
