@@ -14,6 +14,7 @@
 * add DicomUID.IsVolumeStorage.
 * Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
 * allow Query/Register/Unregister transfer syntax.
+* DicomCFindRequest should allow defnition of Query Retrieve Information Model (#708)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
