@@ -346,7 +346,7 @@ namespace Dicom
                     elementValue = element.Get<T>(index);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     elementValue = default(T);
                     return false;
@@ -432,7 +432,7 @@ namespace Dicom
                     values = element.Get<T[]>(-1);
                     return true;
                 }
-                catch(DicomDataException)
+                catch
                 {
                     values = null;
                     return false;
@@ -508,7 +508,7 @@ namespace Dicom
                     value = element.Get<T>(0);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     value = default(T);
                     return false;

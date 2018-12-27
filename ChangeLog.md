@@ -15,6 +15,7 @@
 * Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
 * allow Query/Register/Unregister transfer syntax.
 * add convenient function to create MemoryByteBuffer (#760)
+* Bug Fix : TryGetValue, TryGetValues, TryGetSingleValue should return false instead of throw exception. (#746)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
