@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Dicom.Media
 {
@@ -16,16 +15,12 @@ namespace Dicom.Media
         public DicomDirectoryRecord NextDirectoryRecord { get; set; }
 
         public DicomDirectoryRecordCollection LowerLevelDirectoryRecordCollection
-        {
-            get => new DicomDirectoryRecordCollection(LowerLevelDirectoryRecord);
-        }
+            => new DicomDirectoryRecordCollection(LowerLevelDirectoryRecord);
 
         public uint Offset { get; internal set; }
 
         public string DirectoryRecordType
-        {
-            get => GetSingleValue<string>(DicomTag.DirectoryRecordType);
-        }
+            => GetSingleValue<string>(DicomTag.DirectoryRecordType);
 
         #endregion
 

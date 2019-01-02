@@ -489,6 +489,51 @@ namespace Dicom
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void TryGetValue_MustNotThrowOnVRViolation()
+        {
+            //  related #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+                        Encoding.Default.GetBytes("1.0")
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetValue(DicomTag.SeriesNumber, 0, out int _));
+        }
+
+        [Fact]
+        public void TryGetValues_MustNotThrowOnVRViolation()
+        {
+            //  related #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+                        Encoding.Default.GetBytes("1.0")
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetValues(DicomTag.SeriesNumber, out int[] _));
+        }
+
+        [Fact]
+        public void TryGetSingleValue_MustNotThrowOnVRViolation()
+        {
+            //  #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+                        Encoding.Default.GetBytes("1.0")
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetSingleValue(DicomTag.SeriesNumber, out int _));
+        }
+
         #endregion
 
         #region Support methods

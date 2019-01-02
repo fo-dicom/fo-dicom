@@ -14,9 +14,9 @@ namespace Dicom.Media
     {
         private DicomSequence _directoryRecordSequence = null;
 
-        private Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
+        private readonly Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();
 
-        private Dictionary<uint, DicomDataset> _lookup = new Dictionary<uint, DicomDataset>();
+        private readonly Dictionary<uint, DicomDataset> _lookup = new Dictionary<uint, DicomDataset>();
 
         private readonly DicomDataset _dataset;
 
@@ -27,9 +27,7 @@ namespace Dicom.Media
 
         public DicomDirectoryRecord BuildDirectoryRecords()
         {
-            uint offset = 0;
-            offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
-
+            var offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
             return ParseDirectoryRecord(offset);
         }
 
@@ -38,8 +36,10 @@ namespace Dicom.Media
             DicomDirectoryRecord record = null;
             if (_lookup.ContainsKey(offset))
             {
-                record = new DicomDirectoryRecord(_lookup[offset]);
-                record.Offset = offset;
+                record = new DicomDirectoryRecord(_lookup[offset])
+                {
+                    Offset = offset
+                };
 
                 record.NextDirectoryRecord =
                     ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
@@ -55,6 +55,7 @@ namespace Dicom.Media
 
         public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
+            // do nothing here
         }
 
         public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
@@ -76,6 +77,7 @@ namespace Dicom.Media
 
         public void OnEndSequenceItem()
         {
+            // do nothing here
         }
 
         public void OnEndSequence()
@@ -83,16 +85,19 @@ namespace Dicom.Media
             _currentSequenceTag.Pop();
         }
 
-        public void OnBeginFragmentSequence(IO.IByteSource source, DicomTag tag, DicomVR vr)
+        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
         {
+            // do nothing here
         }
 
-        public void OnFragmentSequenceItem(IO.IByteSource source, IO.Buffer.IByteBuffer data)
+        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
         {
+            // do nothing here
         }
 
         public void OnEndFragmentSequence()
         {
+            // do nothing here
         }
 
         #endregion
