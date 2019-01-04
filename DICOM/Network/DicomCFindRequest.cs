@@ -51,6 +51,30 @@ namespace Dicom.Network
             Dataset = new DicomDataset();
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomCFindRequest"/> class.
+        /// </summary>
+        /// <param name="affectedSopClassUid">Affected SOP Class UID.</param>
+        /// <param name="level">Query/Retrieve level.</param>
+        /// <param name="priority">Command priority.</param>
+        public DicomCFindRequest(DicomUID affectedSopClassUid, DicomQueryRetrieveLevel level, DicomPriority priority = DicomPriority.Medium)
+            : base(DicomCommandField.CFindRequest, affectedSopClassUid, priority)
+        {
+            //  should we check combination between affectedSopClassUid and level?
+            //  should we allow PatientRoot and StudyRoot only ?
+            if (affectedSopClassUid != DicomUID.ModalityWorklistInformationModelFIND
+            && affectedSopClassUid != DicomUID.PatientRootQueryRetrieveInformationModelFIND
+            && affectedSopClassUid != DicomUID.StudyRootQueryRetrieveInformationModelFIND
+            && affectedSopClassUid != DicomUID.UnifiedProcedureStepPullSOPClass
+            && affectedSopClassUid != DicomUID.UnifiedProcedureStepWatchSOPClass)
+            {
+                throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
+            }
+
+            Dataset = new DicomDataset();
+            Level = level;
+        }
+
         #endregion
 
         #region PROPERTIES

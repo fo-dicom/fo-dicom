@@ -25,6 +25,22 @@ namespace Dicom.Network
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Constructor_CreatesPatientRootQuery()
+        {
+            var query = new DicomCFindRequest(DicomUID.PatientRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Patient);
+            Assert.Equal(DicomQueryRetrieveLevel.Patient, query.Level);
+            Assert.Equal(DicomUID.PatientRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+        }
+
+        [Fact]
+        public void Constructor_CreatesStudyRootQuery()
+        {
+            var query = new DicomCFindRequest(DicomUID.StudyRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Study);
+            Assert.Equal(DicomQueryRetrieveLevel.Study, query.Level);
+            Assert.Equal(DicomUID.StudyRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+        }
+
         #endregion
 
         #region Support Data
