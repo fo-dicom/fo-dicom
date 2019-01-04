@@ -38,6 +38,26 @@ namespace Dicom
             Assert.True(DicomUID.EnhancedUSVolumeStorage.IsVolumeStorage);
         }
 
+        [Fact]
+        public void Generate_ReturnsValidUid()
+        {
+            var uid = DicomUID.Generate();
+
+            Assert.True(DicomUID.IsValid(uid.UID));
+            Assert.True(uid.UID.Length <= 64); // Currently not checked by DicomUID.IsValid
+        }
+
+        [Fact]
+        public void Generate_ReturnsDifferentUidsEachTime()
+        {
+            // Note: it is statistically not possible to verify that all returned Uids
+            // are unique in a unit test. Just verify that 2 calls result in 2 different values.
+            var uidA = DicomUID.Generate();
+            var uidB = DicomUID.Generate();
+
+            Assert.NotEqual(uidA, uidB);
+        }
+
         /// <summary>
         /// Parse can parse string UID.
         /// </summary>

@@ -15,6 +15,8 @@
 * Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
 * allow Query/Register/Unregister transfer syntax.
 * DicomCFindRequest should allow defnition of Query Retrieve Information Model (#708)
+* Bug fix : DicomUIDGenerator.GenerateDerivedFromUUID converts Guids incorrectly to the DICOM "2.25." + UUID format (#762)
+* Bug Fix : TryGetValue, TryGetValues, TryGetSingleValue should return false instead of throw exception. (#746)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
