@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>fo-dicom.Serilog.NetCore</id>
+        <version>$version$</version>
+        <title>Fellow Oak DICOM Serilog .NET Core connector</title>
+        <authors>fo-dicom contributors</authors>
+        <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+        <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+        <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Support library for connecting Serilog log handler to fo-dicom.</description>
+        <language>en-US</language>
+        <dependencies>
+            <dependency id="fo-dicom.Desktop" version="$version$" />
+            <dependency id="Serilog" version="2.7.1" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\Logging\Serilog.NetCore\bin\Release\netstandard1.3\DICOM.Serilog.NetCore.dll" target="lib\netstandard1.3" />
+        <file src="..\Logging\Serilog.NetCore\bin\Release\netstandard1.3\DICOM.Serilog.NetCore.pdb" target="lib\netstandard1.3" />
+    </files>
+</package>
