@@ -276,18 +276,28 @@ namespace Dicom.Imaging
             if (newPixelData)
             {
                 var syntax = dataset.InternalTransferSyntax;
-                if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian) return new OtherWordPixelData(dataset, true);
-
                 var bitsAllocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
-                if (bitsAllocated > 16)
-                    throw new DicomImagingException(
-                        $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
 
-                if (syntax.IsEncapsulated) return new EncapsulatedPixelData(dataset, bitsAllocated);
+                if (syntax.IsEncapsulated)
+                {
+                    if (bitsAllocated > 16)
+                        throw new DicomImagingException(
+                            $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
 
-                return bitsAllocated > 8
-                    ? (DicomPixelData) new OtherWordPixelData(dataset, true)
-                    : new OtherBytePixelData(dataset, true);
+                    return new EncapsulatedPixelData(dataset, bitsAllocated);
+                }
+                else if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian)
+                {
+                    //  DICOM 3.5 A.1
+                    return new OtherWordPixelData(dataset, true);
+                }
+                else
+                {
+                    //  DICOM 3.5 A.2
+                    return bitsAllocated > 8
+                        ? (DicomPixelData)new OtherWordPixelData(dataset, true)
+                        : new OtherBytePixelData(dataset, true);
+                }
             }
 
             var item = dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
