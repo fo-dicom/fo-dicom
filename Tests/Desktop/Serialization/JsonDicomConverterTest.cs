@@ -261,6 +261,33 @@ namespace Dicom.Serialization
         }
 
         /// <summary>
+        /// vr is not first position of json properties.
+        /// </summary>
+        [Fact]
+        public void VrIsNotFirstPosition()
+        {
+            var json = @"
+[
+  {
+     ""0020000D"": {
+      ""Value"": [ ""1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873"" ],
+      ""vr"": ""UI""
+    }
+  },
+  {
+    ""0020000D"" : {
+      ""Value"": [ ""1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876"" ],
+      ""vr"": ""UI""
+    }
+  }
+]";
+
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
+            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
+        }
+
+        /// <summary>
         /// Test round-tripping a dicom dataset containing a bulk uri byte buffer.
         /// </summary>
         [Fact]
