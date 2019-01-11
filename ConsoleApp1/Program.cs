@@ -2,13 +2,15 @@
 using Dicom.Log;
 using Dicom.Network;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
     internal static class Program
     {
-
         private static readonly string QRServerHost = "127.0.0.1";
 
         private static readonly int QRServerPort = 10400;
@@ -17,22 +19,27 @@ namespace ConsoleApp1
 
         private static readonly string AET = "ANY-SCU";
 
-        private static void Main(string[] args)
+        private static int CEchoPort = 12345;
+
+        private static async Task Main(string[] args)
         {
             LogManager.SetImplementation(ConsoleLogManager.Instance);
 
-            Console.WriteLine("VOR ERSTEM");
-            QueryStudies();
-            Console.WriteLine("DAZWISCHEN1");
-            QueryStudies();
-            Console.WriteLine("DAZWISCHEN2");
-            QueryStudies();
-            Console.WriteLine("DAZWISCHEN3");
-            QueryStudies();
-            Console.WriteLine("NACHHER");
+            CFindSerial();
 
-            Console.WriteLine("FERTIG");
+            await CEchoSerialAsync(1000);
+
+            await CEchoParallelAsync(200);
+
             Console.ReadLine();
+        }
+
+        private static void CFindSerial()
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                QueryStudies();
+            }
         }
 
         /// <summary>
@@ -60,11 +67,9 @@ namespace ConsoleApp1
             //        ev.Set();
             //        };
             client.Send(QRServerHost, QRServerPort, false, AET, QRServerAET);
-               //  ev.WaitOne();
-               //client.Abort();
+            //  ev.WaitOne();
+            //client.Abort();
         }
-
-
 
         /// <summary>
         ///
@@ -84,6 +89,78 @@ namespace ConsoleApp1
             request.Dataset.AddOrUpdate(DicomTag.StudyInstanceUID, "");
 
             return request;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expected"></param>
+        private static async Task CEchoSerialAsync(int expected)
+        {
+            var port = CEchoPort++;
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) await Task.Delay(50);
+
+                var actual = 0;
+
+                var client = new DicomClient();
+                for (var i = 0; i < expected; i++)
+                {
+                    client.AddRequest(
+                        new DicomCEchoRequest
+                        {
+                            OnResponseReceived = (req, res) =>
+                            {
+                                Interlocked.Increment(ref actual);
+                            }
+                        }
+                    );
+                    await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
+                }
+
+                Debug.Assert(expected == actual);
+            }
+        }
+
+        /// </summary>
+        /// <param name="expected"></param>
+        private static async Task CEchoParallelAsync(int expected)
+        {
+            int port = CEchoPort++;
+
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) await Task.Delay(50);
+
+                var actual = 0;
+
+                var requests = Enumerable.Range(0, expected).Select(
+                    async requestIndex =>
+                    {
+                        var client = new DicomClient();
+                        client.AddRequest(
+                            new DicomCEchoRequest
+                            {
+                                OnResponseReceived = (req, res) =>
+                                {
+                                    Debug.WriteLine("Response #{0}", requestIndex);
+                                    Interlocked.Increment(ref actual);
+                                }
+                            }
+                        );
+
+                        Debug.WriteLine("Sending #{0}", requestIndex);
+                        await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
+                        Debug.WriteLine("Sent (or timed out) #{0}", requestIndex);
+                    }
+                ).ToArray();
+
+                await Task.WhenAll(requests);
+
+                Debug.Assert(expected == actual);
+            }
         }
     }
 }
