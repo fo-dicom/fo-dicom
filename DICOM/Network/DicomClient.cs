@@ -542,6 +542,7 @@ namespace Dicom.Network
                 if (!IsConnected)
                 {
                     _associationRequestedFlag.Reset();
+                    this._associationReleasedFlag.Reset();
                     _completionFlag.Reset();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
