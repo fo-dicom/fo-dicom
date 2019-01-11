@@ -104,7 +104,7 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent<bool> _associationRequestedFlag;
 
-        private readonly AsyncManualResetEvent _associationReleasedFlag;
+        private readonly AsyncManualResetEvent<bool> _associationReleasedFlag;
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
@@ -142,7 +142,7 @@ namespace Dicom.Network
 
             _hasRequestsFlag = new AsyncManualResetEvent();
             _associationRequestedFlag = new AsyncManualResetEvent<bool>();
-            _associationReleasedFlag = new AsyncManualResetEvent();
+            _associationReleasedFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
         }
 
@@ -835,7 +835,7 @@ namespace Dicom.Network
 
             private void SetAssociationReleasedFlag()
             {
-                _client._associationReleasedFlag.Set();
+                _client._associationReleasedFlag.Set(succeeded);
             }
 
             private void SetCompletionFlag(Exception exception = null)
