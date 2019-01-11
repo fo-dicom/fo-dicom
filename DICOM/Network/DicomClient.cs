@@ -656,7 +656,7 @@ namespace Dicom.Network
 
             private bool _isInitialized;
 
-            private bool _releaseRequested;
+            private int _releaseRequested;
 
             private readonly object _lock = new object();
 
@@ -702,7 +702,7 @@ namespace Dicom.Network
 
                 _association = association;
                 _isInitialized = false;
-                _releaseRequested = false;
+                _releaseRequested = 0;
             }
 
             #endregion
@@ -779,13 +779,9 @@ namespace Dicom.Network
             {
                 try
                 {
-                    bool requestRelease;
-                    lock (_lock) requestRelease = !_releaseRequested;
-
-                    if (requestRelease)
+                    if (Interlocked.Exchange(ref this._releaseRequested, 1) == 0)
                     {
                         _client._associationReleasedFlag.Reset();
-                        lock (_lock) _releaseRequested = true;
                         await Task.WhenAny(
                             SendAssociationReleaseRequestAsync().ContinueWith(async _ =>
                             await _client._associationReleasedFlag.WaitAsync()
