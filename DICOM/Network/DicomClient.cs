@@ -833,7 +833,7 @@ namespace Dicom.Network
                 _client._associationRequestedFlag.Set(isAssociated);
             }
 
-            private void SetAssociationReleasedFlag()
+            private void SetAssociationReleasedFlag(bool succeeded = true)
             {
                 _client._associationReleasedFlag.Set(succeeded);
             }
