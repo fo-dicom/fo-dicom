@@ -567,6 +567,8 @@ namespace Dicom.Network
 
         private async Task SendOrReleaseAsync(int millisecondsTimeout)
         {
+            this._associationReleasedFlag.Reset();
+
 #pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
 #pragma warning restore 618
