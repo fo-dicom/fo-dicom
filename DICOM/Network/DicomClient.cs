@@ -756,7 +756,7 @@ namespace Dicom.Network
                 SetCompletionFlag();
 
                 //  tell awaiters association was released successfully.
-                SetAssociationReleasedFlag();
+                SetAssociationReleasedFlag(true);
                 _client.AssociationReleased(_client, EventArgs.Empty);
             }
 
@@ -855,7 +855,7 @@ namespace Dicom.Network
                 _client._associationRequestedFlag.Set(isAssociated);
             }
 
-            private void SetAssociationReleasedFlag(bool succeeded = true)
+            private void SetAssociationReleasedFlag(bool succeeded)
             {
                 _client._associationReleasedFlag.Set(succeeded);
             }
