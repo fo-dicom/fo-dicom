@@ -804,16 +804,13 @@ namespace Dicom.Network
                     {
                         if (Interlocked.Exchange(ref this._releaseRequested, 1) == 0)
                         {
-                            _client._associationReleasedFlag.Reset();
                             await Task.WhenAny(
-                                SendAssociationReleaseRequestAsync().ContinueWith(async _ =>
-                                await _client._associationReleasedFlag.WaitAsync()
-                                ),
+                                SendAssociationReleaseRequestAsync(),
                                 _isDisconnectedFlag.WaitAsync(),
                                 Task.Delay(millisecondsTimeout)
-                                    ).ConfigureAwait(false);
+                            ).ConfigureAwait(false);
 
-                            SetCompletionFlag();                    }
+                            SetCompletionFlag();
                         }
                     }
                 }
