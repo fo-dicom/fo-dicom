@@ -639,6 +639,8 @@ namespace Dicom.Network
 
                     _service = null;
                 }
+
+                await this._serviceRunnerTask.ConfigureAwait(false);
             }
 
             // If not already set, set association notifier here to signal completion to awaiters
