@@ -250,7 +250,7 @@ namespace Dicom.Network
                 bool connected;
                 lock (_lock)
                 {
-                    connected =_service != null && _service.IsConnected;
+                    connected = _service != null && _service.IsConnected;
                 }
 
                 return connected;
@@ -843,8 +843,11 @@ namespace Dicom.Network
                     _isDisconnectedFlag.WaitAsync()
                         .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion),
                     Task.Delay(_client.Linger)
-                        .ContinueWith(_ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
-                            TaskContinuationOptions.OnlyOnRanToCompletion)).ConfigureAwait(false);
+                        .ContinueWith(
+                            _ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
+                            TaskContinuationOptions.OnlyOnRanToCompletion
+                        )
+                ).ConfigureAwait(false);
             }
 
             private void SetAssociationRequestedFlag(bool isAssociated)
