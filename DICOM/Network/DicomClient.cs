@@ -747,6 +747,8 @@ namespace Dicom.Network
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetCompletionFlag();
+
+                //  tell awaiters association was released successfully.
                 SetAssociationReleasedFlag();
                 _client.AssociationReleased(_client, EventArgs.Empty);
             }
