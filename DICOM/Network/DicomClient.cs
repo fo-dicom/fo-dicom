@@ -776,6 +776,9 @@ namespace Dicom.Network
             public void OnConnectionClosed(Exception exception)
             {
                 SetCompletionFlag(exception);
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
