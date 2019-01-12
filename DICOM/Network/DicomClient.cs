@@ -767,6 +767,9 @@ namespace Dicom.Network
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
                 SetCompletionFlag(new DicomAssociationAbortedException(source, reason));
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
