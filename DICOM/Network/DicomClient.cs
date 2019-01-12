@@ -738,6 +738,9 @@ namespace Dicom.Network
                 _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
