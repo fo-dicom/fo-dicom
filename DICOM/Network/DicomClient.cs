@@ -826,6 +826,9 @@ namespace Dicom.Network
                 }
 
                 SetCompletionFlag();
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
