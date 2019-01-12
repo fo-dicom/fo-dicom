@@ -607,6 +607,11 @@ namespace Dicom.Network
 
             if (completedException != null || force)
             {
+                if (force)
+                {
+                    await this._associationReleasedFlag.WaitAsync().ConfigureAwait(false);
+                }
+
                 if (_networkStream != null)
                 {
                     try
