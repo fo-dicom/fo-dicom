@@ -590,6 +590,10 @@ namespace Dicom.Network
             {
                 await _service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
+            else
+            {
+                this._associationReleasedFlag.Set(false);
+            }
         }
 
         private async Task SendQueuedRequestsAsync()
