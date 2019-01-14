@@ -10,7 +10,7 @@ namespace Dicom.Imaging.Mathematics
     {
         #region Members
 
-        private int[,] _matrix;
+        private readonly int[,] _matrix;
 
         #endregion
 
@@ -30,29 +30,11 @@ namespace Dicom.Imaging.Mathematics
 
         #region Properties
 
-        public int Rows
-        {
-            get
-            {
-                return _matrix.GetLength(0);
-            }
-        }
+        public int Rows => _matrix.GetLength(0);
 
-        public int Columns
-        {
-            get
-            {
-                return _matrix.GetLength(1);
-            }
-        }
+        public int Columns => _matrix.GetLength(1);
 
-        public bool IsSquare
-        {
-            get
-            {
-                return Rows == Columns;
-            }
-        }
+        public bool IsSquare => Rows == Columns;
 
         public bool IsIdentity
         {
@@ -74,14 +56,8 @@ namespace Dicom.Imaging.Mathematics
 
         public int this[int row, int col]
         {
-            get
-            {
-                return _matrix[row, col];
-            }
-            set
-            {
-                _matrix[row, col] = value;
-            }
+            get => _matrix[row, col];
+            set => _matrix[row, col] = value;
         }
 
         public int Determinant
@@ -471,7 +447,7 @@ namespace Dicom.Imaging.Mathematics
     {
         #region Members
 
-        private float[,] _matrix;
+        private readonly float[,] _matrix;
 
         #endregion
 
@@ -491,29 +467,11 @@ namespace Dicom.Imaging.Mathematics
 
         #region Properties
 
-        public int Rows
-        {
-            get
-            {
-                return _matrix.GetLength(0);
-            }
-        }
+        public int Rows => _matrix.GetLength(0);
 
-        public int Columns
-        {
-            get
-            {
-                return _matrix.GetLength(1);
-            }
-        }
+        public int Columns => _matrix.GetLength(1);
 
-        public bool IsSquare
-        {
-            get
-            {
-                return Rows == Columns;
-            }
-        }
+        public bool IsSquare => Rows == Columns;
 
         public bool IsIdentity
         {
@@ -535,14 +493,8 @@ namespace Dicom.Imaging.Mathematics
 
         public float this[int row, int col]
         {
-            get
-            {
-                return _matrix[row, col];
-            }
-            set
-            {
-                _matrix[row, col] = value;
-            }
+            get => _matrix[row, col];
+            set => _matrix[row, col] = value;
         }
 
         public float Determinant
@@ -932,7 +884,7 @@ namespace Dicom.Imaging.Mathematics
     {
         #region Members
 
-        private double[,] _matrix;
+        private readonly double[,] _matrix;
 
         #endregion
 
@@ -952,29 +904,11 @@ namespace Dicom.Imaging.Mathematics
 
         #region Properties
 
-        public int Rows
-        {
-            get
-            {
-                return _matrix.GetLength(0);
-            }
-        }
+        public int Rows => _matrix.GetLength(0);
 
-        public int Columns
-        {
-            get
-            {
-                return _matrix.GetLength(1);
-            }
-        }
+        public int Columns => _matrix.GetLength(1);
 
-        public bool IsSquare
-        {
-            get
-            {
-                return Rows == Columns;
-            }
-        }
+        public bool IsSquare => Rows == Columns;
 
         public bool IsIdentity
         {
@@ -996,14 +930,8 @@ namespace Dicom.Imaging.Mathematics
 
         public double this[int row, int col]
         {
-            get
-            {
-                return _matrix[row, col];
-            }
-            set
-            {
-                _matrix[row, col] = value;
-            }
+            get => _matrix[row, col];
+            set => _matrix[row, col] = value;
         }
 
         public double Determinant
