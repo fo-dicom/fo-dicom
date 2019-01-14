@@ -557,6 +557,9 @@ namespace Dicom.Network
                 _associationRequestedFlag.Set(false);
                 _completionFlag.Set();
 
+                //  tell awaiters association was released unsuccessfully.
+                this._associationReleasedFlag.Set(false);
+
                 throw;
             }
             finally
