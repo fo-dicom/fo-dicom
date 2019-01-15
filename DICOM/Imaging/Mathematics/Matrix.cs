@@ -960,11 +960,30 @@ namespace Dicom.Imaging.Mathematics
                     return (aei + bfg + cdh) - (hfa + idb + gec);
                 }
 
+                if (dimensions == 4)
+                {
+                    var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
+                    var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
+                    var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
+                    var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
+                    var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
+                    var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
+
+                    var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
+                    var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
+                    var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
+                    var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
+                    var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
+                    var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
+
+                    return s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+                }
+
                 double pos = 0.0;
                 for (int c = 0; c < dimensions; c++)
                 {
                     int k = c;
-                    double diag = 0.0;
+                    double diag = 1.0;
                     for (int r = 0; r < dimensions; r++, k = ((k + 1) % dimensions))
                     {
                         diag *= _matrix[r, k];
@@ -1264,6 +1283,23 @@ namespace Dicom.Imaging.Mathematics
                     for (int i = 0; i < inner; i++) d += a[r, i] * b[i, c];
                     x[r, c] = d;
                 }
+            }
+
+            return x;
+        }
+
+        public static double[] operator *(MatrixD a, double[] b)
+        {
+            if (a.Columns != b.Length) throw new ArgumentException("Unable to multiply matrix and vector of different inner dimensions");
+
+            var x = new double[a.Rows];
+
+            var inner = a.Columns;
+            for (int r = 0, rows = a.Rows; r < rows; r++)
+            {
+                double d = 0.0;
+                for (int i = 0; i < inner; i++) d += a[r, i] * b[i];
+                x[r] = d;
             }
 
             return x;

@@ -5,6 +5,14 @@ using System;
 
 namespace Dicom.Imaging.Mathematics
 {
+
+    public static class Constants
+    {
+
+        public static readonly double Epsilon = 0.000000001; // the epsilon in mm to check if a value is quasi zero
+
+    }
+
     public class Vector3D
     {
         #region Constants
@@ -115,55 +123,41 @@ namespace Dicom.Imaging.Mathematics
 
         #region Public Methods
 
+        public bool IsZero
+            => Math.Abs(X) < Constants.Epsilon && Math.Abs(Y) < Constants.Epsilon && Math.Abs(Z) < Constants.Epsilon;
+
         public double Length()
-        {
-            return Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
-        }
+            => Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
 
         public Vector3D Round()
-        {
-            return new Vector3D(Math.Round(X), Math.Round(Y), Math.Round(Z));
-        }
+            => new Vector3D(Math.Round(X), Math.Round(Y), Math.Round(Z));
 
         public double Magnitude()
-        {
-            return Math.Sqrt(DotProduct(this));
-        }
+            => Math.Sqrt(DotProduct(this));
 
         public Vector3D Normalize()
-        {
-            return this * (1 / Magnitude());
-        }
+            => this * (1 / Magnitude());
 
         public double DotProduct(Vector3D b)
-        {
-            return (X * b.X) + (Y * b.Y) + (Z * b.Z);
-        }
+            => (X * b.X) + (Y * b.Y) + (Z * b.Z);
+
+        public double DotProduct(Point3D b)
+            => (X * b.X) + (Y * b.Y) + (Z * b.Z);
 
         public Vector3D CrossProduct(Vector3D b)
-        {
-            return new Vector3D((Y * b.Z) - (Z * b.Y), (Z * b.X) - (X * b.Z), (X * b.Y) - (Y * b.X));
-        }
+            => new Vector3D((Y * b.Z) - (Z * b.Y), (Z * b.X) - (X * b.Z), (X * b.Y) - (Y * b.X));
 
         public double Distance(Vector3D b)
-        {
-            return Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
-        }
+            => Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
 
         public bool IsPerpendicular(Vector3D b)
-        {
-            return DotProduct(b) == 0;
-        }
+            => DotProduct(b) == 0;
 
         public static Vector3D Max(Vector3D a, Vector3D b)
-        {
-            return (a >= b) ? a : b;
-        }
+            => (a >= b) ? a : b;
 
         public static Vector3D Min(Vector3D a, Vector3D b)
-        {
-            return (a <= b) ? a : b;
-        }
+            => (a <= b) ? a : b;
 
         public Vector3D Rotate(Vector3D axis, double angle)
         {
@@ -252,6 +246,12 @@ namespace Dicom.Imaging.Mathematics
             return new Vector3D(a.X * b, a.Y * b, a.Z * b);
         }
 
+        public static double operator *(Vector3D a, Vector3D b)
+            => a.DotProduct(b);
+
+        public static double operator *(Vector3D a, Point3D b)
+            => a.DotProduct(b);
+
         public static Vector3D operator *(double a, Vector3D b)
         {
             return b * a;
@@ -318,8 +318,8 @@ namespace Dicom.Imaging.Mathematics
 
             if ((a is null) || (b is null)) return false;
 
-            return Math.Abs(a.X - b.X) <= Double.Epsilon && Math.Abs(a.Y - b.Y) <= Double.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Double.Epsilon;
+            return Math.Abs(a.X - b.X) <= Constants.Epsilon && Math.Abs(a.Y - b.Y) <= Constants.Epsilon
+                   && Math.Abs(a.Z - b.Z) <= Constants.Epsilon;
         }
 
         public static bool operator !=(Vector3D a, Vector3D b)
@@ -457,10 +457,15 @@ namespace Dicom.Imaging.Mathematics
             return new Point3D(p.X + v.X, p.Y + v.Y, p.Z + v.Z);
         }
 
+        public static Vector3D operator - (Point3D a, Point3D b)
+        {
+            return new Vector3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
         public static bool operator ==(Point3D a, Point3D b)
         {
-            return Math.Abs(a.X - b.X) <= Double.Epsilon && Math.Abs(a.Y - b.Y) <= Double.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Double.Epsilon;
+            return Math.Abs(a.X - b.X) <= Constants.Epsilon && Math.Abs(a.Y - b.Y) <= Constants.Epsilon
+                   && Math.Abs(a.Z - b.Z) <= Constants.Epsilon;
         }
 
         public static bool operator !=(Point3D a, Point3D b)
@@ -674,13 +679,13 @@ namespace Dicom.Imaging.Mathematics
             double w2 = -b.Distance;
             double id;
 
-            if ((v2.Z > v2.Y) && (v2.Z > v2.X) && (v2.Z > double.Epsilon))
+            if ((v2.Z > v2.Y) && (v2.Z > v2.X) && (v2.Z > Constants.Epsilon))
             {
                 // point on XY plane
                 id = 1.0 / v1.Z;
                 p = new Point3D(Normal.Y * w2 - b.Normal.Y * w1, b.Normal.X * w1 - Normal.X * w2, 0.0);
             }
-            else if ((v2.Y > v2.X) && (v2.Y > Double.Epsilon))
+            else if ((v2.Y > v2.X) && (v2.Y > Constants.Epsilon))
             {
                 // point on XZ plane
                 id = -1.0 / v1.Y;
