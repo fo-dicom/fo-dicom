@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Buffer
@@ -15,21 +15,9 @@ namespace Dicom.IO.Buffer
 
         public int UnitSize { get; private set; }
 
-        public bool IsMemory
-        {
-            get
-            {
-                return Internal.IsMemory;
-            }
-        }
+        public bool IsMemory => Internal.IsMemory;
 
-        public uint Size
-        {
-            get
-            {
-                return Internal.Size;
-            }
-        }
+        public long Size=> Internal.Size;
 
         public byte[] Data
         {
@@ -52,7 +40,7 @@ namespace Dicom.IO.Buffer
             }
         }
 
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             byte[] data = Internal.GetByteRange(offset, count);
             Endian.SwapBytes(UnitSize, data);

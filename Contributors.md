@@ -37,3 +37,5 @@
 * [Volkan Özdemir](https://github.com/volkans80)
 * [idubnori](https://github.com/idubnori)
 * [Pressacco](https://github.com/pressacco)
+* [Victor Derks](https://github.com/vbaderks)
+* [Victor Chang](https://github.com/mocsharp)

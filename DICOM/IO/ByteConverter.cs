@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -54,8 +54,8 @@ namespace Dicom.IO
 #else
             uint size = (uint)Marshal.SizeOf(typeof(T));
 #endif
-            uint padding = buffer.Size % size;
-            uint count = buffer.Size / size;
+            uint padding = (uint)(buffer.Size % size);
+            uint count = (uint)(buffer.Size / size);
             T[] values = new T[count];
             System.Buffer.BlockCopy(buffer.Data, 0, values, 0, (int)(buffer.Size - padding));
             return values;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO
@@ -10,7 +10,7 @@ namespace Dicom.IO
     /// </summary>
     public sealed class DesktopFileReference : IFileReference
     {
-        private bool isTempFile;
+        private bool _isTempFile;
 
         /// <summary>
         /// Initializes a <see cref="DesktopFileReference"/> object.
@@ -18,8 +18,8 @@ namespace Dicom.IO
         /// <param name="fileName">File name.</param>
         public DesktopFileReference(string fileName)
         {
-            this.Name = fileName;
-            this.IsTempFile = false;
+            Name = fileName;
+            IsTempFile = false;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Dicom.IO
         /// </summary>
         ~DesktopFileReference()
         {
-            if (this.IsTempFile)
+            if (IsTempFile)
             {
                 TemporaryFileRemover.Delete(this);
             }
@@ -41,22 +41,13 @@ namespace Dicom.IO
         /// <summary>
         /// Gets whether the file exist or not.
         /// </summary>
-        public bool Exists
-        {
-            get
-            {
-                return File.Exists(this.Name);
-            }
-        }
+        public bool Exists => File.Exists(Name);
 
         /// <summary>Gets and sets whether the file is temporary or not.</summary>
         /// <remarks>Temporary file will be deleted when object is <c>Disposed</c>.</remarks>
         public bool IsTempFile
         {
-            get
-            {
-                return this.isTempFile;
-            }
+            get => _isTempFile;
             set
             {
                 if (value && this.Exists)
@@ -65,7 +56,7 @@ namespace Dicom.IO
                     {
                         // set temporary file attribute so that the file system
                         // will attempt to keep all of the data in memory
-                        File.SetAttributes(this.Name, File.GetAttributes(this.Name) | FileAttributes.Temporary);
+                        File.SetAttributes(Name, File.GetAttributes(Name) | FileAttributes.Temporary);
                     }
                     catch
                     {
@@ -73,20 +64,14 @@ namespace Dicom.IO
                     }
                 }
 
-                this.isTempFile = value;
+                _isTempFile = value;
             }
         }
 
         /// <summary>
         /// Gets the directory reference of the file.
         /// </summary>
-        public IDirectoryReference Directory
-        {
-            get
-            {
-                return new DesktopDirectoryReference(Path.GetDirectoryName(this.Name));
-            }
-        }
+        public IDirectoryReference Directory => new DesktopDirectoryReference(Path.GetDirectoryName(Name));
 
         /// <summary>
         /// Creates a new file for reading and writing. Overwrites existing file.
@@ -94,7 +79,7 @@ namespace Dicom.IO
         /// <returns>Stream to the created file.</returns>
         public Stream Create()
         {
-            return File.Create(this.Name);
+            return File.Create(Name);
         }
 
         /// <summary>
@@ -103,7 +88,7 @@ namespace Dicom.IO
         /// <returns></returns>
         public Stream Open()
         {
-            return File.Open(this.Name, FileMode.Open, FileAccess.ReadWrite);
+            return File.Open(Name, FileMode.Open, FileAccess.ReadWrite);
         }
 
         /// <summary>
@@ -112,7 +97,7 @@ namespace Dicom.IO
         /// <returns>Stream to the opened file.</returns>
         public Stream OpenRead()
         {
-            return File.OpenRead(this.Name);
+            return File.OpenRead(Name);
         }
 
         /// <summary>
@@ -121,7 +106,7 @@ namespace Dicom.IO
         /// <returns>Stream to the opened file.</returns>
         public Stream OpenWrite()
         {
-            return File.OpenWrite(this.Name);
+            return File.OpenWrite(Name);
         }
 
         /// <summary>
@@ -129,7 +114,7 @@ namespace Dicom.IO
         /// </summary>
         public void Delete()
         {
-            File.Delete(this.Name);
+            File.Delete(Name);
         }
 
         /// <summary>
@@ -144,9 +129,9 @@ namespace Dicom.IO
             // delete if overwriting; let File.Move thow IOException if not
             if (File.Exists(dstFileName) && overwrite) File.Delete(dstFileName);
 
-            File.Move(this.Name, dstFileName);
-            this.Name = Path.GetFullPath(dstFileName);
-            this.IsTempFile = false;
+            File.Move(Name, dstFileName);
+            Name = Path.GetFullPath(dstFileName);
+            IsTempFile = false;
         }
 
         /// <summary>
@@ -155,11 +140,11 @@ namespace Dicom.IO
         /// <param name="offset">Offset from the start position of the file.</param>
         /// <param name="count">Number of bytes to select.</param>
         /// <returns>The specified sub-range of bytes in the file.</returns>
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             byte[] buffer = new byte[count];
 
-            using (var fs = this.OpenRead())
+            using (var fs = OpenRead())
             {
                 fs.Seek(offset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, count);
@@ -176,7 +161,7 @@ namespace Dicom.IO
         /// </returns>
         public override string ToString()
         {
-            return this.IsTempFile ? string.Format("{0} [TEMP]", this.Name) : this.Name;
+            return IsTempFile ? $"{Name} [TEMP]" : Name;
         }
     }
 }

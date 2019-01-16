@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Dicom.Network;
@@ -63,7 +65,7 @@ namespace Dicom
         }
 
         /// <summary>
-        /// If <paramref name="sourceUid"/> is known, return associated destination UID, otherwise generate and return 
+        /// If <paramref name="sourceUid"/> is known, return associated destination UID, otherwise generate and return
         /// a new destination UID for the specified <paramref name="sourceUid"/>.
         /// </summary>
         /// <param name="sourceUid">Source UID.</param>
@@ -99,6 +101,7 @@ namespace Dicom
         /// Generate a new DICOM UID.
         /// </summary>
         /// <returns>Generated UID.</returns>
+        [Obsolete("This method may return statistically non-unique UIDs and is deprecated, use the method GenerateDerivedFromUUID()")]
         public static DicomUID GenerateNew()
         {
             lock (_lock)
@@ -122,13 +125,30 @@ namespace Dicom
         /// </summary>
         /// <returns>A new UID with 2.25 prefix.</returns>
         public static DicomUID GenerateDerivedFromUUID()
-        {            
-            var guid = Guid.NewGuid().ToByteArray();
-            var bigint = new System.Numerics.BigInteger(guid);
-            if (bigint < 0) bigint = -bigint;
-            var uid = "2.25." + bigint;
+        {
+            var guid = Guid.NewGuid();
+            return new DicomUID(ConvertGuidToUuidInteger(ref guid), "Local UID", DicomUidType.Unknown);
+        }
 
-            return new DicomUID(uid, "Local UID", DicomUidType.Unknown);
+        /// <summary>
+        /// Converts a .NET Guid to a UUID in OID format.
+        /// </summary>
+        /// <remarks>Method is internal to support access to unit tests.</remarks>
+        internal static string ConvertGuidToUuidInteger(ref Guid value)
+        {
+            // ISO/IEC 9834-8, paragraph 6.3 (referenced by DICOM PS 3.5, B.2) defines how
+            // to convert a UUID to a single integer value that can be converted back into a UUID.
+
+            // The Guid.ToByteArray Method returns the array in a strange order (see .NET docs),
+            // BigInteger expects the input array in little endian order.
+            // The last byte controls the sign, add an additional zero to ensure
+            // the array is parsed as a positive number.
+            var octets = value.ToByteArray();
+            var littleEndianOrder = new byte[]
+                { octets[15], octets[14], octets[13], octets[12], octets[11], octets[10], octets[9], octets[8],
+                  octets[6], octets[7], octets[4], octets[5], octets[0], octets[1], octets[2], octets[3], 0 };
+
+            return "2.25." + new BigInteger(littleEndianOrder).ToString(CultureInfo.InvariantCulture);
         }
 
         #endregion

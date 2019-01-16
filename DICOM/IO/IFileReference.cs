@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2018 fo-dicom contributors.
+// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO
@@ -77,7 +77,7 @@ namespace Dicom.IO
         /// <param name="offset">Offset from the start position of the file.</param>
         /// <param name="count">Number of bytes to select.</param>
         /// <returns>The specified sub-range of bytes in the file.</returns>
-        byte[] GetByteRange(int offset, int count);
+        byte[] GetByteRange(long offset, int count);
 
         #endregion
     }

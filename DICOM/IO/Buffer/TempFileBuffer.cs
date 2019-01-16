@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
@@ -12,7 +12,7 @@ namespace Dicom.IO.Buffer
     {
         #region FIELDS
 
-        private readonly IFileReference file;
+        private readonly IFileReference _file;
 
         #endregion
 
@@ -24,12 +24,12 @@ namespace Dicom.IO.Buffer
         /// <param name="data">Byte array subject to buffering.</param>
         public TempFileBuffer(byte[] data)
         {
-            this.file = TemporaryFile.Create();
-            this.Size = (uint)data.Length;
+            _file = TemporaryFile.Create();
+            Size = data.Length;
 
-            using (var stream = this.file.OpenWrite())
+            using (var stream = _file.OpenWrite())
             {
-                stream.Write(data, 0, (int)this.Size);
+                stream.Write(data, 0, (int)Size);
             }
         }
 
@@ -40,29 +40,17 @@ namespace Dicom.IO.Buffer
         /// <summary>
         /// Gets whether data is buffered in memory or not.
         /// </summary>
-        public bool IsMemory
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsMemory => false;
 
         /// <summary>
         /// Gets the size of the buffered data.
         /// </summary>
-        public uint Size { get; private set; }
+        public long Size { get; private set; }
 
         /// <summary>
         /// Gets the data.
         /// </summary>
-        public byte[] Data
-        {
-            get
-            {
-                return this.GetByteRange(0, (int)this.Size);
-            }
-        }
+        public byte[] Data => GetByteRange(0, (int)Size);
 
         #endregion
 
@@ -74,11 +62,11 @@ namespace Dicom.IO.Buffer
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             var buffer = new byte[count];
 
-            using (var fs = this.file.OpenRead())
+            using (var fs = _file.OpenRead())
             {
                 fs.Seek(offset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, count);

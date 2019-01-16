@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -36,6 +36,26 @@ namespace Dicom
         {
             Assert.False(DicomUID.EnhancedUSVolumeStorage.IsImageStorage);
             Assert.True(DicomUID.EnhancedUSVolumeStorage.IsVolumeStorage);
+        }
+
+        [Fact]
+        public void Generate_ReturnsValidUid()
+        {
+            var uid = DicomUID.Generate();
+
+            Assert.True(DicomUID.IsValid(uid.UID));
+            Assert.True(uid.UID.Length <= 64); // Currently not checked by DicomUID.IsValid
+        }
+
+        [Fact]
+        public void Generate_ReturnsDifferentUidsEachTime()
+        {
+            // Note: it is statistically not possible to verify that all returned Uids
+            // are unique in a unit test. Just verify that 2 calls result in 2 different values.
+            var uidA = DicomUID.Generate();
+            var uidB = DicomUID.Generate();
+
+            Assert.NotEqual(uidA, uidB);
         }
 
         /// <summary>
