@@ -13,7 +13,7 @@ namespace Dicom.Imaging
         None,
         Axial,
         Sagittal,
-        Koronal
+        Coronal
     }
 
     public class FrameGeometry
@@ -87,7 +87,7 @@ namespace Dicom.Imaging
                 if (axis.X != 0)
                     Orientation = FrameOrientation.Sagittal;
                 else if (axis.Y != 0)
-                    Orientation = FrameOrientation.Koronal;
+                    Orientation = FrameOrientation.Coronal;
                 else if (axis.Z != 0)
                     Orientation = FrameOrientation.Axial;
                 else
