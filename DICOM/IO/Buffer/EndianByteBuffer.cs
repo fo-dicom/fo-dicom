@@ -40,7 +40,7 @@ namespace Dicom.IO.Buffer
         public bool IsMemory => Internal.IsMemory;
 
         /// <inheritdoc />
-        public uint Size => Internal.Size;
+        public long Size => Internal.Size;
 
         /// <inheritdoc />
         public byte[] Data
@@ -65,7 +65,7 @@ namespace Dicom.IO.Buffer
         }
 
         /// <inheritdoc />
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             var data = Internal.GetByteRange(offset, count);
 

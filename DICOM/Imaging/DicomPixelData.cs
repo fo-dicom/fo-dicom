@@ -346,17 +346,16 @@ namespace Dicom.Imaging
                 if (frame < 0 || frame >= NumberOfFrames)
                     throw new IndexOutOfRangeException("Requested frame out of range!");
 
-                var offset = UncompressedFrameSize * frame;
-                return new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                var offset = (long)UncompressedFrameSize * frame;
+                return new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
             }
 
             /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
-                if (!(_element.Buffer is CompositeByteBuffer))
+                var buffer = _element.Buffer as CompositeByteBuffer ??
                     throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
 
-                var buffer = (CompositeByteBuffer)_element.Buffer;
                 buffer.Buffers.Add(data);
 
                 NumberOfFrames++;
@@ -408,13 +407,14 @@ namespace Dicom.Imaging
             /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
             {
-                if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
 
-                var offset = UncompressedFrameSize * frame;
-                IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, (uint)offset, (uint)UncompressedFrameSize);
+                var offset = (long)UncompressedFrameSize * frame;
+                IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
 
                 // mainly for GE Private Implicit VR Big Endian
-                if (Syntax.SwapPixelData) buffer = new SwapByteBuffer(buffer, 2);
+                if (Syntax.SwapPixelData) { buffer = new SwapByteBuffer(buffer, 2); }
 
                 return buffer;
             }
@@ -422,9 +422,8 @@ namespace Dicom.Imaging
             /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
-                if (!(_element.Buffer is CompositeByteBuffer)) throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
-
-                var buffer = (CompositeByteBuffer)_element.Buffer;
+                var buffer = (_element.Buffer as CompositeByteBuffer)
+                    ?? throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
 
                 if (Syntax.SwapPixelData) data = new SwapByteBuffer(data, 2);
 
@@ -486,7 +485,8 @@ namespace Dicom.Imaging
             /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
             {
-                if (frame < 0 || frame >= NumberOfFrames) throw new IndexOutOfRangeException("Requested frame out of range!");
+                if (frame < 0 || frame >= NumberOfFrames)
+                    throw new IndexOutOfRangeException("Requested frame out of range!");
 
                 IByteBuffer buffer;
 
@@ -496,7 +496,10 @@ namespace Dicom.Imaging
                         ? _element.Fragments[0]
                         : new CompositeByteBuffer(_element.Fragments);
                 }
-                else if (_element.Fragments.Count == NumberOfFrames) buffer = _element.Fragments[frame];
+                else if (_element.Fragments.Count == NumberOfFrames)
+                {
+                    buffer = _element.Fragments[frame];
+                }
                 else if (_element.OffsetTable.Count == NumberOfFrames)
                 {
                     var start = _element.OffsetTable[frame];
@@ -506,7 +509,7 @@ namespace Dicom.Imaging
 
                     var composite = new CompositeByteBuffer();
 
-                    uint pos = 0;
+                    long pos = 0;
                     var frag = 0;
 
                     while (pos < start && frag < _element.Fragments.Count)
@@ -548,7 +551,7 @@ namespace Dicom.Imaging
             {
                 NumberOfFrames++;
 
-                var pos = _element.Fragments.Sum(x => (long)x.Size + 8);
+                var pos = _element.Fragments.Sum(x => x.Size + 8);
                 if (pos < uint.MaxValue)
                 {
                     _element.OffsetTable.Add((uint)pos);
