@@ -50,13 +50,13 @@ namespace Dicom.Imaging
         #region Constructor
 
 
-        public FrameGeometry(DicomImage image)
-            : this(image.Dataset.GetString(DicomTag.FrameOfReferenceUID),
-                  image.Dataset.GetValues<double>(DicomTag.ImagePositionPatient),
-                  image.Dataset.GetValues<double>(DicomTag.ImageOrientationPatient),
-                  image.Dataset.GetValues<double>(DicomTag.PixelSpacing),
-                  image.Width,
-                  image.Height)
+        public FrameGeometry(DicomDataset image)
+            : this(image.GetString(DicomTag.FrameOfReferenceUID),
+                  image.GetValues<double>(DicomTag.ImagePositionPatient),
+                  image.GetValues<double>(DicomTag.ImageOrientationPatient),
+                  image.GetValues<double>(DicomTag.PixelSpacing),
+                  image.GetSingleValue<int>(DicomTag.Columns),
+                  image.GetSingleValue<int>(DicomTag.Rows))
         {
             // TODO: this constructor only works for single-frame images. Also handle multiframe like EnhancedCT or EnhancedMR
         }
