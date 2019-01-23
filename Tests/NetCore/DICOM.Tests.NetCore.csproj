@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp20</TargetFramework>
     <AssemblyName>DICOM [Unit Tests]</AssemblyName>
     <RootNamespace>Dicom</RootNamespace>
     <SignAssembly>true</SignAssembly>
