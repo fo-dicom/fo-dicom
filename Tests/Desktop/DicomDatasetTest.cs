@@ -497,7 +497,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );
@@ -512,7 +516,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );
@@ -527,7 +535,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );

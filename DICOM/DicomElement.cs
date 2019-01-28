@@ -33,7 +33,7 @@ namespace Dicom
         {
             get
             {
-                if (Buffer != null) return Buffer.Size;
+                if (Buffer != null) return (uint)Buffer.Size;
                 return 0;
             }
         }
@@ -362,8 +362,6 @@ namespace Dicom
 
             if (typeof(T) == typeof(object[]))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Cast<object>().ToArray();
             }
 
