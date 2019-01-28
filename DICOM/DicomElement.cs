@@ -33,7 +33,7 @@ namespace Dicom
         {
             get
             {
-                if (Buffer != null) return Buffer.Size;
+                if (Buffer != null) return (uint)Buffer.Size;
                 return 0;
             }
         }

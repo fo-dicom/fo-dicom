@@ -69,7 +69,7 @@ namespace Dicom.IO.Writer
                     // fragment item
                     length += 4; // tag
                     length += 4; // length
-                    length += fragment.Size;
+                    length += (uint)fragment.Size;
                 }
 
                 // sequence delimitation item
