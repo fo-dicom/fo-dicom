@@ -77,10 +77,16 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="tcpClient">TCP client.</param>
         /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <remarks>Ownership of <paramref name="tcpClient"/> remains with the caller, including responsibility for
-        /// disposal. Therefore, a handle to <paramref name="tcpClient"/> is <em>not</em> stored when <see cref="DesktopNetworkStream"/>
-        /// is initialized with this server-side constructor.</remarks>
-        internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate)
+        /// <param name="ownsTcpClient">dispose tcpClient on Dispose</param>
+        /// <remarks>
+        /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
+        /// 
+        /// if <paramref name="ownsTcpClient"/> is false, <paramref name="tcpClient"/> must be disposed by caller.
+        /// this is default so that compatible with older versions.
+        /// 
+        /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
+        /// </remarks>
+        internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate, bool ownsTcpClient = false)
         {
             this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
             this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
@@ -97,6 +103,11 @@ namespace Dicom.Network
                 ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls, false);
 #endif
                 stream = ssl;
+            }
+
+            if (ownsTcpClient)
+            {
+                this.tcpClient = tcpClient;
             }
 
             this.networkStream = stream;
