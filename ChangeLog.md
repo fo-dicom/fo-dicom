@@ -21,6 +21,7 @@
 * Bug Fix : DicomPixelData.Create throws Exception if BitsAllocated >= 32 (#716)
 * Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
 * Serilog for .NET Standard 1.3/.NET Core (#772)
+* DicomClient uses StrongBox to reduce memory consumption (#794)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
