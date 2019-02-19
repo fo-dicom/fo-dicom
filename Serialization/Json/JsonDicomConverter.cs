@@ -514,23 +514,23 @@ namespace Dicom.Serialization
                     data = ReadJsonPersonName(reader);
                     break;
                 case "FL":
-                    data = ReadJsonMultiNumber<float>(reader);
+                    data = ReadJsonMultiNumberValue<float>(reader);
                     break;
                 case "FD":
-                    data = ReadJsonMultiNumber<double>(reader);
+                    data = ReadJsonMultiNumberValue<double>(reader);
                     break;
                 case "IS":
                 case "SL":
-                    data = ReadJsonMultiNumber<int>(reader);
+                    data = ReadJsonMultiNumberValue<int>(reader);
                     break;
                 case "SS":
-                    data = ReadJsonMultiNumber<short>(reader);
+                    data = ReadJsonMultiNumberValue<short>(reader);
                     break;
                 case "UL":
-                    data = ReadJsonMultiNumber<uint>(reader);
+                    data = ReadJsonMultiNumberValue<uint>(reader);
                     break;
                 case "US":
-                    data = ReadJsonMultiNumber<ushort>(reader);
+                    data = ReadJsonMultiNumberValue<ushort>(reader);
                     break;
                 case "DS":
                     data = ReadJsonMultiString(reader);
@@ -583,7 +583,24 @@ namespace Dicom.Serialization
             return data;
         }
 
-        private static T[] ReadJsonMultiNumber<T>(JsonReader reader)
+        private object ReadJsonMultiNumber<T>(JsonReader reader)
+        {
+            reader.Read();
+            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Value")
+            {
+                return ReadJsonMultiNumberValue<T>(reader);
+            }
+            else if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "BulkDataURI")
+            {
+                return ReadJsonBulkDataUri(reader);
+            }
+            else
+            {
+                return new T[0];
+            }
+        }
+
+        private static T[] ReadJsonMultiNumberValue<T>(JsonReader reader)
         {
             reader.Read();
             if (reader.TokenType == JsonToken.EndObject) return new T[0];
