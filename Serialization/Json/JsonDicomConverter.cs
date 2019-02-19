@@ -204,7 +204,14 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "IS":
-                    item = new DicomIntegerString(tag, (int[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomIntegerString(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomIntegerString(tag, (int[])data);
+                    }
                     break;
                 case "LO":
                     item = new DicomLongString(tag, (string[])data);
@@ -534,6 +541,8 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<double>(reader);
                     break;
                 case "IS":
+                    data = ReadJsonMultiNumber<int>(reader);
+                    break;
                 case "SL":
                     data = ReadJsonMultiNumberValue<int>(reader);
                     break;

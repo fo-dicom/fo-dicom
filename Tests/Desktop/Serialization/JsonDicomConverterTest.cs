@@ -294,6 +294,26 @@ namespace Dicom.Serialization
         }
 
         /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=IS.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForIS()
+        {
+            const string json = @"
+{
+  ""00720064"": {
+    ""vr"": ""IS"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorISValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
         /// Run the examples from DICOM Standard PS 3.18, section F.2.1.1.2.
         /// </summary>
         [Fact]
