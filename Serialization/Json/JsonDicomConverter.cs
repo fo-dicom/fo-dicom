@@ -326,7 +326,15 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "UT":
-                    item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomUnlimitedText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                    }
                     break;
                 default:
                     throw new NotSupportedException("Unsupported value representation");
