@@ -259,7 +259,14 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "SS":
-                    item = new DicomSignedShort(tag, (short[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomSignedShort(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomSignedShort(tag, (short[])data);
+                    }
                     break;
                 case "ST":
                     item = new DicomShortText(tag, ((string[])data)[0]);
@@ -562,7 +569,7 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<int>(reader);
                     break;
                 case "SS":
-                    data = ReadJsonMultiNumberValue<short>(reader);
+                    data = ReadJsonMultiNumber<short>(reader);
                     break;
                 case "UL":
                     data = ReadJsonMultiNumberValue<uint>(reader);
