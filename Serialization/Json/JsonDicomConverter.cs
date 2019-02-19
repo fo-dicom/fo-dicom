@@ -171,7 +171,14 @@ namespace Dicom.Serialization
                     item = new DicomDate(tag, (string[])data);
                     break;
                 case "DS":
-                    item = new DicomDecimalString(tag, (string[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomDecimalString(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomDecimalString(tag, (string[])data);
+                    }
                     break;
                 case "DT":
                     item = new DicomDateTime(tag, (string[])data);
