@@ -217,7 +217,15 @@ namespace Dicom.Serialization
                     item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
-                    item = new DicomLongText(tag, ((string[])data).Single());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomLongText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomLongText(tag, ((string[])data).Single());
+                    }
                     break;
                 case "OB":
                     item = new DicomOtherByte(tag, (IByteBuffer)data);
