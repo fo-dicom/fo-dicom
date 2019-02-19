@@ -194,7 +194,14 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "FL":
-                    item = new DicomFloatingPointSingle(tag, (float[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomFloatingPointSingle(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomFloatingPointSingle(tag, (float[])data);
+                    }
                     break;
                 case "IS":
                     item = new DicomIntegerString(tag, (int[])data);
@@ -521,7 +528,7 @@ namespace Dicom.Serialization
                     data = ReadJsonPersonName(reader);
                     break;
                 case "FL":
-                    data = ReadJsonMultiNumberValue<float>(reader);
+                    data = ReadJsonMultiNumber<float>(reader);
                     break;
                 case "FD":
                     data = ReadJsonMultiNumber<double>(reader);
