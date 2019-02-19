@@ -316,7 +316,14 @@ namespace Dicom.Serialization
                     item = new DicomUniversalResource(tag, ((string[])data).Single());
                     break;
                 case "US":
-                    item = new DicomUnsignedShort(tag, (ushort[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomUnsignedShort(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnsignedShort(tag, (ushort[])data);
+                    }
                     break;
                 case "UT":
                     item = new DicomUnlimitedText(tag, ((string[])data).Single());
@@ -598,7 +605,7 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<uint>(reader);
                     break;
                 case "US":
-                    data = ReadJsonMultiNumberValue<ushort>(reader);
+                    data = ReadJsonMultiNumber<ushort>(reader);
                     break;
                 case "DS":
                     data = ReadJsonMultiString(reader);
