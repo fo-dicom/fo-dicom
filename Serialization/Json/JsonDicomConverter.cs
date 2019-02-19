@@ -286,7 +286,15 @@ namespace Dicom.Serialization
                     item = new DicomTime(tag, (string[])data);
                     break;
                 case "UC":
-                    item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomUnlimitedCharacters(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                    }
                     break;
                 case "UI":
                     item = new DicomUniqueIdentifier(tag, (string[])data);
