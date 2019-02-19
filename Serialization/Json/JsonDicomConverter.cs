@@ -184,7 +184,14 @@ namespace Dicom.Serialization
                     item = new DicomDateTime(tag, (string[])data);
                     break;
                 case "FD":
-                    item = new DicomFloatingPointDouble(tag, (double[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomFloatingPointDouble(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomFloatingPointDouble(tag, (double[])data);
+                    }
                     break;
                 case "FL":
                     item = new DicomFloatingPointSingle(tag, (float[])data);
@@ -517,7 +524,7 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumberValue<float>(reader);
                     break;
                 case "FD":
-                    data = ReadJsonMultiNumberValue<double>(reader);
+                    data = ReadJsonMultiNumber<double>(reader);
                     break;
                 case "IS":
                 case "SL":
