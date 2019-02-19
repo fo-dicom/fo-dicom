@@ -269,7 +269,15 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "ST":
-                    item = new DicomShortText(tag, ((string[])data)[0]);
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomShortText(tag,DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomShortText(tag, ((string[])data)[0]);
+                    }
                     break;
                 case "SQ":
                     item = new DicomSequence(tag, ((DicomDataset[])data));
