@@ -300,7 +300,14 @@ namespace Dicom.Serialization
                     item = new DicomUniqueIdentifier(tag, (string[])data);
                     break;
                 case "UL":
-                    item = new DicomUnsignedLong(tag, (uint[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomUnsignedLong(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnsignedLong(tag, (uint[])data);
+                    }
                     break;
                 case "UN":
                     item = new DicomUnknown(tag, (IByteBuffer)data);
@@ -588,7 +595,7 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<short>(reader);
                     break;
                 case "UL":
-                    data = ReadJsonMultiNumberValue<uint>(reader);
+                    data = ReadJsonMultiNumber<uint>(reader);
                     break;
                 case "US":
                     data = ReadJsonMultiNumberValue<ushort>(reader);
