@@ -251,7 +251,7 @@ namespace Dicom.Network
                             scp.Options = Options;
                         }
 
-                        _services.Add(scp.RunAsync());
+                        _services.Add(scp.RunAsync().ContinueWith(_ => scp.Dispose()));
 
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax) _hasNonMaxServicesFlag.Reset();
