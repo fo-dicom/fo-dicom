@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -318,6 +318,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+
                 if (index >= element.Count )
                 {
                     throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}");
@@ -368,7 +370,7 @@ namespace Dicom
                     elementValue = element.Get<T>(index);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     elementValue = default(T);
                     return false;
@@ -411,6 +413,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(T[]) == typeof(byte[])) { return (T[])(object)element.Buffer.Data; }
+
                 return element.Get<T[]>(-1);
             }
             else
@@ -452,7 +456,7 @@ namespace Dicom
                     values = element.Get<T[]>(-1);
                     return true;
                 }
-                catch(DicomDataException)
+                catch
                 {
                     values = null;
                     return false;
@@ -482,6 +486,8 @@ namespace Dicom
 
             if (item is DicomElement element)
             {
+                if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
+
                 if (element.Count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
 
                 return element.Get<T>(0);
@@ -526,7 +532,7 @@ namespace Dicom
                     value = element.Get<T>(0);
                     return true;
                 }
-                catch (DicomDataException)
+                catch
                 {
                     value = default(T);
                     return false;
@@ -677,7 +683,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or if the specified
         /// <paramref name="n">item index</paramref> is out-of-range.</exception>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, int n = 0)
         {
             return Get<T>(tag, n, false, default(T));
@@ -690,7 +696,7 @@ namespace Dicom
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Element value corresponding to <paramref name="tag"/>.</returns>
         /// <exception cref="DicomDataException">If the element corresponding to <paramref name="tag"/> cannot be converted to an integer.</exception>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public int Get(DicomTag tag, int defaultValue)
         {
             return Get<int>(tag, 0, true, defaultValue);
@@ -705,7 +711,7 @@ namespace Dicom
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
         /// <remarks>In code, consider to use this method with implicit type specification, since <typeparamref name="T"/> can be inferred from
         /// <paramref name="defaultValue"/>, e.g. prefer <code>dataset.Get(tag, "Default")</code> over <code>dataset.Get&lt;string&gt;(tag, "Default")</code>.</remarks>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, T defaultValue)
         {
             return Get<T>(tag, 0, true, defaultValue);
@@ -719,7 +725,7 @@ namespace Dicom
         /// <param name="n">Item index (for multi-valued elements).</param>
         /// <param name="defaultValue">Default value to apply if <paramref name="tag"/> is not contained in dataset.</param>
         /// <returns>Item or element value corresponding to <paramref name="tag"/>.</returns>
-        [Obsolete("Use GetValue or GetValues instead")]
+        [Obsolete("Use GetValue, GetValues, GetSingleValue or GetSequence instead. See https://github.com/fo-dicom/fo-dicom/wiki/Getting-data")]
         public T Get<T>(DicomTag tag, int n, T defaultValue)
         {
             return Get<T>(tag, n, true, defaultValue);

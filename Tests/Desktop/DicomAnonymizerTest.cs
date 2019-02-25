@@ -1,10 +1,12 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Xunit;
 
 namespace Dicom
 {
+    using System.Text;
+
     [Collection("General")]
     public class DicomAnonymizerTest
     {
@@ -188,6 +190,53 @@ namespace Dicom
 
             var sequence = dataset.Get<DicomSequence>(tag);
             Assert.Equal(0, sequence.Items.Count);
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_BasicProfile()
+        {
+            const string fileName = "CT1_J2KI";
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif
+
+            var profile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
+            var anony = new DicomAnonymizer(profile);
+
+            var anonymized = anony.Anonymize(dataset);
+
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientName), anonymized.GetString(DicomTag.PatientName));
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientAge), anonymized.GetSingleValueOrDefault(DicomTag.PatientAge, string.Empty));
+            Assert.NotEqual(dataset.GetString(DicomTag.PatientID), anonymized.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty));
+        }
+
+        [Fact]
+        public void Anonymize_PatientName_ShouldUseOriginalDicomEncoding()
+        {
+            const string fileName = "GH064.dcm";
+
+#if NETFX_CORE
+            var orignalDicom = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result;
+#else
+            var orignalDicom = DicomFile.Open($"./Test Data/{fileName}");
+#endif
+
+            var securityProfile = Dicom.DicomAnonymizer.SecurityProfile.LoadProfile(null, Dicom.DicomAnonymizer.SecurityProfileOptions.BasicProfile);
+            securityProfile.PatientName = "kökö";
+
+            var dicomAnonymizer = new Dicom.DicomAnonymizer(securityProfile);
+            var anonymizedDicom = dicomAnonymizer.Anonymize(orignalDicom);
+
+            // Ensure that we are using valid input data for test.
+            Assert.Equal(Encoding.ASCII, DicomEncoding.Default);
+            Assert.NotEqual(DicomEncoding.GetEncoding(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet)), DicomEncoding.Default);
+
+            // Ensure DICOM encoding same as original.
+            Assert.Equal(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
+            Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
         #endregion

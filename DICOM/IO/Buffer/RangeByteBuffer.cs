@@ -1,11 +1,15 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 
 namespace Dicom.IO.Buffer
 {
+
     public class RangeByteBuffer : IByteBuffer
     {
-        public RangeByteBuffer(IByteBuffer buffer, uint offset, uint length)
+
+        public RangeByteBuffer(IByteBuffer buffer, long offset, int length)
         {
             Internal = buffer;
             Offset = offset;
@@ -14,37 +18,19 @@ namespace Dicom.IO.Buffer
 
         public IByteBuffer Internal { get; private set; }
 
-        public uint Offset { get; private set; }
+        public long Offset { get; private set; }
 
-        public uint Length { get; private set; }
+        public int Length { get; private set; }
 
-        public bool IsMemory
+        public bool IsMemory => Internal.IsMemory;
+
+        public long Size => Length;
+
+        public byte[] Data => Internal.GetByteRange(Offset, Length);
+
+        public byte[] GetByteRange(long offset, int count)
         {
-            get
-            {
-                return Internal.IsMemory;
-            }
-        }
-
-        public uint Size
-        {
-            get
-            {
-                return Length;
-            }
-        }
-
-        public byte[] Data
-        {
-            get
-            {
-                return Internal.GetByteRange((int)Offset, (int)Length);
-            }
-        }
-
-        public byte[] GetByteRange(int offset, int count)
-        {
-            return Internal.GetByteRange((int)Offset + offset, count);
+            return Internal.GetByteRange(Offset + offset, count);
         }
     }
 }

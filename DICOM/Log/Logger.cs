@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Log
@@ -157,8 +157,7 @@ namespace Dicom.Log
         /// <returns>True if <paramref name="s"/> could be interpreted as integer value, false otherwise.</returns>
         internal static bool IsNumber(string s)
         {
-            int dummy;
-            return int.TryParse(s, out dummy);
+            return int.TryParse(s, out _);
         }
     }
 }

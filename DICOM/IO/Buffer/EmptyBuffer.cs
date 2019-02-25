@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -14,29 +14,17 @@ namespace Dicom.IO.Buffer
             Data = new byte[0];
         }
 
-        public bool IsMemory
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsMemory => true;
 
         public byte[] Data { get; private set; }
 
-        public uint Size
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public long Size => 0;
 
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             if (offset != 0 || count != 0)
                 throw new ArgumentOutOfRangeException(
-                    "offset",
+                    nameof(offset),
                     "Offset and count cannot be greater than 0 in EmptyBuffer");
             return Data;
         }

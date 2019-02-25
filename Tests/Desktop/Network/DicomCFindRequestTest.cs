@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -23,6 +23,22 @@ namespace Dicom.Network
         {
             var actual = request.Level;
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Constructor_CreatesPatientRootQuery()
+        {
+            var query = new DicomCFindRequest(DicomUID.PatientRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Patient);
+            Assert.Equal(DicomQueryRetrieveLevel.Patient, query.Level);
+            Assert.Equal(DicomUID.PatientRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+        }
+
+        [Fact]
+        public void Constructor_CreatesStudyRootQuery()
+        {
+            var query = new DicomCFindRequest(DicomUID.StudyRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Study);
+            Assert.Equal(DicomQueryRetrieveLevel.Study, query.Level);
+            Assert.Equal(DicomUID.StudyRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
         }
 
         #endregion

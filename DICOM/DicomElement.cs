@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -29,7 +29,7 @@ namespace Dicom
 
         public IByteBuffer Buffer { get; protected set; }
 
-        public uint Length => Buffer?.Size ?? 0;
+        public uint Length => (uint)(Buffer?.Size ?? 0);
 
         public abstract T Get<T>(int item = -1);
 
@@ -432,8 +432,6 @@ namespace Dicom
 
             if (typeof(T) == typeof(object[]))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Cast<object>().ToArray();
             }
 

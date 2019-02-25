@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -487,6 +487,63 @@ namespace Dicom
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TryGetValue_MustNotThrowOnVRViolation()
+        {
+            //  related #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
+                        Encoding.Default.GetBytes("1.0")
+#endif
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetValue(DicomTag.SeriesNumber, 0, out int _));
+        }
+
+        [Fact]
+        public void TryGetValues_MustNotThrowOnVRViolation()
+        {
+            //  related #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
+                        Encoding.Default.GetBytes("1.0")
+#endif
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetValues(DicomTag.SeriesNumber, out int[] _));
+        }
+
+        [Fact]
+        public void TryGetSingleValue_MustNotThrowOnVRViolation()
+        {
+            //  #746
+            var dataset = new DicomDataset(
+                new DicomIntegerString(
+                    DicomTag.SeriesNumber,
+                    new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
+                        Encoding.Default.GetBytes("1.0")
+#endif
+                    )
+                )
+            );
+            Assert.False(dataset.TryGetSingleValue(DicomTag.SeriesNumber, out int _));
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -36,7 +36,7 @@ namespace Dicom.Network
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors)
+        internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
         {
             this.RemoteHost = host;
             this.RemotePort = port;
@@ -55,6 +55,9 @@ namespace Dicom.Network
                     stream,
                     false,
                     (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || ignoreSslPolicyErrors);
+                ssl.ReadTimeout = millisecondsTimeout;
+                ssl.WriteTimeout = millisecondsTimeout;
+
 #if NETSTANDARD
                 ssl.AuthenticateAsClientAsync(host).Wait();
 #else

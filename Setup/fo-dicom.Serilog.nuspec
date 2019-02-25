@@ -12,13 +12,21 @@
         <description>Support library for connecting Serilog log handler to fo-dicom.</description>
         <language>en-US</language>
         <dependencies>
-            <dependency id="fo-dicom.Desktop" version="$version$" />
-            <dependency id="Serilog" version="1.5.14" />
+            <group targetFramework="net45">
+                <dependency id="fo-dicom.Desktop" version="$version$" />
+                <dependency id="Serilog" version="1.5.14" />
+            </group>
+            <group targetFramework="netstandard1.3">
+                <dependency id="fo-dicom.NetCore" version="$version$" />
+                <dependency id="Serilog" version="2.7.1" />
+            </group>
         </dependencies>
     </metadata>
     <files>
         <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.dll" target="lib\net45" />
         <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.pdb" target="lib\net45" />
         <file src="..\Logging\Serilog.Desktop\bin\Release\Dicom.Serilog.xml" target="lib\net45" />
+        <file src="..\Logging\Serilog\bin\Release\netstandard1.3\DICOM.Serilog.dll" target="lib\netstandard1.3" />
+        <file src="..\Logging\Serilog\bin\Release\netstandard1.3\DICOM.Serilog.pdb" target="lib\netstandard1.3" />
     </files>
 </package>

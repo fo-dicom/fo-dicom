@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Buffer
@@ -40,7 +40,7 @@ namespace Dicom.IO.Buffer
         public bool IsMemory => Internal.IsMemory;
 
         /// <inheritdoc />
-        public uint Size => Internal.Size;
+        public long Size => Internal.Size;
 
         /// <inheritdoc />
         public byte[] Data
@@ -65,7 +65,7 @@ namespace Dicom.IO.Buffer
         }
 
         /// <inheritdoc />
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             var data = Internal.GetByteRange(offset, count);
 

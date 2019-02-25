@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
@@ -337,7 +337,7 @@ namespace Dicom.Network
             var ignoreSslPolicyErrors = Options?.IgnoreSslPolicyErrors
                                         ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
-            _networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors);
+            _networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
 
             var assoc = new DicomAssociation(callingAe, calledAe)
             {
