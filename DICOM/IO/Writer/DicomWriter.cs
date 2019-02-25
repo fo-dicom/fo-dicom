@@ -341,7 +341,7 @@ namespace Dicom.IO.Writer
                 remainingSize -= largeObjectSize;
             }
 
-            target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize);
+            await target.WriteAsync(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize).ConfigureAwait(false);
         }
 #endif
     }

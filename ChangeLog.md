@@ -22,6 +22,7 @@
 * Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
 * Serilog for .NET Standard 1.3/.NET Core (#772)
 * DicomClient uses StrongBox to reduce memory consumption (#794)
+* Bug Fix: C-STORE request may hang. (#792)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
