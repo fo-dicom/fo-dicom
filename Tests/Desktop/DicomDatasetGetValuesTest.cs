@@ -205,6 +205,24 @@ namespace Dicom
             Assert.False(success);
         }
 
+        /// <summary>
+        /// issue #720
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [MemberData(nameof(ValueElementsWithNoValues))]
+        [MemberData(nameof(ValueElementsWithSingleValue))]
+        [MemberData(nameof(ValueElementsWithTwoValues))]
+        public void Get_Values_ObjectArray_Success(DicomElement element, object[] expected)
+        {
+            DicomDataset ds = new DicomDataset(element);
+
+            object[] objects = ds.GetValues<object>(element.Tag);
+
+            Assert.Equal(expected, objects);
+        }
+
         #endregion
 
         #region Support data
@@ -228,6 +246,57 @@ namespace Dicom
             public DicomDataset Dataset { get; private set; }
             public T[] Values { get; private set; }
         }
+
+        /// <summary>
+        /// instances of DicomValueElement-derived classes with no values
+        /// </summary>
+        public static readonly object[][] ValueElementsWithNoValues = new[]{
+            new object[] { new DicomFloatingPointDouble(DicomTag.SelectorFDValue), new object[0] },
+            new object[] { new DicomFloatingPointSingle(DicomTag.SelectorFLValue), new object[0] },
+            new object[] { new DicomOtherByte(DicomTag.SelectorOBValue), new object[0] },
+            new object[] { new DicomOtherDouble(DicomTag.SelectorODValue), new object[0] },
+            new object[] { new DicomOtherFloat(DicomTag.SelectorOFValue), new object[0] },
+            new object[] { new DicomOtherLong(DicomTag.SelectorOLValue), new object[0] },
+            new object[] { new DicomOtherWord(DicomTag.SelectorOWValue), new object[0] },
+            new object[] { new DicomSignedLong(DicomTag.SelectorSLValue), new object[0] },
+            new object[] { new DicomSignedShort(DicomTag.SelectorSSValue), new object[0] },
+            new object[] { new DicomUnsignedLong(DicomTag.SelectorULValue), new object[0] },
+            new object[] { new DicomUnsignedShort(DicomTag.SelectorUSValue), new object[0] },
+        };
+
+        /// <summary>
+        /// instances of DicomValueElement-derived classes with single value
+        /// </summary>
+        public static readonly object[][] ValueElementsWithSingleValue = new[]{
+            new object[] { new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 1), new object[] { 1D } },
+            new object[] { new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 1), new object[] { 1F } },
+            new object[] { new DicomOtherByte(DicomTag.SelectorOBValue, 1), new object[] { (byte)1, }  },
+            new object[] { new DicomOtherDouble(DicomTag.SelectorODValue, 1), new object[] { 1D } },
+            new object[] { new DicomOtherFloat(DicomTag.SelectorOFValue, 1), new object[] { 1F } },
+            new object[] { new DicomOtherLong(DicomTag.SelectorOLValue, 1), new object[] { 1U } },
+            new object[] { new DicomOtherWord(DicomTag.SelectorOWValue, 1), new object[] { (ushort)1 } },
+            new object[] { new DicomSignedLong(DicomTag.SelectorSLValue, 1), new object[] { 1 } },
+            new object[] { new DicomSignedShort(DicomTag.SelectorSSValue, 1), new object[] { (short)1 } },
+            new object[] { new DicomUnsignedLong(DicomTag.SelectorULValue, 1), new object[] { 1U } },
+            new object[] { new DicomUnsignedShort(DicomTag.SelectorUSValue, 1), new object[] { (ushort)1 } },
+        };
+
+        /// <summary>
+        /// instances of DicomValueElement-derived classes with 2 values
+        /// </summary>
+        public static readonly object[][] ValueElementsWithTwoValues = new[]{
+            new object[] { new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 1, 2), new object[] { 1D, 2D } },
+            new object[] { new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 1, 2), new object[] { 1F, 2F } },
+            new object[] { new DicomOtherByte(DicomTag.SelectorOBValue, 1, 2), new object[] { (byte)1, (byte)2 }  },
+            new object[] { new DicomOtherDouble(DicomTag.SelectorODValue, 1, 2), new object[] { 1D, 2D } },
+            new object[] { new DicomOtherFloat(DicomTag.SelectorOFValue, 1, 2), new object[] { 1F, 2F } },
+            new object[] { new DicomOtherLong(DicomTag.SelectorOLValue, 1, 2), new object[] { 1U, 2U } },
+            new object[] { new DicomOtherWord(DicomTag.SelectorOWValue, 1, 2), new object[] { (ushort)1, (ushort)2 } },
+            new object[] { new DicomSignedLong(DicomTag.SelectorSLValue, 1, 2), new object[] { 1, 2 } },
+            new object[] { new DicomSignedShort(DicomTag.SelectorSSValue, 1, 2), new object[] { (short)1, (short)2 } },
+            new object[] { new DicomUnsignedLong(DicomTag.SelectorULValue, 1, 2), new object[] { 1U, 2U } },
+            new object[] { new DicomUnsignedShort(DicomTag.SelectorUSValue, 1, 2), new object[] { (ushort)1, (ushort)2 } },
+        };
 
         #endregion
     }

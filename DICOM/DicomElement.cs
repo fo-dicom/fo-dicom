@@ -362,8 +362,6 @@ namespace Dicom
 
             if (typeof(T) == typeof(object[]))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
-
                 return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Cast<object>().ToArray();
             }
 
