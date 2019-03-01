@@ -137,6 +137,7 @@
     <Compile Include="Helpers\TestOutputHelperLogger.cs" />
     <Compile Include="Helpers\TestPriorityAttribute.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
+    <Compile Include="Imaging\FrameGeometryTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
     <Compile Include="Imaging\DicomImageTest.cs" />
     <Compile Include="Imaging\DicomOverlayDataTest.cs" />
