@@ -171,15 +171,16 @@ namespace Dicom.Imaging
         /// <summary>
         /// This method calculates the localizer rectangle of the sourceFrame that can be drawn on the destinationFrame.
         /// You should call the method CanDrawLocalizer prior to check if localizer calculation is valid on the two frames.
-        /// This method will return the 4 points of a rectangle, although most image sets will intersect, resulting in the rectangle
-        /// being presented as a straight line on the scout image.
+        /// This method will return the 4 points of a rectangle, although most image sets are orthogonal, resulting in the rectangle
+        /// being presented as a straight line on the scout image. Since the source image is projected on the destination image
+        /// there might me a result even if the two images do not intersect
         ///
         /// </summary>
         /// <param name="sourceFrame">The dataset of the frame, that is viewed by the user</param>
         /// <param name="destinationFrame">The dataset of the scout frame, where the localizer line should be drawn on</param>
         /// <param name="localizerPoints">This contains the points of the localizer rectangle in terms of pixels on destinationFrame</param>        
         /// <returns></returns>
-        public static void CalcualteLocalizer(DicomDataset sourceFrame, DicomDataset destinationFrame, out List<Point2> localizerPoints)
+        public static void CalcualteProjectionLocalizer(DicomDataset sourceFrame, DicomDataset destinationFrame, out List<Point2> localizerPoints)
         {
             localizerPoints = new List<Point2>();
 
@@ -359,7 +360,8 @@ namespace Dicom.Imaging
         /// <summary>
         /// This method calculates the localizer line of the sourceFrame that can be drawn on the destinationFrame.
         /// You should call the method CanDrawLocalizer prior to check if localizer calculation is valid on the two frames.
-        /// 
+        ///
+        /// This method returns the line of common pixels where the two images intersect.
         /// If the two images intersect, then it returns <code>true</code> and the out parameters are filled with values. Otherwise the method returns <code>false</code>
         /// </summary>
         /// <param name="sourceFrame">The geometry of the frame, that is viewed by the user</param>
@@ -367,7 +369,7 @@ namespace Dicom.Imaging
         /// <param name="startPoint">If the frames intersect, then this contains the start point of the localizer line in terms of pixels on destinationFrame</param>
         /// <param name="endPoint">If the frames intersect, then this contains the end point of the localizer lin in terms of pixels on destinationFrame</param>
         /// <returns></returns>
-        public static bool CalcualteLocalizer(FrameGeometry sourceFrame, FrameGeometry destinationFrame, out Point2 startPoint, out Point2 endPoint)
+        public static bool CalcualteIntersectionLocalizer(FrameGeometry sourceFrame, FrameGeometry destinationFrame, out Point2 startPoint, out Point2 endPoint)
         {
             double t; // coeficient of the plane-equation
             double nA, nB, nC, nD, nP;
@@ -378,8 +380,6 @@ namespace Dicom.Imaging
             endPoint = Point2.Origin;
 
             // validation
-            if (destinationFrame.PointTopLeft.ToVector().IsZero)
-                return false;
             if (destinationFrame.DirectionNormal.IsZero)
                 return false;
 
