@@ -60,7 +60,7 @@ namespace Dicom.Imaging.Render
         /// <param name="scale">Scale factor.</param>
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scale) <= Constants.Epsilon) return;
+            if ((scale - _scale).IsNearlyZero()) return;
 
             _scale = scale;
             _scaledData = null;

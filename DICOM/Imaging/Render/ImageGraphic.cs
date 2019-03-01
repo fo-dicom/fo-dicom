@@ -76,7 +76,7 @@ namespace Dicom.Imaging.Render
             {
                 if (_scaledData == null)
                 {
-                    _scaledData = Math.Abs(_scaleFactor - 1.0) <= Constants.Epsilon
+                    _scaledData = (_scaleFactor - 1.0).IsNearlyZero()
                         ? _originalData
                         : OriginalData.Rescale(_scaleFactor);
                 }
@@ -161,7 +161,7 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scaleFactor) <= Constants.Epsilon) return;
+            if ((scale - _scaleFactor).IsNearlyZero()) return;
 
             _scaleFactor = scale;
             _scaledData = null;

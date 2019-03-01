@@ -124,7 +124,7 @@ namespace Dicom.Imaging.Mathematics
         #region Public Methods
 
         public bool IsZero
-            => Math.Abs(X) < Constants.Epsilon && Math.Abs(Y) < Constants.Epsilon && Math.Abs(Z) < Constants.Epsilon;
+            => X.IsNearlyZero() && Y.IsNearlyZero() && Z.IsNearlyZero();
 
         public double Length()
             => Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
@@ -318,8 +318,8 @@ namespace Dicom.Imaging.Mathematics
 
             if ((a is null) || (b is null)) return false;
 
-            return Math.Abs(a.X - b.X) <= Constants.Epsilon && Math.Abs(a.Y - b.Y) <= Constants.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Constants.Epsilon;
+            return (a.X - b.X).IsNearlyZero() && (a.Y - b.Y).IsNearlyZero()
+                   && (a.Z - b.Z).IsNearlyZero();
         }
 
         public static bool operator !=(Vector3D a, Vector3D b)
@@ -464,8 +464,8 @@ namespace Dicom.Imaging.Mathematics
 
         public static bool operator ==(Point3D a, Point3D b)
         {
-            return Math.Abs(a.X - b.X) <= Constants.Epsilon && Math.Abs(a.Y - b.Y) <= Constants.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Constants.Epsilon;
+            return (a.X - b.X).IsNearlyZero() && (a.Y - b.Y).IsNearlyZero()
+                   && (a.Z - b.Z).IsNearlyZero();
         }
 
         public static bool operator !=(Point3D a, Point3D b)

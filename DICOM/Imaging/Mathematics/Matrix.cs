@@ -199,6 +199,7 @@ namespace Dicom.Imaging.Mathematics
             return t;
         }
 
+        [Obsolete("Integers (Z) has only inverse elements for addition but not for multiplication. If introducing inverse for multiplications you are in rational numbers (Q). So there cant be a inverse matrix for an int-matrix", true)]
         public Matrix Invert()
         {
             int rows = Rows;
@@ -641,7 +642,17 @@ namespace Dicom.Imaging.Mathematics
             int rows = Rows;
             int cols = Columns;
 
-            if (rows != cols) throw new InvalidOperationException("Unable to invert non-square matrix");
+            if (!IsSquare) throw new InvalidOperationException("Unable to invert non-square matrix");
+
+            // for dimension 3 and 4 there are optimized methods to calculate the invert matrix
+            if (rows == 3)
+            {
+                return Invert3();
+            }
+            if (rows == 4)
+            {
+                return Invert4();
+            }
 
             if (Determinant == 0.0f) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
 
@@ -675,6 +686,83 @@ namespace Dicom.Imaging.Mathematics
 
             return x;
         }
+
+
+        private MatrixF Invert3()
+        {
+            var b0 = _matrix[1, 1] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 1];
+            var b1 = _matrix[1, 0] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 0];
+            var b2 = _matrix[1, 0] * _matrix[2, 1] - _matrix[1, 1] * _matrix[2, 0];
+
+            var c0 = _matrix[0, 1] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 1];
+            var s0 = _matrix[0, 1] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 1];
+            var c1 = _matrix[0, 0] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 0];
+
+            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 0];
+            var c2 = _matrix[0, 0] * _matrix[2, 1] - _matrix[0, 1] * _matrix[2, 0];
+            var s2 = _matrix[0, 0] * _matrix[1, 1] - _matrix[0, 1] * _matrix[1, 0];
+
+            var det = _matrix[0, 0] * b0 - _matrix[0, 1] * b1 + _matrix[0, 2] * b2;
+            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+
+            var result = new MatrixF(3, 3);
+            det = 1 / det;
+
+            result[0, 0] = b0 * det;
+            result[0, 1] = -c0 * det;
+            result[0, 2] = s0 * det;
+            result[1, 0] = -b1 * det;
+            result[1, 1] = c1 * det;
+            result[1, 2] = -s1 * det;
+            result[2, 0] = b2 * det;
+            result[2, 1] = -c2 * det;
+            result[2, 2] = s2 * det;
+
+            return result;
+        }
+
+        private MatrixF Invert4()
+        {
+            var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
+            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
+            var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
+            var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
+            var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
+            var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
+
+            var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
+            var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
+            var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
+            var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
+            var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
+            var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
+
+            var det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+
+            var result = new MatrixF(4, 4);
+            det = 1 / det;
+
+            result[0, 0] = (_matrix[1, 1] * c5 - _matrix[1, 2] * c4 + _matrix[1, 3] * c3) * det;
+            result[0, 1] = (-_matrix[0, 1] * c5 + _matrix[0, 2] * c4 - _matrix[0, 3] * c3) * det;
+            result[0, 2] = (_matrix[3, 1] * s5 - _matrix[3, 2] * s4 + _matrix[3, 3] * s3) * det;
+            result[0, 3] = (-_matrix[2, 1] * s5 + _matrix[2, 2] * s4 - _matrix[2, 3] * s3) * det;
+            result[1, 0] = (-_matrix[1, 0] * c5 + _matrix[1, 2] * c2 - _matrix[1, 3] * c1) * det;
+            result[1, 1] = (_matrix[0, 0] * c5 - _matrix[0, 2] * c2 + _matrix[0, 3] * c1) * det;
+            result[1, 2] = (-_matrix[3, 0] * s5 + _matrix[3, 2] * s2 - _matrix[3, 3] * s1) * det;
+            result[1, 3] = (_matrix[2, 0] * s5 - _matrix[2, 2] * s2 + _matrix[2, 3] * s1) * det;
+            result[2, 0] = (_matrix[1, 0] * c4 - _matrix[1, 1] * c2 + _matrix[1, 3] * c0) * det;
+            result[2, 1] = (-_matrix[0, 0] * c4 + _matrix[0, 1] * c2 - _matrix[0, 3] * c0) * det;
+            result[2, 2] = (_matrix[3, 0] * s4 - _matrix[3, 1] * s2 + _matrix[3, 3] * s0) * det;
+            result[2, 3] = (-_matrix[2, 0] * s4 + _matrix[2, 1] * s2 - _matrix[2, 3] * s0) * det;
+            result[3, 0] = (-_matrix[1, 0] * c3 + _matrix[1, 1] * c1 - _matrix[1, 2] * c0) * det;
+            result[3, 1] = (_matrix[0, 0] * c3 - _matrix[0, 1] * c1 + _matrix[0, 2] * c0) * det;
+            result[3, 2] = (-_matrix[3, 0] * s3 + _matrix[3, 1] * s1 - _matrix[3, 2] * s0) * det;
+            result[3, 3] = (_matrix[2, 0] * s3 - _matrix[2, 1] * s1 + _matrix[2, 2] * s0) * det;
+
+            return result;
+        }
+
 
         public override string ToString()
         {
@@ -1097,7 +1185,17 @@ namespace Dicom.Imaging.Mathematics
             int rows = Rows;
             int cols = Columns;
 
-            if (rows != cols) throw new InvalidOperationException("Unable to invert non-square matrix");
+            if (!IsSquare) throw new InvalidOperationException("Unable to invert non-square matrix");
+
+            // for dimensions 3 and 4 there are optimized methods to calculate the invert matrix. 
+            if (rows == 3)
+            {
+                return Invert3();
+            }
+            if (rows == 4)
+            {
+                return Invert4();
+            }
 
             if (Determinant == 0.0) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
 
@@ -1130,6 +1228,81 @@ namespace Dicom.Imaging.Mathematics
             }
 
             return x;
+        }
+
+        private MatrixD Invert3()
+        {
+            var b0 = _matrix[1, 1] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 1];
+            var b1 = _matrix[1, 0] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 0];
+            var b2 = _matrix[1, 0] * _matrix[2, 1] - _matrix[1, 1] * _matrix[2, 0];
+
+            var c0 = _matrix[0, 1] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 1];
+            var s0 = _matrix[0, 1] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 1];
+            var c1 = _matrix[0, 0] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 0];
+
+            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 0];
+            var c2 = _matrix[0, 0] * _matrix[2, 1] - _matrix[0, 1] * _matrix[2, 0];
+            var s2 = _matrix[0, 0] * _matrix[1, 1] - _matrix[0, 1] * _matrix[1, 0];
+
+            var det = _matrix[0, 0] * b0 - _matrix[0, 1] * b1 + _matrix[0, 2] * b2;
+            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+
+            var result = new MatrixD(3,3);
+            det = 1 / det;
+
+            result[0, 0] = b0 * det;
+            result[0, 1] = -c0 * det;
+            result[0, 2] = s0 * det;
+            result[1, 0] = -b1 * det;
+            result[1, 1] = c1 * det;
+            result[1, 2] = -s1 * det;
+            result[2, 0] = b2 * det;
+            result[2, 1] = -c2 * det;
+            result[2, 2] = s2 * det;
+
+            return result;
+        }
+
+        private MatrixD Invert4()
+        {
+            var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
+            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
+            var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
+            var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
+            var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
+            var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
+
+            var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
+            var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
+            var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
+            var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
+            var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
+            var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
+
+            var det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+
+            var result = new MatrixD(4,4);
+            det = 1 / det;
+
+            result[0, 0] = (_matrix[1, 1] * c5 - _matrix[1, 2] * c4 + _matrix[1, 3] * c3) * det;
+            result[0, 1] = (-_matrix[0, 1] * c5 + _matrix[0, 2] * c4 - _matrix[0, 3] * c3) * det;
+            result[0, 2] = (_matrix[3, 1] * s5 - _matrix[3, 2] * s4 + _matrix[3, 3] * s3) * det;
+            result[0, 3] = (-_matrix[2, 1] * s5 + _matrix[2, 2] * s4 - _matrix[2, 3] * s3) * det;
+            result[1, 0] = (-_matrix[1, 0] * c5 + _matrix[1, 2] * c2 - _matrix[1, 3] * c1) * det;
+            result[1, 1] = (_matrix[0, 0] * c5 - _matrix[0, 2] * c2 + _matrix[0, 3] * c1) * det;
+            result[1, 2] = (-_matrix[3, 0] * s5 + _matrix[3, 2] * s2 - _matrix[3, 3] * s1) * det;
+            result[1, 3] = (_matrix[2, 0] * s5 - _matrix[2, 2] * s2 + _matrix[2, 3] * s1) * det;
+            result[2, 0] = (_matrix[1, 0] * c4 - _matrix[1, 1] * c2 + _matrix[1, 3] * c0) * det;
+            result[2, 1] = (-_matrix[0, 0] * c4 + _matrix[0, 1] * c2 - _matrix[0, 3] * c0) * det;
+            result[2, 2] = (_matrix[3, 0] * s4 - _matrix[3, 1] * s2 + _matrix[3, 3] * s0) * det;
+            result[2, 3] = (-_matrix[2, 0] * s4 + _matrix[2, 1] * s2 - _matrix[2, 3] * s0) * det;
+            result[3, 0] = (-_matrix[1, 0] * c3 + _matrix[1, 1] * c1 - _matrix[1, 2] * c0) * det;
+            result[3, 1] = (_matrix[0, 0] * c3 - _matrix[0, 1] * c1 + _matrix[0, 2] * c0) * det;
+            result[3, 2] = (-_matrix[3, 0] * s3 + _matrix[3, 1] * s1 - _matrix[3, 2] * s0) * det;
+            result[3, 3] = (_matrix[2, 0] * s3 - _matrix[2, 1] * s1 + _matrix[2, 2] * s0) * det;
+
+            return result;
         }
 
         public override string ToString()
