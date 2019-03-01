@@ -184,74 +184,52 @@ namespace Dicom.Imaging
         {
             localizerPoints = new List<Point2>();
 
-            GetPositionOrientationSpacingAndSize(destinationFrame, out double dst_row_dircos_x, out double dst_row_dircos_y, out double dst_row_dircos_z,
-                    out double dst_col_dircos_x, out double dst_col_dircos_y, out double dst_col_dircos_z,
-                    out double dst_nrm_dircos_x, out double dst_nrm_dircos_y, out double dst_nrm_dircos_z,
-                    out double dst_pos_x, out double dst_pos_y, out double dst_pos_z,
-                    out ulong dst_rows, out ulong dst_cols,
-                    out double dst_row_spacing, out double dst_col_spacing,
-                    out double dst_row_length, out double dst_col_length);
+            GetPositionOrientationSpacingAndSize(destinationFrame, out Vector3D dstRowDir,
+                    out Vector3D dstColDir, out Vector3D dstNormal, out Point3D dstPos,
+                    out int _, out int _,
+                    out double dstRowSpacing, out double dstColSpacing,
+                    out double _, out double _);
 
-            GetPositionOrientationSpacingAndSize(sourceFrame, out double src_row_dircos_x, out double src_row_dircos_y, out double src_row_dircos_z,
-                        out double src_col_dircos_x, out double src_col_dircos_y, out double src_col_dircos_z,
-                        out double src_nrm_dircos_x, out double src_nrm_dircos_y, out double src_nrm_dircos_z,
-                        out double src_pos_x, out double src_pos_y, out double src_pos_z,
-                        out ulong src_rows, out ulong src_cols,
-                        out double src_row_spacing, out double src_col_spacing,
-                        out double src_row_length, out double src_col_length);
+            GetPositionOrientationSpacingAndSize(sourceFrame, out Vector3D srcRowDir,
+                    out Vector3D srcColDir, out Vector3D _, out Point3D srcPos,
+                    out int _, out int _,
+                    out double _, out double _,
+                    out double srcRowLength, out double srcColLength);
 
             // Build a square to project with 4 corners TLHC, TRHC, BRHC, BLHC ...
-            double[] pos_x = new double[4];
-            double[] pos_y = new double[4];
-            double[] pos_z = new double[4];
+            Point3D[] pos = new Point3D[4];
 
             // TLHC is what is in ImagePositionPatient
-            pos_x[0] = src_pos_x;
-            pos_y[0] = src_pos_y;
-            pos_z[0] = src_pos_z;
-
+            pos[0] = srcPos;
             // TRHC
-            pos_x[1] = src_pos_x + src_row_dircos_x * (src_row_length - 1);
-            pos_y[1] = src_pos_y + src_row_dircos_y * (src_row_length - 1);
-            pos_z[1] = src_pos_z + src_row_dircos_z * (src_row_length - 1);
-
+            pos[1] = srcPos + srcRowDir * (srcRowLength - 1);
             // BRHC
-            pos_x[2] = src_pos_x + src_row_dircos_x * (src_row_length - 1) + src_col_dircos_x * (src_col_length - 1);
-            pos_y[2] = src_pos_y + src_row_dircos_y * (src_row_length - 1) + src_col_dircos_y * (src_col_length - 1);
-            pos_z[2] = src_pos_z + src_row_dircos_z * (src_row_length - 1) + src_col_dircos_z * (src_col_length - 1);
-
+            pos[2] = srcPos + srcRowDir * (srcRowLength - 1) + srcColDir * (srcColLength - 1);
             // BLHC
-            pos_x[3] = src_pos_x + src_col_dircos_x * (src_col_length - 1);
-            pos_y[3] = src_pos_y + src_col_dircos_y * (src_col_length - 1);
-            pos_z[3] = src_pos_z + src_col_dircos_z * (src_col_length - 1);
+            pos[3] = srcPos + srcColDir * (srcColLength - 1);
 
-            int[] row_pixel = new int[4];
-            int[] col_pixel = new int[4];
+            Point2[] pixel = new Point2[4];
 
-            for (int i = 0; i < 4; ++i)
+            var rotation = new MatrixD(3, 3);
+            rotation.Row(0, dstRowDir.ToArray());
+            rotation.Row(1, dstColDir.ToArray());
+            rotation.Row(2, dstNormal.ToArray());
+
+            for (int i = 0; i < 4; i++)
             {            
                 // move everything to origin of target
-                pos_x[i] -= dst_pos_x;
-                pos_y[i] -= dst_pos_y;
-                pos_z[i] -= dst_pos_z;
+                pos[i] += (Point3D.Zero- dstPos);
 
                 // The rotation is easy ... just rotate by the row, col and normal vectors ...
-                Rotate(dst_row_dircos_x, dst_row_dircos_y, dst_row_dircos_z,
-                    dst_col_dircos_x, dst_col_dircos_y, dst_col_dircos_z,
-                    dst_nrm_dircos_x, dst_nrm_dircos_y, dst_nrm_dircos_z,
-                    pos_x[i], pos_y[i], pos_z[i],
-                    out pos_x[i], out pos_y[i], out pos_z[i]);
+                pos[i] = new Point3D( rotation * pos[i].ToArray());
 
                 // DICOM coordinates are center of pixel 1\1
-                col_pixel[i] = Convert.ToInt32(pos_x[i] / dst_col_spacing + 0.5);
-                row_pixel[i] = Convert.ToInt32(pos_y[i] / dst_row_spacing + 0.5);
+                pixel[i] = new Point2( Convert.ToInt32(pos[i].X / dstColSpacing + 0.5),
+                  Convert.ToInt32(pos[i].Y / dstRowSpacing + 0.5));
 
             }            
 
-            localizerPoints.Add(new Point2(col_pixel[0], row_pixel[0]));
-            localizerPoints.Add(new Point2(col_pixel[1], row_pixel[1]));
-            localizerPoints.Add(new Point2(col_pixel[2], row_pixel[2]));
-            localizerPoints.Add(new Point2(col_pixel[3], row_pixel[3]));
+            localizerPoints.AddRange(pixel);
         }
 
         /// <summary>
@@ -261,99 +239,42 @@ namespace Dicom.Imaging
         ///
         /// </summary>
         /// <param name="dicomDataset">The dataset of the frame, that is viewed by the user</param>
-        /// <param name="row_dircos_x">The row direction cosine for the x-axis</param>
-        /// <param name="row_dircos_y">The row direction cosine for the y-axis</param>        
-        /// <param name="row_dircos_z">The row direction cosine for the z-axis</param>
-        /// <param name="col_dircos_x">The column direction cosine for the x-axis</param>
-        /// <param name="col_dircos_y">The column direction cosine for the y-axis</param>
-        /// <param name="col_dircos_z">The column direction cosine for the z-axis</param>
-        /// <param name="nrm_dircos_x">The normal direction cosine for the x-axis</param>        
-        /// <param name="nrm_dircos_y">The normal direction cosine for the y-axis</param>
-        /// <param name="nrm_dircos_z">The normal direction cosine for the z-axis</param>
-        /// <param name="pos_x">The starting pixel position on the x-axis (top lefthand corner)</param>
-        /// <param name="pos_y">The starting pixel position on the y-axis (top lefthand corner)</param>
-        /// <param name="pos_z">The starting pixel position on the z-axis (top lefthand corner)</param>        
+        /// <param name="rowDir">The row direction cosine</param>
+        /// <param name="colDir">The column direction cosine</param>
+        /// <param name="normalDir">The normal direction cosine</param>
+        /// <param name="pos">The starting pixel position (top lefthand corner)</param>
         /// <param name="rows">The number of rows in the frame</param>
         /// <param name="cols">The number of columns in the frame</param>
         /// <param name="row_spacing">The Row spacing of the frame, derived from the first entry of the PixelSpacing tag</param>
         /// <param name="col_spacing">The Column spacing of the frame, derived from the second entry of the PixelSpacing tag</param>
-        /// <param name="row_length">The row length of the frame, derived from multiplying the columns by the row spacing</param>        
-        /// <param name="col_length">The column length of the frame, derived from multiplying the rows by the column spacing</param>        
+        /// <param name="row_length">The row length of the frame, derived from multiplying the columns by the row spacing</param>
+        /// <param name="col_length">The column length of the frame, derived from multiplying the rows by the column spacing</param>
         /// <returns></returns>
         private static bool GetPositionOrientationSpacingAndSize(DicomDataset dicomDataset,
-                        out double row_dircos_x, out double row_dircos_y, out double row_dircos_z,
-                        out double col_dircos_x, out double col_dircos_y, out double col_dircos_z,
-                        out double nrm_dircos_x, out double nrm_dircos_y, out double nrm_dircos_z,
-                        out double pos_x, out double pos_y, out double pos_z,
-                        out ulong rows, out ulong cols,
+                        out Vector3D rowDir, out Vector3D colDir,
+                        out Vector3D normalDir, out Point3D pos,
+                        out int rows, out int cols,
                         out double row_spacing, out double col_spacing,
                         out double row_length, out double col_length)
         {
-            row_dircos_x = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 0);
-            row_dircos_y = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 1);
-            row_dircos_z = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 2);
-            col_dircos_x = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 3);
-            col_dircos_y = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 4);
-            col_dircos_z = dicomDataset.GetValue<double>(DicomTag.ImageOrientationPatient, 5);
-
+            var imageorientation = dicomDataset.GetValues<double>(DicomTag.ImageOrientationPatient);
+            rowDir = new Vector3D(imageorientation, 0);
+            colDir = new Vector3D(imageorientation, 3);
             // compute nrm to row and col (i.e. cross product of row and col unit vectors)
-            nrm_dircos_x = row_dircos_y * col_dircos_z - row_dircos_z * col_dircos_y;
-            nrm_dircos_y = row_dircos_z * col_dircos_x - row_dircos_x * col_dircos_z;
-            nrm_dircos_z = row_dircos_x * col_dircos_y - row_dircos_y * col_dircos_x;
+            normalDir = rowDir.CrossProduct(colDir);
 
-            pos_x = dicomDataset.GetValue<double>(DicomTag.ImagePositionPatient, 0);
-            pos_y = dicomDataset.GetValue<double>(DicomTag.ImagePositionPatient, 1);
-            pos_z = dicomDataset.GetValue<double>(DicomTag.ImagePositionPatient, 2);
+            pos = new Point3D(dicomDataset.GetValues<double>(DicomTag.ImagePositionPatient));
 
             row_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 0);
             col_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 1);
 
-            rows = dicomDataset.GetSingleValue<ulong>(DicomTag.Rows);
-            cols = dicomDataset.GetSingleValue<ulong>(DicomTag.Columns);
+            rows = dicomDataset.GetSingleValue<int>(DicomTag.Rows);
+            cols = dicomDataset.GetSingleValue<int>(DicomTag.Columns);
 
             row_length = cols * row_spacing;
             col_length = rows * col_spacing;
 
             return true;
-        }
-
-        /// <summary>
-        /// This method rotates the positions of the source pixels to the orientation of the destination frame
-        ///
-        /// </summary>
-        /// <param name="dst_row_dircos_x">The row direction cosine for the x-axis of the destination image</param>
-        /// <param name="dst_row_dircos_y">The row direction cosine for the y-axis of the destination image</param>        
-        /// <param name="dst_row_dircos_z">The row direction cosine for the z-axis of the destination image</param>
-        /// <param name="dst_col_dircos_x">The column direction cosine for the x-axis of the destination image</param>
-        /// <param name="dst_col_dircos_y">The column direction cosine for the y-axis of the destination image</param>
-        /// <param name="dst_col_dircos_z">The column direction cosine for the z-axis of the destination image</param>
-        /// <param name="dst_nrm_dircos_x">The normal direction cosine for the x-axis of the destination image</param>        
-        /// <param name="dst_nrm_dircos_y">The normal direction cosine for the y-axis of the destination image</param>
-        /// <param name="dst_nrm_dircos_z">The normal direction cosine for the z-axis of the destination image</param>
-        /// <param name="src_pos_x">The starting pixel position on the x-axis of the source image</param>
-        /// <param name="src_pos_y">The starting pixel position on the y-axis of the source image</param>
-        /// <param name="src_pos_z">The starting pixel position on the z-axis of the source image</param> 
-        /// <param name="dst_pos_x">The resulting rotated pixel position on the x-axis of the destination image (top lefthand corner)</param>
-        /// <param name="dst_pos_y">The resulting rotated pixel position on the y-axis of the destination image (top lefthand corner)</param>
-        /// <param name="dst_pos_z">The resulting rotated pixel position on the z-axis of the destination image (top lefthand corner)</param>
-        /// <returns></returns>
-        private static void Rotate(double dst_row_dircos_x, double dst_row_dircos_y, double dst_row_dircos_z,
-                    double dst_col_dircos_x, double dst_col_dircos_y, double dst_col_dircos_z,
-                    double dst_nrm_dircos_x, double dst_nrm_dircos_y, double dst_nrm_dircos_z,
-                    double src_pos_x, double src_pos_y, double src_pos_z,
-                    out double dst_pos_x, out double dst_pos_y, out double dst_pos_z)
-        {
-            dst_pos_x = dst_row_dircos_x * src_pos_x
-                + dst_row_dircos_y * src_pos_y
-                + dst_row_dircos_z * src_pos_z;
-
-            dst_pos_y = dst_col_dircos_x * src_pos_x
-                + dst_col_dircos_y * src_pos_y
-                + dst_col_dircos_z * src_pos_z;
-
-            dst_pos_z = dst_nrm_dircos_x * src_pos_x
-                + dst_nrm_dircos_y * src_pos_y
-                + dst_nrm_dircos_z * src_pos_z;
         }
 
 

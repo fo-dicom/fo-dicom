@@ -217,6 +217,11 @@ namespace Dicom.Imaging.Mathematics
             return new Point3D(X, Y, Z);
         }
 
+        public double[] ToArray()
+        {
+            return new double[] { X, Y, Z };
+        }
+
         #endregion
 
         #region Operators
@@ -446,6 +451,11 @@ namespace Dicom.Imaging.Mathematics
         public Vector3D ToVector()
         {
             return new Vector3D(X, Y, Z);
+        }
+
+        public double[] ToArray()
+        {
+            return new double[] { X, Y, Z };
         }
 
         #endregion
