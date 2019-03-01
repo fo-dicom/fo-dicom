@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,7 +107,7 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
-        private readonly ConcurrentQueue<DicomRequest> _requests;
+        private readonly ConcurrentQueue<StrongBox<DicomRequest>> _requests;
 
         private DicomServiceUser _service;
 
@@ -133,7 +134,7 @@ namespace Dicom.Network
         {
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
 
-            _requests = new ConcurrentQueue<DicomRequest>();
+            _requests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             _asyncInvoked = 1;
             _asyncPerformed = 1;
             Linger = DefaultLinger;
@@ -275,7 +276,7 @@ namespace Dicom.Network
         /// <param name="request">DICOM request.</param>
         public void AddRequest(DicomRequest request)
         {
-            _requests.Enqueue(request);
+            _requests.Enqueue(new StrongBox<DicomRequest>(request));
             _hasRequestsFlag.Set();
         }
 
@@ -579,10 +580,11 @@ namespace Dicom.Network
         {
             await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
 
-            DicomRequest request;
+            StrongBox<DicomRequest> request;
             while (IsConnected && _requests.TryDequeue(out request))
             {
-                await _service.SendRequestAsync(request).ConfigureAwait(false);
+                await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
+                request.Value = null;
             }
 
             if (_requests.IsEmpty) _hasRequestsFlag.Reset();
@@ -673,7 +675,7 @@ namespace Dicom.Network
                 List<DicomRequest> requests;
                 lock (_client._lock)
                 {
-                    requests = new List<DicomRequest>(_client._requests);
+                    requests = _client._requests.Select(s => s.Value).ToList();
                 }
 
                 foreach (var request in requests)

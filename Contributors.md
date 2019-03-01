@@ -39,3 +39,6 @@
 * [Pressacco](https://github.com/pressacco)
 * [Victor Derks](https://github.com/vbaderks)
 * [Chris Darbonne](https://github.com/CDarbonne)
+* [Victor Chang](https://github.com/mocsharp)
+* [vzdesic] (https://github.com/vzdesic)
+* [gustavosaita](https://github.com/gustavosaita)
