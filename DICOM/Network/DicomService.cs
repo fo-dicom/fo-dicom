@@ -346,6 +346,10 @@ namespace Dicom.Network
                     LogIOException(e, Logger, false);
                     TryCloseConnection(e, true);
                 }
+                catch (ObjectDisposedException e)
+                {
+                    // ignore ObjectDisposedException, that may happen, when closing a connection.
+                }
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
