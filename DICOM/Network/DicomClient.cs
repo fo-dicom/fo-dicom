@@ -103,7 +103,9 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent _hasRequestsFlag;
 
-        private readonly AsyncManualResetEvent<bool> _associationFlag;
+        private readonly AsyncManualResetEvent<bool> _associationRequestedFlag;
+
+        private readonly AsyncManualResetEvent<bool> _associationReleasedFlag;
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
@@ -140,7 +142,8 @@ namespace Dicom.Network
             Linger = DefaultLinger;
 
             _hasRequestsFlag = new AsyncManualResetEvent();
-            _associationFlag = new AsyncManualResetEvent<bool>();
+            _associationRequestedFlag = new AsyncManualResetEvent<bool>();
+            _associationReleasedFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
         }
 
@@ -248,7 +251,7 @@ namespace Dicom.Network
                 bool connected;
                 lock (_lock)
                 {
-                    connected =_service != null && _service.IsConnected;
+                    connected = _service != null && _service.IsConnected;
                 }
 
                 return connected;
@@ -310,7 +313,7 @@ namespace Dicom.Network
 
             try
             {
-                DoSendAsync(_networkStream, assoc, millisecondsTimeout).Wait();
+                DoSendAsync(_networkStream, assoc, millisecondsTimeout, true).Wait();
             }
             catch (AggregateException e)
             {
@@ -348,7 +351,7 @@ namespace Dicom.Network
                 RemotePort = port
             };
 
-            return DoSendAsync(_networkStream, assoc, millisecondsTimeout);
+            return DoSendAsync(_networkStream, assoc, millisecondsTimeout, true);
         }
 
         /// <summary>
@@ -373,7 +376,7 @@ namespace Dicom.Network
 
             try
             {
-                DoSendAsync(stream, assoc, millisecondsTimeout).Wait();
+                DoSendAsync(stream, assoc, millisecondsTimeout, false).Wait();
             }
             catch (AggregateException e)
             {
@@ -403,7 +406,7 @@ namespace Dicom.Network
                 RemotePort = stream.RemotePort
             };
 
-            return DoSendAsync(stream, assoc, millisecondsTimeout);
+            return DoSendAsync(stream, assoc, millisecondsTimeout, false);
         }
 
         /// <summary>
@@ -440,11 +443,11 @@ namespace Dicom.Network
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
                 using (cancellationSource.Token.Register(() =>
                 {
-                    _associationFlag.Set(false);
+                    _associationRequestedFlag.Set(false);
                     _completionFlag.Set();
                 }, false))
                 {
-                    return await _associationFlag.WaitAsync().ConfigureAwait(false);
+                    return await _associationRequestedFlag.WaitAsync().ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException)
@@ -525,13 +528,22 @@ namespace Dicom.Network
             }
         }
 
-        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association, int millisecondsTimeout)
+        /// <summary>
+        /// Requests an association, sends all the requests from the queue and sends an association release request.
+        /// </summary>
+        /// <param name="stream">The stream that is used to send the messages</param>
+        /// <param name="association"></param>
+        /// <param name="millisecondsTimeout">Timeout for Responses on Association Request or Accociation Release</param>
+        /// <param name="forceDisconnect">if true, then the network stream is forced to be closed after the association has been released.</param>
+        /// <returns></returns>
+        private async Task DoSendAsync(INetworkStream stream, DicomAssociation association, int millisecondsTimeout, bool forceDisconnect)
         {
             try
             {
                 if (!IsConnected)
                 {
-                    _associationFlag.Reset();
+                    _associationRequestedFlag.Reset();
+                    this._associationReleasedFlag.Reset();
                     _completionFlag.Reset();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
@@ -543,19 +555,24 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 Logger.Error("Failed to send due to: {@error}", e);
-                _associationFlag.Set(false);
+                _associationRequestedFlag.Set(false);
                 _completionFlag.Set();
+
+                //  tell awaiters association was released unsuccessfully.
+                this._associationReleasedFlag.Set(false);
 
                 throw;
             }
             finally
             {
-                await CleanupAsync(false).ConfigureAwait(false);
+                await CleanupAsync(forceDisconnect).ConfigureAwait(false);
             }
         }
 
         private async Task SendOrReleaseAsync(int millisecondsTimeout)
         {
+            this._associationReleasedFlag.Reset();
+
 #pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
 #pragma warning restore 618
@@ -574,14 +591,17 @@ namespace Dicom.Network
             {
                 await _service.DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
+            else
+            {
+                this._associationReleasedFlag.Set(false);
+            }
         }
 
         private async Task SendQueuedRequestsAsync()
         {
             await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
 
-            StrongBox<DicomRequest> request;
-            while (IsConnected && _requests.TryDequeue(out request))
+            while (IsConnected && _requests.TryDequeue(out var request))
             {
                 await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
                 request.Value = null;
@@ -596,6 +616,11 @@ namespace Dicom.Network
 
             if (completedException != null || force)
             {
+                if (force)
+                {
+                    await this._associationReleasedFlag.WaitAsync().ConfigureAwait(false);
+                }
+
                 if (_networkStream != null)
                 {
                     try
@@ -623,10 +648,17 @@ namespace Dicom.Network
 
                     _service = null;
                 }
+
+                //  if DicomServiceUser's constructor throws
+                //  _serviceRunnerTask can be null
+                if (this._serviceRunnerTask != null)
+                {
+                    await this._serviceRunnerTask.ConfigureAwait(false);
+                }
             }
 
             // If not already set, set association notifier here to signal completion to awaiters
-            _associationFlag.Set(false);
+            _associationRequestedFlag.Set(false);
 
             if (completedException != null)
             {
@@ -648,7 +680,7 @@ namespace Dicom.Network
 
             private bool _isInitialized;
 
-            private bool _releaseRequested;
+            private int _releaseRequested;
 
             private readonly object _lock = new object();
 
@@ -694,7 +726,7 @@ namespace Dicom.Network
 
                 _association = association;
                 _isInitialized = false;
-                _releaseRequested = false;
+                _releaseRequested = 0;
             }
 
             #endregion
@@ -713,7 +745,7 @@ namespace Dicom.Network
                     }
                 }
 
-                SetAssociationFlag(true);
+                SetAssociationRequestedFlag(true);
                 _client.AssociationAccepted(_client, new AssociationAcceptedEventArgs(association));
             }
 
@@ -723,16 +755,22 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                SetAssociationFlag(false);
+                SetAssociationRequestedFlag(false);
                 _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
             public void OnReceiveAssociationReleaseResponse()
             {
                 SetCompletionFlag();
+
+                //  tell awaiters association was released successfully.
+                SetAssociationReleasedFlag(true);
                 _client.AssociationReleased(_client, EventArgs.Empty);
             }
 
@@ -750,12 +788,18 @@ namespace Dicom.Network
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
                 SetCompletionFlag(new DicomAssociationAbortedException(source, reason));
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
             public void OnConnectionClosed(Exception exception)
             {
                 SetCompletionFlag(exception);
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
@@ -770,18 +814,19 @@ namespace Dicom.Network
             {
                 try
                 {
-                    bool requestRelease;
-                    lock (_lock) requestRelease = !_releaseRequested;
-
-                    if (requestRelease)
+                    if (this.IsConnected)
                     {
-                        lock (_lock) _releaseRequested = true;
-                        await Task.WhenAny(SendAssociationReleaseRequestAsync(), _isDisconnectedFlag.WaitAsync(),
-                            Task.Delay(millisecondsTimeout)).ConfigureAwait(false);
+                        if (Interlocked.Exchange(ref this._releaseRequested, 1) == 0)
+                        {
+                            await Task.WhenAny(
+                                SendAssociationReleaseRequestAsync(),
+                                _isDisconnectedFlag.WaitAsync(),
+                                Task.Delay(millisecondsTimeout)
+                            ).ConfigureAwait(false);
 
-                        SetCompletionFlag();
+                            SetCompletionFlag();
+                        }
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -799,6 +844,9 @@ namespace Dicom.Network
                 }
 
                 SetCompletionFlag();
+
+                //  tell awaiters association was released unsuccessfully.
+                this.SetAssociationReleasedFlag(false);
             }
 
             /// <inheritdoc />
@@ -809,13 +857,21 @@ namespace Dicom.Network
                     _isDisconnectedFlag.WaitAsync()
                         .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion),
                     Task.Delay(_client.Linger)
-                        .ContinueWith(_ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
-                            TaskContinuationOptions.OnlyOnRanToCompletion)).ConfigureAwait(false);
+                        .ContinueWith(
+                            _ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
+                            TaskContinuationOptions.OnlyOnRanToCompletion
+                        )
+                ).ConfigureAwait(false);
             }
 
-            private void SetAssociationFlag(bool isAssociated)
+            private void SetAssociationRequestedFlag(bool isAssociated)
             {
-                _client._associationFlag.Set(isAssociated);
+                _client._associationRequestedFlag.Set(isAssociated);
+            }
+
+            private void SetAssociationReleasedFlag(bool succeeded)
+            {
+                _client._associationReleasedFlag.Set(succeeded);
             }
 
             private void SetCompletionFlag(Exception exception = null)
