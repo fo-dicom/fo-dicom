@@ -293,7 +293,15 @@ namespace Dicom.Network
         /// <returns>Awaitable task.</returns>
         protected Task SendPDUAsync(PDU pdu)
         {
-            _pduQueueWatcher.Wait();
+            try
+            {
+                _pduQueueWatcher.Wait();
+            }
+            catch (ObjectDisposedException)
+            {
+                // ignore ObjectDisposedException, that may happen, when closing a connection.
+                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+            }
 
             lock (_lock)
             {
@@ -337,6 +345,10 @@ namespace Dicom.Network
                 {
                     LogIOException(e, Logger, false);
                     TryCloseConnection(e, true);
+                }
+                catch (ObjectDisposedException e)
+                {
+                    // ignore ObjectDisposedException, that may happen, when closing a connection.
                 }
                 catch (Exception e)
                 {
@@ -738,8 +750,7 @@ namespace Dicom.Network
                                         .ConfigureAwait(false);
 
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(
-                                        _dimseStreamFile != null ? _dimseStreamFile.Name : null, e);
+                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile?.Name, e);
                                     return;
                                 }
                             }
@@ -792,16 +803,16 @@ namespace Dicom.Network
 
             if (dimse.Type == DicomCommandField.CStoreRequest)
             {
-                if (this is IDicomCStoreProvider)
+                if (this is IDicomCStoreProvider thisDicomCStoreProvider)
                 {
-                    var response = (this as IDicomCStoreProvider).OnCStoreRequest(dimse as DicomCStoreRequest);
+                    var response = thisDicomCStoreProvider.OnCStoreRequest(dimse as DicomCStoreRequest);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
 
-                if (this is IDicomServiceUser)
+                if (this is IDicomServiceUser thisDicomServiceUser)
                 {
-                    var response = (this as IDicomServiceUser).OnCStoreRequest(dimse as DicomCStoreRequest);
+                    var response = thisDicomServiceUser.OnCStoreRequest(dimse as DicomCStoreRequest);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -811,36 +822,36 @@ namespace Dicom.Network
 
             if (dimse.Type == DicomCommandField.CFindRequest)
             {
-                if (!(this is IDicomCFindProvider)) throw new DicomNetworkException("C-Find SCP not implemented");
+                var thisAsCFindProvider = this as IDicomCFindProvider ?? throw new DicomNetworkException("C-Find SCP not implemented");
 
-                var responses = (this as IDicomCFindProvider).OnCFindRequest(dimse as DicomCFindRequest);
+                var responses = thisAsCFindProvider.OnCFindRequest(dimse as DicomCFindRequest);
                 foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
 
             if (dimse.Type == DicomCommandField.CGetRequest)
             {
-                if (!(this is IDicomCGetProvider)) throw new DicomNetworkException("C-GET SCP not implemented");
+                var thisAsCGetProvider = this as IDicomCGetProvider ?? throw new DicomNetworkException("C-GET SCP not implemented");
 
-                var responses = (this as IDicomCGetProvider).OnCGetRequest(dimse as DicomCGetRequest);
+                var responses = thisAsCGetProvider.OnCGetRequest(dimse as DicomCGetRequest);
                 foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
 
             if (dimse.Type == DicomCommandField.CMoveRequest)
             {
-                if (!(this is IDicomCMoveProvider)) throw new DicomNetworkException("C-Move SCP not implemented");
+                var thisAsCMoveProvider = this as IDicomCMoveProvider ?? throw new DicomNetworkException("C-Move SCP not implemented");
 
-                var responses = (this as IDicomCMoveProvider).OnCMoveRequest(dimse as DicomCMoveRequest);
+                var responses = thisAsCMoveProvider.OnCMoveRequest(dimse as DicomCMoveRequest);
                 foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
 
             if (dimse.Type == DicomCommandField.CEchoRequest)
             {
-                if (!(this is IDicomCEchoProvider)) throw new DicomNetworkException("C-Echo SCP not implemented");
+                var thisAsCEchoProvider = this as IDicomCEchoProvider ?? throw new DicomNetworkException("C-Echo SCP not implemented");
 
-                var response = (this as IDicomCEchoProvider).OnCEchoRequest(dimse as DicomCEchoRequest);
+                var response = thisAsCEchoProvider.OnCEchoRequest(dimse as DicomCEchoRequest);
                 await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
@@ -850,27 +861,30 @@ namespace Dicom.Network
                 || dimse.Type == DicomCommandField.NEventReportRequest
                 || dimse.Type == DicomCommandField.NGetRequest || dimse.Type == DicomCommandField.NSetRequest)
             {
-                if (!(this is IDicomNServiceProvider)) throw new DicomNetworkException("N-Service SCP not implemented");
+                var thisAsNServiceProvider = this as IDicomNServiceProvider ?? throw new DicomNetworkException("N-Service SCP not implemented");
 
                 DicomResponse response = null;
-                if (dimse.Type == DicomCommandField.NActionRequest)
-                    response = (this as IDicomNServiceProvider).OnNActionRequest(dimse as DicomNActionRequest);
-                else if (dimse.Type == DicomCommandField.NCreateRequest)
-                    response = (this as IDicomNServiceProvider).OnNCreateRequest(dimse as DicomNCreateRequest);
-                else if (dimse.Type == DicomCommandField.NDeleteRequest)
-                    response =
-                        (this as IDicomNServiceProvider).OnNDeleteRequest(dimse as DicomNDeleteRequest);
-                else if (dimse.Type == DicomCommandField.NEventReportRequest)
-                    response =
-                        (this as IDicomNServiceProvider).OnNEventReportRequest(
-                            dimse as DicomNEventReportRequest);
-                else if (dimse.Type == DicomCommandField.NGetRequest)
-                    response =
-                        (this as IDicomNServiceProvider).OnNGetRequest(dimse as DicomNGetRequest);
-                else if (dimse.Type == DicomCommandField.NSetRequest)
-                    response =
-                        (this as IDicomNServiceProvider).OnNSetRequest(
-                            dimse as DicomNSetRequest);
+                switch (dimse.Type)
+                {
+                    case DicomCommandField.NActionRequest:
+                        response = thisAsNServiceProvider.OnNActionRequest(dimse as DicomNActionRequest);
+                        break;
+                    case DicomCommandField.NCreateRequest:
+                        response = thisAsNServiceProvider.OnNCreateRequest(dimse as DicomNCreateRequest);
+                        break;
+                    case DicomCommandField.NDeleteRequest:
+                        response = thisAsNServiceProvider.OnNDeleteRequest(dimse as DicomNDeleteRequest);
+                        break;
+                    case DicomCommandField.NEventReportRequest:
+                        response = thisAsNServiceProvider.OnNEventReportRequest(dimse as DicomNEventReportRequest);
+                        break;
+                    case DicomCommandField.NGetRequest:
+                        response = thisAsNServiceProvider.OnNGetRequest(dimse as DicomNGetRequest);
+                        break;
+                    case DicomCommandField.NSetRequest:
+                        response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
+                        break;
+                }
 
                 await SendResponseAsync(response).ConfigureAwait(false);
                 return;
@@ -1279,9 +1293,7 @@ namespace Dicom.Network
 
         private static bool LogIOException(Exception e, Logger logger, bool reading)
         {
-            int errorCode;
-            string errorDescriptor;
-            if (NetworkManager.IsSocketException(e.InnerException, out errorCode, out errorDescriptor))
+            if (NetworkManager.IsSocketException(e.InnerException, out int errorCode, out string errorDescriptor))
             {
                 logger.Info(
                     $"Socket error while {(reading ? "reading" : "writing")} PDU: {{socketError}} [{{errorCode}}]",

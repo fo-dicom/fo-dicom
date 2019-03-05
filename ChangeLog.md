@@ -18,10 +18,13 @@
 * DicomCFindRequest should allow defnition of Query Retrieve Information Model (#708)
 * Bug fix : DicomUIDGenerator.GenerateDerivedFromUUID converts Guids incorrectly to the DICOM "2.25." + UUID format (#762)
 * Bug Fix : TryGetValue, TryGetValues, TryGetSingleValue should return false instead of throw exception. (#746)
+* Add methods to calculate localizer lines (#779)
 * Bug Fix : DicomPixelData.Create throws Exception if BitsAllocated >= 32 (#716)
 * Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
 * Serilog for .NET Standard 1.3/.NET Core (#772)
 * Bug Fix : DicomServer does not close TcpClient/socket after client closed connection (#795)
+* DicomClient uses StrongBox to reduce memory consumption (#794)
+* Bug Fix: C-STORE request may hang. (#792)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
