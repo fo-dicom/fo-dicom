@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Dump
@@ -201,7 +201,7 @@ namespace Dicom.Dump
                 var tag = String.Format(
                     "{0}{1}  {2}",
                     Indent,
-                    element.Tag.ToString().ToUpper(),
+                    element.Tag.ToString().ToUpperInvariant(),
                     element.Tag.DictionaryEntry.Name);
 
                 string value = "<large value not displayed>";
@@ -230,7 +230,7 @@ namespace Dicom.Dump
                 var tag = String.Format(
                     "{0}{1}  {2}",
                     Indent,
-                    sequence.Tag.ToString().ToUpper(),
+                    sequence.Tag.ToString().ToUpperInvariant(),
                     sequence.Tag.DictionaryEntry.Name);
 
                 Form.AddItem(tag, "SQ", String.Empty, String.Empty);
@@ -266,7 +266,7 @@ namespace Dicom.Dump
                 var tag = String.Format(
                     "{0}{1}  {2}",
                     Indent,
-                    fragment.Tag.ToString().ToUpper(),
+                    fragment.Tag.ToString().ToUpperInvariant(),
                     fragment.Tag.DictionaryEntry.Name);
 
                 Form.AddItem(tag, fragment.ValueRepresentation.Code, String.Empty, String.Empty);

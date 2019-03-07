@@ -1,7 +1,10 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
@@ -24,6 +27,42 @@ namespace Dicom
         }
 
         [Fact]
+        public void ConvertGuidToUuidInteger_RoundTripConversion()
+        {
+            var expected = new Guid("11223344-5566-7788-9900-aabbccddeeff");
+            string converted = DicomUIDGenerator.ConvertGuidToUuidInteger(ref expected);
+            var actual = ConvertDicomUidToGuid(converted);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ConvertGuidToUuidInteger_RoundTripConversionMaximumValue()
+        {
+            var expected = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff");
+            string converted = DicomUIDGenerator.ConvertGuidToUuidInteger(ref expected);
+            var actual = ConvertDicomUidToGuid(converted);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ConvertGuidToUuidInteger_RoundTripConversionEmpty()
+        {
+            var expected = new Guid();
+            string converted = DicomUIDGenerator.ConvertGuidToUuidInteger(ref expected);
+            var actual = ConvertDicomUidToGuid(converted);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ConvertGuidToUuidInteger_Iso9834Sample()
+        {
+            // Sample value of ISO/IEC 9834-8, paragraph 8 and wiki.ihe.net
+            var sampleValue = new Guid("f81d4fae-7dec-11d0-a765-00a0c91e6bf6");
+            string actual = DicomUIDGenerator.ConvertGuidToUuidInteger(ref sampleValue);
+            Assert.Equal("2.25.329800735698586629295641978511506172918", actual);
+        }
+
+        [Fact]
         public void Generate_MultipleInParallel_AllValuesUnique()
         {
             const int n = 100000;
@@ -42,6 +81,23 @@ namespace Dicom
             var actual = generator.Generate(source);
 
             Assert.Equal(expected, actual);
+        }
+
+
+        private static Guid ConvertDicomUidToGuid(string value)
+        {
+            // Remove "2.25." OID root prefix
+            string valueWithoutRoot = value.Substring(5);
+
+            var bigInteger = BigInteger.Parse(valueWithoutRoot, CultureInfo.InvariantCulture);
+            var hex = bigInteger.ToString("x32", CultureInfo.InvariantCulture);
+            if (hex.Length > 32)
+            {
+                // BigInteger will return additional leading 0 when top byte > 7 to indicate positive value, remove it.
+                hex = hex.Substring(1);
+            }
+
+            return new Guid(hex);
         }
 
         #endregion

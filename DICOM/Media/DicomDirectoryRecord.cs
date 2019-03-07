@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Dicom.Media
 {
@@ -16,16 +15,12 @@ namespace Dicom.Media
         public DicomDirectoryRecord NextDirectoryRecord { get; set; }
 
         public DicomDirectoryRecordCollection LowerLevelDirectoryRecordCollection
-        {
-            get => new DicomDirectoryRecordCollection(LowerLevelDirectoryRecord);
-        }
+            => new DicomDirectoryRecordCollection(LowerLevelDirectoryRecord);
 
         public uint Offset { get; internal set; }
 
         public string DirectoryRecordType
-        {
-            get => GetSingleValue<string>(DicomTag.DirectoryRecordType);
-        }
+            => GetSingleValue<string>(DicomTag.DirectoryRecordType);
 
         #endregion
 

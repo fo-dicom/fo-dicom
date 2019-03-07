@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 
@@ -16,7 +16,7 @@ namespace Dicom
                 throw new DicomDataException("DicomParseable.Parse expects a class derived from DicomParseable");
             }
 
-            var method = typeof(T).GetTypeInfo().GetDeclaredMethods("Parse").Single(m => m.IsPublic && m.IsStatic);
+            var method = typeof(T).GetTypeInfo().GetDeclaredMethods("Parse").Single(m => m.IsPublic && m.IsStatic && m.GetParameters().Length == 1 && m.GetParameters().Single().ParameterType == typeof(string));
             return (T)method.Invoke(null, new object[] { value });
         }
     }

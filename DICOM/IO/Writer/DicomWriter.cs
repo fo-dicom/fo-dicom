@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO.Writer
@@ -211,13 +211,15 @@ namespace Dicom.IO.Writer
         /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnFragmentItem(IByteBuffer item)
         {
-            WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, (uint)item.Size);
 
             var buffer = item;
-            if (buffer is EndianByteBuffer)
+            if (buffer is EndianByteBuffer ebb)
             {
-                var ebb = (EndianByteBuffer)buffer;
-                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
+                {
+                    buffer = ebb.Internal;
+                }
             }
 
             WriteBuffer(_target, buffer, _options.LargeObjectSize);
@@ -233,13 +235,15 @@ namespace Dicom.IO.Writer
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public async Task<bool> OnFragmentItemAsync(IByteBuffer item)
         {
-            WriteTagHeader(DicomTag.Item, DicomVR.NONE, item.Size);
+            WriteTagHeader(DicomTag.Item, DicomVR.NONE, (uint)item.Size);
 
             var buffer = item;
-            if (buffer is EndianByteBuffer)
+            if (buffer is EndianByteBuffer ebb)
             {
-                var ebb = (EndianByteBuffer)buffer;
-                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
+                {
+                    buffer = ebb.Internal;
+                }
             }
 
             await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
@@ -319,7 +323,7 @@ namespace Dicom.IO.Writer
                 remainingSize -= largeObjectSize;
             }
 
-            target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, remainingSize);
+            target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize);
         }
 
 #if !NET35
@@ -337,7 +341,7 @@ namespace Dicom.IO.Writer
                 remainingSize -= largeObjectSize;
             }
 
-            target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, remainingSize);
+            await target.WriteAsync(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize).ConfigureAwait(false);
         }
 #endif
     }

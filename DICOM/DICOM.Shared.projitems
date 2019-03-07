@@ -97,6 +97,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\VOILUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\BitList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\FrameGeometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\Geometry3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\Histogram.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\Matrix.cs" />

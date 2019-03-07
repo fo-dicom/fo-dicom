@@ -1,9 +1,29 @@
 #### v.4.0.1 (TBD)
+* change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
+* DicomDirectory.AddFile returns a reference to the newly added patient-, study-, series- and instance-Record.
 * Update Json DS validation regex (#643)
 * Add option to DicomFile.Open how to deal with large tags (#617)
 * DicomFileMetaInformation now uses pre-existing SourceAET where possible
 * PixelData.GetMinMax now has 2 overloads, one that takes padding into account and one wihtout the padding parameter (#675)
+* string.ToUpper() is replaced by string.ToUpperInvariant() to prevent bad character conversion on turkish system
+* Fix detecting default windowing if a dataset contains several windows configurations (#741)
+* Fix bug in .net core when a image is both flipped in x and y direction (#721)
+* Pass through the timeout parameter from DicomClient.Send to the constructor of DesktopNetworkStream (#732)
+* Added appveyor.yml file for ci by this setting (#729)
+* Bug Fix : anonymized patient name is now encoded with same character set as the original Dicom.
+* add DicomUID.IsVolumeStorage.
+* Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
+* allow Query/Register/Unregister transfer syntax.
+* DicomCFindRequest should allow defnition of Query Retrieve Information Model (#708)
+* Bug fix : DicomUIDGenerator.GenerateDerivedFromUUID converts Guids incorrectly to the DICOM "2.25." + UUID format (#762)
+* Bug Fix : TryGetValue, TryGetValues, TryGetSingleValue should return false instead of throw exception. (#746)
+* Add methods to calculate localizer lines (#779)
+* Bug Fix : DicomPixelData.Create throws Exception if BitsAllocated >= 32 (#716)
+* Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
+* Serilog for .NET Standard 1.3/.NET Core (#772)
+* DicomClient uses StrongBox to reduce memory consumption (#794)
+* Bug Fix: C-STORE request may hang. (#792)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec

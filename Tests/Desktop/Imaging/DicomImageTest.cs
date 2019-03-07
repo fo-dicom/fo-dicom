@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Drawing;
@@ -74,6 +74,20 @@ namespace Dicom.Imaging
                 Assert.Null(exception);
             }
         }
+
+
+        [Fact]
+        public void RenderImage_ColorPalette()
+        {
+            lock (_lock)
+            {
+                ImageManager.SetImplementation(WinFormsImageManager.Instance);
+                var file = new DicomImage(@".\Test Data\10200904.dcm");
+                var image = file.RenderImage(0);
+                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+            }
+        }
+
 
         #endregion
     }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -90,7 +90,10 @@ namespace Dicom.Media
             var dicomDir = new DicomDirectory();
             foreach (var dicomFile in dicomFiles)
             {
-                dicomDir.AddFile(dicomFile);
+                var entry = dicomDir.AddFile(dicomFile);
+                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID), entry.InstanceRecord.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile));
+                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID), entry.SeriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID), entry.StudyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
             }
 
             var imageNodes = dicomDir.RootDirectoryRecord.LowerLevelDirectoryRecord.LowerLevelDirectoryRecord

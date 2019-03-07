@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.Network
@@ -100,7 +100,7 @@ namespace Dicom.Network
                     case DicomQueryRetrieveLevel.Study:
                     case DicomQueryRetrieveLevel.Series:
                     case DicomQueryRetrieveLevel.Image:
-                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpper());
+                        Dataset.AddOrUpdate(DicomTag.QueryRetrieveLevel, value.ToString().ToUpperInvariant());
                         break;
                     default:
                         Dataset.Remove(DicomTag.QueryRetrieveLevel);

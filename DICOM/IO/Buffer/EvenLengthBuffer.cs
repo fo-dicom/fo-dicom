@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -34,7 +34,7 @@ namespace Dicom.IO.Buffer
         /// <summary>
         /// Gets the size of the even length buffer, which is always equal to the underlying (uneven length) buffer plus 1.
         /// </summary>
-        public uint Size => Buffer.Size + 1;
+        public long Size => Buffer.Size + 1;
 
         /// <summary>
         /// Gets the buffer data, which is equal to the underlying buffer data plus a padding byte at the end.
@@ -56,10 +56,10 @@ namespace Dicom.IO.Buffer
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
         /// <remarks>Allows for reach to the padded byte at the end of the even length buffer.</remarks>
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             var data = new byte[count];
-            System.Buffer.BlockCopy(Buffer.Data, offset, data, 0, Math.Min((int)Buffer.Size - offset, count));
+            System.Buffer.BlockCopy(Buffer.Data, (int)offset, data, 0, (int)Math.Min(Buffer.Size - offset, count));
             return data;
         }
 

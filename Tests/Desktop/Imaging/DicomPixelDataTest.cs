@@ -1,4 +1,4 @@
-﻿// // Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// // Copyright (c) 2012-2019 fo-dicom contributors.
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
@@ -18,14 +18,17 @@ namespace Dicom.Imaging
             Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
 
+        /// <summary>
+        /// issue #716
+        /// </summary>
         [Fact]
-        public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan16_Throws()
+        public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan16_ReturnsOtherWordPixelDataObject()
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
-            dataset.Add(DicomTag.BitsAllocated, (ushort)17);
-            var exception = Record.Exception(() => DicomPixelData.Create(dataset, true));
+            dataset.Add(DicomTag.BitsAllocated, (ushort)32);
+            var pixelData = DicomPixelData.Create(dataset, true);
 
-            Assert.NotNull(exception);
+            Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
 
         [Theory]
@@ -113,5 +116,15 @@ namespace Dicom.Imaging
             var exception = Record.Exception(() => pixelData.HighBit = highBit);
             Assert.NotNull(exception);
         }
+
+        [Fact]
+        public void RotateAndFlipImage()
+        {
+            DicomFile myDicomFile = DicomFile.Open(@"Test Data\CR-MONO1-10-chest");
+            var myDicomImage = new DicomImage(myDicomFile.Dataset);
+            IImage myImg = myDicomImage.RenderImage(0);
+            myImg.Render(3, true, true, 0);
+        }
+
     }
 }

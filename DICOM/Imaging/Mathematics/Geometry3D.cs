@@ -1,10 +1,18 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
 
 namespace Dicom.Imaging.Mathematics
 {
+
+    public static class Constants
+    {
+
+        public static readonly double Epsilon = 0.000000001; // the epsilon in mm to check if a value is quasi zero
+
+    }
+
     public class Vector3D
     {
         #region Constants
@@ -25,16 +33,6 @@ namespace Dicom.Imaging.Mathematics
 
         #endregion
 
-        #region Private Members
-
-        private double _x;
-
-        private double _y;
-
-        private double _z;
-
-        #endregion
-
         #region Public Constructors
 
         public Vector3D()
@@ -43,167 +41,123 @@ namespace Dicom.Imaging.Mathematics
 
         public Vector3D(Vector3D v)
         {
-            _x = v.X;
-            _y = v.Y;
-            _z = v.Z;
+            X = v.X;
+            Y = v.Y;
+            Z = v.Z;
         }
 
         public Vector3D(double x, double y, double z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Vector3D(double[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Vector3D(double[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         public Vector3D(float x, float y, float z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Vector3D(float[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Vector3D(float[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         public Vector3D(int x, int y, int z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Vector3D(int[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Vector3D(int[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         #endregion
 
         #region Public Properties
 
-        public double X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                _x = value;
-            }
-        }
+        public double X { get; set; }
 
-        public double Y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                _y = value;
-            }
-        }
+        public double Y { get; set; }
 
-        public double Z
-        {
-            get
-            {
-                return _z;
-            }
-            set
-            {
-                _z = value;
-            }
-        }
+        public double Z { get; set; }
 
         #endregion
 
         #region Public Methods
 
+        public bool IsZero
+            => X.IsNearlyZero() && Y.IsNearlyZero() && Z.IsNearlyZero();
+
         public double Length()
-        {
-            return Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
-        }
+            => Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
 
         public Vector3D Round()
-        {
-            return new Vector3D(Math.Round(X), Math.Round(Y), Math.Round(Z));
-        }
+            => new Vector3D(Math.Round(X), Math.Round(Y), Math.Round(Z));
 
         public double Magnitude()
-        {
-            return Math.Sqrt(DotProduct(this));
-        }
+            => Math.Sqrt(DotProduct(this));
 
         public Vector3D Normalize()
-        {
-            return this * (1 / Magnitude());
-        }
+            => this * (1 / Magnitude());
 
         public double DotProduct(Vector3D b)
-        {
-            return (X * b.X) + (Y * b.Y) + (Z * b.Z);
-        }
+            => (X * b.X) + (Y * b.Y) + (Z * b.Z);
+
+        public double DotProduct(Point3D b)
+            => (X * b.X) + (Y * b.Y) + (Z * b.Z);
 
         public Vector3D CrossProduct(Vector3D b)
-        {
-            return new Vector3D((Y * b.Z) - (Z * b.Y), (Z * b.X) - (X * b.Z), (X * b.Y) - (Y * b.X));
-        }
+            => new Vector3D((Y * b.Z) - (Z * b.Y), (Z * b.X) - (X * b.Z), (X * b.Y) - (Y * b.X));
 
         public double Distance(Vector3D b)
-        {
-            return Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
-        }
+            => Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
 
         public bool IsPerpendicular(Vector3D b)
-        {
-            return DotProduct(b) == 0;
-        }
+            => DotProduct(b) == 0;
 
         public static Vector3D Max(Vector3D a, Vector3D b)
-        {
-            return (a >= b) ? a : b;
-        }
+            => (a >= b) ? a : b;
 
         public static Vector3D Min(Vector3D a, Vector3D b)
-        {
-            return (a <= b) ? a : b;
-        }
+            => (a <= b) ? a : b;
 
         public Vector3D Rotate(Vector3D axis, double angle)
         {
@@ -226,7 +180,7 @@ namespace Dicom.Imaging.Mathematics
 
         public Vector3D NearestAxis()
         {
-            Vector3D b = Vector3D.Zero.Clone();
+            Vector3D b = Zero.Clone();
             double xabs = Math.Abs(X);
             double yabs = Math.Abs(Y);
             double zabs = Math.Abs(Z);
@@ -245,13 +199,12 @@ namespace Dicom.Imaging.Mathematics
 
         public override bool Equals(object obj)
         {
-            if (obj is Vector3D) return this == (Vector3D)obj;
-            return false;
+            return obj is Vector3D other && this == other;
         }
 
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", X, Y, Z);
+            return string.Format("({0}, {1}, {2})", X, Y, Z);
         }
 
         public Vector3D Clone()
@@ -262,6 +215,11 @@ namespace Dicom.Imaging.Mathematics
         public Point3D ToPoint()
         {
             return new Point3D(X, Y, Z);
+        }
+
+        public double[] ToArray()
+        {
+            return new double[] { X, Y, Z };
         }
 
         #endregion
@@ -292,6 +250,12 @@ namespace Dicom.Imaging.Mathematics
         {
             return new Vector3D(a.X * b, a.Y * b, a.Z * b);
         }
+
+        public static double operator *(Vector3D a, Vector3D b)
+            => a.DotProduct(b);
+
+        public static double operator *(Vector3D a, Point3D b)
+            => a.DotProduct(b);
 
         public static Vector3D operator *(double a, Vector3D b)
         {
@@ -357,10 +321,10 @@ namespace Dicom.Imaging.Mathematics
         {
             if (ReferenceEquals(a, b)) return true;
 
-            if (((object)a == null) || ((object)b == null)) return false;
+            if ((a is null) || (b is null)) return false;
 
-            return Math.Abs(a.X - b.X) <= Double.Epsilon && Math.Abs(a.Y - b.Y) <= Double.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Double.Epsilon;
+            return (a.X - b.X).IsNearlyZero() && (a.Y - b.Y).IsNearlyZero()
+                   && (a.Z - b.Z).IsNearlyZero();
         }
 
         public static bool operator !=(Vector3D a, Vector3D b)
@@ -379,16 +343,6 @@ namespace Dicom.Imaging.Mathematics
 
         #endregion
 
-        #region Private Members
-
-        private double _x;
-
-        private double _y;
-
-        private double _z;
-
-        #endregion
-
         #region Public Constructors
 
         public Point3D()
@@ -397,113 +351,83 @@ namespace Dicom.Imaging.Mathematics
 
         public Point3D(Point3D v)
         {
-            _x = v.X;
-            _y = v.Y;
-            _z = v.Z;
+            X = v.X;
+            Y = v.Y;
+            Z = v.Z;
         }
 
         public Point3D(double x, double y, double z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Point3D(double[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Point3D(double[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         public Point3D(float x, float y, float z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Point3D(float[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Point3D(float[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         public Point3D(int x, int y, int z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public Point3D(int[] v)
         {
-            _x = v[0];
-            _y = v[1];
-            _z = v[2];
+            X = v[0];
+            Y = v[1];
+            Z = v[2];
         }
 
         public Point3D(int[] v, int start)
         {
-            _x = v[start];
-            _y = v[start + 1];
-            _z = v[start + 2];
+            X = v[start];
+            Y = v[start + 1];
+            Z = v[start + 2];
         }
 
         #endregion
 
         #region Public Properties
 
-        public double X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                _x = value;
-            }
-        }
+        public double X { get; set; }
 
-        public double Y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                _y = value;
-            }
-        }
+        public double Y { get; set; }
 
-        public double Z
-        {
-            get
-            {
-                return _z;
-            }
-            set
-            {
-                _z = value;
-            }
-        }
+        public double Z { get; set; }
 
         #endregion
 
@@ -529,6 +453,11 @@ namespace Dicom.Imaging.Mathematics
             return new Vector3D(X, Y, Z);
         }
 
+        public double[] ToArray()
+        {
+            return new double[] { X, Y, Z };
+        }
+
         #endregion
 
         #region Operators
@@ -538,10 +467,15 @@ namespace Dicom.Imaging.Mathematics
             return new Point3D(p.X + v.X, p.Y + v.Y, p.Z + v.Z);
         }
 
+        public static Vector3D operator - (Point3D a, Point3D b)
+        {
+            return new Vector3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
         public static bool operator ==(Point3D a, Point3D b)
         {
-            return Math.Abs(a.X - b.X) <= Double.Epsilon && Math.Abs(a.Y - b.Y) <= Double.Epsilon
-                   && Math.Abs(a.Z - b.Z) <= Double.Epsilon;
+            return (a.X - b.X).IsNearlyZero() && (a.Y - b.Y).IsNearlyZero()
+                   && (a.Z - b.Z).IsNearlyZero();
         }
 
         public static bool operator !=(Point3D a, Point3D b)
@@ -556,13 +490,12 @@ namespace Dicom.Imaging.Mathematics
 
         public override bool Equals(object obj)
         {
-            if (obj is Point3D) return this == (Point3D)obj;
-            return false;
+            return obj is Point3D other && this == other;
         }
 
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", X, Y, Z);
+            return string.Format("({0}, {1}, {2})", X, Y, Z);
         }
 
         #endregion
@@ -570,67 +503,40 @@ namespace Dicom.Imaging.Mathematics
 
     public class Line3D
     {
-        #region Private Members
-
-        private Vector3D _vector;
-
-        private Point3D _point;
-
-        #endregion
 
         #region Public Constructors
 
         public Line3D()
         {
-            _point = Point3D.Zero.Clone();
-            _vector = Vector3D.Zero.Clone();
+            Point = Point3D.Zero.Clone();
+            Vector = Vector3D.Zero.Clone();
         }
 
         public Line3D(Point3D p, Vector3D v)
         {
-            _point = p.Clone();
-            _vector = v.Clone();
+            Point = p.Clone();
+            Vector = v.Clone();
         }
 
         public Line3D(Point3D p1, Point3D p2)
         {
-            _point = p1.Clone();
-            _vector = new Vector3D(p2.X - p1.X, p2.Y - p1.Y, p2.Z - p1.Z);
+            Point = p1.Clone();
+            Vector = new Vector3D(p2.X - p1.X, p2.Y - p1.Y, p2.Z - p1.Z);
         }
 
         public Line3D(Line3D line)
         {
-            _point = line.Point.Clone();
-            _vector = line.Vector.Clone();
+            Point = line.Point.Clone();
+            Vector = line.Vector.Clone();
         }
 
         #endregion
 
         #region Public Properties
 
-        public Point3D Point
-        {
-            get
-            {
-                return _point;
-            }
-            set
-            {
-                _point = value;
-            }
-        }
+        public Point3D Point { get; set; }
 
-        public Vector3D Vector
-        {
-            get
-            {
-                return _vector;
-            }
-            set
-            {
-                _vector = value;
-            }
-        }
+        public Vector3D Vector { get; set; }
 
         #endregion
 
@@ -681,99 +587,47 @@ namespace Dicom.Imaging.Mathematics
 
     public class Segment3D
     {
-        #region Private Members
-
-        private Point3D _a;
-
-        private Point3D _b;
-
-        #endregion
 
         #region Public Constructors
 
         public Segment3D()
         {
-            _a = Point3D.Zero.Clone();
-            _b = Point3D.Zero.Clone();
+            A = Point3D.Zero.Clone();
+            B = Point3D.Zero.Clone();
         }
 
         public Segment3D(Point3D a, Point3D b)
         {
-            _a = a.Clone();
-            _b = b.Clone();
+            A = a.Clone();
+            B = b.Clone();
         }
 
         #endregion
 
         #region Public Properties
 
-        public Point3D A
-        {
-            get
-            {
-                return _a;
-            }
-            set
-            {
-                _a = value;
-            }
-        }
+        public Point3D A { get; set; }
 
-        public Point3D B
-        {
-            get
-            {
-                return _b;
-            }
-            set
-            {
-                _b = value;
-            }
-        }
+        public Point3D B { get; set; }
 
-        public double Length
-        {
-            get
-            {
-                return _a.Distance(_b);
-            }
-        }
+        public double Length => A.Distance(B);
 
-        public Vector3D Vector
-        {
-            get
-            {
-                return new Vector3D(_b.X - _a.X, _b.Y - _a.Y, _b.Z - _a.Z);
-            }
-        }
+        public Vector3D Vector => new Vector3D(B.X - A.X, B.Y - A.Y, B.Z - A.Z);
 
-        public Vector3D NormalVector
-        {
-            get
-            {
-                return Vector.Normalize();
-            }
-        }
+        public Vector3D NormalVector => Vector.Normalize();
 
         #endregion
     }
 
     public class Plane3D
     {
-        #region Private Members
-
-        private Vector3D _normal;
-
-        private Point3D _point;
-
-        #endregion
 
         #region Public Constructors
 
         public Plane3D(Vector3D normal, Point3D point)
         {
-            _normal = normal;
-            _point = point;
+            Normal = normal;
+            Point = point;
         }
 
         public Plane3D(Point3D a, Point3D b, Point3D c)
@@ -782,45 +636,19 @@ namespace Dicom.Imaging.Mathematics
             Vector3D bv = b.ToVector();
             Vector3D cv = c.ToVector();
 
-            _normal = (bv - av).CrossProduct(cv - av).Normalize();
-            _point = a;
+            Normal = (bv - av).CrossProduct(cv - av).Normalize();
+            Point = a;
         }
 
         #endregion
 
         #region Public Properties
 
-        public Vector3D Normal
-        {
-            get
-            {
-                return _normal;
-            }
-            set
-            {
-                _normal = value;
-            }
-        }
+        public Vector3D Normal { get; set; }
 
-        public Point3D Point
-        {
-            get
-            {
-                return _point;
-            }
-            set
-            {
-                _point = value;
-            }
-        }
+        public Point3D Point { get; set; }
 
-        public double Distance
-        {
-            get
-            {
-                return Point.Distance(Point3D.Zero);
-            }
-        }
+        public double Distance => Point.Distance(Point3D.Zero);
 
         #endregion
 
@@ -861,13 +689,13 @@ namespace Dicom.Imaging.Mathematics
             double w2 = -b.Distance;
             double id;
 
-            if ((v2.Z > v2.Y) && (v2.Z > v2.X) && (v2.Z > Double.Epsilon))
+            if ((v2.Z > v2.Y) && (v2.Z > v2.X) && (v2.Z > Constants.Epsilon))
             {
                 // point on XY plane
                 id = 1.0 / v1.Z;
                 p = new Point3D(Normal.Y * w2 - b.Normal.Y * w1, b.Normal.X * w1 - Normal.X * w2, 0.0);
             }
-            else if ((v2.Y > v2.X) && (v2.Y > Double.Epsilon))
+            else if ((v2.Y > v2.X) && (v2.Y > Constants.Epsilon))
             {
                 // point on XZ plane
                 id = -1.0 / v1.Y;
@@ -904,21 +732,21 @@ namespace Dicom.Imaging.Mathematics
     {
         #region Private Members
 
-        private Vector3D _normal;
+        private readonly Vector3D _normal;
 
-        private Point3D _topLeft;
+        private readonly Point3D _topLeft;
 
-        private Point3D _topRight;
+        private readonly Point3D _topRight;
 
-        private Point3D _bottomLeft;
+        private readonly Point3D _bottomLeft;
 
-        private Point3D _bottomRight;
+        private readonly Point3D _bottomRight;
 
-        private double _width;
+        private readonly double _width;
 
-        private double _height;
+        private readonly double _height;
 
-        private Plane3D _plane;
+        private readonly Plane3D _plane;
 
         #endregion
 
@@ -944,69 +772,21 @@ namespace Dicom.Imaging.Mathematics
 
         #region Public Properties
 
-        public Vector3D Normal
-        {
-            get
-            {
-                return _normal;
-            }
-        }
+        public Vector3D Normal => _normal;
 
-        public Plane3D Plane
-        {
-            get
-            {
-                return _plane;
-            }
-        }
+        public Plane3D Plane => _plane;
 
-        public Point3D TopLeft
-        {
-            get
-            {
-                return _topLeft;
-            }
-        }
+        public Point3D TopLeft => _topLeft;
 
-        public Point3D TopRight
-        {
-            get
-            {
-                return _topRight;
-            }
-        }
+        public Point3D TopRight => _topRight;
 
-        public Point3D BottomLeft
-        {
-            get
-            {
-                return _bottomLeft;
-            }
-        }
+        public Point3D BottomLeft => _bottomLeft;
 
-        public Point3D BottomRight
-        {
-            get
-            {
-                return _bottomRight;
-            }
-        }
+        public Point3D BottomRight => _bottomRight;
 
-        public double Width
-        {
-            get
-            {
-                return _width;
-            }
-        }
+        public double Width => _width;
 
-        public double Height
-        {
-            get
-            {
-                return _height;
-            }
-        }
+        public double Height => _height;
 
         #endregion
 
@@ -1024,11 +804,9 @@ namespace Dicom.Imaging.Mathematics
 
         public bool Intersect(Slice3D b, out Segment3D intersection)
         {
+            // todo: check. this always returns false????
             intersection = null;
-
-            Line3D line;
-            if (!Plane.Intersect(b.Plane, out line)) return false;
-
+            if (!Plane.Intersect(b.Plane, out var line)) return false;
             return false;
         }
 
@@ -1069,53 +847,17 @@ namespace Dicom.Imaging.Mathematics
 
         #region Public Properties
 
-        public Vector3D Forward
-        {
-            get
-            {
-                return _forward;
-            }
-        }
+        public Vector3D Forward => _forward;
 
-        public Vector3D Backward
-        {
-            get
-            {
-                return -Forward;
-            }
-        }
+        public Vector3D Backward => -Forward;
 
-        public Vector3D Left
-        {
-            get
-            {
-                return -Right;
-            }
-        }
+        public Vector3D Left => -Right;
 
-        public Vector3D Right
-        {
-            get
-            {
-                return Down.CrossProduct(Forward);
-            }
-        }
+        public Vector3D Right => Down.CrossProduct(Forward);
 
-        public Vector3D Up
-        {
-            get
-            {
-                return -Down;
-            }
-        }
+        public Vector3D Up => -Down;
 
-        public Vector3D Down
-        {
-            get
-            {
-                return _down;
-            }
-        }
+        public Vector3D Down => _down;
 
         #endregion
 
