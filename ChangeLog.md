@@ -22,6 +22,7 @@
 * Bug Fix : DicomPixelData.Create throws Exception if BitsAllocated >= 32 (#716)
 * Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
 * Serilog for .NET Standard 1.3/.NET Core (#772)
+* Bug Fix: fix deserialization of Json when the VR-property is not on first position (#730) 
 * DicomClient uses StrongBox to reduce memory consumption (#794)
 * Bug Fix: C-STORE request may hang. (#792)
 
