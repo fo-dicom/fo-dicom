@@ -639,7 +639,7 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<double>(token);
                     break;
                 case "IS":
-                    data = ReadJsonMultiNumber<int>(reader);
+                    data = ReadJsonMultiNumber<int>(token);
                     break;
                 case "SL":
                     data = ReadJsonMultiNumber<int>(token);
@@ -699,15 +699,15 @@ namespace Dicom.Serialization
             return data;
         }
 
-        private object ReadJsonMultiNumber<T>(JsonReader reader)
+        private object ReadJsonMultiNumber<T>(JToken itemObject)
         {
-            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Value")
+            if (itemObject["Value"] is JToken token)
             {
-                return ReadJsonMultiNumberValue<T>(reader);
+                return ReadJsonMultiNumberValue<T>(token);
             }
-            else if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "BulkDataURI")
+            else if (itemObject["BulkDataURI"] is JToken bulk)
             {
-                return ReadJsonBulkDataUri(reader);
+                return ReadJsonBulkDataUri(bulk);
             }
             else
             {
@@ -715,9 +715,9 @@ namespace Dicom.Serialization
             }
         }
 
-        private static T[] ReadJsonMultiNumberValue<T>(JToken reader)
+        private static T[] ReadJsonMultiNumberValue<T>(JToken token)
         {
-            if (!(itemObject["Value"] is JArray tokens)) { return new T[0]; }
+            if (!(token is JArray tokens)) { return new T[0]; }
             var childValues = new List<T>();
             foreach (var item in tokens)
             {
