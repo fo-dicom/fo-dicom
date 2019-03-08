@@ -1,10 +1,11 @@
-// Copyright (c) 2012-2018 fo-dicom contributors.
+// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
 using System.Collections.Generic;
 
 using Dicom.Imaging.LUT;
+using Dicom.Imaging.Mathematics;
 
 namespace Dicom.Imaging.Render
 {
@@ -75,7 +76,7 @@ namespace Dicom.Imaging.Render
             {
                 if (_scaledData == null)
                 {
-                    _scaledData = Math.Abs(_scaleFactor - 1.0) <= double.Epsilon
+                    _scaledData = (_scaleFactor - 1.0).IsNearlyZero()
                         ? _originalData
                         : OriginalData.Rescale(_scaleFactor);
                 }
@@ -160,7 +161,7 @@ namespace Dicom.Imaging.Render
         /// <inheritdoc />
         public void Scale(double scale)
         {
-            if (Math.Abs(scale - _scaleFactor) <= double.Epsilon) return;
+            if ((scale - _scaleFactor).IsNearlyZero()) return;
 
             _scaleFactor = scale;
             _scaledData = null;

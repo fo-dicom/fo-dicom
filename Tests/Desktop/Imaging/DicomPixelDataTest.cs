@@ -1,4 +1,4 @@
-﻿// // Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// // Copyright (c) 2012-2019 fo-dicom contributors.
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
@@ -18,14 +18,17 @@ namespace Dicom.Imaging
             Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
 
+        /// <summary>
+        /// issue #716
+        /// </summary>
         [Fact]
-        public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan16_Throws()
+        public void Create_TransferSyntaxExplicitLEBitsAllocatedGreaterThan16_ReturnsOtherWordPixelDataObject()
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
-            dataset.Add(DicomTag.BitsAllocated, (ushort)17);
-            var exception = Record.Exception(() => DicomPixelData.Create(dataset, true));
+            dataset.Add(DicomTag.BitsAllocated, (ushort)32);
+            var pixelData = DicomPixelData.Create(dataset, true);
 
-            Assert.NotNull(exception);
+            Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
 
         [Theory]

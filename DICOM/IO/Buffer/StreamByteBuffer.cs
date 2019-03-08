@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
@@ -8,7 +8,7 @@ namespace Dicom.IO.Buffer
     public sealed class StreamByteBuffer : IByteBuffer
     {
 
-        public StreamByteBuffer(Stream stream, long position, uint length)
+        public StreamByteBuffer(Stream stream, long position, long length)
         {
             Stream = stream;
             Position = position;
@@ -21,7 +21,7 @@ namespace Dicom.IO.Buffer
 
         public long Position { get; private set; }
 
-        public uint Size { get; private set; }
+        public long Size { get; private set; }
 
         public byte[] Data
         {
@@ -35,7 +35,7 @@ namespace Dicom.IO.Buffer
             }
         }
 
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             if (!Stream.CanRead) throw new DicomIoException("cannot read from stream - maybe closed");
             byte[] buffer = new byte[count];

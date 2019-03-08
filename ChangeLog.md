@@ -1,4 +1,5 @@
 #### v.4.0.1 (TBD)
+* change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * DicomDirectory.AddFile returns a reference to the newly added patient-, study-, series- and instance-Record.
 * Update Json DS validation regex (#643)
@@ -14,7 +15,16 @@
 * add DicomUID.IsVolumeStorage.
 * Bug Fix : DICOM server may throw DicomDataException on association when non-standard transfer syntax was proposed (#749)
 * allow Query/Register/Unregister transfer syntax.
+* DicomCFindRequest should allow defnition of Query Retrieve Information Model (#708)
+* Bug fix : DicomUIDGenerator.GenerateDerivedFromUUID converts Guids incorrectly to the DICOM "2.25." + UUID format (#762)
 * Bug Fix : TryGetValue, TryGetValues, TryGetSingleValue should return false instead of throw exception. (#746)
+* Add methods to calculate localizer lines (#779)
+* Bug Fix : DicomPixelData.Create throws Exception if BitsAllocated >= 32 (#716)
+* Bug Fix: GetValues<object> on empty element may throw ArgumentOutOfRangeException (#720)
+* Serilog for .NET Standard 1.3/.NET Core (#772)
+* Bug Fix: fix deserialization of Json when the VR-property is not on first position (#730) 
+* DicomClient uses StrongBox to reduce memory consumption (#794)
+* Bug Fix: C-STORE request may hang. (#792)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec

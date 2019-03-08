@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom
@@ -117,6 +117,12 @@ namespace Dicom
             _uids.Add(uid.UID, uid);
         }
 
+        public static DicomUID Generate()
+        {
+            return DicomUIDGenerator.GenerateDerivedFromUUID();
+        }
+
+        [Obsolete("This method may return statistically non-unique UIDs and is deprecated, use the method Generate()")]
         public static DicomUID Generate(string name)
         {
             if (string.IsNullOrEmpty(RootUID))
@@ -127,12 +133,6 @@ namespace Dicom
             var uid = $"{RootUID}.{DateTime.UtcNow}.{DateTime.UtcNow.Ticks}";
 
             return new DicomUID(uid, name, DicomUidType.SOPInstance);
-        }
-
-        public static DicomUID Generate()
-        {
-            var generator = new DicomUIDGenerator();
-            return DicomUIDGenerator.GenerateNew();
         }
 
         public static DicomUID Append(DicomUID baseUid, long nextSeq)

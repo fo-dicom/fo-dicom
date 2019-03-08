@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace Dicom.IO
@@ -24,8 +24,8 @@ namespace Dicom.IO
         /// <param name="fileName">File name.</param>
         public WindowsFileReference(string fileName)
         {
-            this.Name = Path.GetFullPath(fileName);
-            this.IsTempFile = false;
+            Name = Path.GetFullPath(fileName);
+            IsTempFile = false;
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Dicom.IO
         /// </summary>
         ~WindowsFileReference()
         {
-            if (this.IsTempFile)
+            if (IsTempFile)
             {
                 TemporaryFileRemover.Delete(this);
             }
@@ -51,13 +51,7 @@ namespace Dicom.IO
         /// <summary>
         /// Gets whether the file exist or not.
         /// </summary>
-        public bool Exists
-        {
-            get
-            {
-                return IsFileExistingAsync(this.Name).Result;
-            }
-        }
+        public bool Exists => IsFileExistingAsync(Name).Result;
 
         /// <summary>Gets and sets whether the file is temporary or not.</summary>
         /// <remarks>Temporary file will be deleted when object is <c>Disposed</c>.</remarks>
@@ -66,13 +60,7 @@ namespace Dicom.IO
         /// <summary>
         /// Gets the directory reference of the file.
         /// </summary>
-        public IDirectoryReference Directory
-        {
-            get
-            {
-                return new DesktopDirectoryReference(Path.GetDirectoryName(this.Name));
-            }
-        }
+        public IDirectoryReference Directory => new DesktopDirectoryReference(Path.GetDirectoryName(Name));
 
         #endregion
 
@@ -84,7 +72,7 @@ namespace Dicom.IO
         /// <returns>Stream to the created file.</returns>
         public Stream Create()
         {
-            return CreateAsync(this.Name).Result;
+            return CreateAsync(Name).Result;
         }
 
         /// <summary>
@@ -93,7 +81,7 @@ namespace Dicom.IO
         /// <returns>Read/write stream to the opened file.</returns>
         public Stream Open()
         {
-            return OpenExistingAsync(this.Name, true, true).Result;
+            return OpenExistingAsync(Name, true, true).Result;
         }
 
         /// <summary>
@@ -102,7 +90,7 @@ namespace Dicom.IO
         /// <returns>Readable stream to the opened file.</returns>
         public Stream OpenRead()
         {
-            return OpenExistingAsync(this.Name, true, false).Result;
+            return OpenExistingAsync(Name, true, false).Result;
         }
 
         /// <summary>
@@ -111,7 +99,7 @@ namespace Dicom.IO
         /// <returns>Writeable stream to the opened file.</returns>
         public Stream OpenWrite()
         {
-            return OpenOrCreateAsync(this.Name).Result;
+            return OpenOrCreateAsync(Name).Result;
         }
 
         /// <summary>
@@ -119,7 +107,7 @@ namespace Dicom.IO
         /// </summary>
         public void Delete()
         {
-            DeleteAsync(this.Name).Wait();
+            DeleteAsync(Name).Wait();
         }
 
         /// <summary>
@@ -131,10 +119,10 @@ namespace Dicom.IO
         /// <param name="overwrite">True if <paramref name="dstFileName"/> should be overwritten if it already exists, false otherwise.</param>
         public void Move(string dstFileName, bool overwrite = false)
         {
-            MoveAsync(this.Name, dstFileName, overwrite).Wait();
+            MoveAsync(Name, dstFileName, overwrite).Wait();
 
-            this.Name = Path.GetFullPath(dstFileName);
-            this.IsTempFile = false;
+            Name = Path.GetFullPath(dstFileName);
+            IsTempFile = false;
         }
 
         /// <summary>
@@ -143,9 +131,9 @@ namespace Dicom.IO
         /// <param name="offset">Offset from the start position of the file.</param>
         /// <param name="count">Number of bytes to select.</param>
         /// <returns>The specified sub-range of bytes in the file.</returns>
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
-            return GetByteRangeAsync(this.Name, offset, count).Result;
+            return GetByteRangeAsync(Name, offset, count).Result;
         }
 
         /// <summary>
@@ -156,7 +144,7 @@ namespace Dicom.IO
         /// </returns>
         public override string ToString()
         {
-            return this.IsTempFile ? string.Format("{0} [TEMP]", this.Name) : this.Name;
+            return IsTempFile ? $"{Name} [TEMP]" : Name;
         }
 
         private static async Task<bool> IsFileExistingAsync(string path)
@@ -258,7 +246,7 @@ namespace Dicom.IO
                     overwrite ? NameCollisionOption.ReplaceExisting : NameCollisionOption.FailIfExists);
         }
 
-        private static async Task<byte[]> GetByteRangeAsync(string path, int offset, int count)
+        private static async Task<byte[]> GetByteRangeAsync(string path, long offset, int count)
         {
             var buffer = new Windows.Storage.Streams.Buffer((uint)count);
 

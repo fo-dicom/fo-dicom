@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -45,7 +45,7 @@ namespace Dicom.IO.Buffer
         public bool IsMemory => true;
 
         /// <inheritdoc />
-        public uint Size => (uint)Buffers.Sum(x => x.Size);
+        public long Size => Buffers.Sum(x => x.Size);
 
         /// <inheritdoc />
         public byte[] Data
@@ -68,22 +68,22 @@ namespace Dicom.IO.Buffer
         #region METHODS
 
         /// <inheritdoc />
-        public byte[] GetByteRange(int offset, int count)
+        public byte[] GetByteRange(long offset, int count)
         {
             var pos = 0;
-            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++) offset -= (int)Buffers[pos].Size;
+            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++) offset -= Buffers[pos].Size;
 
             var offset2 = 0;
             var data = new byte[count];
             for (; pos < Buffers.Count && count > 0; pos++)
             {
-                var remain = Math.Min((int)Buffers[pos].Size - offset, count);
+                var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
 
                 if (Buffers[pos].IsMemory)
                 {
                     try
                     {
-                        System.Buffer.BlockCopy(Buffers[pos].Data, offset, data, offset2, remain);
+                        System.Buffer.BlockCopy(Buffers[pos].Data, (int)offset, data, offset2, remain);
                     }
                     catch (Exception)
                     {

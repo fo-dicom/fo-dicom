@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace Dicom.IO.Writer
                     // fragment item
                     length += 4; // tag
                     length += 4; // length
-                    length += fragment.Size;
+                    length += (uint)fragment.Size;
                 }
 
                 // sequence delimitation item

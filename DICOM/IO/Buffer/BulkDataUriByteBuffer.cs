@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -24,10 +24,7 @@ namespace Dicom.IO.Buffer
         /// <summary>
         /// Gets whether data is buffered in memory or not.
         /// </summary>
-        public bool IsMemory
-        {
-            get { return _buffer != null; }
-        }
+        public bool IsMemory => _buffer != null;
 
         /// <summary>
         /// The URI for retrieving the referenced bulk data.
@@ -39,18 +36,9 @@ namespace Dicom.IO.Buffer
         /// </summary>
         public virtual byte[] Data
         {
-            get
-            {
-                if (_buffer == null)
-                    throw new InvalidOperationException(
-                        "BulkDataUriByteBuffer cannot provide Data until either GetData() has been called.");
-                return _buffer;
-            }
-
-            set
-            {
-                _buffer = value;
-            }
+            get => _buffer
+                ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Data until either GetData() has been called.");
+            set => _buffer = value;
         }
 
         /// <summary>
@@ -59,30 +47,25 @@ namespace Dicom.IO.Buffer
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        public virtual byte[] GetByteRange(int offset, int count)
+        public virtual byte[] GetByteRange(long offset, int count)
         {
             if (_buffer == null)
                 throw new InvalidOperationException(
                     "BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
 
             var range = new byte[count];
-            Array.Copy(Data, offset, range, 0, count);
+            Array.Copy(Data, (int)offset, range, 0, count);
             return range;
         }
 
         /// <summary>
         /// Gets the size of the buffered data. Throws an InvalidOperationException if the Data has not been set.
         /// </summary>
-        public virtual uint Size
+        public virtual long Size
         {
-            get
-            {
-                if (_buffer == null)
-                    throw new InvalidOperationException(
-                        "BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
-
-                return (uint)_buffer.Length;
-            }
+            get => _buffer?.Length
+                ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
         }
+
     }
 }

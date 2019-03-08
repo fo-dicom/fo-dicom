@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
     using System;
@@ -161,7 +161,7 @@ namespace Dicom.Network
 
                 for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
-                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await Task.WhenAny(task, Task.Delay(30000));
 
                 Assert.Equal(expected, actual);

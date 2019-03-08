@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -497,7 +497,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );
@@ -512,7 +516,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );
@@ -527,7 +535,11 @@ namespace Dicom
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
+#if NETSTANDARD
+                        Encoding.GetEncoding(0).GetBytes("1.0")
+#else
                         Encoding.Default.GetBytes("1.0")
+#endif
                     )
                 )
             );
