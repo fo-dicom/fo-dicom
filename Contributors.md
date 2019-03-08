@@ -42,4 +42,6 @@
 * [Victor Chang](https://github.com/mocsharp)
 * [cjcaldwell](https://github.com/cjcaldwell)
 * [vzdesic](https://github.com/vzdesic)
+* [Erik Edespong](https://github.com/edespong)
+* [vzdesic] (https://github.com/vzdesic)
 * [gustavosaita](https://github.com/gustavosaita)
