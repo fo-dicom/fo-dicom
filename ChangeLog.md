@@ -25,6 +25,7 @@
 * Bug Fix: fix deserialization of Json when the VR-property is not on first position (#730) 
 * DicomClient uses StrongBox to reduce memory consumption (#794)
 * Bug Fix: C-STORE request may hang. (#792)
+* Bug Fix: Fixed frame caching in DicomImage and added try-catch failsafe for multi-threading issues (#805)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
