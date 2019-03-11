@@ -185,25 +185,61 @@ namespace Dicom.Serialization
                     item = new DicomDate(tag, (string[])data);
                     break;
                 case "DS":
-                    item = new DicomDecimalString(tag, (string[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomDecimalString(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomDecimalString(tag, (string[])data);
+                    }
                     break;
                 case "DT":
                     item = new DicomDateTime(tag, (string[])data);
                     break;
                 case "FD":
-                    item = new DicomFloatingPointDouble(tag, (double[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomFloatingPointDouble(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomFloatingPointDouble(tag, (double[])data);
+                    }
                     break;
                 case "FL":
-                    item = new DicomFloatingPointSingle(tag, (float[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomFloatingPointSingle(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomFloatingPointSingle(tag, (float[])data);
+                    }
                     break;
                 case "IS":
-                    item = new DicomIntegerString(tag, (int[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomIntegerString(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomIntegerString(tag, (int[])data);
+                    }
                     break;
                 case "LO":
                     item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
-                    item = new DicomLongText(tag, ((string[])data).Single());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomLongText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomLongText(tag, ((string[])data).Single());
+                    }
                     break;
                 case "OB":
                     item = new DicomOtherByte(tag, (IByteBuffer)data);
@@ -227,13 +263,35 @@ namespace Dicom.Serialization
                     item = new DicomShortString(tag, (string[])data);
                     break;
                 case "SL":
-                    item = new DicomSignedLong(tag, (int[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomSignedLong(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomSignedLong(tag, (int[])data);
+                    }
                     break;
                 case "SS":
-                    item = new DicomSignedShort(tag, (short[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomSignedShort(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomSignedShort(tag, (short[])data);
+                    }
                     break;
                 case "ST":
-                    item = new DicomShortText(tag, ((string[])data)[0]);
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomShortText(tag,DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomShortText(tag, ((string[])data)[0]);
+                    }
                     break;
                 case "SQ":
                     item = new DicomSequence(tag, ((DicomDataset[])data));
@@ -242,13 +300,28 @@ namespace Dicom.Serialization
                     item = new DicomTime(tag, (string[])data);
                     break;
                 case "UC":
-                    item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomUnlimitedCharacters(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                    }
                     break;
                 case "UI":
                     item = new DicomUniqueIdentifier(tag, (string[])data);
                     break;
                 case "UL":
-                    item = new DicomUnsignedLong(tag, (uint[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomUnsignedLong(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnsignedLong(tag, (uint[])data);
+                    }
                     break;
                 case "UN":
                     item = new DicomUnknown(tag, (IByteBuffer)data);
@@ -257,10 +330,25 @@ namespace Dicom.Serialization
                     item = new DicomUniversalResource(tag, ((string[])data).Single());
                     break;
                 case "US":
-                    item = new DicomUnsignedShort(tag, (ushort[])data);
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomUnsignedShort(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnsignedShort(tag, (ushort[])data);
+                    }
                     break;
                 case "UT":
-                    item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                    if (data is IByteBuffer)
+                    {
+                        //XXX   what should we use for encoding here ?
+                        item = new DicomUnlimitedText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                    }
                     break;
                 default:
                     throw new NotSupportedException("Unsupported value representation");
@@ -551,6 +639,8 @@ namespace Dicom.Serialization
                     data = ReadJsonMultiNumber<double>(token);
                     break;
                 case "IS":
+                    data = ReadJsonMultiNumber<int>(token);
+                    break;
                 case "SL":
                     data = ReadJsonMultiNumber<int>(token);
                     break;
@@ -609,9 +699,25 @@ namespace Dicom.Serialization
             return data;
         }
 
-        private static T[] ReadJsonMultiNumber<T>(JToken itemObject)
+        private object ReadJsonMultiNumber<T>(JToken itemObject)
         {
-            if (!(itemObject["Value"] is JArray tokens)) { return new T[0]; }
+            if (itemObject["Value"] is JToken token)
+            {
+                return ReadJsonMultiNumberValue<T>(token);
+            }
+            else if (itemObject["BulkDataURI"] is JToken bulk)
+            {
+                return ReadJsonBulkDataUri(bulk);
+            }
+            else
+            {
+                return new T[0];
+            }
+        }
+
+        private static T[] ReadJsonMultiNumberValue<T>(JToken token)
+        {
+            if (!(token is JArray tokens)) { return new T[0]; }
             var childValues = new List<T>();
             foreach (var item in tokens)
             {
