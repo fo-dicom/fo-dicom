@@ -34,8 +34,6 @@ namespace Dicom.Imaging
 
         private DicomOverlayData[] _overlays;
 
-        private IPixelData _pixels;
-
         private IPipeline _pipeline;
 
         private GrayscaleRenderOptions _renderOptions;
@@ -229,8 +227,8 @@ namespace Dicom.Imaging
                 ImageGraphic graphic;
                 if (!_framePixels.ContainsKey(frameIndex))
                 {
-                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
-                    graphic = new ImageGraphic(_pixels);
+                    _framePixels[frameIndex] = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    graphic = new ImageGraphic(_framePixels[frameIndex]);                    
                 }
                 else
                 {
