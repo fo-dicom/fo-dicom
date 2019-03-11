@@ -26,6 +26,8 @@ namespace Dicom.Imaging
 
         private bool _rerender;
 
+        private Dictionary<int, IPixelData> _framePixels = new Dictionary<int, IPixelData>();
+
         private readonly DicomDataset _dataset;
 
         private readonly DicomPixelData _pixelData;
@@ -212,30 +214,29 @@ namespace Dicom.Imaging
         /// <returns>Rendered image</returns>
         public virtual IImage RenderImage(int frame = 0)
         {
-            bool load;
             lock (_lock)
             {
-                load = frame >= 0 && (frame != CurrentFrame || _rerender);
                 _currentFrame = frame;
-                _rerender = false;
             }
 
             var frameIndex = GetFrameIndex(frame);
-            if (load)
-            {
-                lock (_lock)
-                {
-                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
-                }
-            }
 
             if (ShowOverlays) EstablishGraphicsOverlays();
 
             IImage image;
             lock (_lock)
-            { 
-                var graphic = new ImageGraphic(_pixels);
-
+            {
+                ImageGraphic graphic;
+                if (!_framePixels.ContainsKey(frameIndex))
+                {
+                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    graphic = new ImageGraphic(_pixels);
+                }
+                else
+                {
+                    graphic = new ImageGraphic(_framePixels[frameIndex]);
+                }
+                
                 if (ShowOverlays)
                 {
                     foreach (var overlay in _overlays)
@@ -252,8 +253,14 @@ namespace Dicom.Imaging
                         og.Scale(_scale);
                     }
                 }
-
-                image = graphic.RenderImage(_pipeline.LUT);
+                try
+                {
+                    image = graphic.RenderImage(_pipeline.LUT);
+                }
+                catch
+                {
+                    image = RenderImage(frameIndex);
+                }
             }
 
             return image;
