@@ -28,8 +28,6 @@ namespace Dicom.Network
 
         private StreamSocketListener _listener;
 
-        private StreamSocket _socket;
-
         #endregion
 
         #region CONSTRUCTORS
@@ -76,8 +74,6 @@ namespace Dicom.Network
             _tokenRegistration.Dispose();
             _listener.ConnectionReceived -= OnConnectionReceived;
             _listener.Dispose();
-            _socket?.Dispose();
-            _socket = null;
         }
 
         /// <inheritdoc />
@@ -109,10 +105,8 @@ namespace Dicom.Network
         /// <see cref="StreamSocketListenerConnectionReceivedEventArgs.Socket">Socket</see>/> property is saved for later use.</param>
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            _socket?.Dispose();
-            _socket = args.Socket;
             _tokenRegistration.Dispose();
-            _streamTcs?.TrySetResult(new WindowsNetworkStream(_socket));
+            _streamTcs?.TrySetResult(new WindowsNetworkStream(args.Socket, true));
         }
 
         #endregion
