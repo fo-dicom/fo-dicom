@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using Xunit;
 
 namespace Dicom.Network
@@ -11,7 +13,7 @@ namespace Dicom.Network
     {
         #region Unit Tests
 
-        [Theory, MemberData(nameof(AffectedSopClassUids))]
+        [Theory, ClassData(typeof(AffectedSopClassesGenerator))]
         public void Constructor_AffectedSopClassUid_ThrowWhenNotSupported(DicomUID affectedSopClassUid, bool throws)
         {
             var exception = Record.Exception(() => new DicomCFindRequest(affectedSopClassUid));
@@ -45,15 +47,25 @@ namespace Dicom.Network
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> AffectedSopClassUids = new[]
+        private class AffectedSopClassesGenerator : IEnumerable<object[]>
         {
-            new object[] { DicomUID.PatientRootQueryRetrieveInformationModelFIND, true },
-            new object[] { DicomUID.StudyRootQueryRetrieveInformationModelFIND, true },
-            new object[] { DicomUID.ModalityWorklistInformationModelFIND, false },
-            new object[] { DicomUID.UnifiedProcedureStepPullSOPClass, false },
-            new object[] { DicomUID.UnifiedProcedureStepWatchSOPClass, false },
-            new object[] { DicomUID.UnifiedProcedureStepPushSOPClass, true }
-        };
+            private readonly IEnumerable<object[]> _testData = new[]
+            {
+                new object[] { new DicomUID("1.2.3.4", "TestSopClass", DicomUidType.SOPClass, false), false },
+                new object[] { new DicomUID("1.2.3.4", "TestSopClass", DicomUidType.SOPClass, true), false },
+            };
+
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                var uidTypes = Enum.GetValues(typeof(DicomUidType)).Cast<DicomUidType>();
+                var testData = uidTypes
+                    .Where(t => t != DicomUidType.SOPClass)
+                    .Select(t => new object[] { new DicomUID("1.2.3.4", "NonSopClassUid", t, false), true });
+                return _testData.Concat(testData).GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
 
         public static readonly IEnumerable<object[]> InstancesLevels = new[]
         {

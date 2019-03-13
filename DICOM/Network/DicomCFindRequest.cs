@@ -41,9 +41,7 @@ namespace Dicom.Network
         public DicomCFindRequest(DicomUID affectedSopClassUid, DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CFindRequest, affectedSopClassUid, priority)
         {
-            if (!affectedSopClassUid.Equals(DicomUID.ModalityWorklistInformationModelFIND)
-                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepPullSOPClass) 
-                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepWatchSOPClass))
+            if (affectedSopClassUid.Type != DicomUidType.SOPClass)
             {
                 throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
             }
