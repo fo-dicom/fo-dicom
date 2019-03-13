@@ -1,4 +1,4 @@
-#### v.4.0.1 (TBD)
+#### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
 * DicomDirectory.AddFile returns a reference to the newly added patient-, study-, series- and instance-Record.
