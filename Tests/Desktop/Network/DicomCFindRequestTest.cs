@@ -20,6 +20,22 @@ namespace Dicom.Network
             Assert.Equal(throws, exception != null);
         }
 
+        [Theory, ClassData(typeof(AffectedSopClassesGenerator))]
+        public void Constructor_AffectedSopClassUid_Level_ThrowWhenNotSupported(DicomUID affectedSopClassUid, bool throws)
+        {
+            var exception = Record.Exception(() => new DicomCFindRequest(affectedSopClassUid, DicomPriority.High));
+            Assert.Equal(throws, exception != null);
+        }
+
+        [Fact]
+        public void Constructor_ParamatersAreSet()
+        {
+            var cfind = new DicomCFindRequest(DicomUID.UnifiedProcedureStepEventSOPClass, DicomQueryRetrieveLevel.NotApplicable, DicomPriority.High);
+            Assert.Equal(cfind.Priority, DicomPriority.High);
+            Assert.Equal(cfind.Level, DicomQueryRetrieveLevel.NotApplicable);
+            Assert.Equal(cfind.SOPClassUID, DicomUID.UnifiedProcedureStepEventSOPClass);
+        }
+
         [Theory, MemberData(nameof(InstancesLevels))]
         public void Level_Getter_ReturnsCorrectQueryRetrieveLevel(DicomCFindRequest request, DicomQueryRetrieveLevel expected)
         {
