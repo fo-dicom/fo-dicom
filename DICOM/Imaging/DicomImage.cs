@@ -209,8 +209,9 @@ namespace Dicom.Imaging
 
         /// <summary>Renders DICOM image to <see cref="IImage"/>.</summary>
         /// <param name="frame">Zero indexed frame number.</param>
+        /// <param name="cachePixelData">Optional parameter to cache images. If true, rendering will be faster, but more memory will be used.</param>
         /// <returns>Rendered image</returns>
-        public virtual IImage RenderImage(int frame = 0)
+        public virtual IImage RenderImage(int frame = 0, bool cachePixelData = false)
         {
             lock (_lock)
             {
@@ -225,16 +226,24 @@ namespace Dicom.Imaging
             lock (_lock)
             {
                 ImageGraphic graphic;
-                if (!_framePixels.ContainsKey(frameIndex))
+                if (cachePixelData)
                 {
-                    _framePixels[frameIndex] = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
-                    graphic = new ImageGraphic(_framePixels[frameIndex]);                    
+                    if (!_framePixels.ContainsKey(frameIndex))
+                    {
+                        _framePixels[frameIndex] = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                        graphic = new ImageGraphic(_framePixels[frameIndex]);
+                    }
+                    else
+                    {
+                        graphic = new ImageGraphic(_framePixels[frameIndex]);
+                    }
                 }
                 else
                 {
-                    graphic = new ImageGraphic(_framePixels[frameIndex]);
+                    var pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    graphic = new ImageGraphic(pixels);
                 }
-                
+
                 if (ShowOverlays)
                 {
                     foreach (var overlay in _overlays)
@@ -257,7 +266,7 @@ namespace Dicom.Imaging
                 }
                 catch
                 {
-                    image = RenderImage(frameIndex);
+                    image = RenderImage(frameIndex, cachePixelData);
                 }
             }
 
