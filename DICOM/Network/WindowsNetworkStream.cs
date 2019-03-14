@@ -71,10 +71,16 @@ namespace Dicom.Network
         /// Initializes a server instance of <see cref="WindowsNetworkStream"/>.
         /// </summary>
         /// <param name="socket">TCP socket.</param>
-        /// <remarks>Ownership of <paramref name="socket"/> remains with the caller, including responsibility for
-        /// disposal. Therefore, a handle to <paramref name="socket"/> is <em>not</em> stored when <see cref="WindowsNetworkStream"/>
-        /// is initialized with this server-side constructor.</remarks>
-        internal WindowsNetworkStream(StreamSocket socket)
+        /// <param name="ownsSocket">dispose <paramref name="socket"/> on Dispose</param>
+        /// <remarks>
+        /// Ownership of <paramref name="socket"/> is controlled by <paramref name="ownsSocket"/>.
+        /// 
+        /// if <paramref name="ownsSocket"/> is false, <paramref name="socket"/> must be disposed by caller.
+        /// this is default so that compatible with older versions.
+        /// 
+        /// if <paramref name="ownsSocket"/> is true, <paramref name="socket"/> will be disposed altogether on WindowsNetworkStream's disposal.
+        /// </remarks>
+        internal WindowsNetworkStream(StreamSocket socket, bool ownsSocket = false)
         {
             this.LocalHost = socket.Information.LocalAddress.DisplayName;
             this.LocalPort = int.Parse(socket.Information.LocalPort, CultureInfo.InvariantCulture);
@@ -82,7 +88,7 @@ namespace Dicom.Network
             this.RemotePort = int.Parse(socket.Information.RemotePort, CultureInfo.InvariantCulture);
 
             this.socket = socket;
-            this.canDisposeSocket = false;
+            this.canDisposeSocket = ownsSocket;
             this.isConnected = true;
         }
 

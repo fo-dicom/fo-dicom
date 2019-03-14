@@ -281,7 +281,6 @@ Global
 		{3025F55B-3AED-43B0-889C-F7C5FE5B8ABA}.Release|x86.ActiveCfg = Release|Win32
 		{3025F55B-3AED-43B0-889C-F7C5FE5B8ABA}.Release|x86.Build.0 = Release|Win32
 		{0A648368-9B9A-49BF-8C11-EBA79F241B94}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{0A648368-9B9A-49BF-8C11-EBA79F241B94}.Debug|Any CPU.Build.0 = Debug|Win32
 		{0A648368-9B9A-49BF-8C11-EBA79F241B94}.Debug|ARM.ActiveCfg = Debug|ARM
 		{0A648368-9B9A-49BF-8C11-EBA79F241B94}.Debug|ARM.Build.0 = Debug|ARM
 		{0A648368-9B9A-49BF-8C11-EBA79F241B94}.Debug|x64.ActiveCfg = Debug|x64
@@ -447,19 +446,13 @@ Global
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|ARM.Build.0 = Debug|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|x64.Build.0 = Debug|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Debug|x86.Build.0 = Debug|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|ARM.ActiveCfg = Release|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|ARM.Build.0 = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x64.ActiveCfg = Release|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x64.Build.0 = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x86.ActiveCfg = Release|Any CPU
-		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -499,8 +492,8 @@ Global
 		{6467B08B-1E19-430D-ADAB-C4CD65730290} = {479C8BA1-3659-4EBD-AB6B-651FC1CF43FA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = True
 		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
+		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

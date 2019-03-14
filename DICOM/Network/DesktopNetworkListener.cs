@@ -79,7 +79,8 @@ namespace Dicom.Network
                         _certificate = GetX509Certificate(certificateName);
                     }
 
-                    return new DesktopNetworkStream(tcpClient, _certificate);
+                    //  let DesktopNetworkStream to dispose tcpClient
+                    return new DesktopNetworkStream(tcpClient, _certificate, true);
                 }
 
                 return null;
