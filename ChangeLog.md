@@ -1,3 +1,7 @@
+#### v.4.0.2 (TBD)
+* Bug Fix: Fixed frame caching in DicomImage and added try-catch failsafe for multi-threading issues (#805)
+* Added optional parameter to RenderImage() to determine whether or Frames pixel data will be cached
+
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
@@ -27,7 +31,6 @@
 * Bug Fix: fix deserialization of Json when the VR-property is not on first position (#730) 
 * DicomClient uses StrongBox to reduce memory consumption (#794)
 * Bug Fix: C-STORE request may hang. (#792)
-* Bug Fix: Fixed frame caching in DicomImage and added try-catch failsafe for multi-threading issues (#805)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
