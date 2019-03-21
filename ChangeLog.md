@@ -1,3 +1,5 @@
+* Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
+
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
