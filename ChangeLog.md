@@ -1,3 +1,8 @@
+#### v.4.0.2 (TBD)
+* Updated to DICOM Dictionary 2019b (#724)
+* Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
+* Replaced deprecated licenseUrl tags in NuGet specification files (#813)
+
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
