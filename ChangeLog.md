@@ -1,3 +1,7 @@
+#### v.4.0.2 (TBD)
+* Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
+
+
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
 * internally identify dicom servers by port/ipadress combination instead of only port (#699)
