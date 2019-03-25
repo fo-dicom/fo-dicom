@@ -134,6 +134,8 @@ namespace Dicom
                     return DicomVR.OL;
                 case DicomVRCode.OW:
                     return DicomVR.OW;
+                case DicomVRCode.OV:
+                    return DicomVR.OV;
                 case DicomVRCode.PN:
                     return DicomVR.PN;
                 case DicomVRCode.SH:
@@ -146,6 +148,8 @@ namespace Dicom
                     return DicomVR.SS;
                 case DicomVRCode.ST:
                     return DicomVR.ST;
+                case DicomVRCode.SV:
+                    return DicomVR.SV;
                 case DicomVRCode.TM:
                     return DicomVR.TM;
                 case DicomVRCode.UC:
@@ -162,6 +166,8 @@ namespace Dicom
                     return DicomVR.US;
                 case DicomVRCode.UT:
                     return DicomVR.UT;
+                case DicomVRCode.UV:
+                    return DicomVR.UV;
                 default:
                     valid = false;
                     return DicomVR.NONE;
@@ -469,6 +475,22 @@ namespace Dicom
                                                     ValueType = typeof(ushort[])
                                                 };
 
+        /// <summary>Other Very Long</summary>
+        public static readonly DicomVR OV = new DicomVR
+        {
+            Code = DicomVRCode.OV,
+            Name = "Other Very Long",
+            IsString = false,
+            IsStringEncoded = false,
+            Is16bitLength = false,
+            IsMultiValue = true,
+            PaddingValue = PadZero,
+            MaximumLength = 0,
+            UnitSize = 8,
+            ByteSwap = 8,
+            ValueType = typeof(ulong[])
+        };
+
         /// <summary>Person Name</summary>
         public static readonly DicomVR PN = new DicomVR
                                                 {
@@ -569,6 +591,22 @@ namespace Dicom
                                                     ValueType = typeof(string),
                                                     StringValidator = DicomValidation.ValidateST
                                                 };
+
+        /// <summary>Signed Very Long</summary>
+        public static readonly DicomVR SV = new DicomVR
+        {
+            Code = DicomVRCode.SV,
+            Name = "Signed Very Long",
+            IsString = false,
+            IsStringEncoded = false,
+            Is16bitLength = true,
+            IsMultiValue = true,
+            PaddingValue = PadZero,
+            MaximumLength = 8,
+            UnitSize = 8,
+            ByteSwap = 8,
+            ValueType = typeof(long)
+        };
 
         /// <summary>Time</summary>
         public static readonly DicomVR TM = new DicomVR
@@ -699,5 +737,21 @@ namespace Dicom
                                                     ByteSwap = 1,
                                                     ValueType = typeof(string)
                                                 };
+
+        /// <summary>Unsigned Very Long</summary>
+        public static readonly DicomVR UV = new DicomVR
+        {
+            Code = DicomVRCode.UV,
+            Name = "Unsigned Very Long",
+            IsString = false,
+            IsStringEncoded = false,
+            Is16bitLength = true,
+            IsMultiValue = true,
+            PaddingValue = PadZero,
+            MaximumLength = 8,
+            UnitSize = 8,
+            ByteSwap = 8,
+            ValueType = typeof(ulong)
+        };
     }
 }

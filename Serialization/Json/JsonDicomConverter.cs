@@ -255,6 +255,9 @@ namespace Dicom.Serialization
                 case "OW":
                     item = new DicomOtherWord(tag, (IByteBuffer)data);
                     break;
+                case "OV":
+                    item = new DicomOtherVeryLong(tag, (IByteBuffer)data);
+                    break;
                 case "PN":
                     item = new DicomPersonName(tag, (string[])data);
                     break;
@@ -270,6 +273,9 @@ namespace Dicom.Serialization
                     {
                         item = new DicomSignedLong(tag, (int[])data);
                     }
+                    break;
+                case "SQ":
+                    item = new DicomSequence(tag, ((DicomDataset[])data));
                     break;
                 case "SS":
                     if (data is IByteBuffer)
@@ -292,8 +298,15 @@ namespace Dicom.Serialization
                         item = new DicomShortText(tag, ((string[])data)[0]);
                     }
                     break;
-                case "SQ":
-                    item = new DicomSequence(tag, ((DicomDataset[])data));
+                case "SV":
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomSignedVeryLong(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomSignedVeryLong(tag, (long[])data);
+                    }
                     break;
                 case "TM":
                     item = new DicomTime(tag, (string[])data);
@@ -349,6 +362,16 @@ namespace Dicom.Serialization
                         item = new DicomUnlimitedText(tag, ((string[])data).Single());
                     }
                     break;
+                case "UV":
+                    if (data is IByteBuffer)
+                    {
+                        item = new DicomUnsignedVeryLong(tag, (IByteBuffer)data);
+                    }
+                    else
+                    {
+                        item = new DicomUnsignedVeryLong(tag, (ulong[])data);
+                    }
+                    break;
                 default:
                     throw new NotSupportedException("Unsupported value representation");
             }
@@ -377,6 +400,7 @@ namespace Dicom.Serialization
                 case "OD":
                 case "OF":
                 case "OL":
+                case "OV":
                 case "OW":
                 case "UN":
                     WriteJsonOther(writer, (DicomElement)item);
@@ -394,11 +418,17 @@ namespace Dicom.Serialization
                 case "SS":
                     WriteJsonElement<short>(writer, (DicomElement)item);
                     break;
+                case "SV":
+                    WriteJsonElement<long>(writer, (DicomElement)item);
+                    break;
                 case "UL":
                     WriteJsonElement<uint>(writer, (DicomElement)item);
                     break;
                 case "US":
                     WriteJsonElement<ushort>(writer, (DicomElement)item);
+                    break;
+                case "UV":
+                    WriteJsonElement<ulong>(writer, (DicomElement)item);
                     break;
                 case "DS":
                     WriteJsonDecimalString(writer, (DicomElement)item);
@@ -629,6 +659,7 @@ namespace Dicom.Serialization
                 case "OF":
                 case "OL":
                 case "OW":
+                case "OV":
                 case "UN":
                     data = ReadJsonOX(token);
                     break;
@@ -653,11 +684,17 @@ namespace Dicom.Serialization
                 case "SS":
                     data = ReadJsonMultiNumber<short>(token);
                     break;
+                case "SV":
+                    data = ReadJsonMultiNumber<long>(token);
+                    break;
                 case "UL":
                     data = ReadJsonMultiNumber<uint>(token);
                     break;
                 case "US":
                     data = ReadJsonMultiNumber<ushort>(token);
+                    break;
+                case "UV":
+                    data = ReadJsonMultiNumber<ulong>(token);
                     break;
                 case "DS":
                     data = ReadJsonMultiString(token);
