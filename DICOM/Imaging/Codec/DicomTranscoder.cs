@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Globalization;
 using Dicom.Imaging.Render;
 using Dicom.IO.Buffer;
 using Dicom.IO.Writer;
@@ -89,10 +89,14 @@ namespace Dicom.Imaging.Codec
         public DicomFile Transcode(DicomFile file)
         {
             var f = new DicomFile();
+            f.FileMetaInfo.ValidateItems = false;
+            f.Dataset.ValidateItems = false;
             f.FileMetaInfo.Add(file.FileMetaInfo);
             f.FileMetaInfo.TransferSyntax = OutputSyntax;
             f.Dataset.InternalTransferSyntax = OutputSyntax;
             f.Dataset.Add(Transcode(file.Dataset));
+            f.FileMetaInfo.ValidateItems = true;
+            f.Dataset.ValidateItems = true;
             return f;
         }
 
@@ -265,7 +269,7 @@ namespace Dicom.Imaging.Codec
 
                 double oldSize = oldPixelData.GetFrame(0).Size;
                 double newSize = newPixelData.GetFrame(0).Size;
-                var ratio = string.Format("{0:0.000}", oldSize / newSize);
+                var ratio = string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize);
                 newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
             }
 

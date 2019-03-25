@@ -38,17 +38,19 @@ namespace Dicom
 
             RetainDeviceIdent = 8,
 
-            RetainPatientChars = 16,
+            RetainInstitutionIdent = 16,
 
-            RetainLongFullDates = 32,
+            RetainPatientChars = 32,
 
-            RetainLongModifDates = 64,
+            RetainLongFullDates = 64,
 
-            CleanDesc = 128,
+            RetainLongModifDates = 128,
 
-            CleanStructdCont = 256,
+            CleanDesc = 256,
 
-            CleanGraph = 512
+            CleanStructdCont = 512,
+
+            CleanGraph = 1024
         }
 
         /// <summary>Profile actions per tag as described in DICOM PS 3.15</summary>

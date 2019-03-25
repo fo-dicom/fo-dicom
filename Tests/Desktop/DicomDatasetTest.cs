@@ -212,8 +212,8 @@ namespace Dicom
         [Fact]
         public void DicomSignedLongTest()
         {
-            var testValues = new int[] { 0, 1, 2 };
-            var element = new DicomSignedLong(DicomTag.ReferencePixelX0, testValues);
+            var testValues = new int[] { 1, 2, 3 };
+            var element = new DicomSignedLong(DicomTag.RationalNumeratorValue, testValues);
 
             TestAddElementToDatasetAsString(element, testValues);
         }

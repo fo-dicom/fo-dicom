@@ -59,8 +59,18 @@ namespace Dicom
         /// </summary>
         /// <param name="items">A collection of DICOM items.</param>
         public DicomDataset(IEnumerable<DicomItem> items)
+            : this(items, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
+        /// <param name="items">A collection of DICOM items.</param>
+        internal DicomDataset(IEnumerable<DicomItem> items, bool validate)
             : this()
         {
+            ValidateItems = validate;
             if (items != null)
             {
                 foreach (var item in items.Where(item => item != null))
@@ -77,10 +87,12 @@ namespace Dicom
                     }
                     else
                     {
+                        if (ValidateItems) item.Validate();
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
             }
+            ValidateItems = true;
         }
 
         #endregion
@@ -104,6 +116,19 @@ namespace Dicom
                     }
                 }
             }
+        }
+
+
+        internal bool ValidateItems { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset
+        /// </summary>
+        [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you need to set this property.", false)]
+        public bool AutoValidate
+        {
+            get => ValidateItems;
+            set => ValidateItems = value;
         }
 
         #endregion
@@ -268,7 +293,6 @@ namespace Dicom
             }
             else
             {
-                //TODO: check if this is the correct. 
                 //Are there any other cases where this method can be called for non DicomElement types?
                 throw new DicomDataException("DicomTag doesn't support values.");
             }
@@ -637,6 +661,18 @@ namespace Dicom
 
 
         #region METHODS
+
+        /// <summary>
+        /// Performs a validation of all DICOM items that are contained in this DicomDataset
+        /// </summary>
+        /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
+        public void Validate()
+        {
+            foreach(var item in this)
+            {
+                item.Validate();
+            }
+        }
 
         /// <summary>
         /// Gets the item or element value of the specified <paramref name="tag"/>.
@@ -1146,6 +1182,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
+                        if (ValidateItems) item.Validate();
                         _items[tag] = item;
                     }
                 }
@@ -1160,6 +1197,7 @@ namespace Dicom
                             item.Tag = tag;
                         }
 
+                        if (ValidateItems) item.Validate();
                         _items.Add(tag, item);
                     }
                 }
@@ -1183,6 +1221,7 @@ namespace Dicom
                     tag = GetPrivateTag(tag);
                     item.Tag = tag;
                 }
+                if (ValidateItems) item.Validate();
 
                 if (allowUpdate)
                 {

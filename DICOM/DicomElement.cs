@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Dicom.IO;
+using Dicom.IO.Buffer;
+
 namespace Dicom
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-
-    using Dicom.IO;
-    using Dicom.IO.Buffer;
 
     [DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
     public abstract class DicomElement : DicomItem
@@ -20,7 +20,7 @@ namespace Dicom
         protected DicomElement(DicomTag tag, IByteBuffer data)
             : base(tag)
         {
-            this.Buffer = data;
+            Buffer = data;
         }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
@@ -29,16 +29,31 @@ namespace Dicom
 
         public IByteBuffer Buffer { get; protected set; }
 
-        public uint Length
+        public uint Length => (uint)(Buffer?.Size ?? 0);
+
+        public abstract T Get<T>(int item = -1);
+
+        public override void Validate()
         {
-            get
+            ValidateString();
+            ValidateVM();
+        }
+
+        protected virtual void ValidateVM()
+        {
+            if (!Tag.IsPrivate
+                && (Count > 0))
             {
-                if (Buffer != null) return (uint)Buffer.Size;
-                return 0;
+                var entry = Tag.DictionaryEntry;
+                if (Count < entry.ValueMultiplicity.Minimum || Count > entry.ValueMultiplicity.Maximum)
+                {
+                    throw new DicomValidationException(this.ToString(), ValueRepresentation, $"Number of items {Count} does not match ValueMultiplicity {entry.ValueMultiplicity}");
+                }
             }
         }
 
-        public abstract T Get<T>(int item = -1);
+        protected virtual void ValidateString() { }
+
     }
 
     /// <summary>
@@ -47,6 +62,15 @@ namespace Dicom
     /// <seealso cref="DicomPersonName"/>
     public abstract class DicomStringElement : DicomElement
     {
+
+        #region FIELDS
+
+        private string _value = null;
+
+        #endregion
+
+        #region Constructors
+
         protected DicomStringElement(DicomTag tag, string value)
             : this(tag, DicomEncoding.Default, value)
         {
@@ -65,19 +89,15 @@ namespace Dicom
             Encoding = encoding;
         }
 
+        #endregion
+
+        #region Public Properties
+
         public Encoding Encoding { get; protected set; }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
         /// <value>Number of value items</value>
-        public override int Count
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        private string _value = null;
+        public override int Count => 1;
 
         protected string StringValue
         {
@@ -90,6 +110,10 @@ namespace Dicom
                 return _value;
             }
         }
+
+        #endregion
+
+        #region Public Methods
 
         public override T Get<T>(int item = -1)
         {
@@ -104,10 +128,27 @@ namespace Dicom
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
         }
+
+        #endregion
+
+        protected override void ValidateString()
+        {
+            this.ValueRepresentation?.ValidateString(_value);
+        }
     }
 
     public abstract class DicomMultiStringElement : DicomStringElement
     {
+
+        #region FIELDS
+
+        private int _count = -1;
+        private string[] _values = null;
+
+        #endregion
+
+        #region Constructors
+
         protected DicomMultiStringElement(DicomTag tag, params string[] values)
             : base(tag, DicomEncoding.Default, String.Join("\\", values))
         {
@@ -123,31 +164,53 @@ namespace Dicom
         {
         }
 
-        private int _count = -1;
+        #endregion
+
+        #region Public Properties
 
         public override int Count
         {
             get
             {
-                if (_count == -1)
-                {
-                    if (String.IsNullOrEmpty(StringValue)) _count = 0;
-                    else _count = StringValue.Split('\\').Count();
-                }
+                EnsureSplitValues();
                 return _count;
             }
         }
 
-        private string[] _values = null;
+        #endregion
 
-        public override T Get<T>(int item = -1)
+        #region Private Methods
+
+        private void EnsureSplitValues()
         {
-            if (_values == null)
+            if (_values == null || _count == -1)
             {
                 if (String.IsNullOrEmpty(StringValue)) _values = new string[0];
                 else _values = StringValue.Split('\\');
                 _count = _values.Length;
             }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        protected override void ValidateString()
+        {
+            EnsureSplitValues();
+#if PORTABLE
+            foreach(var value in _values)
+            {
+                ValueRepresentation.ValidateString(value);
+            }
+#else
+            _values.ToList().ForEach(ValueRepresentation.ValidateString);
+#endif
+        }
+
+        public override T Get<T>(int item = -1)
+        {
+            EnsureSplitValues();
 
             if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
             {
@@ -171,6 +234,9 @@ namespace Dicom
             throw new InvalidCastException(
                 "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
         }
+
+        #endregion
+
     }
 
     public abstract class DicomDateElement : DicomMultiStringElement
@@ -324,11 +390,15 @@ namespace Dicom
         }
 
         #endregion
+
     }
 
     public abstract class DicomValueElement<Tv> : DicomElement
         where Tv : struct
     {
+
+        #region Constructors
+
         protected DicomValueElement(DicomTag tag, params Tv[] values)
             : this(tag, ByteConverter.ToByteBuffer<Tv>(values))
         {
@@ -339,13 +409,13 @@ namespace Dicom
         {
         }
 
-        public override int Count
-        {
-            get
-            {
-                return (int)Buffer.Size / ValueRepresentation.UnitSize;
-            }
-        }
+        #endregion
+
+        #region Public Properties
+
+        public override int Count => (int)Buffer.Size / ValueRepresentation.UnitSize;
+
+        #endregion
 
         #region Public Members
 
@@ -411,6 +481,7 @@ namespace Dicom
         }
 
         #endregion
+
     }
 
     /// <summary>Application Entity (AE)</summary>
@@ -432,20 +503,16 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.AE;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.AE;
 
         #endregion
+
     }
 
     /// <summary>Age String (AS)</summary>
     public class DicomAgeString : DicomMultiStringElement
     {
+
         #region Public Constructors
 
         public DicomAgeString(DicomTag tag, params string[] values)
@@ -462,20 +529,21 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.AS;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.AS;
 
         #endregion
+
     }
 
     /// <summary>Attribute Tag (AT)</summary>
     public class DicomAttributeTag : DicomElement
     {
+        #region FIELDS
+
+        private DicomTag[] _values;
+
+        #endregion
+
         #region Public Constructors
 
         public DicomAttributeTag(DicomTag tag, params DicomTag[] values)
@@ -493,23 +561,9 @@ namespace Dicom
 
         #region Public Properties
 
-        public override int Count
-        {
-            get
-            {
-                return (int)Buffer.Size / 4;
-            }
-        }
+        public override int Count => (int)Buffer.Size / 4;
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.AT;
-            }
-        }
-
-        private DicomTag[] _values;
+        public override DicomVR ValueRepresentation => DicomVR.AT;
 
         public IEnumerable<DicomTag> Values
         {
@@ -563,7 +617,7 @@ namespace Dicom
             if (typeof(T) == typeof(string[])) return (T)(object)tags.Select(x => x.ToString()).ToArray();
 
             throw new InvalidCastException(
-                "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
+                $"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
         #endregion
@@ -588,20 +642,22 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.CS;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.CS;
 
         #endregion
+
     }
 
     /// <summary>Date (DA)</summary>
     public class DicomDate : DicomDateElement
     {
+
+        #region FIELDS
+
+        private static string[] _formats;
+
+        #endregion
+
         #region Public Constructors
 
         public DicomDate(DicomTag tag, params DateTime[] values)
@@ -628,15 +684,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.DA;
-            }
-        }
-
-        private static string[] _formats;
+        public override DicomVR ValueRepresentation => DicomVR.DA;
 
         private static string[] PrivateDateFormats
         {
@@ -659,11 +707,19 @@ namespace Dicom
         }
 
         #endregion
+
     }
 
     /// <summary>Decimal String (DS)</summary>
     public class DicomDecimalString : DicomMultiStringElement
     {
+
+        #region FIELDS
+
+        private decimal[] _values;
+
+        #endregion
+
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
@@ -685,19 +741,11 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.DS;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.DS;
 
         #endregion
 
         #region Public Members
-
-        private decimal[] _values;
 
         public override T Get<T>(int item = -1)
         {
@@ -749,6 +797,7 @@ namespace Dicom
         }
 
         #endregion
+
     }
 
     /// <summary>Date Time (DT)</summary>
@@ -780,13 +829,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.DT;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.DT;
 
         private static string[] _formats;
 
@@ -851,13 +894,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.FD;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.FD;
 
         #endregion
     }
@@ -881,13 +918,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.FL;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.FL;
 
         #endregion
     }
@@ -916,13 +947,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.IS;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.IS;
 
         #endregion
 
@@ -1027,13 +1052,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.LO;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.LO;
 
         #endregion
     }
@@ -1062,13 +1081,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.LT;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.LT;
 
         #endregion
     }
@@ -1092,13 +1105,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OB;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.OB;
 
         #endregion
 
@@ -1136,6 +1143,12 @@ namespace Dicom
         }
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
+
     }
 
     /// <summary>Other Word (OW)</summary>
@@ -1157,15 +1170,15 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OW;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.OW;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
+
     }
 
     /// <summary>Other Long (OL)</summary>
@@ -1187,13 +1200,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OL;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.OL;
 
         #endregion
     }
@@ -1217,15 +1224,15 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OD;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.OD;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
+
     }
 
     /// <summary>Other Float (OF)</summary>
@@ -1247,11 +1254,35 @@ namespace Dicom
 
         #region Public Properties
 
+        public override DicomVR ValueRepresentation => DicomVR.OF;
+
+        #endregion
+    }
+
+    /// <summary>Other Very Long (OV)</summary>
+    public class DicomOtherVeryLong : DicomValueElement<ulong>
+    {
+        #region Public Constructors
+
+        public DicomOtherVeryLong(DicomTag tag, params ulong[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomOtherVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
         public override DicomVR ValueRepresentation
         {
             get
             {
-                return DicomVR.OF;
+                return DicomVR.OV;
             }
         }
 
@@ -1305,13 +1336,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.PN;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.PN;
 
         public string Last
         {
@@ -1403,6 +1428,15 @@ namespace Dicom
         }
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            if (Tag == DicomTag.PatientName && Count > 3)
+            {
+                throw new DicomValidationException(this.ToString(), DicomVR.PN, $"Number of items {Count} does not match ValueMultiplicity 1-3");
+            }
+        }
+
     }
 
     /// <summary>Short String (SH)</summary>
@@ -1429,13 +1463,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.SH;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.SH;
 
         #endregion
     }
@@ -1459,13 +1487,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.SL;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.SL;
 
         #endregion
     }
@@ -1489,13 +1511,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.SS;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.SS;
 
         #endregion
 
@@ -1535,11 +1551,35 @@ namespace Dicom
 
         #region Public Properties
 
+        public override DicomVR ValueRepresentation => DicomVR.ST;
+
+        #endregion
+    }
+
+    /// <summary>Signed Very Long (SV)</summary>
+    public class DicomSignedVeryLong : DicomValueElement<long>
+    {
+        #region Public Constructors
+
+        public DicomSignedVeryLong(DicomTag tag, params long[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomSignedVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
         public override DicomVR ValueRepresentation
         {
             get
             {
-                return DicomVR.ST;
+                return DicomVR.SV;
             }
         }
 
@@ -1575,13 +1615,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.TM;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.TM;
 
         private static string[] _formats;
 
@@ -1663,20 +1697,27 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UC;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UC;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not validate the number of items
+        }
+
     }
 
     /// <summary>Unique Identifier (UI)</summary>
     public class DicomUniqueIdentifier : DicomMultiStringElement
     {
+
+        #region FIELDS
+
+        private DicomUID[] _values;
+
+        #endregion
+
         #region Public Constructors
 
         public DicomUniqueIdentifier(DicomTag tag, params string[] values)
@@ -1703,19 +1744,11 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UI;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UI;
 
         #endregion
 
         #region Public Members
-
-        private DicomUID[] _values;
 
         public override T Get<T>(int item = -1)
         {
@@ -1769,13 +1802,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UL;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UL;
 
         #endregion
     }
@@ -1799,15 +1826,15 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UN;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UN;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not validate number of items
+        }
+
     }
 
     /// <summary>Universal Resource Identifier or Universal Resource Locator (UR)</summary>
@@ -1834,13 +1861,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UR;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UR;
 
         #endregion
     }
@@ -1864,13 +1885,7 @@ namespace Dicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.US;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.US;
 
         #endregion
 
@@ -1910,11 +1925,35 @@ namespace Dicom
 
         #region Public Properties
 
+        public override DicomVR ValueRepresentation => DicomVR.UT;
+
+        #endregion
+    }
+
+    /// <summary>Unsigned Very Long (UV)</summary>
+    public class DicomUnsignedVeryLong : DicomValueElement<ulong>
+    {
+        #region Public Constructors
+
+        public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomUnsignedVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
         public override DicomVR ValueRepresentation
         {
             get
             {
-                return DicomVR.UT;
+                return DicomVR.UV;
             }
         }
 
