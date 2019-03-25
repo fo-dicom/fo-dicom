@@ -1259,6 +1259,36 @@ namespace Dicom
         #endregion
     }
 
+    /// <summary>Other Very Long (OV)</summary>
+    public class DicomOtherVeryLong : DicomValueElement<ulong>
+    {
+        #region Public Constructors
+
+        public DicomOtherVeryLong(DicomTag tag, params ulong[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomOtherVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.OV;
+            }
+        }
+
+        #endregion
+    }
+
     /// <summary>Person Name (PN)</summary>
     public sealed class DicomPersonName : DicomMultiStringElement
     {
@@ -1522,6 +1552,36 @@ namespace Dicom
         #region Public Properties
 
         public override DicomVR ValueRepresentation => DicomVR.ST;
+
+        #endregion
+    }
+
+    /// <summary>Signed Very Long (SV)</summary>
+    public class DicomSignedVeryLong : DicomValueElement<long>
+    {
+        #region Public Constructors
+
+        public DicomSignedVeryLong(DicomTag tag, params long[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomSignedVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.SV;
+            }
+        }
 
         #endregion
     }
@@ -1866,6 +1926,36 @@ namespace Dicom
         #region Public Properties
 
         public override DicomVR ValueRepresentation => DicomVR.UT;
+
+        #endregion
+    }
+
+    /// <summary>Unsigned Very Long (UV)</summary>
+    public class DicomUnsignedVeryLong : DicomValueElement<ulong>
+    {
+        #region Public Constructors
+
+        public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
+            : base(tag, values)
+        {
+        }
+
+        public DicomUnsignedVeryLong(DicomTag tag, IByteBuffer data)
+            : base(tag, data)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override DicomVR ValueRepresentation
+        {
+            get
+            {
+                return DicomVR.UV;
+            }
+        }
 
         #endregion
     }

@@ -417,6 +417,8 @@ private static List<string> GetConfidentialityProfileData()
 	Init();
 #endif
 
+	const int TableColumns = 15;
+
 	// Part 15, Table E.1-1 contains confidentiality profile attributes
 	var tableE11Items = Part15Document.DocumentElement.SelectNodes(
 		"//d:table[@label='E.1-1']/d:tbody/d:tr",
@@ -430,7 +432,7 @@ private static List<string> GetConfidentialityProfileData()
 			.OfType<XmlNode>().Select(node => node.InnerText).ToList();
 
 		// Exclude lines with invalid number of columns, or that contains masked or private tags
-		if (list.Count != 14 || list[1].Contains("x") || list[1].Contains("g")) continue;
+		if (list.Count != TableColumns || list[1].Contains("x") || list[1].Contains("g")) continue;
 
 		rows.Add($"{list[1].Replace("(", "").Replace(")", "").Replace(" ", "")};" + 
 			string.Join(";", Enumerable.Range(4, 10).Select(i => $"{list[i]}")));

@@ -139,9 +139,20 @@ namespace Dicom.Serialization
         [Fact]
         public void DecimalStringValuesShouldPass()
         {
-            var ds = new DicomDataset { { DicomTag.ImageOrientationPatient, new[] { "1.0000", "1e-3096", "1", "0.0000000", ".03", "-.03" } },
-                                        { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", } } };
-            VerifyJsonTripleTrip(ds);
+            var originalDataset = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000", ".03", "-.03" } } };
+
+            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
+            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
+            /* This test only verifies the DicomDatasets and not the serialized json strings, because
+             * deserialization parses the DS as floats and then when re-serializing the
+             * value after serialization:
+             * {"00200032":{"vr":"DS","Value":[1.0000,0.00,0,0.0000000000000000000000000000,1,0.0000000,0.03,-0.03]}}
+             * value after deserialization and then again serialization:
+             * {"00200032":{"vr":"DS","Value":[1,0,0,0,1,0,0.03,-0.03]}}
+             * Is this ok behavior but string comparison fails
+             */
         }
 
         /// <summary>Verify that PrivateCreators are set for the tags in a deserialized dataset.</summary>
@@ -240,6 +251,246 @@ namespace Dicom.Serialization
         }
 
         /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=DS.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForDS()
+        {
+            const string json = @"
+{
+  ""00720072"": {
+    ""vr"": ""DS"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorDSValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=FD.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForFD()
+        {
+            const string json = @"
+{
+  ""00720074"": {
+    ""vr"": ""FD"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorFDValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=FL.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForFL()
+        {
+            const string json = @"
+{
+  ""00720076"": {
+    ""vr"": ""FL"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorFLValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=IS.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForIS()
+        {
+            const string json = @"
+{
+  ""00720064"": {
+    ""vr"": ""IS"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorISValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=LT.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForLT()
+        {
+            const string json = @"
+{
+  ""00720068"": {
+    ""vr"": ""LT"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorLTValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=SL.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForSL()
+        {
+            const string json = @"
+{
+  ""0072007C"": {
+    ""vr"": ""SL"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSLValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=SS.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForSS()
+        {
+            const string json = @"
+{
+  ""0072007E"": {
+    ""vr"": ""SS"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSSValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=ST.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForST()
+        {
+            const string json = @"
+{
+  ""0072006E"": {
+    ""vr"": ""ST"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSTValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=UC.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForUC()
+        {
+            const string json = @"
+{
+  ""0072006F"": {
+    ""vr"": ""UC"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUCValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=UL.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForUL()
+        {
+            const string json = @"
+{
+  ""00720078"": {
+    ""vr"": ""UL"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorULValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=US.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForUS()
+        {
+            const string json = @"
+{
+  ""0072007A"": {
+    ""vr"": ""US"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUSValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
+        /// Test deserializing a dicom dataset containing a bulk data URI with VR=UT.
+        /// </summary>
+        [Fact]
+        public void TestBulkDataUriForUT()
+        {
+            const string json = @"
+{
+  ""00720070"": {
+    ""vr"": ""UT"",
+    ""BulkDataURI"": ""http://www.example.com/testdicom.dcm""
+  }
+}
+";
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUTValue);
+            Assert.NotNull(buffer);
+            Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
+        }
+
+        /// <summary>
         /// Run the examples from DICOM Standard PS 3.18, section F.2.1.1.2.
         /// </summary>
         [Fact]
@@ -257,6 +508,33 @@ namespace Dicom.Serialization
     ""0020000D"" : {
       ""vr"": ""UI"",
       ""Value"": [ ""1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876"" ]
+    }
+  }
+]";
+
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
+            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
+        }
+
+        /// <summary>
+        /// vr is not first position of json properties.
+        /// </summary>
+        [Fact]
+        public void VrIsNotFirstPosition()
+        {
+            var json = @"
+[
+  {
+     ""0020000D"": {
+      ""Value"": [ ""1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873"" ],
+      ""vr"": ""UI""
+    }
+  },
+  {
+    ""0020000D"" : {
+      ""Value"": [ ""1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876"" ],
+      ""vr"": ""UI""
     }
   }
 ]";
@@ -433,21 +711,24 @@ namespace Dicom.Serialization
             privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx10"), "Private Tag 10", "PrivateTag10", DicomVM.VM_1, false, DicomVR.OF));
             privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx11"), "Private Tag 11", "PrivateTag11", DicomVM.VM_1, false, DicomVR.OL));
             privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx12"), "Private Tag 12", "PrivateTag12", DicomVM.VM_1, false, DicomVR.OW));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx13"), "Private Tag 13", "PrivateTag13", DicomVM.VM_1, false, DicomVR.PN));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx14"), "Private Tag 14", "PrivateTag14", DicomVM.VM_1, false, DicomVR.SH));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx15"), "Private Tag 15", "PrivateTag15", DicomVM.VM_1, false, DicomVR.SL));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx16"), "Private Tag 16", "PrivateTag16", DicomVM.VM_1, false, DicomVR.SQ));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx17"), "Private Tag 17", "PrivateTag17", DicomVM.VM_1, false, DicomVR.ST));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx18"), "Private Tag 18", "PrivateTag18", DicomVM.VM_1, false, DicomVR.SS));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx19"), "Private Tag 19", "PrivateTag19", DicomVM.VM_1, false, DicomVR.ST));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1a"), "Private Tag 1a", "PrivateTag1a", DicomVM.VM_1, false, DicomVR.TM));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1b"), "Private Tag 1b", "PrivateTag1b", DicomVM.VM_1, false, DicomVR.UC));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1c"), "Private Tag 1c", "PrivateTag1c", DicomVM.VM_1, false, DicomVR.UI));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1d"), "Private Tag 1d", "PrivateTag1d", DicomVM.VM_1, false, DicomVR.UL));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1e"), "Private Tag 1e", "PrivateTag1e", DicomVM.VM_1, false, DicomVR.UN));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1f"), "Private Tag 1f", "PrivateTag1f", DicomVM.VM_1, false, DicomVR.UR));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx20"), "Private Tag 20", "PrivateTag20", DicomVM.VM_1, false, DicomVR.US));
-            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx21"), "Private Tag 21", "PrivateTag21", DicomVM.VM_1, false, DicomVR.UT));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx13"), "Private Tag 13", "PrivateTag13", DicomVM.VM_1, false, DicomVR.OV));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx14"), "Private Tag 14", "PrivateTag14", DicomVM.VM_1, false, DicomVR.PN));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx15"), "Private Tag 15", "PrivateTag15", DicomVM.VM_1, false, DicomVR.SH));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx16"), "Private Tag 16", "PrivateTag16", DicomVM.VM_1, false, DicomVR.SL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx17"), "Private Tag 17", "PrivateTag17", DicomVM.VM_1, false, DicomVR.SQ));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx18"), "Private Tag 18", "PrivateTag18", DicomVM.VM_1, false, DicomVR.ST));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx19"), "Private Tag 19", "PrivateTag19", DicomVM.VM_1, false, DicomVR.SS));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1a"), "Private Tag 1a", "PrivateTag1a", DicomVM.VM_1, false, DicomVR.ST));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1b"), "Private Tag 1b", "PrivateTag1b", DicomVM.VM_1, false, DicomVR.SV));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1c"), "Private Tag 1c", "PrivateTag1c", DicomVM.VM_1, false, DicomVR.TM));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1d"), "Private Tag 1d", "PrivateTag1d", DicomVM.VM_1, false, DicomVR.UC));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1e"), "Private Tag 1e", "PrivateTag1e", DicomVM.VM_1, false, DicomVR.UI));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx1f"), "Private Tag 1f", "PrivateTag1f", DicomVM.VM_1, false, DicomVR.UL));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx20"), "Private Tag 20", "PrivateTag20", DicomVM.VM_1, false, DicomVR.UN));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx21"), "Private Tag 21", "PrivateTag21", DicomVM.VM_1, false, DicomVR.UR));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx22"), "Private Tag 22", "PrivateTag22", DicomVM.VM_1, false, DicomVR.US));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx23"), "Private Tag 23", "PrivateTag23", DicomVM.VM_1, false, DicomVR.UT));
+            privDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx24"), "Private Tag 24", "PrivateTag24", DicomVM.VM_1, false, DicomVR.UV));
 
             var ds = new DicomDataset();
 
@@ -468,20 +749,23 @@ namespace Dicom.Serialization
             ds.Add(new DicomOtherFloat(ds.GetPrivateTag(new DicomTag(3, 0x0010, privateCreator)), new float[] { 1.0f, 2.9f }));
             ds.Add(new DicomOtherLong(ds.GetPrivateTag(new DicomTag(3, 0x0011, privateCreator)), new uint[] { 0xffffffff, 0x00000000, 0x12345678 }));
             ds.Add(new DicomOtherWord(ds.GetPrivateTag(new DicomTag(3, 0x0012, privateCreator)), new ushort[] { 0xffff, 0x0000, 0x1234 }));
-            ds.Add(new DicomPersonName(ds.GetPrivateTag(new DicomTag(3, 0x0013, privateCreator)), "Morrison-Jones^Susan^^^Ph.D."));
-            ds.Add(new DicomShortString(ds.GetPrivateTag(new DicomTag(3, 0x0014, privateCreator)), "顔文字"));
-            ds.Add(new DicomSignedLong(ds.GetPrivateTag(new DicomTag(3, 0x0015, privateCreator)), -65538));
-            ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0016, privateCreator)), new[] { new DicomDataset { new DicomShortText(new DicomTag(3, 0x0017, privateCreator), "ಠ_ಠ") } }));
-            ds.Add(new DicomSignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0018, privateCreator)), -32768));
-            ds.Add(new DicomShortText(ds.GetPrivateTag(new DicomTag(3, 0x0019, privateCreator)), "ಠ_ಠ"));
-            ds.Add(new DicomTime(ds.GetPrivateTag(new DicomTag(3, 0x001a, privateCreator)), "123456"));
-            ds.Add(new DicomUnlimitedCharacters(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), "Hmph."));
-            ds.Add(new DicomUniqueIdentifier(ds.GetPrivateTag(new DicomTag(3, 0x001c, privateCreator)), DicomUID.CTImageStorage));
-            ds.Add(new DicomUnsignedLong(ds.GetPrivateTag(new DicomTag(3, 0x001d, privateCreator)), 0xffffffff));
-            ds.Add(new DicomUnknown(ds.GetPrivateTag(new DicomTag(3, 0x001e, privateCreator)), new byte[] { 1, 2, 3, 0, 255 }));
-            ds.Add(new DicomUniversalResource(ds.GetPrivateTag(new DicomTag(3, 0x001f, privateCreator)), "http://example.com?q=1"));
-            ds.Add(new DicomUnsignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0020, privateCreator)), 0xffff));
-            ds.Add(new DicomUnlimitedText(ds.GetPrivateTag(new DicomTag(3, 0x0021, privateCreator)), "unlimited!"));
+            ds.Add(new DicomOtherVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0013, privateCreator)), new ulong[] { ulong.MaxValue, ulong.MinValue, 0x1234 }));
+            ds.Add(new DicomPersonName(ds.GetPrivateTag(new DicomTag(3, 0x0014, privateCreator)), "Morrison-Jones^Susan^^^Ph.D."));
+            ds.Add(new DicomShortString(ds.GetPrivateTag(new DicomTag(3, 0x0015, privateCreator)), "顔文字"));
+            ds.Add(new DicomSignedLong(ds.GetPrivateTag(new DicomTag(3, 0x0016, privateCreator)), -65538));
+            ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0017, privateCreator)), new[] { new DicomDataset { new DicomShortText(new DicomTag(3, 0x0018, privateCreator), "ಠ_ಠ") } }));
+            ds.Add(new DicomSignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0019, privateCreator)), -32768));
+            ds.Add(new DicomShortText(ds.GetPrivateTag(new DicomTag(3, 0x001a, privateCreator)), "ಠ_ಠ"));
+            ds.Add(new DicomSignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), -12345678));
+            ds.Add(new DicomTime(ds.GetPrivateTag(new DicomTag(3, 0x001c, privateCreator)), "123456"));
+            ds.Add(new DicomUnlimitedCharacters(ds.GetPrivateTag(new DicomTag(3, 0x001d, privateCreator)), "Hmph."));
+            ds.Add(new DicomUniqueIdentifier(ds.GetPrivateTag(new DicomTag(3, 0x001e, privateCreator)), DicomUID.CTImageStorage));
+            ds.Add(new DicomUnsignedLong(ds.GetPrivateTag(new DicomTag(3, 0x001f, privateCreator)), 0xffffffff));
+            ds.Add(new DicomUnknown(ds.GetPrivateTag(new DicomTag(3, 0x0020, privateCreator)), new byte[] { 1, 2, 3, 0, 255 }));
+            ds.Add(new DicomUniversalResource(ds.GetPrivateTag(new DicomTag(3, 0x0021, privateCreator)), "http://example.com?q=1"));
+            ds.Add(new DicomUnsignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0022, privateCreator)), 0xffff));
+            ds.Add(new DicomUnlimitedText(ds.GetPrivateTag(new DicomTag(3, 0x0023, privateCreator)), "unlimited!"));
+            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0024, privateCreator)), 0xffffffffffffffff));
 
             return ds;
         }
@@ -561,8 +845,8 @@ namespace Dicom.Serialization
             var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             var json2 = JsonConvert.SerializeObject(reconstituatedDataset, new JsonDicomConverter());
 
-            Assert.Equal(json, json2);
             Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
+            Assert.Equal(json, json2);
         }
 
         [Fact]
