@@ -2,6 +2,7 @@
 * Updated to DICOM Dictionary 2019a (#724)
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
+* Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
@@ -9,7 +10,6 @@
 * DicomDirectory.AddFile returns a reference to the newly added patient-, study-, series- and instance-Record.
 * Update Json DS validation regex (#643)
 * Add option to DicomFile.Open how to deal with large tags (#617)
-* Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
 * DicomFileMetaInformation now uses pre-existing SourceAET where possible
 * PixelData.GetMinMax now has 2 overloads, one that takes padding into account and one wihtout the padding parameter (#675)
 * string.ToUpper() is replaced by string.ToUpperInvariant() to prevent bad character conversion on turkish system
