@@ -53,8 +53,8 @@ namespace Dicom.Serialization
             finalXml2.AppendLine(@"<Value number=""3"">VL3_RLE</Value>");
             finalXml2.AppendLine(@"</DicomAttribute>");
             Assert.True(!string.IsNullOrEmpty(xml));
-            Assert.True(xml.Contains(finalXml1.ToString()));
-            Assert.True(xml.Contains(finalXml2.ToString()));
+            Assert.Contains(finalXml1.ToString(), xml);
+            Assert.Contains(finalXml2.ToString(), xml);
         }
     }
 }

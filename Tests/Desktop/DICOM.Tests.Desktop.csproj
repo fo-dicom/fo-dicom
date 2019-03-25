@@ -132,6 +132,7 @@
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="DicomTransferSyntaxTest.cs" />
     <Compile Include="DicomUIDGeneratorTest.cs" />
+    <Compile Include="DicomValidationTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Helpers\PriorityOrderer.cs" />
     <Compile Include="Helpers\TestOutputHelperLogger.cs" />

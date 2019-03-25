@@ -5,11 +5,13 @@ using System.Collections.Generic;
 
 namespace Dicom
 {
+
     /// <summary>
     /// Representation of a DICOM sequence of items.
     /// </summary>
     public class DicomSequence : DicomItem, IEnumerable<DicomDataset>
     {
+
         /// <summary>
         /// Initializes an instance of the <see cref="DicomSequence"/> class.
         /// </summary>
@@ -40,5 +42,11 @@ namespace Dicom
         {
             return Items.GetEnumerator();
         }
+
+        public override void Validate()
+        {
+            Items?.Each(ds => ds?.Validate());
+        }
+
     }
 }

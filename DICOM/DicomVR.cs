@@ -49,6 +49,17 @@ namespace Dicom
         /// <summary>Type used to represent VR value.</summary>
         public Type ValueType { get; private set; }
 
+        private Action<string> StringValidator { get; set; }
+
+        /// <summary> validates a string content. Throws Dicom
+        /// 
+        /// </summary>
+        /// <param name="content"></param>
+        public void ValidateString(string content)
+        {
+            StringValidator?.Invoke(content);
+        }
+
         /// <summary>
         /// Gets a string representation of this VR.
         /// </summary>
@@ -65,9 +76,8 @@ namespace Dicom
         /// <returns>VR</returns>
         public static DicomVR Parse(string vr)
         {
-            bool valid;
-            DicomVR result = TryParse(vr, out valid);
-            if (!valid) throw new DicomDataException(string.Format("Unknown VR: '{0}'", vr));
+            DicomVR result = TryParse(vr, out bool valid);
+            if (!valid) throw new DicomDataException($"Unknown VR: '{vr}'");
             return result;
         }
 
@@ -79,8 +89,7 @@ namespace Dicom
         /// <returns>true if VR was successfully parsed, false otherwise</returns>
         public static bool TryParse(string vr, out DicomVR result)
         {
-            bool valid;
-            result = TryParse(vr, out valid);
+            result = TryParse(vr, out bool valid);
             return valid;
         }
 
@@ -197,7 +206,8 @@ namespace Dicom
                                                     MaximumLength = 16,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateAE
                                                 };
 
         /// <summary>Age String</summary>
@@ -213,7 +223,8 @@ namespace Dicom
                                                     MaximumLength = 4,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateAS
                                                 };
 
         /// <summary>Attribute Tag</summary>
@@ -245,7 +256,8 @@ namespace Dicom
                                                     MaximumLength = 16,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateCS
                                                 };
 
         /// <summary>Date</summary>
@@ -261,7 +273,8 @@ namespace Dicom
                                                     MaximumLength = 8,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(DateTime)
+                                                    ValueType = typeof(DateTime),
+                                                    StringValidator = DicomValidation.ValidateDA
                                                 };
 
         /// <summary>Decimal String</summary>
@@ -277,7 +290,8 @@ namespace Dicom
                                                     MaximumLength = 16,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(decimal)
+                                                    ValueType = typeof(decimal),
+                                                    StringValidator = DicomValidation.ValidateDS
                                                 };
 
         /// <summary>Date Time</summary>
@@ -293,7 +307,8 @@ namespace Dicom
                                                     MaximumLength = 26,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(DateTime)
+                                                    ValueType = typeof(DateTime),
+                                                    StringValidator = DicomValidation.ValidateDT
                                                 };
 
         /// <summary>Floating Point Double</summary>
@@ -341,7 +356,8 @@ namespace Dicom
                                                     MaximumLength = 12,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(int)
+                                                    ValueType = typeof(int),
+                                                    StringValidator = DicomValidation.ValidateIS
                                                 };
 
         /// <summary>Long String</summary>
@@ -358,7 +374,8 @@ namespace Dicom
                                                     MaximumLength = 64,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateLO
                                                 };
 
         /// <summary>Long Text</summary>
@@ -374,7 +391,8 @@ namespace Dicom
                                                     MaximumLength = 10240,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateLT
                                                 };
 
         /// <summary>Other Byte</summary>
@@ -487,7 +505,8 @@ namespace Dicom
                                                     MaximumLength = 64,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(String)
+                                                    ValueType = typeof(String),
+                                                    StringValidator = DicomValidation.ValidatePN
                                                 };
 
         /// <summary>Short String</summary>
@@ -504,7 +523,8 @@ namespace Dicom
                                                     MaximumLength = 16,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateSH
                                                 };
 
         /// <summary>Signed Long</summary>
@@ -568,7 +588,8 @@ namespace Dicom
                                                     MaximumLength = 1024,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateST
                                                 };
 
         /// <summary>Signed Very Long</summary>
@@ -600,7 +621,8 @@ namespace Dicom
                                                     MaximumLength = 16,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(DateTime)
+                                                    ValueType = typeof(DateTime),
+                                                    StringValidator = DicomValidation.ValidateTM
                                                 };
 
         /// <summary>Unlimited Characters</summary>
@@ -632,7 +654,8 @@ namespace Dicom
                                                     MaximumLength = 64,
                                                     UnitSize = 1,
                                                     ByteSwap = 1,
-                                                    ValueType = typeof(string)
+                                                    ValueType = typeof(string),
+                                                    StringValidator = DicomValidation.ValidateUI
                                                 };
 
         /// <summary>Unsigned Long</summary>
