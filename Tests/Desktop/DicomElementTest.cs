@@ -520,11 +520,11 @@ namespace Dicom
 
         public static IEnumerable<object[]> TransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.XMLEncoding },
+            new object[] { DicomUID.XMLEncodingRETIRED },
             new object[] { DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo },
             new object[] { DicomUID.JPEG2000Part2MultiComponentLosslessOnly },
             new object[] { DicomUID.JPIPReferencedDeflate },
-            new object[] { DicomUID.RFC2557MIMEEncapsulation }
+            new object[] { DicomUID.RFC2557MIMEEncapsulationRETIRED }
         };
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
