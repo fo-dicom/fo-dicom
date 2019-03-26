@@ -139,7 +139,10 @@ namespace Dicom.Serialization
         [Fact]
         public void DecimalStringValuesShouldPass()
         {
-            var originalDataset = new DicomDataset { { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0", "1e-3096", "1", "0.0000000", ".03", "-.03" } } };
+            var originalDataset = new DicomDataset {
+                { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0" } },
+                { DicomTag.ImageOrientationPatient, new[] { "1e-3096", "1", "0.0000000", ".03", "-.03", "-0" } }
+            };
 
             var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
             var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
