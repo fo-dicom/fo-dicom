@@ -45,3 +45,4 @@
 * [Erik Edespong](https://github.com/edespong)
 * [vzdesic] (https://github.com/vzdesic)
 * [gustavosaita](https://github.com/gustavosaita)
+* [MikaelBertze](https://github.com/mikaelbertze)
