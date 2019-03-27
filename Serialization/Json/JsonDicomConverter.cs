@@ -4,11 +4,12 @@
 using System.Globalization;
 using Dicom.IO.Buffer;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
- using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 
 namespace Dicom.Serialization

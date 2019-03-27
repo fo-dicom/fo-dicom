@@ -29,7 +29,7 @@ namespace Dicom
 
         public IByteBuffer Buffer { get; protected set; }
 
-        public uint Length => Buffer?.Size ?? 0;
+        public uint Length => (uint)(Buffer?.Size ?? 0);
 
         public abstract T Get<T>(int item = -1);
 
