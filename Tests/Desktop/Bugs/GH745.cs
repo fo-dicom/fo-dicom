@@ -58,12 +58,12 @@ namespace Dicom.Bugs
                     output.WriteLine("Sending #{0}", i);
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
                     output.WriteLine("Sent (or timed out) #{0}", i);
-                    if (i != actual-1)
-                    {
-                        output.WriteLine("  waiting #{0}", i);
-                        await Task.Delay((int)TimeSpan.FromSeconds(1).TotalMilliseconds);
-                        output.WriteLine("  waited #{0}", i);
-                    }
+                    //if (i != actual-1)
+                    //{
+                    //    output.WriteLine("  waiting #{0}", i);
+                    //    await Task.Delay((int)TimeSpan.FromSeconds(1).TotalMilliseconds);
+                    //    output.WriteLine("  waited #{0}", i);
+                    //}
                 }
 
                 Assert.Equal(expected, actual);
