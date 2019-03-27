@@ -3,6 +3,7 @@
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
+* Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
@@ -33,7 +34,6 @@
 * Bug Fix: fix deserialization of Json when the VR-property is not on first position (#730) 
 * DicomClient uses StrongBox to reduce memory consumption (#794)
 * Bug Fix: C-STORE request may hang. (#792)
-* Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
 
 #### v.4.0.0 (9/24/2018)
 * Demonstrate and fix error in RLELossless Transfer Syntax Codec
