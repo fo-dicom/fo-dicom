@@ -41,9 +41,7 @@ namespace Dicom.Network
         public DicomCFindRequest(DicomUID affectedSopClassUid, DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CFindRequest, affectedSopClassUid, priority)
         {
-            if (!affectedSopClassUid.Equals(DicomUID.ModalityWorklistInformationModelFIND)
-                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepPullSOPClass) 
-                && !affectedSopClassUid.Equals(DicomUID.UnifiedProcedureStepWatchSOPClass))
+            if (affectedSopClassUid.Type != DicomUidType.SOPClass)
             {
                 throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
             }
@@ -58,20 +56,8 @@ namespace Dicom.Network
         /// <param name="level">Query/Retrieve level.</param>
         /// <param name="priority">Command priority.</param>
         public DicomCFindRequest(DicomUID affectedSopClassUid, DicomQueryRetrieveLevel level, DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.CFindRequest, affectedSopClassUid, priority)
+            : this(affectedSopClassUid, priority)
         {
-            //  should we check combination between affectedSopClassUid and level?
-            //  should we allow PatientRoot and StudyRoot only ?
-            if (affectedSopClassUid != DicomUID.ModalityWorklistInformationModelFIND
-            && affectedSopClassUid != DicomUID.PatientRootQueryRetrieveInformationModelFIND
-            && affectedSopClassUid != DicomUID.StudyRootQueryRetrieveInformationModelFIND
-            && affectedSopClassUid != DicomUID.UnifiedProcedureStepPullSOPClass
-            && affectedSopClassUid != DicomUID.UnifiedProcedureStepWatchSOPClass)
-            {
-                throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
-            }
-
-            Dataset = new DicomDataset();
             Level = level;
         }
 
