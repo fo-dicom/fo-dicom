@@ -19,7 +19,7 @@ namespace Dicom.Imaging.Render
         public PaletteColorPipeline(DicomPixelData pixelData)
         {
             var lut = pixelData.PaletteColorLUT;
-            var first = pixelData.Dataset.GetSingleValueOrDefault(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
+            var first = pixelData.Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
 
             LUT = new PaletteColorLUT(first, lut);
         }
