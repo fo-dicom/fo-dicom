@@ -590,16 +590,16 @@ namespace Dicom.Media
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
             var patientId = dataset.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
-            var patientName = dataset.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
+            var patientName = dataset.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
 
             var currentPatient = RootDirectoryRecord;
 
             while (currentPatient != null)
             {
                 var currPatId = currentPatient.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
-                var currPatName = currentPatient.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
+                var currPatName = currentPatient.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
 
-                if (currPatId == patientId && currPatName == patientName)
+                if (currPatId == patientId && PersonNamesAreEqual(currPatName, patientName))
                 {
                     return currentPatient;
                 }
@@ -628,6 +628,18 @@ namespace Dicom.Media
             }
 
             return newPatient;
+        }
+
+
+        private bool PersonNamesAreEqual(DicomPersonName nameA, DicomPersonName nameB)
+        {
+            if (nameA == null && nameB == null) { return true; } // both are null
+            if (nameA == null || nameB == null) { return false; } // one us null but the other is not
+            return string.Compare(nameA.Last, nameB.Last, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.First, nameB.First, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Middle, nameB.Middle, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Prefix, nameB.Prefix, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Suffix, nameB.Suffix, StringComparison.CurrentCultureIgnoreCase) == 0;
         }
 
         private DicomDirectoryRecord CreateRecordSequenceItem(DicomDirectoryRecordType recordType, DicomDataset dataset)
