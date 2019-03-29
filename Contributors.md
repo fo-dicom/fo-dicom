@@ -47,3 +47,4 @@
 * [gustavosaita](https://github.com/gustavosaita)
 * [MikaelBertze](https://github.com/mikaelbertze)
 * [PalminX](https://github.com/PalminX)
+* [devsko](https://github.com/devsko)

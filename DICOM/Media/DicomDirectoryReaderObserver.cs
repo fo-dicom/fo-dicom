@@ -27,28 +27,110 @@ namespace Dicom.Media
 
         public DicomDirectoryRecord BuildDirectoryRecords()
         {
+            var notFoundOffsets = new SortedSet<uint>();
             var offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
-            return ParseDirectoryRecord(offset);
+            DicomDirectoryRecord root = ParseDirectoryRecord(offset, notFoundOffsets);
+
+            if (_lookup.Count > 0)
+            {
+                // There are unresolved sequences. Try to resolve them with non exact offset match
+                ParseDirectoryRecordNotExact(ref root, offset, notFoundOffsets);
+            }
+
+            return root;
         }
 
-        private DicomDirectoryRecord ParseDirectoryRecord(uint offset)
+        private DicomDirectoryRecord ParseDirectoryRecord(uint offset, SortedSet<uint> notFoundOffsets)
         {
             DicomDirectoryRecord record = null;
-            if (_lookup.ContainsKey(offset))
+            if (!_lookup.TryGetValue(offset, out var dataset))
             {
-                record = new DicomDirectoryRecord(_lookup[offset])
+                notFoundOffsets.Add(offset);
+            }
+            else
+            {
+                record = new DicomDirectoryRecord(dataset)
                 {
                     Offset = offset
                 };
 
+                _lookup.Remove(offset);
+
                 record.NextDirectoryRecord =
-                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord));
+                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord), notFoundOffsets);
 
                 record.LowerLevelDirectoryRecord =
-                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity));
+                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity), notFoundOffsets);
             }
 
             return record;
+        }
+
+        private void ParseDirectoryRecordNotExact(ref DicomDirectoryRecord root, uint rootOffset, SortedSet<uint> offsets)
+        {
+            // Collect all used offsets and turn them into a dictionary with the next larger offset as value
+            foreach (var dataset in _lookup.Values)
+            {
+                var offset = dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord);
+                if (offset > 0)
+                    offsets.Add(offset);
+                offset = dataset.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity);
+                if (offset > 0)
+                    offsets.Add(offset);
+            }
+            var offsetIntervals = new Dictionary<uint, uint>(offsets.Count);
+            var enumerator = offsets.GetEnumerator();
+            if (enumerator.MoveNext())
+            {
+                uint currentOffset = enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    var nextOffset = enumerator.Current;
+                    offsetIntervals.Add(currentOffset, nextOffset);
+                    currentOffset = nextOffset;
+                }
+                offsetIntervals.Add(currentOffset, uint.MaxValue);
+            }
+
+            ParseDirectoryRecord(ref root, rootOffset, offsetIntervals);
+        }
+
+        private void ParseDirectoryRecord(ref DicomDirectoryRecord record, uint offset, Dictionary<uint, uint> offsetIntervals)
+        {
+            if (record == null)
+            {
+                // Find the best matching existing offset for the given offset
+                // Because we collected all used offsets, we know it is in the offsetIntervals dictionary and gives us
+                // the next used offset as upper bound of the search interval
+                offset = _lookup.Keys.FirstOrDefault(key => key >= offset && key < offsetIntervals[offset]);
+                if (!_lookup.TryGetValue(offset, out var dataset))
+                {
+                    return;
+                }
+
+                record = new DicomDirectoryRecord(dataset)
+                {
+                    Offset = offset
+                };
+
+                _lookup.Remove(offset);
+            }
+
+            var nextOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord);
+            if (nextOffset > 0)
+            {
+                DicomDirectoryRecord next = record.NextDirectoryRecord;
+                ParseDirectoryRecord(ref next, nextOffset, offsetIntervals);
+                record.NextDirectoryRecord = next;
+            }
+
+            var lowerLevelOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity);
+            if (lowerLevelOffset > 0)
+            {
+                DicomDirectoryRecord lowerLevel = record.LowerLevelDirectoryRecord;
+                ParseDirectoryRecord(ref lowerLevel, lowerLevelOffset, offsetIntervals);
+                record.LowerLevelDirectoryRecord = lowerLevel;
+            }
         }
 
         #region IDicomReaderObserver Implementation
