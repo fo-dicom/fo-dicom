@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,20 +28,20 @@ namespace Dicom.Media
 
         public DicomDirectoryRecord BuildDirectoryRecords()
         {
-            var notFoundOffsets = new SortedSet<uint>();
+            var notFoundOffsets = new List<uint>();
             var offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
             DicomDirectoryRecord root = ParseDirectoryRecord(offset, notFoundOffsets);
 
             if (_lookup.Count > 0)
             {
                 // There are unresolved sequences. Try to resolve them with non exact offset match
-                ParseDirectoryRecordNotExact(ref root, offset, notFoundOffsets);
+                root = ParseDirectoryRecordNotExact(root, offset, notFoundOffsets);
             }
 
             return root;
         }
 
-        private DicomDirectoryRecord ParseDirectoryRecord(uint offset, SortedSet<uint> notFoundOffsets)
+        private DicomDirectoryRecord ParseDirectoryRecord(uint offset, List<uint> notFoundOffsets)
         {
             DicomDirectoryRecord record = null;
             if (!_lookup.TryGetValue(offset, out var dataset))
@@ -66,9 +67,9 @@ namespace Dicom.Media
             return record;
         }
 
-        private void ParseDirectoryRecordNotExact(ref DicomDirectoryRecord root, uint rootOffset, SortedSet<uint> offsets)
+        private DicomDirectoryRecord ParseDirectoryRecordNotExact(DicomDirectoryRecord root, uint rootOffset, List<uint> offsets)
         {
-            // Collect all used offsets and turn them into a dictionary with the next larger offset as value
+            // Collect all used offsets, and sort them (they can contain duplicates)
             foreach (var dataset in _lookup.Values)
             {
                 var offset = dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord);
@@ -78,34 +79,45 @@ namespace Dicom.Media
                 if (offset > 0)
                     offsets.Add(offset);
             }
-            var offsetIntervals = new Dictionary<uint, uint>(offsets.Count);
-            var enumerator = offsets.GetEnumerator();
-            if (enumerator.MoveNext())
-            {
-                uint currentOffset = enumerator.Current;
-                while (enumerator.MoveNext())
-                {
-                    var nextOffset = enumerator.Current;
-                    offsetIntervals.Add(currentOffset, nextOffset);
-                    currentOffset = nextOffset;
-                }
-                offsetIntervals.Add(currentOffset, uint.MaxValue);
-            }
+            var offsetArray = offsets.ToArray();
+            Array.Sort(offsetArray);
 
-            ParseDirectoryRecord(ref root, rootOffset, offsetIntervals);
+            return ParseDirectoryRecord(root, rootOffset, offsetArray);
         }
 
-        private void ParseDirectoryRecord(ref DicomDirectoryRecord record, uint offset, Dictionary<uint, uint> offsetIntervals)
+        private DicomDirectoryRecord ParseDirectoryRecord(DicomDirectoryRecord record, uint offset, uint[] offsets)
         {
             if (record == null)
             {
                 // Find the best matching existing offset for the given offset
-                // Because we collected all used offsets, we know it is in the offsetIntervals dictionary and gives us
-                // the next used offset as upper bound of the search interval
-                offset = _lookup.Keys.FirstOrDefault(key => key >= offset && key < offsetIntervals[offset]);
+                // The given offset should be in offstes and the following entry in that sorted array gives
+                // us the next used offset. That's the upper bound for the search
+
+                var index = Array.BinarySearch(offsets, offset);
+                if (index < 0)
+                {
+                    return null;
+                }
+                uint maxOffset;
+                int maxIndex = offsets.Length - 1;
+                // Deal with the rare possibility that offsets can contain duplicates
+                while (true)
+                {
+                    if (index >= maxIndex)
+                    {
+                        maxOffset = uint.MaxValue;
+                        break;
+                    }
+                    maxOffset = offsets[++index];
+                    if (maxOffset != offset)
+                    {
+                        break;
+                    }
+                }
+                offset = _lookup.Keys.FirstOrDefault(key => key >= offset && key < maxOffset);
                 if (!_lookup.TryGetValue(offset, out var dataset))
                 {
-                    return;
+                    return null;
                 }
 
                 record = new DicomDirectoryRecord(dataset)
@@ -119,18 +131,16 @@ namespace Dicom.Media
             var nextOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord);
             if (nextOffset > 0)
             {
-                DicomDirectoryRecord next = record.NextDirectoryRecord;
-                ParseDirectoryRecord(ref next, nextOffset, offsetIntervals);
-                record.NextDirectoryRecord = next;
+                record.NextDirectoryRecord = ParseDirectoryRecord(record.NextDirectoryRecord, nextOffset, offsets);
             }
 
             var lowerLevelOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity);
             if (lowerLevelOffset > 0)
             {
-                DicomDirectoryRecord lowerLevel = record.LowerLevelDirectoryRecord;
-                ParseDirectoryRecord(ref lowerLevel, lowerLevelOffset, offsetIntervals);
-                record.LowerLevelDirectoryRecord = lowerLevel;
+                record.LowerLevelDirectoryRecord = ParseDirectoryRecord(record.LowerLevelDirectoryRecord, lowerLevelOffset, offsets);
             }
+
+            return record;
         }
 
         #region IDicomReaderObserver Implementation
