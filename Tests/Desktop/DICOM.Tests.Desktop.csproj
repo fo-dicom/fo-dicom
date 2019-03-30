@@ -163,6 +163,7 @@
     <Compile Include="IO\Writer\DicomFileWriterTest.cs" />
     <Compile Include="IO\Writer\DicomWriterTest.cs" />
     <Compile Include="Log\TextWriterLoggerTest.cs" />
+    <Compile Include="Media\DicomDirectoryReaderObserverTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />

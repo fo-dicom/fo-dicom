@@ -46,7 +46,10 @@ namespace Dicom.Media
             DicomDirectoryRecord record = null;
             if (!_lookup.TryGetValue(offset, out var dataset))
             {
-                notFoundOffsets.Add(offset);
+                if (offset != 0)
+                {
+                    notFoundOffsets.Add(offset);
+                }
             }
             else
             {
