@@ -76,7 +76,7 @@ namespace Dicom.Imaging.LUT
         {
             get
             {
-                return _lut[value + _first].Value;
+                return _lut[(value - _first) > 0 ? (value - _first) : 0].Value;
             }
         }
 

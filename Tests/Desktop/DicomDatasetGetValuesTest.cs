@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Linq;
 using System.Text;
 using Dicom.IO.Buffer;
 using Xunit;
@@ -216,7 +217,7 @@ namespace Dicom
         [MemberData(nameof(ValueElementsWithTwoValues))]
         public void Get_Values_ObjectArray_Success(DicomElement element, object[] expected)
         {
-            DicomDataset ds = new DicomDataset(element);
+            DicomDataset ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
 
             object[] objects = ds.GetValues<object>(element.Tag);
 

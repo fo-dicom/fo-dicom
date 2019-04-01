@@ -35,6 +35,11 @@ namespace Dicom
 
         public override void Validate()
         {
+            if (Buffer is BulkDataUriByteBuffer bulkbuffer && ! bulkbuffer.IsMemory)
+            {
+                // skip validation in case of BulkDataUriByteBuffer, where the content has not been downloaded
+                return;
+            }
             ValidateString();
             ValidateVM();
         }

@@ -5,6 +5,8 @@
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
+* Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
+* Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
