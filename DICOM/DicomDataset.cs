@@ -81,7 +81,7 @@ namespace Dicom
                         if (tag.IsPrivate) tag = GetPrivateTag(tag);
                         var sequenceItems =
                             ((DicomSequence)item).Items.Where(dataset => dataset != null)
-                                .Select(dataset => new DicomDataset(dataset))
+                                .Select(dataset => new DicomDataset(dataset, validate))
                                 .ToArray();
                         _items[tag] = new DicomSequence(tag, sequenceItems);
                     }
