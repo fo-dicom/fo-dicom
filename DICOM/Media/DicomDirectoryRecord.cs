@@ -28,6 +28,11 @@ namespace Dicom.Media
         {
         }
 
+        public DicomDirectoryRecord(DicomDataset dataset)
+            : base(dataset, dataset.ValidateItems)
+        {
+        }
+
         public DicomDirectoryRecord(IEnumerable<DicomItem> items)
             : base(items)
         {
