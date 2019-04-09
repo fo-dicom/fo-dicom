@@ -558,7 +558,7 @@ namespace Dicom.Network
                     await _completionFlag.WaitAsync().ConfigureAwait(false);
                 }
 
-                if (!IsConnected)
+                if (!IsConnected || _completionFlag.IsSet)
                 {
                     _hasAssociationFlag.Reset();
                     _completionFlag.Reset();
