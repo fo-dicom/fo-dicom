@@ -655,6 +655,9 @@ namespace Dicom.Network
 
             if (completedException != null || force)
             {
+                var reason = force ? "'force' is true" : $"an exception caused the completion flag to be set: {completedException}";
+                Logger.Warn($"Disposing network stream because {reason}");
+
                 if (_networkStream != null)
                 {
                     try
@@ -801,12 +804,14 @@ namespace Dicom.Network
                 SetHasAssociationFlag(false);
                 _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
+                Logger.Info("SetCompletionFlag: OnReceiveAssociationReject");
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
             }
 
             /// <inheritdoc />
             public void OnReceiveAssociationReleaseResponse()
             {
+                Logger.Info("SetCompletionFlag: OnReceiveAssociationReleaseResponse");
                 SetCompletionFlag();
 
                 _client.AssociationReleased(_client, EventArgs.Empty);
@@ -825,12 +830,14 @@ namespace Dicom.Network
             /// <inheritdoc />
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
+                Logger.Info("SetCompletionFlag: OnReceiveAbort");
                 SetCompletionFlag(new DicomAssociationAbortedException(source, reason));
             }
 
             /// <inheritdoc />
             public void OnConnectionClosed(Exception exception)
             {
+                Logger.Info("SetCompletionFlag: OnConnectionClosed");
                 SetCompletionFlag(exception);
             }
 
@@ -899,6 +906,7 @@ namespace Dicom.Network
                         .ConfigureAwait(false);
                 }
 
+                Logger.Info("SetCompletionFlag: DoSendAbortAsync");
                 SetCompletionFlag();
             }
 
