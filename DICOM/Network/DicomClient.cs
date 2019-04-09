@@ -748,7 +748,7 @@ namespace Dicom.Network
                     }
                 }
 
-                SetAssociationRequestedFlag(true);
+                SetHasAssociationFlag(true);
                 _client.AssociationAccepted(_client, new AssociationAcceptedEventArgs(association));
             }
 
@@ -758,7 +758,7 @@ namespace Dicom.Network
                 DicomRejectSource source,
                 DicomRejectReason reason)
             {
-                SetAssociationRequestedFlag(false);
+                SetHasAssociationFlag(false);
                 _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
@@ -880,7 +880,7 @@ namespace Dicom.Network
                 ).ConfigureAwait(false);
             }
 
-            private void SetAssociationRequestedFlag(bool isAssociated)
+            private void SetHasAssociationFlag(bool isAssociated)
             {
                 _client._hasAssociationFlag.Set(isAssociated);
             }
