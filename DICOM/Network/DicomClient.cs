@@ -683,6 +683,12 @@ namespace Dicom.Network
 
             #endregion
 
+            #region PROPERTIES
+
+            public bool IsAssociationReleasing { get; private set; }
+
+            #endregion
+
             #region CONSTRUCTORS
 
             internal DicomServiceUser(
@@ -812,6 +818,8 @@ namespace Dicom.Network
                         return;
                     }
 
+                    IsAssociationReleasing = true;
+
                     var sendAssociationReleaseRequestTask = SendAssociationReleaseRequestAsync();
                     var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
                     var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
@@ -839,6 +847,8 @@ namespace Dicom.Network
                 }
                 catch (Exception e)
                 {
+                    IsAssociationReleasing = false;
+
                     Logger.Warn("Attempt to send association release request failed due to: {@error}", e);
                     SetCompletionFlag(e);
                 }
