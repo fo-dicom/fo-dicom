@@ -800,35 +800,41 @@ namespace Dicom.Network
             {
                 try
                 {
-                    if (this.IsConnected)
+                    if (!IsConnected)
                     {
-                        if (Interlocked.Exchange(ref this._releaseRequested, 1) == 0)
-                        {
-                            var sendAssociationReleaseRequestTask = SendAssociationReleaseRequestAsync();
-                            var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
-                            var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
+                        Logger.Warn($"Tried to release association but we're no longer connected");
+                        return;
+                    }
 
-                            var firstCompletedTask = await Task.WhenAny(
-                                sendAssociationReleaseRequestTask,
-                                waitUntilDisconnectionTask,
-                                sendAssociationReleaseRequestTimeoutTask
-                            ).ConfigureAwait(false);
+                    if (Interlocked.Exchange(ref _releaseRequested, 1) != 0)
+                    {
+                        Logger.Warn("Tried to release association from multiple threads in parallel, this thread lost the race and won't try to release the association");
+                        return;
+                    }
 
-                            if (firstCompletedTask == sendAssociationReleaseRequestTimeoutTask)
-                            {
-                                Logger.Debug($"Timeout while trying to release the association");
-                                SetCompletionFlag();
-                            }
-                            else if (firstCompletedTask == waitUntilDisconnectionTask)
-                            {
-                                Logger.Debug($"Disconnected while trying to release the association");
-                                SetCompletionFlag();
-                            }
-                            else if (firstCompletedTask == sendAssociationReleaseRequestTask)
-                            {
-                                Logger.Debug("Association release request was sent successfully");
-                            }
-                        }
+                    var sendAssociationReleaseRequestTask = SendAssociationReleaseRequestAsync();
+                    var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
+                    var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
+
+                    var firstCompletedTask = await Task.WhenAny(
+                        sendAssociationReleaseRequestTask,
+                        waitUntilDisconnectionTask,
+                        sendAssociationReleaseRequestTimeoutTask
+                    ).ConfigureAwait(false);
+
+                    if (firstCompletedTask == sendAssociationReleaseRequestTimeoutTask)
+                    {
+                        Logger.Debug($"Timeout while trying to release the association");
+                        SetCompletionFlag();
+                    }
+                    else if (firstCompletedTask == waitUntilDisconnectionTask)
+                    {
+                        Logger.Debug($"Disconnected while trying to release the association");
+                        SetCompletionFlag();
+                    }
+                    else if (firstCompletedTask == sendAssociationReleaseRequestTask)
+                    {
+                        Logger.Debug("Association release request was sent successfully");
                     }
                 }
                 catch (Exception e)
