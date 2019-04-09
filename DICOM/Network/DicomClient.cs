@@ -254,7 +254,7 @@ namespace Dicom.Network
                 return connected;
             }
         }
-        
+
         private bool HasAssociation
         {
             get
@@ -804,13 +804,30 @@ namespace Dicom.Network
                     {
                         if (Interlocked.Exchange(ref this._releaseRequested, 1) == 0)
                         {
-                            await Task.WhenAny(
-                                SendAssociationReleaseRequestAsync(),
-                                _isDisconnectedFlag.WaitAsync(),
-                                Task.Delay(millisecondsTimeout)
+                            var sendAssociationReleaseRequestTask = SendAssociationReleaseRequestAsync();
+                            var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
+                            var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
+
+                            var firstCompletedTask = await Task.WhenAny(
+                                sendAssociationReleaseRequestTask,
+                                waitUntilDisconnectionTask,
+                                sendAssociationReleaseRequestTimeoutTask
                             ).ConfigureAwait(false);
 
-                            SetCompletionFlag();
+                            if (firstCompletedTask == sendAssociationReleaseRequestTimeoutTask)
+                            {
+                                Logger.Debug($"Timeout while trying to release the association");
+                                SetCompletionFlag();
+                            }
+                            else if (firstCompletedTask == waitUntilDisconnectionTask)
+                            {
+                                Logger.Debug($"Disconnected while trying to release the association");
+                                SetCompletionFlag();
+                            }
+                            else if (firstCompletedTask == sendAssociationReleaseRequestTask)
+                            {
+                                Logger.Debug("Association release request was sent successfully");
+                            }
                         }
                     }
                 }
