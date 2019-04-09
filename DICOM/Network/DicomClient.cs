@@ -475,7 +475,7 @@ namespace Dicom.Network
         {
             try
             {
-                ReleaseAsync(millisecondsTimeout).Wait();
+                ReleaseAsync(millisecondsTimeout).GetAwaiter().GetResult();
             }
             catch (AggregateException e)
             {
@@ -605,22 +605,41 @@ namespace Dicom.Network
             }
         }
 
-        private async Task SendQueuedRequestsAsync()
+        private async Task<bool> SendQueuedRequestsAsync()
         {
             await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
 
-            while (IsConnected && _requests.TryDequeue(out var request))
+            bool requestsWereSent = false;
+
+            while (IsConnected && HasAssociation && _service.IsAssociationReleasing != true && _requests.TryDequeue(out var request))
             {
                 await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
                 request.Value = null;
+                requestsWereSent = true;
             }
 
             if (_requests.IsEmpty) _hasRequestsFlag.Reset();
+
+            return requestsWereSent;
         }
 
         private async Task CleanupAsync(bool force)
         {
-            var completedException = await _completionFlag.WaitAsync().ConfigureAwait(false);
+            var completionTask = _completionFlag.WaitAsync();
+
+            while(true)
+            {
+                await Task.WhenAny(completionTask, Task.Delay(1000)).ConfigureAwait(false);
+
+                if (completionTask.IsCompleted || completionTask.IsFaulted || completionTask.IsCanceled)
+                    break;
+
+                Logger.Warn("Waited 1 second to cleanup DicomServiceUser but completion flag is still not set");
+
+                await _service.SendNextMessageAsync().ConfigureAwait(false);
+            }
+
+            var completedException = completionTask.IsCompleted ? completionTask.Result : null;
 
             if (completedException != null || force)
             {
@@ -654,9 +673,9 @@ namespace Dicom.Network
 
                 //  if DicomServiceUser's constructor throws
                 //  _serviceRunnerTask can be null
-                if (this._serviceRunnerTask != null)
+                if (_serviceRunnerTask != null)
                 {
-                    await this._serviceRunnerTask.ConfigureAwait(false);
+                    await _serviceRunnerTask.ConfigureAwait(false);
                 }
             }
 
@@ -691,7 +710,7 @@ namespace Dicom.Network
 
             #region PROPERTIES
 
-            public bool IsAssociationReleasing { get; private set; }
+            public bool IsAssociationReleasing => _releaseRequested == 1;
 
             #endregion
 
@@ -824,8 +843,6 @@ namespace Dicom.Network
                         return;
                     }
 
-                    IsAssociationReleasing = true;
-
                     var sendAssociationReleaseRequestTask = SendAssociationReleaseRequestAsync();
                     var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
                     var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
@@ -850,11 +867,12 @@ namespace Dicom.Network
                     {
                         Logger.Debug("Association release request was sent successfully");
                     }
+
+                    _releaseRequested = 0;
                 }
                 catch (Exception e)
                 {
-                    IsAssociationReleasing = false;
-
+                    _releaseRequested = 0;
                     Logger.Warn("Attempt to send association release request failed due to: {@error}", e);
                     SetCompletionFlag(e);
                 }
@@ -886,7 +904,10 @@ namespace Dicom.Network
                 }
 
                 var sendTheNextRequest = _client.SendQueuedRequestsAsync()
-                    .ContinueWith(_ => CancelLingering("another DICOM request was just sent"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                    .ContinueWith(requestsWereSent =>
+                    {
+                        if(requestsWereSent.Result) CancelLingering("another DICOM request was just sent");
+                    }, TaskContinuationOptions.OnlyOnRanToCompletion);
                 var waitUntilDisconnection = _isDisconnectedFlag.WaitAsync()
                     .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion)
                     .ContinueWith(_ => CancelLingering("we are already disconnected"), TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -946,7 +967,13 @@ namespace Dicom.Network
 
             private void SetCompletionFlag(Exception exception = null)
             {
-                _client._completionFlag.Set(exception);
+                lock (_lock)
+                {
+                    if (_client._completionFlag.IsSet)
+                        return;
+
+                    _client._completionFlag.Set(exception);
+                }
             }
 
             #endregion

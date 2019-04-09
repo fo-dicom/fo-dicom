@@ -36,7 +36,7 @@ namespace Dicom.Network
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
-                .WithMinimumLevel(LogLevel.Info);
+                .WithMinimumLevel(LogLevel.Debug);
             remoteHost = null;
             remotePort = 0;
         }
