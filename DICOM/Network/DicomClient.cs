@@ -552,6 +552,12 @@ namespace Dicom.Network
         {
             try
             {
+                if (_service?.IsAssociationReleasing == true)
+                {
+                    Logger.Debug($"Still releasing previous association, waiting for that first");
+                    await _completionFlag.WaitAsync().ConfigureAwait(false);
+                }
+
                 if (!IsConnected)
                 {
                     _hasAssociationFlag.Reset();
