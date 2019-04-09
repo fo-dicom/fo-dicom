@@ -122,6 +122,7 @@ namespace Dicom.Network
         {
             var port = Ports.GetNext();
             var flag = new ManualResetEventSlim();
+            var logger = _logger.IncludePrefix("UnitTest");
 
             using (var server = CreateServer<DicomCEchoProvider>(port))
             {
@@ -130,6 +131,7 @@ namespace Dicom.Network
                 var actual = 0;
 
                 var client = CreateClient();
+
                 for (var i = 0; i < expected; ++i)
                 {
                     client.AddRequest(
@@ -137,7 +139,7 @@ namespace Dicom.Network
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
-                                        _testOutputHelper.WriteLine($"{i}");
+                                        logger.Info($"{i} Received response for [{req.MessageID}]");
                                         Interlocked.Increment(ref actual);
                                         if (actual == expected) flag.Set();
                                     }

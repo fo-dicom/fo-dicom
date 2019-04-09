@@ -107,6 +107,8 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
+        private readonly AsyncManualResetEvent<bool> _isCleaningUpFlag;
+
         private readonly ConcurrentQueue<StrongBox<DicomRequest>> _requests;
 
         private DicomServiceUser _service;
@@ -142,6 +144,7 @@ namespace Dicom.Network
             _hasRequestsFlag = new AsyncManualResetEvent();
             _hasAssociationFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
+            _isCleaningUpFlag = new AsyncManualResetEvent<bool>();
         }
 
         #endregion
@@ -558,10 +561,17 @@ namespace Dicom.Network
                     await _completionFlag.WaitAsync().ConfigureAwait(false);
                 }
 
+                if (_isCleaningUpFlag.IsSet && _isCleaningUpFlag.Value)
+                {
+                    Logger.Debug("Still cleaning up previous association / connection, waiting for that first");
+                    await _isCleaningUpFlag.WaitAsync().ConfigureAwait(false);
+                }
+
                 if (!IsConnected || _completionFlag.IsSet)
                 {
                     _hasAssociationFlag.Reset();
                     _completionFlag.Reset();
+                    _isCleaningUpFlag.Reset();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                     _serviceRunnerTask = _service.RunAsync();
@@ -625,6 +635,8 @@ namespace Dicom.Network
 
         private async Task CleanupAsync(bool force)
         {
+            _isCleaningUpFlag.Set(true);
+
             var completionTask = _completionFlag.WaitAsync();
 
             while(true)
@@ -634,7 +646,7 @@ namespace Dicom.Network
                 if (completionTask.IsCompleted || completionTask.IsFaulted || completionTask.IsCanceled)
                     break;
 
-                Logger.Warn("Waited 1 second to cleanup DicomServiceUser but completion flag is still not set");
+                Logger.Warn("Waited 1 second to cleanup but completion flag is still not set");
 
                 await _service.SendNextMessageAsync().ConfigureAwait(false);
             }
@@ -671,8 +683,7 @@ namespace Dicom.Network
                     _service = null;
                 }
 
-                //  if DicomServiceUser's constructor throws
-                //  _serviceRunnerTask can be null
+                // Wait until listener realizes connection is gone. If DicomServiceUser's constructor threw, _serviceRunnerTask can be null
                 if (_serviceRunnerTask != null)
                 {
                     await _serviceRunnerTask.ConfigureAwait(false);
@@ -681,6 +692,10 @@ namespace Dicom.Network
 
             // If not already set, set association notifier here to signal completion to awaiters
             _hasAssociationFlag.Set(false);
+
+            _isCleaningUpFlag.Set(false);
+
+            _isCleaningUpFlag.Reset();
 
             if (completedException != null)
             {
@@ -856,12 +871,10 @@ namespace Dicom.Network
                     if (firstCompletedTask == sendAssociationReleaseRequestTimeoutTask)
                     {
                         Logger.Debug($"Timeout while trying to release the association");
-                        SetCompletionFlag();
                     }
                     else if (firstCompletedTask == waitUntilDisconnectionTask)
                     {
                         Logger.Debug($"Disconnected while trying to release the association");
-                        SetCompletionFlag();
                     }
                     else if (firstCompletedTask == sendAssociationReleaseRequestTask)
                     {
@@ -909,7 +922,6 @@ namespace Dicom.Network
                         if(requestsWereSent.Result) CancelLingering("another DICOM request was just sent");
                     }, TaskContinuationOptions.OnlyOnRanToCompletion);
                 var waitUntilDisconnection = _isDisconnectedFlag.WaitAsync()
-                    .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion)
                     .ContinueWith(_ => CancelLingering("we are already disconnected"), TaskContinuationOptions.OnlyOnRanToCompletion);
                 var waitUntilAssociationReleased = _client._hasAssociationFlag.WaitAsync()
                     .ContinueWith(hasAssociation =>
