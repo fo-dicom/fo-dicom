@@ -103,7 +103,7 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent _hasRequestsFlag;
 
-        private readonly AsyncManualResetEvent<bool> _associationRequestedFlag;
+        private readonly AsyncManualResetEvent<bool> _hasAssociationFlag;
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
@@ -140,7 +140,7 @@ namespace Dicom.Network
             Linger = DefaultLinger;
 
             _hasRequestsFlag = new AsyncManualResetEvent();
-            _associationRequestedFlag = new AsyncManualResetEvent<bool>();
+            _hasAssociationFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
         }
 
@@ -252,6 +252,21 @@ namespace Dicom.Network
                 }
 
                 return connected;
+            }
+        }
+        
+        private bool HasAssociation
+        {
+            get
+            {
+                bool hasAssociation;
+
+                lock (_lock)
+                {
+                    hasAssociation = _hasAssociationFlag.IsSet && _hasAssociationFlag.Value;
+                }
+
+                return hasAssociation;
             }
         }
 
@@ -440,11 +455,11 @@ namespace Dicom.Network
                 using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
                 using (cancellationSource.Token.Register(() =>
                 {
-                    _associationRequestedFlag.Set(false);
+                    _hasAssociationFlag.Set(false);
                     _completionFlag.Set();
                 }, false))
                 {
-                    return await _associationRequestedFlag.WaitAsync().ConfigureAwait(false);
+                    return await _hasAssociationFlag.WaitAsync().ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException)
@@ -539,7 +554,7 @@ namespace Dicom.Network
             {
                 if (!IsConnected)
                 {
-                    _associationRequestedFlag.Reset();
+                    _hasAssociationFlag.Reset();
                     _completionFlag.Reset();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
@@ -551,7 +566,7 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 Logger.Error("Failed to send due to: {@error}", e);
-                _associationRequestedFlag.Set(false);
+                _hasAssociationFlag.Set(false);
                 _completionFlag.Set();
 
                 throw;
@@ -640,7 +655,7 @@ namespace Dicom.Network
             }
 
             // If not already set, set association notifier here to signal completion to awaiters
-            _associationRequestedFlag.Set(false);
+            _hasAssociationFlag.Set(false);
 
             if (completedException != null)
             {
@@ -834,7 +849,7 @@ namespace Dicom.Network
 
             private void SetAssociationRequestedFlag(bool isAssociated)
             {
-                _client._associationRequestedFlag.Set(isAssociated);
+                _client._hasAssociationFlag.Set(isAssociated);
             }
 
             private void SetCompletionFlag(Exception exception = null)
