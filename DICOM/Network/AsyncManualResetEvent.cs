@@ -31,7 +31,6 @@ namespace Dicom.Network
         internal AsyncManualResetEvent(bool isSet, T value)
         {
             _tcs = new TaskCompletionSource<T>();
-
             if (isSet)
                 _tcs.TrySetResult(value);
         }
@@ -72,6 +71,21 @@ namespace Dicom.Network
             }
         }
 
+        /// <summary>
+        /// Gets the value of the event.
+        /// <remarks>Will cause synchronous locking when the event is not set yet! Use with caution</remarks>
+        /// </summary>
+        internal T Value
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _tcs.Task.Result;
+                }
+            }
+        }
+
         #endregion
 
         #region METHODS
@@ -84,6 +98,8 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
+                if (_tcs.Task.IsCompleted)
+                    _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(value);
             }
         }
@@ -95,6 +111,8 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
+                if (_tcs.Task.IsCompleted)
+                    _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(default(T));
             }
         }
