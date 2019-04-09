@@ -874,16 +874,69 @@ namespace Dicom.Network
             /// <inheritdoc />
             protected override async Task OnSendQueueEmptyAsync()
             {
-                await Task.WhenAny(
-                    _client.SendQueuedRequestsAsync(),
-                    _isDisconnectedFlag.WaitAsync()
-                        .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion),
-                    Task.Delay(_client.Linger)
-                        .ContinueWith(
-                            _ => DoSendAssociationReleaseRequestAsync(DefaultReleaseTimeout),
-                            TaskContinuationOptions.OnlyOnRanToCompletion
-                        )
-                ).ConfigureAwait(false);
+                var lingerCancellationTokenSource = new CancellationTokenSource();
+
+                void CancelLingering(string reason)
+                {
+                    if (!lingerCancellationTokenSource.IsCancellationRequested)
+                    {
+                        Logger.Debug($"Won't linger association because {reason}");
+                        lingerCancellationTokenSource.Cancel();
+                    }
+                }
+
+                var sendTheNextRequest = _client.SendQueuedRequestsAsync()
+                    .ContinueWith(_ => CancelLingering("another DICOM request was just sent"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var waitUntilDisconnection = _isDisconnectedFlag.WaitAsync()
+                    .ContinueWith(_ => SetCompletionFlag(), TaskContinuationOptions.OnlyOnRanToCompletion)
+                    .ContinueWith(_ => CancelLingering("we are already disconnected"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var waitUntilAssociationReleased = _client._hasAssociationFlag.WaitAsync()
+                    .ContinueWith(hasAssociation =>
+                    {
+                        if(!hasAssociation.Result) CancelLingering("the association is already released");
+                    }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                var lingerAssociation = Task.Delay(_client.Linger, lingerCancellationTokenSource.Token)
+                    .ContinueWith(_ => LingerAsync(DefaultReleaseTimeout), TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                await Task.WhenAny(sendTheNextRequest, waitUntilDisconnection, waitUntilAssociationReleased, lingerAssociation)
+                    .ConfigureAwait(false);
+            }
+
+            private async Task LingerAsync(int millisecondsTimeout)
+            {
+                if (!IsConnected)
+                {
+                    Logger.Debug($"Not releasing association after linger because the connection is already gone");
+                    return;
+                }
+
+                if (!_client._requests.IsEmpty)
+                {
+                    Logger.Debug($"Not releasing association after linger because at least one request is waiting to be processed");
+                    return;
+                }
+
+                if (!IsSendQueueEmpty)
+                {
+                    Logger.Debug($"Not releasing association because at least one request is being processed");
+                    return;
+                }
+
+                if (IsAssociationReleasing)
+                {
+                    Logger.Debug($"Not releasing association after linger because something else already triggered an association release request");
+                    return;
+                }
+
+                if (!_client.HasAssociation)
+                {
+                    Logger.Debug($"Not releasing association after linger because there is no active association anymore");
+                    return;
+                }
+
+                Logger.Info($"Automatically releasing association after linger timeout of {_client.Linger}ms");
+
+                await DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
 
             private void SetHasAssociationFlag(bool isAssociated)
