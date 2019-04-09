@@ -435,7 +435,7 @@ namespace Dicom.Network
         {
             try
             {
-                return WaitForAssociationAsync(millisecondsTimeout).Result;
+                return WaitForAssociationAsync(millisecondsTimeout).GetAwaiter().GetResult();
             }
             catch (AggregateException e)
             {
@@ -453,22 +453,10 @@ namespace Dicom.Network
             "Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
-            try
-            {
-                using (var cancellationSource = new CancellationTokenSource(millisecondsTimeout))
-                using (cancellationSource.Token.Register(() =>
-                {
-                    _hasAssociationFlag.Set(false);
-                    _completionFlag.Set();
-                }, false))
-                {
-                    return await _hasAssociationFlag.WaitAsync().ConfigureAwait(false);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
+            var hasAssociationTask = _hasAssociationFlag.WaitAsync();
+            var timeoutTask = Task.Delay(millisecondsTimeout);
+            var firstCompletedTask = await Task.WhenAny(hasAssociationTask, timeoutTask).ConfigureAwait(false);
+            return firstCompletedTask == hasAssociationTask && hasAssociationTask.Result;
         }
 
         /// <summary>
