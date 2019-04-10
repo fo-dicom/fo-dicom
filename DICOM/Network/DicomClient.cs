@@ -107,7 +107,9 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
-        private readonly AsyncManualResetEvent<bool> _isCleaningUpFlag;
+        private readonly AsyncManualResetEvent _isCleanupStartedFlag;
+
+        private readonly AsyncManualResetEvent _isCleanupFinishedFlag;
 
         private readonly ConcurrentQueue<StrongBox<DicomRequest>> _requests;
 
@@ -144,7 +146,8 @@ namespace Dicom.Network
             _hasRequestsFlag = new AsyncManualResetEvent();
             _hasAssociationFlag = new AsyncManualResetEvent<bool>();
             _completionFlag = new AsyncManualResetEvent<Exception>();
-            _isCleaningUpFlag = new AsyncManualResetEvent<bool>();
+            _isCleanupStartedFlag = new AsyncManualResetEvent();
+            _isCleanupFinishedFlag = new AsyncManualResetEvent();
         }
 
         #endregion
@@ -553,17 +556,18 @@ namespace Dicom.Network
                     await _completionFlag.WaitAsync().ConfigureAwait(false);
                 }
 
-                if (_isCleaningUpFlag.IsSet && _isCleaningUpFlag.Value)
+                if (_isCleanupStartedFlag.IsSet)
                 {
                     Logger.Debug("Still cleaning up previous association / connection, waiting for that first");
-                    await _isCleaningUpFlag.WaitAsync().ConfigureAwait(false);
+                    await _isCleanupFinishedFlag.WaitAsync().ConfigureAwait(false);
                 }
 
                 if (!IsConnected || _completionFlag.IsSet)
                 {
                     _hasAssociationFlag.Reset();
                     _completionFlag.Reset();
-                    _isCleaningUpFlag.Reset();
+                    _isCleanupStartedFlag.Reset();
+                    _isCleanupFinishedFlag.Reset();
 
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                     _serviceRunnerTask = _service.RunAsync();
@@ -589,6 +593,7 @@ namespace Dicom.Network
 
         private async Task SendOrReleaseAsync(int millisecondsTimeout)
         {
+            Logger.Debug("[WAITING] SendOrReleaseAsync");
 #pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
 #pragma warning restore 618
@@ -611,14 +616,13 @@ namespace Dicom.Network
 
         private async Task<bool> SendQueuedRequestsAsync()
         {
+            Logger.Debug("[WAITING] SendQueuedRequestsAsync");
             await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
 
             bool requestsWereSent = false;
 
             while (IsConnected && HasAssociation && _service.IsAssociationReleasing != true && _requests.TryDequeue(out var request))
             {
-                Logger.Debug("[WAITING] SendQueuedRequestsAsync");
-
                 await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
                 request.Value = null;
                 requestsWereSent = true;
@@ -631,7 +635,7 @@ namespace Dicom.Network
 
         private async Task CleanupAsync(bool force)
         {
-            _isCleaningUpFlag.Set(true);
+            if(!_isCleanupStartedFlag.IsSet) _isCleanupStartedFlag.Set();
 
             var completionTask = _completionFlag.WaitAsync();
 
@@ -694,9 +698,7 @@ namespace Dicom.Network
             // If not already set, set association notifier here to signal completion to awaiters
             _hasAssociationFlag.Set(false);
 
-            _isCleaningUpFlag.Set(false);
-
-            _isCleaningUpFlag.Reset();
+            if(!_isCleanupFinishedFlag.IsSet) _isCleanupFinishedFlag.Set();
 
             if (completedException != null)
             {
