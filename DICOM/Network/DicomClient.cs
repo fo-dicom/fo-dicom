@@ -979,6 +979,7 @@ namespace Dicom.Network
 
             private void SetHasAssociationFlag(bool isAssociated)
             {
+                Logger.Debug("SetHasAssociationFlag: " + isAssociated);
                 _client._hasAssociationFlag.Set(isAssociated);
             }
 
@@ -986,7 +987,7 @@ namespace Dicom.Network
             {
                 if (_client._completionFlag.IsSet)
                     return;
-
+                Logger.Debug("SetCompletionFlag: " + exception);
                 _client._completionFlag.Set(exception);
             }
 
