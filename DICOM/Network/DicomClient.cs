@@ -1,4 +1,5 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿/*
+// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
@@ -347,7 +348,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
-        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
+        public Task SendfAsync(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
             if (!CanSend) Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
@@ -992,3 +993,4 @@ namespace Dicom.Network
 }
 
 #endif
+*/
