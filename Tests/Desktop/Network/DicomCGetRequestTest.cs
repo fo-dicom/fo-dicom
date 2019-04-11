@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using Dicom.Network.Client;
 
 using Xunit;
 
@@ -103,7 +104,7 @@ namespace Dicom.Network
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> InstancesLevels = new[] 
+        public static readonly IEnumerable<object[]> InstancesLevels = new[]
         {
             new object[] { new DicomCGetRequest("1.2.3"), DicomQueryRetrieveLevel.Study },
             new object[] { new DicomCGetRequest("1.2.3", "2.3.4"), DicomQueryRetrieveLevel.Series },

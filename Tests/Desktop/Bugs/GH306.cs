@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading.Tasks;
+using Dicom.Network.Client;
 
 namespace Dicom.Bugs
 {

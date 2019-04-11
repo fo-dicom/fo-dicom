@@ -4,7 +4,7 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-
+using Dicom.Network.Client;
 using Xunit;
 
 using Dicom.Helpers;

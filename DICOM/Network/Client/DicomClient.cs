@@ -33,14 +33,11 @@ namespace Dicom.Network.Client
         Encoding FallbackEncoding { get; set; }
 
         /// <summary>
-        /// Gets the state of this DICOM client
+        /// Set negotiation asynchronous operations.
         /// </summary>
-        IDicomClientState State { get; }
-
-        /// <summary>
-        /// Gets the DICOM requests that are queued for execution
-        /// </summary>
-        IEnumerable<DicomRequest> QueuedRequests { get; }
+        /// <param name="invoked">Asynchronous operations invoked.</param>
+        /// <param name="performed">Asynchronous operations performed.</param>
+        void NegotiateAsyncOps(int invoked = 0, int performed = 0);
 
         /// <summary>
         /// Enqueues a new DICOM request for execution.
@@ -57,39 +54,42 @@ namespace Dicom.Network.Client
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
         Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default);
     }
 
     public class DicomClient : IDicomClient
     {
-        private readonly object _lock = new object();
-        private readonly ConcurrentQueue<StrongBox<DicomRequest>> _queuedRequests;
-
         public IDicomClientState State { get; private set; }
-        public IEnumerable<DicomRequest> QueuedRequests => _queuedRequests.Select(r => r.Value).ToList();
+        internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
+        internal int AsyncInvoked { get; private set; }
+        internal int AsyncPerformed { get; private set; }
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
         /// </summary>
         public DicomClient()
         {
-            _queuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
+            QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
+            AsyncInvoked = 1;
+            AsyncPerformed = 1;
             State = new DicomClientIdleState(this);
         }
 
-        internal async Task Transition<TTransitionParameters>(
-            IDicomClientState<TTransitionParameters> newState,
-            TTransitionParameters transitionParameters,
-            CancellationToken cancellationToken)
+        internal async Task Transition(IDicomClientState newState, CancellationToken cancellationToken)
         {
             var oldState = State;
 
-            State = newState ?? throw new ArgumentNullException(nameof(newState));
+            Logger.Info($"Transitioning from '{oldState}' to '{newState}'");
 
-            await newState.OnTransition(transitionParameters, cancellationToken);
+            await oldState.OnExit(cancellationToken);
 
             if (oldState is IDisposable disposableState) disposableState.Dispose();
+
+            State = newState ?? throw new ArgumentNullException(nameof(newState));
+
+            await newState.OnEnter(cancellationToken).ConfigureAwait(false);
         }
 
         public Logger Logger { get; set; }
@@ -100,15 +100,38 @@ namespace Dicom.Network.Client
 
         public Encoding FallbackEncoding { get; set; }
 
+        public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
+        {
+            AsyncInvoked = invoked;
+            AsyncPerformed = performed;
+        }
+
         public void AddRequest(DicomRequest dicomRequest)
         {
-            _queuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            State.AddRequest(dicomRequest);
         }
 
         public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
         {
             return State.SendAsync(host, port, useTls, callingAe, calledAe, millisecondsTimeout, cancellationToken);
+        }
+    }
+
+    public static class ExtensionsForDicomClient
+    {
+        public static void Send(this IDicomClient dicomClient, string host, int port, bool useTls, string callingAe, string calledAe,
+            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
+        {
+            try
+            {
+                dicomClient.SendAsync(host, port, useTls, callingAe, calledAe, millisecondsTimeout, CancellationToken.None).Wait();
+            }
+            catch (AggregateException e)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                throw e.Flatten().InnerException;
+            }
         }
     }
 }

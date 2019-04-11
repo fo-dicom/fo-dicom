@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.Network;
+using Dicom.Network.Client;
 
 using Xunit;
 

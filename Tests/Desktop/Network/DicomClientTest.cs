@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Log;
+using Dicom.Network.Client;
 
 using Xunit;
 using Xunit.Abstractions;

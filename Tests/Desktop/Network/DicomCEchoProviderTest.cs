@@ -5,6 +5,7 @@ namespace Dicom.Network
 {
     using Dicom.Helpers;
     using Dicom.Log;
+    using Dicom.Network.Client;
 
     using Xunit;
 

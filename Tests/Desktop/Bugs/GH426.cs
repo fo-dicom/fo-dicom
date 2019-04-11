@@ -3,6 +3,7 @@
 
 using Dicom.Network;
 
+using Dicom.Network.Client;
 using Xunit;
 
 namespace Dicom.Bugs

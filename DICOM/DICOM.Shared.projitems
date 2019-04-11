@@ -182,6 +182,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomFileScanner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncManualResetEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientDefaults.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationAbortedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationRejectedException.cs" />
