@@ -165,7 +165,7 @@ namespace Dicom.Network
         /// <summary>
         /// Representation of the DICOM association released event.
         /// </summary>
-        public event EventHandler AssociationReleased = delegate { };
+        public event EventHandler AssociationReleased = delegate { };A
 
         #endregion
 

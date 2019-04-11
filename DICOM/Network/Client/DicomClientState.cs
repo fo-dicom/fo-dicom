@@ -84,8 +84,12 @@ namespace Dicom.Network.Client
         Task ListenerTask { get; set; }
     }
 
-    public abstract class DicomClientWithConnectionState<TInitialisationParameters> : IDicomClientState
-        where TInitialisationParameters: IInitialisationWithConnectionParameters
+    public interface IInitialisationWithAssociationParameters : IInitialisationWithConnectionParameters
+    {
+        DicomAssociation Association { get; set; }
+    }
+
+    public abstract class DicomClientWithConnectionState : IDicomClientState
     {
         /// <summary>
         /// Gets the connection between the client and the server
@@ -97,7 +101,7 @@ namespace Dicom.Network.Client
         /// </summary>
         public Task ListenerTask { get; }
 
-        protected DicomClientWithConnectionState(TInitialisationParameters initialisationParameters)
+        protected DicomClientWithConnectionState(IInitialisationWithConnectionParameters initialisationParameters)
         {
             Connection = initialisationParameters.Connection;
             ListenerTask = initialisationParameters.ListenerTask;
@@ -151,6 +155,20 @@ namespace Dicom.Network.Client
             int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default);
     }
 
+    public abstract class DicomClientWithAssociationState : DicomClientWithConnectionState
+    {
+        /// <summary>
+        /// Gets the currently active association between the client and the server
+        /// </summary>
+        public DicomAssociation Association { get; set; }
+
+        protected DicomClientWithAssociationState(IInitialisationWithAssociationParameters initialisationParameters) : base(initialisationParameters)
+        {
+            if (initialisationParameters == null) throw new ArgumentNullException(nameof(initialisationParameters));
+            Association = initialisationParameters.Association ?? throw new ArgumentNullException(nameof(initialisationParameters.Association));
+        }
+    }
+
     /// <summary>
     /// The DICOM client is doing nothing. Call SendAsync to begin
     /// </summary>
@@ -175,6 +193,7 @@ namespace Dicom.Network.Client
 
         public void AddRequest(DicomRequest dicomRequest)
         {
+            _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
         public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
@@ -269,14 +288,14 @@ namespace Dicom.Network.Client
             var ignoreSslPolicyErrors = _dicomClient.Options?.IgnoreSslPolicyErrors ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
             var networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
 
-            var dicomClientConnection = new DicomClientConnection(_dicomClient, networkStream)
-            {
-                Options = _dicomClient.Options,
-            };
+            var dicomClientConnection = new DicomClientConnection(_dicomClient, networkStream);
+
+            if (_dicomClient.Options != null)
+                dicomClientConnection.Options = _dicomClient.Options;
 
             var dicomClientConnectionListenerTask = Task.Run(() => dicomClientConnection.RunAsync(), cancellationToken);
 
-            var initialisationParameters = new DicomClientRequestAssociationState.InitialisationParameters(host, port, callingAe, calledAe,
+            var initialisationParameters = new DicomClientRequestAssociationState.InitialisationParameters(callingAe, calledAe,
                 DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, dicomClientConnection, dicomClientConnectionListenerTask);
 
             var requestAssociationState = new DicomClientRequestAssociationState(_dicomClient, initialisationParameters);
@@ -342,7 +361,7 @@ namespace Dicom.Network.Client
     /// <summary>
     /// The DICOM client is connected to the server and requires an association. When transitioning into this state, a new association request will be sent
     /// </summary>
-    public class DicomClientRequestAssociationState : DicomClientWithConnectionState<DicomClientRequestAssociationState.InitialisationParameters>, IDisposable
+    public class DicomClientRequestAssociationState : DicomClientWithConnectionState, IDisposable
     {
         public class InitialisationParameters : IInitialisationWithConnectionParameters
         {
@@ -352,7 +371,7 @@ namespace Dicom.Network.Client
             public IDicomClientConnection Connection { get; set; }
             public Task ListenerTask { get; set; }
 
-            public InitialisationParameters(string host, int port, string callingAe, string calledAe, int associationRequestTimeoutInMs, IDicomClientConnection connection, Task listenerTask)
+            public InitialisationParameters(string callingAe, string calledAe, int associationRequestTimeoutInMs, IDicomClientConnection connection, Task listenerTask)
             {
                 CallingAe = callingAe;
                 CalledAe = calledAe;
@@ -376,22 +395,22 @@ namespace Dicom.Network.Client
 
         public override async Task OnReceiveAssociationAccept(DicomAssociation association)
         {
-            _dicomClient.Logger.Info("Association accepted");
-
             _timeoutCancellationTokenSource.Cancel();
+
+            _dicomClient.Logger.Info("Association accepted");
+            _dicomClient.NotifyAssociationAccepted(new AssociationAcceptedEventArgs(association));
 
             var initialisationParameters =
                 new DicomClientSendingRequestsState.InitialisationParameters(association, _initialisationParameters.Connection,
                     _initialisationParameters.ListenerTask);
-
             var newState = new DicomClientSendingRequestsState(_dicomClient, initialisationParameters);
-
             await _dicomClient.Transition(newState, CancellationToken.None);
         }
 
         public override Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _timeoutCancellationTokenSource.Cancel();
+            _dicomClient.NotifyAssociationRejected(new AssociationRejectedEventArgs(result, source, reason));
             // TODO transition to AssociationRejectedState
             return Task.FromResult(0);
         }
@@ -451,12 +470,15 @@ namespace Dicom.Network.Client
 
             _combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeoutCancellationTokenSource.Token);
 
+            // TODO use custom TaskCompletionSource and fill it when AssociationAccept is received...
+
             await Task.Delay(_initialisationParameters.AssociationRequestTimeoutInMs, _combinedCancellationTokenSource.Token)
                 .ContinueWith(_ =>
                 {
                     _dicomClient.Logger.Warn("Association request timed out");
                     // TODO transition to another state when association request times out. Perhaps re-enter this one again, with a max retry count..
-                }, TaskContinuationOptions.OnlyOnCanceled);
+                }, TaskContinuationOptions.OnlyOnCanceled)
+                .ConfigureAwait(false);
         }
 
         public override Task OnExit(CancellationToken cancellationToken)
@@ -493,14 +515,14 @@ namespace Dicom.Network.Client
     /// <summary>
     /// The DICOM client is connected and has an active DICOM association. Every queued request will be sent one by one.
     /// </summary>
-    public class DicomClientSendingRequestsState : DicomClientWithConnectionState<DicomClientSendingRequestsState.InitialisationParameters>, IDisposable
+    public class DicomClientSendingRequestsState : DicomClientWithAssociationState, IDisposable
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _sendRequestsCancellationTokenSource;
         private CancellationTokenSource _combinedCancellationTokenSource;
 
-        public class InitialisationParameters : IInitialisationWithConnectionParameters
+        public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
             public DicomAssociation Association { get; set; }
             public IDicomClientConnection Connection { get; set; }
@@ -608,13 +630,13 @@ namespace Dicom.Network.Client
     /// When we have an active association, but no more DICOM requests to send (and all responses for previous requests have already arrived)
     /// we will keep the association open for just a little longer in case we get any more requests
     /// </summary>
-    public class DicomClientLingeringState : DicomClientWithConnectionState<DicomClientLingeringState.InitialisationParameters>, IDisposable
+    public class DicomClientLingeringState : DicomClientWithAssociationState, IDisposable
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _lingerTimeoutCancellationTokenSource;
 
-        public class InitialisationParameters : IInitialisationWithConnectionParameters
+        public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
             public DicomAssociation Association { get; set; }
             public IDicomClientConnection Connection { get; set; }
@@ -696,8 +718,11 @@ namespace Dicom.Network.Client
                     else if (lingerTask.IsCompleted)
                     {
                         // No requests came in, boohoo
-                        // TODO transition to
+                        var releaseAssociationParameters = new DicomClientReleaseAssociationState.InitialisationParameters(
+                            _initialisationParameters.Association, _initialisationParameters.Connection, _initialisationParameters.ListenerTask);
+                        var releaseAssociationState = new DicomClientReleaseAssociationState(_dicomClient, releaseAssociationParameters);
 
+                        await _dicomClient.Transition(releaseAssociationState, cancellationToken);
                     }
                 }, TaskContinuationOptions.NotOnFaulted)
                 .ConfigureAwait(false);
@@ -714,6 +739,7 @@ namespace Dicom.Network.Client
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
+            _dicomClient.Logger.Debug("Canceling linger because a new request came in");
             _lingerTimeoutCancellationTokenSource.Cancel();
         }
 
@@ -728,13 +754,13 @@ namespace Dicom.Network.Client
         }
     }
 
-    public class DicomClientReleaseAssociationState : DicomClientWithConnectionState<DicomClientReleaseAssociationState.InitialisationParameters>
+    public class DicomClientReleaseAssociationState : DicomClientWithAssociationState, IDisposable
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _associationReleaseTimeoutCancellationTokenSource;
 
-        public class InitialisationParameters : IInitialisationWithConnectionParameters
+        public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
             public DicomAssociation Association { get; set; }
             public IDicomClientConnection Connection { get; set; }
@@ -782,6 +808,7 @@ namespace Dicom.Network.Client
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
+
             // TODO transition to aborted state
             return Task.FromResult(0);
         }
@@ -803,12 +830,32 @@ namespace Dicom.Network.Client
 
             var timeout = DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs;
             await Task.Delay(timeout, _associationReleaseTimeoutCancellationTokenSource.Token)
-                .ContinueWith(_ =>
+                .ContinueWith(async associationReleaseTimeout =>
                 {
-                    // No association release response received within timeout? Move to disconnect state anyway
-                    _dicomClient.Logger.Warn($"Did not receive association release response within {timeout}ms, disconnecting now...");
+                    if (associationReleaseTimeout.IsCompleted)
+                    {
+                        // No association release response received within timeout? Move to disconnect state anyway
+                        _dicomClient.Logger.Warn($"Did not receive association release response within {timeout}ms, disconnecting now...");
 
-                }, TaskContinuationOptions.OnlyOnRanToCompletion)
+                        var disconnectParameters =
+                            new DicomClientDisconnectState.InitialisationParameters(_initialisationParameters.Connection,
+                                _initialisationParameters.ListenerTask);
+                        var disconnectState = new DicomClientDisconnectState(_dicomClient, disconnectParameters);
+
+                        await _dicomClient.Transition(disconnectState, cancellationToken);
+                    }
+                    else if (associationReleaseTimeout.IsCanceled)
+                    {
+                        // Association release timeout was canceled? Then we must have received an association release response
+                        var disconnectParameters = new DicomClientDisconnectState.InitialisationParameters(_initialisationParameters.Connection, _initialisationParameters.ListenerTask);
+                        var disconnectState = new DicomClientDisconnectState(_dicomClient, disconnectParameters);
+
+                        _dicomClient.NotifyAssociationReleased();
+
+                        await _dicomClient.Transition(disconnectState, CancellationToken.None);
+                    }
+
+                }, TaskContinuationOptions.NotOnFaulted)
                 .ConfigureAwait(false);
         }
 
@@ -827,9 +874,104 @@ namespace Dicom.Network.Client
             var association = _initialisationParameters.Association;
             return $"Releasing association between {association.CallingAE} to {association.CalledAE} on {association.RemoteHost}:{association.RemotePort}";
         }
+
+        public void Dispose()
+        {
+            _associationReleaseTimeoutCancellationTokenSource.Cancel();
+            _associationReleaseTimeoutCancellationTokenSource?.Dispose();
+        }
     }
 
-    public class DicomClientDisconnectState : DicomClientWithConnectionState<DicomClientDisconnectState.InitialisationParameters>
+    public class DicomClientAbortState : DicomClientWithConnectionState
+    {
+        private readonly DicomClient _dicomClient;
+        private readonly InitialisationParameters _initialisationParameters;
+
+        public class InitialisationParameters : IInitialisationWithConnectionParameters
+        {
+            public IDicomClientConnection Connection { get; set; }
+            public Task ListenerTask { get; set; }
+
+            public InitialisationParameters(IDicomClientConnection connection, Task listenerTask)
+            {
+                Connection = connection;
+                ListenerTask = listenerTask;
+            }
+        }
+
+        public DicomClientAbortState(DicomClient dicomClient, InitialisationParameters initialisationParameters) : base(initialisationParameters)
+        {
+            _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
+            _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
+        }
+
+        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
+            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        {
+            // TODO explicit send is requested, move back to association request state after abort
+            return Task.FromResult(0);
+        }
+
+        public override Task OnReceiveAssociationAccept(DicomAssociation association)
+        {
+            _dicomClient.Logger.Warn("Received association accept but we were just in the process of aborting!");
+            return Task.FromResult(0);
+        }
+
+        public override Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        {
+            _dicomClient.Logger.Warn("Received association reject but we were just in the process of aborting");
+            return Task.FromResult(0);
+        }
+
+        public override Task OnReceiveAssociationReleaseResponse()
+        {
+            _dicomClient.Logger.Warn("Received association release response but we were just in the process of aborting!");
+            return Task.FromResult(0);
+        }
+
+        public override async Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        {
+            _dicomClient.Logger.Warn("Received abort while we were just in the process of aborting... wonderful");
+            var idleState = new DicomClientIdleState(_dicomClient);
+            await _dicomClient.Transition(idleState, CancellationToken.None);
+        }
+
+        public override async Task OnConnectionClosed(Exception exception)
+        {
+            _dicomClient.Logger.Warn("Received 'OnConnectionClosed' after abort, perfect");
+            var idleState = new DicomClientIdleState(_dicomClient);
+            await _dicomClient.Transition(idleState, CancellationToken.None);
+        }
+
+        public override Task OnSendQueueEmpty()
+        {
+            return Task.FromResult(0);
+        }
+
+        public override async Task OnEnter(CancellationToken cancellationToken)
+        {
+            await _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
+        }
+
+        public override Task OnExit(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(0);
+        }
+
+        public override void AddRequest(DicomRequest dicomRequest)
+        {
+            _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+        }
+
+        public override string ToString()
+        {
+            var connectionNetworkStream = _initialisationParameters.Connection?.NetworkStream;
+            return $"Aborting connection to {connectionNetworkStream?.RemoteHost}:{connectionNetworkStream?.RemotePort}";
+        }
+    }
+
+    public class DicomClientDisconnectState : DicomClientWithConnectionState
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
@@ -917,6 +1059,17 @@ namespace Dicom.Network.Client
 
             // wait until listener task realizes connection is gone
             await _initialisationParameters.ListenerTask.ConfigureAwait(false);
+
+            if (_dicomClient.QueuedRequests.Any())
+            {
+                // TODO reconnect
+            }
+            else
+            {
+                var idleState = new DicomClientIdleState(_dicomClient);
+
+                await _dicomClient.Transition(idleState, cancellationToken);
+            }
         }
 
         public override Task OnExit(CancellationToken cancellationToken)
@@ -926,7 +1079,7 @@ namespace Dicom.Network.Client
 
         public override void AddRequest(DicomRequest dicomRequest)
         {
-            // TODO More requests? Begin again!
+            _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
         public override string ToString()
