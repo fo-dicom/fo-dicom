@@ -618,15 +618,8 @@ namespace Dicom.Network
 
             if (_requests.IsEmpty)
             {
-                Logger.Debug("SendQueuedRequestsAsync has sent all requests, resetting _hasRequestsFlag");
                 _hasRequestsFlag.Reset();
             }
-            else
-            {
-                Logger.Debug($"SendQueuedRequestsAsync has not sent all requests, still {_requests.Count} in queue, not resetting _hasRequestsFlag");
-            }
-
-            Logger.Debug("[FINISHED] SendQueuedRequestsAsync");
 
             return requestsWereSent;
         }
