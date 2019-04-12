@@ -647,6 +647,17 @@ namespace Dicom.Network
 
         #endregion
 
+        [Fact]
+        public async Task DicomClient_AbortWhenNeverConnected()
+        {
+            var tic = DateTime.Now;
+            new DicomClient().Abort();
+            await new DicomClient().AbortAsync();
+            var toc = DateTime.Now;
+
+            Assert.True((toc - tic).TotalSeconds < 1);
+        }
+
         #region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
