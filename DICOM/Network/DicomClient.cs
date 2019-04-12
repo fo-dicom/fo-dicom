@@ -907,7 +907,11 @@ namespace Dicom.Network
                     }
                 }
 
-                var sendTheNextRequest = _client.SendQueuedRequestsAsync()
+
+                var newRequestsComeIn = _client._hasRequestsFlag.WaitAsync()
+                    .ContinueWith(_ => CancelLingering("another DICOM request was just added"),
+                        TaskContinuationOptions.OnlyOnRanToCompletion);
+                var nextRequestsAreSent = _client.SendQueuedRequestsAsync()
                     .ContinueWith(requestsWereSent =>
                     {
                         if(requestsWereSent.Result) CancelLingering("another DICOM request was just sent");
@@ -915,7 +919,7 @@ namespace Dicom.Network
                 var lingerAssociation = Task.Delay(_client.Linger, lingerCancellationTokenSource.Token)
                     .ContinueWith(async _ => await LingerAsync(DefaultReleaseTimeout), TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                await Task.WhenAny(sendTheNextRequest, lingerAssociation)
+                await Task.WhenAny(newRequestsComeIn, nextRequestsAreSent, lingerAssociation)
                     .ConfigureAwait(false);
             }
 
