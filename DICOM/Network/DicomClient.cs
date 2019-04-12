@@ -134,10 +134,8 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
         /// </summary>
-        public DicomClient(Logger logger = null)
+        public DicomClient()
         {
-            if(logger != null)
-                Logger = logger;
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
 
             _requests = new ConcurrentQueue<StrongBox<DicomRequest>>();
@@ -145,11 +143,11 @@ namespace Dicom.Network
             _asyncPerformed = 1;
             Linger = DefaultLinger;
 
-            _hasRequestsFlag = new AsyncManualResetEvent(Logger);
-            _hasAssociationFlag = new AsyncManualResetEvent(Logger);
-            _completionFlag = new AsyncManualResetEvent<Exception>(Logger);
-            _isCleanupStartedFlag = new AsyncManualResetEvent(Logger);
-            _isCleanupFinishedFlag = new AsyncManualResetEvent(Logger);
+            _hasRequestsFlag = new AsyncManualResetEvent();
+            _hasAssociationFlag = new AsyncManualResetEvent();
+            _completionFlag = new AsyncManualResetEvent<Exception>();
+            _isCleanupStartedFlag = new AsyncManualResetEvent();
+            _isCleanupFinishedFlag = new AsyncManualResetEvent();
         }
 
         #endregion
@@ -254,30 +252,16 @@ namespace Dicom.Network
             get
             {
                 bool connected;
-                Logger.Debug("[LOCK] Waiting for lock in DicomClient.IsConnected");
                 lock (_lock)
                 {
-                    Logger.Debug("[LOCK] Acquired lock in DicomClient.IsConnected");
                     connected = _service != null && _service.IsConnected;
                 }
-                Logger.Debug("[LOCK] Released lock in DicomClient.IsConnected");
 
                 return connected;
             }
         }
 
-        private bool HasAssociation
-        {
-            get
-            {
-                bool hasAssociation;
-                Logger.Debug("[LOCK] Before DicomClient.HasAssociation");
-                hasAssociation = _hasAssociationFlag.IsSet;
-                Logger.Debug("[LOCK] After DicomClient.HasAssociation");
-
-                return hasAssociation;
-            }
-        }
+        private bool HasAssociation => _hasAssociationFlag.IsSet;
 
         #endregion
 
@@ -459,7 +443,6 @@ namespace Dicom.Network
             "Use AssociationAccepted and AssociationRejected events to be notified of association status change.")]
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
-            Logger.Debug("[WAITING] WaitForAssociationAsync");
             if (_hasAssociationFlag.IsSet)
                 return true;
 
@@ -555,16 +538,16 @@ namespace Dicom.Network
             {
                 if (_service?.IsAssociationReleasing == true)
                 {
-                    Logger.Debug($"[WAITING] Still releasing previous association, waiting for that first");
+                    Logger.Debug($"Still releasing previous association, waiting for that first");
                     await _completionFlag.WaitAsync().ConfigureAwait(false);
-                    Logger.Debug("[WAITING] OK association is released");
+                    Logger.Debug("OK association is released");
                 }
 
                 if (_isCleanupStartedFlag.IsSet)
                 {
-                    Logger.Debug("[WAITING] Still cleaning up previous association / connection, waiting for that first");
+                    Logger.Debug("Still cleaning up previous association / connection, waiting for that first");
                     await _isCleanupFinishedFlag.WaitAsync().ConfigureAwait(false);
-                    Logger.Debug("[WAITING] OK previous association / connection is cleaned up");
+                    Logger.Debug("OK previous association / connection is cleaned up");
                 }
 
                 if (!IsConnected || _completionFlag.IsSet)
@@ -577,8 +560,6 @@ namespace Dicom.Network
                     _service = new DicomServiceUser(this, stream, association, Options, FallbackEncoding, Logger);
                     _serviceRunnerTask = _service.RunAsync();
                 }
-
-                Logger.Debug("[WAITING] DoSendAsync");
 
                 await Task.WhenAny(_serviceRunnerTask, SendOrReleaseAsync(millisecondsTimeout)).ConfigureAwait(false);
             }
@@ -598,7 +579,6 @@ namespace Dicom.Network
 
         private async Task SendOrReleaseAsync(int millisecondsTimeout)
         {
-            Logger.Debug("[WAITING] SendOrReleaseAsync");
 #pragma warning disable 618
             var associated = await WaitForAssociationAsync(millisecondsTimeout).ConfigureAwait(false);
 #pragma warning restore 618
@@ -621,33 +601,19 @@ namespace Dicom.Network
 
         private async Task<bool> SendQueuedRequestsAsync()
         {
-            Logger.Debug("[WAITING] SendQueuedRequestsAsync");
             if (!_hasRequestsFlag.IsSet)
             {
-                Logger.Debug("[WAITING] SendQueuedRequestsAsync waiting for has requests flag");
                 await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
             }
 
             bool requestsWereSent = false;
 
-            bool isConnected = IsConnected;
-            bool hasAssociation = HasAssociation;
-            bool isAssociationReleasing = _service.IsAssociationReleasing;
-
-            while (isConnected && hasAssociation && !isAssociationReleasing && _requests.TryDequeue(out var request))
+            while (IsConnected && HasAssociation && !_service.IsAssociationReleasing && _requests.TryDequeue(out var request))
             {
-                Logger.Debug($"[WAITING] SendRequestAsync isConnected = {isConnected}, hasAssociation = {hasAssociation}, isAssociationReleasing = {isAssociationReleasing}");
-
                 await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
-
-                Logger.Debug($"[WAITING] SendRequestAsync Request is sent");
 
                 request.Value = null;
                 requestsWereSent = true;
-
-                isConnected = IsConnected;
-                hasAssociation = HasAssociation;
-                isAssociationReleasing = _service.IsAssociationReleasing;
             }
 
             if (_requests.IsEmpty)
@@ -673,8 +639,6 @@ namespace Dicom.Network
 
             while(IsConnected)
             {
-                Logger.Debug("[WAITING] CleanupAsync");
-
                 await Task.WhenAny(completionTask, Task.Delay(1000)).ConfigureAwait(false);
 
                 if (completionTask.IsCompleted || completionTask.IsFaulted || completionTask.IsCanceled)
@@ -898,8 +862,6 @@ namespace Dicom.Network
                     var sendAssociationReleaseRequestTimeoutTask = Task.Delay(millisecondsTimeout);
                     var waitUntilDisconnectionTask = _isDisconnectedFlag.WaitAsync();
 
-                    Logger.Debug("[WAITING] DoSendAssociationReleaseRequestAsync");
-
                     var firstCompletedTask = await Task.WhenAny(
                         sendAssociationReleaseRequestTask,
                         waitUntilDisconnectionTask,
@@ -965,7 +927,6 @@ namespace Dicom.Network
                 var lingerAssociation = Task.Delay(_client.Linger, lingerCancellationTokenSource.Token)
                     .ContinueWith(async _ => await LingerAsync(DefaultReleaseTimeout), TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                Logger.Debug("[WAITING] OnSendQueueEmptyAsync");
                 await Task.WhenAny(sendTheNextRequest, lingerAssociation)
                     .ConfigureAwait(false);
             }
@@ -1004,7 +965,6 @@ namespace Dicom.Network
 
                 Logger.Info($"Automatically releasing association after linger timeout of {_client.Linger}ms");
 
-                Logger.Debug("[WAITING] LingerAsync");
                 await DoSendAssociationReleaseRequestAsync(millisecondsTimeout).ConfigureAwait(false);
             }
 

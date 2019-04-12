@@ -19,7 +19,6 @@ namespace Dicom.Network
         private TaskCompletionSource<T> _tcs;
 
         private readonly object _lock = new object();
-        private readonly Logger _logger;
 
         #endregion
 
@@ -30,10 +29,9 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="isSet">Indicates whether event should be set from start.</param>
         /// <param name="value">Value of the set event.</param>
-        internal AsyncManualResetEvent(bool isSet, T value, Logger logger)
+        internal AsyncManualResetEvent(bool isSet, T value)
         {
             _tcs = new TaskCompletionSource<T>();
-            _logger = logger;
             if (isSet)
                 _tcs.TrySetResult(value);
         }
@@ -43,7 +41,7 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="isSet">Indicates whether event should be set from start. If set, value is set to <code>default(T)</code>.</param>
         internal AsyncManualResetEvent(bool isSet)
-            : this(isSet, default(T), null)
+            : this(isSet, default(T))
         {
         }
 
@@ -51,8 +49,8 @@ namespace Dicom.Network
         /// Initializes an instance of the <see cref="AsyncManualResetEvent{T}"/> class.
         /// Event is reset upon initialization.
         /// </summary>
-        internal AsyncManualResetEvent(Logger logger)
-            : this(false, default(T), logger)
+        internal AsyncManualResetEvent()
+            : this(false, default(T))
         {
         }
 
@@ -67,14 +65,11 @@ namespace Dicom.Network
         {
             get
             {
-                _logger?.Debug("[LOCK] Waiting for _lock in AsyncManualResetEvent.IsSet");
                 bool isCompleted;
                 lock (_lock)
                 {
-                    _logger?.Debug("[LOCK] Acquired _lock in AsyncManualResetEvent.IsSet");
                     isCompleted = _tcs.Task.IsCompleted;
                 }
-                _logger?.Debug("[LOCK] Released _lock in AsyncManualResetEvent.IsSet");
                 return isCompleted;
             }
         }
@@ -88,15 +83,12 @@ namespace Dicom.Network
         /// <param name="value">Value to set for the event.</param>
         internal void Set(T value)
         {
-            _logger?.Debug("[LOCK] Waiting for _lock in AsyncManualResetEvent.Set with value");
             lock (_lock)
             {
-                _logger?.Debug("[LOCK] Acquired _lock in AsyncManualResetEvent.Set with value");
                 if (_tcs.Task.IsCompleted)
                     _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(value);
             }
-            _logger?.Debug("[LOCK] Released _lock in AsyncManualResetEvent.Set with value");
         }
 
         /// <summary>
@@ -104,15 +96,12 @@ namespace Dicom.Network
         /// </summary>
         internal void Set()
         {
-            _logger?.Debug("[LOCK] Waiting for _lock in AsyncManualResetEvent.Set");
             lock (_lock)
             {
-                _logger?.Debug("[LOCK] Acquired _lock in AsyncManualResetEvent.Set");
                 if (_tcs.Task.IsCompleted)
                     _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(default(T));
             }
-            _logger?.Debug("[LOCK] Released _lock in AsyncManualResetEvent.Set");
         }
 
         /// <summary>
@@ -152,8 +141,8 @@ namespace Dicom.Network
         /// Initializes an instance of the <see cref="AsyncManualResetEvent"/> class.
         /// </summary>
         /// <param name="isSet">Indicates whether event should be set from start.</param>
-        internal AsyncManualResetEvent(bool isSet, Logger logger = null)
-            : base(isSet, null, logger)
+        internal AsyncManualResetEvent(bool isSet)
+            : base(isSet, null)
         {
         }
 
@@ -161,8 +150,8 @@ namespace Dicom.Network
         /// Initializes an instance of the <see cref="AsyncManualResetEvent"/> class.
         /// Event is reset upon initialization.
         /// </summary>
-        internal AsyncManualResetEvent(Logger logger = null)
-            : base(false, null, logger)
+        internal AsyncManualResetEvent()
+            : base(false, null)
         {
         }
 

@@ -54,7 +54,9 @@ namespace Dicom.Network
 
         private DicomClient CreateClient()
         {
-            var client = new DicomClient(_logger.IncludePrefix(typeof(DicomClient).Name));
+            var client = new DicomClient {
+                Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
+            };
             return client;
         }
 
