@@ -54,10 +54,7 @@ namespace Dicom.Network
 
         private DicomClient CreateClient()
         {
-            var client = new DicomClient
-            {
-                Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-            };
+            var client = new DicomClient(_logger.IncludePrefix(typeof(DicomClient).Name));
             return client;
         }
 
@@ -134,12 +131,13 @@ namespace Dicom.Network
 
                 for (var i = 0; i < expected; ++i)
                 {
+                    var localIndex = i;
                     client.AddRequest(
                         new DicomCEchoRequest
                             {
                                 OnResponseReceived = (req, res) =>
                                     {
-                                        logger.Info($"{i} Received response for [{req.MessageID}]");
+                                        logger.Info($"i = {localIndex}, received response for [{req.MessageID}]");
                                         Interlocked.Increment(ref actual);
                                         if (actual == expected) flag.Set();
                                     }

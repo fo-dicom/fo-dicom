@@ -103,7 +103,7 @@ namespace Dicom.Network
 
         private readonly AsyncManualResetEvent _hasRequestsFlag;
 
-        private readonly AsyncManualResetEvent<bool> _hasAssociationFlag;
+        private readonly AsyncManualResetEvent _hasAssociationFlag;
 
         private readonly AsyncManualResetEvent<Exception> _completionFlag;
 
@@ -134,8 +134,10 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
         /// </summary>
-        public DicomClient()
+        public DicomClient(Logger logger = null)
         {
+            if(logger != null)
+                Logger = logger;
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
 
             _requests = new ConcurrentQueue<StrongBox<DicomRequest>>();
@@ -143,11 +145,11 @@ namespace Dicom.Network
             _asyncPerformed = 1;
             Linger = DefaultLinger;
 
-            _hasRequestsFlag = new AsyncManualResetEvent();
-            _hasAssociationFlag = new AsyncManualResetEvent<bool>();
-            _completionFlag = new AsyncManualResetEvent<Exception>();
-            _isCleanupStartedFlag = new AsyncManualResetEvent();
-            _isCleanupFinishedFlag = new AsyncManualResetEvent();
+            _hasRequestsFlag = new AsyncManualResetEvent(Logger);
+            _hasAssociationFlag = new AsyncManualResetEvent(Logger);
+            _completionFlag = new AsyncManualResetEvent<Exception>(Logger);
+            _isCleanupStartedFlag = new AsyncManualResetEvent(Logger);
+            _isCleanupFinishedFlag = new AsyncManualResetEvent(Logger);
         }
 
         #endregion
@@ -252,10 +254,13 @@ namespace Dicom.Network
             get
             {
                 bool connected;
+                Logger.Debug("[LOCK] Waiting for lock in DicomClient.IsConnected");
                 lock (_lock)
                 {
+                    Logger.Debug("[LOCK] Acquired lock in DicomClient.IsConnected");
                     connected = _service != null && _service.IsConnected;
                 }
+                Logger.Debug("[LOCK] Released lock in DicomClient.IsConnected");
 
                 return connected;
             }
@@ -266,11 +271,9 @@ namespace Dicom.Network
             get
             {
                 bool hasAssociation;
-
-                lock (_lock)
-                {
-                    hasAssociation = _hasAssociationFlag.IsSet && _hasAssociationFlag.Value;
-                }
+                Logger.Debug("[LOCK] Before DicomClient.HasAssociation");
+                hasAssociation = _hasAssociationFlag.IsSet;
+                Logger.Debug("[LOCK] After DicomClient.HasAssociation");
 
                 return hasAssociation;
             }
@@ -298,7 +301,7 @@ namespace Dicom.Network
         public void AddRequest(DicomRequest request)
         {
             _requests.Enqueue(new StrongBox<DicomRequest>(request));
-            _hasRequestsFlag.Set();
+            if(!_hasRequestsFlag.IsSet) _hasRequestsFlag.Set();
         }
 
         /// <summary>
@@ -457,13 +460,13 @@ namespace Dicom.Network
         public async Task<bool> WaitForAssociationAsync(int millisecondsTimeout = DefaultAssociationTimeout)
         {
             Logger.Debug("[WAITING] WaitForAssociationAsync");
-            if (_hasAssociationFlag.IsSet && _hasAssociationFlag.Value)
+            if (_hasAssociationFlag.IsSet)
                 return true;
 
             var hasAssociationTask = _hasAssociationFlag.WaitAsync();
             var timeoutTask = Task.Delay(millisecondsTimeout);
             var firstCompletedTask = await Task.WhenAny(hasAssociationTask, timeoutTask).ConfigureAwait(false);
-            return firstCompletedTask == hasAssociationTask && hasAssociationTask.Result;
+            return firstCompletedTask == hasAssociationTask;
         }
 
         /// <summary>
@@ -552,14 +555,16 @@ namespace Dicom.Network
             {
                 if (_service?.IsAssociationReleasing == true)
                 {
-                    Logger.Debug($"Still releasing previous association, waiting for that first");
+                    Logger.Debug($"[WAITING] Still releasing previous association, waiting for that first");
                     await _completionFlag.WaitAsync().ConfigureAwait(false);
+                    Logger.Debug("[WAITING] OK association is released");
                 }
 
                 if (_isCleanupStartedFlag.IsSet)
                 {
-                    Logger.Debug("Still cleaning up previous association / connection, waiting for that first");
+                    Logger.Debug("[WAITING] Still cleaning up previous association / connection, waiting for that first");
                     await _isCleanupFinishedFlag.WaitAsync().ConfigureAwait(false);
+                    Logger.Debug("[WAITING] OK previous association / connection is cleaned up");
                 }
 
                 if (!IsConnected || _completionFlag.IsSet)
@@ -580,7 +585,7 @@ namespace Dicom.Network
             catch (Exception e)
             {
                 Logger.Error("Failed to send due to: {@error}", e);
-                _hasAssociationFlag.Set(false);
+                _hasAssociationFlag.Reset();
                 _completionFlag.Set();
 
                 throw;
@@ -617,18 +622,45 @@ namespace Dicom.Network
         private async Task<bool> SendQueuedRequestsAsync()
         {
             Logger.Debug("[WAITING] SendQueuedRequestsAsync");
-            await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
+            if (!_hasRequestsFlag.IsSet)
+            {
+                Logger.Debug("[WAITING] SendQueuedRequestsAsync waiting for has requests flag");
+                await _hasRequestsFlag.WaitAsync().ConfigureAwait(false);
+            }
 
             bool requestsWereSent = false;
 
-            while (IsConnected && HasAssociation && _service.IsAssociationReleasing != true && _requests.TryDequeue(out var request))
+            bool isConnected = IsConnected;
+            bool hasAssociation = HasAssociation;
+            bool isAssociationReleasing = _service.IsAssociationReleasing;
+
+            while (isConnected && hasAssociation && !isAssociationReleasing && _requests.TryDequeue(out var request))
             {
+                Logger.Debug($"[WAITING] SendRequestAsync isConnected = {isConnected}, hasAssociation = {hasAssociation}, isAssociationReleasing = {isAssociationReleasing}");
+
                 await _service.SendRequestAsync(request.Value).ConfigureAwait(false);
+
+                Logger.Debug($"[WAITING] SendRequestAsync Request is sent");
+
                 request.Value = null;
                 requestsWereSent = true;
+
+                isConnected = IsConnected;
+                hasAssociation = HasAssociation;
+                isAssociationReleasing = _service.IsAssociationReleasing;
             }
 
-            if (_requests.IsEmpty) _hasRequestsFlag.Reset();
+            if (_requests.IsEmpty)
+            {
+                Logger.Debug("SendQueuedRequestsAsync has sent all requests, resetting _hasRequestsFlag");
+                _hasRequestsFlag.Reset();
+            }
+            else
+            {
+                Logger.Debug($"SendQueuedRequestsAsync has not sent all requests, still {_requests.Count} in queue, not resetting _hasRequestsFlag");
+            }
+
+            Logger.Debug("[FINISHED] SendQueuedRequestsAsync");
 
             return requestsWereSent;
         }
@@ -695,10 +727,9 @@ namespace Dicom.Network
                 }
             }
 
-            // If not already set, set association notifier here to signal completion to awaiters
-            _hasAssociationFlag.Set(false);
+            if (_hasAssociationFlag.IsSet) _hasAssociationFlag.Reset();
 
-            if(!_isCleanupFinishedFlag.IsSet) _isCleanupFinishedFlag.Set();
+            if (!_isCleanupFinishedFlag.IsSet) _isCleanupFinishedFlag.Set();
 
             if (completedException != null)
             {
@@ -980,7 +1011,15 @@ namespace Dicom.Network
             private void SetHasAssociationFlag(bool isAssociated)
             {
                 Logger.Debug("SetHasAssociationFlag: " + isAssociated);
-                _client._hasAssociationFlag.Set(isAssociated);
+                if (isAssociated)
+                {
+                    if(!_client._hasAssociationFlag.IsSet)
+                        _client._hasAssociationFlag.Set();
+                }
+                else
+                {
+                    _client._hasAssociationFlag.Reset();
+                }
             }
 
             private void SetCompletionFlag(Exception exception = null)

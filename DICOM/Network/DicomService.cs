@@ -179,10 +179,15 @@ namespace Dicom.Network
         {
             get
             {
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.IsSendQueueEmpty");
+                bool isSendQueueEmpty;
                 lock (_lock)
                 {
-                    return _msgQueue.Count == 0 && _pending.Count == 0;
+                    Logger.Debug("[LOCK] Acquired lock in DicomService.IsSendQueueEmpty");
+                    isSendQueueEmpty = _msgQueue.Count == 0 && _pending.Count == 0;
                 }
+                Logger.Debug("[LOCK] Released lock in DicomService.IsSendQueueEmpty");
+                return isSendQueueEmpty;
             }
         }
 
@@ -303,11 +308,14 @@ namespace Dicom.Network
                 return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
             }
 
+            Logger.Debug("[LOCK] Waiting for lock in DicomService.SendPDUAsync");
             lock (_lock)
             {
+                Logger.Debug("[LOCK] Acquired lock in DicomService.SendPDUAsync");
                 _pduQueue.Enqueue(pdu);
                 if (_pduQueue.Count >= MaximumPDUsInQueue) _pduQueueWatcher.Reset();
             }
+            Logger.Debug("[LOCK] Released lock in DicomService.SendPDUAsync");
 
             return SendNextPDUAsync();
         }
@@ -318,16 +326,27 @@ namespace Dicom.Network
             {
                 PDU pdu;
 
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.SendNextPDUAsync");
                 lock (_lock)
                 {
-                    if (_writing) return;
+                    Logger.Debug("[LOCK] Acquired lock in DicomService.SendNextPDUAsync");
+                    if (_writing)
+                    {
+                        Logger.Debug("[LOCK] Releasing lock in DicomService.SendNextPDUAsync");
+                        return;
+                    }
 
-                    if (_pduQueue.Count == 0) return;
+                    if (_pduQueue.Count == 0)
+                    {
+                        Logger.Debug("[LOCK] Releasing lock in DicomService.SendNextPDUAsync");
+                        return;
+                    }
 
                     _writing = true;
 
                     pdu = _pduQueue.Dequeue();
                     if (_pduQueue.Count < MaximumPDUsInQueue) _pduQueueWatcher.Set();
+                    Logger.Debug("[LOCK] Releasing lock in DicomService.SendNextPDUAsync");
                 }
 
                 if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
@@ -356,7 +375,9 @@ namespace Dicom.Network
                     TryCloseConnection(e);
                 }
 
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.SendNextPDUAsync to set _writing to false");
                 lock (_lock) _writing = false;
+                Logger.Debug("[LOCK] Released lock in DicomService.SendNextPDUAsync to set _writing to false");
             }
         }
 
@@ -897,10 +918,13 @@ namespace Dicom.Network
 
         private Task SendMessageAsync(DicomMessage message)
         {
+            Logger.Debug("[LOCK] DicomService.SendMessageAsync lock to enqueue msg");
             lock (_lock)
             {
+                Logger.Debug("[LOCK] Acquired lock in DicomService.SendMessageAsync to enqueue msg");
                 _msgQueue.Enqueue(message);
             }
+            Logger.Debug("[LOCK] Released lock in DicomService.SendMessageAsync to enqueue msg");
 
             return SendNextMessageAsync();
         }
@@ -911,9 +935,11 @@ namespace Dicom.Network
 
             while (true)
             {
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.SendNextMessageAsync to send next msg");
                 DicomMessage msg;
                 lock (_lock)
                 {
+                    Logger.Debug("[LOCK] Acquired lock in DicomService.SendNextMessageAsync to send next msg");
                     if (_sending)
                     {
                         break;
@@ -941,10 +967,13 @@ namespace Dicom.Network
                         _pending.Add(msg as DicomRequest);
                     }
                 }
+                Logger.Debug("[LOCK] Released lock in DicomService.SendNextMessageAsync to send next msg");
 
                 await DoSendMessageAsync(msg).ConfigureAwait(false);
 
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.SendNextMessageAsync to set _sending to false");
                 lock (_lock) _sending = false;
+                Logger.Debug("[LOCK] Released lock in DicomService.SendNextMessageAsync to set _sending to false");
             }
 
             if (sendQueueEmpty)
@@ -995,10 +1024,12 @@ namespace Dicom.Network
 
             if (pc == null)
             {
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.DoSendMessageAsync to remove request from _pending queue");
                 lock (_lock)
                 {
                     _pending.Remove(msg as DicomRequest);
                 }
+                Logger.Debug("[LOCK] Released lock in DicomService.DoSendMessageAsync to remove request from _pending queue");
 
                 try
                 {
@@ -1051,8 +1082,9 @@ namespace Dicom.Network
                         Logger.Warn("Unknown message type: {type}", msg.Type);
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    Logger.Error("Exception in DoSendMessageAsync: {error}", e);
                 }
 
                 Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
@@ -1150,8 +1182,10 @@ namespace Dicom.Network
             {
                 if (!IsConnected) return true;
 
+                Logger.Debug("[LOCK] Waiting for lock in DicomService.TryCloseConnection");
                 lock (_lock)
                 {
+                    Logger.Debug("[LOCK] Acquired lock in DicomService.TryCloseConnection");
                     if (force)
                     {
                         _pduQueue.Clear();
@@ -1168,7 +1202,9 @@ namespace Dicom.Network
                             _pending.Count);
                         return false;
                     }
+                    Logger.Debug("[LOCK] Releasing lock in DicomService.TryCloseConnection");
                 }
+                Logger.Debug("[LOCK] Released lock in DicomService.TryCloseConnection");
 
                 (this as IDicomService)?.OnConnectionClosed(exception);
             }
@@ -1178,7 +1214,10 @@ namespace Dicom.Network
                 throw;
             }
 
+            Logger.Debug("[LOCK] Waiting for lock in DicomService.TryCloseConnection to set _isDisconnectedFlag");
             lock (_lock) _isDisconnectedFlag.Set();
+            Logger.Debug("[LOCK] Released lock in DicomService.TryCloseConnection to set _isDisconnectedFlag");
+            
             Logger.Info("Connection closed");
 
             if (exception != null) throw exception;
