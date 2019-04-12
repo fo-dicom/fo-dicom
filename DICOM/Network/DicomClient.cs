@@ -790,14 +790,12 @@ namespace Dicom.Network
                 SetHasAssociationFlag(false);
                 _client.AssociationRejected(_client, new AssociationRejectedEventArgs(result, source, reason));
 
-                Logger.Info("SetCompletionFlag: OnReceiveAssociationReject");
                 SetCompletionFlag(new DicomAssociationRejectedException(result, source, reason));
             }
 
             /// <inheritdoc />
             public void OnReceiveAssociationReleaseResponse()
             {
-                Logger.Info("SetCompletionFlag: OnReceiveAssociationReleaseResponse");
                 SetCompletionFlag();
 
                 _client.AssociationReleased(_client, EventArgs.Empty);
@@ -816,14 +814,12 @@ namespace Dicom.Network
             /// <inheritdoc />
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
-                Logger.Info("SetCompletionFlag: OnReceiveAbort");
                 SetCompletionFlag(new DicomAssociationAbortedException(source, reason));
             }
 
             /// <inheritdoc />
             public void OnConnectionClosed(Exception exception)
             {
-                Logger.Info("SetCompletionFlag: OnConnectionClosed");
                 SetCompletionFlag(exception);
             }
 
@@ -894,7 +890,6 @@ namespace Dicom.Network
                         .ConfigureAwait(false);
                 }
 
-                Logger.Info("SetCompletionFlag: DoSendAbortAsync");
                 SetCompletionFlag();
             }
 
@@ -963,7 +958,6 @@ namespace Dicom.Network
 
             private void SetHasAssociationFlag(bool isAssociated)
             {
-                Logger.Debug("SetHasAssociationFlag: " + isAssociated);
                 if (isAssociated)
                 {
                     if(!_client._hasAssociationFlag.IsSet)
@@ -979,7 +973,6 @@ namespace Dicom.Network
             {
                 if (_client._completionFlag.IsSet)
                     return;
-                Logger.Debug("SetCompletionFlag: " + exception);
                 _client._completionFlag.Set(exception);
             }
 
