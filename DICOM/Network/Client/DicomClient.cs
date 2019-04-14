@@ -242,9 +242,9 @@ namespace Dicom.Network.Client
             State.AddRequest(dicomRequest);
         }
 
-        public Task SendAsync(CancellationToken cancellationToken = default)
+        public async Task SendAsync(CancellationToken cancellationToken = default)
         {
-            return State.SendAsync(cancellationToken);
+            await State.SendAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 

@@ -166,8 +166,8 @@ namespace Dicom.Network
                 client.AddRequest(request);
 
                 var task = client.SendAsync();
-                await Task.WhenAny(task, Task.Delay(10000));
-
+                //await Task.WhenAny(task, Task.Delay(10000));
+                await task;
                 Assert.Equal(1, counter);
             }
         }
