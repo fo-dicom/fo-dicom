@@ -141,7 +141,7 @@ namespace Dicom.Imaging.Codec.JpegLossless
 
         public override void Encode(DicomPixelData oldPixelData, DicomPixelData newPixelData, DicomCodecParams parameters)
         {
-            throw new NotImplementedException($"Encoding of transfersyntax {TransferSyntax} is not supported");
+            throw new DicomCodecException($"Encoding of transfersyntax {TransferSyntax} is not supported");
         }
 
 

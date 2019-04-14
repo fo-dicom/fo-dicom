@@ -1,6 +1,7 @@
-﻿using Dicom.Imaging.Codec;
-using System;
-using System.IO;
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Dicom.Imaging.Codec;
 using Xunit;
 
 namespace Dicom.Imaging
@@ -31,7 +32,7 @@ namespace Dicom.Imaging
             {
                 var encoded = decoded.Clone(DicomTransferSyntax.JPEGProcess14);
             });
-            Assert.IsType<NotImplementedException>(ex);
+            Assert.IsType<DicomCodecException>(ex);
         }
 
 
