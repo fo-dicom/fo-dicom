@@ -33,9 +33,19 @@ namespace Dicom.Network.Client
         Encoding FallbackEncoding { get; set; }
 
         /// <summary>
+        /// Gets or sets the timeout (in ms) to wait for an association response after sending an association request
+        /// </summary>
+        int AssociationRequestTimeoutInMs { get; }
+
+        /// <summary>
+        /// Gets or sets the timeout (in ms) to wait for an association release response after sending an association release request
+        /// </summary>
+        int AssociationReleaseTimeoutInMs { get; }
+
+        /// <summary>
         /// Gets or sets the timeout (in ms) that associations need to be held open after all requests have been processed
         /// </summary>
-        int Linger { get; set; }
+        int AssociationLingerTimeoutInMs { get; }
 
         /// <summary>
         /// Representation of the DICOM association accepted event.
@@ -145,8 +155,6 @@ namespace Dicom.Network.Client
         internal int AsyncInvoked { get; private set; }
 
         internal int AsyncPerformed { get; private set; }
-
-        public int Linger { get; set; } = DicomClientDefaults.DefaultAssociationLingerInMs;
 
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
 
