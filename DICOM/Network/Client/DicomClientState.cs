@@ -11,13 +11,11 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Is called when entering this state
         /// </summary>
-        /// <returns></returns>
         Task OnEnter(CancellationToken cancellationToken);
 
         /// <summary>
         /// Is called when entering this state
         /// </summary>
-        /// <returns></returns>
         Task OnExit(CancellationToken cancellationToken);
 
         /// <summary>
@@ -29,14 +27,7 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Sends existing requests to DICOM service.
         /// </summary>
-        /// <param name="host">DICOM host.</param>
-        /// <param name="port">Port.</param>
-        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
-        /// <param name="callingAe">Calling Application Entity Title.</param>
-        /// <param name="calledAe">Called Application Entity Title.</param>
-        /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
-        Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default);
+        Task SendAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Callback for handling association accept scenarios.
@@ -151,8 +142,7 @@ namespace Dicom.Network.Client
 
         public abstract void AddRequest(DicomRequest dicomRequest);
 
-        public abstract Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default);
+        public abstract Task SendAsync(CancellationToken cancellationToken = default);
     }
 
     public abstract class DicomClientWithAssociationState : DicomClientWithConnectionState
@@ -196,10 +186,9 @@ namespace Dicom.Network.Client
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public async Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public async Task SendAsync(CancellationToken cancellationToken = default)
         {
-            var parameters = new DicomClientConnectState.InitialisationParameters(host, port, useTls, callingAe, calledAe, millisecondsTimeout);
+            var parameters = new DicomClientConnectState.InitialisationParameters();
 
             var state = new DicomClientConnectState(_dicomClient, parameters);
 
@@ -252,22 +241,6 @@ namespace Dicom.Network.Client
 
         public class InitialisationParameters
         {
-            public string Host{ get; set; }
-            public int Port{ get; set; }
-            public bool UseTls{ get; set; }
-            public string CallingAe{ get; set; }
-            public string CalledAe { get; set; }
-            public int TimeoutInMs { get; set; }
-
-            public InitialisationParameters(string host, int port, bool useTls, string callingAe, string calledAe, int timeoutInMs)
-            {
-                Host = host ?? throw new ArgumentNullException(nameof(host));
-                Port = port;
-                UseTls = useTls;
-                CallingAe = callingAe ?? throw new ArgumentNullException(nameof(callingAe));
-                CalledAe = calledAe ?? throw new ArgumentNullException(nameof(calledAe));
-                TimeoutInMs = timeoutInMs;
-            }
         }
 
         public DicomClientConnectState(DicomClient dicomClient, InitialisationParameters initialisationParameters)
@@ -278,12 +251,12 @@ namespace Dicom.Network.Client
 
         public async Task OnEnter(CancellationToken cancellationToken)
         {
-            var host = _initialisationParameters.Host;
-            var port = _initialisationParameters.Port;
-            var useTls = _initialisationParameters.UseTls;
-            var millisecondsTimeout = _initialisationParameters.TimeoutInMs;
-            var callingAe = _initialisationParameters.CalledAe;
-            var calledAe = _initialisationParameters.CalledAe;
+            var host = _dicomClient.Host;
+            var port = _dicomClient.Port;
+            var useTls = _dicomClient.UseTls;
+            var millisecondsTimeout = _dicomClient.AssociationRequestTimeoutInMs;
+            var callingAe = _dicomClient.CalledAe;
+            var calledAe = _dicomClient.CalledAe;
             var noDelay = _dicomClient.Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
             var ignoreSslPolicyErrors = _dicomClient.Options?.IgnoreSslPolicyErrors ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
             var networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
@@ -313,10 +286,9 @@ namespace Dicom.Network.Client
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO what to do here? We're already connecting..
+            // Ignore, we're already connecting
             return Task.FromResult(0);
         }
 
@@ -352,8 +324,8 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            var host = _initialisationParameters.Host;
-            var port = _initialisationParameters.Port;
+            var host = _dicomClient.Host;
+            var port = _dicomClient.Port;
             return $"Connecting to {host}:{port}";
         }
     }
@@ -491,10 +463,9 @@ namespace Dicom.Network.Client
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO check if different parameters, if so enqueue transition
+            // Ignore, we're already busy trying to send
             return Task.FromResult(0);
         }
 
@@ -548,10 +519,9 @@ namespace Dicom.Network.Client
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO check if these parameters match with the existing association, if not, enqueue the necessary state transitions
+            // Ignore, we're already sending
             return Task.FromResult(0);
         }
 
@@ -657,10 +627,9 @@ namespace Dicom.Network.Client
             _lingerTimeoutCancellationTokenSource = new CancellationTokenSource();
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO check if parameters correspond with active association, take action accordingly
+            // Ignore, we will automatically send again if there are requests
             return Task.FromResult(0);
         }
 
@@ -704,7 +673,7 @@ namespace Dicom.Network.Client
         public override async Task OnEnter(CancellationToken cancellationToken)
         {
             // Start the clock
-            await Task.Delay(DicomClientDefaults.DefaultLingerInMs, _lingerTimeoutCancellationTokenSource.Token)
+            await Task.Delay(DicomClientDefaults.DefaultAssociationLingerInMs, _lingerTimeoutCancellationTokenSource.Token)
                 .ContinueWith(async lingerTask =>
                 {
                     if (lingerTask.IsCanceled)
@@ -781,10 +750,9 @@ namespace Dicom.Network.Client
             _associationReleaseTimeoutCancellationTokenSource = new CancellationTokenSource();
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO check if parameters correspond with active association, take action accordingly
+            // Ignore, we will automatically send again when there are requests
             return Task.FromResult(0);
         }
 
@@ -808,7 +776,6 @@ namespace Dicom.Network.Client
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-
             // TODO transition to aborted state
             return Task.FromResult(0);
         }
@@ -905,10 +872,9 @@ namespace Dicom.Network.Client
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO explicit send is requested, move back to association request state after abort
+            // Ignore, we're aborting now
             return Task.FromResult(0);
         }
 
@@ -994,10 +960,9 @@ namespace Dicom.Network.Client
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
         }
 
-        public override Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
-            int millisecondsTimeout = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default)
         {
-            // TODO explicit send is requested, move back to association request state after disconnect
+            // Ignore
             return Task.FromResult(0);
         }
 

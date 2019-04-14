@@ -39,9 +39,9 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 client.AddRequest(request);
-                client.Send("localhost", port, false, "STORESCU", "STORESCP");
+                client.Send();
                 handle.Wait(10000);
 
                 Assert.True(success);
@@ -67,9 +67,9 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 client.AddRequest(request);
-                client.Send("localhost", port, false, "STORESCU", "STORESCP");
+                client.Send();
                 handle.Wait(10000);
 
                 Assert.True(success);

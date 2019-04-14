@@ -20,7 +20,7 @@ namespace Dicom.Bugs
 
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "SCU", "SCP");
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =
@@ -30,7 +30,7 @@ namespace Dicom.Bugs
 
                 client.AdditionalPresentationContexts.AddRange(pcs);
 
-                var exception = Record.Exception(() => client.Send("localhost", port, false, "SCU", "SCP"));
+                var exception = Record.Exception(() => client.Send());
                 Assert.IsType<DicomNetworkException>(exception);
             }
         }

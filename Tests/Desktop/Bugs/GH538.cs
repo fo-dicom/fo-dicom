@@ -42,11 +42,11 @@ namespace Dicom.Bugs
                     handle2.Set();
                 };
 
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 client.AddRequest(request1);
                 client.AddRequest(request2);
 
-                client.Send("localhost", port, false, "STORESCU", "STORESCP");
+                client.Send();
                 handle1.Wait(10000);
                 handle2.Wait(10000);
 

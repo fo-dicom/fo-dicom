@@ -25,7 +25,7 @@ namespace Dicom.Bugs
                 var expected = DicomStatus.Success;
                 DicomStatus actual = null;
 
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(
                     new DicomCEchoRequest
                         {
@@ -34,7 +34,7 @@ namespace Dicom.Bugs
                                     lock (locker) actual = rsp.Status;
                                 }
                         });
-                client.Send("localhost", port, false, "SCU", "ANY-SCP");
+                client.Send();
 
                 Assert.Equal(expected, actual);
             }
@@ -50,7 +50,7 @@ namespace Dicom.Bugs
                 var locker = new object();
                 DicomStatus status = null;
 
-                var client = new DicomClient();
+                var client = new DicomClient("localhost", port, false, "SCU", "WRONG-SCP");
                 client.AddRequest(
                     new DicomCEchoRequest
                     {
@@ -62,7 +62,7 @@ namespace Dicom.Bugs
 
                 try
                 {
-                    client.Send("localhost", port, false, "SCU", "WRONG-SCP");
+                    client.Send();
                 }
                 catch
                 {

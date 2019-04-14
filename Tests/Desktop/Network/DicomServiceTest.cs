@@ -27,10 +27,10 @@ namespace Dicom.Network
                         dataset = request.Dataset;
                     };
 
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Send();
 
                 var commandField = command.Get<ushort>(DicomTag.CommandField);
                 Assert.Equal((ushort)1, commandField);
@@ -79,10 +79,10 @@ namespace Dicom.Network
                     responseDataset = res.Dataset;
                 };
 
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Send();
 
                 Assert.Equal((ushort)1, command.Get<ushort>(DicomTag.CommandField));
 
@@ -112,10 +112,10 @@ namespace Dicom.Network
                     dataset = request.Dataset;
                 };
 
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 var commandField = command.Get<ushort>(DicomTag.CommandField);
                 Assert.Equal((ushort)1, commandField);

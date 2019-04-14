@@ -26,10 +26,10 @@ namespace Dicom.Bugs
             {
                 var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
 
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP");
                 client.AddRequest(new DicomCStoreRequest(file));
 
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                var exception = Record.Exception(() => client.Send());
                 Assert.Null(exception);
             }
         }
@@ -43,10 +43,10 @@ namespace Dicom.Bugs
             {
                 var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP");
                 client.AddRequest(new DicomCStoreRequest(file));
 
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                var exception = Record.Exception(() => client.Send());
                 Assert.Null(exception);
             }
         }

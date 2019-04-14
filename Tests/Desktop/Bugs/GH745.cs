@@ -48,7 +48,10 @@ namespace Dicom.Bugs
 
                 var actual = 0;
 
-                var client = new DicomClient { Logger = clientLogger };
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
+                {
+                    Logger = clientLogger
+                };
                 for (var i = 0; i < expected; i++)
                 {
                     client.AddRequest(
@@ -64,7 +67,7 @@ namespace Dicom.Bugs
                         }
                     );
                     testLogger.Info("Sending #{0}", i);
-                    await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
+                    await client.SendAsync();
                     testLogger.Info("Sent (or timed out) #{0}", i);
                     //if (i != actual-1)
                     //{
@@ -100,7 +103,10 @@ namespace Dicom.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = new DicomClient { Logger = clientLogger };
+                        var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
+                        {
+                            Logger = clientLogger
+                        };
                         client.AddRequest(
                             new DicomCEchoRequest
                             {
@@ -113,7 +119,7 @@ namespace Dicom.Bugs
                         );
 
                         testLogger.Info("Sending #{0}", requestIndex);
-                        await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
+                        await client.SendAsync();
                         testLogger.Info("Sent (or timed out) #{0}", requestIndex);
                     }
                 ).ToArray();

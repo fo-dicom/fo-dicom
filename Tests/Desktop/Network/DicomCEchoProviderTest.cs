@@ -25,13 +25,13 @@ namespace Dicom.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new DicomClient();
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 for (var i = 0; i < 10; i++)
                 {
                     client.AddRequest(new DicomCEchoRequest());
                 }
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Send();
                 Assert.True(target.Logs.Count > 0);
             }
         }
