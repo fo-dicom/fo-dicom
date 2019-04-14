@@ -584,7 +584,7 @@ namespace Dicom.Network
                 var flag = new ManualResetEventSlim();
 
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Linger = 100;
+                client.AssociationLingerTimeoutInMs = 100;
                 client.AddRequest(
                     new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
                 client.SendAsync();

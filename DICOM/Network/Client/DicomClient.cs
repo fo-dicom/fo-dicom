@@ -144,9 +144,9 @@ namespace Dicom.Network.Client
         public bool UseTls { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
-        public int AssociationRequestTimeoutInMs { get; }
-        public int AssociationReleaseTimeoutInMs { get; }
-        public int AssociationLingerTimeoutInMs { get; }
+        public int AssociationRequestTimeoutInMs { get; set; }
+        public int AssociationReleaseTimeoutInMs { get; set; }
+        public int AssociationLingerTimeoutInMs { get; set; }
 
         internal IDicomClientState State { get; private set; }
 
