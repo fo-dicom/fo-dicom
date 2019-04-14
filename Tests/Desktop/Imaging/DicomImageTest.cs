@@ -88,6 +88,22 @@ namespace Dicom.Imaging
             }
         }
 
+        [Theory]
+        [InlineData("TestPattern_Palette.dcm")]
+        [InlineData("TestPattern_Palette_16.dcm")]
+        [InlineData("TestPattern_RGB.dcm")]
+        public void RenderImage_ColorPaletteWithOffset(string filename)
+        {
+            lock (_lock)
+            {
+                ImageManager.SetImplementation(WinFormsImageManager.Instance);
+                var file = new DicomImage(@".\Test Data\" + filename);
+                var image = file.RenderImage(0);
+                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+            }
+
+        }
+
 
         #endregion
     }

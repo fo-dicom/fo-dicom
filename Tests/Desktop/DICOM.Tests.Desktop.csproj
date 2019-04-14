@@ -132,6 +132,7 @@
     <Compile Include="DicomParseableTest.cs" />
     <Compile Include="DicomTransferSyntaxTest.cs" />
     <Compile Include="DicomUIDGeneratorTest.cs" />
+    <Compile Include="DicomValidationTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Helpers\PriorityOrderer.cs" />
     <Compile Include="Helpers\TestOutputHelperLogger.cs" />
@@ -310,6 +311,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH340.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_Palette.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_Palette_16.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_RGB.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\test_720.dcm">

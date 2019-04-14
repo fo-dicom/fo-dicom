@@ -47,23 +47,11 @@ namespace Dicom
 
         public ushort Element { get; private set; }
 
-        public bool IsPrivate
-        {
-            get
-            {
-                return Group.IsOdd();
-            }
-        }
+        public bool IsPrivate => Group.IsOdd();
 
         public DicomPrivateCreator PrivateCreator { get; set; }
 
-        public DicomDictionaryEntry DictionaryEntry
-        {
-            get
-            {
-                return DicomDictionary.Default[this];
-            }
-        }
+        public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
         public override string ToString()
         {
