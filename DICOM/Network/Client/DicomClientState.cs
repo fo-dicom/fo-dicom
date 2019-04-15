@@ -423,7 +423,6 @@ namespace Dicom.Network.Client
         {
             if (_onAssociationAcceptedTaskCompletionSource.TrySetResult(association))
             {
-                _dicomClient.NotifyAssociationAccepted(new AssociationAcceptedEventArgs(association));
             }
             else
             {
@@ -438,7 +437,6 @@ namespace Dicom.Network.Client
             if (_onAssociationRejectedTaskCompletionSource.TrySetResult((result, source, reason)))
             {
                 _dicomClient.Logger.Debug("Received association reject response");
-                _dicomClient.NotifyAssociationRejected(new AssociationRejectedEventArgs(result, source, reason));
             }
             else
             {
@@ -565,13 +563,19 @@ namespace Dicom.Network.Client
             if (winner == associationIsAccepted)
             {
                 _dicomClient.Logger.Debug("[RequestAssociationState] Association is accepted");
+                _dicomClient.NotifyAssociationAccepted(new AssociationAcceptedEventArgs(associationIsAccepted.Result));
                 await TransitionToSendingRequestsState(associationIsAccepted.Result, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsRejected)
             {
-                _dicomClient.Logger.Warn("[RequestAssociationState] Association is rejected");
                 var associationRejectedResult = associationIsRejected.Result;
-                var exception = new DicomAssociationRejectedException(associationRejectedResult.Result, associationRejectedResult.Source, associationRejectedResult.Reason);
+
+                _dicomClient.Logger.Warn("[RequestAssociationState] Association is rejected");
+                var result = associationRejectedResult.Result;
+                var source = associationRejectedResult.Source;
+                var reason = associationRejectedResult.Reason;
+                _dicomClient.NotifyAssociationRejected(new AssociationRejectedEventArgs(result, source, reason));
+                var exception = new DicomAssociationRejectedException(result, source, reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsAborted)
@@ -1111,12 +1115,10 @@ namespace Dicom.Network.Client
             if (_onAssociationReleasedTaskCompletionSource.TrySetResult(true))
             {
                 _dicomClient.Logger.Debug("Received association release response");
-                _dicomClient.NotifyAssociationReleased();
             }
             else
             {
                 _dicomClient.Logger.Warn("Received association release response but it's too late now");
-                _dicomClient.NotifyAssociationReleased();
             }
 
             _associationReleaseTimeoutCancellationTokenSource.Cancel();
@@ -1197,6 +1199,8 @@ namespace Dicom.Network.Client
 
             if (winner == onAssociationRelease)
             {
+                _dicomClient.NotifyAssociationReleased();
+
                 if (!cancellationToken.IsCancellationRequested && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _))
                 {
                     _dicomClient.Logger.Debug("More requests need to be sent after association release, creating new association");
