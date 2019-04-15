@@ -280,7 +280,7 @@ namespace Dicom.Network.Client
         [Obsolete]
         public static Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
-            if (dicomClient.State is DicomClientSendingRequestsState || dicomClient.State is DicomClientLingeringState)
+            if (dicomClient.State is DicomClientWithAssociationState)
                 return Task.FromResult(true);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -291,7 +291,7 @@ namespace Dicom.Network.Client
                 dicomClient.AssociationAccepted -= OnAssociationAccepted;
 
                 cancellationTokenSource.Cancel();
-                taskCompletionSource.SetResult(true);
+                taskCompletionSource.TrySetResult(true);
             }
 
             dicomClient.AssociationAccepted += OnAssociationAccepted;
@@ -300,7 +300,7 @@ namespace Dicom.Network.Client
                 .ContinueWith(_ =>
                 {
                     dicomClient.AssociationAccepted -= OnAssociationAccepted;
-                    taskCompletionSource.SetResult(false);
+                    taskCompletionSource.TrySetResult(false);
 
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
@@ -312,7 +312,7 @@ namespace Dicom.Network.Client
         {
             if (dicomClient.State is DicomClientWithConnectionState dicomClientWithConnectionState)
             {
-                var abortParameters = new DicomClientAbortState.InitialisationParameters(dicomClientWithConnectionState.Connection, dicomClientWithConnectionState.ListenerTask);
+                var abortParameters = new DicomClientAbortState.InitialisationParameters(dicomClientWithConnectionState.Connection);
                 var abortState = new DicomClientAbortState(dicomClient, abortParameters);
                 dicomClient.Transition(abortState, CancellationToken.None).GetAwaiter().GetResult();
             }
@@ -324,7 +324,7 @@ namespace Dicom.Network.Client
             if (dicomClient.State is DicomClientWithAssociationState dicomClientWithAssociationState)
             {
                 var releaseAssociationParameters = new DicomClientReleaseAssociationState.InitialisationParameters(
-                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection, dicomClientWithAssociationState.ListenerTask);
+                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection);
                 var releaseAssociationState = new DicomClientReleaseAssociationState(dicomClient, releaseAssociationParameters);
 
                 await dicomClient.Transition(releaseAssociationState, CancellationToken.None);
@@ -337,7 +337,7 @@ namespace Dicom.Network.Client
             if (dicomClient.State is DicomClientWithAssociationState dicomClientWithAssociationState)
             {
                 var releaseAssociationParameters = new DicomClientReleaseAssociationState.InitialisationParameters(
-                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection, dicomClientWithAssociationState.ListenerTask);
+                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection);
                 var releaseAssociationState = new DicomClientReleaseAssociationState(dicomClient, releaseAssociationParameters);
 
                 dicomClient.Transition(releaseAssociationState, CancellationToken.None).GetAwaiter().GetResult();

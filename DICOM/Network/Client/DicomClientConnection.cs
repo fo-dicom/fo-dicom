@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Dicom.Network.Client
@@ -9,6 +10,16 @@ namespace Dicom.Network.Client
         /// Gets the network stream of this connection
         /// </summary>
         INetworkStream NetworkStream { get; }
+
+        /// <summary>
+        /// Gets the long running listener task that waits for incoming DICOM communication from the server.
+        /// </summary>
+        Task Listener { get; }
+
+        /// <summary>
+        /// Opens a long running listener task that waits for incoming DICOM communication
+        /// </summary>
+        void StartListener();
 
         /// <summary>
         /// Send association request.
@@ -70,13 +81,22 @@ namespace Dicom.Network.Client
     public class DicomClientConnection : DicomService, IDicomClientConnection
     {
         private DicomClient DicomClient { get; }
+
         public INetworkStream NetworkStream { get; }
+        public Task Listener { get; private set; }
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
             : base(networkStream, dicomClient.FallbackEncoding, dicomClient.Logger)
         {
             DicomClient = dicomClient;
             NetworkStream = networkStream;
+        }
+
+        public void StartListener()
+        {
+            if (Listener != null) return;
+
+            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association)
