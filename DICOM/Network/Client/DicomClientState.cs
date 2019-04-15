@@ -236,7 +236,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            return $"Idle";
+            return $"IDLE";
         }
     }
 
@@ -375,7 +375,7 @@ namespace Dicom.Network.Client
         {
             var host = _dicomClient.Host;
             var port = _dicomClient.Port;
-            return $"Connecting to {host}:{port}";
+            return $"CONNECTING";
         }
     }
 
@@ -423,7 +423,6 @@ namespace Dicom.Network.Client
         {
             if (_onAssociationAcceptedTaskCompletionSource.TrySetResult(association))
             {
-                _dicomClient.Logger.Debug("Received association accept response");
                 _dicomClient.NotifyAssociationAccepted(new AssociationAcceptedEventArgs(association));
             }
             else
@@ -565,29 +564,31 @@ namespace Dicom.Network.Client
 
             if (winner == associationIsAccepted)
             {
-                _dicomClient.Logger.Debug("Association is accepted");
+                _dicomClient.Logger.Debug("[RequestAssociationState] Association is accepted");
                 await TransitionToSendingRequestsState(associationIsAccepted.Result, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsRejected)
             {
-                _dicomClient.Logger.Warn("Association is rejected");
+                _dicomClient.Logger.Warn("[RequestAssociationState] Association is rejected");
                 var associationRejectedResult = associationIsRejected.Result;
                 var exception = new DicomAssociationRejectedException(associationRejectedResult.Result, associationRejectedResult.Source, associationRejectedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsAborted)
             {
-                _dicomClient.Logger.Warn("Association is aborted");
+                _dicomClient.Logger.Warn("[RequestAssociationState] Association is aborted");
                 var associationAbortedResult = associationIsAborted.Result;
                 var exception = new DicomAssociationAbortedException(associationAbortedResult.Source, associationAbortedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == connectionIsClosed)
             {
+                _dicomClient.Logger.Warn("[RequestAssociationState] Disconnected");
                 await TransitionToDisconnectState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationRequestTimesOut)
             {
+                _dicomClient.Logger.Warn("[RequestAssociationState] Association request timeout");
                 await TransitionToDisconnectState(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -623,12 +624,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            var connection = _initialisationParameters.Connection;
-            var callingAe = _dicomClient.CallingAe;
-            var calledAe = _dicomClient.CalledAe;
-            var remoteHost = connection.NetworkStream.RemoteHost;
-            var remotePort = connection.NetworkStream.RemotePort;
-            return $"Requesting association from {callingAe} to {calledAe} at {remoteHost}:{remotePort}";
+            return $"REQUESTING ASSOCIATION";
         }
     }
 
@@ -813,21 +809,24 @@ namespace Dicom.Network.Client
 
             if (winner == sendQueueIsEmpty)
             {
+                _dicomClient.Logger.Debug("[SendingRequestsState] DICOM client send queue is empty, going to linger association now...");
                 await TransitionToLingerState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onCancellation.Task)
             {
+                _dicomClient.Logger.Debug("[SendingRequestsState] DICOM client cancellation requested while sending requests, releasing association...");
                 await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Warn("Association is aborted");
+                _dicomClient.Logger.Warn("[SendingRequestsState] Association is aborted while sending requests, cleaning up...");
                 var associationAbortedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(associationAbortedResult.Source, associationAbortedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
+                _dicomClient.Logger.Debug("[SendingRequestsState] DICOM client disconnected while sending requests, cleaning up...");
                 await TransitionToDisconnectState(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -852,7 +851,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            return $"Sending queued DICOM requests";
+            return $"SENDING REQUESTS";
         }
     }
 
@@ -1002,24 +1001,24 @@ namespace Dicom.Network.Client
 
             if (winner == onRequestIsAdded)
             {
-                _dicomClient.Logger.Debug("A new request was added, reusing association within linger timeout");
+                _dicomClient.Logger.Debug("[LingeringState] A new request was added, reusing association within linger timeout");
                 await TransitionToSendingRequestsState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onLingerTimeout)
             {
-                _dicomClient.Logger.Debug("Linger timed out, releasing association");
+                _dicomClient.Logger.Debug("[LingeringState] Linger timed out, releasing association");
                 await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Warn("Association was aborted during linger");
+                _dicomClient.Logger.Warn("[LingeringState] Association was aborted during linger");
                 var associationAbortedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(associationAbortedResult.Source, associationAbortedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Warn("Disconnected during linger");
+                _dicomClient.Logger.Warn("[LingeringState] Disconnected during linger");
                 await TransitionToDisconnectState(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -1054,7 +1053,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            return $"Keeping existing association open (lingering) for {_dicomClient.AssociationLingerTimeoutInMs}ms";
+            return $"LINGERING ASSOCIATION";
         }
     }
 
@@ -1112,10 +1111,12 @@ namespace Dicom.Network.Client
             if (_onAssociationReleasedTaskCompletionSource.TrySetResult(true))
             {
                 _dicomClient.Logger.Debug("Received association release response");
+                _dicomClient.NotifyAssociationReleased();
             }
             else
             {
                 _dicomClient.Logger.Warn("Received association release response but it's too late now");
+                _dicomClient.NotifyAssociationReleased();
             }
 
             _associationReleaseTimeoutCancellationTokenSource.Cancel();
@@ -1238,8 +1239,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            var association = _initialisationParameters.Association;
-            return $"Releasing association between {association.CallingAE} to {association.CalledAE} on {association.RemoteHost}:{association.RemotePort}";
+            return $"RELEASING ASSOCIATION";
         }
 
         public void Dispose()
@@ -1393,8 +1393,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            var connectionNetworkStream = _initialisationParameters.Connection?.NetworkStream;
-            return $"Aborting connection to {connectionNetworkStream?.RemoteHost}:{connectionNetworkStream?.RemotePort}";
+            return $"ABORTING ASSOCIATION";
         }
 
         public void Dispose()
@@ -1516,8 +1515,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            var connectionNetworkStream = _initialisationParameters.Connection?.NetworkStream;
-            return $"Disconnecting from {connectionNetworkStream?.RemoteHost}:{connectionNetworkStream?.RemotePort}";
+            return $"DISCONNECTING";
         }
     }
 
@@ -1565,15 +1563,6 @@ namespace Dicom.Network.Client
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
         }
 
-        private async Task TransitionToIdleState(CancellationToken cancellationToken)
-        {
-            var parameters = new DicomClientConnectState.InitialisationParameters();
-
-            var state = new DicomClientConnectState(_dicomClient, parameters);
-
-            await _dicomClient.Transition(state, cancellationToken).ConfigureAwait(false);
-        }
-
         private async Task Cleanup(IDicomClientConnection connection)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
@@ -1610,7 +1599,6 @@ namespace Dicom.Network.Client
             {
                 case DicomClientCompletedWithoutErrorInitialisationParameters _:
                     _dicomClient.Logger.Debug("DICOM client completed without errors");
-                    await TransitionToIdleState(cancellationToken).ConfigureAwait(false);
                     break;
 
                 case DicomClientCompletedWithErrorInitialisationParameters parameters:
@@ -1677,7 +1665,7 @@ namespace Dicom.Network.Client
 
         public override string ToString()
         {
-            return $"Completed";
+            return $"COMPLETED";
         }
     }
 

@@ -193,7 +193,7 @@ namespace Dicom.Network.Client
         {
             var oldState = State;
 
-            Logger.Info($"Transitioning from '{oldState}' to '{newState}'");
+            Logger.Info($"DICOM client transition: '{oldState}' --> '{newState}'");
 
             await oldState.OnExit(cancellationToken).ConfigureAwait(false);
 
