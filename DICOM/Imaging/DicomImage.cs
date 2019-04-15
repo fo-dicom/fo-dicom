@@ -26,13 +26,13 @@ namespace Dicom.Imaging
 
         private bool _rerender;
 
+        private Dictionary<int, IPixelData> _framePixels = new Dictionary<int, IPixelData>();
+
         private readonly DicomDataset _dataset;
 
         private readonly DicomPixelData _pixelData;
 
         private DicomOverlayData[] _overlays;
-
-        private IPixelData _pixels;
 
         private IPipeline _pipeline;
 
@@ -209,32 +209,40 @@ namespace Dicom.Imaging
 
         /// <summary>Renders DICOM image to <see cref="IImage"/>.</summary>
         /// <param name="frame">Zero indexed frame number.</param>
+        /// <param name="cachePixelData">Optional parameter to cache images. If true, rendering will be faster, but more memory will be used.</param>
         /// <returns>Rendered image</returns>
-        public virtual IImage RenderImage(int frame = 0)
+        public virtual IImage RenderImage(int frame = 0, bool cachePixelData = false)
         {
-            bool load;
             lock (_lock)
             {
-                load = frame >= 0 && (frame != CurrentFrame || _rerender);
                 _currentFrame = frame;
-                _rerender = false;
             }
 
             var frameIndex = GetFrameIndex(frame);
-            if (load)
-            {
-                lock (_lock)
-                {
-                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
-                }
-            }
 
             if (ShowOverlays) EstablishGraphicsOverlays();
 
             IImage image;
             lock (_lock)
-            { 
-                var graphic = new ImageGraphic(_pixels);
+            {
+                ImageGraphic graphic;
+                if (cachePixelData)
+                {
+                    if (!_framePixels.ContainsKey(frameIndex))
+                    {
+                        _framePixels[frameIndex] = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                        graphic = new ImageGraphic(_framePixels[frameIndex]);
+                    }
+                    else
+                    {
+                        graphic = new ImageGraphic(_framePixels[frameIndex]);
+                    }
+                }
+                else
+                {
+                    var pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    graphic = new ImageGraphic(pixels);
+                }
 
                 if (ShowOverlays)
                 {
@@ -252,8 +260,14 @@ namespace Dicom.Imaging
                         og.Scale(_scale);
                     }
                 }
-
-                image = graphic.RenderImage(_pipeline.LUT);
+                try
+                {
+                    image = graphic.RenderImage(_pipeline.LUT);
+                }
+                catch
+                {
+                    image = RenderImage(frameIndex, cachePixelData);
+                }
             }
 
             return image;

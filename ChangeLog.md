@@ -1,4 +1,6 @@
 #### v.4.0.2 (TBD)
+* Bug Fix: Fixed frame caching in DicomImage and added try-catch failsafe for multi-threading issues (#805)
+* Added optional parameter to RenderImage() to determine whether or Frames pixel data will be cached
 * Updated to DICOM Dictionary 2019a (#724)
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
