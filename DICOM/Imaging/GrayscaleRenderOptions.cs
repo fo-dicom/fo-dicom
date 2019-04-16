@@ -55,6 +55,16 @@ namespace Dicom.Imaging
         public string VOILUTFunction { get; private set; }
 
         /// <summary>
+        /// Modality LUT Sequence
+        /// </summary>
+        public DicomSequence ModalityLUTSequence { get; private set; }
+
+        /// <summary>
+        /// VOI LUT Sequence
+        /// </summary>
+        public DicomSequence VOILUTSequence { get; private set; }
+
+        /// <summary>
         /// Window width
         /// </summary>
         public double WindowWidth { get; set; }
@@ -140,8 +150,13 @@ namespace Dicom.Imaging
                 WindowCenter = dataset.GetValue<double>(DicomTag.WindowCenter, 0),
 
                 VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR"),
-                ColorMap = GetColorMap(dataset)
+                ColorMap = GetColorMap(dataset),
             };
+
+            if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                options.ModalityLUTSequence = modalityLutSequence;
+            if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+                options.VOILUTSequence = voiLutSequence;
 
             return options;
         }
@@ -178,6 +193,11 @@ namespace Dicom.Imaging
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
+
+            if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                options.ModalityLUTSequence = modalityLutSequence;
+            if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+                options.VOILUTSequence = voiLutSequence;
 
             return options;
         }
@@ -217,6 +237,11 @@ namespace Dicom.Imaging
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
+            if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                options.ModalityLUTSequence = modalityLutSequence;
+            if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+                options.VOILUTSequence = voiLutSequence;
+
             return options;
         }
 
@@ -242,6 +267,11 @@ namespace Dicom.Imaging
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
+
+            if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                options.ModalityLUTSequence = modalityLutSequence;
+            if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+                options.VOILUTSequence = voiLutSequence;
 
             return options;
         }
@@ -283,6 +313,11 @@ namespace Dicom.Imaging
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
+
+            if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                options.ModalityLUTSequence = modalityLutSequence;
+            if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+                options.VOILUTSequence = voiLutSequence;
 
             return options;
         }

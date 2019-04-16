@@ -4,9 +4,9 @@
 namespace Dicom.Imaging.LUT
 {
     /// <summary>
-    /// Modalit LUT implementation of <seealso cref="ILUT"/>
+    /// Modality Rescale LUT implementation of <seealso cref="IModalityLUT"/> and <seealso cref="ILUT"/>
     /// </summary>
-    public class ModalityLUT : ILUT
+    public class ModalityRescaleLUT : IModalityLUT
     {
         #region Private Members
 
@@ -21,10 +21,10 @@ namespace Dicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="ModalityLUT"/> using the specified slope and intercept parameters
+        /// Initialize new instance of <seealso cref="Dicom.Imaging.LUT.ModalityRescaleLUT"/> using the specified slope and intercept parameters
         /// </summary>
         /// <param name="options">Render options</param>
-        public ModalityLUT(GrayscaleRenderOptions options)
+        public ModalityRescaleLUT(GrayscaleRenderOptions options)
         {
             _renderOptions = options;
             _minValue = this[options.BitDepth.MinimumValue];
