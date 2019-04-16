@@ -5,6 +5,7 @@
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
 * Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
 * Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
+* Added Modality LUT Sequence and VOI LUT Sequence functionality when generating a DICOM Image.
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
