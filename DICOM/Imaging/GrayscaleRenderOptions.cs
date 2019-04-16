@@ -150,7 +150,7 @@ namespace Dicom.Imaging
                 WindowCenter = dataset.GetValue<double>(DicomTag.WindowCenter, 0),
 
                 VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR"),
-                ColorMap = GetColorMap(dataset),
+                ColorMap = GetColorMap(dataset)
             };
 
             if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
