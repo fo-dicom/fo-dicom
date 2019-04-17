@@ -15,20 +15,6 @@ namespace Dicom.Imaging.LUT
 
         private GrayscaleRenderOptions _renderOptions;
 
-        private double _windowCenter;
-
-        private double _windowWidth;
-
-        private double _windowCenterMin05;
-
-        private double _windowWidthMin1;
-
-        private double _windowWidthDiv2;
-
-        private int _windowStart;
-
-        private int _windowEnd;
-
         #endregion
 
         #region Public Constructors
@@ -47,86 +33,27 @@ namespace Dicom.Imaging.LUT
 
         #region Public Properties
 
-        protected double WindowCenter
-        {
-            get
-            {
-                return _windowCenter;
-            }
-        }
+        protected double WindowCenter { get; private set; }
 
-        protected double WindowWidth
-        {
-            get
-            {
-                return _windowWidth;
-            }
-        }
+        protected double WindowWidth { get; private set; }
 
-        protected double WindowCenterMin05
-        {
-            get
-            {
-                return _windowCenterMin05;
-            }
-        }
+        protected double WindowCenterMin05 { get; private set; }
 
-        protected double WindowWidthMin1
-        {
-            get
-            {
-                return _windowWidthMin1;
-            }
-        }
+        protected double WindowWidthMin1 { get; private set; }
 
-        protected double WindowWidthDiv2
-        {
-            get
-            {
-                return _windowWidthDiv2;
-            }
-        }
+        protected double WindowWidthDiv2 { get; private set; }
 
-        protected int WindowStart
-        {
-            get
-            {
-                return _windowStart;
-            }
-        }
+        protected int WindowStart { get; private set; }
 
-        protected int WindowEnd
-        {
-            get
-            {
-                return _windowEnd;
-            }
-        }
+        protected int WindowEnd { get; private set; }
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int MinimumOutputValue => 0;
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return 255;
-            }
-        }
+        public int MaximumOutputValue => 255;
 
-        public bool IsValid
-        {
-            get
-            {
-                // always recalculate
-                return false;
-            }
-        }
+        public int OutputRange => 255;
+
+        public bool IsValid => false; // always recalculate
 
         public abstract int this[int value] { get; }
 
@@ -136,15 +63,15 @@ namespace Dicom.Imaging.LUT
 
         public void Recalculate()
         {
-            if (_renderOptions.WindowWidth != _windowWidth || _renderOptions.WindowCenter != _windowCenter)
+            if (_renderOptions.WindowWidth != WindowWidth || _renderOptions.WindowCenter != WindowCenter)
             {
-                _windowWidth = _renderOptions.WindowWidth;
-                _windowCenter = _renderOptions.WindowCenter;
-                _windowCenterMin05 = _windowCenter - 0.5;
-                _windowWidthMin1 = _windowWidth - 1;
-                _windowWidthDiv2 = _windowWidthMin1 / 2;
-                _windowStart = (int)(_windowCenterMin05 - _windowWidthDiv2);
-                _windowEnd = (int)(_windowCenterMin05 + _windowWidthDiv2);
+                WindowWidth = _renderOptions.WindowWidth;
+                WindowCenter = _renderOptions.WindowCenter;
+                WindowCenterMin05 = WindowCenter - 0.5;
+                WindowWidthMin1 = WindowWidth - 1;
+                WindowWidthDiv2 = WindowWidthMin1 / 2;
+                WindowStart = (int)(WindowCenterMin05 - WindowWidthDiv2);
+                WindowEnd = (int)(WindowCenterMin05 + WindowWidthDiv2);
             }
         }
 
@@ -197,13 +124,13 @@ namespace Dicom.Imaging.LUT
         {
             get
             {
-                //if (value <= WindowStart)
-                //    return MinimumOutputValue;
-                //if (value > WindowEnd)
-                //    return MaximumOutputValue;
                 unchecked
                 {
-                    return (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * 255.0);
+                    return
+                        Math.Min(MaximumOutputValue,
+                        Math.Max(MinimumOutputValue,
+                        (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue)
+                        ));
                 }
             }
         }
