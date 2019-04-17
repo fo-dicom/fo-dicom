@@ -1,4 +1,5 @@
 #### v.4.0.2 (TBD)
+* Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
 * Updated to DICOM Dictionary 2019a (#724)
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)

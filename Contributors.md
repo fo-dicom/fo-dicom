@@ -40,7 +40,7 @@
 * [Victor Derks](https://github.com/vbaderks)
 * [Chris Darbonne](https://github.com/CDarbonne)
 * [Victor Chang](https://github.com/mocsharp)
-* [cjcaldwell](https://github.com/cjcaldwell)
+* [Chris Caldwell](https://github.com/cjcaldwell), Everlight Radiology
 * [vzdesic](https://github.com/vzdesic)
 * [Erik Edespong](https://github.com/edespong)
 * [vzdesic] (https://github.com/vzdesic)
