@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Dicom.Network.Client
@@ -117,42 +116,42 @@ namespace Dicom.Network.Client
         protected override Task OnSendQueueEmptyAsync()
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnSendQueueEmptyAsync)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnSendQueueEmptyAsync)}");
             return dicomClientState.OnSendQueueEmpty();
         }
 
         public Task OnReceiveAssociationAccept(DicomAssociation association)
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnReceiveAssociationAccept)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnReceiveAssociationAccept)}");
             return dicomClientState.OnReceiveAssociationAccept(association);
         }
 
         public Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnReceiveAssociationReject)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnReceiveAssociationReject)}");
             return dicomClientState.OnReceiveAssociationReject(result, source, reason);
         }
 
         public Task OnReceiveAssociationReleaseResponse()
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnReceiveAssociationReleaseResponse)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnReceiveAssociationReleaseResponse)}");
             return dicomClientState.OnReceiveAssociationReleaseResponse();
         }
 
         public Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnReceiveAbort)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnReceiveAbort)}");
             return dicomClientState.OnReceiveAbort(source, reason);
         }
 
         public Task OnConnectionClosed(Exception exception)
         {
             var dicomClientState = DicomClient.State;
-            DicomClient.Logger.Debug($"{dicomClientState.GetType().Name}: {nameof(OnConnectionClosed)}");
+            DicomClient.Logger.Debug($"[{dicomClientState}] {nameof(OnConnectionClosed)}");
             return dicomClientState.OnConnectionClosed(exception);
         }
     }

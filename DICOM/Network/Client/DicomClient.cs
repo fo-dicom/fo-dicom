@@ -63,6 +63,11 @@ namespace Dicom.Network.Client
         event EventHandler AssociationReleased;
 
         /// <summary>
+        /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
+        /// </summary>
+        event EventHandler<StateChangedEventArgs> StateChanged;
+
+        /// <summary>
         /// Set negotiation asynchronous operations.
         /// </summary>
         /// <param name="invoked">Asynchronous operations invoked.</param>
@@ -137,6 +142,30 @@ namespace Dicom.Network.Client
         public DicomRejectReason Reason { get; }
     }
 
+    public class StateChangedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets the old state the DicomClient was in
+        /// </summary>
+        public IDicomClientState OldState { get; }
+
+        /// <summary>
+        /// Gets the new state the DicomClient is in
+        /// </summary>
+        public IDicomClientState NewState { get; set; }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="StateChangedEventArgs"/>
+        /// </summary>
+        /// <param name="oldState"></param>
+        /// <param name="newState"></param>
+        public StateChangedEventArgs(IDicomClientState oldState, IDicomClientState newState)
+        {
+            OldState = oldState;
+            NewState = newState;
+        }
+    }
+
     public class DicomClient : IDicomClient
     {
         public string Host { get; }
@@ -201,6 +230,8 @@ namespace Dicom.Network.Client
 
             State = newState ?? throw new ArgumentNullException(nameof(newState));
 
+            StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+
             await newState.OnEnter(cancellationToken).ConfigureAwait(false);
         }
 
@@ -219,7 +250,7 @@ namespace Dicom.Network.Client
             AssociationReleased?.Invoke(this, EventArgs.Empty);
         }
 
-        public Logger Logger { get; set; }
+        public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
 
         public DicomServiceOptions Options { get; set; }
 
@@ -230,6 +261,7 @@ namespace Dicom.Network.Client
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
+        public event EventHandler<StateChangedEventArgs> StateChanged;
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
         {
@@ -250,7 +282,7 @@ namespace Dicom.Network.Client
 
     public static class ExtensionsForDicomClient
     {
-        [Obsolete]
+        [Obsolete("Use SendAsync instead")]
         public static void Send(this DicomClient dicomClient)
         {
             try
@@ -263,7 +295,8 @@ namespace Dicom.Network.Client
                 throw e.Flatten().InnerException;
             }
         }
-        [Obsolete]
+
+        [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
         public static bool WaitForAssociation(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
             try
@@ -277,71 +310,33 @@ namespace Dicom.Network.Client
             }
         }
 
-        [Obsolete]
-        public static Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
+        [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
+        public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
             if (dicomClient.State is DicomClientWithAssociationState)
-                return Task.FromResult(true);
+                return true;
 
-            var cancellationTokenSource = new CancellationTokenSource();
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var associationTask = new TaskCompletionSource<bool>();
 
-            void OnAssociationAccepted(object sender, AssociationAcceptedEventArgs eventArgs)
+            void OnStateChanged(object sender, StateChangedEventArgs stateChangedEventArgs)
             {
-                dicomClient.AssociationAccepted -= OnAssociationAccepted;
-
-                cancellationTokenSource.Cancel();
-                taskCompletionSource.TrySetResult(true);
+                if(stateChangedEventArgs.NewState is DicomClientWithAssociationState)
+                    associationTask.TrySetResult(true);
             }
 
-            dicomClient.AssociationAccepted += OnAssociationAccepted;
+            dicomClient.StateChanged += OnStateChanged;
 
-            Task.Delay(timeoutInMs, cancellationTokenSource.Token)
-                .ContinueWith(_ =>
-                {
-                    dicomClient.AssociationAccepted -= OnAssociationAccepted;
-                    taskCompletionSource.TrySetResult(false);
+            var timeoutCancellation = new CancellationTokenSource();
+            var timeout = Task.Delay(timeoutInMs, timeoutCancellation.Token);
 
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            var winner = await Task.WhenAny(associationTask.Task, timeout).ConfigureAwait(false);
 
-            return taskCompletionSource.Task;
-        }
+            dicomClient.StateChanged -= OnStateChanged;
 
-        [Obsolete("Use cancellation token instead")]
-        public static void Abort(this DicomClient dicomClient)
-        {
-            if (dicomClient.State is DicomClientWithConnectionState dicomClientWithConnectionState)
-            {
-                var abortParameters = new DicomClientAbortState.InitialisationParameters(dicomClientWithConnectionState.Connection);
-                var abortState = new DicomClientAbortState(dicomClient, abortParameters);
-                dicomClient.Transition(abortState, CancellationToken.None).GetAwaiter().GetResult();
-            }
-        }
+            timeoutCancellation.Cancel();
+            timeoutCancellation.Dispose();
 
-        [Obsolete("Use cancellation token instead")]
-        public static async Task ReleaseAsync(this DicomClient dicomClient)
-        {
-            if (dicomClient.State is DicomClientWithAssociationState dicomClientWithAssociationState)
-            {
-                var releaseAssociationParameters = new DicomClientReleaseAssociationState.InitialisationParameters(
-                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection);
-                var releaseAssociationState = new DicomClientReleaseAssociationState(dicomClient, releaseAssociationParameters);
-
-                await dicomClient.Transition(releaseAssociationState, CancellationToken.None);
-            }
-        }
-
-        [Obsolete("Use cancellation token instead")]
-        public static void Release(this DicomClient dicomClient)
-        {
-            if (dicomClient.State is DicomClientWithAssociationState dicomClientWithAssociationState)
-            {
-                var releaseAssociationParameters = new DicomClientReleaseAssociationState.InitialisationParameters(
-                    dicomClientWithAssociationState.Association, dicomClientWithAssociationState.Connection);
-                var releaseAssociationState = new DicomClientReleaseAssociationState(dicomClient, releaseAssociationParameters);
-
-                dicomClient.Transition(releaseAssociationState, CancellationToken.None).GetAwaiter().GetResult();
-            }
+            return winner == associationTask.Task;
         }
     }
 }

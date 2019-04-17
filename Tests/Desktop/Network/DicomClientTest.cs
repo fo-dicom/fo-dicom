@@ -302,23 +302,6 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void WaitForAssociation_Aborted_ReturnsFalse()
-        {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.AddRequest(new DicomCEchoRequest());
-                client.SendAsync();
-
-                client.Abort();
-                var actual = client.WaitForAssociation(1000);
-
-                Assert.False(actual);
-            }
-        }
-
-        [Fact]
         public async Task WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
         {
             int port = Ports.GetNext();
@@ -346,23 +329,6 @@ namespace Dicom.Network
 
                 var actual = await client.WaitForAssociationAsync(1);
                 task.Wait(1000);
-                Assert.False(actual);
-            }
-        }
-
-        [Fact]
-        public async Task WaitForAssociationAsync_Aborted_ReturnsFalse()
-        {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.AddRequest(new DicomCEchoRequest());
-                var task = client.SendAsync();
-                client.Abort();
-
-                var actual = await client.WaitForAssociationAsync(500);
-
                 Assert.False(actual);
             }
         }
@@ -421,46 +387,6 @@ namespace Dicom.Network
 
                 handle.Wait(1000);
                 Assert.True(released);
-            }
-        }
-
-        [Fact]
-        public void Release_AfterAssociation_SendIsCompleted()
-        {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.AddRequest(new DicomCEchoRequest());
-                var task = client.SendAsync();
-
-                client.WaitForAssociation();
-
-                client.Release();
-                Thread.Sleep(10);
-                Assert.True(task.IsCompleted);
-            }
-        }
-
-        [Fact]
-        public async Task ReleaseAsync_AfterAssociation_SendIsCompleted()
-        {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                Task task = null;
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.AssociationAccepted += HandleAssociationAccepted;
-                client.AddRequest(new DicomCEchoRequest());
-                task = client.SendAsync();
-
-                void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
-                {
-                    (sender as DicomClient).ReleaseAsync().Wait();
-                    Thread.Sleep(10);
-                    Assert.True(task.IsCompleted);
-                }
-
             }
         }
 
