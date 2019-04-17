@@ -180,10 +180,12 @@ namespace Dicom.Network
         {
             get
             {
+                bool isSendQueueEmpty;
                 lock (_lock)
                 {
-                    return _msgQueue.Count == 0 && _pending.Count == 0;
+                    isSendQueueEmpty = _msgQueue.Count == 0 && _pending.Count == 0;
                 }
+                return isSendQueueEmpty;
             }
         }
 
@@ -321,9 +323,15 @@ namespace Dicom.Network
 
                 lock (_lock)
                 {
-                    if (_writing) return;
+                    if (_writing)
+                    {
+                        return;
+                    }
 
-                    if (_pduQueue.Count == 0) return;
+                    if (_pduQueue.Count == 0)
+                    {
+                        return;
+                    }
 
                     _writing = true;
 
@@ -1051,8 +1059,9 @@ namespace Dicom.Network
                         Logger.Warn("Unknown message type: {type}", msg.Type);
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    Logger.Error("Exception in DoSendMessageAsync: {error}", e);
                 }
 
                 Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
@@ -1179,6 +1188,7 @@ namespace Dicom.Network
             }
 
             lock (_lock) _isDisconnectedFlag.Set();
+
             Logger.Info("Connection closed");
 
             if (exception != null) throw exception;
