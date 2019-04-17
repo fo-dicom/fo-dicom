@@ -1,4 +1,5 @@
 #### v.4.0.2 (TBD)
+* Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
 * Updated to DICOM Dictionary 2019a (#724)
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
@@ -6,6 +7,8 @@
 * Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
 * Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
 * Bug Fix: When adding datasets to a DicomDirectory where some patientNames have trailing ^, then they were not recognized as one patient (#765)
+* Bug Fix: Anonymizer throws exception on private tags (#771)
+* Bug Fix: Linear windowing wrong in corner cases (#816)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)

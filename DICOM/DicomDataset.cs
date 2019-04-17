@@ -81,7 +81,7 @@ namespace Dicom
                         if (tag.IsPrivate) tag = GetPrivateTag(tag);
                         var sequenceItems =
                             ((DicomSequence)item).Items.Where(dataset => dataset != null)
-                                .Select(dataset => new DicomDataset(dataset))
+                                .Select(dataset => new DicomDataset(dataset, validate))
                                 .ToArray();
                         _items[tag] = new DicomSequence(tag, sequenceItems);
                     }
@@ -1302,7 +1302,7 @@ namespace Dicom
             {
                 if (values == null) return DoAdd(new DicomCodeString(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomCodeString(tag, values.Cast<string>().ToArray()), allowUpdate);
-                if (typeof(T).GetTypeInfo().IsEnum) return DoAdd(new DicomCodeString(tag, values.Select(x => x.ToString()).ToArray()), allowUpdate);
+                if (typeof(T).GetTypeInfo().IsEnum) return DoAdd(new DicomCodeString(tag, values.Select(x => x.ToString().ToUpperInvariant()).ToArray()), allowUpdate);
             }
 
             if (vr == DicomVR.DA)
