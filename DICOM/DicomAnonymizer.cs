@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Dicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -202,7 +203,7 @@ namespace Dicom
                         case SecurityProfileActions.C: // Clean
                         case SecurityProfileActions.D: // Dummy
                             if (vr == DicomVR.UI) ReplaceUID(dataset, item);
-                            else if (vr.IsString) ReplaceString(dataset, encoding, item, "ANONYMOUS");
+                            else if (vr.ValueType == typeof(string)) ReplaceString(dataset, encoding, item, "ANONYMOUS");
                             else BlankItem(dataset, item, true);
                             break;
                         case SecurityProfileActions.K: // Keep
@@ -214,7 +215,7 @@ namespace Dicom
                             BlankItem(dataset, item, false);
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException(nameof(action));
                     }
                 }
 
@@ -303,7 +304,7 @@ namespace Dicom
 
             if (item is DicomSequence)
             {
-                dataset.AddOrUpdate<DicomDataset>(tag);
+                dataset.AddOrUpdate<DicomDataset>(DicomVR.SQ, tag);
                 return;
             }
 
@@ -339,9 +340,9 @@ namespace Dicom
 
             if (IsOtherElement(item)) // Replaces with an empty array
             {
-                var ctor = GetConstructor(item, typeof(DicomTag));
-                var updated = (DicomItem)ctor.Invoke(new object[] { tag });
-                dataset.AddOrUpdate(tag, updated);
+                var ctor = GetConstructor(item, typeof(DicomTag), typeof(IByteBuffer));
+                var updated = (DicomItem)ctor.Invoke(new object[] { tag, EmptyBuffer.Value });
+                dataset.AddOrUpdate(updated);
                 return;
             }
 
@@ -350,7 +351,7 @@ namespace Dicom
             {
                 var ctor = GetConstructor(item, typeof(DicomTag), valueType);
                 var updated = (DicomItem)ctor.Invoke(new[] { tag, Activator.CreateInstance(valueType) });
-                dataset.AddOrUpdate(tag, updated);
+                dataset.AddOrUpdate(updated);
             }
         }
 
