@@ -105,6 +105,7 @@ namespace Dicom.Imaging.LUT
     /// </summary>
     public class VOILinearLUT : VOILUT
     {
+
         #region Public Constructors
 
         /// <summary>
@@ -126,11 +127,17 @@ namespace Dicom.Imaging.LUT
             {
                 unchecked
                 {
-                    return
-                        Math.Min(MaximumOutputValue,
-                        Math.Max(MinimumOutputValue,
-                        (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue)
-                        ));
+                    if (WindowWidth == 1)
+                    {
+                        return value < WindowCenterMin05 ? MinimumOutputValue : MaximumOutputValue;
+                    }
+                    else
+                    {
+                        return Math.Min(MaximumOutputValue,
+                            Math.Max(MinimumOutputValue,
+                            (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue)
+                            ));
+                    }
                 }
             }
         }
