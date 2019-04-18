@@ -10,7 +10,9 @@
 * Bug Fix: Don't drop connection right after releasing an association (#839)
 * Bug Fix: Wait for release of previous association before opening a new one  (#833)
 * Bug Fix: When a connection is still open but the association is already released, create a new association (#833)
+* Bug Fix: When adding datasets to a DicomDirectory where some patientNames have trailing ^, then they were not recognized as one patient (#765)
 * Bug Fix: Anonymizer throws exception on private tags (#771)
+* Bug Fix: Linear windowing wrong in corner cases (#816)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
