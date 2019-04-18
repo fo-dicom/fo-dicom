@@ -6,6 +6,7 @@
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
 * Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
 * Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
+* Bug Fix: When adding datasets to a DicomDirectory where some patientNames have trailing ^, then they were not recognized as one patient (#765)
 * Bug Fix: Anonymizer throws exception on private tags (#771)
 * Bug Fix: Linear windowing wrong in corner cases (#816)
 
