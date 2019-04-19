@@ -134,7 +134,9 @@ namespace Dicom.Network.Client
                 }
                 else
                 {
-                    _dicomClient.Logger.Debug($"[{this}] No more requests to be sent, disconnecting...");
+                    _dicomClient.Logger.Debug(cancellationToken.IsCancellationRequested
+                        ? $"[{this}] Cancellation requested, disconnecting..."
+                        : $"[{this}] No more requests to be sent, disconnecting...");
                     await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
                 }
             }
