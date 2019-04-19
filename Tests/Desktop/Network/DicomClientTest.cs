@@ -779,6 +779,7 @@ namespace Dicom.Network
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
                 Assert.Equal(3, numberOfResponsesReceived);
+
             }
         }
 
