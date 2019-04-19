@@ -27,7 +27,9 @@ namespace Dicom.Network.Client
 
         public async Task OnEnter(CancellationToken cancellationToken)
         {
-            if (!cancellationToken.IsCancellationRequested && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _))
+            if (!cancellationToken.IsCancellationRequested 
+                && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _)
+                && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
                 _dicomClient.Logger.Debug($"[{this}] More requests to send (and no cancellation requested yet), automatically opening new association");
                 await TransitionToConnectState(cancellationToken).ConfigureAwait(false);
