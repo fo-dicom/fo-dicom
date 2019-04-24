@@ -121,10 +121,12 @@ namespace Dicom.Network
         /// <returns>Awaitable <see cref="Task{T}"/>, where result is the set value.</returns>
         internal Task<T> WaitAsync()
         {
+            Task<T> task;
             lock (_lock)
             {
-                return _tcs.Task;
+                task = _tcs.Task;
             }
+            return task;
         }
 
         #endregion

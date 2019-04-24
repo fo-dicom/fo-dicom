@@ -3,6 +3,7 @@
 
 using Dicom.Network;
 
+using Dicom.Network.Client;
 using Xunit;
 
 namespace Dicom.Bugs
@@ -13,13 +14,13 @@ namespace Dicom.Bugs
         #region Unit tests
 
         [Fact]
-        public void DicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
+        public void OldDicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
         {
             var port = Ports.GetNext();
 
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new DicomClient();
+                var client = new Network.DicomClient();
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =
@@ -30,6 +31,28 @@ namespace Dicom.Bugs
                 client.AdditionalPresentationContexts.AddRange(pcs);
 
                 var exception = Record.Exception(() => client.Send("localhost", port, false, "SCU", "SCP"));
+                Assert.IsType<DicomNetworkException>(exception);
+            }
+        }
+
+        [Fact]
+        public void DicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var client = new Network.Client.DicomClient("localhost", port, false, "SCU", "SCP");
+
+                // this just illustrates the issue of too many presentation contexts, not real world application.
+                var pcs =
+                    DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
+                        DicomStorageCategory.None,
+                        DicomTransferSyntax.ImplicitVRLittleEndian);
+
+                client.AdditionalPresentationContexts.AddRange(pcs);
+
+                var exception = Record.Exception(() => client.Send());
                 Assert.IsType<DicomNetworkException>(exception);
             }
         }

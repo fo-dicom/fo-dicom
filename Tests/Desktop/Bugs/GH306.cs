@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading.Tasks;
+using Dicom.Network.Client;
 
 namespace Dicom.Bugs
 {
@@ -17,6 +18,23 @@ namespace Dicom.Bugs
         #region Unit tests
 
         [Fact]
+        public void OldDicomClientSend_StoreNonPart10File_ShouldSucceed()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<CStoreScp>(port))
+            {
+                var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+
+                var client = new DicomClient();
+                client.AddRequest(new DicomCStoreRequest(file));
+
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                Assert.Null(exception);
+            }
+        }
+
+        [Fact]
         public void DicomClientSend_StoreNonPart10File_ShouldSucceed()
         {
             var port = Ports.GetNext();
@@ -24,6 +42,23 @@ namespace Dicom.Bugs
             using (var server = DicomServer.Create<CStoreScp>(port))
             {
                 var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+
+                var client = new Dicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP");
+                client.AddRequest(new DicomCStoreRequest(file));
+
+                var exception = Record.Exception(() => client.Send());
+                Assert.Null(exception);
+            }
+        }
+
+        [Fact]
+        public void OldDicomClientSend_StorePart10File_ShouldSucceed()
+        {
+            var port = Ports.GetNext();
+
+            using (var server = DicomServer.Create<CStoreScp>(port))
+            {
+                var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
                 var client = new DicomClient();
                 client.AddRequest(new DicomCStoreRequest(file));
@@ -42,10 +77,10 @@ namespace Dicom.Bugs
             {
                 var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new DicomClient();
+                var client = new Dicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP");
                 client.AddRequest(new DicomCStoreRequest(file));
 
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                var exception = Record.Exception(() => client.Send());
                 Assert.Null(exception);
             }
         }
