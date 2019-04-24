@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client
 {
@@ -25,9 +26,9 @@ namespace Dicom.Network.Client
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _associationRequestTimeoutCancellationTokenSource;
         private readonly TaskCompletionSource<DicomAssociation> _onAssociationAcceptedTaskCompletionSource;
-        private readonly TaskCompletionSource<(DicomRejectResult Result, DicomRejectSource Source, DicomRejectReason Reason)> _onAssociationRejectedTaskCompletionSource;
-        private readonly TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)> _onAssociationAbortedTaskCompletionSource;
-        private readonly TaskCompletionSource<Exception> _onConnectionClosedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAssociationRejectedEvent> _onAssociationRejectedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
+        private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
 
         public DicomClientRequestAssociationState(DicomClient dicomClient, InitialisationParameters initialisationParameters) : base(initialisationParameters)
         {
@@ -35,10 +36,9 @@ namespace Dicom.Network.Client
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _associationRequestTimeoutCancellationTokenSource = new CancellationTokenSource();
             _onAssociationAcceptedTaskCompletionSource = new TaskCompletionSource<DicomAssociation>();
-            _onAssociationRejectedTaskCompletionSource =
-                new TaskCompletionSource<(DicomRejectResult Result, DicomRejectSource Source, DicomRejectReason Reason)>();
-            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<Exception>();
+            _onAssociationRejectedTaskCompletionSource = new TaskCompletionSource<DicomAssociationRejectedEvent>();
+            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
         }
 
         public override Task OnReceiveAssociationAccept(DicomAssociation association)
@@ -50,7 +50,7 @@ namespace Dicom.Network.Client
 
         public override Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _onAssociationRejectedTaskCompletionSource.TrySetResult((result, source, reason));
+            _onAssociationRejectedTaskCompletionSource.TrySetResult(new DicomAssociationRejectedEvent(result, source, reason));
 
             return Task.FromResult(0);
         }
@@ -63,14 +63,14 @@ namespace Dicom.Network.Client
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAssociationAbortedTaskCompletionSource.TrySetResult((source, reason));
+            _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
 
         public override Task OnConnectionClosed(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(exception);
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }

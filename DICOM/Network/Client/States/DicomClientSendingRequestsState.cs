@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client
 {
@@ -14,11 +15,11 @@ namespace Dicom.Network.Client
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _sendRequestsCancellationTokenSource;
-        private readonly TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)> _onAssociationAbortedTaskCompletionSource;
-        private readonly TaskCompletionSource<Exception> _onConnectionClosedTaskCompletionSource;
-        private readonly TaskCompletionSource<bool> _onSendQueueEmptyTaskCompletionSource;
-        private readonly IList<IDisposable> _disposables;
+        private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
+        private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
+        private readonly TaskCompletionSource<SendQueueEmptyEvent> _onSendQueueEmptyTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
+        private readonly IList<IDisposable> _disposables;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
@@ -37,9 +38,9 @@ namespace Dicom.Network.Client
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _sendRequestsCancellationTokenSource = new CancellationTokenSource();
-            _onSendQueueEmptyTaskCompletionSource = new TaskCompletionSource<bool>();
-            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<Exception>();
+            _onSendQueueEmptyTaskCompletionSource = new TaskCompletionSource<SendQueueEmptyEvent>();
+            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
             _onCancellationTaskCompletionSource = new TaskCompletionSource<bool>();
             _disposables = new List<IDisposable>();
         }
@@ -78,7 +79,7 @@ namespace Dicom.Network.Client
             // Stop sending requests ASAP
             _sendRequestsCancellationTokenSource.Cancel();
 
-            _onAssociationAbortedTaskCompletionSource.TrySetResult((source, reason));
+            _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
@@ -88,14 +89,14 @@ namespace Dicom.Network.Client
             // Stop sending requests ASAP
             _sendRequestsCancellationTokenSource.Cancel();
 
-            _onConnectionClosedTaskCompletionSource.TrySetResult(exception);
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }
 
         public override Task OnSendQueueEmpty()
         {
-            _onSendQueueEmptyTaskCompletionSource.TrySetResult(true);
+            _onSendQueueEmptyTaskCompletionSource.TrySetResult(new SendQueueEmptyEvent());
 
             return Task.FromResult(0);
         }

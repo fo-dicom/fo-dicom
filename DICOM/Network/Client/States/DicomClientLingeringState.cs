@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client
 {
@@ -14,8 +15,8 @@ namespace Dicom.Network.Client
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _lingerTimeoutCancellationTokenSource;
-        private readonly TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)> _onAssociationAbortedTaskCompletionSource;
-        private readonly TaskCompletionSource<Exception> _onConnectionClosedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
+        private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onRequestAddedTaskCompletionSource;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
@@ -35,8 +36,8 @@ namespace Dicom.Network.Client
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _lingerTimeoutCancellationTokenSource = new CancellationTokenSource();
-            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<Exception>();
+            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
             _onRequestAddedTaskCompletionSource = new TaskCompletionSource<bool>();
         }
 
@@ -66,14 +67,14 @@ namespace Dicom.Network.Client
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAssociationAbortedTaskCompletionSource.TrySetResult((source, reason));
+            _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
 
         public override Task OnConnectionClosed(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(exception);
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }
