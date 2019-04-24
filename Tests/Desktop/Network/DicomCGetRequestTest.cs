@@ -13,7 +13,7 @@ namespace Dicom.Network
     {
         #region Unit tests
 
-/*
+
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public void DicomCGetRequest_OneImageInSeries_Received()
         {
@@ -48,9 +48,8 @@ namespace Dicom.Network
 
             Assert.Equal("RT ANKLE", dataset.Get<string>(DicomTag.StudyDescription));
         }
-*/
 
-/*
+
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
         public void DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
@@ -87,7 +86,6 @@ namespace Dicom.Network
 
             Assert.Equal(140, counter);
         }
-*/
 
         [Fact]
         public void Level_GetterOnRequestCreatedFromCommand_Throws()
