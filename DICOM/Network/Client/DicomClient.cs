@@ -86,7 +86,7 @@ namespace Dicom.Network.Client
         /// Sends existing requests to DICOM service.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
-        Task SendAsync(CancellationToken cancellationToken = default);
+        Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 
     public class DicomClient : IDicomClient
@@ -197,7 +197,7 @@ namespace Dicom.Network.Client
             State.AddRequest(dicomRequest);
         }
 
-        public async Task SendAsync(CancellationToken cancellationToken = default)
+        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             await State.SendAsync(cancellationToken).ConfigureAwait(false);
         }
