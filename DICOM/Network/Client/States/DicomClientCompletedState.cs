@@ -141,7 +141,7 @@ namespace Dicom.Network.Client.States
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public async Task SendAsync(CancellationToken cancellationToken = default)
+        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!(_initialisationParameters is DicomClientCompletedWithErrorInitialisationParameters))
             {

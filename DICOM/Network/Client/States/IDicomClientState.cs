@@ -25,7 +25,7 @@ namespace Dicom.Network.Client.States
         /// <summary>
         /// Sends existing requests to DICOM service.
         /// </summary>
-        Task SendAsync(CancellationToken cancellationToken = default);
+        Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Callback for handling association accept scenarios.

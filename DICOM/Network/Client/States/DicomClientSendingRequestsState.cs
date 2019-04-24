@@ -50,7 +50,7 @@ namespace Dicom.Network.Client.States
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we're already sending
             return Task.FromResult(0);

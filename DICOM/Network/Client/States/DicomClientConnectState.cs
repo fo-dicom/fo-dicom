@@ -131,7 +131,7 @@ namespace Dicom.Network.Client.States
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public Task SendAsync(CancellationToken cancellationToken = default)
+        public Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we're already connecting
             return Task.FromResult(0);

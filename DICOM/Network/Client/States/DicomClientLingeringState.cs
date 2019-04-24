@@ -41,7 +41,7 @@ namespace Dicom.Network.Client.States
             _onRequestAddedTaskCompletionSource = new TaskCompletionSource<bool>();
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we will automatically send again if there are requests
             return Task.FromResult(0);

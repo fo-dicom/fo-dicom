@@ -27,7 +27,7 @@ namespace Dicom.Network.Client.States
 
         public async Task OnEnter(CancellationToken cancellationToken)
         {
-            if (!cancellationToken.IsCancellationRequested 
+            if (!cancellationToken.IsCancellationRequested
                 && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _)
                 && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
@@ -56,7 +56,7 @@ namespace Dicom.Network.Client.States
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
         }
 
-        public async Task SendAsync(CancellationToken cancellationToken = default)
+        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Interlocked.CompareExchange(ref _sendCalled, 1, 0) != 0)
             {

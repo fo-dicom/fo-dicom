@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client.States
 {
@@ -10,8 +11,8 @@ namespace Dicom.Network.Client.States
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _associationReleaseTimeoutCancellationTokenSource;
-        private readonly TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)> _onAssociationAbortedTaskCompletionSource;
-        private readonly TaskCompletionSource<Exception> _onConnectionClosedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
+        private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onAssociationReleasedTaskCompletionSource;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
@@ -32,11 +33,11 @@ namespace Dicom.Network.Client.States
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _associationReleaseTimeoutCancellationTokenSource = new CancellationTokenSource();
             _onAssociationReleasedTaskCompletionSource = new TaskCompletionSource<bool>();
-            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<(DicomAbortSource Source, DicomAbortReason Reason)>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<Exception>();
+            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we will automatically send again when there are requests
             return Task.FromResult(0);
@@ -63,14 +64,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAssociationAbortedTaskCompletionSource.TrySetResult((source, reason));
+            _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
 
         public override Task OnConnectionClosed(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(exception);
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }

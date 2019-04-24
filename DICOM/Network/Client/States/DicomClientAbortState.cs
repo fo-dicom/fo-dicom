@@ -11,7 +11,7 @@ namespace Dicom.Network.Client.States
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
-        private readonly TaskCompletionSource<Exception> _onConnectionClosedTaskCompletionSource;
+        private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly CancellationTokenSource _associationAbortTimeoutCancellationTokenSource;
 
         public class InitialisationParameters : IInitialisationWithConnectionParameters
@@ -29,11 +29,11 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<Exception>();
+            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
             _associationAbortTimeoutCancellationTokenSource = new CancellationTokenSource();
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default)
+        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we're aborting now
             return Task.FromResult(0);
@@ -66,7 +66,7 @@ namespace Dicom.Network.Client.States
 
         public override Task OnConnectionClosed(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(exception);
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }

@@ -25,7 +25,7 @@ namespace Dicom.Network.Client.States
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _associationRequestTimeoutCancellationTokenSource;
-        private readonly TaskCompletionSource<DicomAssociation> _onAssociationAcceptedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAssociationAcceptedEvent> _onAssociationAcceptedTaskCompletionSource;
         private readonly TaskCompletionSource<DicomAssociationRejectedEvent> _onAssociationRejectedTaskCompletionSource;
         private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
         private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
@@ -35,7 +35,7 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _associationRequestTimeoutCancellationTokenSource = new CancellationTokenSource();
-            _onAssociationAcceptedTaskCompletionSource = new TaskCompletionSource<DicomAssociation>();
+            _onAssociationAcceptedTaskCompletionSource = new TaskCompletionSource<DicomAssociationAcceptedEvent>();
             _onAssociationRejectedTaskCompletionSource = new TaskCompletionSource<DicomAssociationRejectedEvent>();
             _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
@@ -43,7 +43,7 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAssociationAccept(DicomAssociation association)
         {
-            _onAssociationAcceptedTaskCompletionSource.TrySetResult(association);
+            _onAssociationAcceptedTaskCompletionSource.TrySetResult(new DicomAssociationAcceptedEvent(association));
 
             return Task.FromResult(0);
         }
@@ -156,8 +156,9 @@ namespace Dicom.Network.Client.States
             if (winner == associationIsAccepted)
             {
                 _dicomClient.Logger.Debug($"[{this}] Association is accepted");
-                _dicomClient.NotifyAssociationAccepted(new EventArguments.AssociationAcceptedEventArgs(associationIsAccepted.Result));
-                await TransitionToSendingRequestsState(associationIsAccepted.Result, cancellationToken).ConfigureAwait(false);
+                var association = associationIsAccepted.Result.Association;
+                _dicomClient.NotifyAssociationAccepted(new EventArguments.AssociationAcceptedEventArgs(association));
+                await TransitionToSendingRequestsState(association, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsRejected)
             {
