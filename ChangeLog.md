@@ -1,6 +1,7 @@
 #### v.4.0.2 (TBD)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
 * Updated to DICOM Dictionary 2019a (#724)
+* Add pure managed JpegLosses Decoder to DICOM.NetCore project
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
