@@ -58,6 +58,7 @@ using Dicom.IO;
 using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 using Dicom.Log;
+using Dicom.Network.Client;
 
 namespace Dicom.Network
 {
@@ -459,8 +460,8 @@ namespace Dicom.Network
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
                                 Association.ToString());
-                            await ((this as IDicomServiceProvider)?.OnReceiveAssociationRequestAsync(Association))
-                                .ConfigureAwait(false);
+                            if (this is IDicomServiceProvider provider)
+                                await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
                             break;
                         }
                         case 0x02:
@@ -472,7 +473,10 @@ namespace Dicom.Network
                                 "{calledAE} <- Association accept:\n{assocation}",
                                 LogID,
                                 Association.ToString());
-                            (this as IDicomServiceUser)?.OnReceiveAssociationAccept(Association);
+                            if (this is IDicomServiceUser dicomServiceUser)
+                                dicomServiceUser.OnReceiveAssociationAccept(Association);
+                            if (this is IDicomClientConnection connection)
+                                await connection.OnReceiveAssociationAccept(Association).ConfigureAwait(false);
                             break;
                         }
                         case 0x03:
@@ -485,10 +489,10 @@ namespace Dicom.Network
                                 pdu.Result,
                                 pdu.Source,
                                 pdu.Reason);
-                            (this as IDicomServiceUser)?.OnReceiveAssociationReject(
-                                pdu.Result,
-                                pdu.Source,
-                                pdu.Reason);
+                            if (this is IDicomServiceUser user)
+                                user.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
+                            if (this is IDicomClientConnection connection)
+                                await connection.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
                             if (TryCloseConnection()) return;
                             break;
                         }
@@ -505,8 +509,8 @@ namespace Dicom.Network
                             var pdu = new AReleaseRQ();
                             pdu.Read(raw);
                             Logger.Info("{logId} <- Association release request", LogID);
-                            await ((this as IDicomServiceProvider)?.OnReceiveAssociationReleaseRequestAsync())
-                                .ConfigureAwait(false);
+                            if(this is IDicomServiceProvider provider)
+                                await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
 
                             break;
                         }
@@ -515,7 +519,10 @@ namespace Dicom.Network
                             var pdu = new AReleaseRP();
                             pdu.Read(raw);
                             Logger.Info("{logId} <- Association release response", LogID);
-                            (this as IDicomServiceUser)?.OnReceiveAssociationReleaseResponse();
+                            if (this is IDicomServiceUser user)
+                                user.OnReceiveAssociationReleaseResponse();
+                            if (this is IDicomClientConnection connection)
+                                await connection.OnReceiveAssociationReleaseResponse().ConfigureAwait(false);
                             if (TryCloseConnection()) return;
                             break;
                         }
@@ -528,7 +535,8 @@ namespace Dicom.Network
                                 LogID,
                                 pdu.Source,
                                 pdu.Reason);
-                            (this as IDicomService)?.OnReceiveAbort(pdu.Source, pdu.Reason);
+                            if (this is IDicomService service)
+                                service.OnReceiveAbort(pdu.Source, pdu.Reason);
                             if (TryCloseConnection()) return;
                             break;
                         }
