@@ -136,7 +136,7 @@
     <Compile Include="DicomValidationTest.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Helpers\PriorityOrderer.cs" />
-    <Compile Include="Helpers\TestOutputHelperLogger.cs" />
+    <Compile Include="Helpers\XUnitDicomLogger.cs" />
     <Compile Include="Helpers\TestPriorityAttribute.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
     <Compile Include="Imaging\FrameGeometryTest.cs" />
