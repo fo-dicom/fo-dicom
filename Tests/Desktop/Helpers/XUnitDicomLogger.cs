@@ -50,7 +50,7 @@ namespace Dicom.Helpers
                 return;
 
             var prefix = _prefixEnrichers.Aggregate(
-                $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 6}",
+                $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 7}",
                 (intermediatePrefix, enrichPrefix) => enrichPrefix(intermediatePrefix));
             var message = string.Format(NameFormatToPositionalFormat(msg), args);
             var line = $"{prefix} : {message}";

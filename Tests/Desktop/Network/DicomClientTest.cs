@@ -70,9 +70,18 @@ namespace Dicom.Network
             return server as TServer;
         }
 
-        private DicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
+        private Network.Client.DicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            var client = new DicomClient(host, port, useTls, callingAe, calledAe)
+            var client = new Network.Client.DicomClient(host, port, useTls, callingAe, calledAe)
+            {
+                Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
+            };
+            return client;
+        }
+
+        private Network.DicomClient CreateOldClient()
+        {
+            var client = new DicomClient()
             {
                 Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
             };
@@ -81,7 +90,519 @@ namespace Dicom.Network
 
         #endregion
 
-        #region Unit tests
+        #region Unit tests for old DICOM client
+
+        [Fact]
+        public void Old_Send_SingleRequest_Recognized()
+        {
+            int port = Ports.GetNext();
+            using (DicomServer.Create<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+
+                var client = CreateOldClient();
+                client.AddRequest(request);
+
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.Equal(1, counter);
+            }
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(20)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public void Old_Send_MultipleRequests_AllRecognized(int expected)
+        {
+            var port = Ports.GetNext();
+            var flag = new ManualResetEventSlim();
+
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var actual = 0;
+                DicomCEchoRequest.ResponseDelegate callback = (req, res) =>
+                {
+                    Interlocked.Increment(ref actual);
+                    if (actual == expected) flag.Set();
+                };
+
+                var client = CreateOldClient();
+                client.NegotiateAsyncOps(expected, 1);
+
+                for (var i = 0; i < expected; ++i)
+                    client.AddRequest(new DicomCEchoRequest { OnResponseReceived = callback });
+
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                flag.Wait(10000);
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [InlineData(20)]
+        [InlineData(100)]
+        public void Old_Send_MultipleTimes_AllRecognized(int expected)
+        {
+            var port = Ports.GetNext();
+            var flag = new ManualResetEventSlim();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            using (var server = CreateServer<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) Thread.Sleep(50);
+
+                var actual = 0;
+
+                var client = CreateOldClient();
+
+                for (var i = 0; i < expected; ++i)
+                {
+                    var localIndex = i;
+                    client.AddRequest(
+                        new DicomCEchoRequest
+                            {
+                                OnResponseReceived = (req, res) =>
+                                    {
+                                        logger.Info($"i = {localIndex}, received response for [{req.MessageID}]");
+                                        Interlocked.Increment(ref actual);
+                                        if (actual == expected) flag.Set();
+                                    }
+                            });
+                    client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                }
+
+                flag.Wait(10000);
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public async Task Old_SendAsync_SingleRequest_Recognized()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+
+                var client = CreateOldClient();
+                client.AddRequest(request);
+
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                //await Task.WhenAny(task, Task.Delay(10000));
+                await task;
+                Assert.Equal(1, counter);
+            }
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(20)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public async Task OldSendAsync_MultipleRequests_AllRecognized(int expected)
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var actual = 0;
+
+                var client = CreateOldClient();
+                client.NegotiateAsyncOps(expected, 1);
+
+                for (var i = 0; i < expected; ++i) client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+
+                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await Task.WhenAny(task, Task.Delay(30000));
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [InlineData(20)]
+        [InlineData(100)]
+        public async Task Old_SendAsync_MultipleTimes_AllRecognized(int expected)
+        {
+            var port = Ports.GetNext();
+            var flag = new ManualResetEventSlim();
+
+            using (var server = CreateServer<DicomCEchoProvider>(port))
+            {
+                while (!server.IsListening) await Task.Delay(50);
+
+                var actual = 0;
+
+                var client = CreateOldClient();
+                for (var i = 0; i < expected; i++)
+                {
+                    client.AddRequest(
+                        new DicomCEchoRequest
+                            {
+                                OnResponseReceived = (req, res) =>
+                                    {
+                                        Interlocked.Increment(ref actual);
+                                        if (actual == expected) flag.Set();
+                                    }
+                            });
+                    await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                }
+
+                flag.Wait(10000);
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [InlineData(20)]
+        [InlineData(200)]
+        public async Task Old_SendAsync_MultipleTimesParallel_AllRecognized(int expected)
+        {
+            int port = Ports.GetNext();
+
+            using (
+                var server = CreateServer<DicomCEchoProvider>(port))
+            {
+                await Task.Delay(500);
+                Assert.True(server.IsListening, "Server is not listening");
+
+                var actual = 0;
+
+                var requests = Enumerable.Range(0, expected).Select(
+                    async requestIndex =>
+                        {
+                            var client = CreateOldClient();
+                            client.AddRequest(
+                                new DicomCEchoRequest
+                                    {
+                                        OnResponseReceived = (req, res) =>
+                                            {
+                                                _testOutputHelper.WriteLine("Response #{0}", requestIndex);
+                                                Interlocked.Increment(ref actual);
+                                            }
+                                    });
+
+                            _testOutputHelper.WriteLine("Sending #{0}", requestIndex);
+                            await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                            _testOutputHelper.WriteLine("Sent (or timed out) #{0}", requestIndex);
+                        }).ToList();
+                await Task.WhenAll(requests);
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public void Old_WaitForAssociation_WithinTimeout_ReturnsTrue()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                var actual = client.WaitForAssociation(10000);
+                task.Wait(10000);
+                Assert.True(actual);
+            }
+        }
+
+        [Fact]
+        public void Old_WaitForAssociation_TooShortTimeout_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                var actual = client.WaitForAssociation(1);
+                task.Wait(1000);
+                Assert.False(actual);
+            }
+        }
+
+        [Fact]
+        public async Task Old_WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                var actual = await client.WaitForAssociationAsync(10000);
+                task.Wait(10000);
+                Assert.True(actual);
+            }
+        }
+
+        [Fact]
+        public async Task Old_WaitForAssociationAsync_TooShortTimeout_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                var actual = await client.WaitForAssociationAsync(1);
+                task.Wait(1000);
+                Assert.False(actual);
+            }
+        }
+
+        [Fact]
+        public void Old_AssociationAccepted_SuccessfulSend_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+
+                var accepted = false;
+                client.AssociationAccepted += (sender, args) => accepted = true;
+
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.True(accepted);
+            }
+        }
+
+        [Fact]
+        public void Old_AssociationRejected_AssociationNotAllowed_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+
+                var reason = DicomRejectReason.NoReasonGiven;
+                client.AssociationRejected += (sender, args) => reason = args.Reason;
+
+                client.AddRequest(new DicomCEchoRequest());
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "NOTACCEPTEDSCP"));
+
+                Assert.Equal(DicomRejectReason.CalledAENotRecognized, reason);
+                Assert.NotNull(exception);
+            }
+        }
+
+        [Fact]
+        public void Old_AssociationReleased_SuccessfulSend_IsInvoked()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+
+                var released = false;
+                var handle = new ManualResetEventSlim();
+                client.AssociationReleased += (sender, args) => { released = true; handle.Set(); };
+
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                handle.Wait(1000);
+                Assert.True(released);
+            }
+        }
+
+        [Fact]
+        public void Old_Send_RecordAssociationData_AssociationContainsHostAndPort()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.NotNull(remoteHost);
+                Assert.True(remotePort > 0);
+                Assert.NotEqual(port, remotePort);
+            }
+        }
+
+        [Fact]
+        public void Old_Send_RejectedAssociation_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "INVALID"));
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
+        [Fact]
+        public async Task Old_SendAsync_RejectedAssociation_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var exception =
+                    await
+                    Record.ExceptionAsync(() => client.SendAsync("127.0.0.1", port, false, "SCU", "INVALID"))
+                        .ConfigureAwait(false);
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
+        [Fact(Skip = "Requires external C-ECHO SCP")]
+        public void Old_Send_EchoRequestToExternalServer_ShouldSucceed()
+        {
+            var result = false;
+            var awaiter = new ManualResetEventSlim();
+
+            var client = CreateOldClient();
+            var req = new DicomCEchoRequest();
+            req.OnResponseReceived = (rq, rsp) =>
+                {
+                    if (rsp.Status == DicomStatus.Success)
+                    {
+                        result = true;
+                    }
+                    awaiter.Set();
+                };
+            client.AddRequest(req);
+
+            try
+            {
+                client.Send("127.0.0.1", 11112, false, "SCU", "ANY-SCP");
+                awaiter.Wait();
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                client.Logger.Error("Send failed, exception: {0}", ex);
+                awaiter.Set();
+            }
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void Old_IsSendRequired_AddedRequestNotConnected_ReturnsTrue()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                Assert.True(client.IsSendRequired);
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                Thread.Sleep(100);
+
+                client.AddRequest(new DicomCEchoRequest());
+
+                Assert.True(client.IsSendRequired);
+            }
+        }
+
+        [Fact]
+        public void Old_IsSendRequired_NoRequestNotConnected_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                Assert.False(client.IsSendRequired);
+            }
+        }
+
+        [Fact]
+        public void Old_IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<DicomCEchoProvider>(port))
+            {
+                var counter = 0;
+                var flag = new ManualResetEventSlim();
+
+                var client = CreateOldClient();
+                client.Linger = 100;
+                client.AddRequest(
+                    new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
+                client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                client.AddRequest(
+                    new DicomCEchoRequest
+                        {
+                            OnResponseReceived = (req, res) =>
+                                {
+                                    Interlocked.Increment(ref counter);
+                                    flag.Set();
+                                }
+                        });
+                Assert.False(client.IsSendRequired);
+
+                flag.Wait(1000);
+                Assert.Equal(2, counter);
+            }
+        }
+
+        [Fact]
+        public void Old_Send_ToExplicitOnlyProvider_NotAccepted()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<ExplicitLECStoreProvider>(port))
+            {
+                var request = new DicomCStoreRequest(@"./Test Data/CR-MONO1-10-chest");
+
+                var client = CreateOldClient();
+                client.AddRequest(request);
+
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP"));
+
+                Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
+        [Theory]
+        [InlineData(200)]
+        public void Old_Send_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<SimpleCStoreProvider>(port))
+            {
+                var actual = 0;
+
+                var client = CreateOldClient();
+                client.NegotiateAsyncOps(expected, 1);
+
+                for (var i = 0; i < expected; ++i)
+                    client.AddRequest(new DicomCStoreRequest(@"./Test Data/CT1_J2KI")
+                    {
+                        OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
+                    });
+
+                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP"));
+
+                Assert.Null(exception);
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        #endregion
+
+        #region Unit tests for new DICOM client
 
         [Fact]
         public void Send_SingleRequest_Recognized()

@@ -1,5 +1,4 @@
-﻿/*
-// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
@@ -90,6 +89,7 @@ namespace Dicom.Network
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
+    [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
     public class DicomClient
     {
         #region FIELDS
@@ -135,6 +135,7 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
         /// </summary>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public DicomClient()
         {
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
@@ -168,7 +169,7 @@ namespace Dicom.Network
         /// <summary>
         /// Representation of the DICOM association released event.
         /// </summary>
-        public event EventHandler AssociationReleased = delegate { };A
+        public event EventHandler AssociationReleased = delegate { };
 
         #endregion
 
@@ -290,7 +291,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Synchonously send existing requests to DICOM service.
+        /// Synchronously send existing requests to DICOM service.
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
@@ -298,6 +299,7 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -338,6 +340,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -367,6 +370,7 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Send(INetworkStream stream, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -399,6 +403,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public Task SendAsync(INetworkStream stream, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -456,6 +461,7 @@ namespace Dicom.Network
         /// <summary>
         /// Synchronously release association.
         /// </summary>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Release(int millisecondsTimeout = DefaultReleaseTimeout)
         {
             try
@@ -473,6 +479,7 @@ namespace Dicom.Network
         /// Asynchronously release association.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public async Task ReleaseAsync(int millisecondsTimeout = DefaultReleaseTimeout)
         {
             try
@@ -989,4 +996,3 @@ namespace Dicom.Network
 }
 
 #endif
-*/
