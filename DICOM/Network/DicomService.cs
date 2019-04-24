@@ -179,10 +179,12 @@ namespace Dicom.Network
         {
             get
             {
+                bool isSendQueueEmpty;
                 lock (_lock)
                 {
-                    return _msgQueue.Count == 0 && _pending.Count == 0;
+                    isSendQueueEmpty = _msgQueue.Count == 0 && _pending.Count == 0;
                 }
+                return isSendQueueEmpty;
             }
         }
 
@@ -264,9 +266,9 @@ namespace Dicom.Network
         /// The purpose of this method is to create a DicomFile for the SopInstance received via
         /// CStoreSCP to pass to the IDicomCStoreProvider.OnCStoreRequest method for processing.
         /// This default implementation will return a DicomFile if the stream created by
-        /// CreateCStoreReceiveStream() is seekable or null if it is not.  Child classes that 
-        /// override CreateCStoreReceiveStream may also want override this to return a DicomFile 
-        /// for unseekable streams or to do cleanup related to receiving that specific instance.  
+        /// CreateCStoreReceiveStream() is seekable or null if it is not.  Child classes that
+        /// override CreateCStoreReceiveStream may also want override this to return a DicomFile
+        /// for unseekable streams or to do cleanup related to receiving that specific instance.
         /// </summary>
         /// <returns>The DicomFile or null if the stream is not seekable.</returns>
         protected virtual DicomFile GetCStoreDicomFile()
@@ -320,9 +322,15 @@ namespace Dicom.Network
 
                 lock (_lock)
                 {
-                    if (_writing) return;
+                    if (_writing)
+                    {
+                        return;
+                    }
 
-                    if (_pduQueue.Count == 0) return;
+                    if (_pduQueue.Count == 0)
+                    {
+                        return;
+                    }
 
                     _writing = true;
 
@@ -544,7 +552,7 @@ namespace Dicom.Network
                 }
                 catch (IOException e)
                 {
-                    // LogIOException returns true for underlying socket error (probably due to forcibly closed connection), 
+                    // LogIOException returns true for underlying socket error (probably due to forcibly closed connection),
                     // in that case discard exception
                     TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
                 }
@@ -905,7 +913,7 @@ namespace Dicom.Network
             return SendNextMessageAsync();
         }
 
-        private async Task SendNextMessageAsync()
+        internal async Task SendNextMessageAsync()
         {
             var sendQueueEmpty = false;
 
@@ -1051,8 +1059,9 @@ namespace Dicom.Network
                         Logger.Warn("Unknown message type: {type}", msg.Type);
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    Logger.Error("Exception in DoSendMessageAsync: {error}", e);
                 }
 
                 Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
@@ -1066,8 +1075,8 @@ namespace Dicom.Network
                 {
                     // remove group lengths as recommended in PS 3.5 7.2
                     //
-                    //	2. It is recommended that Group Length elements be removed during storage or transfer 
-                    //	   in order to avoid the risk of inconsistencies arising during coercion of data 
+                    //	2. It is recommended that Group Length elements be removed during storage or transfer
+                    //	   in order to avoid the risk of inconsistencies arising during coercion of data
                     //	   element values and changes in transfer syntax.
                     msg.Dataset.RemoveGroupLengths();
 
@@ -1179,6 +1188,7 @@ namespace Dicom.Network
             }
 
             lock (_lock) _isDisconnectedFlag.Set();
+
             Logger.Info("Connection closed");
 
             if (exception != null) throw exception;

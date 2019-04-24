@@ -47,4 +47,5 @@
 * [gustavosaita](https://github.com/gustavosaita)
 * [MikaelBertze](https://github.com/mikaelbertze)
 * [PalminX](https://github.com/PalminX)
+* [amoerie](https://github.com/amoerie)
 * [Pieter-Jan Van Robays] (https://github.com/PieterJanVR)

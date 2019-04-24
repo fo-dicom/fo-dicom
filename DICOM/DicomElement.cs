@@ -1442,6 +1442,21 @@ namespace Dicom
             }
         }
 
+        #region Public Functions
+
+        public static bool HaveSameContent(DicomPersonName nameA, DicomPersonName nameB)
+        {
+            if (nameA == null && nameB == null) { return true; } // both are null
+            if (nameA == null || nameB == null) { return false; } // one us null but the other is not
+            return string.Compare(nameA.Last, nameB.Last, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.First, nameB.First, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Middle, nameB.Middle, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Prefix, nameB.Prefix, StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Suffix, nameB.Suffix, StringComparison.CurrentCultureIgnoreCase) == 0;
+        }
+
+        #endregion
+
     }
 
     /// <summary>Short String (SH)</summary>
