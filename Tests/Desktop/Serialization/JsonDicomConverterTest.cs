@@ -106,7 +106,7 @@ namespace Dicom.Serialization
             _output.WriteLine(
                 $"Parsing tag with JsonDicomConverter.ParseTag: {millisecondsPerCallD} ms for {DicomDictionary.Default.Count()} tests");
 
-            Assert.InRange(millisecondsPerCallD / (1 + millisecondsPerCallC), 0, 4);
+            Assert.InRange(millisecondsPerCallD / (1 + millisecondsPerCallC), 0, 10);
 
         }
 

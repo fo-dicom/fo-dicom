@@ -4,8 +4,12 @@
 * Upgraded native libraries to MSVC platform toolset v141 (VS 2017) (#814)
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
+* Be more prudent when releasing association after the linger timeout (#840)
 * Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
 * Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
+* Bug Fix: Don't drop connection right after releasing an association (#839)
+* Bug Fix: Wait for release of previous association before opening a new one  (#833)
+* Bug Fix: When a connection is still open but the association is already released, create a new association (#833)
 * Bug Fix: When adding datasets to a DicomDirectory where some patientNames have trailing ^, then they were not recognized as one patient (#765)
 * Bug Fix: Anonymizer throws exception on private tags (#771)
 * Bug Fix: Linear windowing wrong in corner cases (#816)

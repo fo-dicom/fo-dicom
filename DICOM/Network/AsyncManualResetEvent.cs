@@ -4,6 +4,7 @@
 #if !NET35
 
 using System.Threading.Tasks;
+using Dicom.Log;
 
 namespace Dicom.Network
 {
@@ -31,7 +32,6 @@ namespace Dicom.Network
         internal AsyncManualResetEvent(bool isSet, T value)
         {
             _tcs = new TaskCompletionSource<T>();
-
             if (isSet)
                 _tcs.TrySetResult(value);
         }
@@ -65,13 +65,14 @@ namespace Dicom.Network
         {
             get
             {
+                bool isCompleted;
                 lock (_lock)
                 {
-                    return _tcs.Task.IsCompleted;
+                    isCompleted = _tcs.Task.IsCompleted;
                 }
+                return isCompleted;
             }
         }
-
         #endregion
 
         #region METHODS
@@ -84,6 +85,8 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
+                if (_tcs.Task.IsCompleted)
+                    _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(value);
             }
         }
@@ -95,6 +98,8 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
+                if (_tcs.Task.IsCompleted)
+                    _tcs = new TaskCompletionSource<T>();
                 _tcs.TrySetResult(default(T));
             }
         }
@@ -106,8 +111,7 @@ namespace Dicom.Network
         {
             lock (_lock)
             {
-                if (_tcs.Task.IsCompleted)
-                    _tcs = new TaskCompletionSource<T>();
+                _tcs = new TaskCompletionSource<T>();
             }
         }
 
