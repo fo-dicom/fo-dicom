@@ -614,16 +614,16 @@ namespace Dicom.Media
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
             var patientId = dataset.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
-            var patientName = dataset.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
+            var patientName = dataset.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
 
             var currentPatient = RootDirectoryRecord;
 
             while (currentPatient != null)
             {
                 var currPatId = currentPatient.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
-                var currPatName = currentPatient.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
+                var currPatName = currentPatient.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
 
-                if (currPatId == patientId && currPatName == patientName)
+                if (currPatId == patientId && DicomPersonName.HaveSameContent(currPatName, patientName))
                 {
                     return currentPatient;
                 }
@@ -653,6 +653,7 @@ namespace Dicom.Media
 
             return newPatient;
         }
+
 
         private DicomDirectoryRecord CreateRecordSequenceItem(DicomDirectoryRecordType recordType, DicomDataset dataset)
         {

@@ -64,10 +64,14 @@ namespace Dicom.Network
         {
             try
             {
-                var awaiter =
-                    await
-                    Task.WhenAny(_listener.AcceptTcpClientAsync(), Task.Delay(-1, token)).ConfigureAwait(false);
-
+                Task awaiter;
+                using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token))
+                {
+                    awaiter =
+                        await
+                        Task.WhenAny(_listener.AcceptTcpClientAsync(), Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
+                    cancelSource.Cancel();
+                }
                 var tcpClientTask = awaiter as Task<TcpClient>;
                 if (tcpClientTask != null)
                 {
