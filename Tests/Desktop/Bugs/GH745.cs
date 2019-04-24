@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,11 +19,13 @@ namespace Dicom.Bugs
     public class GH745
     {
 
-        private readonly ITestOutputHelper output;
+        private readonly XUnitDicomLogger output;
 
         public GH745(ITestOutputHelper output)
         {
-            this.output = output;
+            this.output = new XUnitDicomLogger(output)
+                .IncludeTimestamps()
+                .IncludeThreadId();
         }
 
 
@@ -33,14 +36,18 @@ namespace Dicom.Bugs
         public async Task DicomClientShallNotCloseConnectionTooEarly_CEchoSerialAsync(int expected)
         {
             var port = Ports.GetNext();
+            var testLogger = this.output.IncludePrefix("GH745");
+            var clientLogger = this.output.IncludePrefix(nameof(DicomClient));
+            var serverLogger = this.output.IncludePrefix(nameof(DicomCEchoProvider));
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
+                server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
 
                 var actual = 0;
 
-                var client = new DicomClient();
+                var client = new DicomClient { Logger = clientLogger };
                 for (var i = 0; i < expected; i++)
                 {
                     client.AddRequest(
@@ -48,16 +55,16 @@ namespace Dicom.Bugs
                         {
                             OnResponseReceived = (req, res) =>
                             {
-                                output.WriteLine("Response #{0} / expected #{1}", actual, req.UserState);
+                                testLogger.Info("Response #{0} / expected #{1}", actual, req.UserState);
                                 Interlocked.Increment(ref actual);
-                                output.WriteLine("         #{0} / expected #{1}", actual - 1, req.UserState);
+                                testLogger.Info("         #{0} / expected #{1}", actual - 1, req.UserState);
                             },
                             UserState = i
                         }
                     );
-                    output.WriteLine("Sending #{0}", i);
+                    testLogger.Info("Sending #{0}", i);
                     await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
-                    output.WriteLine("Sent (or timed out) #{0}", i);
+                    testLogger.Info("Sent (or timed out) #{0}", i);
                     //if (i != actual-1)
                     //{
                     //    output.WriteLine("  waiting #{0}", i);
@@ -78,8 +85,13 @@ namespace Dicom.Bugs
         {
             int port = Ports.GetNext();
 
+            var testLogger = this.output.IncludePrefix("GH745");
+            var clientLogger = this.output.IncludePrefix(nameof(DicomClient));
+            var serverLogger = this.output.IncludePrefix(nameof(DicomCEchoProvider));
+
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
+                server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
 
                 var actual = 0;
@@ -87,21 +99,21 @@ namespace Dicom.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = new DicomClient();
+                        var client = new DicomClient { Logger = clientLogger };
                         client.AddRequest(
                             new DicomCEchoRequest
                             {
                                 OnResponseReceived = (req, res) =>
                                 {
-                                    output.WriteLine("Response #{0}", requestIndex);
+                                    testLogger.Info("Response #{0}", requestIndex);
                                     Interlocked.Increment(ref actual);
                                 }
                             }
                         );
 
-                        output.WriteLine("Sending #{0}", requestIndex);
+                        testLogger.Info("Sending #{0}", requestIndex);
                         await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000);
-                        output.WriteLine("Sent (or timed out) #{0}", requestIndex);
+                        testLogger.Info("Sent (or timed out) #{0}", requestIndex);
                     }
                 ).ToArray();
 
