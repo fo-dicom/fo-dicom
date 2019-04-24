@@ -1,6 +1,6 @@
 using System;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.EventArguments
 {
     /// <summary>
     /// Container class for arguments associated with the <see cref="Dicom.Network.Client.DicomClient.AssociationRejected"/> event.

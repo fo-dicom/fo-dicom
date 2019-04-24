@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     /// <summary>
     /// The DICOM client is connected to the server and requires an association. When transitioning into this state, a new association request will be sent
@@ -156,7 +156,7 @@ namespace Dicom.Network.Client
             if (winner == associationIsAccepted)
             {
                 _dicomClient.Logger.Debug($"[{this}] Association is accepted");
-                _dicomClient.NotifyAssociationAccepted(new AssociationAcceptedEventArgs(associationIsAccepted.Result));
+                _dicomClient.NotifyAssociationAccepted(new EventArguments.AssociationAcceptedEventArgs(associationIsAccepted.Result));
                 await TransitionToSendingRequestsState(associationIsAccepted.Result, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == associationIsRejected)
@@ -167,7 +167,7 @@ namespace Dicom.Network.Client
                 var result = associationRejectedResult.Result;
                 var source = associationRejectedResult.Source;
                 var reason = associationRejectedResult.Reason;
-                _dicomClient.NotifyAssociationRejected(new AssociationRejectedEventArgs(result, source, reason));
+                _dicomClient.NotifyAssociationRejected(new EventArguments.AssociationRejectedEventArgs(result, source, reason));
                 var exception = new DicomAssociationRejectedException(result, source, reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }

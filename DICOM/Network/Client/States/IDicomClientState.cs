@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     public interface IDicomClientState
     {

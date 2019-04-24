@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     /// <summary>
     /// When we have an active association, but no more DICOM requests to send (and all responses for previous requests have already arrived)

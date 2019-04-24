@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     /// <summary>
     /// The DICOM client is doing nothing. Call SendAsync to begin

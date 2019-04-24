@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Log;
 using Dicom.Network.Client;
-
+using Dicom.Network.Client.States;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Log;
+using Dicom.Network.Client.EventArguments;
+using Dicom.Network.Client.States;
 
 namespace Dicom.Network.Client
 {
@@ -50,12 +52,12 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Representation of the DICOM association accepted event.
         /// </summary>
-        event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
+        event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
 
         /// <summary>
         /// Representation of the DICOM association rejected event.
         /// </summary>
-        event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
+        event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
 
         /// <summary>
         /// Representation of the DICOM association released event.
@@ -156,12 +158,12 @@ namespace Dicom.Network.Client
             await newState.OnEnter(cancellationToken).ConfigureAwait(false);
         }
 
-        internal void NotifyAssociationAccepted(AssociationAcceptedEventArgs eventArgs)
+        internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
         {
             AssociationAccepted?.Invoke(this, eventArgs);
         }
 
-        internal void NotifyAssociationRejected(AssociationRejectedEventArgs eventArgs)
+        internal void NotifyAssociationRejected(EventArguments.AssociationRejectedEventArgs eventArgs)
         {
             AssociationRejected?.Invoke(this, eventArgs);
         }
@@ -179,8 +181,8 @@ namespace Dicom.Network.Client
 
         public Encoding FallbackEncoding { get; set; }
 
-        public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
-        public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
+        public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
+        public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
         public event EventHandler<StateChangedEventArgs> StateChanged;
 

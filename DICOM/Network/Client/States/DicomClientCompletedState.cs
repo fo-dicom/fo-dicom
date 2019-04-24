@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     /// <summary>
     /// The DICOM client has completed its work. If no errors happened, it will transition back to 'idle', otherwise it will stop here.

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     /// <summary>
     /// The DICOM client is connected and has an active DICOM association. Every queued request will be sent one by one.

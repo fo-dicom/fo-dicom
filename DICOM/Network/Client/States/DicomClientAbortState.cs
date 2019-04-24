@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     public class DicomClientAbortState : DicomClientWithConnectionState, IDisposable
     {

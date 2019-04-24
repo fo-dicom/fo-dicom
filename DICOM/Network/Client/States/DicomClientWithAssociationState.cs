@@ -1,6 +1,6 @@
 using System;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.States
 {
     public abstract class DicomClientWithAssociationState : DicomClientWithConnectionState
     {

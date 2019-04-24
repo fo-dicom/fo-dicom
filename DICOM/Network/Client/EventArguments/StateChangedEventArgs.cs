@@ -1,6 +1,7 @@
 using System;
+using Dicom.Network.Client.States;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.EventArguments
 {
     public class StateChangedEventArgs : EventArgs
     {
