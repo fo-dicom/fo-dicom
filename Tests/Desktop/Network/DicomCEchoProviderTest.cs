@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using Xunit.Abstractions;
+
 namespace Dicom.Network
 {
     using Dicom.Helpers;
@@ -13,6 +16,13 @@ namespace Dicom.Network
     [Trait("Category", "Network")]
     public class OldDicomCEchoProviderTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public OldDicomCEchoProviderTest(ITestOutputHelper output)
+        {
+            _output = output ?? throw new ArgumentNullException(nameof(output));
+        }
+
         [Fact]
         public void Send_FromDicomClient_DoesNotDeadlock()
         {
@@ -23,9 +33,13 @@ namespace Dicom.Network
                 NLog.LogLevel.Trace);
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new Network.DicomClient();
+                server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
+                var client = new Network.DicomClient
+                {
+                    Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
+                };
                 for (var i = 0; i < 10; i++)
                 {
                     client.AddRequest(new DicomCEchoRequest());
@@ -41,6 +55,13 @@ namespace Dicom.Network
     [Trait("Category", "Network")]
     public class DicomCEchoProviderTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public DicomCEchoProviderTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Send_FromDicomClient_DoesNotDeadlock()
         {
@@ -51,9 +72,13 @@ namespace Dicom.Network
                 NLog.LogLevel.Trace);
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
+                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                {
+                    Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
+                };
                 for (var i = 0; i < 10; i++)
                 {
                     client.AddRequest(new DicomCEchoRequest());
