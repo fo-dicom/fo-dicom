@@ -75,6 +75,13 @@ namespace Dicom.Network.Client
         /// </summary>
         /// <param name="request">Request to send.</param>
         Task SendRequestAsync(DicomRequest request);
+
+        /// <summary>
+        /// Sometimes, DICOM requests can be enqueued but not immediately sent. This can happen for the following reasons:
+        ///   -- The same DicomService is already sending other requests
+        ///   -- The active association is temporarily saturated (too many open pending requests), see <see cref="DicomAssociation.MaxAsyncOpsInvoked"/>
+        /// </summary>
+        Task SendNextMessageAsync();
     }
 
     public class DicomClientConnection : DicomService, IDicomClientConnection
@@ -111,6 +118,16 @@ namespace Dicom.Network.Client
         public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             return base.SendAbortAsync(source, reason);
+        }
+
+        public new Task SendRequestAsync(DicomRequest request)
+        {
+            return base.SendRequestAsync(request);
+        }
+
+        public new Task SendNextMessageAsync()
+        {
+            return base.SendNextMessageAsync();
         }
 
         protected override Task OnSendQueueEmptyAsync()

@@ -140,6 +140,15 @@ namespace Dicom.Network.Client.States
             }
         }
 
+        private async Task KeepTryingToSendRequests()
+        {
+            while (!_sendRequestsCancellationTokenSource.IsCancellationRequested)
+            {
+                await Task.Delay(1000, _sendRequestsCancellationTokenSource.Token).ConfigureAwait(false);
+                await Connection.SendNextMessageAsync().ConfigureAwait(false);
+            }
+        }
+
         public override async Task OnEnter(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -161,17 +170,18 @@ namespace Dicom.Network.Client.States
             var onReceiveAbort = _onAssociationAbortedTaskCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
             var onCancellation = _onCancellationTaskCompletionSource.Task;
+            var keepTryingToSendRequests = KeepTryingToSendRequests();
 
             _disposables.Add(cancellationToken.Register(() => _onCancellationTaskCompletionSource.SetResult(true)));
 
-            var winner = await Task.WhenAny(sendQueueIsEmpty, onReceiveAbort, onDisconnect, onCancellation).ConfigureAwait(false);
+            var winner = await Task.WhenAny(sendQueueIsEmpty, onReceiveAbort, onDisconnect, onCancellation, keepTryingToSendRequests).ConfigureAwait(false);
 
             if (winner == sendQueueIsEmpty)
             {
                 _dicomClient.Logger.Debug($"[{this}] DICOM client send queue is empty, going to linger association now...");
                 await TransitionToLingerState(cancellationToken).ConfigureAwait(false);
             }
-            else if (winner == onCancellation)
+            else if (winner == onCancellation || winner == keepTryingToSendRequests)
             {
                 _dicomClient.Logger.Debug($"[{this}] DICOM client cancellation requested while sending requests, releasing association...");
                 await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
