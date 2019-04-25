@@ -3,15 +3,25 @@
 
 using System.Net;
 using System.Threading;
+using Dicom.Helpers;
 using Dicom.Network;
 using Dicom.Network.Client;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Dicom.Bugs
 {
     public class GH526
     {
+        private readonly XUnitDicomLogger _logger;
+
+        public GH526(ITestOutputHelper output)
+        {
+            _logger = new XUnitDicomLogger(output).IncludeTimestamps().IncludeThreadId();
+        }
+
+
         #region Unit Tests
 
         [Fact]
@@ -118,8 +128,9 @@ namespace Dicom.Bugs
             var handle = new ManualResetEventSlim();
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<VideoCStoreProvider>(port))
+            using (var server = DicomServer.Create<VideoCStoreProvider>(port))
             {
+                server.Logger = _logger.IncludePrefix("VideoCStoreProvider");
                 var request = new DicomCStoreRequest(fileName);
                 request.OnResponseReceived = (req, rsp) =>
                 {
@@ -129,7 +140,10 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP")
+                {
+                    Logger = _logger.IncludePrefix("DicomClient")
+                };
                 client.AddRequest(request);
                 client.Send();
                 handle.Wait(10000);

@@ -20,6 +20,7 @@ namespace Dicom.Network.Client.States
         private readonly TaskCompletionSource<SendQueueEmptyEvent> _onSendQueueEmptyTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
         private readonly IList<IDisposable> _disposables;
+        private readonly CancellationTokenSource _keepTryingToSendRequestsCancellationTokenSource;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
@@ -38,6 +39,7 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _sendRequestsCancellationTokenSource = new CancellationTokenSource();
+            _keepTryingToSendRequestsCancellationTokenSource = new CancellationTokenSource();
             _onSendQueueEmptyTaskCompletionSource = new TaskCompletionSource<SendQueueEmptyEvent>();
             _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
@@ -76,9 +78,6 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            // Stop sending requests ASAP
-            _sendRequestsCancellationTokenSource.Cancel();
-
             _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
@@ -86,9 +85,6 @@ namespace Dicom.Network.Client.States
 
         public override Task OnConnectionClosed(Exception exception)
         {
-            // Stop sending requests ASAP
-            _sendRequestsCancellationTokenSource.Cancel();
-
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
@@ -142,9 +138,9 @@ namespace Dicom.Network.Client.States
 
         private async Task KeepTryingToSendRequests()
         {
-            while (!_sendRequestsCancellationTokenSource.IsCancellationRequested)
+            while (!_keepTryingToSendRequestsCancellationTokenSource.IsCancellationRequested)
             {
-                await Task.Delay(1000, _sendRequestsCancellationTokenSource.Token).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false);
                 await Connection.SendNextMessageAsync().ConfigureAwait(false);
             }
         }
@@ -158,7 +154,9 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
+            _disposables.Add(cancellationToken.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
             _disposables.Add(cancellationToken.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
+            _disposables.Add(cancellationToken.Register(() => _keepTryingToSendRequestsCancellationTokenSource.Cancel()));
 
             _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
 
@@ -172,7 +170,6 @@ namespace Dicom.Network.Client.States
             var onCancellation = _onCancellationTaskCompletionSource.Task;
             var keepTryingToSendRequests = KeepTryingToSendRequests();
 
-            _disposables.Add(cancellationToken.Register(() => _onCancellationTaskCompletionSource.SetResult(true)));
 
             var winner = await Task.WhenAny(sendQueueIsEmpty, onReceiveAbort, onDisconnect, onCancellation, keepTryingToSendRequests).ConfigureAwait(false);
 
@@ -214,6 +211,8 @@ namespace Dicom.Network.Client.States
 
             _sendRequestsCancellationTokenSource.Cancel();
             _sendRequestsCancellationTokenSource.Dispose();
+            _keepTryingToSendRequestsCancellationTokenSource.Cancel();
+            _keepTryingToSendRequestsCancellationTokenSource.Dispose();
 
             _onCancellationTaskCompletionSource.TrySetCanceled();
             _onSendQueueEmptyTaskCompletionSource.TrySetCanceled();
