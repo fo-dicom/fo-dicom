@@ -59,9 +59,10 @@ namespace Dicom.Log
             {
                 sb.Append('[');
                 string val = element.Get<string>();
-                if (val.Length > (_value - 2 - sb.Length))
+                var maxLengthToWrite = (_value - 2 - sb.Length);
+                if (val.Length > maxLengthToWrite && maxLengthToWrite > 0)
                 {
-                    sb.Append(val.Substring(0, _value - 2 - sb.Length));
+                    sb.Append(val.Substring(0, maxLengthToWrite));
                     sb.Append(')');
                 }
                 else
@@ -77,9 +78,10 @@ namespace Dicom.Log
             else
             {
                 var val = String.Join("/", element.Get<string[]>());
-                if (val.Length > (_value - sb.Length))
+                var maxLengthToWrite = _value - sb.Length;
+                if (val.Length > maxLengthToWrite && maxLengthToWrite > 0)
                 {
-                    sb.Append(val.Substring(0, _value - sb.Length));
+                    sb.Append(val.Substring(0, maxLengthToWrite));
                 }
                 else
                 {
@@ -92,7 +94,7 @@ namespace Dicom.Log
             sb.AppendFormat(
                 "{0,6}, {1}",
                 element.Length,
-                name.Substring(0, System.Math.Min(_width - sb.Length - 9, name.Length)));
+                name.Substring(0, Math.Max(0, Math.Min(_width - sb.Length - 9, name.Length))));
             _log.AppendLine(sb.ToString());
             return true;
         }
