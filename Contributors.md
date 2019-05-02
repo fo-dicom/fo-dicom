@@ -43,8 +43,8 @@
 * [Chris Caldwell](https://github.com/cjcaldwell), Everlight Radiology
 * [vzdesic](https://github.com/vzdesic)
 * [Erik Edespong](https://github.com/edespong)
-* [vzdesic] (https://github.com/vzdesic)
 * [gustavosaita](https://github.com/gustavosaita)
 * [MikaelBertze](https://github.com/mikaelbertze)
 * [PalminX](https://github.com/PalminX)
+* [Pieter-Jan Van Robays] (https://github.com/PieterJanVR)
 * [Alexander Moerman](https://github.com/amoerie)

@@ -15,6 +15,8 @@
 * Bug Fix: Anonymizer throws exception on private tags (#771)
 * Bug Fix: Linear windowing wrong in corner cases (#816)
 * Bug Fix: Fix DicomClient getting stuck when sending one request fails completely (#848)
+* Added Modality LUT Sequence and VOI LUT Sequence functionality when generating a DICOM Image.
+* Bug Fix: Logging requests with very long private tags throws exception (#846)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
