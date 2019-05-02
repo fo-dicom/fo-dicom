@@ -90,13 +90,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\ImageManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\CompositeLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\ILUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\IModalityLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\InvertLUT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\ModalityLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\ModalityRescaleLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\ModalitySequenceLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\OutputLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\PaddingLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\PaletteColorLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\PrecalculatedLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\VOILUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Imaging\LUT\VOISequenceLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\BitList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\Mathematics\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Imaging\FrameGeometry.cs" />

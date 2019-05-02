@@ -958,9 +958,14 @@ namespace Dicom.Network
                     }
                 }
 
-                await DoSendMessageAsync(msg).ConfigureAwait(false);
-
-                lock (_lock) _sending = false;
+                try
+                {
+                    await DoSendMessageAsync(msg).ConfigureAwait(false);
+                }
+                finally
+                {
+                    lock (_lock) _sending = false;
+                }
             }
 
             if (sendQueueEmpty)
