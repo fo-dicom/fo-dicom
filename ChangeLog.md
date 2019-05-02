@@ -14,6 +14,7 @@
 * Bug Fix: When adding datasets to a DicomDirectory where some patientNames have trailing ^, then they were not recognized as one patient (#765)
 * Bug Fix: Anonymizer throws exception on private tags (#771)
 * Bug Fix: Linear windowing wrong in corner cases (#816)
+* Bug Fix: Fix DicomClient getting stuck when sending one request fails completely (#848)
 * Added Modality LUT Sequence and VOI LUT Sequence functionality when generating a DICOM Image.
 * Bug Fix: Logging requests with very long private tags throws exception (#846)
 
