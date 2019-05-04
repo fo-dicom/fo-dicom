@@ -170,7 +170,6 @@ namespace Dicom.Network.Client.States
             var onCancellation = _onCancellationTaskCompletionSource.Task;
             var keepTryingToSendRequests = KeepTryingToSendRequests();
 
-
             var winner = await Task.WhenAny(sendQueueIsEmpty, onReceiveAbort, onDisconnect, onCancellation, keepTryingToSendRequests).ConfigureAwait(false);
 
             if (winner == sendQueueIsEmpty)

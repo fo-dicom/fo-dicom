@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
 using Dicom.Network;
 
 using Dicom.Network.Client;
@@ -36,7 +37,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void DicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
+        public async Task DicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
         {
             var port = Ports.GetNext();
 
@@ -52,7 +53,7 @@ namespace Dicom.Bugs
 
                 client.AdditionalPresentationContexts.AddRange(pcs);
 
-                var exception = Record.Exception(() => client.Send());
+                var exception = await Record.ExceptionAsync(() => client.SendAsync());
                 Assert.IsType<DicomNetworkException>(exception);
             }
         }

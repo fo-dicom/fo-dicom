@@ -41,7 +41,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Send_SingleRequest_DataSufficientlyTransported()
+        public async Task Send_SingleRequest_DataSufficientlyTransported()
         {
             int port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
@@ -57,7 +57,7 @@ namespace Dicom.Network
                 var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                client.Send();
+                await client.SendAsync();
 
                 var commandField = command.Get<ushort>(DicomTag.CommandField);
                 Assert.Equal((ushort)1, commandField);
@@ -126,7 +126,7 @@ namespace Dicom.Network
 
 
         [Fact]
-        public void Send_PrivateTags_DataSufficientlyTransported()
+        public async Task Send_PrivateTags_DataSufficientlyTransported()
         {
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
@@ -166,7 +166,7 @@ namespace Dicom.Network
                 var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                client.Send();
+                await client.SendAsync();
 
                 Assert.Equal((ushort)1, command.Get<ushort>(DicomTag.CommandField));
 

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace Dicom.Network
@@ -57,7 +58,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Send_FromDicomClient_DoesNotDeadlock()
+        public async Task Send_FromDicomClient_DoesNotDeadlock()
         {
             var port = Ports.GetNext();
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -72,7 +73,7 @@ namespace Dicom.Network
                     client.AddRequest(new DicomCEchoRequest());
                 }
 
-                client.Send();
+                await client.SendAsync();
 
                 Assert.Empty(client.QueuedRequests);
             }

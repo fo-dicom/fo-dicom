@@ -2,7 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading;
-
+using System.Threading.Tasks;
 using Dicom.Network;
 using Dicom.Network.Client;
 
@@ -55,7 +55,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
+        public async Task CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
         {
             const string file1 = @"Test Data/GH538-jpeg1.dcm";
             const string file2 = @"Test Data/GH538-jpeg14sv1.dcm";
@@ -86,7 +86,7 @@ namespace Dicom.Bugs
                 client.AddRequest(request1);
                 client.AddRequest(request2);
 
-                client.Send();
+                await client.SendAsync();
                 handle1.Wait(10000);
                 handle2.Wait(10000);
 

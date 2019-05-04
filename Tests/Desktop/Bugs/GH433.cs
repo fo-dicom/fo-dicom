@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
 using Dicom.Network;
 using Dicom.Network.Client;
 
@@ -41,7 +42,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void DicomClientSend_ToAcceptedAssociation_ShouldSendRequest()
+        public async Task DicomClientSend_ToAcceptedAssociation_ShouldSendRequest()
         {
             var port = Ports.GetNext();
 
@@ -61,7 +62,7 @@ namespace Dicom.Bugs
                                     lock (locker) actual = rsp.Status;
                                 }
                         });
-                client.Send();
+                await client.SendAsync();
 
                 Assert.Equal(expected, actual);
             }
@@ -100,7 +101,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void DicomClientSend_ToRejectedAssociation_ShouldNotSendRequest()
+        public async Task DicomClientSend_ToRejectedAssociation_ShouldNotSendRequest()
         {
             var port = Ports.GetNext();
 
@@ -121,7 +122,7 @@ namespace Dicom.Bugs
 
                 try
                 {
-                    client.Send();
+                    await client.SendAsync();
                 }
                 catch
                 {

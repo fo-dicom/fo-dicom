@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Network;
 using Dicom.Network.Client;
@@ -59,7 +60,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void CStoreRequestSend_VideoFileServerSupportsMPEG2_TransferSuccessful()
+        public async Task CStoreRequestSend_VideoFileServerSupportsMPEG2_TransferSuccessful()
         {
             const string fileName = "GH526.dcm";
             using (var webClient = new WebClient())
@@ -85,7 +86,7 @@ namespace Dicom.Bugs
 
                 var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 client.AddRequest(request);
-                client.Send();
+                await client.SendAsync();
                 handle.Wait(10000);
 
                 Assert.True(success);
@@ -121,7 +122,7 @@ namespace Dicom.Bugs
         }
 
         [Fact]
-        public void CStoreRequestSend_VideoFileServerSupportsMPEG4_TransferSuccessful()
+        public async Task CStoreRequestSend_VideoFileServerSupportsMPEG4_TransferSuccessful()
         {
             const string fileName = @"Test Data/test_720.dcm";
             var success = false;
@@ -145,7 +146,7 @@ namespace Dicom.Bugs
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
                 client.AddRequest(request);
-                client.Send();
+                await client.SendAsync();
                 handle.Wait(10000);
 
                 Assert.True(success);

@@ -145,7 +145,7 @@ namespace Dicom.Network.Client
         {
             var oldState = State;
 
-            Logger.Info($"[{oldState}] --> [{newState}]");
+            Logger.Debug($"[{oldState}] --> [{newState}]");
 
             await oldState.OnExit(cancellationToken).ConfigureAwait(false);
 
@@ -205,34 +205,6 @@ namespace Dicom.Network.Client
 
     public static class ExtensionsForDicomClient
     {
-        [Obsolete("Use SendAsync instead")]
-        public static void Send(this DicomClient dicomClient)
-        {
-            try
-            {
-                dicomClient.SendAsync(CancellationToken.None).GetAwaiter().GetResult();
-            }
-            catch (AggregateException e)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                throw e.Flatten().InnerException;
-            }
-        }
-
-        [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
-        public static bool WaitForAssociation(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
-        {
-            try
-            {
-                return dicomClient.WaitForAssociationAsync(timeoutInMs).GetAwaiter().GetResult();
-            }
-            catch (AggregateException e)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                throw e.Flatten().InnerException;
-            }
-        }
-
         [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
         public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
