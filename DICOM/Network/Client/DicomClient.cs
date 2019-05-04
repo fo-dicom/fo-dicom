@@ -208,30 +208,37 @@ namespace Dicom.Network.Client
         [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
         public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
+            var associationTaskCompletionSource = new TaskCompletionSource<bool>();
+
             if (dicomClient.State is DicomClientWithAssociationState)
-                return true;
+                associationTaskCompletionSource.SetResult(true);
 
-            var associationTask = new TaskCompletionSource<bool>();
-
-            void OnStateChanged(object sender, StateChangedEventArgs stateChangedEventArgs)
+            void OnAssociationAccepted(object sender, EventArguments.AssociationAcceptedEventArgs associationAcceptedEventArgs)
             {
-                if(stateChangedEventArgs.NewState is DicomClientWithAssociationState)
-                    associationTask.TrySetResult(true);
+                associationTaskCompletionSource.TrySetResult(true);
             }
 
-            dicomClient.StateChanged += OnStateChanged;
+            void OnAssociationRejected(object sender, EventArguments.AssociationRejectedEventArgs associationRejectedEventArgs)
+            {
+                associationTaskCompletionSource.TrySetResult(false);
+            }
+
+            dicomClient.AssociationAccepted += OnAssociationAccepted;
+            dicomClient.AssociationRejected += OnAssociationRejected;
 
             var timeoutCancellation = new CancellationTokenSource();
             var timeout = Task.Delay(timeoutInMs, timeoutCancellation.Token);
+            var associationTask = associationTaskCompletionSource.Task;
 
-            var winner = await Task.WhenAny(associationTask.Task, timeout).ConfigureAwait(false);
+            var winner = await Task.WhenAny(associationTask, timeout).ConfigureAwait(false);
 
-            dicomClient.StateChanged -= OnStateChanged;
+            dicomClient.AssociationAccepted -= OnAssociationAccepted;
+            dicomClient.AssociationRejected -= OnAssociationRejected;
 
             timeoutCancellation.Cancel();
             timeoutCancellation.Dispose();
 
-            return winner == associationTask.Task;
+            return winner == associationTask;
         }
     }
 }
