@@ -819,7 +819,7 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest());
                 var task = client.SendAsync();
 
-                var actual = await client.WaitForAssociationAsync(10000);
+                var actual = await client.WaitForAssociationAsync(10000).ConfigureAwait(false);
                 task.Wait(10000);
                 Assert.True(actual);
             }
@@ -835,7 +835,7 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
                 var task = client.SendAsync();
 
-                var actual = await client.WaitForAssociationAsync(1);
+                var actual = await client.WaitForAssociationAsync(1).ConfigureAwait(false);
                 task.Wait(1000);
                 Assert.False(actual);
             }
@@ -851,7 +851,7 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest());
                 var task = client.SendAsync();
 
-                var actual = await client.WaitForAssociationAsync(10000);
+                var actual = await client.WaitForAssociationAsync(10000).ConfigureAwait(false);
                 task.Wait(10000);
                 Assert.True(actual);
             }
@@ -867,7 +867,7 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest { OnResponseReceived = (rq, rsp) => Thread.Sleep(100) });
                 var task = client.SendAsync();
 
-                var actual = await client.WaitForAssociationAsync(1);
+                var actual = await client.WaitForAssociationAsync(1).ConfigureAwait(false);
                 task.Wait(1000);
                 Assert.False(actual);
             }
