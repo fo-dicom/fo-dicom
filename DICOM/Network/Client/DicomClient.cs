@@ -91,6 +91,8 @@ namespace Dicom.Network.Client
 
     public class DicomClient : IDicomClient
     {
+        private readonly SemaphoreSlim _transitionLock = new SemaphoreSlim(1, 1);
+
         public string Host { get; }
         public int Port { get; }
         public bool UseTls { get; }
@@ -143,17 +145,22 @@ namespace Dicom.Network.Client
 
         internal async Task Transition(IDicomClientState newState, CancellationToken cancellationToken)
         {
-            var oldState = State;
+            async Task InternalTransition()
+            {
+                var oldState = State;
 
-            Logger.Debug($"[{oldState}] --> [{newState}]");
+                Logger.Debug($"[{oldState}] --> [{newState}]");
 
-            await oldState.OnExit(cancellationToken).ConfigureAwait(false);
+                await oldState.OnExit(cancellationToken).ConfigureAwait(false);
 
-            if (oldState is IDisposable disposableState) disposableState.Dispose();
+                if (oldState is IDisposable disposableState) disposableState.Dispose();
 
-            State = newState ?? throw new ArgumentNullException(nameof(newState));
+                State = newState ?? throw new ArgumentNullException(nameof(newState));
 
-            StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+                StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+            }
+
+            await ExecuteWithinTransitionLock($"{nameof(Transition)} -> [{newState}]", InternalTransition).ConfigureAwait(false);
 
             await newState.OnEnter(cancellationToken).ConfigureAwait(false);
         }
@@ -201,12 +208,80 @@ namespace Dicom.Network.Client
         {
             await State.SendAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        private async Task ExecuteWithinTransitionLock(string caller, Func<Task> task)
+        {
+            await _transitionLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await task().ConfigureAwait(false);
+            }
+            finally
+            {
+                _transitionLock.Release();
+            }
+        }
+
+        internal Task OnSendQueueEmptyAsync()
+        {
+            return ExecuteWithinTransitionLock(nameof(OnSendQueueEmptyAsync), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnSendQueueEmptyAsync)}");
+                return State.OnSendQueueEmpty();
+            });
+        }
+
+        internal Task OnReceiveAssociationAccept(DicomAssociation association)
+        {
+            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationAccept), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationAccept)}");
+                return State.OnReceiveAssociationAccept(association);
+            });
+        }
+
+        internal Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        {
+            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationReject), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationReject)}");
+                return State.OnReceiveAssociationReject(result, source, reason);
+            });
+        }
+
+        internal Task OnReceiveAssociationReleaseResponse()
+        {
+            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationReleaseResponse), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationReleaseResponse)}");
+                return State.OnReceiveAssociationReleaseResponse();
+            });
+        }
+
+        internal Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        {
+            return ExecuteWithinTransitionLock(nameof(OnReceiveAbort), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnReceiveAbort)}");
+                return State.OnReceiveAbort(source, reason);
+            });
+        }
+
+        internal Task OnConnectionClosed(Exception exception)
+        {
+            return ExecuteWithinTransitionLock(nameof(OnConnectionClosed), () =>
+            {
+                Logger.Debug($"[{State}] {nameof(OnConnectionClosed)}");
+                return State.OnConnectionClosed(exception);
+            });
+        }
     }
 
     public static class ExtensionsForDicomClient
     {
         [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
-        public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
+        public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient,
+            int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
             var associationTaskCompletionSource = new TaskCompletionSource<bool>();
 

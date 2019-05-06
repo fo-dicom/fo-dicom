@@ -788,6 +788,7 @@ namespace Dicom.Network
                     async requestIndex =>
                         {
                             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                            client.Logger = _logger.IncludePrefix($"{nameof(DicomClient)} #{requestIndex}");
                             client.AddRequest(
                                 new DicomCEchoRequest
                                     {
