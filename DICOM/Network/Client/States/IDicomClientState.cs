@@ -12,11 +12,6 @@ namespace Dicom.Network.Client.States
         Task OnEnter(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Is called when entering this state
-        /// </summary>
-        Task OnExit(CancellationToken cancellationToken);
-
-        /// <summary>
         /// Enqueues a new DICOM request for execution.
         /// </summary>
         /// <param name="dicomRequest">The DICOM request to send</param>

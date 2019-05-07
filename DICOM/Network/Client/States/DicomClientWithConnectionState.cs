@@ -53,8 +53,6 @@ namespace Dicom.Network.Client.States
 
         public abstract Task OnEnter(CancellationToken cancellationToken);
 
-        public abstract Task OnExit(CancellationToken cancellationToken);
-
         public abstract void AddRequest(DicomRequest dicomRequest);
 
         public abstract Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));

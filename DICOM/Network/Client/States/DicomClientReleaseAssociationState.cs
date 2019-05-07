@@ -160,11 +160,6 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public override Task OnExit(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(0);
-        }
-
         public override void AddRequest(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));

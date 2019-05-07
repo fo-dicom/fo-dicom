@@ -151,8 +151,6 @@ namespace Dicom.Network.Client
 
                 Logger.Debug($"[{oldState}] --> [{newState}]");
 
-                await oldState.OnExit(cancellationToken).ConfigureAwait(false);
-
                 if (oldState is IDisposable disposableState) disposableState.Dispose();
 
                 State = newState ?? throw new ArgumentNullException(nameof(newState));
@@ -160,7 +158,7 @@ namespace Dicom.Network.Client
                 StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
             }
 
-            await ExecuteWithinTransitionLock($"{nameof(Transition)} -> [{newState}]", InternalTransition).ConfigureAwait(false);
+            await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
 
             await newState.OnEnter(cancellationToken).ConfigureAwait(false);
         }
@@ -209,8 +207,9 @@ namespace Dicom.Network.Client
             await State.SendAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task ExecuteWithinTransitionLock(string caller, Func<Task> task)
+        private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")
         {
+            Logger.Debug($"[{State}] {caller}");
             await _transitionLock.WaitAsync().ConfigureAwait(false);
             try
             {
@@ -224,64 +223,39 @@ namespace Dicom.Network.Client
 
         internal Task OnSendQueueEmptyAsync()
         {
-            return ExecuteWithinTransitionLock(nameof(OnSendQueueEmptyAsync), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnSendQueueEmptyAsync)}");
-                return State.OnSendQueueEmpty();
-            });
+            return ExecuteWithinTransitionLock(() => State.OnSendQueueEmpty());
         }
 
         internal Task OnReceiveAssociationAccept(DicomAssociation association)
         {
-            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationAccept), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationAccept)}");
-                return State.OnReceiveAssociationAccept(association);
-            });
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAccept(association));
         }
 
         internal Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationReject), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationReject)}");
-                return State.OnReceiveAssociationReject(result, source, reason);
-            });
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReject(result, source, reason));
         }
 
         internal Task OnReceiveAssociationReleaseResponse()
         {
-            return ExecuteWithinTransitionLock(nameof(OnReceiveAssociationReleaseResponse), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnReceiveAssociationReleaseResponse)}");
-                return State.OnReceiveAssociationReleaseResponse();
-            });
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponse());
         }
 
         internal Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            return ExecuteWithinTransitionLock(nameof(OnReceiveAbort), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnReceiveAbort)}");
-                return State.OnReceiveAbort(source, reason);
-            });
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAbort(source, reason));
         }
 
         internal Task OnConnectionClosed(Exception exception)
         {
-            return ExecuteWithinTransitionLock(nameof(OnConnectionClosed), () =>
-            {
-                Logger.Debug($"[{State}] {nameof(OnConnectionClosed)}");
-                return State.OnConnectionClosed(exception);
-            });
+            return ExecuteWithinTransitionLock(() => State.OnConnectionClosed(exception));
         }
     }
 
     public static class ExtensionsForDicomClient
     {
         [Obsolete("Use AssociationAccepted|AssociationRejected events instead")]
-        public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient,
-            int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
+        public static async Task<bool> WaitForAssociationAsync(this DicomClient dicomClient, int timeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs)
         {
             var associationTaskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -302,6 +276,7 @@ namespace Dicom.Network.Client
             dicomClient.AssociationRejected += OnAssociationRejected;
 
             var timeoutCancellation = new CancellationTokenSource();
+
             var timeout = Task.Delay(timeoutInMs, timeoutCancellation.Token);
             var associationTask = associationTaskCompletionSource.Task;
 
@@ -313,7 +288,13 @@ namespace Dicom.Network.Client
             timeoutCancellation.Cancel();
             timeoutCancellation.Dispose();
 
-            return winner == associationTask;
+            if (winner == timeout)
+            {
+                associationTaskCompletionSource.TrySetCanceled();
+                return false;
+            }
+
+            return await associationTask.ConfigureAwait(false);
         }
     }
 }

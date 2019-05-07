@@ -52,7 +52,7 @@ namespace Dicom.Network.Client.States
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
         }
 
-        private async Task<IDicomClientConnection> Connect()
+        private async Task<IDicomClientConnection> Connect(CancellationToken cancellationToken)
         {
             return await Task.Run<IDicomClientConnection>(() =>
             {
@@ -70,10 +70,13 @@ namespace Dicom.Network.Client.States
                 if (_dicomClient.Options != null)
                     connection.Options = _dicomClient.Options;
 
-                connection.StartListener();
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    connection.StartListener();
+                }
 
                 return connection;
-            });
+            }, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task OnEnter(CancellationToken cancellationToken)
@@ -87,7 +90,7 @@ namespace Dicom.Network.Client.States
 
             _disposables.Add(cancellationToken.Register(() => _cancellationRequested.SetResult(true)));
 
-            var connect = Connect();
+            var connect = Connect(cancellationToken);
             var cancel = _cancellationRequested.Task;
 
             var winner = await Task.WhenAny(connect, cancel).ConfigureAwait(false);
@@ -97,7 +100,7 @@ namespace Dicom.Network.Client.States
                 IDicomClientConnection connection = null;
                 try
                 {
-                    connection = await connect;
+                    connection = await connect.ConfigureAwait(false);
 
                     await TransitionToRequestAssociationState(connection, cancellationToken).ConfigureAwait(false);
                 }
@@ -108,22 +111,17 @@ namespace Dicom.Network.Client.States
             }
             else
             {
-                // Cancellation was triggered but the connection was made anyway
-                if (connect.Status == TaskStatus.RanToCompletion)
+                // Cancellation was triggered but wait for the connection anyway, because we need to dispose of it properly
+                try
                 {
-                    var connection = await connect;
-                    await TransitionToCompletedWithoutErrorState(connection, cancellationToken);
+                    var connection = await connect.ConfigureAwait(false);
+                    await TransitionToCompletedWithoutErrorState(connection, cancellationToken).ConfigureAwait(false);
                 }
-                else
+                catch(Exception e)
                 {
-                    await TransitionToCompletedWithoutErrorState(null, cancellationToken);
+                    await TransitionToCompletedWithErrorState(e, null, cancellationToken).ConfigureAwait(false);
                 }
             }
-        }
-
-        public Task OnExit(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(0);
         }
 
         public void AddRequest(DicomRequest dicomRequest)

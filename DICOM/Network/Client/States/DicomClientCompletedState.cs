@@ -131,11 +131,6 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public Task OnExit(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(0);
-        }
-
         public void AddRequest(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));

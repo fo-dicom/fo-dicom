@@ -196,11 +196,6 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public override Task OnExit(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(0);
-        }
-
         public void Dispose()
         {
             foreach (var disposable in _disposables)
