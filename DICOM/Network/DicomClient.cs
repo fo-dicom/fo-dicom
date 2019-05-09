@@ -879,8 +879,6 @@ namespace Dicom.Network
                     {
                         Logger.Debug("Association release request was sent successfully");
                     }
-
-                    _releaseRequested = 0;
                 }
                 catch (Exception e)
                 {
@@ -983,6 +981,8 @@ namespace Dicom.Network
 
             private void SetCompletionFlag(Exception exception = null)
             {
+                Interlocked.Exchange(ref _releaseRequested, 0);
+                
                 if (_client._completionFlag.IsSet)
                     return;
                 _client._completionFlag.Set(exception);
