@@ -639,7 +639,6 @@ namespace Dicom.Network
         }
 
         [Theory]
-        [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
         [InlineData( /*number of requests:*/ 3, /* seconds between each request: */ 2, /* linger: */ 5)]
         public async Task Old_SendAsync_Linger_ShouldLingerLongEnoughToReuseAssociation(int numberOfRequests, int secondsBetweenEachRequest,
             int lingerTimeoutInSeconds)
@@ -662,7 +661,7 @@ namespace Dicom.Network
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
+                    var task = SendEchoRequestWithTimeout(client, 20000);
                     requests.Add(task);
 
                     if (client.IsSendRequired)
@@ -699,7 +698,6 @@ namespace Dicom.Network
         }
 
         [Theory]
-        [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 4, /* linger: */ 5)]
         public async Task Old_SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest,
             int lingerTimeoutInSeconds)
@@ -721,7 +719,7 @@ namespace Dicom.Network
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
+                    var task = SendEchoRequestWithTimeout(client, 20000);
                     requests.Add(task);
 
                     if (client.IsSendRequired)
@@ -758,8 +756,7 @@ namespace Dicom.Network
         }
 
         [Theory]
-        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 2, /* linger: */ 1)]
-        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 3, /* linger: */ 2)]
+        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 5, /* linger: */ 3)]
         public async Task Old_SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTime(int numberOfRequests, int secondsBetweenEachRequest,
             int lingerTimeoutInSeconds)
         {
@@ -781,7 +778,7 @@ namespace Dicom.Network
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
+                    var task = SendEchoRequestWithTimeout(client, 20000);
                     requests.Add(task);
 
                     if (client.IsSendRequired)
@@ -840,7 +837,7 @@ namespace Dicom.Network
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client, 10000);
+                    var task = SendEchoRequestWithTimeout(client, 20000);
                     requests.Add(task);
 
                     if (client.IsSendRequired)
