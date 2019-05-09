@@ -668,21 +668,27 @@ namespace Dicom.Network.Client
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 var cancellationTokenSource = new CancellationTokenSource();
+
+                var sentRequests = new ConcurrentBag<DicomCEchoRequest>();
+                server.OnCEchoRequest(request =>
+                {
+                    sentRequests.Add(request);
+                    if (sentRequests.Count > 0)
+                    {
+                        cancellationTokenSource.Cancel();
+                    }
+                });
+
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
                 client.NegotiateAsyncOps(1, 1);
                 for (var i = 0; i < numberOfRequestsSent; ++i)
                 {
-                    var i1 = i;
                     client.AddRequest(new DicomCEchoRequest
                     {
                         OnResponseReceived = (request, response) =>
                         {
                             Interlocked.Increment(ref numberOfResponsesReceived);
-                            if (i1 == 2)
-                            {
-                                cancellationTokenSource.Cancel();
-                            }
                         }
                     });
                 }
@@ -709,7 +715,7 @@ namespace Dicom.Network.Client
                 Assert.True(associated);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.Equal(3, numberOfResponsesReceived);
+                Assert.Equal(2, numberOfResponsesReceived);
             }
         }
 
@@ -1150,13 +1156,15 @@ namespace Dicom.Network.Client
         {
             private readonly ConcurrentBag<DicomAssociation> _associations;
             private readonly ConcurrentBag<DicomCEchoRequest> _requests;
+            private readonly Action<DicomCEchoRequest> _onRequest;
 
             public IEnumerable<DicomCEchoRequest> Requests => _requests;
             public IEnumerable<DicomAssociation> Associations => _associations;
 
-            public RecordingDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+            public RecordingDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, Action<DicomCEchoRequest> onRequest)
                 : base(stream, fallbackEncoding, log)
             {
+                _onRequest = onRequest ?? throw new ArgumentNullException(nameof(onRequest));
                 _requests = new ConcurrentBag<DicomCEchoRequest>();
                 _associations = new ConcurrentBag<DicomAssociation>();
             }
@@ -1200,6 +1208,8 @@ namespace Dicom.Network.Client
 
             public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
             {
+                _onRequest(request);
+
                 _requests.Add(request);
 
                 WaitForALittleBit().GetAwaiter().GetResult();
@@ -1211,17 +1221,24 @@ namespace Dicom.Network.Client
         public class RecordingDicomCEchoProviderServer : DicomServer<RecordingDicomCEchoProvider>
         {
             private readonly ConcurrentBag<RecordingDicomCEchoProvider> _providers;
+            private Action<DicomCEchoRequest> _onRequest;
 
             public IEnumerable<RecordingDicomCEchoProvider> Providers => _providers;
 
             public RecordingDicomCEchoProviderServer()
             {
                 _providers = new ConcurrentBag<RecordingDicomCEchoProvider>();
+                _onRequest = _ => { };
+            }
+
+            public void OnCEchoRequest(Action<DicomCEchoRequest> onRequest)
+            {
+                _onRequest = onRequest;
             }
 
             protected sealed override RecordingDicomCEchoProvider CreateScp(INetworkStream stream)
             {
-                var provider = new RecordingDicomCEchoProvider(stream, Encoding.UTF8, Logger);
+                var provider = new RecordingDicomCEchoProvider(stream, Encoding.UTF8, Logger, _onRequest);
                 _providers.Add(provider);
                 return provider;
             }
