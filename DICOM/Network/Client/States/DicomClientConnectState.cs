@@ -88,7 +88,7 @@ namespace Dicom.Network.Client.States
             }, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task OnEnter(CancellationToken cancellationToken)
+        public async Task OnEnterAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -159,32 +159,32 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        public Task OnReceiveAssociationAccept(DicomAssociation association)
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             return Task.FromResult(0);
         }
 
-        public Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             return Task.FromResult(0);
         }
 
-        public Task OnReceiveAssociationReleaseResponse()
+        public Task OnReceiveAssociationReleaseResponseAsync()
         {
             return Task.FromResult(0);
         }
 
-        public Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             return Task.FromResult(0);
         }
 
-        public Task OnConnectionClosed(Exception exception)
+        public Task OnConnectionClosedAsync(Exception exception)
         {
             return Task.FromResult(0);
         }
 
-        public Task OnSendQueueEmpty()
+        public Task OnSendQueueEmptyAsync()
         {
             return Task.FromResult(0);
         }

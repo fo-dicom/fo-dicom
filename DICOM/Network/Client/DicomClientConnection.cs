@@ -144,27 +144,27 @@ namespace Dicom.Network.Client
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            return DicomClient.OnReceiveAssociationAccept(association);
+            return DicomClient.OnReceiveAssociationAcceptAsync(association);
         }
 
         public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            return DicomClient.OnReceiveAssociationReject(result, source, reason);
+            return DicomClient.OnReceiveAssociationRejectAsync(result, source, reason);
         }
 
         public Task OnReceiveAssociationReleaseResponseAsync()
         {
-            return DicomClient.OnReceiveAssociationReleaseResponse();
+            return DicomClient.OnReceiveAssociationReleaseResponseAsync();
         }
 
         public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            return DicomClient.OnReceiveAbort(source, reason);
+            return DicomClient.OnReceiveAbortAsync(source, reason);
         }
 
         public Task OnConnectionClosedAsync(Exception exception)
         {
-            return DicomClient.OnConnectionClosed(exception);
+            return DicomClient.OnConnectionClosedAsync(exception);
         }
 
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)

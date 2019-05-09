@@ -45,36 +45,36 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationAccept(DicomAssociation association)
+        public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationReleaseResponse()
+        public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
 
-        public override Task OnConnectionClosed(Exception exception)
+        public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }
 
-        public override Task OnSendQueueEmpty()
+        public override Task OnSendQueueEmptyAsync()
         {
             return Task.FromResult(0);
         }
@@ -92,7 +92,7 @@ namespace Dicom.Network.Client.States
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellationToken);
         }
 
-        public override async Task OnEnter(CancellationToken cancellationToken)
+        public override async Task OnEnterAsync(CancellationToken cancellationToken)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;

@@ -13,21 +13,21 @@ namespace Dicom.Network.Client.States
 
         public IDicomClientConnection Connection { get; }
 
-        public abstract Task OnReceiveAssociationAccept(DicomAssociation association);
+        public abstract Task OnReceiveAssociationAcceptAsync(DicomAssociation association);
 
-        public abstract Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
+        public abstract Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
 
-        public abstract Task OnReceiveAssociationReleaseResponse();
+        public abstract Task OnReceiveAssociationReleaseResponseAsync();
 
-        public abstract Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason);
+        public abstract Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason);
 
-        public abstract Task OnConnectionClosed(Exception exception);
+        public abstract Task OnConnectionClosedAsync(Exception exception);
 
-        public abstract Task OnSendQueueEmpty();
+        public abstract Task OnSendQueueEmptyAsync();
 
         public abstract Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
 
-        public abstract Task OnEnter(CancellationToken cancellationToken);
+        public abstract Task OnEnterAsync(CancellationToken cancellationToken);
 
         public abstract void AddRequest(DicomRequest dicomRequest);
 

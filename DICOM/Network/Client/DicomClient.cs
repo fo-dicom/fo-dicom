@@ -167,7 +167,7 @@ namespace Dicom.Network.Client
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
 
-            await newState.OnEnter(cancellationToken).ConfigureAwait(false);
+            await newState.OnEnterAsync(cancellationToken).ConfigureAwait(false);
         }
 
         internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
@@ -234,32 +234,32 @@ namespace Dicom.Network.Client
 
         internal Task OnSendQueueEmptyAsync()
         {
-            return ExecuteWithinTransitionLock(() => State.OnSendQueueEmpty());
+            return ExecuteWithinTransitionLock(() => State.OnSendQueueEmptyAsync());
         }
 
-        internal Task OnReceiveAssociationAccept(DicomAssociation association)
+        internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAccept(association));
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
         }
 
-        internal Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        internal Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReject(result, source, reason));
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationRejectAsync(result, source, reason));
         }
 
-        internal Task OnReceiveAssociationReleaseResponse()
+        internal Task OnReceiveAssociationReleaseResponseAsync()
         {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponse());
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponseAsync());
         }
 
-        internal Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        internal Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAbort(source, reason));
+            return ExecuteWithinTransitionLock(() => State.OnReceiveAbortAsync(source, reason));
         }
 
-        internal Task OnConnectionClosed(Exception exception)
+        internal Task OnConnectionClosedAsync(Exception exception)
         {
-            return ExecuteWithinTransitionLock(() => State.OnConnectionClosed(exception));
+            return ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
         }
 
         internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)

@@ -75,39 +75,39 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationAccept(DicomAssociation association)
+        public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAssociationReleaseResponse()
+        public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             _dicomClient.Logger.Warn($"[{this}] Received association release response but we did not expect this!");
             return Task.FromResult(0);
         }
 
-        public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
 
-        public override Task OnConnectionClosed(Exception exception)
+        public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.FromResult(0);
         }
 
-        public override Task OnSendQueueEmpty()
+        public override Task OnSendQueueEmptyAsync()
         {
             _onSendQueueEmptyTaskCompletionSource.TrySetResult(new SendQueueEmptyEvent());
 
@@ -194,7 +194,7 @@ namespace Dicom.Network.Client.States
             Interlocked.Exchange(ref _sendingMoreRequests, 0);
         }
 
-        public override async Task OnEnter(CancellationToken cancellationToken)
+        public override async Task OnEnterAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
