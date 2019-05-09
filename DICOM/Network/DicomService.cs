@@ -1023,53 +1023,66 @@ namespace Dicom.Network
 
                 try
                 {
-                    if (msg is DicomCStoreRequest)
-                        (msg as DicomCStoreRequest).PostResponse(
-                            this,
-                            new DicomCStoreResponse(msg as DicomCStoreRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomCEchoRequest)
-                        (msg as DicomCEchoRequest).PostResponse(
-                            this,
-                            new DicomCEchoResponse(msg as DicomCEchoRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomCFindRequest)
-                        (msg as DicomCFindRequest).PostResponse(
-                            this,
-                            new DicomCFindResponse(msg as DicomCFindRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomCGetRequest)
-                        (msg as DicomCGetRequest).PostResponse(
-                            this,
-                            new DicomCGetResponse(msg as DicomCGetRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomCMoveRequest)
-                        (msg as DicomCMoveRequest).PostResponse(
-                            this,
-                            new DicomCMoveResponse(msg as DicomCMoveRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNActionRequest)
-                        (msg as DicomNActionRequest).PostResponse(
-                            this,
-                            new DicomNActionResponse(msg as DicomNActionRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNCreateRequest)
-                        (msg as DicomNCreateRequest).PostResponse(
-                            this,
-                            new DicomNCreateResponse(msg as DicomNCreateRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNDeleteRequest)
-                        (msg as DicomNDeleteRequest).PostResponse(
-                            this,
-                            new DicomNDeleteResponse(msg as DicomNDeleteRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNEventReportRequest)
-                        (msg as DicomNEventReportRequest).PostResponse(
-                            this,
-                            new DicomNEventReportResponse(msg as DicomNEventReportRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNGetRequest)
-                        (msg as DicomNGetRequest).PostResponse(
-                            this,
-                            new DicomNGetResponse(msg as DicomNGetRequest, DicomStatus.SOPClassNotSupported));
-                    else if (msg is DicomNSetRequest)
-                        (msg as DicomNSetRequest).PostResponse(
-                            this,
-                            new DicomNSetResponse(msg as DicomNSetRequest, DicomStatus.SOPClassNotSupported));
-                    else
+                    switch (msg)
                     {
-                        Logger.Warn("Unknown message type: {type}", msg.Type);
+                        case DicomCStoreRequest cStoreRequest:
+                            cStoreRequest.PostResponse(
+                                this,
+                                new DicomCStoreResponse(cStoreRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomCEchoRequest cEchoRequest:
+                            cEchoRequest.PostResponse(
+                                this,
+                                new DicomCEchoResponse(cEchoRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomCFindRequest cFindRequest:
+                            cFindRequest.PostResponse(
+                                this,
+                                new DicomCFindResponse(cFindRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomCGetRequest cGetRequest:
+                            cGetRequest.PostResponse(
+                                this,
+                                new DicomCGetResponse(cGetRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomCMoveRequest cMoveRequest:
+                            cMoveRequest.PostResponse(
+                                this,
+                                new DicomCMoveResponse(cMoveRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNActionRequest nActionRequest:
+                            nActionRequest.PostResponse(
+                                this,
+                                new DicomNActionResponse(nActionRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNCreateRequest nCreateRequest:
+                            nCreateRequest.PostResponse(
+                                this,
+                                new DicomNCreateResponse(nCreateRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNDeleteRequest nDeleteRequest:
+                            nDeleteRequest.PostResponse(
+                                this,
+                                new DicomNDeleteResponse(nDeleteRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNEventReportRequest nEventReportRequest:
+                            nEventReportRequest.PostResponse(
+                                this,
+                                new DicomNEventReportResponse(nEventReportRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNGetRequest nGetRequest:
+                            nGetRequest.PostResponse(
+                                this,
+                                new DicomNGetResponse(nGetRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        case DicomNSetRequest nSetRequest:
+                            nSetRequest.PostResponse(
+                                this,
+                                new DicomNSetResponse(nSetRequest, DicomStatus.SOPClassNotSupported));
+                            break;
+                        default:
+                            Logger.Warn("Unknown message type: {type}", msg.Type);
+                            break;
                     }
                 }
                 catch(Exception e)
