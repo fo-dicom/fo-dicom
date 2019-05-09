@@ -138,7 +138,7 @@ namespace Dicom.Network.Client
             var port = Ports.GetNext();
             var flag = new ManualResetEventSlim();
             var logger = _logger.IncludePrefix("UnitTest");
-
+            var sendTasks = new List<Task>();
             using (var server = CreateServer<DicomCEchoProvider>(port))
             {
                 while (!server.IsListening) Thread.Sleep(50);
@@ -160,9 +160,10 @@ namespace Dicom.Network.Client
                                 if (actual == expected) flag.Set();
                             }
                         });
-                    await client.SendAsync();
+                    sendTasks.Add(client.SendAsync());
                 }
 
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
                 flag.Wait(10000);
                 Assert.Equal(expected, actual);
             }
@@ -715,7 +716,7 @@ namespace Dicom.Network.Client
                 Assert.True(associated);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.Equal(2, numberOfResponsesReceived);
+                Assert.Equal(1, numberOfResponsesReceived);
             }
         }
 
