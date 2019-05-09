@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
-using System.Threading;
 
 using Xunit;
 
@@ -25,6 +24,31 @@ namespace Dicom.Network
         {
             var actual = request.Level;
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateQueryWithInvalidUID()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCMoveRequest("DestinationAE", invalidStudyUID);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            });
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void AddInvalidUIDToQuery()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCMoveRequest("DestinationAE", invalidStudyUID);
+                request.Dataset.AddOrUpdate(DicomTag.SeriesInstanceUID, invalidStudyUID);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+            });
+            Assert.Null(e);
         }
 
         #endregion

@@ -99,6 +99,31 @@ namespace Dicom.Network
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void CreateQueryWithInvalidUID()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCGetRequest(invalidStudyUID, DicomPriority.Medium);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            });
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void AddInvalidUIDToQuery()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCGetRequest(invalidStudyUID, DicomPriority.Medium);
+                request.Dataset.AddOrUpdate(DicomTag.SeriesInstanceUID, invalidStudyUID);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+            });
+            Assert.Null(e);
+        }
+
         #endregion
 
         #region Support Data

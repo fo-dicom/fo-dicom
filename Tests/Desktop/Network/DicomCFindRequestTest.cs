@@ -31,9 +31,9 @@ namespace Dicom.Network
         public void Constructor_ParamatersAreSet()
         {
             var cfind = new DicomCFindRequest(DicomUID.UnifiedProcedureStepEventSOPClass, DicomQueryRetrieveLevel.NotApplicable, DicomPriority.High);
-            Assert.Equal(cfind.Priority, DicomPriority.High);
-            Assert.Equal(cfind.Level, DicomQueryRetrieveLevel.NotApplicable);
-            Assert.Equal(cfind.SOPClassUID, DicomUID.UnifiedProcedureStepEventSOPClass);
+            Assert.Equal(DicomPriority.High, cfind.Priority);
+            Assert.Equal(DicomQueryRetrieveLevel.NotApplicable, cfind.Level);
+            Assert.Equal(DicomUID.UnifiedProcedureStepEventSOPClass, cfind.SOPClassUID);
         }
 
         [Theory, MemberData(nameof(InstancesLevels))]
@@ -57,6 +57,31 @@ namespace Dicom.Network
             var query = new DicomCFindRequest(DicomUID.StudyRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Study);
             Assert.Equal(DicomQueryRetrieveLevel.Study, query.Level);
             Assert.Equal(DicomUID.StudyRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+        }
+
+        [Fact]
+        public void CreateQueryWithInvalidUID()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = DicomCFindRequest.CreateSeriesQuery(invalidStudyUID);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            });
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void AddInvalidUIDToQuery()
+        {
+            var invalidStudyUID = "1.2.0004";
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
+                request.Dataset.AddOrUpdate(DicomTag.StudyInstanceUID, invalidStudyUID);
+                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            });
+            Assert.Null(e);
         }
 
         #endregion
