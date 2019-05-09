@@ -23,6 +23,11 @@ namespace Dicom.Network.Client.States
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Stop doing whatever it is the DicomClient is doing, abort the existing association and close the connection.
+        /// </summary>
+        Task AbortAsync();
+
+        /// <summary>
         /// Callback for handling association accept scenarios.
         /// </summary>
         /// <param name="association">Accepted association.</param>

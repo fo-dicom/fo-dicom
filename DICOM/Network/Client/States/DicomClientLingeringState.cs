@@ -15,9 +15,10 @@ namespace Dicom.Network.Client.States
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
         private readonly CancellationTokenSource _lingerTimeoutCancellationTokenSource;
-        private readonly TaskCompletionSource<DicomAbortedEvent> _onAssociationAbortedTaskCompletionSource;
+        private readonly TaskCompletionSource<DicomAbortedEvent> _onAbortReceivedTaskCompletionSource;
         private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onRequestAddedTaskCompletionSource;
+        private readonly TaskCompletionSource<bool> _onAbortRequestedCompletionSource;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
@@ -36,14 +37,22 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _lingerTimeoutCancellationTokenSource = new CancellationTokenSource();
-            _onAssociationAbortedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
+            _onAbortReceivedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
             _onRequestAddedTaskCompletionSource = new TaskCompletionSource<bool>();
+            _onAbortRequestedCompletionSource = new TaskCompletionSource<bool>();
         }
 
         public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ignore, we will automatically send again if there are requests
+            return Task.FromResult(0);
+        }
+
+        public override Task AbortAsync()
+        {
+            _onAbortRequestedCompletionSource.TrySetResult(true);
+
             return Task.FromResult(0);
         }
 
@@ -67,7 +76,7 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAssociationAbortedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.FromResult(0);
         }
@@ -112,6 +121,12 @@ namespace Dicom.Network.Client.States
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
         }
 
+        private async Task TransitionToAbortState(CancellationToken cancellationToken)
+        {
+            var parameters = new DicomClientAbortState.InitialisationParameters(_initialisationParameters.Connection);
+            await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellationToken);
+        }
+
         public override async Task OnEnter(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -122,11 +137,12 @@ namespace Dicom.Network.Client.States
             }
 
             var onRequestIsAdded = _onRequestAddedTaskCompletionSource.Task;
-            var onReceiveAbort = _onAssociationAbortedTaskCompletionSource.Task;
+            var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
+            var onAbortRequested = _onAbortRequestedCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
             var onLingerTimeout = Task.Delay(_dicomClient.AssociationLingerTimeoutInMs, _lingerTimeoutCancellationTokenSource.Token);
 
-            var winner = await Task.WhenAny(onRequestIsAdded, onReceiveAbort, onDisconnect, onLingerTimeout)
+            var winner = await Task.WhenAny(onRequestIsAdded, onReceiveAbort, onAbortRequested, onDisconnect, onLingerTimeout)
                 .ConfigureAwait(false);
 
             if (winner == onRequestIsAdded)
@@ -142,14 +158,19 @@ namespace Dicom.Network.Client.States
             else if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Warn($"[{this}] Association was aborted while lingering the association");
-                var associationAbortedResult = onReceiveAbort.Result;
-                var exception = new DicomAssociationAbortedException(associationAbortedResult.Source, associationAbortedResult.Reason);
+                var abortReceivedResult = onReceiveAbort.Result;
+                var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Warn($"[{this}] Disconnected while lingering the association");
                 await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
+            }
+            else if (winner == onAbortRequested)
+            {
+                _dicomClient.Logger.Warn($"[{this}] Abort requested, immediately aborting association");
+                await TransitionToAbortState(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -164,8 +185,9 @@ namespace Dicom.Network.Client.States
         {
             _lingerTimeoutCancellationTokenSource.Cancel();
             _lingerTimeoutCancellationTokenSource.Dispose();
-            _onAssociationAbortedTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
             _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onAbortRequestedCompletionSource.TrySetCanceled();
         }
 
         public override string ToString()

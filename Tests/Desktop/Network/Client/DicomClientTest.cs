@@ -771,6 +771,238 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Fact]
+        public async Task AbortAsync_BeforeSend_ShouldNeverConnect()
+        {
+            var port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var numberOfRequestsSent = 5;
+                var numberOfResponsesReceived = 0;
+                for (var i = 0; i < numberOfRequestsSent; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
+                    });
+                }
+
+                bool connected = false;
+                client.StateChanged += (sender, args) =>
+                {
+                    if (args.NewState is DicomClientWithConnectionState)
+                    {
+                        connected = true;
+                    }
+                };
+
+                var sendTask = client.SendAsync(CancellationToken.None);
+
+                await client.AbortAsync().ConfigureAwait(false);
+
+                await sendTask.ConfigureAwait(false);
+
+                Assert.Equal(0, numberOfResponsesReceived);
+                Assert.Empty(server.Providers);
+                Assert.False(connected);
+            }
+        }
+
+        [Fact]
+        public async Task AbortAsync_AfterConnect_BeforeAssociation_ShouldNeverAssociate()
+        {
+            var port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                var numberOfRequestsSent = 5;
+                var numberOfResponsesReceived = 0;
+                for (var i = 0; i < numberOfRequestsSent; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
+                    });
+                }
+
+                bool connected = false, associated = false;
+                client.StateChanged += async (sender, args) =>
+                {
+                    if (args.NewState is DicomClientWithConnectionState)
+                    {
+                        connected = true;
+                        await client.AbortAsync().ConfigureAwait(false);
+                    }
+
+                    if (args.NewState is DicomClientWithAssociationState)
+                    {
+                        associated = true;
+                    }
+                };
+
+                var sendTask = client.SendAsync(CancellationToken.None);
+
+                await sendTask.ConfigureAwait(false);
+
+                Assert.True(connected);
+                Assert.False(associated);
+                Assert.Empty(server.Providers.SelectMany(p => p.Associations));
+                Assert.Empty(server.Providers.SelectMany(p => p.Requests));
+                Assert.Equal(0, numberOfResponsesReceived);
+            }
+        }
+
+        [Fact]
+        public async Task AbortAsync_AfterAssociation_BeforeSend_ShouldNeverSend()
+        {
+            var port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var numberOfRequestsSent = 5;
+                var numberOfResponsesReceived = 0;
+                for (var i = 0; i < numberOfRequestsSent; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
+                    });
+                }
+
+                bool connected = false, associated = false;
+                client.StateChanged += async (sender, args) =>
+                {
+                    if (args.NewState is DicomClientWithConnectionState)
+                    {
+                        connected = true;
+                    }
+
+                    if (args.NewState is DicomClientWithAssociationState)
+                    {
+                        associated = true;
+                        await client.AbortAsync().ConfigureAwait(false);
+                    }
+                };
+
+                await client.SendAsync(CancellationToken.None);
+
+                Assert.True(connected);
+                Assert.True(associated);
+                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
+                Assert.Empty(server.Providers.SelectMany(p => p.Requests));
+                Assert.Equal(0, numberOfResponsesReceived);
+            }
+        }
+
+        [Fact]
+        public async Task AbortAsync_DuringSend_ShouldStopSending()
+        {
+            var port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var cancellationTokenSource = new CancellationTokenSource();
+
+                var sentRequests = new ConcurrentBag<DicomCEchoRequest>();
+                server.OnCEchoRequest(async request =>
+                {
+                    sentRequests.Add(request);
+                    if (sentRequests.Count > 0)
+                    {
+                        await client.AbortAsync().ConfigureAwait(false);
+                    }
+                });
+
+                var numberOfRequestsSent = 5;
+                var numberOfResponsesReceived = 0;
+                client.NegotiateAsyncOps(1, 1);
+                for (var i = 0; i < numberOfRequestsSent; ++i)
+                {
+                    client.AddRequest(new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) =>
+                        {
+                            Interlocked.Increment(ref numberOfResponsesReceived);
+                        }
+                    });
+                }
+
+                bool connected = false, associated = false;
+                client.StateChanged += (sender, args) =>
+                {
+                    if (args.NewState is DicomClientWithConnectionState)
+                    {
+                        connected = true;
+                    }
+
+                    if (args.NewState is DicomClientWithAssociationState)
+                    {
+                        associated = true;
+                    }
+                };
+
+                await client.SendAsync(cancellationTokenSource.Token);
+
+                cancellationTokenSource.Dispose();
+
+                Assert.True(connected);
+                Assert.True(associated);
+                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
+                Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
+                Assert.Equal(1, numberOfResponsesReceived);
+            }
+        }
+
+        [Fact]
+        public async Task AbortAsync_DuringAssociationRelease_ShouldNotLinger()
+        {
+            var port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var numberOfRequestsSent = 5;
+                var numberOfResponsesReceived = 0;
+                client.NegotiateAsyncOps(1, 1);
+                for (var i = 0; i < numberOfRequestsSent; ++i)
+                {
+                    var i1 = i;
+                    client.AddRequest(new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
+                    });
+                }
+
+                bool connected = false, associated = false;
+                client.StateChanged += async (sender, args) =>
+                {
+                    if (args.NewState is DicomClientWithConnectionState)
+                    {
+                        connected = true;
+                    }
+
+                    if (args.NewState is DicomClientWithAssociationState)
+                    {
+                        associated = true;
+                    }
+
+                    if (args.NewState is DicomClientReleaseAssociationState)
+                    {
+                        await client.AbortAsync().ConfigureAwait(false);
+                    }
+                };
+
+                await client.SendAsync(CancellationToken.None);
+
+                Assert.True(connected);
+                Assert.True(associated);
+                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
+                Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
+                Assert.Equal(5, numberOfResponsesReceived);
+            }
+        }
+
         private Task<DicomCEchoResponse> SendEchoRequestWithTimeout(DicomClient dicomClient, int timeoutInMilliseconds = 3000)
         {
             var request = new DicomCEchoRequest();

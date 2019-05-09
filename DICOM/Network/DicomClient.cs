@@ -982,7 +982,7 @@ namespace Dicom.Network
             private void SetCompletionFlag(Exception exception = null)
             {
                 Interlocked.Exchange(ref _releaseRequested, 0);
-                
+
                 if (_client._completionFlag.IsSet)
                     return;
                 _client._completionFlag.Set(exception);

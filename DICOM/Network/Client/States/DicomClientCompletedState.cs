@@ -154,6 +154,11 @@ namespace Dicom.Network.Client.States
             await TransitionToIdleState(cancellationToken).ConfigureAwait(false);
         }
 
+        public Task AbortAsync()
+        {
+            return Task.FromResult(0);
+        }
+
         public Task OnReceiveAssociationAccept(DicomAssociation association)
         {
             return Task.FromResult(0);

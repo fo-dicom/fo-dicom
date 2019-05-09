@@ -61,6 +61,11 @@ namespace Dicom.Network.Client.States
             await TransitionToConnectState(cancellationToken).ConfigureAwait(false);
         }
 
+        public Task AbortAsync()
+        {
+            return Task.FromResult(0);
+        }
+
         public Task OnReceiveAssociationAccept(DicomAssociation association)
         {
             return Task.FromResult(0);

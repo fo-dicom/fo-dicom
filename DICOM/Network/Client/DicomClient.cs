@@ -87,6 +87,11 @@ namespace Dicom.Network.Client
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Stop doing whatever it is the DicomClient is doing, abort the existing association and close the connection.
+        /// </summary>
+        Task AbortAsync();
     }
 
     public class DicomClient : IDicomClient
@@ -207,6 +212,11 @@ namespace Dicom.Network.Client
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             await State.SendAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public Task AbortAsync()
+        {
+            return ExecuteWithinTransitionLock(() => State.AbortAsync());
         }
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")

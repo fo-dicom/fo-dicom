@@ -135,6 +135,11 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
+        public Task AbortAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task OnReceiveAssociationAccept(DicomAssociation association)
         {
             return Task.FromResult(0);
