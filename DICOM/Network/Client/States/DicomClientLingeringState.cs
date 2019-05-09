@@ -111,7 +111,7 @@ namespace Dicom.Network.Client.States
 
         private async Task TransitionToCompletedState(CancellationToken cancellationToken)
         {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
+            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection, CancellationToken.None);
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
         }
 

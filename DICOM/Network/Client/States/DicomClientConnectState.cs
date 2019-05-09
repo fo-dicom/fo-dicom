@@ -12,13 +12,15 @@ namespace Dicom.Network.Client.States
     public class DicomClientConnectState : IDicomClientState, IDisposable
     {
         private readonly DicomClient _dicomClient;
-        private readonly TaskCompletionSource<bool> _cancellationRequested;
+        private readonly TaskCompletionSource<bool> _cancellationRequestedTaskCompletionSource;
+        private readonly TaskCompletionSource<bool> _onAbortRequestedTaskCompletionSource;
         private readonly List<IDisposable> _disposables;
 
         public DicomClientConnectState(DicomClient dicomClient)
         {
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
-            _cancellationRequested = new TaskCompletionSource<bool>();
+            _cancellationRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
+            _onAbortRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
             _disposables = new List<IDisposable>();
         }
 
@@ -33,15 +35,22 @@ namespace Dicom.Network.Client.States
 
         private async Task TransitionToIdleState(CancellationToken cancellationToken)
         {
-            await _dicomClient.Transition(new DicomClientIdleState(_dicomClient), cancellationToken);
+            var parameters = new DicomClientIdleState.InitialisationParameters(CancellationToken.None);
+            await _dicomClient.Transition(new DicomClientIdleState(_dicomClient, parameters), cancellationToken);
         }
 
         private async Task TransitionToCompletedWithoutErrorState(IDicomClientConnection connection, CancellationToken cancellationToken)
         {
             var parameters = connection == null
-                ? new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(null)
-                : new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(connection);
+                ? new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(null, CancellationToken.None)
+                : new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(connection, CancellationToken.None);
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
+        }
+
+        private async Task TransitionToAbortState(IDicomClientConnection connection, CancellationToken cancellationToken)
+        {
+            var parameters = new DicomClientAbortState.InitialisationParameters(connection);
+            await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellationToken);
         }
 
         private async Task TransitionToCompletedWithErrorState(Exception exception, IDicomClientConnection connection, CancellationToken cancellationToken)
@@ -88,12 +97,13 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
-            _disposables.Add(cancellationToken.Register(() => _cancellationRequested.SetResult(true)));
+            _disposables.Add(cancellationToken.Register(() => _cancellationRequestedTaskCompletionSource.SetResult(true)));
 
             var connect = Connect(cancellationToken);
-            var cancel = _cancellationRequested.Task;
+            var cancel = _cancellationRequestedTaskCompletionSource.Task;
+            var onAbortRequested = _onAbortRequestedTaskCompletionSource.Task;
 
-            var winner = await Task.WhenAny(connect, cancel).ConfigureAwait(false);
+            var winner = await Task.WhenAny(connect, cancel, onAbortRequested).ConfigureAwait(false);
 
             if (winner == connect)
             {
@@ -111,11 +121,18 @@ namespace Dicom.Network.Client.States
             }
             else
             {
-                // Cancellation was triggered but wait for the connection anyway, because we need to dispose of it properly
+                // Cancellation or abort was triggered but wait for the connection anyway, because we need to dispose of it properly
                 try
                 {
                     var connection = await connect.ConfigureAwait(false);
-                    await TransitionToCompletedWithoutErrorState(connection, cancellationToken).ConfigureAwait(false);
+                    if (winner == cancel)
+                    {
+                        await TransitionToCompletedWithoutErrorState(connection, cancellationToken).ConfigureAwait(false);
+                    }
+                    else if (winner == onAbortRequested)
+                    {
+                        await TransitionToAbortState(connection, cancellationToken).ConfigureAwait(false);
+                    }
                 }
                 catch(Exception e)
                 {
@@ -137,7 +154,9 @@ namespace Dicom.Network.Client.States
 
         public Task AbortAsync()
         {
-            throw new NotImplementedException();
+            _onAbortRequestedTaskCompletionSource.TrySetResult(true);
+
+            return Task.FromResult(0);
         }
 
         public Task OnReceiveAssociationAccept(DicomAssociation association)
@@ -177,7 +196,8 @@ namespace Dicom.Network.Client.States
                 disposable.Dispose();
             }
 
-            _cancellationRequested.TrySetCanceled();
+            _onAbortRequestedTaskCompletionSource.TrySetCanceled();
+            _cancellationRequestedTaskCompletionSource.TrySetCanceled();
         }
 
         public override string ToString()

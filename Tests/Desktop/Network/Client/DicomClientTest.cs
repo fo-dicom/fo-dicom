@@ -772,44 +772,6 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task AbortAsync_BeforeSend_ShouldNeverConnect()
-        {
-            var port = Ports.GetNext();
-            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                var numberOfRequestsSent = 5;
-                var numberOfResponsesReceived = 0;
-                for (var i = 0; i < numberOfRequestsSent; ++i)
-                {
-                    client.AddRequest(new DicomCEchoRequest
-                    {
-                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
-                    });
-                }
-
-                bool connected = false;
-                client.StateChanged += (sender, args) =>
-                {
-                    if (args.NewState is DicomClientWithConnectionState)
-                    {
-                        connected = true;
-                    }
-                };
-
-                var sendTask = client.SendAsync(CancellationToken.None);
-
-                await client.AbortAsync().ConfigureAwait(false);
-
-                await sendTask.ConfigureAwait(false);
-
-                Assert.Equal(0, numberOfResponsesReceived);
-                Assert.Empty(server.Providers);
-                Assert.False(connected);
-            }
-        }
-
-        [Fact]
         public async Task AbortAsync_AfterConnect_BeforeAssociation_ShouldNeverAssociate()
         {
             var port = Ports.GetNext();
@@ -830,7 +792,7 @@ namespace Dicom.Network.Client
                 bool connected = false, associated = false;
                 client.StateChanged += async (sender, args) =>
                 {
-                    if (args.NewState is DicomClientWithConnectionState)
+                    if (args.NewState is DicomClientRequestAssociationState)
                     {
                         connected = true;
                         await client.AbortAsync().ConfigureAwait(false);
@@ -849,13 +811,12 @@ namespace Dicom.Network.Client
                 Assert.True(connected);
                 Assert.False(associated);
                 Assert.Empty(server.Providers.SelectMany(p => p.Associations));
-                Assert.Empty(server.Providers.SelectMany(p => p.Requests));
                 Assert.Equal(0, numberOfResponsesReceived);
             }
         }
 
         [Fact]
-        public async Task AbortAsync_AfterAssociation_BeforeSend_ShouldNeverSend()
+        public async Task AbortAsync_AfterAssociation_BeforeSend_ShouldStopSendingASAP()
         {
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
@@ -874,12 +835,12 @@ namespace Dicom.Network.Client
                 bool connected = false, associated = false;
                 client.StateChanged += async (sender, args) =>
                 {
-                    if (args.NewState is DicomClientWithConnectionState)
+                    if (args.NewState is DicomClientConnectState)
                     {
                         connected = true;
                     }
 
-                    if (args.NewState is DicomClientWithAssociationState)
+                    if (args.NewState is DicomClientSendingRequestsState)
                     {
                         associated = true;
                         await client.AbortAsync().ConfigureAwait(false);
@@ -890,8 +851,6 @@ namespace Dicom.Network.Client
 
                 Assert.True(connected);
                 Assert.True(associated);
-                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
-                Assert.Empty(server.Providers.SelectMany(p => p.Requests));
                 Assert.Equal(0, numberOfResponsesReceived);
             }
         }
@@ -915,10 +874,10 @@ namespace Dicom.Network.Client
                     }
                 });
 
-                var numberOfRequestsSent = 5;
+                var numberOfRequestsToSend = 5;
                 var numberOfResponsesReceived = 0;
                 client.NegotiateAsyncOps(1, 1);
-                for (var i = 0; i < numberOfRequestsSent; ++i)
+                for (var i = 0; i < numberOfRequestsToSend; ++i)
                 {
                     client.AddRequest(new DicomCEchoRequest
                     {
@@ -949,9 +908,7 @@ namespace Dicom.Network.Client
 
                 Assert.True(connected);
                 Assert.True(associated);
-                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
-                Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.Equal(1, numberOfResponsesReceived);
+                Assert.True(numberOfRequestsToSend > numberOfResponsesReceived);
             }
         }
 

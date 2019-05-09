@@ -124,7 +124,7 @@ namespace Dicom.Network.Client.States
 
         private async Task TransitionToCompletedState(CancellationToken cancellationToken)
         {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
+            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection, CancellationToken.None);
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
         }
 
@@ -166,6 +166,13 @@ namespace Dicom.Network.Client.States
             {
                 _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
                 await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            if (_onAbortRequestedTaskCompletionSource.Task.IsCompleted)
+            {
+                _dicomClient.Logger.Warn($"[{this}] Abort requested before requests could be sent, immediately aborting now...");
+                await TransitionToAbortState(cancellationToken).ConfigureAwait(false);
                 return;
             }
 

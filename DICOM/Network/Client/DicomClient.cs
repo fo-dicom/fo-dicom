@@ -145,7 +145,7 @@ namespace Dicom.Network.Client
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this);
+            State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters(CancellationToken.None));
         }
 
         internal async Task Transition(IDicomClientState newState, CancellationToken cancellationToken)

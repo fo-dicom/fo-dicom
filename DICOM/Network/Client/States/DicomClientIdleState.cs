@@ -11,11 +11,23 @@ namespace Dicom.Network.Client.States
     public class DicomClientIdleState : IDicomClientState
     {
         private readonly DicomClient _dicomClient;
+        private readonly InitialisationParameters _initialisationParameters;
         private int _sendCalled;
 
-        public DicomClientIdleState(DicomClient dicomClient)
+        public DicomClientIdleState(DicomClient dicomClient, InitialisationParameters initialisationParameters)
         {
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
+            _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
+        }
+
+        public class InitialisationParameters
+        {
+            public CancellationToken AbortToken { get; }
+
+            public InitialisationParameters(CancellationToken abortToken)
+            {
+                AbortToken = abortToken;
+            }
         }
 
         private async Task TransitionToConnectState(CancellationToken cancellationToken)
@@ -27,7 +39,8 @@ namespace Dicom.Network.Client.States
 
         public async Task OnEnter(CancellationToken cancellationToken)
         {
-            if (!cancellationToken.IsCancellationRequested
+            if (!_initialisationParameters.AbortToken.IsCancellationRequested
+                && !cancellationToken.IsCancellationRequested
                 && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _)
                 && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
@@ -36,6 +49,10 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
+            if (_initialisationParameters.AbortToken.IsCancellationRequested)
+            {
+                _dicomClient.Logger.Debug($"[{this}] Abort requested, staying idle");
+            }
             if (cancellationToken.IsCancellationRequested)
             {
                 _dicomClient.Logger.Debug($"[{this}] Cancellation requested, staying idle");
