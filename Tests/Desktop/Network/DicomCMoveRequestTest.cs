@@ -51,6 +51,35 @@ namespace Dicom.Network
             Assert.Null(e);
         }
 
+
+        [Fact]
+        public void AddSeveralUIDsToQuery()
+        {
+            var e = Record.Exception(() =>
+            {
+                var request = new DicomCMoveRequest("DestinationAE", "1.2.3.456");
+                request.Dataset.Add(DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5");
+                Assert.Equal(2, request.Dataset.GetValueCount(DicomTag.SeriesInstanceUID));
+            });
+            Assert.Null(e);
+
+            e = Record.Exception(() =>
+            {
+                var request = new DicomCMoveRequest("DestinationAE", "1.2.3.456");
+                request.Dataset.Add(DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4");
+                Assert.Equal(2, request.Dataset.GetValueCount(DicomTag.SeriesInstanceUID));
+            });
+            Assert.Null(e);
+
+            e = Record.Exception(() =>
+            {
+                var request = new DicomCMoveRequest("DestinationAE", "1.2.3.456");
+                request.Dataset.Add(new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5"));
+                Assert.Equal(2, request.Dataset.GetValueCount(DicomTag.SeriesInstanceUID));
+            });
+            Assert.Null(e);
+        }
+
         #endregion
 
         #region Support Data
