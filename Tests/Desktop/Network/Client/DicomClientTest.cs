@@ -1003,7 +1003,6 @@ namespace Dicom.Network.Client
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                // Linger for 5 full seconds
                 client.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
