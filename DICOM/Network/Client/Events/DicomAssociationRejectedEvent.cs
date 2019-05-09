@@ -1,6 +1,6 @@
 namespace Dicom.Network.Client.Events
 {
-    public class DicomAssociationRejectedEvent
+    internal class DicomAssociationRejectedEvent
     {
         public DicomRejectResult Result { get; }
         public DicomRejectSource Source { get; }

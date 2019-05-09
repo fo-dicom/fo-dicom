@@ -145,7 +145,7 @@ namespace Dicom.Network.Client
 
         internal async Task Transition(IDicomClientState newState, CancellationToken cancellationToken)
         {
-            async Task InternalTransition()
+            Task InternalTransition()
             {
                 var oldState = State;
 
@@ -156,6 +156,8 @@ namespace Dicom.Network.Client
                 State = newState ?? throw new ArgumentNullException(nameof(newState));
 
                 StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+
+                return Task.FromResult(0);
             }
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);

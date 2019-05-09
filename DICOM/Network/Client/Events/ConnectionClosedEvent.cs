@@ -2,7 +2,7 @@ using System;
 
 namespace Dicom.Network.Client.Events
 {
-    public class ConnectionClosedEvent
+    internal class ConnectionClosedEvent
     {
         public Exception Exception { get; }
 

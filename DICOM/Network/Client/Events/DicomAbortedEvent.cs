@@ -1,6 +1,6 @@
 namespace Dicom.Network.Client.Events
 {
-    public class DicomAbortedEvent
+    internal class DicomAbortedEvent
     {
         public DicomAbortSource Source { get; }
         public DicomAbortReason Reason { get; }

@@ -2,7 +2,7 @@ using System;
 
 namespace Dicom.Network.Client.Events
 {
-    public class DicomAssociationAcceptedEvent
+    internal class DicomAssociationAcceptedEvent
     {
         public DicomAssociation Association { get; }
 
