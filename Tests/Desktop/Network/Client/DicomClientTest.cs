@@ -708,7 +708,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(cancellationTokenSource.Token);
+                await client.SendAsync(cancellationTokenSource.Token).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
