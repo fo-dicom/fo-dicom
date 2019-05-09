@@ -211,7 +211,6 @@ namespace Dicom.Network.Client
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")
         {
-            Logger.Debug($"[{State}] {caller}");
             await _transitionLock.WaitAsync().ConfigureAwait(false);
             try
             {

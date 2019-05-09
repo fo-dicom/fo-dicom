@@ -55,22 +55,7 @@ namespace Dicom.Network
             return server;
         }
 
-        private TServer CreateServer<TProvider, TServer>(int port)
-            where TProvider : DicomService, IDicomServiceProvider
-            where TServer : class, IDicomServer<TProvider>, new()
-        {
-            var logger = _logger.IncludePrefix(nameof(IDicomServer));
-            var options = new DicomServiceOptions
-            {
-                LogDimseDatasets = false,
-                LogDataPDUs = false,
-            };
-            var ipAddress = NetworkManager.IPv4Any;
-            var server = DicomServer.Create<TProvider, TServer>(ipAddress,port,logger: logger,options: options);
-            return server as TServer;
-        }
-
-        private Network.DicomClient CreateOldClient()
+        private DicomClient CreateOldClient()
         {
             var client = new DicomClient()
             {

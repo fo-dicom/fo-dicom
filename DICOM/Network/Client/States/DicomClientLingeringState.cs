@@ -131,24 +131,24 @@ namespace Dicom.Network.Client.States
 
             if (winner == onRequestIsAdded)
             {
-                _dicomClient.Logger.Debug($"[{this}] A new request was added, reusing association within linger timeout");
+                _dicomClient.Logger.Debug($"[{this}] A new request was added before linger timeout of {_dicomClient.AssociationLingerTimeoutInMs}ms, reusing association");
                 await TransitionToSendingRequestsState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onLingerTimeout)
             {
-                _dicomClient.Logger.Debug($"[{this}] Linger timed out, releasing association");
+                _dicomClient.Logger.Debug($"[{this}] Linger timed out after {_dicomClient.AssociationLingerTimeoutInMs}ms, releasing association");
                 await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Warn($"[{this}] Association was aborted during linger");
+                _dicomClient.Logger.Warn($"[{this}] Association was aborted while lingering the association");
                 var associationAbortedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(associationAbortedResult.Source, associationAbortedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Warn($"[{this}] Disconnected during linger");
+                _dicomClient.Logger.Warn($"[{this}] Disconnected while lingering the association");
                 await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
             }
         }
