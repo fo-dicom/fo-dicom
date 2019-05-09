@@ -98,6 +98,52 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Fact]
+        public async Task Send_MultipleRequestsWhileAlreadySending_ReusesSameAssociation()
+        {
+            int port = Ports.GetNext();
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var counter = 0;
+
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
+                for (var i = 0; i < 5; i++)
+                {
+                    var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                    client.AddRequest(request);
+                }
+
+                bool moreRequestsSent = false;
+
+                client.StateChanged += async (sender, args) =>
+                {
+                    if (moreRequestsSent)
+                        return;
+                    if (args.NewState is DicomClientSendingRequestsState)
+                    {
+                        while (!client.QueuedRequests.IsEmpty)
+                        {
+                            await Task.Delay(10).ConfigureAwait(false);
+                        }
+                    }
+
+                    for (var i = 0; i < 5; i++)
+                    {
+                        var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                        client.AddRequest(request);
+                    }
+
+                    moreRequestsSent = true;
+                };
+
+                await client.SendAsync().ConfigureAwait(false);
+
+                Assert.Equal(10, counter);
+                Assert.Single(server.Providers.SelectMany(p => p.Associations));
+            }
+        }
+
         [Theory]
         [InlineData(2)]
         [InlineData(20)]
