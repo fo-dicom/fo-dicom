@@ -42,7 +42,7 @@ namespace Dicom.Network.Client
         /// Callback for handling association accept scenarios.
         /// </summary>
         /// <param name="association">Accepted association.</param>
-        Task OnReceiveAssociationAccept(DicomAssociation association);
+        Task OnReceiveAssociationAcceptAsync(DicomAssociation association);
 
         /// <summary>
         /// Callback for handling association reject scenarios.
@@ -50,25 +50,25 @@ namespace Dicom.Network.Client
         /// <param name="result">Specification of rejection result.</param>
         /// <param name="source">Source of rejection.</param>
         /// <param name="reason">Detailed reason for rejection.</param>
-        Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
+        Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
 
         /// <summary>
         /// Callback on response from an association release.
         /// </summary>
-        Task OnReceiveAssociationReleaseResponse();
+        Task OnReceiveAssociationReleaseResponseAsync();
 
         /// <summary>
         /// Callback on receiving an abort message.
         /// </summary>
         /// <param name="source">Abort source.</param>
         /// <param name="reason">Detailed reason for abort.</param>
-        Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason);
+        Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason);
 
         /// <summary>
         /// Callback when connection is closed.
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        Task OnConnectionClosed(Exception exception);
+        Task OnConnectionClosedAsync(Exception exception);
 
         /// <summary>
         /// Send request from service.
@@ -82,6 +82,13 @@ namespace Dicom.Network.Client
         ///   -- The active association is temporarily saturated (too many open pending requests), see <see cref="DicomAssociation.MaxAsyncOpsInvoked"/>
         /// </summary>
         Task SendNextMessageAsync();
+
+        /// <summary>
+        /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
+        /// </summary>
+        /// <param name="request">The original request that was sent, which has now been fulfilled.</param>
+        /// <param name="response">The final response from the DICOM server</param>
+        Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
     }
 
     public class DicomClientConnection : DicomService, IDicomClientConnection
@@ -135,29 +142,34 @@ namespace Dicom.Network.Client
             return DicomClient.OnSendQueueEmptyAsync();
         }
 
-        public Task OnReceiveAssociationAccept(DicomAssociation association)
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             return DicomClient.OnReceiveAssociationAccept(association);
         }
 
-        public Task OnReceiveAssociationReject(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             return DicomClient.OnReceiveAssociationReject(result, source, reason);
         }
 
-        public Task OnReceiveAssociationReleaseResponse()
+        public Task OnReceiveAssociationReleaseResponseAsync()
         {
             return DicomClient.OnReceiveAssociationReleaseResponse();
         }
 
-        public Task OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             return DicomClient.OnReceiveAbort(source, reason);
         }
 
-        public Task OnConnectionClosed(Exception exception)
+        public Task OnConnectionClosedAsync(Exception exception)
         {
             return DicomClient.OnConnectionClosed(exception);
+        }
+
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return DicomClient.OnRequestCompletedAsync(request, response);
         }
     }
 }

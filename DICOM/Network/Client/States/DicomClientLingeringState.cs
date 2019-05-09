@@ -93,6 +93,11 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
+        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return Task.FromResult(0);
+        }
+
         private async Task TransitionToSendingRequestsState(CancellationToken cancellationToken)
         {
             var sendRequestsParameters = new DicomClientSendingRequestsState.InitialisationParameters(_initialisationParameters.Association,

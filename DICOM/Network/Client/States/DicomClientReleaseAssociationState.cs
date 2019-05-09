@@ -90,6 +90,11 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
+        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return Task.FromResult(0);
+        }
+
         private async Task TransitionToRequestAssociationState(CancellationToken cancellationToken)
         {
             var parameters =

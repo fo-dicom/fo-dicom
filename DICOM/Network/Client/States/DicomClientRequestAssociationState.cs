@@ -82,6 +82,11 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
+        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return Task.FromResult(0);
+        }
+
         private async Task SendAssociationRequest()
         {
             var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe)

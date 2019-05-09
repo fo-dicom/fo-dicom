@@ -476,7 +476,7 @@ namespace Dicom.Network
                             if (this is IDicomServiceUser dicomServiceUser)
                                 dicomServiceUser.OnReceiveAssociationAccept(Association);
                             if (this is IDicomClientConnection connection)
-                                await connection.OnReceiveAssociationAccept(Association).ConfigureAwait(false);
+                                await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
                             break;
                         }
                         case 0x03:
@@ -492,7 +492,7 @@ namespace Dicom.Network
                             if (this is IDicomServiceUser user)
                                 user.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
                             if (this is IDicomClientConnection connection)
-                                await connection.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
                             if (TryCloseConnection()) return;
                             break;
                         }
@@ -522,7 +522,7 @@ namespace Dicom.Network
                             if (this is IDicomServiceUser user)
                                 user.OnReceiveAssociationReleaseResponse();
                             if (this is IDicomClientConnection connection)
-                                await connection.OnReceiveAssociationReleaseResponse().ConfigureAwait(false);
+                                await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
                             if (TryCloseConnection()) return;
                             break;
                         }
@@ -794,9 +794,8 @@ namespace Dicom.Network
         {
             Logger.Info("{logId} <- {dicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
 
-            if (!DicomMessage.IsRequest(dimse.Type))
+            if (!DicomMessage.IsRequest(dimse.Type) && dimse is DicomResponse rsp)
             {
-                var rsp = dimse as DicomResponse;
                 DicomRequest req;
                 lock (_lock)
                 {
@@ -805,13 +804,24 @@ namespace Dicom.Network
 
                 if (req != null)
                 {
-                    rsp.UserState = req.UserState;
-                    req.PostResponse(this, rsp);
-                    if (rsp.Status.State != DicomState.Pending)
+                    try
                     {
-                        lock (_lock)
+                        rsp.UserState = req.UserState;
+                        req.PostResponse(this, rsp);
+                    }
+                    finally
+                    {
+                        if (rsp.Status.State != DicomState.Pending)
                         {
-                            _pending.Remove(req);
+                            lock (_lock)
+                            {
+                                _pending.Remove(req);
+                            }
+
+                            if (this is IDicomClientConnection connection)
+                            {
+                                await connection.OnRequestCompletedAsync(req, rsp).ConfigureAwait(false);
+                            }
                         }
                     }
                 }
@@ -1016,73 +1026,67 @@ namespace Dicom.Network
 
             if (pc == null)
             {
+                var request = msg as DicomRequest;
+
                 lock (_lock)
                 {
-                    _pending.Remove(msg as DicomRequest);
+                    _pending.Remove(request);
                 }
 
                 try
                 {
+                    DicomResponse response;
+
                     switch (msg)
                     {
                         case DicomCStoreRequest cStoreRequest:
-                            cStoreRequest.PostResponse(
-                                this,
-                                new DicomCStoreResponse(cStoreRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomCStoreResponse(cStoreRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomCEchoRequest cEchoRequest:
-                            cEchoRequest.PostResponse(
-                                this,
-                                new DicomCEchoResponse(cEchoRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomCEchoResponse(cEchoRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomCFindRequest cFindRequest:
-                            cFindRequest.PostResponse(
-                                this,
-                                new DicomCFindResponse(cFindRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomCFindResponse(cFindRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomCGetRequest cGetRequest:
-                            cGetRequest.PostResponse(
-                                this,
-                                new DicomCGetResponse(cGetRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomCGetResponse(cGetRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomCMoveRequest cMoveRequest:
-                            cMoveRequest.PostResponse(
-                                this,
-                                new DicomCMoveResponse(cMoveRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomCMoveResponse(cMoveRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNActionRequest nActionRequest:
-                            nActionRequest.PostResponse(
-                                this,
-                                new DicomNActionResponse(nActionRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNActionResponse(nActionRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNCreateRequest nCreateRequest:
-                            nCreateRequest.PostResponse(
-                                this,
-                                new DicomNCreateResponse(nCreateRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNCreateResponse(nCreateRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNDeleteRequest nDeleteRequest:
-                            nDeleteRequest.PostResponse(
-                                this,
-                                new DicomNDeleteResponse(nDeleteRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNDeleteResponse(nDeleteRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNEventReportRequest nEventReportRequest:
-                            nEventReportRequest.PostResponse(
-                                this,
-                                new DicomNEventReportResponse(nEventReportRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNEventReportResponse(nEventReportRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNGetRequest nGetRequest:
-                            nGetRequest.PostResponse(
-                                this,
-                                new DicomNGetResponse(nGetRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNGetResponse(nGetRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         case DicomNSetRequest nSetRequest:
-                            nSetRequest.PostResponse(
-                                this,
-                                new DicomNSetResponse(nSetRequest, DicomStatus.SOPClassNotSupported));
+                            response = new DicomNSetResponse(nSetRequest, DicomStatus.SOPClassNotSupported);
                             break;
                         default:
+                            response = null;
                             Logger.Warn("Unknown message type: {type}", msg.Type);
                             break;
+
+                    }
+
+                    if (response != null)
+                    {
+                        request.PostResponse(this, response);
+                    }
+
+                    if (this is IDicomClientConnection connection)
+                    {
+                        await connection.OnRequestCompletedAsync(request, response).ConfigureAwait(false);
                     }
                 }
                 catch(Exception e)

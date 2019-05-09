@@ -191,6 +191,11 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return Task.FromResult(0);
+        }
+
         public override string ToString()
         {
             return $"COMPLETED";

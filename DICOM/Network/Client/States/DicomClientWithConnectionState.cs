@@ -6,12 +6,12 @@ namespace Dicom.Network.Client.States
 {
     public abstract class DicomClientWithConnectionState : IDicomClientState
     {
-        public IDicomClientConnection Connection { get; }
-
         protected DicomClientWithConnectionState(IInitialisationWithConnectionParameters parameters)
         {
             Connection = parameters.Connection ?? throw new ArgumentNullException(nameof(IInitialisationWithConnectionParameters.Connection));
         }
+
+        public IDicomClientConnection Connection { get; }
 
         public abstract Task OnReceiveAssociationAccept(DicomAssociation association);
 
@@ -24,6 +24,8 @@ namespace Dicom.Network.Client.States
         public abstract Task OnConnectionClosed(Exception exception);
 
         public abstract Task OnSendQueueEmpty();
+
+        public abstract Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
 
         public abstract Task OnEnter(CancellationToken cancellationToken);
 

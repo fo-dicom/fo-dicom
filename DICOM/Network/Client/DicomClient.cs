@@ -261,5 +261,10 @@ namespace Dicom.Network.Client
         {
             return ExecuteWithinTransitionLock(() => State.OnConnectionClosed(exception));
         }
+
+        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            return ExecuteWithinTransitionLock(() => State.OnRequestCompletedAsync(request, response));
+        }
     }
 }

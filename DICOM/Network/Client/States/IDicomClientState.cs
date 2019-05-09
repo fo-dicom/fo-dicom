@@ -64,5 +64,12 @@ namespace Dicom.Network.Client.States
         /// </summary>
         /// <returns>Awaitable task</returns>
         Task OnSendQueueEmpty();
+
+        /// <summary>
+        /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
+        /// </summary>
+        /// <param name="request">The original request that was sent, which has now been fulfilled.</param>
+        /// <param name="response">The final response from the DICOM server</param>
+        Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
     }
 }
