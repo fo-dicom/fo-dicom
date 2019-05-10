@@ -1,11 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
     /// <summary>
     /// Interface for implementations of a DICOM service as a client.
     /// </summary>
+    [Obsolete("This is the synchronous API employed by the old DICOM client. Use IDicomClientConnection instead.")]
     public interface IDicomServiceUser : IDicomService
     {
         /// <summary>
