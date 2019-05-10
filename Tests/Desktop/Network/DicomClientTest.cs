@@ -429,22 +429,6 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Old_Send_RecordAssociationData_AssociationContainsHostAndPort()
-        {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateOldClient();
-                client.AddRequest(new DicomCEchoRequest());
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                Assert.NotNull(remoteHost);
-                Assert.True(remotePort > 0);
-                Assert.NotEqual(port, remotePort);
-            }
-        }
-
-        [Fact]
         public void Old_Release_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();
