@@ -193,6 +193,8 @@ namespace Dicom.Network.Client
 
         public Encoding FallbackEncoding { get; set; }
 
+        public DicomClientCStoreRequestHandler CStoreRequestHandler { get; set; }
+
         public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
@@ -265,6 +267,14 @@ namespace Dicom.Network.Client
         internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
             return ExecuteWithinTransitionLock(() => State.OnRequestCompletedAsync(request, response));
+        }
+
+        public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        {
+            if (CStoreRequestHandler == null)
+                return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
+
+            return await CStoreRequestHandler(request).ConfigureAwait(false);
         }
     }
 }

@@ -89,6 +89,17 @@ namespace Dicom.Network.Client
         /// <param name="request">The original request that was sent, which has now been fulfilled.</param>
         /// <param name="response">The final response from the DICOM server</param>
         Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+
+        /// <summary>
+        /// Callback for handling a client related C-STORE request, typically emanating from the client's C-GET request.
+        /// </summary>
+        /// <param name="request">
+        /// C-STORE request.
+        /// </param>
+        /// <returns>
+        /// The <see cref="DicomCStoreResponse"/> related to the C-STORE <paramref name="request"/>.
+        /// </returns>
+        Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
     }
 
     public class DicomClientConnection : DicomService, IDicomClientConnection
@@ -170,6 +181,11 @@ namespace Dicom.Network.Client
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
             return DicomClient.OnRequestCompletedAsync(request, response);
+        }
+
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        {
+            return DicomClient.OnCStoreRequestAsync(request);
         }
     }
 }

@@ -845,6 +845,13 @@ namespace Dicom.Network
                     return;
                 }
 
+                if (this is IDicomClientConnection connection)
+                {
+                    var response = await connection.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+
                 throw new DicomNetworkException("C-Store SCP not implemented");
             }
 
