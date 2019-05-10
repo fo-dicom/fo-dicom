@@ -428,6 +428,62 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void Release_AfterAssociation_SendIsCompleted()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                client.WaitForAssociation();
+
+                client.Release();
+                Thread.Sleep(10);
+                Assert.True(task.IsCompleted);
+            }
+        }
+
+        [Fact]
+        public async Task ReleaseAsync_AfterAssociation_SendIsCompleted()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                Task task = null;
+                var client = CreateOldClient();
+                client.AssociationAccepted += HandleAssociationAccepted;
+                client.AddRequest(new DicomCEchoRequest());
+                task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
+                {
+                    (sender as DicomClient).ReleaseAsync().Wait();
+                    Thread.Sleep(10);
+                    Assert.True(task.IsCompleted);
+                }
+            }
+        }
+
+        [Fact]
+        public void Send_RecordAssociationData_AssociationContainsHostAndPort()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+
+                Assert.NotNull(remoteHost);
+                Assert.True(remotePort > 0);
+                Assert.NotEqual(port, remotePort);
+            }
+        }
+
+        [Fact]
         public void Old_Send_RejectedAssociation_ShouldYieldException()
         {
             var port = Ports.GetNext();
