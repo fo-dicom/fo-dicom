@@ -319,6 +319,23 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public void Old_WaitForAssociation_Aborted_ReturnsFalse()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateOldClient();
+                client.AddRequest(new DicomCEchoRequest());
+                client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                client.Abort();
+                var actual = client.WaitForAssociation(1000);
+
+                Assert.False(actual);
+            }
+        }
+
+        [Fact]
         public async Task Old_WaitForAssociationAsync_WithinTimeout_ReturnsTrue()
         {
             int port = Ports.GetNext();
@@ -428,7 +445,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Release_AfterAssociation_SendIsCompleted()
+        public void Old_Release_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
@@ -446,7 +463,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public async Task ReleaseAsync_AfterAssociation_SendIsCompleted()
+        public async Task Old_ReleaseAsync_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
@@ -467,7 +484,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Send_RecordAssociationData_AssociationContainsHostAndPort()
+        public void Old_Send_RecordAssociationData_AssociationContainsHostAndPort()
         {
             int port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
