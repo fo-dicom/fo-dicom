@@ -618,7 +618,7 @@ namespace Dicom.Network
                         {
                             _dimseStream.Seek(0, SeekOrigin.Begin);
 
-                            var command = new DicomDataset();
+                            var command = new DicomDataset() { ValidateItems = false };
 
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
