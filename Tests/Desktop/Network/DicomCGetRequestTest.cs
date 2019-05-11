@@ -13,7 +13,6 @@ namespace Dicom.Network
     {
         #region Unit tests
 
-
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public void DicomCGetRequest_OneImageInSeries_Received()
         {

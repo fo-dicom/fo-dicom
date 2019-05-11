@@ -107,7 +107,7 @@ namespace Dicom.Network.Client
         public int AssociationReleaseTimeoutInMs { get; set; }
         public int AssociationLingerTimeoutInMs { get; set; }
 
-        internal IDicomClientState State { get; private set; }
+        private IDicomClientState State { get; set; }
 
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
 
@@ -193,7 +193,10 @@ namespace Dicom.Network.Client
 
         public Encoding FallbackEncoding { get; set; }
 
-        public DicomClientCStoreRequestHandler CStoreRequestHandler { get; set; }
+        /// <summary>
+        /// Gets or sets the handler of a client C-STORE request.
+        /// </summary>
+        public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
         public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
@@ -271,10 +274,10 @@ namespace Dicom.Network.Client
 
         public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
-            if (CStoreRequestHandler == null)
+            if (OnCStoreRequest == null)
                 return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
 
-            return await CStoreRequestHandler(request).ConfigureAwait(false);
+            return await OnCStoreRequest(request).ConfigureAwait(false);
         }
     }
 }

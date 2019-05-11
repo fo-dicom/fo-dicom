@@ -506,7 +506,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public void IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
+        public async Task IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
         {
             var port = Ports.GetNext();
             using (CreateServer<DicomCEchoProvider>(port))
@@ -518,7 +518,7 @@ namespace Dicom.Network.Client
                 client.AssociationLingerTimeoutInMs = 100;
                 client.AddRequest(
                     new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)});
-                client.SendAsync();
+                var sendTask = client.SendAsync();
 
                 client.AddRequest(
                     new DicomCEchoRequest
@@ -533,6 +533,7 @@ namespace Dicom.Network.Client
 
                 flag.Wait(1000);
                 Assert.Equal(2, counter);
+                await sendTask.ConfigureAwait(false);
             }
         }
 
@@ -1287,6 +1288,47 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Fact]
+        public async Task OnCStoreRequest_AfterCGet_ShouldTrigger()
+        {
+            var logger = _logger.IncludePrefix("UnitTest");
+            var port = Ports.GetNext();
+
+            using (CreateServer<RecordingDicomCGetProvider, RecordingDicomCGetProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                DicomCStoreRequest capturedCStoreRequest = null;
+
+                client.OnCStoreRequest = async request =>
+                {
+                    logger.Info("Handling C-Store request");
+                    capturedCStoreRequest = request;
+                    await Task.Delay(50).ConfigureAwait(false);
+                    return new DicomCStoreResponse(request, DicomStatus.Success);
+                };
+
+                var studyInstanceUID = "999.999.3859744";
+                var seriesInstanceUID = "999.999.94827453";
+                var sopInstanceUID = "999.999.133.1996.1.1800.1.6.21";
+
+                logger.Info("Sending C-Get request");
+                client.AddRequest(new DicomCGetRequest(studyInstanceUID, seriesInstanceUID, sopInstanceUID));
+
+                var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
+                    DicomStorageCategory.Image,
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
+                    DicomTransferSyntax.ImplicitVRLittleEndian,
+                    DicomTransferSyntax.ImplicitVRBigEndian);
+                client.AdditionalPresentationContexts.AddRange(pcs);
+
+                await client.SendAsync().ConfigureAwait(false);
+
+                Assert.NotNull(capturedCStoreRequest);
+                Assert.Equal(DicomUID.Parse(sopInstanceUID).ToString(), capturedCStoreRequest.SOPInstanceUID.ToString());
+            }
+        }
+
         #region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1413,7 +1455,7 @@ namespace Dicom.Network.Client
             /// <inheritdoc />
             public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
-                await WaitForALittleBit();
+                await WaitForALittleBit().ConfigureAwait(false);
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.SetResult(DicomPresentationContextResult.Accept);
@@ -1427,8 +1469,8 @@ namespace Dicom.Network.Client
             /// <inheritdoc />
             public async Task OnReceiveAssociationReleaseRequestAsync()
             {
-                await WaitForALittleBit();
-                await SendAssociationReleaseResponseAsync();
+                await WaitForALittleBit().ConfigureAwait(false);
+                await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
 
             /// <inheritdoc />
@@ -1474,6 +1516,108 @@ namespace Dicom.Network.Client
             protected sealed override RecordingDicomCEchoProvider CreateScp(INetworkStream stream)
             {
                 var provider = new RecordingDicomCEchoProvider(stream, Encoding.UTF8, Logger, _onRequest);
+                _providers.Add(provider);
+                return provider;
+            }
+        }
+
+
+        public class RecordingDicomCGetProvider : DicomService, IDicomServiceProvider, IDicomCGetProvider
+        {
+            private readonly ConcurrentBag<DicomAssociation> _associations;
+            private readonly ConcurrentBag<DicomCGetRequest> _requests;
+
+            public IEnumerable<DicomCGetRequest> Requests => _requests;
+            public IEnumerable<DicomAssociation> Associations => _associations;
+
+            public RecordingDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
+            {
+                _requests = new ConcurrentBag<DicomCGetRequest>();
+                _associations = new ConcurrentBag<DicomAssociation>();
+            }
+
+            async Task WaitForALittleBit()
+            {
+                var ms = new Random().Next(10);
+                await Task.Delay(ms);
+            }
+
+            /// <inheritdoc />
+            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                await WaitForALittleBit().ConfigureAwait(false);
+                foreach (var pc in association.PresentationContexts)
+                {
+                    pc.SetResult(DicomPresentationContextResult.Accept);
+                }
+
+                _associations.Add(association);
+
+                await SendAssociationAcceptAsync(association);
+            }
+
+            /// <inheritdoc />
+            public async Task OnReceiveAssociationReleaseRequestAsync()
+            {
+                await WaitForALittleBit().ConfigureAwait(false);
+                await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
+            }
+
+            /// <inheritdoc />
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            /// <inheritdoc />
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public IEnumerable<DicomCGetResponse> OnCGetRequest(DicomCGetRequest request)
+            {
+                _requests.Add(request);
+
+                WaitForALittleBit().GetAwaiter().GetResult();
+
+                yield return new DicomCGetResponse(request, DicomStatus.Pending);
+
+                DicomCGetResponse nextResponse;
+
+                try
+                {
+                    var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+
+                    var cStoreRequest = new DicomCStoreRequest(file);
+
+                    SendRequestAsync(cStoreRequest).Wait();
+
+                    nextResponse = new DicomCGetResponse(request, DicomStatus.Success);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Could not send file via C-Store request: {error}", e);
+                    nextResponse = new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
+                }
+
+                yield return nextResponse;
+            }
+        }
+
+        public class RecordingDicomCGetProviderServer : DicomServer<RecordingDicomCGetProvider>
+        {
+            private readonly ConcurrentBag<RecordingDicomCGetProvider> _providers;
+
+            public IEnumerable<RecordingDicomCGetProvider> Providers => _providers;
+
+            public RecordingDicomCGetProviderServer()
+            {
+                _providers = new ConcurrentBag<RecordingDicomCGetProvider>();
+            }
+
+            protected sealed override RecordingDicomCGetProvider CreateScp(INetworkStream stream)
+            {
+                var provider = new RecordingDicomCGetProvider(stream, Encoding.UTF8, Logger);
                 _providers.Add(provider);
                 return provider;
             }
