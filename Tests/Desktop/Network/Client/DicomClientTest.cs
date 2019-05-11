@@ -729,10 +729,10 @@ namespace Dicom.Network.Client
                     }
                 });
 
-                var numberOfRequestsSent = 5;
+                var numberOfRequestsToSend = 5;
                 var numberOfResponsesReceived = 0;
                 client.NegotiateAsyncOps(1, 1);
-                for (var i = 0; i < numberOfRequestsSent; ++i)
+                for (var i = 0; i < numberOfRequestsToSend; ++i)
                 {
                     client.AddRequest(new DicomCEchoRequest
                     {
@@ -765,7 +765,7 @@ namespace Dicom.Network.Client
                 Assert.True(associated);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.Equal(1, numberOfResponsesReceived);
+                Assert.True(numberOfRequestsToSend > numberOfResponsesReceived);
             }
         }
 
