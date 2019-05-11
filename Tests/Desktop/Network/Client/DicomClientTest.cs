@@ -715,6 +715,8 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
+
                 var cancellationTokenSource = new CancellationTokenSource();
 
                 var sentRequests = new ConcurrentBag<DicomCEchoRequest>();
@@ -894,7 +896,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(CancellationToken.None);
+                await client.SendAsync(CancellationToken.None).ConfigureAwait(false);
 
                 Assert.True(connected);
                 Assert.True(associated);
@@ -909,6 +911,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
 
                 var sentRequests = new ConcurrentBag<DicomCEchoRequest>();
@@ -949,7 +952,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(cancellationTokenSource.Token);
+                await client.SendAsync(cancellationTokenSource.Token).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
@@ -997,7 +1000,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(CancellationToken.None);
+                await client.SendAsync(CancellationToken.None).ConfigureAwait(false);
 
                 Assert.True(connected);
                 Assert.True(associated);
