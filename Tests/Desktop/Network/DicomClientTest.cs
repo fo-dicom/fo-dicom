@@ -429,7 +429,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Old_Release_AfterAssociation_SendIsCompleted()
+        public async Task Old_Release_AfterAssociation_SendIsCompleted()
         {
             int port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
@@ -441,7 +441,7 @@ namespace Dicom.Network
                 client.WaitForAssociation();
 
                 client.Release();
-                Thread.Sleep(10);
+                await Task.Delay(1000).ConfigureAwait(false);
                 Assert.True(task.IsCompleted);
             }
         }
@@ -458,10 +458,10 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest());
                 task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
+                async void HandleAssociationAccepted(object sender, AssociationAcceptedEventArgs e)
                 {
-                    (sender as DicomClient).ReleaseAsync().Wait();
-                    Thread.Sleep(10);
+                    await client.ReleaseAsync().ConfigureAwait(false);
+                    await Task.Delay(1000).ConfigureAwait(false);
                     Assert.True(task.IsCompleted);
                 }
             }
@@ -548,7 +548,7 @@ namespace Dicom.Network
         }
 
         [Fact]
-        public void Old_IsSendRequired_AddedRequestNotConnected_ReturnsTrue()
+        public async Task Old_IsSendRequired_AddedRequestNotConnected_ReturnsTrue()
         {
             var port = Ports.GetNext();
             using (CreateServer<DicomCEchoProvider>(port))
@@ -557,7 +557,8 @@ namespace Dicom.Network
                 client.AddRequest(new DicomCEchoRequest());
                 Assert.True(client.IsSendRequired);
                 client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                Thread.Sleep(100);
+
+                await Task.Delay(100).ConfigureAwait(false);
 
                 client.AddRequest(new DicomCEchoRequest());
 
