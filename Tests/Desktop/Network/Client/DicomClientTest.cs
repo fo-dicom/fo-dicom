@@ -586,6 +586,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
@@ -625,6 +626,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
@@ -670,6 +672,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
@@ -776,6 +779,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
@@ -827,7 +831,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
+                client.NegotiateAsyncOps(1, 1);
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
                 for (var i = 0; i < numberOfRequestsSent; ++i)
@@ -871,6 +875,7 @@ namespace Dicom.Network.Client
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(1, 1);
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
                 for (var i = 0; i < numberOfRequestsSent; ++i)
@@ -900,7 +905,7 @@ namespace Dicom.Network.Client
 
                 Assert.True(connected);
                 Assert.True(associated);
-                Assert.Equal(0, numberOfResponsesReceived);
+                Assert.True(numberOfRequestsSent > numberOfResponsesReceived);
             }
         }
 
