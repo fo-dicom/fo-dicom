@@ -864,7 +864,7 @@ namespace Dicom.Network.Client
                 Assert.True(connected);
                 Assert.False(associated);
                 Assert.Empty(server.Providers.SelectMany(p => p.Associations));
-                Assert.Equal(0, numberOfResponsesReceived);
+                Assert.True(numberOfRequestsSent > numberOfResponsesReceived);
             }
         }
 
