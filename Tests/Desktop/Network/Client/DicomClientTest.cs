@@ -229,7 +229,7 @@ namespace Dicom.Network.Client
 
                 var task = client.SendAsync();
                 //await Task.WhenAny(task, Task.Delay(10000));
-                await task;
+                await task.ConfigureAwait(false);
                 Assert.Equal(1, counter);
             }
         }
@@ -252,8 +252,7 @@ namespace Dicom.Network.Client
                 for (var i = 0; i < expected; ++i)
                     client.AddRequest(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)});
 
-                var task = client.SendAsync();
-                await Task.WhenAny(task, Task.Delay(30000));
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }
@@ -285,7 +284,7 @@ namespace Dicom.Network.Client
                                 if (actual == expected) flag.Set();
                             }
                         });
-                    await client.SendAsync();
+                    await client.SendAsync().ConfigureAwait(false);
                 }
 
                 flag.Wait(10000);
@@ -324,10 +323,10 @@ namespace Dicom.Network.Client
                             });
 
                         _testOutputHelper.WriteLine("Sending #{0}", requestIndex);
-                        await client.SendAsync();
+                        await client.SendAsync().ConfigureAwait(false);
                         _testOutputHelper.WriteLine("Sent (or timed out) #{0}", requestIndex);
                     }).ToList();
-                await Task.WhenAll(requests);
+                await Task.WhenAll(requests).ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }
