@@ -209,6 +209,7 @@ namespace Dicom.Network.Client.States
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
 
+            // TODO clear DicomService.msgQueue upon cancellation. It's a bit silly that further requests can be sent even after cancellation
             if (cancellation.Mode != DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)
             {
                 _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
