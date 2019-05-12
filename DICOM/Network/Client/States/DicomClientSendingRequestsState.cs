@@ -186,11 +186,6 @@ namespace Dicom.Network.Client.States
             Interlocked.Exchange(ref _sendingMoreRequests, 0);
         }
 
-        private async Task OnCancel(DicomClientCancellation cancellation)
-        {
-
-        }
-
         public override async Task OnEnterAsync(DicomClientCancellation cancellation)
         {
             if (cancellation.Token.IsCancellationRequested)
@@ -217,6 +212,11 @@ namespace Dicom.Network.Client.States
             if (cancellation.Mode != DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)
             {
                 _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
+            }
+            else
+            {
+                _disposables.Add(cancellation.Token.Register(() =>
+                    _dicomClient.Logger.Warn($"[{this}] Cancellation requested, waiting for sent requests to complete")));
             }
 
             _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
@@ -250,11 +250,11 @@ namespace Dicom.Network.Client.States
                 switch (cancellation.Mode)
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] cancellation requested while sending requests, releasing association...");
+                        _dicomClient.Logger.Warn($"[{this}] cancellation requested, releasing association...");
                         await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
                         break;
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] cancellation requested while sending requests, aborting association...");
+                        _dicomClient.Logger.Warn($"[{this}] cancellation requested, aborting association...");
                         await TransitionToAbortState(cancellation).ConfigureAwait(false);
                         break;
                     default:
