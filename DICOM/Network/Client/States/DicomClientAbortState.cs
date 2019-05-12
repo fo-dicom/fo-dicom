@@ -33,15 +33,9 @@ namespace Dicom.Network.Client.States
             _associationAbortTimeoutCancellationTokenSource = new CancellationTokenSource();
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task SendAsync(DicomClientCancellation cancellation)
         {
             // Ignore, we're aborting now
-            return Task.FromResult(0);
-        }
-
-        public override Task AbortAsync()
-        {
-            // Ignore, we're already aborting
             return Task.FromResult(0);
         }
 
@@ -84,15 +78,14 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        private async Task TransitionToCompletedState(CancellationToken cancellationToken)
+        private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
         {
-            var abortToken = new CancellationToken(true);
             var initialisationParameters = new DicomClientCompletedState
-                .DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection, abortToken);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellationToken);
+                .DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
+            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
         }
 
-        public override async Task OnEnterAsync(CancellationToken cancellationToken)
+        public override async Task OnEnterAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -104,22 +97,22 @@ namespace Dicom.Network.Client.States
             if (winner == sendAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification sent to server. Disconnecting...");
-                await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
             if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Received abort while aborting. Neat.");
-                await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while aborting. Perfect.");
-                await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
             else if (winner == onTimeout)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification timed out. Disconnecting...");
-                await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
         }
 

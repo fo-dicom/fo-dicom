@@ -9,7 +9,7 @@ namespace Dicom.Network.Client.States
         /// </summary>
         public DicomAssociation Association { get; set; }
 
-        protected DicomClientWithAssociationState(IInitialisationWithAssociationParameters initialisationParameters) : base((IInitialisationWithConnectionParameters) initialisationParameters)
+        protected DicomClientWithAssociationState(IInitialisationWithAssociationParameters initialisationParameters) : base(initialisationParameters)
         {
             if (initialisationParameters == null) throw new ArgumentNullException(nameof(initialisationParameters));
             Association = initialisationParameters.Association ?? throw new ArgumentNullException(nameof(initialisationParameters.Association));

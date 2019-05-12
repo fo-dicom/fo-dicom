@@ -27,12 +27,10 @@ namespace Dicom.Network.Client.States
 
         public abstract Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
 
-        public abstract Task OnEnterAsync(CancellationToken cancellationToken);
+        public abstract Task OnEnterAsync(DicomClientCancellation cancellation);
 
         public abstract void AddRequest(DicomRequest dicomRequest);
 
-        public abstract Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-        public abstract Task AbortAsync();
+        public abstract Task SendAsync(DicomClientCancellation cancellation);
     }
 }

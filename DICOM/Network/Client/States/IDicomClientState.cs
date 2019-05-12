@@ -9,7 +9,7 @@ namespace Dicom.Network.Client.States
         /// <summary>
         /// Is called when entering this state
         /// </summary>
-        Task OnEnterAsync(CancellationToken cancellationToken);
+        Task OnEnterAsync(DicomClientCancellation cancellation);
 
         /// <summary>
         /// Enqueues a new DICOM request for execution.
@@ -20,12 +20,7 @@ namespace Dicom.Network.Client.States
         /// <summary>
         /// Sends existing requests to DICOM service.
         /// </summary>
-        Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Stop doing whatever it is the DicomClient is doing, abort the existing association and close the connection.
-        /// </summary>
-        Task AbortAsync();
+        Task SendAsync(DicomClientCancellation cancellation);
 
         /// <summary>
         /// Callback for handling association accept scenarios.

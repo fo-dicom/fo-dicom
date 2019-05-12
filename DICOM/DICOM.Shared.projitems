@@ -186,6 +186,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomFileScanner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncManualResetEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCancellation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCancellationMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCStoreRequestHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientDefaults.cs" />

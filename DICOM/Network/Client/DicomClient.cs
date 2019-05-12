@@ -50,6 +50,11 @@ namespace Dicom.Network.Client
         int AssociationLingerTimeoutInMs { get; }
 
         /// <summary>
+        /// Gets or sets the handler of a client C-STORE request.
+        /// </summary>
+        DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+
+        /// <summary>
         /// Representation of the DICOM association accepted event.
         /// </summary>
         event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
@@ -86,17 +91,19 @@ namespace Dicom.Network.Client
         /// Sends existing requests to DICOM service.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
-        Task SendAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Stop doing whatever it is the DicomClient is doing, abort the existing association and close the connection.
-        /// </summary>
-        Task AbortAsync();
+        /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
+        Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
+            DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
     }
 
     public class DicomClient : IDicomClient
     {
         private readonly SemaphoreSlim _transitionLock = new SemaphoreSlim(1, 1);
+        private IDicomClientState State { get; set; }
+
+        internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
+        internal int AsyncInvoked { get; private set; }
+        internal int AsyncPerformed { get; private set; }
 
         public string Host { get; }
         public int Port { get; }
@@ -106,16 +113,17 @@ namespace Dicom.Network.Client
         public int AssociationRequestTimeoutInMs { get; set; }
         public int AssociationReleaseTimeoutInMs { get; set; }
         public int AssociationLingerTimeoutInMs { get; set; }
-
-        private IDicomClientState State { get; set; }
-
-        internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
-
-        internal int AsyncInvoked { get; private set; }
-
-        internal int AsyncPerformed { get; private set; }
-
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
+        public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
+        public DicomServiceOptions Options { get; set; }
+        public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
+        public Encoding FallbackEncoding { get; set; }
+        public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+
+        public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
+        public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
+        public event EventHandler AssociationReleased;
+        public event EventHandler<StateChangedEventArgs> StateChanged;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
@@ -145,10 +153,23 @@ namespace Dicom.Network.Client
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters(CancellationToken.None));
+            State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters());
         }
 
-        internal async Task Transition(IDicomClientState newState, CancellationToken cancellationToken)
+        private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")
+        {
+            await _transitionLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await task().ConfigureAwait(false);
+            }
+            finally
+            {
+                _transitionLock.Release();
+            }
+        }
+
+        internal async Task Transition(IDicomClientState newState, DicomClientCancellation cancellation)
         {
             Task InternalTransition()
             {
@@ -167,41 +188,46 @@ namespace Dicom.Network.Client
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
 
-            await newState.OnEnterAsync(cancellationToken).ConfigureAwait(false);
+            await newState.OnEnterAsync(cancellation).ConfigureAwait(false);
         }
 
         internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
-        {
-            AssociationAccepted?.Invoke(this, eventArgs);
-        }
+            => AssociationAccepted?.Invoke(this, eventArgs);
 
         internal void NotifyAssociationRejected(EventArguments.AssociationRejectedEventArgs eventArgs)
-        {
-            AssociationRejected?.Invoke(this, eventArgs);
-        }
+            => AssociationRejected?.Invoke(this, eventArgs);
 
         internal void NotifyAssociationReleased()
+            => AssociationReleased?.Invoke(this, EventArgs.Empty);
+
+        internal Task OnSendQueueEmptyAsync()
+            => ExecuteWithinTransitionLock(() => State.OnSendQueueEmptyAsync());
+
+        internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
+            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
+
+        internal Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationRejectAsync(result, source, reason));
+
+        internal Task OnReceiveAssociationReleaseResponseAsync()
+            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponseAsync());
+
+        internal Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
+            => ExecuteWithinTransitionLock(() => State.OnReceiveAbortAsync(source, reason));
+
+        internal Task OnConnectionClosedAsync(Exception exception)
+            => ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
+
+        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+            => ExecuteWithinTransitionLock(() => State.OnRequestCompletedAsync(request, response));
+
+        internal async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
-            AssociationReleased?.Invoke(this, EventArgs.Empty);
+            if (OnCStoreRequest == null)
+                return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
+
+            return await OnCStoreRequest(request).ConfigureAwait(false);
         }
-
-        public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
-
-        public DicomServiceOptions Options { get; set; }
-
-        public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
-
-        public Encoding FallbackEncoding { get; set; }
-
-        /// <summary>
-        /// Gets or sets the handler of a client C-STORE request.
-        /// </summary>
-        public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
-
-        public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
-        public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
-        public event EventHandler AssociationReleased;
-        public event EventHandler<StateChangedEventArgs> StateChanged;
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
         {
@@ -214,70 +240,11 @@ namespace Dicom.Network.Client
             State.AddRequest(dicomRequest);
         }
 
-        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
+            DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)
         {
-            await State.SendAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task AbortAsync()
-        {
-            return ExecuteWithinTransitionLock(() => State.AbortAsync());
-        }
-
-        private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")
-        {
-            await _transitionLock.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                await task().ConfigureAwait(false);
-            }
-            finally
-            {
-                _transitionLock.Release();
-            }
-        }
-
-        internal Task OnSendQueueEmptyAsync()
-        {
-            return ExecuteWithinTransitionLock(() => State.OnSendQueueEmptyAsync());
-        }
-
-        internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-        {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
-        }
-
-        internal Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-        {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationRejectAsync(result, source, reason));
-        }
-
-        internal Task OnReceiveAssociationReleaseResponseAsync()
-        {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponseAsync());
-        }
-
-        internal Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-        {
-            return ExecuteWithinTransitionLock(() => State.OnReceiveAbortAsync(source, reason));
-        }
-
-        internal Task OnConnectionClosedAsync(Exception exception)
-        {
-            return ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
-        }
-
-        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-        {
-            return ExecuteWithinTransitionLock(() => State.OnRequestCompletedAsync(request, response));
-        }
-
-        public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
-        {
-            if (OnCStoreRequest == null)
-                return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
-
-            return await OnCStoreRequest(request).ConfigureAwait(false);
+            var cancellation = new DicomClientCancellation(cancellationToken, cancellationMode);
+            await State.SendAsync(cancellation).ConfigureAwait(false);
         }
     }
 }

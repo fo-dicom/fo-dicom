@@ -19,14 +19,14 @@ namespace Dicom.Network.Client.States
         private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly TaskCompletionSource<SendQueueEmptyEvent> _onSendQueueEmptyTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
-        private readonly TaskCompletionSource<bool> _onAbortRequestedTaskCompletionSource;
         private readonly IList<IDisposable> _disposables;
 
         private event EventHandler TriggerSendMoreRequests;
+
         /// <summary>
         /// This is the little flag that could
         /// It will happily switch to 1 when this DicomClient state is actively sending requests
-        /// When its hard work is temporarily finished (and we wait for responses to come in), it will lower the flag back to 0
+        /// When its hard work is -temporarily- finished (and we wait for responses to come in), it will lower the flag back to 0
         /// </summary>
         private int _sendingMoreRequests = 0;
 
@@ -51,7 +51,6 @@ namespace Dicom.Network.Client.States
             _onAbortReceivedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
             _onCancellationTaskCompletionSource = new TaskCompletionSource<bool>();
-            _onAbortRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
             _disposables = new List<IDisposable>();
         }
 
@@ -62,16 +61,9 @@ namespace Dicom.Network.Client.States
             TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
         }
 
-        public override Task SendAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task SendAsync(DicomClientCancellation cancellation)
         {
             // Ignore, we're already sending
-            return Task.FromResult(0);
-        }
-
-        public override Task AbortAsync()
-        {
-            _onAbortRequestedTaskCompletionSource.TrySetResult(true);
-
             return Task.FromResult(0);
         }
 
@@ -121,38 +113,38 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        private async Task TransitionToLingerState(CancellationToken cancellationToken)
+        private async Task TransitionToLingerState(DicomClientCancellation cancellation)
         {
             var lingerParameters = new DicomClientLingeringState.InitialisationParameters(_initialisationParameters.Association,
                 _initialisationParameters.Connection);
             var lingerState = new DicomClientLingeringState(_dicomClient, lingerParameters);
-            await _dicomClient.Transition(lingerState, cancellationToken);
+            await _dicomClient.Transition(lingerState, cancellation);
         }
 
-        private async Task TransitionToReleaseAssociationState(CancellationToken cancellationToken)
+        private async Task TransitionToReleaseAssociationState(DicomClientCancellation cancellation)
         {
             var parameters = new DicomClientReleaseAssociationState.InitialisationParameters(_initialisationParameters.Association,
                 _initialisationParameters.Connection);
             var state = new DicomClientReleaseAssociationState(_dicomClient, parameters);
-            await _dicomClient.Transition(state, cancellationToken);
+            await _dicomClient.Transition(state, cancellation);
         }
 
-        private async Task TransitionToCompletedState(CancellationToken cancellationToken)
+        private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
         {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection, CancellationToken.None);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
+            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
+            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
         }
 
-        private async Task TransitionToCompletedWithErrorState(Exception exception, CancellationToken cancellationToken)
+        private async Task TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
         {
             var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellationToken);
+            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
         }
 
-        private async Task TransitionToAbortState(CancellationToken cancellationToken)
+        private async Task TransitionToAbortState(DicomClientCancellation cancellation)
         {
             var parameters = new DicomClientAbortState.InitialisationParameters(_initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellationToken);
+            await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellation);
         }
 
         private async Task SendRequests()
@@ -194,37 +186,44 @@ namespace Dicom.Network.Client.States
             Interlocked.Exchange(ref _sendingMoreRequests, 0);
         }
 
-        public override async Task OnEnterAsync(CancellationToken cancellationToken)
+        private async Task OnCancel(DicomClientCancellation cancellation)
         {
-            if (cancellationToken.IsCancellationRequested)
+
+        }
+
+        public override async Task OnEnterAsync(DicomClientCancellation cancellation)
+        {
+            if (cancellation.Token.IsCancellationRequested)
             {
-                _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
-                await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
+                switch (cancellation.Mode)
+                {
+                    case DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation:
+                    case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
+                        _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
+                        await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
+                        break;
+                    case DicomClientCancellationMode.ImmediatelyAbortAssociation:
+                        _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, aborting association ...");
+                        await TransitionToAbortState(cancellation).ConfigureAwait(false);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
+                }
                 return;
             }
 
-            if (_onAbortRequestedTaskCompletionSource.Task.IsCompleted)
-            {
-                _dicomClient.Logger.Warn($"[{this}] Abort requested before requests could be sent, immediately aborting now...");
-                await TransitionToAbortState(cancellationToken).ConfigureAwait(false);
-                return;
-            }
+            _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
 
-            _disposables.Add(cancellationToken.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
-            _disposables.Add(cancellationToken.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
+            if (cancellation.Mode != DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)
+            {
+                _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
+            }
 
             _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
 
-            var onAbortRequested = _onAbortRequestedTaskCompletionSource.Task;
-            var sendRequests = SendRequests();
+            await SendRequests().ConfigureAwait(false);
+
             TriggerSendMoreRequests += SendMoreRequests;
-
-            var sendOrAbort = await Task.WhenAny(onAbortRequested, sendRequests).ConfigureAwait(false);
-
-            if (sendOrAbort == onAbortRequested)
-            {
-                _sendRequestsCancellationTokenSource.Cancel();
-            }
 
             _dicomClient.Logger.Debug($"[{this}] Requests are sent, waiting for next event now");
 
@@ -237,37 +236,43 @@ namespace Dicom.Network.Client.States
                     sendQueueIsEmpty,
                     onReceiveAbort,
                     onDisconnect,
-                    onCancellation,
-                    onAbortRequested
+                    onCancellation
                 )
                 .ConfigureAwait(false);
 
             if (winner == sendQueueIsEmpty)
             {
                 _dicomClient.Logger.Debug($"[{this}] DICOM client send queue is empty, going to linger association now...");
-                await TransitionToLingerState(cancellationToken).ConfigureAwait(false);
+                await TransitionToLingerState(cancellation).ConfigureAwait(false);
             }
             else if (winner == onCancellation)
             {
-                _dicomClient.Logger.Debug($"[{this}] DICOM client cancellation requested while sending requests, releasing association...");
-                await TransitionToReleaseAssociationState(cancellationToken).ConfigureAwait(false);
+                switch (cancellation.Mode)
+                {
+                    case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
+                        _dicomClient.Logger.Warn($"[{this}] cancellation requested while sending requests, releasing association...");
+                        await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
+                        break;
+                    case DicomClientCancellationMode.ImmediatelyAbortAssociation:
+                        _dicomClient.Logger.Warn($"[{this}] cancellation requested while sending requests, aborting association...");
+                        await TransitionToAbortState(cancellation).ConfigureAwait(false);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
+                }
+                return;
             }
             else if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Warn($"[{this}] Association is aborted while sending requests, cleaning up...");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
-                await TransitionToCompletedWithErrorState(exception, cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedWithErrorState(exception, cancellation).ConfigureAwait(false);
             }
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] DICOM client disconnected while sending requests, cleaning up...");
-                await TransitionToCompletedState(cancellationToken).ConfigureAwait(false);
-            }
-            else if (winner == onAbortRequested)
-            {
-                _dicomClient.Logger.Warn($"[{this}] Abort requested while sending requests, immediately aborting association");
-                await TransitionToAbortState(cancellationToken).ConfigureAwait(false);
+                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
         }
 
@@ -287,7 +292,6 @@ namespace Dicom.Network.Client.States
             _onSendQueueEmptyTaskCompletionSource.TrySetCanceled();
             _onAbortReceivedTaskCompletionSource.TrySetCanceled();
             _onConnectionClosedTaskCompletionSource.TrySetCanceled();
-            _onAbortRequestedTaskCompletionSource.TrySetCanceled();
         }
 
         public override string ToString()
