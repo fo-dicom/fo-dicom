@@ -47,6 +47,19 @@ namespace Dicom
             Assert.True(uid.UID.Length <= 64); // Currently not checked by DicomUID.IsValid
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("TEST1")]
+        [InlineData("fo-dicom")]
+        public void Obsolete_Generate_ReturnsValidUid(string name)
+        {
+            var uid = DicomUID.Generate(name);
+
+            Assert.True(DicomUID.IsValid(uid.UID));
+            Assert.True(uid.UID.Length <= 64); // Currently not checked by DicomUID.IsValid
+        }
+
         [Fact]
         public void Generate_ReturnsDifferentUidsEachTime()
         {
