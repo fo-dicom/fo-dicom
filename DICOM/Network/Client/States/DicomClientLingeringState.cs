@@ -136,7 +136,6 @@ namespace Dicom.Network.Client.States
                     _dicomClient.Logger.Warn($"[{this}] Cancellation requested, immediately aborting association");
                     await TransitionToAbortState(cancellation).ConfigureAwait(false);
                     break;
-                case DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation:
                 case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                 default:
                     _dicomClient.Logger.Warn($"[{this}] Cancellation requested, immediately releasing association");

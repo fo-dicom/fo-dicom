@@ -192,7 +192,6 @@ namespace Dicom.Network.Client.States
             {
                 switch (cancellation.Mode)
                 {
-                    case DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation:
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                         _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
                         await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
@@ -208,17 +207,7 @@ namespace Dicom.Network.Client.States
             }
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
-
-            // TODO clear DicomService.msgQueue upon cancellation. It's a bit silly that further requests can be sent even after cancellation
-            if (cancellation.Mode != DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)
-            {
-                _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
-            }
-            else
-            {
-                _disposables.Add(cancellation.Token.Register(() =>
-                    _dicomClient.Logger.Warn($"[{this}] Cancellation requested, waiting for sent requests to complete")));
-            }
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
 
             _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
 
@@ -243,7 +232,7 @@ namespace Dicom.Network.Client.States
 
             if (winner == sendQueueIsEmpty)
             {
-                _dicomClient.Logger.Debug($"[{this}] DICOM client send queue is empty, going to linger association now...");
+                _dicomClient.Logger.Debug($"[{this}] All requests are done, going to linger association now...");
                 await TransitionToLingerState(cancellation).ConfigureAwait(false);
             }
             else if (winner == onCancellation)
@@ -251,11 +240,11 @@ namespace Dicom.Network.Client.States
                 switch (cancellation.Mode)
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] cancellation requested, releasing association...");
+                        _dicomClient.Logger.Warn($"[{this}] Cancellation requested, releasing association...");
                         await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
                         break;
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] cancellation requested, aborting association...");
+                        _dicomClient.Logger.Warn($"[{this}] Cancellation requested, aborting association...");
                         await TransitionToAbortState(cancellation).ConfigureAwait(false);
                         break;
                     default:
@@ -272,7 +261,7 @@ namespace Dicom.Network.Client.States
             }
             else if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Debug($"[{this}] DICOM client disconnected while sending requests, cleaning up...");
+                _dicomClient.Logger.Debug($"[{this}] Disconnected while sending requests, cleaning up...");
                 await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
         }

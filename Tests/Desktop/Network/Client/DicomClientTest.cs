@@ -579,7 +579,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_BeforeSend_ShouldNeverConnect(DicomClientCancellationMode cancellationMode)
@@ -622,7 +621,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_AfterConnect_BeforeAssociation_ShouldNeverAssociate(DicomClientCancellationMode cancellationMode)
@@ -670,7 +668,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_AfterAssociation_BeforeSend_ShouldNeverSend(DicomClientCancellationMode cancellationMode)
@@ -719,7 +716,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringSend_ShouldStopSending(DicomClientCancellationMode cancellationMode)
@@ -789,75 +785,6 @@ namespace Dicom.Network.Client
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
                 Assert.InRange(sentRequests.Count, 0, 5);
-            }
-        }
-
-        [Fact]
-        public async Task CancelWaitForRequests_DuringSend_ShouldStopSendingAndWaitForRequests()
-        {
-            var cancellationMode = DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation;
-            var port = Ports.GetNext();
-            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
-            {
-                server.SetResponseTimeout(TimeSpan.FromMilliseconds(100));
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.NegotiateAsyncOps(1, 1);
-
-                var cancellationTokenSource = new CancellationTokenSource();
-
-                var sentRequests = new ConcurrentBag<DicomCEchoRequest>();
-                server.OnCEchoRequest(request =>
-                {
-                    sentRequests.Add(request);
-                    if (sentRequests.Count >= 2)
-                    {
-                        cancellationTokenSource.Cancel();
-                    }
-                });
-
-                var numberOfRequestsToSend = 5;
-                var numberOfResponsesReceived = 0;
-                client.NegotiateAsyncOps(1, 1);
-                for (var i = 0; i < numberOfRequestsToSend; ++i)
-                {
-                    client.AddRequest(new DicomCEchoRequest
-                    {
-                        OnResponseReceived = (request, response) =>
-                        {
-                            Interlocked.Increment(ref numberOfResponsesReceived);
-                        }
-                    });
-                }
-
-                bool connected = false, associated = false, aborted = false;
-                client.StateChanged += (sender, args) =>
-                {
-                    if (args.NewState is DicomClientWithConnectionState)
-                    {
-                        connected = true;
-                    }
-
-                    if (args.NewState is DicomClientWithAssociationState)
-                    {
-                        associated = true;
-                    }
-
-                    if (args.NewState is DicomClientAbortState)
-                    {
-                        aborted = true;
-                    }
-                };
-
-                await client.SendAsync(cancellationTokenSource.Token, cancellationMode).ConfigureAwait(false);
-
-                cancellationTokenSource.Dispose();
-
-                Assert.True(connected);
-                Assert.True(associated);
-                Assert.False(aborted);
-                Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
-                Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.Equal(5, numberOfResponsesReceived);
             }
         }
 
@@ -1002,7 +929,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringLinger_ShouldStopLingering(DicomClientCancellationMode cancellationMode)
@@ -1066,7 +992,6 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(DicomClientCancellationMode.WaitForSentRequestsToCompleteAndThenReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringAssociationRelease_ShouldNotLinger(DicomClientCancellationMode cancellationMode)
