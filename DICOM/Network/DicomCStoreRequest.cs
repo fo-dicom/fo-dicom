@@ -51,10 +51,14 @@ namespace Dicom.Network
         /// <param name="priority">Priority of request</param>
         public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CStoreRequest, file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID), priority)
-        {
+        {            
             File = file;
             Dataset = file.Dataset;
+
+            // for potentially invalid UID values, we have to disable validation 
+            Command.ValidateItems = false;
             SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            Command.ValidateItems = true;
         }
 
         /// <summary>
