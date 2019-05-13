@@ -17,6 +17,9 @@ namespace Dicom
         /// </summary>
         public DicomFileMetaInformation()
         {
+            // per default, we do turn off validation as most of the use cases are
+            // creation of the meta-info from files or streams etc.
+            ValidateItems = false;
         }
 
         /// <summary>
@@ -27,6 +30,7 @@ namespace Dicom
         /// </param>
         public DicomFileMetaInformation(DicomDataset dataset)
         {
+            ValidateItems = dataset.ValidateItems;
             Version = new byte[] { 0x00, 0x01 };
 
             MediaStorageSOPClassUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID);
@@ -64,6 +68,7 @@ namespace Dicom
         /// <param name="metaInfo">DICOM file meta information to be updated.</param>
         public DicomFileMetaInformation(DicomFileMetaInformation metaInfo)
         {
+            ValidateItems = metaInfo.ValidateItems;
             Version = new byte[] { 0x00, 0x01 };
 
             if (metaInfo.Contains(DicomTag.MediaStorageSOPClassUID)) MediaStorageSOPClassUID = metaInfo.MediaStorageSOPClassUID;
