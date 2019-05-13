@@ -92,7 +92,7 @@ namespace Dicom.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(request);
 
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(1, counter);
             }
@@ -169,7 +169,8 @@ namespace Dicom.Network.Client
                 for (var i = 0; i < expected; ++i)
                     client.AddRequest(new DicomCEchoRequest {OnResponseReceived = callback});
 
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
+
                 flag.Wait(10000);
 
                 Assert.Equal(expected, actual);
@@ -344,7 +345,7 @@ namespace Dicom.Network.Client
                 client.AssociationAccepted += (sender, args) => accepted = true;
 
                 client.AddRequest(new DicomCEchoRequest());
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.True(accepted);
             }
@@ -386,7 +387,7 @@ namespace Dicom.Network.Client
                 };
 
                 client.AddRequest(new DicomCEchoRequest());
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 handle.Wait(1000);
                 Assert.True(released);
@@ -401,7 +402,7 @@ namespace Dicom.Network.Client
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(new DicomCEchoRequest());
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.NotNull(remoteHost);
                 Assert.True(remotePort > 0);
@@ -459,7 +460,7 @@ namespace Dicom.Network.Client
 
             try
             {
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
                 awaiter.Wait();
             }
             catch (Exception ex)
@@ -498,7 +499,7 @@ namespace Dicom.Network.Client
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AddRequest(new DicomCEchoRequest {OnResponseReceived = (req, res) => Thread.Sleep(100)});
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.False(client.IsSendRequired);
             }
@@ -610,7 +611,7 @@ namespace Dicom.Network.Client
 
                 cancellationTokenSource.Cancel();
 
-                await client.SendAsync(cancellationTokenSource.Token, cancellationMode);
+                await client.SendAsync(cancellationTokenSource.Token, cancellationMode).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
@@ -656,7 +657,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(cancellationTokenSource.Token, cancellationMode);
+                await client.SendAsync(cancellationTokenSource.Token, cancellationMode).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
@@ -704,7 +705,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(cancellationTokenSource.Token, cancellationMode);
+                await client.SendAsync(cancellationTokenSource.Token, cancellationMode).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
@@ -1033,7 +1034,7 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.SendAsync(cancellationTokenSource.Token, cancellationMode);
+                await client.SendAsync(cancellationTokenSource.Token, cancellationMode).ConfigureAwait(false);
 
                 cancellationTokenSource.Dispose();
 
