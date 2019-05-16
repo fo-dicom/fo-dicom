@@ -17,7 +17,7 @@ namespace Dicom.Network.Client.States
         public DicomClientConnectState(DicomClient dicomClient)
         {
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
-            _cancellationRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
+            _cancellationRequestedTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
             _disposables = new List<IDisposable>();
         }
 

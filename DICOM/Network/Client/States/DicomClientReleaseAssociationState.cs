@@ -36,10 +36,10 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _associationReleaseTimeoutCancellationTokenSource = new CancellationTokenSource();
-            _onAssociationReleasedTaskCompletionSource = new TaskCompletionSource<bool>();
-            _onAbortReceivedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
-            _onAbortRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
+            _onAssociationReleasedTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
+            _onAbortReceivedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = TaskCompletionSourceFactory.Create<ConnectionClosedEvent>();
+            _onAbortRequestedTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
             _disposables = new List<IDisposable>();
         }
 

@@ -38,11 +38,11 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _associationRequestTimeoutCancellationTokenSource = new CancellationTokenSource();
-            _onAssociationAcceptedTaskCompletionSource = new TaskCompletionSource<DicomAssociationAcceptedEvent>();
-            _onAssociationRejectedTaskCompletionSource = new TaskCompletionSource<DicomAssociationRejectedEvent>();
-            _onAbortReceivedTaskCompletionSource = new TaskCompletionSource<DicomAbortedEvent>();
-            _onConnectionClosedTaskCompletionSource = new TaskCompletionSource<ConnectionClosedEvent>();
-            _onCancellationRequestedTaskCompletionSource = new TaskCompletionSource<bool>();
+            _onAssociationAcceptedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAssociationAcceptedEvent>();
+            _onAssociationRejectedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAssociationRejectedEvent>();
+            _onAbortReceivedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAbortedEvent>();
+            _onConnectionClosedTaskCompletionSource = TaskCompletionSourceFactory.Create<ConnectionClosedEvent>();
+            _onCancellationRequestedTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
             _disposables = new List<IDisposable>();
         }
 

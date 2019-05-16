@@ -212,6 +212,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IDicomClientState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithAssociationParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithConnectionParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\TaskCompletionSourceFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationAbortedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationRejectedException.cs" />
