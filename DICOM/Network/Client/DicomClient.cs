@@ -88,7 +88,8 @@ namespace Dicom.Network.Client
         void AddRequest(DicomRequest dicomRequest);
 
         /// <summary>
-        /// Sends existing requests to DICOM service.
+        /// Sends existing requests to DICOM service. Note that subsequent calls, when the DICOM client is already sending its requests, will be completely ignored.
+        /// If you want to cancel the process, be sure to cancel the cancellation token that was passed into the first call.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
