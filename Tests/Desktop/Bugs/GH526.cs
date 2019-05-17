@@ -85,8 +85,8 @@ namespace Dicom.Bugs
                 };
 
                 var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
-                client.AddRequest(request);
-                await client.SendAsync();
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
                 handle.Wait(10000);
 
                 Assert.True(success);
@@ -145,8 +145,8 @@ namespace Dicom.Bugs
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
-                client.AddRequest(request);
-                await client.SendAsync();
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
                 handle.Wait(10000);
 
                 Assert.True(success);

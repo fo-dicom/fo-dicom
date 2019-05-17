@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -152,6 +153,13 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
+            if (_dicomClient.QueuedRequests.Any())
+            {
+                _dicomClient.Logger.Debug($"[{this}] DICOM client already has requests again, immediately moving back to sending requests");
+                await TransitionToSendingRequestsState(cancellation).ConfigureAwait(false);
+                return;
+            }
+
             _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResult(true)));
 
             var onRequestIsAdded = _onRequestAddedTaskCompletionSource.Task;
@@ -192,11 +200,13 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public override void AddRequest(DicomRequest dicomRequest)
+        public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
             _onRequestAddedTaskCompletionSource.TrySetResult(true);
+
+            return Task.FromResult(0);
         }
 
         public void Dispose()

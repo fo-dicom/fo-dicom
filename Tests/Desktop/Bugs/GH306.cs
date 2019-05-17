@@ -62,9 +62,9 @@ namespace Dicom.Bugs
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
-                client.AddRequest(new DicomCStoreRequest(file));
+                await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
-                var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
+                var exception = await Record.ExceptionAsync(async () => await client.SendAsync().ConfigureAwait(false));
                 Assert.Null(exception);
             }
         }
@@ -106,7 +106,7 @@ namespace Dicom.Bugs
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
-                client.AddRequest(new DicomCStoreRequest(file));
+                await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
                 var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
                 Assert.Null(exception);

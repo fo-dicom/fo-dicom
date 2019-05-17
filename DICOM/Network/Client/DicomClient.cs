@@ -85,7 +85,7 @@ namespace Dicom.Network.Client
         /// Enqueues a new DICOM request for execution.
         /// </summary>
         /// <param name="dicomRequest">The DICOM request to send</param>
-        void AddRequest(DicomRequest dicomRequest);
+        Task AddRequestAsync(DicomRequest dicomRequest);
 
         /// <summary>
         /// Sends existing requests to DICOM service. Note that subsequent calls, when the DICOM client is already sending its requests, will be completely ignored.
@@ -236,10 +236,8 @@ namespace Dicom.Network.Client
             AsyncPerformed = performed;
         }
 
-        public void AddRequest(DicomRequest dicomRequest)
-        {
-            State.AddRequest(dicomRequest);
-        }
+        public Task AddRequestAsync(DicomRequest dicomRequest)
+            => ExecuteWithinTransitionLock(() => State.AddRequestAsync(dicomRequest));
 
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)

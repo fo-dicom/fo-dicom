@@ -83,8 +83,8 @@ namespace Dicom.Bugs
                 };
 
                 var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
-                client.AddRequest(request1);
-                client.AddRequest(request2);
+                await client.AddRequestAsync(request1).ConfigureAwait(false);
+                await client.AddRequestAsync(request2).ConfigureAwait(false);
 
                 await client.SendAsync();
                 handle1.Wait(10000);
@@ -123,7 +123,7 @@ namespace Dicom.Bugs
             }
         }
         [Fact]
-        public void CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
+        public async Task CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
             const string file = @"Test Data/GH538-jpeg14sv1.dcm";
             var handle = new ManualResetEventSlim();
@@ -141,9 +141,9 @@ namespace Dicom.Bugs
                 };
 
                 var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
-                client.AddRequest(request);
+                await client.AddRequestAsync(request).ConfigureAwait(false);
 
-                client.Send();
+                await client.SendAsync().ConfigureAwait(false);
                 handle.Wait(10000);
 
                 Assert.True(success);

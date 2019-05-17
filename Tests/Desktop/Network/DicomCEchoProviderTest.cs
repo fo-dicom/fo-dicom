@@ -70,10 +70,10 @@ namespace Dicom.Network
                 };
                 for (var i = 0; i < 10; i++)
                 {
-                    client.AddRequest(new DicomCEchoRequest());
+                    await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
                 }
 
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Empty(client.QueuedRequests);
             }

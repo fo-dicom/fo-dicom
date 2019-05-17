@@ -54,15 +54,15 @@ namespace Dicom.Bugs
                 DicomStatus actual = null;
 
                 var client = new Dicom.Network.Client.DicomClient("localhost", port, false, "SCU", "ANY-SCP");
-                client.AddRequest(
+                await client.AddRequestAsync(
                     new DicomCEchoRequest
                         {
                             OnResponseReceived = (rq, rsp) =>
                                 {
                                     lock (locker) actual = rsp.Status;
                                 }
-                        });
-                await client.SendAsync();
+                        }).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }
@@ -111,18 +111,18 @@ namespace Dicom.Bugs
                 DicomStatus status = null;
 
                 var client = new Dicom.Network.Client.DicomClient("localhost", port, false, "SCU", "WRONG-SCP");
-                client.AddRequest(
+                await client.AddRequestAsync(
                     new DicomCEchoRequest
                     {
                         OnResponseReceived = (rq, rsp) =>
                         {
                             lock (locker) status = rsp.Status;
                         }
-                    });
+                    }).ConfigureAwait(false);
 
                 try
                 {
-                    await client.SendAsync();
+                    await client.SendAsync().ConfigureAwait(false);
                 }
                 catch
                 {

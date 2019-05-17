@@ -29,7 +29,7 @@ namespace Dicom.Network.Client.States
 
         public abstract Task OnEnterAsync(DicomClientCancellation cancellation);
 
-        public abstract void AddRequest(DicomRequest dicomRequest);
+        public abstract Task AddRequestAsync(DicomRequest dicomRequest);
 
         public abstract Task SendAsync(DicomClientCancellation cancellation);
     }

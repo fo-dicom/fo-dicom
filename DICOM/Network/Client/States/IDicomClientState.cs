@@ -15,7 +15,7 @@ namespace Dicom.Network.Client.States
         /// Enqueues a new DICOM request for execution.
         /// </summary>
         /// <param name="dicomRequest">The DICOM request to send</param>
-        void AddRequest(DicomRequest dicomRequest);
+        Task AddRequestAsync(DicomRequest dicomRequest);
 
         /// <summary>
         /// Sends existing requests to DICOM service.

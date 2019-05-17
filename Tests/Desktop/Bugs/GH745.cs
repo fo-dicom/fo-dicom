@@ -44,7 +44,8 @@ namespace Dicom.Bugs
 
                 var client = new Network.DicomClient()
                 {
-                    Logger = clientLogger
+                    Logger = clientLogger,
+                    Linger = 1 // No need to linger, we only send one request at a time
                 };
                 for (var i = 0; i < expected; i++)
                 {
@@ -95,11 +96,12 @@ namespace Dicom.Bugs
 
                 var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
                 {
-                    Logger = clientLogger
+                    Logger = clientLogger,
+                    AssociationLingerTimeoutInMs = 1 // No need to linger, we only send one request at a time
                 };
                 for (var i = 0; i < expected; i++)
                 {
-                    client.AddRequest(
+                    await client.AddRequestAsync(
                         new DicomCEchoRequest
                         {
                             OnResponseReceived = (req, res) =>
@@ -110,7 +112,7 @@ namespace Dicom.Bugs
                             },
                             UserState = i
                         }
-                    );
+                    ).ConfigureAwait(false);
                     testLogger.Info("Sending #{0}", i);
                     await client.SendAsync().ConfigureAwait(false);
                     testLogger.Info("Sent (or timed out) #{0}", i);
@@ -201,7 +203,7 @@ namespace Dicom.Bugs
                         {
                             Logger = clientLogger
                         };
-                        client.AddRequest(
+                        await client.AddRequestAsync(
                             new DicomCEchoRequest
                             {
                                 OnResponseReceived = (req, res) =>
@@ -210,7 +212,7 @@ namespace Dicom.Bugs
                                     Interlocked.Increment(ref actual);
                                 }
                             }
-                        );
+                        ).ConfigureAwait(false);
 
                         testLogger.Info("Sending #{0}", requestIndex);
                         await client.SendAsync().ConfigureAwait(false);

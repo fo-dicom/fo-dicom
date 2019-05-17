@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,11 +55,13 @@ namespace Dicom.Network.Client.States
             _disposables = new List<IDisposable>();
         }
 
-        public override void AddRequest(DicomRequest dicomRequest)
+        public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
             TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
+
+            return Task.FromResult(0);
         }
 
         public override Task SendAsync(DicomClientCancellation cancellation)
@@ -156,6 +159,9 @@ namespace Dicom.Network.Client.States
                 await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
                 queuedItem.Value = null;
             }
+
+            // In case the DICOM client requests queue is empty, but the connection still has queued requests, try to trigger those
+            await Connection.SendNextMessageAsync().ConfigureAwait(false);
         }
 
         /// <summary>

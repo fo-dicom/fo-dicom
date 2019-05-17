@@ -127,9 +127,10 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public void AddRequest(DicomRequest dicomRequest)
+        public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            return Task.FromResult(0);
         }
 
         public Task SendAsync(DicomClientCancellation cancellation)

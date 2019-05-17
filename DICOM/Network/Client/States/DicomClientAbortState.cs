@@ -116,9 +116,10 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public override void AddRequest(DicomRequest dicomRequest)
+        public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            return Task.FromResult(0);
         }
 
         public override string ToString()
