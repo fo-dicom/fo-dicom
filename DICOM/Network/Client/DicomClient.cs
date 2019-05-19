@@ -88,6 +88,13 @@ namespace Dicom.Network.Client
         Task AddRequestAsync(DicomRequest dicomRequest);
 
         /// <summary>
+        /// Enqueues new DICOM requests for execution.
+        /// When you have many requests, this method is recommended over calling <see cref="AddRequestAsync"/> multiple times.
+        /// </summary>
+        /// <param name="dicomRequests">The DICOM requests to send</param>
+        Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests);
+
+        /// <summary>
         /// Sends existing requests to DICOM service. Note that subsequent calls, when the DICOM client is already sending its requests, will be completely ignored.
         /// If you want to cancel the process, be sure to cancel the cancellation token that was passed into the first call.
         /// </summary>
@@ -238,6 +245,23 @@ namespace Dicom.Network.Client
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
             => ExecuteWithinTransitionLock(() => State.AddRequestAsync(dicomRequest));
+
+        public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
+        {
+            if (dicomRequests == null)
+                return Task.FromResult(0);
+
+            var requests = dicomRequests.ToList();
+
+            if (!requests.Any())
+                return Task.FromResult(0);
+
+            return ExecuteWithinTransitionLock(async () =>
+            {
+                foreach (var request in requests)
+                    await State.AddRequestAsync(request).ConfigureAwait(false);
+            });
+        }
 
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)

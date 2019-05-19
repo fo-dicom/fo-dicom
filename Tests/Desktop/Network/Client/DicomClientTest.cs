@@ -160,8 +160,10 @@ namespace Dicom.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i)
-                    await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)}).ConfigureAwait(false);
+                var requests = Enumerable.Range(0, expected)
+                    .Select(i => new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)});
+
+                await client.AddRequestsAsync(requests).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
 
@@ -463,11 +465,13 @@ namespace Dicom.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.NegotiateAsyncOps(expected, 1);
 
-                for (var i = 0; i < expected; ++i)
-                    await client.AddRequestAsync(new DicomCStoreRequest(@"./Test Data/CT1_J2KI")
+                var requests = Enumerable.Range(0, expected)
+                    .Select(i => new DicomCStoreRequest(@"./Test Data/CT1_J2KI")
                     {
                         OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
-                    }).ConfigureAwait(false);
+                    });
+
+                await client.AddRequestsAsync(requests).ConfigureAwait(false);
 
                 var exception = await Record.ExceptionAsync(() => client.SendAsync());
 
@@ -489,13 +493,14 @@ namespace Dicom.Network.Client
                 var cancellationTokenSource = new CancellationTokenSource();
                 var numberOfRequestsSent = 5;
                 var numberOfResponsesReceived = 0;
-                for (var i = 0; i < numberOfRequestsSent; ++i)
-                {
-                    await client.AddRequestAsync(new DicomCEchoRequest
+
+                var requests = Enumerable.Range(0, numberOfRequestsSent)
+                    .Select(i => new DicomCEchoRequest
                     {
                         OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
-                    }).ConfigureAwait(false);
-                }
+                    });
+
+                await client.AddRequestsAsync(requests).ConfigureAwait(false);
 
                 bool connected = false;
                 client.StateChanged += (sender, args) =>
