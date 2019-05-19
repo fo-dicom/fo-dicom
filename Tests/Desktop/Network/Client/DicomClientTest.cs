@@ -81,25 +81,7 @@ namespace Dicom.Network.Client
         #endregion
 
         [Fact]
-        public async Task Send_SingleRequest_Recognized()
-        {
-            int port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
-            {
-                var counter = 0;
-                var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
-
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-
-                await client.SendAsync().ConfigureAwait(false);
-
-                Assert.Equal(1, counter);
-            }
-        }
-
-        [Fact]
-        public async Task Send_MultipleRequestsWhileAlreadySending_ReusesSameAssociation()
+        public async Task SendAsync_MultipleRequestsWhileAlreadySending_ReusesSameAssociation()
         {
             int port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
@@ -141,78 +123,6 @@ namespace Dicom.Network.Client
 
                 Assert.Equal(10, counter);
                 Assert.Single(server.Providers.SelectMany(p => p.Associations));
-            }
-        }
-
-        [Theory]
-        [InlineData(2)]
-        [InlineData(20)]
-        [InlineData(100)]
-        [InlineData(1000)]
-        public async Task Send_MultipleRequests_AllRecognized(int expected)
-        {
-            var port = Ports.GetNext();
-            var flag = new ManualResetEventSlim();
-
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var actual = 0;
-                DicomCEchoRequest.ResponseDelegate callback = (req, res) =>
-                {
-                    Interlocked.Increment(ref actual);
-                    if (actual == expected) flag.Set();
-                };
-
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.NegotiateAsyncOps(expected, 1);
-
-                for (var i = 0; i < expected; ++i)
-                    await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = callback}).ConfigureAwait(false);
-
-                await client.SendAsync().ConfigureAwait(false);
-
-                flag.Wait(10000);
-
-                Assert.Equal(expected, actual);
-            }
-        }
-
-        [Theory]
-        [InlineData(20)]
-        [InlineData(100)]
-        public async Task Send_MultipleTimes_AllRecognized(int expected)
-        {
-            var port = Ports.GetNext();
-            var flag = new ManualResetEventSlim();
-            var logger = _logger.IncludePrefix("UnitTest");
-            var sendTasks = new List<Task>();
-            using (var server = CreateServer<DicomCEchoProvider>(port))
-            {
-                while (!server.IsListening) Thread.Sleep(50);
-
-                var actual = 0;
-
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                for (var i = 0; i < expected; ++i)
-                {
-                    var localIndex = i;
-                    await client.AddRequestAsync(
-                        new DicomCEchoRequest
-                        {
-                            OnResponseReceived = (req, res) =>
-                            {
-                                logger.Info($"i = {localIndex}, received response for [{req.MessageID}]");
-                                Interlocked.Increment(ref actual);
-                                if (actual == expected) flag.Set();
-                            }
-                        }).ConfigureAwait(false);
-                    sendTasks.Add(client.SendAsync());
-                }
-
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
-                flag.Wait(10000);
-                Assert.Equal(expected, actual);
             }
         }
 
@@ -334,7 +244,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task AssociationAccepted_SuccessfulSend_IsInvoked()
+        public async Task AssociationAccepted_SuccessfulSendAsync_IsInvoked()
         {
             var port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
@@ -371,7 +281,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task AssociationReleased_SuccessfulSend_IsInvoked()
+        public async Task AssociationReleased_SuccessfulSendAsync_IsInvoked()
         {
             var port = Ports.GetNext();
             using (CreateServer<DicomCEchoProvider>(port))
@@ -395,7 +305,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task Send_RecordAssociationData_AssociationContainsHostAndPort()
+        public async Task SendAsync_RecordAssociationData_AssociationContainsHostAndPort()
         {
             int port = Ports.GetNext();
             using (CreateServer<MockCEchoProvider>(port))
@@ -407,19 +317,6 @@ namespace Dicom.Network.Client
                 Assert.NotNull(remoteHost);
                 Assert.True(remotePort > 0);
                 Assert.NotEqual(port, remotePort);
-            }
-        }
-
-        [Fact]
-        public async Task Send_RejectedAssociation_ShouldYieldException()
-        {
-            var port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "INVALID");
-                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
-                Assert.IsType<DicomAssociationRejectedException>(exception);
             }
         }
 
@@ -440,7 +337,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact(Skip = "Requires external C-ECHO SCP")]
-        public async Task Send_EchoRequestToExternalServer_ShouldSucceed()
+        public async Task SendAsync_EchoRequestToExternalServer_ShouldSucceed()
         {
             var result = false;
             var awaiter = new ManualResetEventSlim();
@@ -538,7 +435,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task Send_ToExplicitOnlyProvider_NotAccepted()
+        public async Task SendAsync_ToExplicitOnlyProvider_NotAccepted()
         {
             var port = Ports.GetNext();
             using (CreateServer<ExplicitLECStoreProvider>(port))
@@ -556,7 +453,7 @@ namespace Dicom.Network.Client
 
         [Theory]
         [InlineData(200)]
-        public async Task Send_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
+        public async Task SendAsync_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
         {
             var port = Ports.GetNext();
             using (CreateServer<SimpleCStoreProvider>(port))
@@ -582,7 +479,7 @@ namespace Dicom.Network.Client
         [Theory]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
-        public async Task Cancel_BeforeSend_ShouldNeverConnect(DicomClientCancellationMode cancellationMode)
+        public async Task Cancel_BeforeSendAsync_ShouldNeverConnect(DicomClientCancellationMode cancellationMode)
         {
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
@@ -671,7 +568,7 @@ namespace Dicom.Network.Client
         [Theory]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
-        public async Task Cancel_AfterAssociation_BeforeSend_ShouldNeverSend(DicomClientCancellationMode cancellationMode)
+        public async Task Cancel_AfterAssociation_BeforeSendAsync_ShouldNeverSend(DicomClientCancellationMode cancellationMode)
         {
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
@@ -719,7 +616,7 @@ namespace Dicom.Network.Client
         [Theory]
         [InlineData(DicomClientCancellationMode.ImmediatelyReleaseAssociation)]
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
-        public async Task Cancel_DuringSend_ShouldStopSending(DicomClientCancellationMode cancellationMode)
+        public async Task Cancel_DuringSendAsync_ShouldStopSending(DicomClientCancellationMode cancellationMode)
         {
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
@@ -790,7 +687,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task CancelImmediatelyRelease_DuringSend_ShouldStopSendingAndImmediatelyRelease()
+        public async Task CancelImmediatelyRelease_DuringSendAsync_ShouldStopSendingAndImmediatelyRelease()
         {
             var cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation;
             var port = Ports.GetNext();
@@ -862,7 +759,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task CancelImmediatelyAbort_DuringSend_ShouldStopSendingAndImmediatelyAbort()
+        public async Task CancelImmediatelyAbort_DuringSendAsync_ShouldStopSendingAndImmediatelyAbort()
         {
             var cancellationMode = DicomClientCancellationMode.ImmediatelyAbortAssociation;
             var port = Ports.GetNext();
@@ -1421,7 +1318,7 @@ namespace Dicom.Network.Client
 
         /// <summary>
         /// Artificial C-STORE provider, only supporting Explicit LE transfer syntax for the purpose of
-        /// testing <see cref="Send_ToExplicitOnlyProvider_NotAccepted"/>.
+        /// testing <see cref="SendAsync_ToExplicitOnlyProvider_NotAccepted"/>.
         /// </summary>
         private class ExplicitLECStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
