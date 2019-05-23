@@ -50,44 +50,44 @@ namespace Dicom.Network.Client.States
         {
             _onAssociationAcceptedTaskCompletionSource.TrySetResult(new DicomAssociationAcceptedEvent(association));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _onAssociationRejectedTaskCompletionSource.TrySetResult(new DicomAssociationRejectedEvent(result, source, reason));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             _dicomClient.Logger.Warn($"[{this}] Received association release response but we're still making a new association!");
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnSendQueueEmptyAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         private async Task SendAssociationRequest()
@@ -219,13 +219,13 @@ namespace Dicom.Network.Client.States
         public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task SendAsync(DicomClientCancellation cancellation)
         {
             // Ignore, we're already busy trying to send
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override void Dispose()

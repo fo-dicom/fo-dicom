@@ -50,49 +50,49 @@ namespace Dicom.Network.Client.States
         public override Task SendAsync(DicomClientCancellation cancellation)
         {
             // Ignore, we will automatically send again if there are requests
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             _dicomClient.Logger.Warn($"[{this}] Received association release but we did not expect this!");
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnSendQueueEmptyAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         private async Task TransitionToSendingRequestsState(DicomClientCancellation cancellation)
@@ -206,7 +206,7 @@ namespace Dicom.Network.Client.States
 
             _onRequestAddedTaskCompletionSource.TrySetResult(true);
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override void Dispose()

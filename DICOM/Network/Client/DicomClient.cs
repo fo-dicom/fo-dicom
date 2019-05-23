@@ -191,7 +191,7 @@ namespace Dicom.Network.Client
 
                 StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
 
-                return Task.FromResult(0);
+                return CompletedTaskProvider.CompletedTask;
             }
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
@@ -249,12 +249,12 @@ namespace Dicom.Network.Client
         public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
         {
             if (dicomRequests == null)
-                return Task.FromResult(0);
+                return CompletedTaskProvider.CompletedTask;
 
             var requests = dicomRequests.ToList();
 
             if (!requests.Any())
-                return Task.FromResult(0);
+                return CompletedTaskProvider.CompletedTask;
 
             return ExecuteWithinTransitionLock(async () =>
             {

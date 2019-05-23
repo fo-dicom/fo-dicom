@@ -129,7 +129,7 @@ namespace Dicom.Network.Client.States
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public async Task SendAsync(DicomClientCancellation cancellation)
@@ -152,37 +152,37 @@ namespace Dicom.Network.Client.States
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnReceiveAssociationReleaseResponseAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnConnectionClosedAsync(Exception exception)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnSendQueueEmptyAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override string ToString()

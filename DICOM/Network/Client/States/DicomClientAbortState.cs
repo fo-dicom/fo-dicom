@@ -36,46 +36,46 @@ namespace Dicom.Network.Client.States
         public override Task SendAsync(DicomClientCancellation cancellation)
         {
             // Ignore, we're aborting now
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnSendQueueEmptyAsync()
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
@@ -119,7 +119,7 @@ namespace Dicom.Network.Client.States
         public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            return Task.FromResult(0);
+            return CompletedTaskProvider.CompletedTask;
         }
 
         public override string ToString()

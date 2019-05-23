@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 
 namespace Dicom.Network.Client
 {
+    // Remove this class when Fellow Oak DICOM is completely upgraded to .NET Standard 2.0 or higher
     internal static class TaskCompletionSourceFactory
     {
         public static TaskCompletionSource<T> Create<T>()
