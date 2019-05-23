@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -98,14 +98,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -120,7 +120,7 @@ namespace Dicom.Network.Client.States
 
             if (_pendingRequests.IsEmpty)
             {
-                _allRequestsHaveCompletedTaskCompletionSource.TrySetResult(new AllRequestsHaveCompletedEvent());
+                _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
             }
 
             return CompletedTaskProvider.CompletedTask;
@@ -264,7 +264,7 @@ namespace Dicom.Network.Client.States
             }
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResultAsynchronously(true)));
 
             _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
 
@@ -335,10 +335,10 @@ namespace Dicom.Network.Client.States
             _sendRequestsCancellationTokenSource.Cancel();
             _sendRequestsCancellationTokenSource.Dispose();
 
-            _onCancellationTaskCompletionSource.TrySetCanceled();
-            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceled();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onCancellationTaskCompletionSource.TrySetCanceledAsynchronously();
+            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
 
         public override string ToString()

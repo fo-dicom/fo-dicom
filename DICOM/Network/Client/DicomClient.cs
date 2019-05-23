@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Dicom.Log;
 using Dicom.Network.Client.EventArguments;
 using Dicom.Network.Client.States;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client
 {
@@ -164,7 +165,7 @@ namespace Dicom.Network.Client
             State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters());
         }
 
-        private async Task ExecuteWithinTransitionLock(Func<Task> task, [CallerMemberName] string caller = "")
+        private async Task ExecuteWithinTransitionLock(Func<Task> task)
         {
             await _transitionLock.WaitAsync().ConfigureAwait(false);
             try

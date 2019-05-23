@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace Dicom.Network.Client.Tasks
 {
     // Remove this class when Fellow Oak DICOM is completely upgraded to .NET Standard 2.0 or higher
     internal static class CompletedTaskProvider

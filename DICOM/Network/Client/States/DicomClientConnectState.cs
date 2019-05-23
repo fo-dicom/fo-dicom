@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -181,7 +182,7 @@ namespace Dicom.Network.Client.States
                 disposable.Dispose();
             }
 
-            _cancellationRequestedTaskCompletionSource.TrySetCanceled();
+            _cancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
 
         public override string ToString()

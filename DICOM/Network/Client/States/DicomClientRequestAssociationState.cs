@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -48,14 +49,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            _onAssociationAcceptedTaskCompletionSource.TrySetResult(new DicomAssociationAcceptedEvent(association));
+            _onAssociationAcceptedTaskCompletionSource.TrySetResultAsynchronously(new DicomAssociationAcceptedEvent(association));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _onAssociationRejectedTaskCompletionSource.TrySetResult(new DicomAssociationRejectedEvent(result, source, reason));
+            _onAssociationRejectedTaskCompletionSource.TrySetResultAsynchronously(new DicomAssociationRejectedEvent(result, source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -68,14 +69,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -155,7 +156,7 @@ namespace Dicom.Network.Client.States
 
             await SendAssociationRequest().ConfigureAwait(false);
 
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResult(true)));
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
 
             var associationIsAccepted = _onAssociationAcceptedTaskCompletionSource.Task;
             var associationIsRejected = _onAssociationRejectedTaskCompletionSource.Task;
@@ -233,11 +234,11 @@ namespace Dicom.Network.Client.States
             foreach (var disposable in _disposables)
                 disposable.Dispose();
 
-            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
-            _onAssociationAcceptedTaskCompletionSource.TrySetCanceled();
-            _onAssociationRejectedTaskCompletionSource.TrySetCanceled();
-            _onCancellationRequestedTaskCompletionSource.TrySetCanceled();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAssociationAcceptedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAssociationRejectedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onCancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
             _associationRequestTimeoutCancellationTokenSource.Cancel();
             _associationRequestTimeoutCancellationTokenSource.Dispose();
         }

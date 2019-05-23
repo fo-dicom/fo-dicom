@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -63,21 +63,21 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            _onAssociationReleasedTaskCompletionSource.TrySetResult(true);
+            _onAssociationReleasedTaskCompletionSource.TrySetResultAsynchronously(true);
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -131,7 +131,7 @@ namespace Dicom.Network.Client.States
 
             if (cancellation.Mode == DicomClientCancellationMode.ImmediatelyAbortAssociation)
             {
-                _disposables.Add(cancellation.Token.Register(() => _onAbortRequestedTaskCompletionSource.TrySetResult(true)));
+                _disposables.Add(cancellation.Token.Register(() => _onAbortRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
             }
 
             var onAssociationRelease = _onAssociationReleasedTaskCompletionSource.Task;
@@ -209,10 +209,10 @@ namespace Dicom.Network.Client.States
 
             _associationReleaseTimeoutCancellationTokenSource.Cancel();
             _associationReleaseTimeoutCancellationTokenSource.Dispose();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
-            _onAssociationReleasedTaskCompletionSource.TrySetCanceled();
-            _onAbortRequestedTaskCompletionSource.TrySetCanceled();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAssociationReleasedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
     }
 }
