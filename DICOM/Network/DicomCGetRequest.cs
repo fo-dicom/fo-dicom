@@ -35,7 +35,8 @@ namespace Dicom.Network
             DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CGetRequest, DicomUID.StudyRootQueryRetrieveInformationModelGET, priority)
         {
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
             Level = DicomQueryRetrieveLevel.Study;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
         }
@@ -58,7 +59,8 @@ namespace Dicom.Network
             DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CGetRequest, DicomUID.StudyRootQueryRetrieveInformationModelGET, priority)
         {
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
             Level = DicomQueryRetrieveLevel.Series;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
@@ -86,7 +88,8 @@ namespace Dicom.Network
             DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CGetRequest, DicomUID.StudyRootQueryRetrieveInformationModelGET, priority)
         {
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
             Level = DicomQueryRetrieveLevel.Image;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
