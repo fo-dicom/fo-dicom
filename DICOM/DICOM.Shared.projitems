@@ -199,7 +199,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\DicomAbortedEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\DicomAssociationAcceptedEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\DicomAssociationRejectedEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\SendQueueEmptyEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\AllRequestsHaveCompletedEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\DicomClientAbortState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\DicomClientCompletedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\DicomClientConnectState.cs" />
