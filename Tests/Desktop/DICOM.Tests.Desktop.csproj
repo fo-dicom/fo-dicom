@@ -120,6 +120,7 @@
     <Compile Include="Bugs\GH626.cs" />
     <Compile Include="Bugs\GH745.cs" />
     <Compile Include="Bugs\GH846.cs" />
+    <Compile Include="Bugs\GH859.cs" />
     <Compile Include="Bugs\VideoCStoreProvider.cs" />
     <Compile Include="DicomAnonymizerTest.cs" />
     <Compile Include="DicomDatasetExtensionsTest.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Network\DicomCGetRequestTest.cs" />
     <Compile Include="Network\DicomClientTest.cs" />
     <Compile Include="Network\DicomCMoveRequestTest.cs" />
+    <Compile Include="Network\DicomCStoreRequestTest.cs" />
     <Compile Include="Network\DicomPresentationContextTest.cs" />
     <Compile Include="Network\DicomStatusTest.cs" />
     <Compile Include="Network\DicomNCreateRequestTest.cs" />

@@ -32,7 +32,8 @@ namespace Dicom.Network
             : base(DicomCommandField.CMoveRequest, DicomUID.StudyRootQueryRetrieveInformationModelMOVE, priority)
         {
             DestinationAE = destinationAe;
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
             Level = DicomQueryRetrieveLevel.Study;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
         }
@@ -52,7 +53,9 @@ namespace Dicom.Network
             : base(DicomCommandField.CMoveRequest, DicomUID.StudyRootQueryRetrieveInformationModelMOVE, priority)
         {
             DestinationAE = destinationAe;
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
+
             Level = DicomQueryRetrieveLevel.Series;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
@@ -75,7 +78,9 @@ namespace Dicom.Network
             : base(DicomCommandField.CMoveRequest, DicomUID.StudyRootQueryRetrieveInformationModelMOVE, priority)
         {
             DestinationAE = destinationAe;
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
+
             Level = DicomQueryRetrieveLevel.Image;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);

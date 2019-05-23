@@ -29,7 +29,8 @@ namespace Dicom.Network
         public DicomCFindRequest(DicomQueryRetrieveLevel level, DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CFindRequest, GetAffectedSOPClassUID(level), priority)
         {
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
             Level = level;
         }
 
@@ -46,7 +47,8 @@ namespace Dicom.Network
                 throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
             }
 
-            Dataset = new DicomDataset();
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            Dataset = new DicomDataset { ValidateItems = false };
         }
 
         /// <summary>
@@ -161,6 +163,8 @@ namespace Dicom.Network
             string studyInstanceUid = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
@@ -187,6 +191,8 @@ namespace Dicom.Network
         public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.SeriesInstanceUID, string.Empty);
             dimse.Dataset.Add(DicomTag.SeriesNumber, string.Empty);
@@ -211,6 +217,8 @@ namespace Dicom.Network
             string modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Image);
+            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
+            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
             dimse.Dataset.Add(DicomTag.SOPInstanceUID, string.Empty);
@@ -272,20 +280,22 @@ namespace Dicom.Network
 
             dimse.Dataset.Add(new DicomSequence(DicomTag.ProcedureCodeSequence));
 
-            var sps = new DicomDataset();
-            sps.Add(DicomTag.ScheduledStationAETitle, stationAE);
-            sps.Add(DicomTag.ScheduledStationName, stationName);
-            sps.Add(DicomTag.ScheduledProcedureStepStartDate, scheduledDateTime);
-            sps.Add(DicomTag.ScheduledProcedureStepStartTime, scheduledDateTime);
-            sps.Add(DicomTag.Modality, modality);
-            sps.Add(DicomTag.ScheduledPerformingPhysicianName, string.Empty);
-            sps.Add(DicomTag.ScheduledProcedureStepDescription, string.Empty);
-            sps.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence));
-            sps.Add(DicomTag.ScheduledProcedureStepLocation, string.Empty);
-            sps.Add(DicomTag.ScheduledProcedureStepID, string.Empty);
-            sps.Add(DicomTag.RequestedContrastAgent, string.Empty);
-            sps.Add(DicomTag.PreMedication, string.Empty);
-            sps.Add(DicomTag.AnatomicalOrientationType, string.Empty);
+            var sps = new DicomDataset
+            {
+                { DicomTag.ScheduledStationAETitle, stationAE },
+                { DicomTag.ScheduledStationName, stationName },
+                { DicomTag.ScheduledProcedureStepStartDate, scheduledDateTime },
+                { DicomTag.ScheduledProcedureStepStartTime, scheduledDateTime },
+                { DicomTag.Modality, modality },
+                { DicomTag.ScheduledPerformingPhysicianName, string.Empty },
+                { DicomTag.ScheduledProcedureStepDescription, string.Empty },
+                new DicomSequence(DicomTag.ScheduledProtocolCodeSequence),
+                { DicomTag.ScheduledProcedureStepLocation, string.Empty },
+                { DicomTag.ScheduledProcedureStepID, string.Empty },
+                { DicomTag.RequestedContrastAgent, string.Empty },
+                { DicomTag.PreMedication, string.Empty },
+                { DicomTag.AnatomicalOrientationType, string.Empty }
+            };
             dimse.Dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps));
 
             return dimse;

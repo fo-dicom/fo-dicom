@@ -77,6 +77,30 @@ namespace Dicom
             Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGOHUGOHUGOHUGO1"));
         }
 
+
+        [Fact]
+        public void AddInvalidUIDMultiplicity()
+        {
+            Assert.Throws<DicomValidationException>(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5");
+            });
+
+            Assert.Throws<DicomValidationException>(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4");
+            });
+
+            Assert.Throws<DicomValidationException>(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5"));
+            });
+        }
+
+
         #endregion
 
     }
