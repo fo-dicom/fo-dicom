@@ -32,5 +32,7 @@ namespace Dicom.Network.Client.States
         public abstract Task AddRequestAsync(DicomRequest dicomRequest);
 
         public abstract Task SendAsync(DicomClientCancellation cancellation);
+        
+        public abstract void Dispose();
     }
 }

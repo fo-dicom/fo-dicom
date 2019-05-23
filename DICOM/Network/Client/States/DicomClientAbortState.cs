@@ -6,7 +6,7 @@ using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client.States
 {
-    public class DicomClientAbortState : DicomClientWithConnectionState, IDisposable
+    public class DicomClientAbortState : DicomClientWithConnectionState
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
@@ -127,7 +127,7 @@ namespace Dicom.Network.Client.States
             return $"ABORTING ASSOCIATION";
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _associationAbortTimeoutCancellationTokenSource.Cancel();
             _associationAbortTimeoutCancellationTokenSource.Dispose();

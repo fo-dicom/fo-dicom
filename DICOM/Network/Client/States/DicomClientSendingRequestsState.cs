@@ -11,7 +11,7 @@ namespace Dicom.Network.Client.States
     /// <summary>
     /// The DICOM client is connected and has an active DICOM association. Every queued request will be sent one by one.
     /// </summary>
-    public class DicomClientSendingRequestsState : DicomClientWithAssociationState, IDisposable
+    public class DicomClientSendingRequestsState : DicomClientWithAssociationState
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
@@ -272,7 +272,7 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             TriggerSendMoreRequests -= SendMoreRequests;
 

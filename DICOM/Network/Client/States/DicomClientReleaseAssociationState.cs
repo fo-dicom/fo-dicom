@@ -8,7 +8,7 @@ using Dicom.Network.Client.Events;
 
 namespace Dicom.Network.Client.States
 {
-    public class DicomClientReleaseAssociationState : DicomClientWithAssociationState, IDisposable
+    public class DicomClientReleaseAssociationState : DicomClientWithAssociationState
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
@@ -200,7 +200,7 @@ namespace Dicom.Network.Client.States
             return $"RELEASING ASSOCIATION";
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             foreach (var disposable in _disposables)
             {

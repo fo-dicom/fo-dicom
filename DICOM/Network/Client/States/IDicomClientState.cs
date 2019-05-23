@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Dicom.Network.Client.States
 {
-    public interface IDicomClientState
+    public interface IDicomClientState : IDisposable
     {
         /// <summary>
         /// Is called when entering this state

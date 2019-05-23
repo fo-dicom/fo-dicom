@@ -12,7 +12,7 @@ namespace Dicom.Network.Client.States
     /// When we have an active association, but no more DICOM requests to send (and all responses for previous requests have already arrived)
     /// we will keep the association open for just a little longer in case we get any more requests
     /// </summary>
-    public class DicomClientLingeringState : DicomClientWithAssociationState, IDisposable
+    public class DicomClientLingeringState : DicomClientWithAssociationState
     {
         private readonly DicomClient _dicomClient;
         private readonly InitialisationParameters _initialisationParameters;
@@ -209,7 +209,7 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             foreach(var disposable in _disposables)
                 disposable.Dispose();

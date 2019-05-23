@@ -185,7 +185,7 @@ namespace Dicom.Network.Client
 
                 Logger.Debug($"[{oldState}] --> [{newState}]");
 
-                if (oldState is IDisposable disposableState) disposableState.Dispose();
+                oldState.Dispose();
 
                 State = newState ?? throw new ArgumentNullException(nameof(newState));
 

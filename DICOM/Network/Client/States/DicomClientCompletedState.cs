@@ -189,5 +189,9 @@ namespace Dicom.Network.Client.States
         {
             return $"COMPLETED";
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

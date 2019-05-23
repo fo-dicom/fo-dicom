@@ -8,7 +8,7 @@ namespace Dicom.Network.Client.States
     /// <summary>
     /// The DICOM client is connecting to the DICOM server.
     /// </summary>
-    public class DicomClientConnectState : IDicomClientState, IDisposable
+    public class DicomClientConnectState : IDicomClientState
     {
         private readonly DicomClient _dicomClient;
         private readonly TaskCompletionSource<bool> _cancellationRequestedTaskCompletionSource;

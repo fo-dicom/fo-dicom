@@ -11,7 +11,7 @@ namespace Dicom.Network.Client.States
     /// <summary>
     /// The DICOM client is connected to the server and requires an association. When transitioning into this state, a new association request will be sent
     /// </summary>
-    public class DicomClientRequestAssociationState : DicomClientWithConnectionState, IDisposable
+    public class DicomClientRequestAssociationState : DicomClientWithConnectionState
     {
         public class InitialisationParameters : IInitialisationWithConnectionParameters
         {
@@ -228,7 +228,7 @@ namespace Dicom.Network.Client.States
             return Task.FromResult(0);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             foreach (var disposable in _disposables)
                 disposable.Dispose();

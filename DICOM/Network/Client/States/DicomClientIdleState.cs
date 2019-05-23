@@ -112,5 +112,9 @@ namespace Dicom.Network.Client.States
         {
             return $"IDLE";
         }
+
+        public void Dispose()
+        {
+        }
     }
 }
