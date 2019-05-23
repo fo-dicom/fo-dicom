@@ -220,7 +220,7 @@ namespace Dicom.Network
         {
             var port = Ports.GetNext();
             var flag = new ManualResetEventSlim();
-
+            var logger = _logger.IncludePrefix("UnitTest");
             using (var server = CreateServer<DicomCEchoProvider>(port))
             {
                 while (!server.IsListening) await Task.Delay(50);
@@ -236,6 +236,7 @@ namespace Dicom.Network
                             OnResponseReceived = (req, res) =>
                             {
                                 Interlocked.Increment(ref actual);
+                                logger.Info($"Actual = {actual}");
                                 if (actual == expected) flag.Set();
                             }
                         });
@@ -246,7 +247,9 @@ namespace Dicom.Network
                     }
                 }
 
+                logger.Info("Waiting for flag to be set");
                 flag.Wait(10000);
+                logger.Info("Test done");
                 Assert.Equal(expected, actual);
             }
         }
