@@ -239,7 +239,11 @@ namespace Dicom.Network
                                 if (actual == expected) flag.Set();
                             }
                         });
-                    await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+
+                    if (client.IsSendRequired)
+                    {
+                        await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP").ConfigureAwait(false);
+                    }
                 }
 
                 flag.Wait(10000);
