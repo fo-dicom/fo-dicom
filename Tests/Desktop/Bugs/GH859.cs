@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-
-
 using Dicom.Helpers;
 using Dicom.Network;
 
@@ -12,7 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-using DicomClient = Dicom.Network.Client.DicomClient;
+using DicomClient = Dicom.Network.DicomClient;
 
 namespace Dicom.Bugs
 {
@@ -47,8 +45,10 @@ namespace Dicom.Bugs
                 while (!server.IsListening)
                     await Task.Delay(50);
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = clientLogger;
+                var client = new DicomClient
+                {
+                    Logger = clientLogger
+                };
 
                 var command = new DicomDataset();
                 command.ValidateItems = false;
@@ -57,9 +57,11 @@ namespace Dicom.Bugs
                 command.Add(DicomTag.AffectedSOPClassUID, DicomUID.CTImageStorage);
                 command.Add(new DicomUniqueIdentifier(DicomTag.AffectedSOPInstanceUID, "1.2.3.04"));
 
-                var request = new DicomCStoreRequest(command);
-                request.File = new DicomFile();
-                request.Dataset = new DicomDataset();
+                var request = new DicomCStoreRequest(command)
+                {
+                    File = new DicomFile(),
+                    Dataset = new DicomDataset()
+                };
                 request.Dataset.ValidateItems = false;
                 request.Dataset.Add(DicomTag.SOPClassUID, DicomUID.CTImageStorage);
                 request.Dataset.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.04"));
@@ -72,8 +74,9 @@ namespace Dicom.Bugs
 
                 client.AddRequest(request);
 
-                await client.SendAsync(source.Token);
+                await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
             }
         }
+
     }
 }
