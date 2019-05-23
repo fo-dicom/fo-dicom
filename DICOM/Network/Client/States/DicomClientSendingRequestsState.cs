@@ -115,6 +115,7 @@ namespace Dicom.Network.Client.States
             if (!_dicomClient.QueuedRequests.IsEmpty)
             {
                 TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
+                return CompletedTaskProvider.CompletedTask;
             }
 
             if (_pendingRequests.IsEmpty)
