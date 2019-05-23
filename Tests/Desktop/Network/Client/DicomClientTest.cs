@@ -415,8 +415,9 @@ namespace Dicom.Network.Client
 
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.AssociationLingerTimeoutInMs = 100;
-                await client.AddRequestAsync(
-                    new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)}).ConfigureAwait(false);
+                await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)})
+                    .ConfigureAwait(false);
+
                 var sendTask = client.SendAsync();
 
                 await client.AddRequestAsync(

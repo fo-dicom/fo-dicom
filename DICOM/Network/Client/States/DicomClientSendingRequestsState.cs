@@ -23,14 +23,12 @@ namespace Dicom.Network.Client.States
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
         private readonly IList<IDisposable> _disposables;
 
-        private event EventHandler TriggerSendMoreRequests;
-
         /// <summary>
         /// This is the little flag that could
         /// It will happily switch to 1 when this DicomClient state is actively sending requests
         /// When its hard work is -temporarily- finished (and we wait for responses to come in), it will lower the flag back to 0
         /// </summary>
-        private int _sendingRequests = 0;
+        private int _sendingRequests;
 
         /// <summary>
         /// Since SendQueueEmpty is unreliable in heavy loads, we must keep our own track of pending requests. This is rather easy to do,
@@ -67,7 +65,7 @@ namespace Dicom.Network.Client.States
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
-            TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
+            SendMoreRequests();
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -114,7 +112,7 @@ namespace Dicom.Network.Client.States
         {
             if (!_dicomClient.QueuedRequests.IsEmpty)
             {
-                TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
+                SendMoreRequests();
                 return CompletedTaskProvider.CompletedTask;
             }
 
@@ -132,7 +130,7 @@ namespace Dicom.Network.Client.States
 
             if (!_dicomClient.QueuedRequests.IsEmpty)
             {
-                TriggerSendMoreRequests?.Invoke(this, EventArgs.Empty);
+                SendMoreRequests();
                 return CompletedTaskProvider.CompletedTask;
             }
 
@@ -207,14 +205,25 @@ namespace Dicom.Network.Client.States
         }
 
         /// <summary>
-        /// This is an event handler that triggers in certain circumstances that require us to manually send more requests:
-        ///     - More requests are added to the DicomClient
-        ///     - A pending request has completed, perhaps freeing up an async operations slot on the association
-        ///
-        /// Because this is an event handler, it has to be async void, but that suits our use case rather neatly, because we don't want to hold hostage
-        /// the places where these events come from (i.e. the listener in DicomService, or user code which adds requests)
+        /// This is a synchronous wrapper around SendMoreRequestsAsync, which sounds like a bad idea, but we want to trigger the sending of more requests
+        /// completely out of band, because the events that trigger the sending of more request come from deep within DicomService, which shouldn't need
+        /// to wait for the DicomClient to send requests.
         /// </summary>
-        private async void SendMoreRequests(object sender, EventArgs eventArgs)
+        private void SendMoreRequests()
+        {
+            if (_sendRequestsCancellationTokenSource.IsCancellationRequested)
+                return;
+
+            Task.Factory.StartNew(@this => ((DicomClientSendingRequestsState) @this).SendMoreRequestsAsync(),
+                this, _sendRequestsCancellationTokenSource.Token, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+        }
+
+        /// <summary>
+        /// Sometimes, we need to manually send more requests:
+        ///     - When more requests are added to the DicomClient
+        ///     - When a pending request has completed, perhaps freeing up an async operations slot on the association
+        /// </summary>
+        private async Task SendMoreRequestsAsync()
         {
             if (_sendRequestsCancellationTokenSource.IsCancellationRequested)
                 return;
@@ -270,8 +279,6 @@ namespace Dicom.Network.Client.States
 
             await SendInitialRequests().ConfigureAwait(false);
 
-            TriggerSendMoreRequests += SendMoreRequests;
-
             _dicomClient.Logger.Debug($"[{this}] Requests are all queued for sending");
 
             var sendQueueIsEmpty = _allRequestsHaveCompletedTaskCompletionSource.Task;
@@ -325,8 +332,6 @@ namespace Dicom.Network.Client.States
 
         public override void Dispose()
         {
-            TriggerSendMoreRequests -= SendMoreRequests;
-
             foreach (var disposable in _disposables)
             {
                 disposable?.Dispose();
