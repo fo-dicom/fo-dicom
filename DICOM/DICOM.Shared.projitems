@@ -185,7 +185,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomFileScanner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncManualResetEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\CompletedTaskProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCancellation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCancellationMode.cs" />
@@ -213,7 +212,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IDicomClientState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithAssociationParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithConnectionParameters.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\TaskCompletionSourceFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\CompletedTaskProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationAbortedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomAssociationRejectedException.cs" />

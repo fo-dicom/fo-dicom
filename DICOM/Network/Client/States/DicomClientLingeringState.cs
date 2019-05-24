@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -73,14 +74,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -160,7 +161,7 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResult(true)));
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
 
             var onRequestIsAdded = _onRequestAddedTaskCompletionSource.Task;
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -204,7 +205,7 @@ namespace Dicom.Network.Client.States
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
-            _onRequestAddedTaskCompletionSource.TrySetResult(true);
+            _onRequestAddedTaskCompletionSource.TrySetResultAsynchronously(true);
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -216,10 +217,10 @@ namespace Dicom.Network.Client.States
 
             _lingerTimeoutCancellationTokenSource.Cancel();
             _lingerTimeoutCancellationTokenSource.Dispose();
-            _onRequestAddedTaskCompletionSource.TrySetCanceled();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
-            _onCancellationRequestedTaskCompletionSource.TrySetCanceled();
+            _onRequestAddedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onCancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
 
         public override string ToString()

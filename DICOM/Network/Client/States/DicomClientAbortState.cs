@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Network.Client.Events;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network.Client.States
 {
@@ -56,14 +57,14 @@ namespace Dicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
             return CompletedTaskProvider.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -131,8 +132,8 @@ namespace Dicom.Network.Client.States
         {
             _associationAbortTimeoutCancellationTokenSource.Cancel();
             _associationAbortTimeoutCancellationTokenSource.Dispose();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
     }
 }
