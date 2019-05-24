@@ -16,6 +16,11 @@ namespace Dicom.Network.Client
         Task Listener { get; }
 
         /// <summary>
+        /// Gets whether or not the message queue is empty, i.e. if any requests still have to be sent.
+        /// </summary>
+        bool IsMessageQueueEmpty { get; }
+
+        /// <summary>
         /// Opens a long running listener task that waits for incoming DICOM communication
         /// </summary>
         void StartListener();
@@ -108,6 +113,7 @@ namespace Dicom.Network.Client
 
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
+        public new bool IsMessageQueueEmpty => base.IsMessageQueueEmpty;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
             : base(networkStream, dicomClient.FallbackEncoding, dicomClient.Logger)

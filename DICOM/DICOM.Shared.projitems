@@ -212,6 +212,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IDicomClientState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithAssociationParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithConnectionParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\AsyncManualResetEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\CompletedTaskProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceFactory.cs" />

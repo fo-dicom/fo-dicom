@@ -174,7 +174,7 @@ namespace Dicom.Network
         public bool IsConnected => !_isDisconnectedFlag.IsSet;
 
         /// <summary>
-        /// Gets whether or not the send queue is empty.
+        /// Gets whether or not both the message queue and the pending queue is empty.
         /// </summary>
         public bool IsSendQueueEmpty
         {
@@ -186,6 +186,20 @@ namespace Dicom.Network
                     isSendQueueEmpty = _msgQueue.Count == 0 && _pending.Count == 0;
                 }
                 return isSendQueueEmpty;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not the message queue is empty, i.e. if any requests still have to be sent.
+        /// </summary>
+        public bool IsMessageQueueEmpty
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _msgQueue.Count == 0;
+                }
             }
         }
 
