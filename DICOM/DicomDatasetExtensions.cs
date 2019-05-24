@@ -12,6 +12,7 @@ namespace Dicom
     /// </summary>
     public static class DicomDatasetExtensions
     {
+
         /// <summary>
         /// Clone a dataset.
         /// </summary>
@@ -64,5 +65,30 @@ namespace Dicom
         {
             return dataset.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
         }
+
+
+        /// <summary>
+        /// Turns off validation on the passed DicomDataset and returns this Dataset
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns></returns>
+        public static DicomDataset NotValidated(this DicomDataset dataset)
+        {
+            dataset.ValidateItems = false;
+            return dataset;
+        }
+
+        /// <summary>
+        /// Turns on validation on the passed DicomDataset and returns this Dataset
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns></returns>
+        public static DicomDataset Validated(this DicomDataset dataset)
+        {
+            dataset.ValidateItems = true;
+            return dataset;
+        }
+
+
     }
 }
