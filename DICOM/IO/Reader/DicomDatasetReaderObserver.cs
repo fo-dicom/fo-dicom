@@ -165,7 +165,7 @@ namespace Dicom.IO.Reader
         {
             DicomSequence sq = _sequences.Peek();
 
-            DicomDataset item = new DicomDataset() { ValidateItems = false };
+            DicomDataset item = new DicomDataset().NotValidated();
             sq.Items.Add(item);
 
             _datasets.Push(item);

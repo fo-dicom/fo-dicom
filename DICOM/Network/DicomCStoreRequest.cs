@@ -56,9 +56,10 @@ namespace Dicom.Network
             Dataset = file.Dataset;
 
             // for potentially invalid UID values, we have to disable validation 
-            Command.ValidateItems = false;
-            SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
-            Command.ValidateItems = true;
+            using (var unvalidated = new UnvalidatedScope(Command))
+            {
+                SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            }
         }
 
         /// <summary>

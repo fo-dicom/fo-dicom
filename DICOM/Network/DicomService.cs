@@ -618,7 +618,7 @@ namespace Dicom.Network
                         {
                             _dimseStream.Seek(0, SeekOrigin.Begin);
 
-                            var command = new DicomDataset() { ValidateItems = false };
+                            var command = new DicomDataset().NotValidated();
 
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
@@ -725,9 +725,10 @@ namespace Dicom.Network
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
                                 // when receiving data via network, accept it and dont validate
-                                _dimse.Dataset.ValidateItems = false;
-                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
-                                _dimse.Dataset.ValidateItems = true;
+                                using (var unvalidated = new UnvalidatedScope(_dimse.Dataset))
+                                {
+                                    reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
+                                }
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;

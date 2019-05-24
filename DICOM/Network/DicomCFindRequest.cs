@@ -30,7 +30,7 @@ namespace Dicom.Network
             : base(DicomCommandField.CFindRequest, GetAffectedSOPClassUID(level), priority)
         {
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            Dataset = new DicomDataset { ValidateItems = false };
+            Dataset = new DicomDataset().NotValidated();
             Level = level;
         }
 
@@ -48,7 +48,7 @@ namespace Dicom.Network
             }
 
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            Dataset = new DicomDataset { ValidateItems = false };
+            Dataset = new DicomDataset().NotValidated();
         }
 
         /// <summary>
@@ -163,8 +163,6 @@ namespace Dicom.Network
             string studyInstanceUid = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
-            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
@@ -191,8 +189,6 @@ namespace Dicom.Network
         public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
-            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.SeriesInstanceUID, string.Empty);
             dimse.Dataset.Add(DicomTag.SeriesNumber, string.Empty);
@@ -217,8 +213,6 @@ namespace Dicom.Network
             string modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Image);
-            // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            dimse.Dataset.ValidateItems = false;
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
             dimse.Dataset.Add(DicomTag.SeriesInstanceUID, seriesInstanceUid);
             dimse.Dataset.Add(DicomTag.SOPInstanceUID, string.Empty);

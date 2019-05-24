@@ -33,7 +33,7 @@ namespace Dicom.Network
         {
             DestinationAE = destinationAe;
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            Dataset = new DicomDataset { ValidateItems = false };
+            Dataset = new DicomDataset().NotValidated();
             Level = DicomQueryRetrieveLevel.Study;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
         }
@@ -54,7 +54,7 @@ namespace Dicom.Network
         {
             DestinationAE = destinationAe;
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            Dataset = new DicomDataset { ValidateItems = false };
+            Dataset = new DicomDataset().NotValidated();
 
             Level = DicomQueryRetrieveLevel.Series;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
@@ -79,7 +79,7 @@ namespace Dicom.Network
         {
             DestinationAE = destinationAe;
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation
-            Dataset = new DicomDataset { ValidateItems = false };
+            Dataset = new DicomDataset().NotValidated();
 
             Level = DicomQueryRetrieveLevel.Image;
             Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
