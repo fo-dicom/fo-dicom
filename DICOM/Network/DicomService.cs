@@ -190,15 +190,15 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Gets whether or not the message queue is empty, i.e. if any requests still have to be sent.
+        /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
         /// </summary>
-        public bool IsMessageQueueEmpty
+        public bool IsSendNextMessageRequired
         {
             get
             {
                 lock (_lock)
                 {
-                    return _msgQueue.Count == 0;
+                    return _msgQueue.Count > 0 && !_sending;
                 }
             }
         }

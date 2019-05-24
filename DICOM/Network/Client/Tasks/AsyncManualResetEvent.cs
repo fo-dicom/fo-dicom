@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Dicom.Network.Client.Tasks
     /// This implementation was originally written by Stephen Cleary https://github.com/StephenCleary/AsyncEx
     /// and adapted for use in this library
     /// </summary>
-    public sealed class AsyncManualResetEvent
+    public sealed class AsyncManualResetEvent : IDisposable
     {
         /// <summary>
         /// The object used for synchronization.
@@ -74,6 +75,11 @@ namespace Dicom.Network.Client.Tasks
                 if (_tcs.Task.IsCompleted)
                     _tcs = TaskCompletionSourceFactory.Create<object>();
             }
+        }
+
+        public void Dispose()
+        {
+            _tcs.TrySetCanceledAsynchronously();
         }
     }
 }

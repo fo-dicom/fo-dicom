@@ -16,9 +16,14 @@ namespace Dicom.Network.Client
         Task Listener { get; }
 
         /// <summary>
-        /// Gets whether or not the message queue is empty, i.e. if any requests still have to be sent.
+        /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
         /// </summary>
-        bool IsMessageQueueEmpty { get; }
+        bool IsSendNextMessageRequired { get; }
+
+        /// <summary>
+        /// Gets whether or not the send queue is empty, i.e. if all requests are sent *and* handled
+        /// </summary>
+        bool IsSendQueueEmpty { get; }
 
         /// <summary>
         /// Opens a long running listener task that waits for incoming DICOM communication
@@ -113,7 +118,7 @@ namespace Dicom.Network.Client
 
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
-        public new bool IsMessageQueueEmpty => base.IsMessageQueueEmpty;
+        public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
             : base(networkStream, dicomClient.FallbackEncoding, dicomClient.Logger)
