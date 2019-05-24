@@ -108,7 +108,6 @@ namespace Dicom.Network.Client.States
         public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
         {
             _pendingRequests.TryRemove(request.MessageID, out DicomRequest _);
-            _canSendMoreRequests.Set();
             return CompletedTaskProvider.CompletedTask;
         }
 
