@@ -51,7 +51,7 @@ namespace Dicom.Network.Client.States
             _onCancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
             _disposables = new List<IDisposable>();
             _pendingRequests = new ConcurrentDictionary<int, DicomRequest>();
-            _canSendMoreRequests = new Tasks.AsyncManualResetEvent();
+            _canSendMoreRequests = new Tasks.AsyncManualResetEvent(set: true);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
@@ -163,11 +163,6 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        private async Task SendInitialRequests()
-        {
-            await SendRequests().ConfigureAwait(false);
-        }
-
         /// <summary>
         /// Sometimes, we need to manually send more requests:
         ///     - When more requests are added to the DicomClient
@@ -225,7 +220,7 @@ namespace Dicom.Network.Client.States
 
             _dicomClient.Logger.Debug($"[{this}] Sending DICOM requests");
 
-            await SendInitialRequests().ConfigureAwait(false);
+            await SendRequests().ConfigureAwait(false);
 
             var allRequestsHaveCompleted = KeepSendingUntilAllRequestsHaveCompletedAsync();
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
