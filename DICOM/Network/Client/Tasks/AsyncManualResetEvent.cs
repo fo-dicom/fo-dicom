@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Dicom.Network.Client.Tasks
@@ -10,7 +9,7 @@ namespace Dicom.Network.Client.Tasks
     /// This implementation was originally written by Stephen Cleary https://github.com/StephenCleary/AsyncEx
     /// and adapted for use in this library
     /// </summary>
-    public sealed class AsyncManualResetEvent : IDisposable
+    internal sealed class AsyncManualResetEvent : IDisposable
     {
         /// <summary>
         /// The object used for synchronization.

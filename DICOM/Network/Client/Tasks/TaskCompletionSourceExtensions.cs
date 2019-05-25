@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Dicom.Network.Client.Tasks
 {
-    public static class TaskCompletionSourceExtensions
+    internal static class TaskCompletionSourceExtensions
     {
         public static void TrySetResultAsynchronously<T>(this TaskCompletionSource<T> @this, T result)
         {
