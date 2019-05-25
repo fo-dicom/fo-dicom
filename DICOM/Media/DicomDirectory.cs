@@ -160,9 +160,8 @@ namespace Dicom.Media
             try
             {
                 df.File = IOManager.CreateFileReference(fileName);
-                df.FileMetaInfo.ValidateItems = false;
-                df.Dataset.ValidateItems = false;
 
+                using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
@@ -178,8 +177,6 @@ namespace Dicom.Media
 
                     df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
-                    df.FileMetaInfo.ValidateItems = true;
-                    df.Dataset.ValidateItems = true;
                     return df;
                 }
             }
@@ -218,24 +215,23 @@ namespace Dicom.Media
             try
             {
                 var source = new StreamByteSource(stream, readOption);
-                df.FileMetaInfo.ValidateItems = false;
-                df.Dataset.ValidateItems = false;
 
-                var reader = new DicomFileReader();
-                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using (var unvalidated = new UnvalidatedScope(df.Dataset))
+                {
+                    var reader = new DicomFileReader();
+                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                var result = reader.Read(
-                    source,
-                    new DicomDatasetReaderObserver(df.FileMetaInfo),
-                    new DicomReaderMultiObserver(
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                        dirObserver),
-                    stop);
+                    var result = reader.Read(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomReaderMultiObserver(
+                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                            dirObserver),
+                        stop);
 
-                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                }
 
-                df.Dataset.ValidateItems = true;
-                df.FileMetaInfo.ValidateItems = true;
                 return df;
             }
             catch (Exception e)
@@ -274,9 +270,8 @@ namespace Dicom.Media
             try
             {
                 df.File = IOManager.CreateFileReference(fileName);
-                df.FileMetaInfo.ValidateItems = false;
-                df.Dataset.ValidateItems = false;
 
+                using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
                 {
                     var reader = new DicomFileReader();
@@ -294,8 +289,6 @@ namespace Dicom.Media
 
                     df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
-                    df.Dataset.ValidateItems = true;
-                    df.FileMetaInfo.ValidateItems = true;
                     return df;
                 }
             }
@@ -334,26 +327,25 @@ namespace Dicom.Media
             try
             {
                 var source = new StreamByteSource(stream, readOption);
-                df.FileMetaInfo.ValidateItems = false;
-                df.Dataset.ValidateItems = false;
 
-                var reader = new DicomFileReader();
-                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using (var unvalidatedScop = new UnvalidatedScope(df.Dataset))
+                {
+                    var reader = new DicomFileReader();
+                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                var result =
-                    await
-                    reader.ReadAsync(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomReaderMultiObserver(
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                        dirObserver),
-                        stop).ConfigureAwait(false);
+                    var result =
+                        await
+                        reader.ReadAsync(
+                            source,
+                            new DicomDatasetReaderObserver(df.FileMetaInfo),
+                            new DicomReaderMultiObserver(
+                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                            dirObserver),
+                            stop).ConfigureAwait(false);
 
-                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                }
 
-                df.Dataset.ValidateItems = true;
-                df.FileMetaInfo.ValidateItems = true;
                 return df;
             }
             catch (Exception e)

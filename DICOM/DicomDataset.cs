@@ -1579,4 +1579,45 @@ namespace Dicom
 
         #endregion
     }
+
+
+    public class UnvalidatedScope : IDisposable
+    {
+        private DicomDataset _dataset;
+        private bool _validation;
+
+        public UnvalidatedScope(DicomDataset dataSet)
+        {
+            _dataset = dataSet;
+            _validation = dataSet.ValidateItems;
+            _dataset.ValidateItems = false;
+        }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // for detecting renundant calling of Dispose
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _dataset.ValidateItems = _validation;
+                    _dataset = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
+
+    }
+
 }

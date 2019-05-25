@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Dicom.Log;
+
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-
-using Dicom.Log;
 
 namespace Dicom.Network
 {
@@ -73,6 +73,11 @@ namespace Dicom.Network
         {
             var tempName = Path.GetTempFileName();
             Logger.Info(tempName);
+
+            // as the incoming file could be not-valid
+            request.File.Dataset.ValidateItems = false;
+            request.File.FileMetaInfo.ValidateItems = false;
+
             request.File.Save(tempName);
 
             return new DicomCStoreResponse(request, DicomStatus.Success)
