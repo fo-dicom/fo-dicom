@@ -22,36 +22,6 @@ namespace Dicom.Network.Client.States
             _disposables = new List<IDisposable>();
         }
 
-        private async Task<IDicomClientState> TransitionToRequestAssociationState(IDicomClientConnection connection, DicomClientCancellation cancellation)
-        {
-            var initialisationParameters = new DicomClientRequestAssociationState.InitialisationParameters(connection);
-
-            var requestAssociationState = new DicomClientRequestAssociationState(_dicomClient, initialisationParameters);
-
-            return await _dicomClient.Transition(requestAssociationState, cancellation).ConfigureAwait(false);
-        }
-
-        private async Task<IDicomClientState> TransitionToIdleState(DicomClientCancellation cancellation)
-        {
-            return await _dicomClient.Transition(new DicomClientIdleState(_dicomClient), cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToCompletedWithoutErrorState(IDicomClientConnection connection, DicomClientCancellation cancellation)
-        {
-            var parameters = connection == null
-                ? new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(null)
-                : new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToCompletedWithErrorState(Exception exception, IDicomClientConnection connection, DicomClientCancellation cancellation)
-        {
-            var parameters = connection == null
-                ? new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception)
-                : new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
         private async Task<IDicomClientConnection> Connect(DicomClientCancellation cancellation)
         {
             return await Task.Run<IDicomClientConnection>(() =>
@@ -84,7 +54,7 @@ namespace Dicom.Network.Client.States
             if (cancellation.Token.IsCancellationRequested)
             {
                 _dicomClient.Logger.Warn($"[{this}] Cancellation requested, won't connect");
-                return await TransitionToIdleState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
             }
 
             _disposables.Add(cancellation.Token.Register(() => _cancellationRequestedTaskCompletionSource.SetResult(true)));
@@ -101,11 +71,11 @@ namespace Dicom.Network.Client.States
                 {
                     connection = await connect.ConfigureAwait(false);
 
-                    return await TransitionToRequestAssociationState(connection, cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToRequestAssociationState(connection, cancellation).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
-                    return await TransitionToCompletedWithErrorState(e, connection, cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(connection, e, cancellation).ConfigureAwait(false);
                 }
             }
 
@@ -116,11 +86,11 @@ namespace Dicom.Network.Client.States
             try
             {
                 var connection = await connect.ConfigureAwait(false);
-                return await TransitionToCompletedWithoutErrorState(connection, cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(connection, cancellation).ConfigureAwait(false);
             }
             catch(Exception e)
             {
-                return await TransitionToCompletedWithErrorState(e, null, cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedWithErrorState((IDicomClientConnection) null, e, cancellation).ConfigureAwait(false);
             }
         }
 

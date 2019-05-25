@@ -92,38 +92,12 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
-        private async Task<IDicomClientState> TransitionToRequestAssociationState(DicomClientCancellation cancellation)
-        {
-            var parameters =
-                new DicomClientRequestAssociationState.InitialisationParameters(_initialisationParameters.Connection);
-            var state = new DicomClientRequestAssociationState(_dicomClient, parameters);
-            return await _dicomClient.Transition(state, cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToAbortState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientAbortState.InitialisationParameters(_initialisationParameters.Connection);
-            return await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToCompletedState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             // We can mostly ignore the cancellation token in this state, unless the cancellation mode is set to "Immediately abort"
             if (cancellation.Token.IsCancellationRequested && cancellation.Mode == DicomClientCancellationMode.ImmediatelyAbortAssociation)
             {
-                return await TransitionToAbortState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             await _initialisationParameters.Connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
@@ -154,19 +128,19 @@ namespace Dicom.Network.Client.States
                 if (!cancellation.Token.IsCancellationRequested && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _))
                 {
                     _dicomClient.Logger.Debug($"[{this}] More requests need to be sent after association release, creating new association");
-                    return await TransitionToRequestAssociationState(cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToRequestAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 }
 
                 _dicomClient.Logger.Debug(cancellation.Token.IsCancellationRequested
                     ? $"[{this}] Cancellation requested, disconnecting..."
                     : $"[{this}] No more requests to be sent, disconnecting...");
-                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onAssociationReleaseTimeout)
             {
                 _dicomClient.Logger.Debug($"[{this}] Association release timed out, aborting...");
-                return await TransitionToAbortState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onReceiveAbort)
@@ -174,7 +148,7 @@ namespace Dicom.Network.Client.States
                 _dicomClient.Logger.Debug($"[{this}] Association aborted, disconnecting...");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
-                return await TransitionToCompletedWithErrorState(exception, cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onDisconnect)
@@ -184,18 +158,18 @@ namespace Dicom.Network.Client.States
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
-                    return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 }
                 else
                 {
-                    return await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
                 }
             }
 
             if (winner == onAbort)
             {
                 _dicomClient.Logger.Warn($"[{this}] Cancellation requested during association release, immediately aborting association");
-                return await TransitionToAbortState(cancellation);
+                return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation);
             }
 
             throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);

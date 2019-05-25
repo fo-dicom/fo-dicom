@@ -79,19 +79,6 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
-        private async Task<IDicomClientState> TransitionToCompletedState(DicomClientCancellation cancellation)
-        {
-            var initialisationParameters = new DicomClientCompletedState
-                .DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
-        }
-
-        private async Task<IDicomClientState> TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
-            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
@@ -104,12 +91,12 @@ namespace Dicom.Network.Client.States
             if (winner == sendAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification sent to server. Disconnecting...");
-                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
             if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Received abort while aborting. Neat.");
-                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onDisconnect)
@@ -118,18 +105,18 @@ namespace Dicom.Network.Client.States
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
-                    return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 }
                 else
                 {
-                    return await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
                 }
             }
 
             if (winner == onTimeout)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification timed out. Disconnecting...");
-                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);

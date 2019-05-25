@@ -19,17 +19,6 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
         }
 
-        public class InitialisationParameters
-        {
-        }
-
-        private async Task<IDicomClientState> TransitionToConnectState(DicomClientCancellation cancellation)
-        {
-            var state = new DicomClientConnectState(_dicomClient);
-
-            return await _dicomClient.Transition(state, cancellation).ConfigureAwait(false);
-        }
-
         public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             if (!cancellation.Token.IsCancellationRequested
@@ -37,7 +26,7 @@ namespace Dicom.Network.Client.States
                 && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
                 _dicomClient.Logger.Debug($"[{this}] More requests to send (and no cancellation requested yet), automatically opening new association");
-                return await TransitionToConnectState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
             }
 
             if (cancellation.Token.IsCancellationRequested)
@@ -63,7 +52,7 @@ namespace Dicom.Network.Client.States
                 _dicomClient.Logger.Warn($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
                 return;
             }
-            await TransitionToConnectState(cancellation).ConfigureAwait(false);
+            await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
         }
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)

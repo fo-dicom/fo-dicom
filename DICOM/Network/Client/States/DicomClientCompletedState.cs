@@ -83,11 +83,6 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        private async Task<IDicomClientState> TransitionToIdleState(DicomClientCancellation cancellation)
-        {
-            return await _dicomClient.Transition(new DicomClientIdleState(_dicomClient), cancellation).ConfigureAwait(false);
-        }
-
         public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             switch (_initialisationParameters)
@@ -102,7 +97,7 @@ namespace Dicom.Network.Client.States
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
 
-                    return await TransitionToIdleState(cancellation).ConfigureAwait(false);
+                    return await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
                 }
 
                 case DicomClientCompletedWithErrorInitialisationParameters parameters:
@@ -148,7 +143,7 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
-            await TransitionToIdleState(cancellation).ConfigureAwait(false);
+            await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
         }
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
