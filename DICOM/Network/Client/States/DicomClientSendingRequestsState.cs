@@ -319,7 +319,15 @@ namespace Dicom.Network.Client.States
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while sending requests, cleaning up...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                }
             }
         }
 

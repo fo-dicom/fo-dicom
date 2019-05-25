@@ -367,7 +367,7 @@ namespace Dicom.Network
                 catch (IOException e)
                 {
                     LogIOException(e, Logger, false);
-                    TryCloseConnection(e, true);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
                 catch (ObjectDisposedException e)
                 {
@@ -376,7 +376,7 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
-                    TryCloseConnection(e);
+                    await TryCloseConnectionAsync(e).ConfigureAwait(false);
                 }
 
                 lock (_lock) _writing = false;
@@ -402,7 +402,7 @@ namespace Dicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            TryCloseConnection();
+                            await TryCloseConnectionAsync().ConfigureAwait(false);
                             return;
                         }
 
@@ -432,7 +432,7 @@ namespace Dicom.Network
                             if (count == 0)
                             {
                                 // disconnected
-                                TryCloseConnection();
+                                await TryCloseConnectionAsync().ConfigureAwait(false);
                                 return;
                             }
 
@@ -507,7 +507,7 @@ namespace Dicom.Network
                                 user.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
                             if (this is IDicomClientConnection connection)
                                 await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            if (TryCloseConnection()) return;
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0x04:
@@ -537,7 +537,7 @@ namespace Dicom.Network
                                 user.OnReceiveAssociationReleaseResponse();
                             if (this is IDicomClientConnection connection)
                                 await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
-                            if (TryCloseConnection()) return;
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0x07:
@@ -551,7 +551,9 @@ namespace Dicom.Network
                                 pdu.Reason);
                             if (this is IDicomService service)
                                 service.OnReceiveAbort(pdu.Source, pdu.Reason);
-                            if (TryCloseConnection()) return;
+                            else if (this is IDicomClientConnection connection)
+                                await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0xFF:
@@ -565,23 +567,23 @@ namespace Dicom.Network
                 catch (ObjectDisposedException)
                 {
                     // silently ignore
-                    TryCloseConnection(force: true);
+                    await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (NullReferenceException)
                 {
                     // connection already closed; silently ignore
-                    TryCloseConnection(force: true);
+                    await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
                     // LogIOException returns true for underlying socket error (probably due to forcibly closed connection),
                     // in that case discard exception
-                    TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
+                    await TryCloseConnectionAsync(LogIOException(e, Logger, true) ? null : e, true).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
-                    TryCloseConnection(e, true);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
             }
         }
@@ -1205,7 +1207,7 @@ namespace Dicom.Network
             }
         }
 
-        private bool TryCloseConnection(Exception exception = null, bool force = false)
+        private async Task<bool> TryCloseConnectionAsync(Exception exception = null, bool force = false)
         {
             try
             {
@@ -1231,7 +1233,10 @@ namespace Dicom.Network
                     }
                 }
 
-                (this as IDicomService)?.OnConnectionClosed(exception);
+                if(this is IDicomService dicomService)
+                    dicomService.OnConnectionClosed(exception);
+                else if (this is IDicomClientConnection connection)
+                    await connection.OnConnectionClosedAsync(exception).ConfigureAwait(false);
             }
             catch (Exception e)
             {
