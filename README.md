@@ -116,22 +116,20 @@ image.RenderImage().AsUIImage().AsJPEG().Save(@"test.jpg", true);     // iOS
 
 #### C-Store SCU
 ```csharp
-var client = new DicomClient();
+var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 client.AddRequest(new DicomCStoreRequest(@"test.dcm"));
-client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");             // Alt 1
-await client.SendAsync("127.0.0.1", 12345, false, "SCU", "ANY-SCP");  // Alt 2
+await client.SendAsync();
 ```
 
 #### C-Echo SCU/SCP
 ```csharp
 var server = new DicomServer<DicomCEchoProvider>(12345);
 
-var client = new DicomClient();
+var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 client.NegotiateAsyncOps();
 for (int i = 0; i < 10; i++)
     client.AddRequest(new DicomCEchoRequest());
-client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");             // Alt 1
-await client.SendAsync("127.0.0.1", 12345, false, "SCU", "ANY-SCP");  // Alt 2
+await client.SendAsync();
 ```
 
 #### C-Find SCU
@@ -141,19 +139,17 @@ cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
 	Console.WriteLine("Study UID: {0}", rp.Dataset.Get<string>(DicomTag.StudyInstanceUID));
 };
 
-var client = new DicomClient();
+var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
 client.AddRequest(cfind);
-client.Send("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");             // Alt 1
-await client.SendAsync("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");  // Alt 2
+await client.SendAsync();
 ```
 
 #### C-Move SCU
 ```csharp
 var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
 
-var client = new DicomClient();
+var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
 client.AddRequest(cmove);
-client.Send("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");             // Alt 1
-await client.SendAsync("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");  // Alt 2
+await client.SendAsync(); 
 ```
 
