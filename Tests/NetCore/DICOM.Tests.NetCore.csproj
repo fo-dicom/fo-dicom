@@ -46,6 +46,9 @@
     <None Include="..\Desktop\Test Data\GH538-jpeg14sv1.dcm" Link="Test Data\GH538-jpeg14sv1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\Desktop\Test Data\10200904.dcm" Link="Test Data\10200904.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
