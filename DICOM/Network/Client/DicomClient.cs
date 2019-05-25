@@ -162,7 +162,7 @@ namespace Dicom.Network.Client
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters());
+            State = new DicomClientIdleState(this);
         }
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task)
@@ -178,7 +178,7 @@ namespace Dicom.Network.Client
             }
         }
 
-        internal async Task Transition(IDicomClientState newState, DicomClientCancellation cancellation)
+        internal async Task<IDicomClientState> Transition(IDicomClientState newState, DicomClientCancellation cancellation)
         {
             Task InternalTransition()
             {
@@ -197,7 +197,7 @@ namespace Dicom.Network.Client
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
 
-            await newState.OnEnterAsync(cancellation).ConfigureAwait(false);
+            return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
         }
 
         internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)

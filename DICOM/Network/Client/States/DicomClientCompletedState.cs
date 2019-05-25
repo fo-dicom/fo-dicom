@@ -83,13 +83,12 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        private async Task TransitionToIdleState(DicomClientCancellation cancellation)
+        private async Task<IDicomClientState> TransitionToIdleState(DicomClientCancellation cancellation)
         {
-            var parameters = new DicomClientIdleState.InitialisationParameters();
-            await _dicomClient.Transition(new DicomClientIdleState(_dicomClient, parameters), cancellation).ConfigureAwait(false);
+            return await _dicomClient.Transition(new DicomClientIdleState(_dicomClient), cancellation).ConfigureAwait(false);
         }
 
-        public async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             switch (_initialisationParameters)
             {
@@ -103,9 +102,7 @@ namespace Dicom.Network.Client.States
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
 
-                    await TransitionToIdleState(cancellation);
-
-                    break;
+                    return await TransitionToIdleState(cancellation).ConfigureAwait(false);
                 }
 
                 case DicomClientCompletedWithErrorInitialisationParameters parameters:
@@ -124,6 +121,9 @@ namespace Dicom.Network.Client.States
 
                     throw parameters.ExceptionToThrow;
                 }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_initialisationParameters), "Unknown initialisation parameters");
             }
         }
 

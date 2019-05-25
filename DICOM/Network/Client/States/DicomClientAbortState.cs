@@ -79,20 +79,20 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
-        private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
+        private async Task<IDicomClientState> TransitionToCompletedState(DicomClientCancellation cancellation)
         {
             var initialisationParameters = new DicomClientCompletedState
                 .DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
+            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
         }
 
-        private async Task TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
+        private async Task<IDicomClientState> TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
         {
             var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
+            return await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
         }
 
-        public override async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -104,31 +104,35 @@ namespace Dicom.Network.Client.States
             if (winner == sendAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification sent to server. Disconnecting...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
             if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Received abort while aborting. Neat.");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
-            else if (winner == onDisconnect)
+
+            if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while aborting. Perfect.");
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
-                    await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                    return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
                 }
                 else
                 {
-                    await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                    return await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
                 }
             }
-            else if (winner == onTimeout)
+
+            if (winner == onTimeout)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification timed out. Disconnecting...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
+
+            throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
