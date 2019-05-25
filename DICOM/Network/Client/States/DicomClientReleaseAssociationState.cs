@@ -180,6 +180,7 @@ namespace Dicom.Network.Client.States
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected during association release, cleaning up...");
+                
                 await TransitionToCompletedState(cancellation).ConfigureAwait(false);
             }
             else if (winner == onAbort)

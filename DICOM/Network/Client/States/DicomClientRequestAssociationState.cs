@@ -129,7 +129,8 @@ namespace Dicom.Network.Client.States
 
         private async Task TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
         {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
+            var parameters =
+                new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation).ConfigureAwait(false);
         }
 
@@ -161,7 +162,7 @@ namespace Dicom.Network.Client.States
             var associationIsAccepted = _onAssociationAcceptedTaskCompletionSource.Task;
             var associationIsRejected = _onAssociationRejectedTaskCompletionSource.Task;
             var abortReceived = _onAbortReceivedTaskCompletionSource.Task;
-            var connectionIsClosed = _onConnectionClosedTaskCompletionSource.Task;
+            var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
             var associationRequestTimesOut = Task.Delay(_dicomClient.AssociationRequestTimeoutInMs, _associationRequestTimeoutCancellationTokenSource.Token);
             var onCancellationRequested = _onCancellationRequestedTaskCompletionSource.Task;
 
@@ -169,7 +170,7 @@ namespace Dicom.Network.Client.States
                 associationIsAccepted,
                 associationIsRejected,
                 abortReceived,
-                connectionIsClosed,
+                onDisconnect,
                 associationRequestTimesOut,
                 onCancellationRequested
             ).ConfigureAwait(false);
@@ -200,10 +201,18 @@ namespace Dicom.Network.Client.States
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 await TransitionToCompletedWithErrorState(exception, cancellation).ConfigureAwait(false);
             }
-            else if (winner == connectionIsClosed)
+            else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Warn($"[{this}] Disconnected");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                }
             }
             else if (winner == associationRequestTimesOut)
             {

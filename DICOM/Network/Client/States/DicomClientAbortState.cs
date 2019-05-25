@@ -86,6 +86,12 @@ namespace Dicom.Network.Client.States
             await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
         }
 
+        private async Task TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
+        {
+            var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
+            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
+        }
+
         public override async Task OnEnterAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
@@ -108,7 +114,15 @@ namespace Dicom.Network.Client.States
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while aborting. Perfect.");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                }
             }
             else if (winner == onTimeout)
             {

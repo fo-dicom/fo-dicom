@@ -192,7 +192,15 @@ namespace Dicom.Network.Client.States
             else if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Warn($"[{this}] Disconnected while lingering the association");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    await TransitionToCompletedWithErrorState(connectionClosedEvent.Exception, cancellation);
+                }
             }
             else if (winner == onCancel)
             {
