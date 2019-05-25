@@ -62,6 +62,7 @@
     <Compile Include="..\Desktop\DicomDictionaryTest.cs" Link="DicomDictionaryTest.cs" />
     <Compile Include="..\Desktop\DicomEncodingTest.cs" Link="DicomEncodingTest.cs" />
     <Compile Include="..\Desktop\Network\DicomClientTest.cs" Link="Network\DicomClientTest.cs" />
+    <Compile Include="..\Desktop\Network\Client\DicomClientTest.cs" Link="Network\Client\DicomClientTest.cs" />
     <Compile Include="..\Desktop\Network\Ports.cs" Link="Network\Ports.cs" />
     <Compile Include="..\Desktop\Network\SimpleCStoreProvider.cs" Link="Network\SimpleCStoreProvider.cs" />
   </ItemGroup>
