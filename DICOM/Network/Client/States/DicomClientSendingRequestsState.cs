@@ -20,7 +20,7 @@ namespace Dicom.Network.Client.States
         private readonly TaskCompletionSource<DicomAbortedEvent> _onAbortReceivedTaskCompletionSource;
         private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
-        private readonly TaskCompletionSource<bool> _allPendingRequestsHaveCompletedTaskCompletionSource;
+        private readonly TaskCompletionSource<AllRequestsHaveCompletedEvent> _allRequestsHaveCompletedTaskCompletionSource;
         private readonly IList<IDisposable> _disposables;
         private readonly Tasks.AsyncManualResetEvent _sendMoreRequests;
         private readonly ConcurrentDictionary<int, DicomRequest> _pendingRequests;
@@ -50,7 +50,7 @@ namespace Dicom.Network.Client.States
             _onAbortReceivedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = TaskCompletionSourceFactory.Create<ConnectionClosedEvent>();
             _onCancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
-            _allPendingRequestsHaveCompletedTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
+            _allRequestsHaveCompletedTaskCompletionSource = TaskCompletionSourceFactory.Create<AllRequestsHaveCompletedEvent>();
             _disposables = new List<IDisposable>();
             _pendingRequests = new ConcurrentDictionary<int, DicomRequest>();
             _sendMoreRequests = new Tasks.AsyncManualResetEvent(set: true);
@@ -118,7 +118,7 @@ namespace Dicom.Network.Client.States
             {
                 if (_dicomClient.QueuedRequests.IsEmpty)
                 {
-                    _allPendingRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(true);
+                    _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
                 }
                 else
                 {
@@ -204,7 +204,7 @@ namespace Dicom.Network.Client.States
                 /**
                  * This event will be triggered when the pending queue becomes empty
                  */
-                var allRequestsHaveCompleted = _allPendingRequestsHaveCompletedTaskCompletionSource.Task;
+                var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
 
                 var winner = await Task.WhenAny(allRequestsHaveCompleted, sendMoreRequests, onCancel).ConfigureAwait(false);
                 if (winner == allRequestsHaveCompleted || winner == onCancel)
@@ -336,7 +336,7 @@ namespace Dicom.Network.Client.States
             _onCancellationTaskCompletionSource.TrySetCanceledAsynchronously();
             _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
             _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _allPendingRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
 
             _sendMoreRequests.Dispose();
         }
