@@ -64,7 +64,7 @@ namespace Dicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] DicomService could not be disposed properly: " + e);
+                _dicomClient.Logger.Warn($"[{this}] The listener for incoming DICOM communication could not be disposed properly: " + e);
             }
 
             try
@@ -73,7 +73,7 @@ namespace Dicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] NetworkStream could not be disposed properly: " + e);
+                _dicomClient.Logger.Warn($"[{this}] The connection network stream could not be disposed properly: " + e);
             }
 
             // wait until listener task realizes connection is gone
@@ -99,7 +99,7 @@ namespace Dicom.Network.Client.States
 
                     if (parameters.Connection != null)
                     {
-                        _dicomClient.Logger.Debug($"[{this}] We still have an active connection, cleaning that up now");
+                        _dicomClient.Logger.Debug($"[{this}] Cleaning up");
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
 
