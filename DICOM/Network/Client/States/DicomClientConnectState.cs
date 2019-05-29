@@ -82,8 +82,8 @@ namespace Dicom.Network.Client.States
                 }
             }
 
-            if(winner != cancel)
-                throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
+            if (winner != cancel)
+                throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
 
             // Cancellation or abort was triggered but wait for the connection anyway, because we need to dispose of it properly
             try

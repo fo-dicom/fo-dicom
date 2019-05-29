@@ -175,7 +175,7 @@ namespace Dicom.Network.Client.States
                 return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation);
             }
 
-            throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
+            throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
