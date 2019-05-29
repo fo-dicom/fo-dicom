@@ -6,6 +6,15 @@
 * Replaced deprecated licenseUrl tags in NuGet specification files (#813)
 * Add validation of content when adding DICOM elements to DicomDataset. This validation is skipped when reading files or receiving data via network.
 * Be more prudent when releasing association after the linger timeout (#840)
+* A completely new DicomClient, under the namespace Dicom.Network.Client.DicomClient (beware of confusion with Dicom.Network.DicomClient!)
+  * The intent is that the old Dicom.Network.DicomClient will disappear in the next major update, so the namespace confusion shouldn't last very long.
+  * For now, both versions can be used side by side according to your needs. All of our unit tests cover both implementations. 
+  * The new Dicom.Network.Client.DicomClient sports the following characteristics:
+    * Redesigned architecture using state pattern. This makes the DicomClient a lot more robust in various scenarios (abort while sending requests, disconnect while releasing association, etc)
+    * Completely async from the very start
+    * Full and graceful cancellation support using CancellationToken. Upon cancellation, no more requests will be sent, the association will be released and the connection closed gracefully.
+    * One DicomClient instance per DICOM server. The host, port and other server related parameters are moved to the DicomClient constructor.
+    * More hooks to react to the various states a DicomClient goes through. (e.g. when connecting, when lingering the association, etc.)
 * Bug Fix: Fixed wrong interpretation and application of LUT for PALETTE COLOR images (#817)
 * Bug Fix: Allow any SOP Class to be set as Affected SOP CLass in C-FIND requests (#808)
 * Bug Fix: Don't drop connection right after releasing an association (#839)

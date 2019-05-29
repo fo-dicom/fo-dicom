@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using Dicom.Network.Client;
 
 using Xunit;
 
@@ -46,6 +47,7 @@ namespace Dicom.Network
 
             Assert.Equal("RT ANKLE", dataset.Get<string>(DicomTag.StudyDescription));
         }
+
 
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
         public void DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
@@ -156,7 +158,7 @@ namespace Dicom.Network
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> InstancesLevels = new[] 
+        public static readonly IEnumerable<object[]> InstancesLevels = new[]
         {
             new object[] { new DicomCGetRequest("1.2.3"), DicomQueryRetrieveLevel.Study },
             new object[] { new DicomCGetRequest("1.2.3", "2.3.4"), DicomQueryRetrieveLevel.Series },

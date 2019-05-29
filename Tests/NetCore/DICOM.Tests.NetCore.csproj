@@ -46,6 +46,9 @@
     <None Include="..\Desktop\Test Data\GH538-jpeg14sv1.dcm" Link="Test Data\GH538-jpeg14sv1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\Desktop\Test Data\10200904.dcm" Link="Test Data\10200904.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +65,7 @@
     <Compile Include="..\Desktop\DicomDictionaryTest.cs" Link="DicomDictionaryTest.cs" />
     <Compile Include="..\Desktop\DicomEncodingTest.cs" Link="DicomEncodingTest.cs" />
     <Compile Include="..\Desktop\Network\DicomClientTest.cs" Link="Network\DicomClientTest.cs" />
+    <Compile Include="..\Desktop\Network\Client\DicomClientTest.cs" Link="Network\Client\DicomClientTest.cs" />
     <Compile Include="..\Desktop\Network\Ports.cs" Link="Network\Ports.cs" />
     <Compile Include="..\Desktop\Network\SimpleCStoreProvider.cs" Link="Network\SimpleCStoreProvider.cs" />
   </ItemGroup>

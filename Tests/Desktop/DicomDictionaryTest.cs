@@ -84,13 +84,15 @@ namespace Dicom
 
         private double TimeCall(int numCalls, Action call)
         {
-            var start = Process.GetCurrentProcess().TotalProcessorTime;
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             for (int i = 0; i < numCalls; i++) call();
 
-            var end = Process.GetCurrentProcess().TotalProcessorTime;
+            stopWatch.Stop();
 
-            var millisecondsPerCall = (end - start).TotalMilliseconds / numCalls;
+            var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
+            var millisecondsPerCall = totalElapsedMilliseconds / numCalls;
 
             return millisecondsPerCall;
         }

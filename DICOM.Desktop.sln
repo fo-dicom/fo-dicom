@@ -69,6 +69,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DICOM.Native64", "Native\De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Portable", "Platform\Portable\DICOM.Portable.csproj", "{A661D347-CF7D-4F36-8101-0544AE85EEEC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{71F59831-730A-4F8A-BB5F-0938E6A01122}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Benchmarks.Desktop", "Benchmarks\Desktop\DICOM.Benchmarks.Desktop.csproj", "{7C92284F-28C0-470C-B252-3650D51E2AD2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
@@ -148,6 +152,10 @@ Global
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,6 +179,7 @@ Global
 		{59B38770-D2E7-40B9-8D27-A20691F1CAA9} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{FA9C7678-B9D9-46BC-8921-8152FD6787CA} = {CBB213AA-1E21-4188-A252-42503B13EBD9}
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC} = {97271825-84EF-4DD0-922F-9B84E629C388}
+		{7C92284F-28C0-470C-B252-3650D51E2AD2} = {71F59831-730A-4F8A-BB5F-0938E6A01122}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_UseGlobalSettings = True

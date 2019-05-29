@@ -101,13 +101,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Portable", "Platform\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.Serilog", "Logging\Serilog\DICOM.Serilog.csproj", "{6467B08B-1E19-430D-ADAB-C4CD65730290}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{F499BA50-436A-4F84-9C02-DEF6EA77579A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Benchmarks.Desktop", "Benchmarks\Desktop\DICOM.Benchmarks.Desktop.csproj", "{7C92284F-28C0-470C-B252-3650D51E2AD2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DICOM\DICOM.Shared.projitems*{322dd2ff-c0b7-4cbf-be95-f0032fd94e02}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
-		DICOM\DICOM.Shared.projitems*{f3120ac1-b538-4a30-b4a8-835376737ef5}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -453,6 +456,22 @@ Global
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|ARM.ActiveCfg = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x64.ActiveCfg = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|ARM.Build.0 = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x64.Build.0 = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -490,10 +509,11 @@ Global
 		{322DD2FF-C0B7-4CBF-BE95-F0032FD94E02} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{6467B08B-1E19-430D-ADAB-C4CD65730290} = {479C8BA1-3659-4EBD-AB6B-651FC1CF43FA}
+		{7C92284F-28C0-470C-B252-3650D51E2AD2} = {F499BA50-436A-4F84-9C02-DEF6EA77579A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 		BuildVersion_UseGlobalSettings = True
+		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

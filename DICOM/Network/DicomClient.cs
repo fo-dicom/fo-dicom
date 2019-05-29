@@ -89,6 +89,7 @@ namespace Dicom.Network
     /// <summary>
     /// General client class for DICOM services.
     /// </summary>
+    [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
     public class DicomClient
     {
         #region FIELDS
@@ -134,6 +135,7 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
         /// </summary>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public DicomClient()
         {
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
@@ -289,7 +291,7 @@ namespace Dicom.Network
         }
 
         /// <summary>
-        /// Synchonously send existing requests to DICOM service.
+        /// Synchronously send existing requests to DICOM service.
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
@@ -297,6 +299,7 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Send(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -337,6 +340,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public Task SendAsync(string host, int port, bool useTls, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -366,6 +370,7 @@ namespace Dicom.Network
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Send(INetworkStream stream, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -398,6 +403,7 @@ namespace Dicom.Network
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="millisecondsTimeout">Timeout in milliseconds for establishing association.</param>
         /// <returns>Awaitable task.</returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public Task SendAsync(INetworkStream stream, string callingAe, string calledAe,
             int millisecondsTimeout = DefaultAssociationTimeout)
         {
@@ -455,6 +461,7 @@ namespace Dicom.Network
         /// <summary>
         /// Synchronously release association.
         /// </summary>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public void Release(int millisecondsTimeout = DefaultReleaseTimeout)
         {
             try
@@ -472,6 +479,7 @@ namespace Dicom.Network
         /// Asynchronously release association.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use Dicom.Network.Client.DicomClient instead")]
         public async Task ReleaseAsync(int millisecondsTimeout = DefaultReleaseTimeout)
         {
             try
@@ -871,8 +879,6 @@ namespace Dicom.Network
                     {
                         Logger.Debug("Association release request was sent successfully");
                     }
-
-                    _releaseRequested = 0;
                 }
                 catch (Exception e)
                 {
@@ -975,6 +981,8 @@ namespace Dicom.Network
 
             private void SetCompletionFlag(Exception exception = null)
             {
+                Interlocked.Exchange(ref _releaseRequested, 0);
+
                 if (_client._completionFlag.IsSet)
                     return;
                 _client._completionFlag.Set(exception);
