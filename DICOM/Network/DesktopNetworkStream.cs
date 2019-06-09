@@ -98,9 +98,9 @@ namespace Dicom.Network
             {
                 var ssl = new SslStream(stream, false);
 #if NETSTANDARD
-                ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls, false).Wait();
+                ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).Wait();
 #else
-                ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls, false);
+                ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
 #endif
                 stream = ssl;
             }
