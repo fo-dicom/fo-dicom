@@ -206,7 +206,8 @@ namespace Dicom.Imaging.Codec
 
                 for (var c = 0; c < image.NumberOfComponents; c++)
                 {
-                    var comp = image.GetComponent(c);
+                    // convert RGB BGR colorspace
+                    var comp = image.GetComponent(image.NumberOfComponents - c - 1);
 
                     var pos = bytesAllocated * (newPixelData.PlanarConfiguration == PlanarConfiguration.Planar ? c * pixelCount : c);
                     var offset = bytesAllocated * (newPixelData.PlanarConfiguration == PlanarConfiguration.Planar
