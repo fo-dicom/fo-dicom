@@ -92,7 +92,7 @@ namespace Dicom
             stopWatch.Stop();
 
             var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-            var millisecondsPerCall = totalElapsedMilliseconds / numCalls;
+            var millisecondsPerCall = totalElapsedMilliseconds / (double) numCalls;
 
             return millisecondsPerCall;
         }
@@ -102,9 +102,10 @@ namespace Dicom
         {
             DicomDictionary.EnsureDefaultDictionariesLoaded();
 
-            var millisecondsPerCall = TimeCall(100, () => Assert.NotNull(DicomDictionary.Default.Last()));
+            var millisecondsPerCall = TimeCall(1000, () => Assert.NotNull(DicomDictionary.Default.Last()));
 
-            var referenceTime = TimeCall(100, () => Assert.NotNull(Enumerable.Range(0, 1000).ToDictionary(i => 2 * i).Values.Last()));
+            var referenceDictionarySize = DicomDictionary.Default.Count();
+            var referenceTime = TimeCall(1000, () => Assert.NotEqual(0, Enumerable.Range(0, referenceDictionarySize).ToDictionary(i => 2 * i).Values.Last()));
 
             _output.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
 
