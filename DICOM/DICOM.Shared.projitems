@@ -191,6 +191,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCStoreRequestHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientDefaults.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationAcceptedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationRejectedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\StateChangedEventArgs.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IDicomClientState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithAssociationParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\States\IInitialisationWithConnectionParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\AsyncManualResetEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\CompletedTaskProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Tasks\TaskCompletionSourceFactory.cs" />

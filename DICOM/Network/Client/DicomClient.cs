@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -162,7 +165,7 @@ namespace Dicom.Network.Client
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this, new DicomClientIdleState.InitialisationParameters());
+            State = new DicomClientIdleState(this);
         }
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task)
@@ -178,7 +181,7 @@ namespace Dicom.Network.Client
             }
         }
 
-        internal async Task Transition(IDicomClientState newState, DicomClientCancellation cancellation)
+        internal async Task<IDicomClientState> Transition(IDicomClientState newState, DicomClientCancellation cancellation)
         {
             Task InternalTransition()
             {
@@ -197,7 +200,7 @@ namespace Dicom.Network.Client
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
 
-            await newState.OnEnterAsync(cancellation).ConfigureAwait(false);
+            return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
         }
 
         internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
@@ -210,7 +213,10 @@ namespace Dicom.Network.Client
             => AssociationReleased?.Invoke(this, EventArgs.Empty);
 
         internal Task OnSendQueueEmptyAsync()
-            => ExecuteWithinTransitionLock(() => State.OnSendQueueEmptyAsync());
+            => State.OnSendQueueEmptyAsync();
+
+        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+            => State.OnRequestCompletedAsync(request, response);
 
         internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
             => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
@@ -227,9 +233,6 @@ namespace Dicom.Network.Client
         internal Task OnConnectionClosedAsync(Exception exception)
             => ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
 
-        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-            => ExecuteWithinTransitionLock(() => State.OnRequestCompletedAsync(request, response));
-
         internal async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             if (OnCStoreRequest == null)
@@ -245,23 +248,20 @@ namespace Dicom.Network.Client
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
-            => ExecuteWithinTransitionLock(() => State.AddRequestAsync(dicomRequest));
+            => State.AddRequestAsync(dicomRequest);
 
-        public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
+        public async Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
         {
             if (dicomRequests == null)
-                return CompletedTaskProvider.CompletedTask;
+                return;
 
             var requests = dicomRequests.ToList();
 
             if (!requests.Any())
-                return CompletedTaskProvider.CompletedTask;
+                return;
 
-            return ExecuteWithinTransitionLock(async () =>
-            {
-                foreach (var request in requests)
-                    await State.AddRequestAsync(request).ConfigureAwait(false);
-            });
+            foreach (var request in requests)
+                await State.AddRequestAsync(request).ConfigureAwait(false);
         }
 
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),

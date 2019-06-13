@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -12,45 +15,31 @@ namespace Dicom.Network.Client.States
     public class DicomClientIdleState : IDicomClientState
     {
         private readonly DicomClient _dicomClient;
-        private readonly InitialisationParameters _initialisationParameters;
         private int _sendCalled;
 
-        public DicomClientIdleState(DicomClient dicomClient, InitialisationParameters initialisationParameters)
+        public DicomClientIdleState(DicomClient dicomClient)
         {
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
-            _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
         }
 
-        public class InitialisationParameters
-        {
-        }
-
-        private async Task TransitionToConnectState(DicomClientCancellation cancellation)
-        {
-            var state = new DicomClientConnectState(_dicomClient);
-
-            await _dicomClient.Transition(state, cancellation).ConfigureAwait(false);
-        }
-
-        public async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             if (!cancellation.Token.IsCancellationRequested
                 && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _)
                 && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
                 _dicomClient.Logger.Debug($"[{this}] More requests to send (and no cancellation requested yet), automatically opening new association");
-                await TransitionToConnectState(cancellation).ConfigureAwait(false);
-                return;
+                return await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
             }
 
             if (cancellation.Token.IsCancellationRequested)
             {
                 _dicomClient.Logger.Debug($"[{this}] Cancellation requested, staying idle");
+                return this;
             }
-            else
-            {
-                _dicomClient.Logger.Debug($"[{this}] No requests to send, staying idle");
-            }
+
+            _dicomClient.Logger.Debug($"[{this}] No requests to send, staying idle");
+            return this;
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
@@ -66,12 +55,7 @@ namespace Dicom.Network.Client.States
                 _dicomClient.Logger.Warn($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
                 return;
             }
-            await TransitionToConnectState(cancellation).ConfigureAwait(false);
-        }
-
-        public Task AbortAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
+            await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
         }
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)

@@ -174,7 +174,7 @@ namespace Dicom.Network
         public bool IsConnected => !_isDisconnectedFlag.IsSet;
 
         /// <summary>
-        /// Gets whether or not the send queue is empty.
+        /// Gets whether or not both the message queue and the pending queue is empty.
         /// </summary>
         public bool IsSendQueueEmpty
         {
@@ -186,6 +186,20 @@ namespace Dicom.Network
                     isSendQueueEmpty = _msgQueue.Count == 0 && _pending.Count == 0;
                 }
                 return isSendQueueEmpty;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
+        /// </summary>
+        public bool IsSendNextMessageRequired
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _msgQueue.Count > 0 && !_sending;
+                }
             }
         }
 
@@ -353,7 +367,7 @@ namespace Dicom.Network
                 catch (IOException e)
                 {
                     LogIOException(e, Logger, false);
-                    TryCloseConnection(e, true);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
                 catch (ObjectDisposedException e)
                 {
@@ -362,7 +376,7 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
-                    TryCloseConnection(e);
+                    await TryCloseConnectionAsync(e).ConfigureAwait(false);
                 }
 
                 lock (_lock) _writing = false;
@@ -388,7 +402,7 @@ namespace Dicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            TryCloseConnection();
+                            await TryCloseConnectionAsync().ConfigureAwait(false);
                             return;
                         }
 
@@ -418,7 +432,7 @@ namespace Dicom.Network
                             if (count == 0)
                             {
                                 // disconnected
-                                TryCloseConnection();
+                                await TryCloseConnectionAsync().ConfigureAwait(false);
                                 return;
                             }
 
@@ -493,7 +507,7 @@ namespace Dicom.Network
                                 user.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
                             if (this is IDicomClientConnection connection)
                                 await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            if (TryCloseConnection()) return;
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0x04:
@@ -523,7 +537,7 @@ namespace Dicom.Network
                                 user.OnReceiveAssociationReleaseResponse();
                             if (this is IDicomClientConnection connection)
                                 await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
-                            if (TryCloseConnection()) return;
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0x07:
@@ -537,7 +551,9 @@ namespace Dicom.Network
                                 pdu.Reason);
                             if (this is IDicomService service)
                                 service.OnReceiveAbort(pdu.Source, pdu.Reason);
-                            if (TryCloseConnection()) return;
+                            else if (this is IDicomClientConnection connection)
+                                await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
                             break;
                         }
                         case 0xFF:
@@ -551,23 +567,23 @@ namespace Dicom.Network
                 catch (ObjectDisposedException)
                 {
                     // silently ignore
-                    TryCloseConnection(force: true);
+                    await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (NullReferenceException)
                 {
                     // connection already closed; silently ignore
-                    TryCloseConnection(force: true);
+                    await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
                     // LogIOException returns true for underlying socket error (probably due to forcibly closed connection),
                     // in that case discard exception
-                    TryCloseConnection(LogIOException(e, Logger, true) ? null : e, true);
+                    await TryCloseConnectionAsync(LogIOException(e, Logger, true) ? null : e, true).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
-                    TryCloseConnection(e, true);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
             }
         }
@@ -626,7 +642,7 @@ namespace Dicom.Network
                         {
                             _dimseStream.Seek(0, SeekOrigin.Begin);
 
-                            var command = new DicomDataset();
+                            var command = new DicomDataset().NotValidated();
 
                             var reader = new DicomReader();
                             reader.IsExplicitVR = false;
@@ -733,9 +749,10 @@ namespace Dicom.Network
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
                                 // when receiving data via network, accept it and dont validate
-                                _dimse.Dataset.ValidateItems = false;
-                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
-                                _dimse.Dataset.ValidateItems = true;
+                                using (var unvalidated = new UnvalidatedScope(_dimse.Dataset))
+                                {
+                                    reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
+                                }
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;
@@ -1190,7 +1207,7 @@ namespace Dicom.Network
             }
         }
 
-        private bool TryCloseConnection(Exception exception = null, bool force = false)
+        private async Task<bool> TryCloseConnectionAsync(Exception exception = null, bool force = false)
         {
             try
             {
@@ -1216,7 +1233,10 @@ namespace Dicom.Network
                     }
                 }
 
-                (this as IDicomService)?.OnConnectionClosed(exception);
+                if(this is IDicomService dicomService)
+                    dicomService.OnConnectionClosed(exception);
+                else if (this is IDicomClientConnection connection)
+                    await connection.OnConnectionClosedAsync(exception).ConfigureAwait(false);
             }
             catch (Exception e)
             {

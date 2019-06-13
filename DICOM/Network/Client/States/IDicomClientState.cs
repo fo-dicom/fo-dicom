@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Threading.Tasks;
 
@@ -6,9 +9,9 @@ namespace Dicom.Network.Client.States
     public interface IDicomClientState : IDisposable
     {
         /// <summary>
-        /// Is called when entering this state
+        /// Is called when entering this state, and is used to move forward in the state transition flow
         /// </summary>
-        Task OnEnterAsync(DicomClientCancellation cancellation);
+        Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation);
 
         /// <summary>
         /// Enqueues a new DICOM request for execution.

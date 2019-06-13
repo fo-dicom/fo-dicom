@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
 
+using System;
+#if !NET35
 using System.Threading.Tasks;
-using Dicom.Log;
 
 namespace Dicom.Network
 {
@@ -12,6 +12,7 @@ namespace Dicom.Network
     /// Asynchronous manual reset event class, enabling the possibility to set a return value of <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of value that the event can be set to.</typeparam>
+    [Obsolete("Use the AsyncEx library instead")] // Or Dicom.Network.Client.Tasks.AsyncManualResetEvent if you're a Fellow Oak DICOM contributor
     public class AsyncManualResetEvent<T>
     {
         #region FIELDS
@@ -135,6 +136,7 @@ namespace Dicom.Network
     /// <summary>
     /// Asynchronous parameterless manual reset event class.
     /// </summary>
+    [Obsolete("Use the AsyncEx library instead")] // Or Dicom.Network.Client.Tasks.AsyncManualResetEvent if you're a Fellow Oak DICOM contributor
     public sealed class AsyncManualResetEvent : AsyncManualResetEvent<object>
     {
         #region CONSTRUCTORS

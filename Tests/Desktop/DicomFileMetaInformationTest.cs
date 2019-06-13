@@ -137,6 +137,105 @@ namespace Dicom
             Assert.Null(file.FileMetaInfo.PrivateInformation);
         }
 
+        [Fact]
+        public void Construction_sets_validation_to_false_default_constructor()
+        {
+            var metaInfo = new DicomFileMetaInformation();
+            Assert.False(metaInfo.ValidateItems);
+        }
+
+        [Theory]
+        [InlineData(true, "1.2.3.0456", true)]
+        [InlineData(true, "1.2.3.456.00789", true)]
+        [InlineData(true, "1.2.3.456.00.789", true)]
+        [InlineData(false, "1.2.3.0456", false)]
+        [InlineData(false, "1.2.3.456.00789", false)]
+        [InlineData(false, "1.2.3.456.00.789", false)]
+        [InlineData(true, "1.2.3.456", false)]
+        [InlineData(true, "1.2.3.456.789", false)]
+        [InlineData(true, "1.2.3.456.0.789", false)]
+        public void Construction_sets_validation_to_false_copy_constructor(bool validate, string sopInstanceUid, bool expectedError)
+        {
+            DicomFileMetaInformation existing, metaInfo;
+            var dataset = new DicomDataset { ValidateItems = validate };
+
+            if (expectedError)
+            {
+                // we test the dataset as well here
+                Assert.Throws<DicomValidationException>(() => dataset.Add(
+                    new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                    new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, sopInstanceUid)));
+
+                // such that we can construct it
+                dataset.ValidateItems = false;
+                dataset.AddOrUpdate(
+                    new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                    new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, sopInstanceUid));
+                dataset.ValidateItems = validate;
+
+                Assert.Throws<DicomValidationException>(() => new DicomFileMetaInformation(dataset));
+
+                return;
+            }
+            else
+            {
+                dataset.Add(
+                    new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                    new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, sopInstanceUid));
+                existing = new DicomFileMetaInformation(dataset);
+            }
+
+            metaInfo = new DicomFileMetaInformation(existing);
+
+            Assert.Equal(validate, metaInfo.ValidateItems);
+            Assert.Equal(validate, metaInfo.AutoValidate);
+            Assert.Equal(sopInstanceUid, metaInfo.MediaStorageSOPInstanceUID.UID);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Construction_sets_validation_to_dataset_value_using_dataset_constructor(bool validate)
+        {
+            var dataset = new DicomDataset { ValidateItems = validate };
+            dataset.Add(
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.456"));
+            var metaInfo = new DicomFileMetaInformation(dataset);
+
+            Assert.Equal(validate, metaInfo.AutoValidate);
+            Assert.Equal(validate, metaInfo.ValidateItems);
+            Assert.Equal("1.2.3.456", metaInfo.MediaStorageSOPInstanceUID.UID);
+        }
+
+        [Theory]
+        [InlineData("1.2.3.0456")]
+        [InlineData("1.2.3.456.00789")]
+        [InlineData("1.2.3.456.00.789")]
+        public void Invalid_UI_values_for_meta_information_should_not_throw_on_creation(string sopInstanceUid)
+        {
+            var dataset = new DicomDataset
+            {
+                AutoValidate = false
+            };
+            dataset.Add(
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, sopInstanceUid));
+            var metaInfo = new DicomFileMetaInformation(dataset);
+
+            Assert.Equal(sopInstanceUid, metaInfo.MediaStorageSOPInstanceUID.UID);
+        }
+
+        [Theory]
+        [InlineData("1.2.3.0456")]
+        [InlineData("1.2.3.456.00789")]
+        [InlineData("1.2.3.456.00.789")]
+        public void Invalid_UI_values_for_meta_information_should_throw_on_set_when_validation_is_enabled(string sopInstanceUid)
+        {
+            var metaInfo = new DicomFileMetaInformation() { ValidateItems = true };
+            Assert.Throws<DicomValidationException>(() => metaInfo.MediaStorageSOPInstanceUID = new DicomUID(sopInstanceUid, "test", DicomUidType.SOPInstance));
+        }
+
         #endregion
 
         #region Support data

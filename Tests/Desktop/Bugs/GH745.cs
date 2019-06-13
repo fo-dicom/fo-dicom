@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Helpers;
+using Dicom.Log;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,7 +22,8 @@ namespace Dicom.Bugs
         {
             _logger = new XUnitDicomLogger(output)
                 .IncludeTimestamps()
-                .IncludeThreadId();
+                .IncludeThreadId()
+                .WithMinimumLevel(LogLevel.Warning);
         }
 
         [Theory]

@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,22 +22,16 @@ namespace Dicom.Network.Client.States
         private readonly CancellationTokenSource _sendRequestsCancellationTokenSource;
         private readonly TaskCompletionSource<DicomAbortedEvent> _onAbortReceivedTaskCompletionSource;
         private readonly TaskCompletionSource<ConnectionClosedEvent> _onConnectionClosedTaskCompletionSource;
-        private readonly TaskCompletionSource<AllRequestsHaveCompletedEvent> _allRequestsHaveCompletedTaskCompletionSource;
         private readonly TaskCompletionSource<bool> _onCancellationTaskCompletionSource;
+        private readonly TaskCompletionSource<AllRequestsHaveCompletedEvent> _allRequestsHaveCompletedTaskCompletionSource;
         private readonly IList<IDisposable> _disposables;
-
-        /// <summary>
-        /// This is the little flag that could
-        /// It will happily switch to 1 when this DicomClient state is actively sending requests
-        /// When its hard work is -temporarily- finished (and we wait for responses to come in), it will lower the flag back to 0
-        /// </summary>
-        private int _sendingRequests;
-
-        /// <summary>
-        /// Since SendQueueEmpty is unreliable in heavy loads, we must keep our own track of pending requests. This is rather easy to do,
-        /// as we're the ones sending the requests, and we get a callback for each completed request
-        /// </summary>
+        private readonly Tasks.AsyncManualResetEvent _sendMoreRequests;
         private readonly ConcurrentDictionary<int, DicomRequest> _pendingRequests;
+
+        /**
+         * Safety flag that prevents parallel sending of DICOM requests
+         */
+        private int _sending;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
         {
@@ -53,19 +50,20 @@ namespace Dicom.Network.Client.States
             _dicomClient = dicomClient ?? throw new ArgumentNullException(nameof(dicomClient));
             _initialisationParameters = initialisationParameters ?? throw new ArgumentNullException(nameof(initialisationParameters));
             _sendRequestsCancellationTokenSource = new CancellationTokenSource();
-            _allRequestsHaveCompletedTaskCompletionSource = TaskCompletionSourceFactory.Create<AllRequestsHaveCompletedEvent>();
             _onAbortReceivedTaskCompletionSource = TaskCompletionSourceFactory.Create<DicomAbortedEvent>();
             _onConnectionClosedTaskCompletionSource = TaskCompletionSourceFactory.Create<ConnectionClosedEvent>();
             _onCancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
+            _allRequestsHaveCompletedTaskCompletionSource = TaskCompletionSourceFactory.Create<AllRequestsHaveCompletedEvent>();
             _disposables = new List<IDisposable>();
             _pendingRequests = new ConcurrentDictionary<int, DicomRequest>();
+            _sendMoreRequests = new Tasks.AsyncManualResetEvent(set: true);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
-            SendMoreRequests();
+            _sendMoreRequests.Set();
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -110,16 +108,7 @@ namespace Dicom.Network.Client.States
 
         public override Task OnSendQueueEmptyAsync()
         {
-            if (!_dicomClient.QueuedRequests.IsEmpty)
-            {
-                SendMoreRequests();
-                return CompletedTaskProvider.CompletedTask;
-            }
-
-            if (_pendingRequests.IsEmpty)
-            {
-                _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
-            }
+            _sendMoreRequests.Set();
 
             return CompletedTaskProvider.CompletedTask;
         }
@@ -128,47 +117,19 @@ namespace Dicom.Network.Client.States
         {
             _pendingRequests.TryRemove(request.MessageID, out DicomRequest _);
 
-            if (!_dicomClient.QueuedRequests.IsEmpty)
+            if (_pendingRequests.IsEmpty)
             {
-                SendMoreRequests();
-                return CompletedTaskProvider.CompletedTask;
+                if (_dicomClient.QueuedRequests.IsEmpty)
+                {
+                    _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
+                }
+                else
+                {
+                    _sendMoreRequests.Set();
+                }
             }
 
             return CompletedTaskProvider.CompletedTask;
-        }
-
-        private async Task TransitionToLingerState(DicomClientCancellation cancellation)
-        {
-            var lingerParameters = new DicomClientLingeringState.InitialisationParameters(_initialisationParameters.Association,
-                _initialisationParameters.Connection);
-            var lingerState = new DicomClientLingeringState(_dicomClient, lingerParameters);
-            await _dicomClient.Transition(lingerState, cancellation);
-        }
-
-        private async Task TransitionToReleaseAssociationState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientReleaseAssociationState.InitialisationParameters(_initialisationParameters.Association,
-                _initialisationParameters.Connection);
-            var state = new DicomClientReleaseAssociationState(_dicomClient, parameters);
-            await _dicomClient.Transition(state, cancellation);
-        }
-
-        private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
-        private async Task TransitionToCompletedWithErrorState(Exception exception, DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientCompletedState.DicomClientCompletedWithErrorInitialisationParameters(exception, _initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, parameters), cancellation);
-        }
-
-        private async Task TransitionToAbortState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientAbortState.InitialisationParameters(_initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientAbortState(_dicomClient, parameters), cancellation);
         }
 
         private async Task SendRequests()
@@ -180,9 +141,9 @@ namespace Dicom.Network.Client.States
 
                 if (dicomRequest == null) continue;
 
-                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
+                _pendingRequests[dicomRequest.MessageID] = dicomRequest;
 
-                _pendingRequests.TryAdd(dicomRequest.MessageID, dicomRequest);
+                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
 
                 queuedItem.Value = null;
             }
@@ -190,32 +151,11 @@ namespace Dicom.Network.Client.States
 
         private async Task SendInitialRequests()
         {
-            // Don't spam the connection unnecessarily, there's locks in there!
-            if (Interlocked.CompareExchange(ref _sendingRequests, 1, 0) != 0)
-                return;
+            _sending = 1;
 
-            try
-            {
-                await SendRequests().ConfigureAwait(false);
-            }
-            finally
-            {
-                Interlocked.Exchange(ref _sendingRequests, 0);
-            }
-        }
+            await SendRequests().ConfigureAwait(false);
 
-        /// <summary>
-        /// This is a synchronous wrapper around SendMoreRequestsAsync, which sounds like a bad idea, but we want to trigger the sending of more requests
-        /// completely out of band, because the events that trigger the sending of more request come from deep within DicomService, which shouldn't need
-        /// to wait for the DicomClient to send requests.
-        /// </summary>
-        private void SendMoreRequests()
-        {
-            if (_sendRequestsCancellationTokenSource.IsCancellationRequested)
-                return;
-
-            Task.Factory.StartNew(@this => ((DicomClientSendingRequestsState) @this).SendMoreRequestsAsync(),
-                this, _sendRequestsCancellationTokenSource.Token, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+            Interlocked.Exchange(ref _sending, 0);
         }
 
         /// <summary>
@@ -223,36 +163,62 @@ namespace Dicom.Network.Client.States
         ///     - When more requests are added to the DicomClient
         ///     - When a pending request has completed, perhaps freeing up an async operations slot on the association
         /// </summary>
-        private async Task SendMoreRequestsAsync()
+        private async Task KeepSendingUntilAllRequestsHaveCompletedAsync()
         {
-            if (_sendRequestsCancellationTokenSource.IsCancellationRequested)
-                return;
+            var cancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
+            using (_sendRequestsCancellationTokenSource.Token.Register(() => cancellationTaskCompletionSource.SetResult(true)))
+            {
+                /**
+                 * This event will be triggered when the DicomClientConnection believes it has finished its work by triggering the OnSendQueueEmpty event
+                 */
+                var sendMoreRequests = _sendMoreRequests.WaitAsync();
 
-            // Don't spam the connection unnecessarily, there's locks in there!
-            if (Interlocked.CompareExchange(ref _sendingRequests, 1, 0) != 0)
-                return;
+                /**
+                 * This event will be triggered when the CancellationToken passed into SendAsync is cancelled
+                 */
+                var onCancel = cancellationTaskCompletionSource.Task;
+
+                /**
+                 * This event will be triggered when the pending queue becomes empty
+                 */
+                var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
+
+                var winner = await Task.WhenAny(allRequestsHaveCompleted, sendMoreRequests, onCancel).ConfigureAwait(false);
+                if (winner == allRequestsHaveCompleted || winner == onCancel)
+                {
+                    return;
+                }
+            }
 
             try
             {
-                _dicomClient.Logger.Info($"[{this}] Sending more requests");
+                if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
+                {
+                    if (!_dicomClient.QueuedRequests.IsEmpty)
+                    {
+                        _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
 
-                if (!_dicomClient.QueuedRequests.IsEmpty)
-                {
-                    await SendRequests().ConfigureAwait(false);
-                }
-                else
-                {
-                    // Attempt to flush existing requests from the queue
-                    await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                        await SendRequests().ConfigureAwait(false);
+                    }
+                    else if (Connection.IsSendNextMessageRequired)
+                    {
+                        _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
+
+                        await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                    }
+
+                    Interlocked.Exchange(ref _sending, 0);
                 }
             }
             finally
             {
-                Interlocked.Exchange(ref _sendingRequests, 0);
+                _sendMoreRequests.Reset();
             }
+
+            await KeepSendingUntilAllRequestsHaveCompletedAsync().ConfigureAwait(false);
         }
 
-        public override async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             if (cancellation.Token.IsCancellationRequested)
             {
@@ -260,74 +226,79 @@ namespace Dicom.Network.Client.States
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                         _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
-                        await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
-                        break;
+                        return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
                         _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, aborting association ...");
-                        await TransitionToAbortState(cancellation).ConfigureAwait(false);
-                        break;
+                        return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
                 }
-                return;
             }
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
             _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResultAsynchronously(true)));
 
-            _dicomClient.Logger.Debug($"[{this}] Sending queued DICOM requests");
+            _dicomClient.Logger.Debug($"[{this}] Sending DICOM requests");
 
             await SendInitialRequests().ConfigureAwait(false);
 
-            _dicomClient.Logger.Debug($"[{this}] Requests are all queued for sending");
-
-            var sendQueueIsEmpty = _allRequestsHaveCompletedTaskCompletionSource.Task;
+            var allRequestsHaveCompleted = KeepSendingUntilAllRequestsHaveCompletedAsync();
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
             var onCancellation = _onCancellationTaskCompletionSource.Task;
 
             var winner = await Task.WhenAny(
-                    sendQueueIsEmpty,
+                    allRequestsHaveCompleted,
                     onReceiveAbort,
                     onDisconnect,
                     onCancellation
                 )
                 .ConfigureAwait(false);
 
-            if (winner == sendQueueIsEmpty)
+            if (winner == allRequestsHaveCompleted)
             {
                 _dicomClient.Logger.Debug($"[{this}] All requests are done, going to linger association now...");
-                await TransitionToLingerState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToLingerState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
-            else if (winner == onCancellation)
+
+            if (winner == onCancellation)
             {
                 switch (cancellation.Mode)
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                         _dicomClient.Logger.Warn($"[{this}] Cancellation requested, releasing association...");
-                        await TransitionToReleaseAssociationState(cancellation).ConfigureAwait(false);
-                        break;
+                        return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
                         _dicomClient.Logger.Warn($"[{this}] Cancellation requested, aborting association...");
-                        await TransitionToAbortState(cancellation).ConfigureAwait(false);
-                        break;
+                        return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
                 }
-                return;
             }
-            else if (winner == onReceiveAbort)
+
+            if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Warn($"[{this}] Association is aborted while sending requests, cleaning up...");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
-                await TransitionToCompletedWithErrorState(exception, cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
             }
-            else if (winner == onDisconnect)
+
+            if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while sending requests, cleaning up...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                }
             }
+
+            throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
         }
 
         public override void Dispose()
@@ -341,9 +312,11 @@ namespace Dicom.Network.Client.States
             _sendRequestsCancellationTokenSource.Dispose();
 
             _onCancellationTaskCompletionSource.TrySetCanceledAsynchronously();
-            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
             _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
             _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
+
+            _sendMoreRequests.Dispose();
         }
 
         public override string ToString()

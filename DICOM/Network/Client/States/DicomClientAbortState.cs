@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -79,14 +82,7 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
-        private async Task TransitionToCompletedState(DicomClientCancellation cancellation)
-        {
-            var initialisationParameters = new DicomClientCompletedState
-                .DicomClientCompletedWithoutErrorInitialisationParameters(_initialisationParameters.Connection);
-            await _dicomClient.Transition(new DicomClientCompletedState(_dicomClient, initialisationParameters), cancellation);
-        }
-
-        public override async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -98,23 +94,35 @@ namespace Dicom.Network.Client.States
             if (winner == sendAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification sent to server. Disconnecting...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
             if (winner == onReceiveAbort)
             {
                 _dicomClient.Logger.Debug($"[{this}] Received abort while aborting. Neat.");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
-            else if (winner == onDisconnect)
+
+            if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected while aborting. Perfect.");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
+                if (connectionClosedEvent.Exception == null)
+                {
+                    return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
+                }
+                else
+                {
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                }
             }
-            else if (winner == onTimeout)
+
+            if (winner == onTimeout)
             {
                 _dicomClient.Logger.Debug($"[{this}] Abort notification timed out. Disconnecting...");
-                await TransitionToCompletedState(cancellation).ConfigureAwait(false);
+                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
+
+            throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)

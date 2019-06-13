@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -64,7 +67,7 @@ namespace Dicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] DicomService could not be disposed properly: " + e);
+                _dicomClient.Logger.Warn($"[{this}] The listener for incoming DICOM communication could not be disposed properly: " + e);
             }
 
             try
@@ -73,7 +76,7 @@ namespace Dicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] NetworkStream could not be disposed properly: " + e);
+                _dicomClient.Logger.Warn($"[{this}] The connection network stream could not be disposed properly: " + e);
             }
 
             // wait until listener task realizes connection is gone
@@ -83,13 +86,7 @@ namespace Dicom.Network.Client.States
             }
         }
 
-        private async Task TransitionToIdleState(DicomClientCancellation cancellation)
-        {
-            var parameters = new DicomClientIdleState.InitialisationParameters();
-            await _dicomClient.Transition(new DicomClientIdleState(_dicomClient, parameters), cancellation).ConfigureAwait(false);
-        }
-
-        public async Task OnEnterAsync(DicomClientCancellation cancellation)
+        public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             switch (_initialisationParameters)
             {
@@ -99,13 +96,11 @@ namespace Dicom.Network.Client.States
 
                     if (parameters.Connection != null)
                     {
-                        _dicomClient.Logger.Debug($"[{this}] We still have an active connection, cleaning that up now");
+                        _dicomClient.Logger.Debug($"[{this}] Cleaning up");
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
 
-                    await TransitionToIdleState(cancellation);
-
-                    break;
+                    return await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
                 }
 
                 case DicomClientCompletedWithErrorInitialisationParameters parameters:
@@ -124,6 +119,9 @@ namespace Dicom.Network.Client.States
 
                     throw parameters.ExceptionToThrow;
                 }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_initialisationParameters), "Unknown initialisation parameters");
             }
         }
 
@@ -148,7 +146,7 @@ namespace Dicom.Network.Client.States
                 return;
             }
 
-            await TransitionToIdleState(cancellation).ConfigureAwait(false);
+            await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
         }
 
         public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)

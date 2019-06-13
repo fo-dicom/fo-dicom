@@ -26,6 +26,11 @@
 * Bug Fix: Fix DicomClient getting stuck when sending one request fails completely (#848)
 * Added Modality LUT Sequence and VOI LUT Sequence functionality when generating a DICOM Image.
 * Bug Fix: Logging requests with very long private tags throws exception (#846)
+* Bug Fix: turn off validation when creating CFind-, CGet- or CMove-Requests, since there are no newly generated data included, but already existing UIDs have to be added there. (#860, #842)
+* Bug Fix: generation of DicomUID using obsolete method Generate("name") resulted in invalid UIDs. (#862)
+* Bug Fix: Disabling dataset validation for file meta information objects. (#859)
+* Bug Fix: JPEG 2000 decodes wrong colors in .NET Core (#850)
+* Enable secure DICOM Tls 1.0, 1.1 and 1.2 (#872)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)

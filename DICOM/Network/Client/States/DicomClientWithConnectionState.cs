@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Threading.Tasks;
 
@@ -26,12 +29,12 @@ namespace Dicom.Network.Client.States
 
         public abstract Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
 
-        public abstract Task OnEnterAsync(DicomClientCancellation cancellation);
+        public abstract Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation);
 
         public abstract Task AddRequestAsync(DicomRequest dicomRequest);
 
         public abstract Task SendAsync(DicomClientCancellation cancellation);
-        
+
         public abstract void Dispose();
     }
 }

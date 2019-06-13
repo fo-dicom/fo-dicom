@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Threading.Tasks;
 
@@ -14,6 +17,16 @@ namespace Dicom.Network.Client
         /// Gets the long running listener task that waits for incoming DICOM communication from the server.
         /// </summary>
         Task Listener { get; }
+
+        /// <summary>
+        /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
+        /// </summary>
+        bool IsSendNextMessageRequired { get; }
+
+        /// <summary>
+        /// Gets whether or not the send queue is empty, i.e. if all requests are sent *and* handled
+        /// </summary>
+        bool IsSendQueueEmpty { get; }
 
         /// <summary>
         /// Opens a long running listener task that waits for incoming DICOM communication
@@ -108,6 +121,7 @@ namespace Dicom.Network.Client
 
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
+        public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
             : base(networkStream, dicomClient.FallbackEncoding, dicomClient.Logger)
