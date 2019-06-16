@@ -40,8 +40,10 @@ namespace Dicom.Imaging.Codec
 
         [Theory]
         [InlineData("TestPattern_RGB.dcm")]
+#if !NETSTANDARD
         [InlineData("CR-MONO1-10-chest")]
         [InlineData("GH064.dcm")]
+#endif
         public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline(string filename)
         {
             var file = DicomFile.Open(@".\Test Data\" + filename);
@@ -188,6 +190,6 @@ namespace Dicom.Imaging.Codec
             }
         }
 
-        #endregion
+#endregion
     }
 }
