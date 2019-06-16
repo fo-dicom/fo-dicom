@@ -25,6 +25,7 @@ namespace Dicom.Imaging.Codec
             Assert.Null(exception);
         }
 
+
         [Fact]
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
@@ -34,6 +35,15 @@ namespace Dicom.Imaging.Codec
                     () =>
                     file.Dataset.Clone(DicomTransferSyntax.JPEGProcess14, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
+        }
+
+
+        [Fact]
+        public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline()
+        {
+            var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=true, Quality = 90 });
+            Assert.Equal("YBR_FULL_422", newDataset.GetString(DicomTag.PhotometricInterpretation));
         }
 
 
