@@ -38,11 +38,14 @@ namespace Dicom.Imaging.Codec
         }
 
 
-        [Fact]
-        public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline()
+        [Theory]
+        [InlineData("TestPattern_RGB.dcm")]
+        [InlineData("CR-MONO1-10-chest")]
+        [InlineData("GH064.dcm")]
+        public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline(string filename)
         {
-            var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
-            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=true, Quality = 90 });
+            var file = DicomFile.Open(@".\Test Data\" + filename);
+            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=true, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
             Assert.Equal("YBR_FULL_422", newDataset.GetString(DicomTag.PhotometricInterpretation));
         }
 
