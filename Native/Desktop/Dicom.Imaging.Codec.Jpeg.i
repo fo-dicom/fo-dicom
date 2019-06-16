@@ -329,12 +329,10 @@ void JPEGCODEC::Encode(DicomPixelData^ oldPixelData, DicomPixelData^ newPixelDat
         jpeg_finish_compress(&cinfo);
         jpeg_destroy_compress(&cinfo);
 
-        if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb && cinfo.jpeg_color_space == JCS_YCbCr) {
-            if (params->SampleFactor == DicomJpegSampleFactor::SF422)
-                newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull422;
-            else
-                newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
-        }
+        if (params->SampleFactor == DicomJpegSampleFactor::SF422)
+            newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull422;
+        else
+            newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull;
 
         IByteBuffer^ buffer;
         if (MemoryBuffer->Length >= (1 * 1024 * 1024) || oldPixelData->NumberOfFrames > 1)
