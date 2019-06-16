@@ -152,7 +152,7 @@ namespace Dicom.Imaging.Codec
         /// <param name="h">The h.</param>
         /// <param name="data">The data.</param>
         /// <param name="syntax">The syntax.</param>
-        public void CheckData(int w, int h, byte[] data, DicomTransferSyntax syntax)
+        private void CheckData(int w, int h, byte[] data, DicomTransferSyntax syntax)
         {
             var memoryBB = new MemoryByteBuffer(data);
             var ds = new DicomDataset();
