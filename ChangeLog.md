@@ -31,6 +31,7 @@
 * Bug Fix: Disabling dataset validation for file meta information objects. (#859)
 * Bug Fix: JPEG 2000 decodes wrong colors in .NET Core (#850)
 * Enable secure DICOM Tls 1.0, 1.1 and 1.2 (#872)
+* Bug Fix: Photometric Interpretation updates on Transfer Syntax changes (#836)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
