@@ -1,13 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Network;
-using Dicom.Network.Client;
-
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,13 +25,7 @@ namespace Dicom.Bugs
         [Fact]
         public void OldCStoreRequestSend_VideoFileServerSupportsMPEG2_TransferSuccessful()
         {
-            const string fileName = "GH526.dcm";
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(
-                    @"https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/DICOM_MPEG_from_ETIAM/ETIAM_video_002.dcm",
-                    fileName);
-            }
+            const string fileName = @".\Test Data\ETIAM_video_002.dcm";
 
             var success = false;
             var handle = new ManualResetEventSlim();
@@ -50,7 +41,7 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.DicomClient();
+                var client = new DicomClient();
                 client.AddRequest(request);
                 client.Send("localhost", port, false, "STORESCU", "STORESCP");
                 handle.Wait(10000);
@@ -62,13 +53,7 @@ namespace Dicom.Bugs
         [Fact]
         public async Task CStoreRequestSend_VideoFileServerSupportsMPEG2_TransferSuccessful()
         {
-            const string fileName = "GH526.dcm";
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(
-                    @"https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/DICOM_MPEG_from_ETIAM/ETIAM_video_002.dcm",
-                    fileName);
-            }
+            const string fileName = @".\Test Data\ETIAM_video_002.dcm";
 
             var success = false;
             var handle = new ManualResetEventSlim();
