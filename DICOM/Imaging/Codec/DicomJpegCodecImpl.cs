@@ -166,6 +166,9 @@ namespace Dicom.Imaging.Codec
                             encoder.WriteJpeg(stream, ToCompressionParameters(parameters));
                         }
                         newPixelData.AddFrame(new MemoryByteBuffer(stream.ToArray()));
+                        newPixelData.PhotometricInterpretation =
+                           parameters.SampleFactor == DicomJpegSampleFactor.SF422
+                           ? PhotometricInterpretation.YbrFull422 : PhotometricInterpretation.YbrFull;
                     }
                 }
                 catch (Exception e)
