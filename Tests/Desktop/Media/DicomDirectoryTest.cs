@@ -76,8 +76,7 @@ namespace Dicom.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToSameStudySeriesNode()
         {
-            var dicomFiles = GetDicomFilesFromWebZip(
-                "https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/Philips_Medical_Images/mr711-mr712/abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
 
             // Anonymize all files
             var anonymizer = new DicomAnonymizer();
@@ -104,8 +103,7 @@ namespace Dicom.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToSamePatientNode()
         {
-            var dicomFiles = GetDicomFilesFromWebZip(
-                "https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/Philips_Medical_Images/mr711-mr712/abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
 
             // Anonymize all files
             var patname = "Pat^Name";
@@ -138,8 +136,7 @@ namespace Dicom.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToDifferentPatientNodes()
         {
-            var dicomFiles = GetDicomFilesFromWebZip(
-                "https://www.creatis.insa-lyon.fr/~jpr/PUBLIC/gdcm/gdcmSampleData/Philips_Medical_Images/mr711-mr712/abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
 
             // Anonymize all files
             var patname = "Pat^Name";
@@ -171,33 +168,28 @@ namespace Dicom.Media
             Assert.Equal(4, dicomDir.RootDirectoryRecordCollection.Count());
         }
 
-        private static IList<DicomFile> GetDicomFilesFromWebZip(string url)
+        private static IList<DicomFile> GetDicomFilesFromZip(string fileName)
         {
             var dicomFiles = new List<DicomFile>();
 
-            using (var webClient = new WebClient())
+            using (var fileStream = File.OpenRead(fileName))
+            using (var zipper = new ZipArchive(fileStream))
             {
-                var bytes = webClient.DownloadData(url);
-
-                using (var stream = new MemoryStream(bytes))
-                using (var zipper = new ZipArchive(stream))
+                foreach (var entry in zipper.Entries)
                 {
-                    foreach (var entry in zipper.Entries)
+                    try
                     {
-                        try
+                        using (var entryStream = entry.Open())
+                        using (var duplicate = new MemoryStream())
                         {
-                            using (var entryStream = entry.Open())
-                            using (var duplicate = new MemoryStream())
-                            {
-                                entryStream.CopyTo(duplicate);
-                                duplicate.Seek(0, SeekOrigin.Begin);
-                                var dicomFile = DicomFile.Open(duplicate);
-                                dicomFiles.Add(dicomFile);
-                            }
+                            entryStream.CopyTo(duplicate);
+                            duplicate.Seek(0, SeekOrigin.Begin);
+                            var dicomFile = DicomFile.Open(duplicate);
+                            dicomFiles.Add(dicomFile);
                         }
-                        catch
-                        {
-                        }
+                    }
+                    catch
+                    {
                     }
                 }
             }

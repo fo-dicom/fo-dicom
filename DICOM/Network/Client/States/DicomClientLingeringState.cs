@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -171,7 +174,7 @@ namespace Dicom.Network.Client.States
                 return await OnCancel(cancellation).ConfigureAwait(false);
             }
 
-            throw new Exception("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
+            throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)

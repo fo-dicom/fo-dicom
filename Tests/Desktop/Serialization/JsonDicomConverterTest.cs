@@ -51,7 +51,7 @@ namespace Dicom.Serialization
             stopWatch.Stop();
 
             var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-            var millisecondsPerCall = totalElapsedMilliseconds / numCalls;
+            var millisecondsPerCall = totalElapsedMilliseconds / (double) numCalls;
 
             return millisecondsPerCall;
         }
@@ -108,7 +108,7 @@ namespace Dicom.Serialization
             _output.WriteLine(
                 $"Parsing tag with JsonDicomConverter.ParseTag: {millisecondsPerCallD} ms for {DicomDictionary.Default.Count()} tests");
 
-            Assert.InRange(millisecondsPerCallD / (1 + millisecondsPerCallC), 0, 10);
+            Assert.InRange(millisecondsPerCallD / (1 + millisecondsPerCallC), 0, 20);
 
         }
 
