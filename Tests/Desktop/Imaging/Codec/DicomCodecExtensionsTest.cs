@@ -25,6 +25,7 @@ namespace Dicom.Imaging.Codec
             Assert.Null(exception);
         }
 
+
         [Fact]
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
@@ -34,6 +35,20 @@ namespace Dicom.Imaging.Codec
                     () =>
                     file.Dataset.Clone(DicomTransferSyntax.JPEGProcess14, new DicomJpegParams { Quality = 50 }));
             Assert.Null(exception);
+        }
+
+
+        [Theory]
+        [InlineData("TestPattern_RGB.dcm")]
+#if !NETSTANDARD
+        [InlineData("CR-MONO1-10-chest")]
+        [InlineData("GH064.dcm")]
+#endif
+        public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline(string filename)
+        {
+            var file = DicomFile.Open(@".\Test Data\" + filename);
+            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=true, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
+            Assert.Equal("YBR_FULL_422", newDataset.GetString(DicomTag.PhotometricInterpretation));
         }
 
 
@@ -139,7 +154,7 @@ namespace Dicom.Imaging.Codec
         /// <param name="h">The h.</param>
         /// <param name="data">The data.</param>
         /// <param name="syntax">The syntax.</param>
-        public void CheckData(int w, int h, byte[] data, DicomTransferSyntax syntax)
+        private void CheckData(int w, int h, byte[] data, DicomTransferSyntax syntax)
         {
             var memoryBB = new MemoryByteBuffer(data);
             var ds = new DicomDataset();
@@ -175,6 +190,6 @@ namespace Dicom.Imaging.Codec
             }
         }
 
-        #endregion
+#endregion
     }
 }
