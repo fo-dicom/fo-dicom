@@ -57,6 +57,19 @@ namespace Dicom.Serialization
         }
 
         [Fact]
+        public void ParseEmptyValues()
+        {
+            var json = @"
+            {
+                ""00082111"": {
+                    ""vr"": ""ST""
+                 }
+            } ";
+            var header = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            Assert.NotNull(header.GetDicomItem<DicomShortText>(DicomTag.DerivationDescription));
+        }
+
+        [Fact]
         public void TimeParseTag()
         {
             var millisecondsPerCallA = TimeCall(100, () =>
