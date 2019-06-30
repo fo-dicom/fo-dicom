@@ -31,6 +31,7 @@
 * Bug Fix: Disabling dataset validation for file meta information objects. (#859)
 * Bug Fix: JPEG 2000 decodes wrong colors in .NET Core (#850)
 * Enable secure DICOM Tls 1.0, 1.1 and 1.2 (#872)
+* Set text encoding of Json to UTF-8, as defined in dicom standard F.2
 * Bug Fix: Photometric Interpretation updates on Transfer Syntax changes (#836)
 * Bug Fix: DicomOverlayData OriginX and OriginY were swapped
 
