@@ -562,6 +562,20 @@ namespace Dicom.Serialization
             VerifyJsonTripleTrip(target);
         }
 
+        /// <summary>
+        /// Test round-tripping a dicom dataset containing a bulk uri byte buffer.
+        /// </summary>
+        [Fact]
+        public void EncodedTextRoundTrip()
+        {
+            var target = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO_IR 192"),
+                new DicomLongText(DicomTag.StudyDescription, Encoding.UTF8, "Label®")
+            };
+            VerifyJsonTripleTrip(target);
+        }
+
         private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
         {
             var request = WebRequest.Create(bulkData.BulkDataUri);
