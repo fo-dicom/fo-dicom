@@ -639,28 +639,29 @@ namespace Dicom.Serialization
                 return true;
             else if (a.ValueRepresentation != b.ValueRepresentation || (uint)a.Tag != (uint)b.Tag)
                 return false;
-            else if (a is DicomElement)
+            else if (a is DicomElement elementA)
             {
-                if (b is DicomElement == false)
+                if (!(b is DicomElement elementB))
                     return false;
-                else if (b is DicomStringElement && a is DicomDecimalString)
-                    return ((DicomDecimalString)a).Get<decimal[]>().SequenceEqual(((DicomDecimalString)b).Get<decimal[]>());
+                else if (b is DicomDecimalString decimalStringB
+                    && a is DicomDecimalString decimalStringA)
+                    return decimalStringA.Get<decimal[]>().SequenceEqual(decimalStringB.Get<decimal[]>());
                 else
-                    return ValueEquals(((DicomElement)a).Buffer, ((DicomElement)b).Buffer);
+                    return ValueEquals(elementA.Buffer, elementB.Buffer);
             }
-            else if (a is DicomSequence)
+            else if (a is DicomSequence sequenceA)
             {
-                if (b is DicomSequence == false)
+                if (!(b is DicomSequence sequenceB))
                     return false;
                 else
-                    return ((DicomSequence)a).Items.Zip(((DicomSequence)b).Items, ValueEquals).All(x => x);
+                    return sequenceA.Items.Zip(sequenceB.Items, ValueEquals).All(x => x);
             }
-            else if (a is DicomFragmentSequence)
+            else if (a is DicomFragmentSequence fragmentSequenceA)
             {
-                if (b is DicomFragmentSequence == false)
+                if (!(b is DicomFragmentSequence fragmentSequenceB))
                     return false;
                 else
-                    return ((DicomFragmentSequence)a).Fragments.Zip(((DicomFragmentSequence)b).Fragments, ValueEquals).All(x => x);
+                    return fragmentSequenceA.Fragments.Zip(fragmentSequenceB.Fragments, ValueEquals).All(x => x);
             }
             else
                 return a.Equals(b);
@@ -685,10 +686,8 @@ namespace Dicom.Serialization
             }
             else if (a is EmptyBuffer && b is EmptyBuffer)
                 return true;
-            else if (a is StreamByteBuffer && b is StreamByteBuffer)
+            else if (a is StreamByteBuffer asbb && b is StreamByteBuffer bsbb)
             {
-                var asbb = (StreamByteBuffer)a;
-                var bsbb = (StreamByteBuffer)b;
                 if (asbb.Stream == null || bsbb.Stream == null)
                 {
                     return asbb.Stream == bsbb.Stream;
@@ -698,9 +697,9 @@ namespace Dicom.Serialization
                     return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
                 }
             }
-            else if (a is CompositeByteBuffer && b is CompositeByteBuffer)
+            else if (a is CompositeByteBuffer acbb && b is CompositeByteBuffer bcbb)
             {
-                return ((CompositeByteBuffer)a).Buffers.Zip(((CompositeByteBuffer)b).Buffers, ValueEquals).All(x => x);
+                return acbb.Buffers.Zip(bcbb.Buffers, ValueEquals).All(x => x);
             }
             else
             {

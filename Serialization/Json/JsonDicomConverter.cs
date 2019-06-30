@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Globalization;
 using Dicom.IO.Buffer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Dicom.Serialization
 {
@@ -186,9 +186,9 @@ namespace Dicom.Serialization
                     item = new DicomDate(tag, (string[])data);
                     break;
                 case "DS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferDS)
                     {
-                        item = new DicomDecimalString(tag, (IByteBuffer)data);
+                        item = new DicomDecimalString(tag, dataBufferDS);
                     }
                     else
                     {
@@ -199,9 +199,9 @@ namespace Dicom.Serialization
                     item = new DicomDateTime(tag, (string[])data);
                     break;
                 case "FD":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferFD)
                     {
-                        item = new DicomFloatingPointDouble(tag, (IByteBuffer)data);
+                        item = new DicomFloatingPointDouble(tag, dataBufferFD);
                     }
                     else
                     {
@@ -209,9 +209,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "FL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferFL)
                     {
-                        item = new DicomFloatingPointSingle(tag, (IByteBuffer)data);
+                        item = new DicomFloatingPointSingle(tag, dataBufferFL);
                     }
                     else
                     {
@@ -219,9 +219,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "IS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferIS)
                     {
-                        item = new DicomIntegerString(tag, (IByteBuffer)data);
+                        item = new DicomIntegerString(tag, dataBufferIS);
                     }
                     else
                     {
@@ -232,9 +232,9 @@ namespace Dicom.Serialization
                     item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferLT)
                     {
-                        item = new DicomLongText(tag, _jsonTextEncoding, (IByteBuffer)data);
+                        item = new DicomLongText(tag, _jsonTextEncoding, dataBufferLT);
                     }
                     else
                     {
@@ -266,9 +266,9 @@ namespace Dicom.Serialization
                     item = new DicomShortString(tag, (string[])data);
                     break;
                 case "SL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSL)
                     {
-                        item = new DicomSignedLong(tag, (IByteBuffer)data);
+                        item = new DicomSignedLong(tag, dataBufferSL);
                     }
                     else
                     {
@@ -279,9 +279,9 @@ namespace Dicom.Serialization
                     item = new DicomSequence(tag, ((DicomDataset[])data));
                     break;
                 case "SS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSS)
                     {
-                        item = new DicomSignedShort(tag, (IByteBuffer)data);
+                        item = new DicomSignedShort(tag, dataBufferSS);
                     }
                     else
                     {
@@ -289,9 +289,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "ST":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferST)
                     {
-                        item = new DicomShortText(tag, _jsonTextEncoding, (IByteBuffer)data);
+                        item = new DicomShortText(tag, _jsonTextEncoding, dataBufferST);
                     }
                     else
                     {
@@ -299,9 +299,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "SV":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSV)
                     {
-                        item = new DicomSignedVeryLong(tag, (IByteBuffer)data);
+                        item = new DicomSignedVeryLong(tag, dataBufferSV);
                     }
                     else
                     {
@@ -312,9 +312,9 @@ namespace Dicom.Serialization
                     item = new DicomTime(tag, (string[])data);
                     break;
                 case "UC":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUC)
                     {
-                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, (IByteBuffer)data);
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC);
                     }
                     else
                     {
@@ -325,9 +325,9 @@ namespace Dicom.Serialization
                     item = new DicomUniqueIdentifier(tag, (string[])data);
                     break;
                 case "UL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUL)
                     {
-                        item = new DicomUnsignedLong(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedLong(tag, dataBufferUL);
                     }
                     else
                     {
@@ -341,9 +341,9 @@ namespace Dicom.Serialization
                     item = new DicomUniversalResource(tag, ((string[])data).Single());
                     break;
                 case "US":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUS)
                     {
-                        item = new DicomUnsignedShort(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedShort(tag, dataBufferUS);
                     }
                     else
                     {
@@ -351,9 +351,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "UT":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUT)
                     {
-                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, (IByteBuffer)data);
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT);
                     }
                     else
                     {
@@ -361,9 +361,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "UV":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUV)
                     {
-                        item = new DicomUnsignedVeryLong(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedVeryLong(tag, dataBufferUV);
                     }
                     else
                     {
@@ -474,7 +474,7 @@ namespace Dicom.Serialization
                         }
                         else
                         {
-                            throw new FormatException(string.Format("Cannot write dicom number {0} to json", val));
+                            throw new FormatException($"Cannot write dicom number {val} to json");
                         }
                     }
                 }
