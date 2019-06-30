@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
+using System.Text;
 
 namespace Dicom.Serialization
 {
@@ -21,6 +21,7 @@ namespace Dicom.Serialization
     public class JsonDicomConverter : JsonConverter
     {
         private readonly bool _writeTagsAsKeywords;
+        private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
 
         /// <summary>
         /// Initialize the JsonDicomConverter.
@@ -233,12 +234,11 @@ namespace Dicom.Serialization
                 case "LT":
                     if (data is IByteBuffer)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomLongText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomLongText(tag, _jsonTextEncoding, (IByteBuffer)data);
                     }
                     else
                     {
-                        item = new DicomLongText(tag, ((string[])data).Single());
+                        item = new DicomLongText(tag, _jsonTextEncoding, ((string[])data).Single());
                     }
                     break;
                 case "OB":
@@ -291,12 +291,11 @@ namespace Dicom.Serialization
                 case "ST":
                     if (data is IByteBuffer)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomShortText(tag,DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomShortText(tag, _jsonTextEncoding, (IByteBuffer)data);
                     }
                     else
                     {
-                        item = new DicomShortText(tag, ((string[])data)[0]);
+                        item = new DicomShortText(tag, _jsonTextEncoding, ((string[])data)[0]);
                     }
                     break;
                 case "SV":
@@ -315,12 +314,11 @@ namespace Dicom.Serialization
                 case "UC":
                     if (data is IByteBuffer)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomUnlimitedCharacters(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, (IByteBuffer)data);
                     }
                     else
                     {
-                        item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, ((string[])data).SingleOrDefault());
                     }
                     break;
                 case "UI":
@@ -355,12 +353,11 @@ namespace Dicom.Serialization
                 case "UT":
                     if (data is IByteBuffer)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomUnlimitedText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, (IByteBuffer)data);
                     }
                     else
                     {
-                        item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, ((string[])data).Single());
                     }
                     break;
                 case "UV":
