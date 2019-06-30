@@ -238,7 +238,7 @@ namespace Dicom.Serialization
                     }
                     else
                     {
-                        item = new DicomLongText(tag, _jsonTextEncoding, ((string[])data).Single());
+                        item = new DicomLongText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "OB":
@@ -295,7 +295,7 @@ namespace Dicom.Serialization
                     }
                     else
                     {
-                        item = new DicomShortText(tag, _jsonTextEncoding, ((string[])data)[0]);
+                        item = new DicomShortText(tag, _jsonTextEncoding, data.AsStringArray().FirstOrEmpty());
                     }
                     break;
                 case "SV":
@@ -318,7 +318,7 @@ namespace Dicom.Serialization
                     }
                     else
                     {
-                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, ((string[])data).SingleOrDefault());
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, data.AsStringArray().SingleOrDefault());
                     }
                     break;
                 case "UI":
@@ -338,7 +338,7 @@ namespace Dicom.Serialization
                     item = new DicomUnknown(tag, (IByteBuffer)data);
                     break;
                 case "UR":
-                    item = new DicomUniversalResource(tag, ((string[])data).Single());
+                    item = new DicomUniversalResource(tag, data.AsStringArray().SingleOrEmpty());
                     break;
                 case "US":
                     if (data is IByteBuffer dataBufferUS)
@@ -357,7 +357,7 @@ namespace Dicom.Serialization
                     }
                     else
                     {
-                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, ((string[])data).Single());
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "UV":
@@ -844,5 +844,17 @@ namespace Dicom.Serialization
         }
 
         #endregion
+    }
+
+
+    internal static class JsonDicomConverterExtensions
+    {
+
+        public static string[] AsStringArray(this object data) => (string[])data;
+
+        public static string FirstOrEmpty(this string[] array) => array.Length > 0 ? array[0] : string.Empty;
+
+        public static string SingleOrEmpty(this string[] array) => array.Length > 0 ? array.Single() : string.Empty;
+
     }
 }

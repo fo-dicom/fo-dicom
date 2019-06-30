@@ -34,6 +34,7 @@
 * Set text encoding of Json to UTF-8, as defined in dicom standard F.2
 * Bug Fix: Photometric Interpretation updates on Transfer Syntax changes (#836)
 * Bug Fix: DicomOverlayData OriginX and OriginY were swapped
+* Bug Fix: Handle Json deserializing of empty values (#873)
 
 #### v.4.0.1 (3/13/2019)
 * change IFileReference and IByteBuffer to have offset of type long so that big files can be processed (#743)
