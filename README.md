@@ -97,7 +97,7 @@ var file = await DicomFile.OpenAsync(@"test.dcm");  // Alt 2
 
 var patientid = file.Dataset.Get<string>(DicomTag.PatientID);
 
-file.Dataset.AddOrUpdate(DicomTag.PatientsName, "DOE^JOHN");
+file.Dataset.AddOrUpdate(DicomTag.PatientName, "DOE^JOHN");
 
 // creates a new instance of DicomFile
 var newFile = file.Clone(DicomTransferSyntax.JPEGProcess14SV1);
