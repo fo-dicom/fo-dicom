@@ -49,6 +49,15 @@
     <None Include="..\Desktop\Test Data\10200904.dcm" Link="Test Data\10200904.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\Desktop\Test Data\GH064.dcm" Link="Test Data\GH064.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Desktop\Test Data\CR-MONO1-10-chest" Link="Test Data\CR-MONO1-10-chest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Desktop\Test Data\TestPattern_RGB.dcm" Link="Test Data\TestPattern_RGB.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

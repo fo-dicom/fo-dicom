@@ -19,110 +19,35 @@ namespace Dicom.Imaging.Codec
 
     public class DicomJpegParams : DicomCodecParams
     {
-        private int _quality;
-
-        private int _smoothing;
-
-        private bool _convertColorspace;
-
-        private DicomJpegSampleFactor _sample;
-
-        private int _predictor;
-
-        private int _pointTransform;
 
         public DicomJpegParams()
         {
-            _quality = 90;
-            _smoothing = 0;
-            _convertColorspace = false;
-            _sample = DicomJpegSampleFactor.SF444;
-            _predictor = 1;
-            _pointTransform = 0;
+            Quality = 90;
+            SmoothingFactor = 0;
+            ConvertColorspaceToRGB = false;
+            SampleFactor = DicomJpegSampleFactor.SF444;
+            Predictor = 1;
+            PointTransform = 0;
         }
 
-        public int Quality
-        {
-            get
-            {
-                return _quality;
-            }
-            set
-            {
-                _quality = value;
-            }
-        }
+        public int Quality { get; set; }
 
-        public int SmoothingFactor
-        {
-            get
-            {
-                return _smoothing;
-            }
-            set
-            {
-                _smoothing = value;
-            }
-        }
+        public int SmoothingFactor { get; set; }
 
-        public bool ConvertColorspaceToRGB
-        {
-            get
-            {
-                return _convertColorspace;
-            }
-            set
-            {
-                _convertColorspace = value;
-            }
-        }
+        public bool ConvertColorspaceToRGB { get; set; }
 
-        public DicomJpegSampleFactor SampleFactor
-        {
-            get
-            {
-                return _sample;
-            }
-            set
-            {
-                _sample = value;
-            }
-        }
+        public DicomJpegSampleFactor SampleFactor { get; set; }
 
-        public int Predictor
-        {
-            get
-            {
-                return _predictor;
-            }
-            set
-            {
-                _predictor = value;
-            }
-        }
+        public int Predictor { get; set; }
 
-        public int PointTransform
-        {
-            get
-            {
-                return _pointTransform;
-            }
-            set
-            {
-                _pointTransform = value;
-            }
-        }
+        public int PointTransform { get; set; }
+
     }
 
     public abstract class DicomJpegCodec : IDicomCodec
     {
-        public string Name
-        {
-            get
-            {
-                return TransferSyntax.UID.Name;
-            }
-        }
+
+        public string Name => TransferSyntax.UID.Name;
 
         public abstract DicomTransferSyntax TransferSyntax { get; }
 
@@ -151,8 +76,10 @@ namespace Dicom.Imaging.Codec
             {
                 DicomItem item = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
                 IByteBuffer buffer;
-                if (item is DicomFragmentSequence) buffer = (item as DicomFragmentSequence).Fragments[0];
-                else buffer = (item as DicomElement).Buffer;
+                if (item is DicomFragmentSequence)
+                    buffer = (item as DicomFragmentSequence).Fragments[0];
+                else
+                    buffer = (item as DicomElement).Buffer;
                 MemoryStream ms = new MemoryStream(buffer.Data);
                 BinaryReader br = EndianBinaryReader.Create(ms, Endian.Big);
 

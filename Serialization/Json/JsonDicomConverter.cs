@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Globalization;
 using Dicom.IO.Buffer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
-
 
 namespace Dicom.Serialization
 {
@@ -21,6 +21,7 @@ namespace Dicom.Serialization
     public class JsonDicomConverter : JsonConverter
     {
         private readonly bool _writeTagsAsKeywords;
+        private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
 
         /// <summary>
         /// Initialize the JsonDicomConverter.
@@ -185,9 +186,9 @@ namespace Dicom.Serialization
                     item = new DicomDate(tag, (string[])data);
                     break;
                 case "DS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferDS)
                     {
-                        item = new DicomDecimalString(tag, (IByteBuffer)data);
+                        item = new DicomDecimalString(tag, dataBufferDS);
                     }
                     else
                     {
@@ -198,9 +199,9 @@ namespace Dicom.Serialization
                     item = new DicomDateTime(tag, (string[])data);
                     break;
                 case "FD":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferFD)
                     {
-                        item = new DicomFloatingPointDouble(tag, (IByteBuffer)data);
+                        item = new DicomFloatingPointDouble(tag, dataBufferFD);
                     }
                     else
                     {
@@ -208,9 +209,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "FL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferFL)
                     {
-                        item = new DicomFloatingPointSingle(tag, (IByteBuffer)data);
+                        item = new DicomFloatingPointSingle(tag, dataBufferFL);
                     }
                     else
                     {
@@ -218,9 +219,9 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "IS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferIS)
                     {
-                        item = new DicomIntegerString(tag, (IByteBuffer)data);
+                        item = new DicomIntegerString(tag, dataBufferIS);
                     }
                     else
                     {
@@ -231,14 +232,13 @@ namespace Dicom.Serialization
                     item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferLT)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomLongText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomLongText(tag, _jsonTextEncoding, dataBufferLT);
                     }
                     else
                     {
-                        item = new DicomLongText(tag, ((string[])data).Single());
+                        item = new DicomLongText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "OB":
@@ -266,9 +266,9 @@ namespace Dicom.Serialization
                     item = new DicomShortString(tag, (string[])data);
                     break;
                 case "SL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSL)
                     {
-                        item = new DicomSignedLong(tag, (IByteBuffer)data);
+                        item = new DicomSignedLong(tag, dataBufferSL);
                     }
                     else
                     {
@@ -279,9 +279,9 @@ namespace Dicom.Serialization
                     item = new DicomSequence(tag, ((DicomDataset[])data));
                     break;
                 case "SS":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSS)
                     {
-                        item = new DicomSignedShort(tag, (IByteBuffer)data);
+                        item = new DicomSignedShort(tag, dataBufferSS);
                     }
                     else
                     {
@@ -289,20 +289,19 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "ST":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferST)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomShortText(tag,DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomShortText(tag, _jsonTextEncoding, dataBufferST);
                     }
                     else
                     {
-                        item = new DicomShortText(tag, ((string[])data)[0]);
+                        item = new DicomShortText(tag, _jsonTextEncoding, data.AsStringArray().FirstOrEmpty());
                     }
                     break;
                 case "SV":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferSV)
                     {
-                        item = new DicomSignedVeryLong(tag, (IByteBuffer)data);
+                        item = new DicomSignedVeryLong(tag, dataBufferSV);
                     }
                     else
                     {
@@ -313,23 +312,22 @@ namespace Dicom.Serialization
                     item = new DicomTime(tag, (string[])data);
                     break;
                 case "UC":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUC)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomUnlimitedCharacters(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC);
                     }
                     else
                     {
-                        item = new DicomUnlimitedCharacters(tag, ((string[])data).SingleOrDefault());
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, data.AsStringArray().SingleOrDefault());
                     }
                     break;
                 case "UI":
                     item = new DicomUniqueIdentifier(tag, (string[])data);
                     break;
                 case "UL":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUL)
                     {
-                        item = new DicomUnsignedLong(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedLong(tag, dataBufferUL);
                     }
                     else
                     {
@@ -340,12 +338,12 @@ namespace Dicom.Serialization
                     item = new DicomUnknown(tag, (IByteBuffer)data);
                     break;
                 case "UR":
-                    item = new DicomUniversalResource(tag, ((string[])data).Single());
+                    item = new DicomUniversalResource(tag, data.AsStringArray().SingleOrEmpty());
                     break;
                 case "US":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUS)
                     {
-                        item = new DicomUnsignedShort(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedShort(tag, dataBufferUS);
                     }
                     else
                     {
@@ -353,20 +351,19 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "UT":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUT)
                     {
-                        //XXX   what should we use for encoding here ?
-                        item = new DicomUnlimitedText(tag, DicomEncoding.Default, (IByteBuffer)data);
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT);
                     }
                     else
                     {
-                        item = new DicomUnlimitedText(tag, ((string[])data).Single());
+                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "UV":
-                    if (data is IByteBuffer)
+                    if (data is IByteBuffer dataBufferUV)
                     {
-                        item = new DicomUnsignedVeryLong(tag, (IByteBuffer)data);
+                        item = new DicomUnsignedVeryLong(tag, dataBufferUV);
                     }
                     else
                     {
@@ -477,7 +474,7 @@ namespace Dicom.Serialization
                         }
                         else
                         {
-                            throw new FormatException(string.Format("Cannot write dicom number {0} to json", val));
+                            throw new FormatException($"Cannot write dicom number {val} to json");
                         }
                     }
                 }
@@ -847,5 +844,17 @@ namespace Dicom.Serialization
         }
 
         #endregion
+    }
+
+
+    internal static class JsonDicomConverterExtensions
+    {
+
+        public static string[] AsStringArray(this object data) => (string[])data;
+
+        public static string FirstOrEmpty(this string[] array) => array.Length > 0 ? array[0] : string.Empty;
+
+        public static string SingleOrEmpty(this string[] array) => array.Length > 0 ? array.Single() : string.Empty;
+
     }
 }
