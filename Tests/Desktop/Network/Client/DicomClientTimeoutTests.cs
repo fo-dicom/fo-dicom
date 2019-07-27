@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
@@ -18,13 +19,9 @@ namespace Dicom.Network.Client
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTimeoutTest
     {
-        private readonly XUnitDicomLogger _logger;
-
         #region Fields
 
-        private static string _remoteHost;
-
-        private static int _remotePort;
+        private readonly XUnitDicomLogger _logger;
 
         #endregion
 
@@ -36,8 +33,6 @@ namespace Dicom.Network.Client
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            _remoteHost = null;
-            _remotePort = 0;
         }
 
         #endregion
@@ -47,7 +42,7 @@ namespace Dicom.Network.Client
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
             var server = DicomServer.Create<T>(port);
-            server.Logger = _logger.IncludePrefix(typeof(T).Name);
+            server.Logger = _logger.IncludePrefix(typeof(T).Name).WithMinimumLevel(LogLevel.Debug);
             return server;
         }
 
@@ -55,20 +50,168 @@ namespace Dicom.Network.Client
         {
             var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
             {
-                Logger = _logger.IncludePrefix(typeof(DicomClient).Name),
+                Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug),
                 Options = new DicomServiceOptions()
             };
             return client;
         }
 
         [Fact]
+        public async Task SendingFindRequestToServerThatNeverRespondsShouldTimeout()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<NeverRespondingDicomServer>(port))
+            {
+                var client = CreateClient(port);
+
+                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+
+                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
+                {
+                    Dataset = new DicomDataset
+                    {
+                        {DicomTag.PatientID, "PAT123"}
+                    },
+                    OnResponseReceived = (req, res) => throw new Exception("Did not expect a response"),
+                };
+
+                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+
+                var sendTask = client.SendAsync();
+                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+
+                var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
+
+                sendTimeoutCancellationTokenSource.Cancel();
+                sendTimeoutCancellationTokenSource.Dispose();
+
+                Assert.Equal(winner, sendTask);
+                Assert.NotNull(onTimeoutEventArgs);
+            }
+        }
+
+        [Fact]
+        public async Task SendingMoveRequestToServerThatNeverRespondsShouldTimeout()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<NeverRespondingDicomServer>(port))
+            {
+                var client = CreateClient(port);
+
+                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+
+                var request = new DicomCMoveRequest("another-AE", "study123")
+                {
+                    OnResponseReceived = (req, res) => throw new Exception("Did not expect a response")
+                };
+
+                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+
+                var sendTask = client.SendAsync();
+                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+
+                var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
+
+                sendTimeoutCancellationTokenSource.Cancel();
+                sendTimeoutCancellationTokenSource.Dispose();
+
+                Assert.Equal(winner, sendTask);
+                Assert.NotNull(onTimeoutEventArgs);
+            }
+        }
+
+        [Fact]
+        public async Task SendingFindRequestToServerThatSendsPendingResponsesWithinTimeoutShouldNotTimeout()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<FastPendingResponsesDicomServer>(port))
+            {
+                var client = CreateClient(port);
+
+                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+
+                DicomCFindResponse lastResponse = null;
+                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
+                {
+                    Dataset = new DicomDataset
+                    {
+                        {DicomTag.PatientID, "PAT123"}
+                    },
+                    OnResponseReceived = (req, res) => { lastResponse = res; }
+                };
+
+                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+
+                var sendTask = client.SendAsync();
+                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+
+                var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
+
+                sendTimeoutCancellationTokenSource.Cancel();
+                sendTimeoutCancellationTokenSource.Dispose();
+
+                Assert.Equal(winner, sendTask);
+                Assert.NotNull(lastResponse);
+                Assert.Equal(lastResponse.Status, DicomStatus.Success);
+                Assert.Null(onTimeoutEventArgs);
+            }
+        }
+
+        [Fact]
+        public async Task SendingMoveRequestToServerThatSendsPendingResponsesWithinTimeoutShouldNotTimeout()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<FastPendingResponsesDicomServer>(port))
+            {
+                var client = CreateClient(port);
+
+                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+
+                DicomCMoveResponse lastResponse = null;
+                var request = new DicomCMoveRequest("another-AE", "study123")
+                {
+                    OnResponseReceived = (req, res) => { lastResponse = res; }
+                };
+
+                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+
+                var sendTask = client.SendAsync();
+                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+
+                var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
+
+                sendTimeoutCancellationTokenSource.Cancel();
+                sendTimeoutCancellationTokenSource.Dispose();
+
+                Assert.Equal(winner, sendTask);
+                Assert.NotNull(lastResponse);
+                Assert.Equal(lastResponse.Status, DicomStatus.Success);
+                Assert.Null(onTimeoutEventArgs);
+            }
+        }
+
+        [Fact]
         public async Task SendingLargeFileUsingVeryShortResponseTimeoutShouldSucceed()
         {
             var port = Ports.GetNext();
-            using (var server = CreateServer<InMemoryDicomCStoreProvider>(port))
+            using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
-                server.Logger = _logger.IncludePrefix("DicomServer");
-
                 var client = CreateClient(port);
 
                 client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
@@ -109,10 +252,8 @@ namespace Dicom.Network.Client
         public async Task SendingLargeFileUsingVeryShortResponseTimeoutAndSendingTakesTooLongShouldFail()
         {
             var port = Ports.GetNext();
-            using (var server = CreateServer<InMemoryDicomCStoreProvider>(port))
+            using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
-                server.Logger = _logger.IncludePrefix("DicomServer");
-
                 var client = CreateClient(port);
 
                 client.Options.RequestTimeout = TimeSpan.FromSeconds(1);
@@ -149,7 +290,11 @@ namespace Dicom.Network.Client
             }
         }
 
-        public class VerySlowNetworkManager : DesktopNetworkManager
+        #endregion
+
+        #region Support classes
+
+        private class VerySlowNetworkManager : DesktopNetworkManager
         {
             private readonly TimeSpan _streamWriteTimeout;
 
@@ -158,7 +303,8 @@ namespace Dicom.Network.Client
                 _streamWriteTimeout = streamWriteTimeout;
             }
 
-            protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
+            protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors,
+                int millisecondsTimeout)
             {
                 return new VerySlowDesktopNetworkStreamDecorator(
                     _streamWriteTimeout,
@@ -167,7 +313,7 @@ namespace Dicom.Network.Client
             }
         }
 
-        public class VerySlowDesktopNetworkStreamDecorator : INetworkStream
+        private class VerySlowDesktopNetworkStreamDecorator : INetworkStream
         {
             private readonly TimeSpan _streamWriteTimeout;
             private readonly DesktopNetworkStream _desktopNetworkStream;
@@ -375,6 +521,108 @@ namespace Dicom.Network.Client
 
             public void OnCStoreRequestException(string tempFileName, Exception e)
             {
+            }
+        }
+
+        private class NeverRespondingDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
+        {
+            public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            {
+            }
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                foreach (var presentationContext in association.PresentationContexts)
+                {
+                    foreach (var ts in presentationContext.GetTransferSyntaxes())
+                    {
+                        presentationContext.SetResult(DicomPresentationContextResult.Accept, ts);
+                        break;
+                    }
+                }
+
+                return SendAssociationAcceptAsync(association);
+            }
+
+            public Task OnReceiveAssociationReleaseRequestAsync()
+            {
+                return SendAssociationReleaseResponseAsync();
+            }
+
+            public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
+            {
+                yield break;
+            }
+
+            public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
+            {
+                yield break;
+            }
+        }
+
+        private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
+        {
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            {
+            }
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                foreach (var presentationContext in association.PresentationContexts)
+                {
+                    foreach (var ts in presentationContext.GetTransferSyntaxes())
+                    {
+                        presentationContext.SetResult(DicomPresentationContextResult.Accept, ts);
+                        break;
+                    }
+                }
+
+                return SendAssociationAcceptAsync(association);
+            }
+
+            public Task OnReceiveAssociationReleaseRequestAsync()
+            {
+                return SendAssociationReleaseResponseAsync();
+            }
+
+            public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
+            {
+                Thread.Sleep(1000);
+                yield return new DicomCFindResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCFindResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCFindResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCFindResponse(request, DicomStatus.Success);
+            }
+
+            public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
+            {
+                Thread.Sleep(1000);
+                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+                Thread.Sleep(1000);
+                yield return new DicomCMoveResponse(request, DicomStatus.Success);
             }
         }
 

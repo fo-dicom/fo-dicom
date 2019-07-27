@@ -135,12 +135,20 @@ namespace Dicom.Network
         public DateTime? LastPDUSent { get; set; }
 
         /// <summary>
+        /// Gets or sets the timestamp of when the last response with status 'Pending' was received
+        /// </summary>
+        public DateTime? LastPendingResponseReceived { get; set; }
+
+        /// <summary>
         /// Given a timeout duration, returns whether this DICOM message is considered timed out or not.
         /// </summary>
         /// <param name="timeout">The timeout duration that should be taken into account</param>
         /// <returns>Whether this DICOM message is considered timed out or not.</returns>
-        public virtual bool IsTimedOut(TimeSpan timeout)
+        public bool IsTimedOut(TimeSpan timeout)
         {
+            if (LastPendingResponseReceived != null)
+                return LastPendingResponseReceived.Value.Add(timeout) < DateTime.Now;
+
             if (LastPDUSent != null)
                 return LastPDUSent.Value.Add(timeout) < DateTime.Now;
 
