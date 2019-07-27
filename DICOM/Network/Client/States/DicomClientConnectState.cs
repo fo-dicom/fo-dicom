@@ -36,7 +36,9 @@ namespace Dicom.Network.Client.States
                 var noDelay = _dicomClient.Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
                 var ignoreSslPolicyErrors = _dicomClient.Options?.IgnoreSslPolicyErrors ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
 
-                var networkStream = NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
+                var networkStream = NetworkManager
+                    .Use(_dicomClient.NetworkManager ?? NetworkManager.Implementation)
+                    .CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
 
                 var connection = new DicomClientConnection(_dicomClient, networkStream);
 

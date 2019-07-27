@@ -28,7 +28,7 @@ namespace Dicom.Network
         /// <param name="callingAe">The calling Application Entity.</param>
         /// <param name="calledAe">The called Application Entity.</param>
         /// <param name="maxPduLength">Maximum PDU length.</param>
-        public DicomAssociation(string callingAe, string calledAe, uint maxPduLength = 16384)
+        public DicomAssociation(string callingAe, string calledAe, uint maxPduLength = DicomServiceOptions.Default.MaxPDULength)
             : this()
         {
             CallingAE = callingAe;

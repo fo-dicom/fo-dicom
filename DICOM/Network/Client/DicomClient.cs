@@ -59,6 +59,11 @@ namespace Dicom.Network.Client
         DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
         /// <summary>
+        /// Gets or sets the network manager that will be used to open connections.
+        /// </summary>
+        NetworkManager NetworkManager { get; set; }
+
+        /// <summary>
         /// Representation of the DICOM association accepted event.
         /// </summary>
         event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
@@ -131,6 +136,7 @@ namespace Dicom.Network.Client
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+        public NetworkManager NetworkManager { get; set; }
 
         public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
