@@ -59,6 +59,33 @@ namespace Dicom.Network
 
         #endregion
 
+        #region EVENTS
+
+        /// <summary>
+        /// Event handler for when this DICOM request times out.
+        /// This will be triggered when the server takes too long to respond, or when it takes us too long to send the request in the first place.
+        /// </summary>
+        public EventHandler<OnTimeoutEventArgs> OnTimeout;
+
+        #endregion
+
+        #region EVENTARGS
+
+        public class OnTimeoutEventArgs
+        {
+            /// <summary>
+            /// The timeout duration that was exceeded for this request
+            /// </summary>
+            public TimeSpan Timeout { get; set; }
+
+            public OnTimeoutEventArgs(TimeSpan timeout)
+            {
+                Timeout = timeout;
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Operation to perform after response has been made.
         /// </summary>

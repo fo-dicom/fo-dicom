@@ -101,7 +101,8 @@ namespace Dicom.Network.Client.States
                 MaxAsyncOpsInvoked = _dicomClient.AsyncInvoked,
                 MaxAsyncOpsPerformed = _dicomClient.AsyncPerformed,
                 RemoteHost = _initialisationParameters.Connection.NetworkStream.RemoteHost,
-                RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort
+                RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort,
+                MaximumPDULength = _dicomClient.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength
             };
 
             foreach (var queuedItem in _dicomClient.QueuedRequests.ToList())
