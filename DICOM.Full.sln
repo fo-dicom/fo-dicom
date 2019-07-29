@@ -111,6 +111,7 @@ Global
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{f3120ac1-b538-4a30-b4a8-835376737ef5}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -457,21 +458,13 @@ Global
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x64.ActiveCfg = Release|Any CPU
 		{6467B08B-1E19-430D-ADAB-C4CD65730290}.Release|x86.ActiveCfg = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|ARM.Build.0 = Debug|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x64.Build.0 = Debug|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Debug|x86.Build.0 = Debug|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|ARM.ActiveCfg = Release|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|ARM.Build.0 = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x64.ActiveCfg = Release|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x64.Build.0 = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x86.ActiveCfg = Release|Any CPU
-		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -512,8 +505,8 @@ Global
 		{7C92284F-28C0-470C-B252-3650D51E2AD2} = {F499BA50-436A-4F84-9C02-DEF6EA77579A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = True
 		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
+		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

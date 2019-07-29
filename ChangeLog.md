@@ -1,4 +1,6 @@
-#### v.4.0.2 (TBD)
+#### v.4.0.3 (TBD)
+
+#### v.4.0.2 (7/30/2019)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
 * Updated to DICOM Dictionary 2019a (#724)
 * Add pure managed JpegLosses Decoder to DICOM.NetCore project
