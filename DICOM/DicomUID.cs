@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace Dicom
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Text;
 
     public enum DicomUidType
     {
@@ -131,9 +133,6 @@ namespace Dicom
             DicomUID uid = null;
             if (_uids.TryGetValue(u, out uid)) return uid;
 
-            //if (!IsValid(u))
-            //	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
-
             return new DicomUID(u, name, type);
         }
 
@@ -151,21 +150,9 @@ namespace Dicom
             return _uids.Values;
         }
 
-        public bool IsImageStorage
-        {
-            get
-            {
-                return StorageCategory == DicomStorageCategory.Image;
-            }
-        }
+        public bool IsImageStorage => StorageCategory == DicomStorageCategory.Image;
 
-        public bool IsVolumeStorage
-        {
-            get
-            {
-                return StorageCategory == DicomStorageCategory.Volume;
-            }
-        }
+        public bool IsVolumeStorage => StorageCategory == DicomStorageCategory.Volume;
 
         public DicomStorageCategory StorageCategory
         {
@@ -230,7 +217,47 @@ namespace Dicom
 
         public override string ToString()
         {
-            return String.Format("{0} [{1}]", Name, UID);
+            return $"{Name} [{UID}]";
         }
+
     }
+
+
+    public static class MetaSopClasses
+    {
+
+        public static Dictionary<DicomUID, DicomUID[]> Instances { get; } = new Dictionary<DicomUID, DicomUID[]>
+        {
+            {
+                DicomUID.BasicGrayscalePrintManagementMetaSOPClass, new DicomUID[]
+                {
+                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmBoxSOPClass,
+                    DicomUID.BasicGrayscaleImageBoxSOPClass,
+                    DicomUID.PrinterSOPClass
+                }
+            },
+            {
+                DicomUID.BasicColorPrintManagementMetaSOPClass, new DicomUID[]
+                {
+                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmBoxSOPClass,
+                    DicomUID.BasicColorImageBoxSOPClass,
+                    DicomUID.PrinterSOPClass
+                }
+            }
+        };
+
+
+        public static DicomUID[] GetMetaSopClass(DicomUID sopClass)
+        {
+            return Instances
+                .Where(kvp => kvp.Value.Contains(sopClass))
+                .Select(kvp => kvp.Key)
+                .DefaultIfEmpty(sopClass)
+                .ToArray();
+        }
+
+    }
+
 }
