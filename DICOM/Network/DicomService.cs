@@ -842,6 +842,10 @@ namespace Dicom.Network
                                 await connection.OnRequestCompletedAsync(req, rsp).ConfigureAwait(false);
                             }
                         }
+                        else
+                        {
+                            req.LastPendingResponseReceived = DateTime.Now;
+                        }
                     }
                 }
 
