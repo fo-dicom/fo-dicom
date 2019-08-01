@@ -1258,7 +1258,7 @@ namespace Dicom.Network
 
                         if (this is IDicomClientConnection connection)
                         {
-                            await connection.OnRequestCompletedAsync(timedOutPendingRequest, null).ConfigureAwait(false);
+                            await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
                         }
                     }
                 }

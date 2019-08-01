@@ -146,6 +146,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         public void Dispose()
         {
             foreach (var disposable in _disposables)

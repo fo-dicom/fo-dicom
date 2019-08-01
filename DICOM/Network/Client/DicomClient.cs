@@ -64,12 +64,12 @@ namespace Dicom.Network.Client
         NetworkManager NetworkManager { get; set; }
 
         /// <summary>
-        /// Representation of the DICOM association accepted event.
+        /// Triggers when an association is accepted
         /// </summary>
         event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
 
         /// <summary>
-        /// Representation of the DICOM association rejected event.
+        /// Triggers when an association is rejected.
         /// </summary>
         event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
 
@@ -81,7 +81,12 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
         /// </summary>
-        event EventHandler<StateChangedEventArgs> StateChanged;
+        event EventHandler<EventArguments.StateChangedEventArgs> StateChanged;
+
+        /// <summary>
+        /// Triggered when a DICOM request times out.
+        /// </summary>
+        event EventHandler<EventArguments.RequestTimedOutEventArgs> RequestTimedOut;
 
         /// <summary>
         /// Set negotiation asynchronous operations.
@@ -142,6 +147,7 @@ namespace Dicom.Network.Client
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
         public event EventHandler<StateChangedEventArgs> StateChanged;
+        public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
@@ -218,11 +224,17 @@ namespace Dicom.Network.Client
         internal void NotifyAssociationReleased()
             => AssociationReleased?.Invoke(this, EventArgs.Empty);
 
+        internal void NotifyRequestTimedOut(EventArguments.RequestTimedOutEventArgs eventArgs)
+            => RequestTimedOut?.Invoke(this, eventArgs);
+
         internal Task OnSendQueueEmptyAsync()
             => State.OnSendQueueEmptyAsync();
 
         internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
             => State.OnRequestCompletedAsync(request, response);
+
+        internal Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+            => State.OnRequestTimedOutAsync(request, timeout);
 
         internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
             => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));

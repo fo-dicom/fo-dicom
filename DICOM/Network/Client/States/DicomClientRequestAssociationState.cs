@@ -94,6 +94,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         private async Task SendAssociationRequest()
         {
             var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe)

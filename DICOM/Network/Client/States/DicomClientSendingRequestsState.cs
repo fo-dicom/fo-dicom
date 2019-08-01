@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom.Network.Client.EventArguments;
 using Dicom.Network.Client.Events;
 using Dicom.Network.Client.Tasks;
 
@@ -113,7 +114,7 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
-        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        private void RemoveRequestFromPendingList(DicomRequest request)
         {
             _pendingRequests.TryRemove(request.MessageID, out DicomRequest _);
 
@@ -128,6 +129,20 @@ namespace Dicom.Network.Client.States
                     _sendMoreRequests.Set();
                 }
             }
+        }
+
+        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
+        {
+            RemoveRequestFromPendingList(request);
+
+            return CompletedTaskProvider.CompletedTask;
+        }
+
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            RemoveRequestFromPendingList(request);
+
+            _dicomClient.NotifyRequestTimedOut(new RequestTimedOutEventArgs(request, timeout));
 
             return CompletedTaskProvider.CompletedTask;
         }

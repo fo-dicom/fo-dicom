@@ -194,6 +194,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationAcceptedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationRejectedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\RequestTimedOutEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\StateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\ConnectionClosedEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Events\DicomAbortedEvent.cs" />

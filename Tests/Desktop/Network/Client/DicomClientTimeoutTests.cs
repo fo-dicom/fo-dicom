@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Log;
+using Dicom.Network.Client.EventArguments;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -75,8 +76,10 @@ namespace Dicom.Network.Client
                     OnResponseReceived = (req, res) => throw new Exception("Did not expect a response"),
                 };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+                DicomRequest.OnTimeoutEventArgs eventArgsFromRequestTimeout = null;
+                request.OnTimeout += (sender, args) => eventArgsFromRequestTimeout = args;
+                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
@@ -90,7 +93,10 @@ namespace Dicom.Network.Client
                 sendTimeoutCancellationTokenSource.Dispose();
 
                 Assert.Equal(winner, sendTask);
-                Assert.NotNull(onTimeoutEventArgs);
+                Assert.NotNull(eventArgsFromRequestTimeout);
+                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -111,6 +117,8 @@ namespace Dicom.Network.Client
 
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
@@ -125,6 +133,9 @@ namespace Dicom.Network.Client
 
                 Assert.Equal(winner, sendTask);
                 Assert.NotNull(onTimeoutEventArgs);
+                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -226,6 +237,8 @@ namespace Dicom.Network.Client
 
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
@@ -240,6 +253,9 @@ namespace Dicom.Network.Client
 
                 Assert.Equal(winner, sendTask);
                 Assert.NotNull(onTimeoutEventArgs);
+                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -257,6 +273,8 @@ namespace Dicom.Network.Client
 
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
@@ -271,6 +289,9 @@ namespace Dicom.Network.Client
 
                 Assert.Equal(winner, sendTask);
                 Assert.NotNull(onTimeoutEventArgs);
+                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -341,6 +362,9 @@ namespace Dicom.Network.Client
                     OnResponseReceived = (req, res) => response = res,
                     OnTimeout = (sender, args) => onTimeoutEventArgs = args
                 };
+
+                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 var sendTask = client.SendAsync();
@@ -355,6 +379,9 @@ namespace Dicom.Network.Client
                 Assert.Same(winner, sendTask);
                 Assert.Null(response);
                 Assert.NotNull(onTimeoutEventArgs);
+                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
