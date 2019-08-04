@@ -44,7 +44,7 @@ namespace Dicom
                             DicomUID dicomUid;
                             if (NetworkManager.TryGetNetworkIdentifier(out dicomUid)) return dicomUid;
 
-                            instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
+                            instanceRootUid = DicomUID.Append(DicomImplementation.ClassUID, Math.Abs(Environment.TickCount));
                         }
                     }
                 }
@@ -68,7 +68,7 @@ namespace Dicom
                 DicomUID destinationUid;
                 if (sourceUid != null && this.uidMap.TryGetValue(sourceUid.UID, out destinationUid)) return destinationUid;
 
-                var ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
+                var ticks = Math.Abs(DateTime.UtcNow.Subtract(Y2K).Ticks);
                 if (ticks == lastTicks) ++ticks;
                 lastTicks = ticks;
 
