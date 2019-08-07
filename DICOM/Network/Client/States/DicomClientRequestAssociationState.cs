@@ -108,6 +108,7 @@ namespace Dicom.Network.Client.States
             {
                 var dicomRequest = queuedItem.Value;
                 associationToRequest.PresentationContexts.AddFromRequest(dicomRequest);
+                associationToRequest.ExtendedNegotiations.AddFromRequest(dicomRequest);
             }
 
             foreach (var context in _dicomClient.AdditionalPresentationContexts)
@@ -115,8 +116,17 @@ namespace Dicom.Network.Client.States
                 associationToRequest.PresentationContexts.Add(
                     context.AbstractSyntax,
                     context.UserRole,
-                    context.ProviderRole,
+                    context.ProviderRole, 
                     context.GetTransferSyntaxes().ToArray());
+            }
+            
+            foreach (var extendedNegotiation in _dicomClient.AdditionalExtendedNegotiations)
+            {
+                associationToRequest.ExtendedNegotiations.AddOrUpdate(
+                    extendedNegotiation.SopClassUid,
+                    extendedNegotiation.RequestedApplicationInfo,
+                    extendedNegotiation.ServiceClassUid,
+                    extendedNegotiation.RelatedGeneralSopClasses.ToArray());
             }
 
             await Connection.SendAssociationRequestAsync(associationToRequest).ConfigureAwait(false);

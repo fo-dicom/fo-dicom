@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using Xunit;
 
 namespace Dicom.Network
@@ -20,18 +20,7 @@ namespace Dicom.Network
             var request = new AAssociateRQ(new DicomAssociation("MALMÖ", notExpected));
 
             var writePdu = request.Write();
-
-            RawPDU readPdu;
-            using (var stream = new MemoryStream())
-            {
-                writePdu.WritePDU(stream);
-
-                var length = (int)writePdu.Length;
-                var buffer = new byte[length];
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.Read(buffer, 0, length);
-                readPdu = new RawPDU(buffer);
-            }
+            var readPdu = ConvertWriteToReadPdu(writePdu);
 
             readPdu.Reset();
             readPdu.SkipBytes("Unknown", 10);
@@ -53,46 +42,59 @@ namespace Dicom.Network
             Assert.True(File.Exists(name));
         }
 
-        [Fact]
-        public void WriteReadAAssociateRQExtendedNegotiation()
+        [Theory]
+        [MemberData(nameof(ExtendedNegotiationTestData))]
+        public void AssociateRQ_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
         {
-            DicomAssociation association = new DicomAssociation("testCalling", "testCalled");
-            association.ExtendedNegotiations.Add(
-                new DicomExtendedNegotiation(
-                    DicomUID.StudyRootQueryRetrieveInformationModelFIND,
-                    new RootQueryRetrieveInfoFind(1, 1, 1, 1, null)));
+            var association = new DicomAssociation("testCalling", "testCalled");
+            association.ExtendedNegotiations.Add(sopClassUid, applicationInfo, commonServiceClass, relatedSopClasses);
 
-            AAssociateRQ rq = new AAssociateRQ(association);
+            var rq = new AAssociateRQ(association);
+            var writePdu = rq.Write();
 
-            RawPDU writePdu = rq.Write();
+            var readPdu = ConvertWriteToReadPdu(writePdu);
 
-            RawPDU readPdu;
-            using (MemoryStream stream = new MemoryStream())
-            {
-                writePdu.WritePDU(stream);
-
-                int length = (int)stream.Length;
-                byte[] buffer = new byte[length];
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.Read(buffer, 0, length);
-                readPdu = new RawPDU(buffer);
-            }
-
-            DicomAssociation testAssociation = new DicomAssociation();
-            AAssociateRQ rq2 = new AAssociateRQ(testAssociation);
+            var testAssociation = new DicomAssociation();
+            var rq2 = new AAssociateRQ(testAssociation);
             rq2.Read(readPdu);
 
-            Assert.True(testAssociation.ExtendedNegotiations.Count == 1);
-            Assert.True(
-                testAssociation.ExtendedNegotiations[0].SopClassUid
-                == DicomUID.StudyRootQueryRetrieveInformationModelFIND);
+            Assert.Single(testAssociation.ExtendedNegotiations);
+            var negotiation = testAssociation.ExtendedNegotiations.First();
+            Assert.Equal(sopClassUid, negotiation.SopClassUid);
+            Assert.Equal(applicationInfo, negotiation.RequestedApplicationInfo);
+            Assert.Equal(commonServiceClass, negotiation.ServiceClassUid);
+            Assert.Equal(relatedSopClasses, negotiation.RelatedGeneralSopClasses);
+            Assert.Null(negotiation.AcceptedApplicationInfo);
+        }
 
-            RootQueryRetrieveInfoFind info =
-                testAssociation.ExtendedNegotiations[0].SubItem as RootQueryRetrieveInfoFind;
-            Assert.True(null != info);
-            Assert.True(
-                (1 == info.DateTimeMatching) && (1 == info.FuzzySemanticMatching) && (1 == info.RelationalQueries)
-                && (1 == info.TimezoneQueryAdjustment) && (false == info.EnhancedMultiFrameImageConversion.HasValue));
+
+        [Theory]
+        [MemberData(nameof(ExtendedNegotiationTestData))]
+        public void AssociateAC_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
+        {
+            var inAssociation = new DicomAssociation("testCalling", "testCalled");
+            inAssociation.ExtendedNegotiations.Add(sopClassUid, applicationInfo, commonServiceClass, relatedSopClasses);
+            var acceptedApplicationInfo = new DicomServiceApplicationInfo(applicationInfo.GetValues());
+            acceptedApplicationInfo.AddOrUpdate(1, 10);
+            inAssociation.ExtendedNegotiations.AcceptApplicationInfo(sopClassUid, acceptedApplicationInfo);
+
+            var ac = new AAssociateAC(inAssociation);
+            var writePdu = ac.Write();
+
+            var readPdu = ConvertWriteToReadPdu(writePdu);
+
+            var outAssociation = new DicomAssociation();
+            outAssociation.ExtendedNegotiations.Add(sopClassUid, applicationInfo);
+            var ac2 = new AAssociateAC(outAssociation);
+            ac2.Read(readPdu);
+
+            Assert.Single(outAssociation.ExtendedNegotiations);
+            var negotiation = outAssociation.ExtendedNegotiations.First();
+            Assert.Equal(sopClassUid, negotiation.SopClassUid);
+            Assert.Equal(applicationInfo, negotiation.RequestedApplicationInfo);
+            Assert.Equal(acceptedApplicationInfo, negotiation.AcceptedApplicationInfo);
+            Assert.Null(negotiation.ServiceClassUid);
+            Assert.Empty(negotiation.RelatedGeneralSopClasses);
         }
 
         [Theory]
@@ -147,6 +149,25 @@ namespace Dicom.Network
         #endregion
 
         #region Test data
+
+        public static readonly IEnumerable<object[]> ExtendedNegotiationTestData = new[]
+        {
+            new object[]
+            {
+                DicomUID.ProcedureLogStorage,
+                new DicomCStoreApplicationInfo(DicomLevelOfSupport.Level2, DicomLevelOfDigitalSignatureSupport.Level3,
+                    DicomElementCoercion.AllowCoercion),
+                DicomUID.StorageServiceClass,
+                new[] {DicomUID.EnhancedSRStorage}
+            },
+            new object[]
+            {
+                DicomUID.StudyRootQueryRetrieveInformationModelFIND,
+                new DicomCFindApplicationInfo(true, true, false, true, true),
+                null,
+                new DicomUID[] {}
+            },
+        };
 
         public static readonly IEnumerable<object[]> RawPDUTestData = new[]
         {
@@ -236,6 +257,24 @@ namespace Dicom.Network
                 }, (byte)1, DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, null
             }
         };
+
+        #endregion
+
+        #region Helper functions
+
+        private RawPDU ConvertWriteToReadPdu(RawPDU writePdu)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                writePdu.WritePDU(stream);
+
+                int length = (int)stream.Length;
+                byte[] buffer = new byte[length];
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.Read(buffer, 0, length);
+                return new RawPDU(buffer);
+            }
+        }
 
         #endregion
     }

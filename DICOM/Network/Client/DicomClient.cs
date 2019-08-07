@@ -34,6 +34,11 @@ namespace Dicom.Network.Client
         List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
 
         /// <summary>
+        /// Gets or sets extended negotiation items to negotiate with association.
+        /// </summary>
+        List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+
+        /// <summary>
         /// Gets or sets the fallback encoding.
         /// </summary>
         Encoding FallbackEncoding { get; set; }
@@ -129,6 +134,7 @@ namespace Dicom.Network.Client
         public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
         public DicomServiceOptions Options { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
+        public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
@@ -163,6 +169,7 @@ namespace Dicom.Network.Client
             AssociationLingerTimeoutInMs = associationLingerTimeoutInMs;
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
+            AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             State = new DicomClientIdleState(this);

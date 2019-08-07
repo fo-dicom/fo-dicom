@@ -227,6 +227,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCFindResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCGetRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCGetApplicationInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCMoveRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCGetResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCMoveResponse.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCStoreRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCStoreResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomExtendedNegotiation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomExtendedNegotiationCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomNActionRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomNActionResponse.cs" />
@@ -253,10 +255,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomPriorityRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomQueryRetrieveLevel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCMoveApplicationInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCFindApplicationInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomCStoreApplicationInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DicomServiceApplicationInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomServiceOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomTimeout.cs" />
@@ -275,8 +281,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\INetworkStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\PDU.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\RootQueryRetrieveInfoMove.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\StudyRootQueryRetrieveInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\ImageBox.cs" />

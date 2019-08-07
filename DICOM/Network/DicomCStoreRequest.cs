@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -97,6 +99,16 @@ namespace Dicom.Network
         /// DICOM dataset will be transcoded on the fly if necessary.
         /// </summary>
         public DicomTransferSyntax[] AdditionalTransferSyntaxes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the (optional) Common Extended Negotiation Service Class UID.
+        /// </summary>
+        public DicomUID CommonServiceClassUid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the (optional) Common Extended Negotiation Related General SOP Class Identification
+        /// </summary>
+        public List<DicomUID> RelatedGeneralSopClasses { get; set; }
 
         /// <summary>
         /// Represents a callback method to be executed when the response for the DICOM C-Store request is received.

@@ -323,6 +323,32 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
+        public async Task SendAsync_RecordAssociationData_AssociationContainsExtendedNegotiation()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var requestedNegotiation = new DicomExtendedNegotiation(
+                    DicomUID.Verification,
+                    new DicomServiceApplicationInfo(new byte[] {1, 1, 1}));
+                DicomExtendedNegotiationCollection acceptedNegotiations = null;
+
+                client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
+                client.AssociationAccepted += (sender, args) => acceptedNegotiations = args.Association.ExtendedNegotiations;
+
+                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
+
+                Assert.NotNull(acceptedNegotiations);
+                Assert.NotEmpty(acceptedNegotiations);
+                var acceptedNegotiation = acceptedNegotiations.First();
+                Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
+                Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
+            }
+        }
+
+        [Fact]
         public async Task SendAsync_RejectedAssociation_ShouldYieldException()
         {
             var port = Ports.GetNext();
@@ -1289,6 +1315,11 @@ namespace Dicom.Network.Client
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.AcceptTransferSyntaxes(DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
+
+                foreach (var exNeg in association.ExtendedNegotiations)
+                {
+                    exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
                 }
 
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))

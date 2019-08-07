@@ -1,59 +1,57 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Dicom.Network
 {
-    using System.Collections.Generic;
-
-    /// <summary>
-    /// Interface for extended negotiation sub-items.
-    /// </summary>
-    public interface IExtendedNegotiationSubItem
-    {
-        /// <summary>
-        /// Write PDU data.
-        /// </summary>
-        /// <param name="pdu">PDU data to write.</param>
-        void Write(RawPDU pdu);
-    }
-
-    /// <summary>
-    /// Delegate representing creation of an <see cref="IExtendedNegotiationSubItem"/>.
-    /// </summary>
-    /// <param name="raw">Raw PDU.</param>
-    /// <param name="itemSize">Item size.</param>
-    /// <param name="bytesRead">Bytes read.</param>
-    /// <returns>Created <see cref="IExtendedNegotiationSubItem"/>.</returns>
-    public delegate IExtendedNegotiationSubItem CreateIExtendedNegotiationSubItemDelegate(
-        RawPDU raw,
-        int itemSize,
-        out int bytesRead);
-
     /// <summary>
     /// Class for managing DICOM extended negotiation.
+    /// See http://dicom.nema.org/medical/dicom/current/output/chtml/part07/sect_D.3.3.5.html
+    /// and sect_D.3.3.6 for details on the SOP Class (Common) Extended Negotiation Sub-item.
     /// </summary>
     public class DicomExtendedNegotiation
     {
-        private static readonly Dictionary<DicomUID, CreateIExtendedNegotiationSubItemDelegate> subItemCreators =
-            new Dictionary<DicomUID, CreateIExtendedNegotiationSubItemDelegate>();
-
-        static DicomExtendedNegotiation()
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomExtendedNegotiation"/> class.
+        /// </summary>
+        /// <param name="sopClassUid">SOP class UID.</param>
+        /// <param name="applicationInfo">Extended negotiation Application Information.</param>
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo)
         {
-            AddSubItemCreator(DicomUID.StudyRootQueryRetrieveInformationModelFIND, RootQueryRetrieveInfoFind.Create);
-            AddSubItemCreator(DicomUID.PatientRootQueryRetrieveInformationModelFIND, RootQueryRetrieveInfoFind.Create);
-            AddSubItemCreator(DicomUID.StudyRootQueryRetrieveInformationModelMOVE, RootQueryRetrieveInfoMove.Create);
-            AddSubItemCreator(DicomUID.PatientRootQueryRetrieveInformationModelMOVE, RootQueryRetrieveInfoMove.Create);
+            SopClassUid = sopClassUid;
+            RequestedApplicationInfo = applicationInfo;
+            RelatedGeneralSopClasses = new List<DicomUID>();
         }
 
         /// <summary>
         /// Initializes an instance of the <see cref="DicomExtendedNegotiation"/> class.
         /// </summary>
         /// <param name="sopClassUid">SOP class UID.</param>
-        /// <param name="subItem">Extended negotiation sub-item.</param>
-        public DicomExtendedNegotiation(DicomUID sopClassUid, IExtendedNegotiationSubItem subItem)
+        /// <param name="serviceClassUid">Common Service Class UID.</param>
+        /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomUID serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
         {
             SopClassUid = sopClassUid;
-            SubItem = subItem;
+            ServiceClassUid = serviceClassUid;
+            RelatedGeneralSopClasses = relatedGeneralSopClasses.ToList();
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="DicomExtendedNegotiation"/> class.
+        /// </summary>
+        /// <param name="sopClassUid">SOP class UID.</param>
+        /// <param name="applicationInfo">Extended negotiation Application Information.</param>
+        /// <param name="serviceClassUid">Common Service Class UID.</param>
+        /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo,
+            DicomUID serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
+        {
+            SopClassUid = sopClassUid;
+            RequestedApplicationInfo = applicationInfo;
+            ServiceClassUid = serviceClassUid;
+            RelatedGeneralSopClasses = relatedGeneralSopClasses.ToList();
         }
 
         /// <summary>
@@ -62,73 +60,56 @@ namespace Dicom.Network
         public DicomUID SopClassUid { get; }
 
         /// <summary>
-        /// Gets extended negotiation sub-item.
+        /// Gets the Requested Service Class Application Information.
         /// </summary>
-        public IExtendedNegotiationSubItem SubItem { get; }
+        public DicomServiceApplicationInfo RequestedApplicationInfo { get; internal set; }
 
         /// <summary>
-        /// Add item for creating extended negotiation sub-items.
+        /// Gets the Accepted Service Class Application Information.
         /// </summary>
-        /// <param name="uid">Associated UID.</param>
-        /// <param name="creator">Creator instance.</param>
-        public static void AddSubItemCreator(DicomUID uid, CreateIExtendedNegotiationSubItemDelegate creator)
+        public DicomServiceApplicationInfo AcceptedApplicationInfo { get; private set; }
+
+        /// <summary>
+        /// Gets the (optional) Service Class UID.
+        /// </summary>
+        public DicomUID ServiceClassUid { get; internal set; }
+
+        /// <summary>
+        /// Gets the (optional) Related General SOP Class Identification
+        /// </summary>
+        public List<DicomUID> RelatedGeneralSopClasses { get; }
+
+        /// <summary>
+        /// Gets the string representation of the Service Class Application information.
+        /// </summary>
+        /// <returns></returns>
+        public string GetApplicationInfo()
         {
-            if (false == subItemCreators.ContainsKey(uid))
-            {
-                subItemCreators.Add(uid, creator);
-            }
+            return AcceptedApplicationInfo != null
+                ? $"{AcceptedApplicationInfo} [Accept]"
+                : $"{RequestedApplicationInfo} [Proposed]";
         }
 
         /// <summary>
-        /// Write PDU.
+        /// Compares the Service Class Application Information accepted by the SCP with the
+        /// Application Information that was requested by the SCU. The accepted Application Information
+        /// will be ignored when no existing application info exists. The existing field values will be
+        /// overwritten by the accepted field values, if the accepted info has fields that are not
+        /// requested, then these fields will be removed.
         /// </summary>
-        /// <param name="pdu">PDU to write.</param>
-        public void Write(RawPDU pdu)
+        /// <param name="acceptedInfo">The Service Class Application Info accepted by the SCP.</param>
+        public void AcceptApplicationInfo(DicomServiceApplicationInfo acceptedInfo)
         {
-            if (null != SubItem)
+            if (RequestedApplicationInfo == null)
+                return;
+
+            for (var i = acceptedInfo.Count + 1; i --> 1; )
             {
-                pdu.Write("Item-Type", (byte)0x56);
-                pdu.Write("Reserved", (byte)0x00);
-
-                pdu.MarkLength16("Item-Length");
-
-                pdu.Write("SOP Class UID Length", (ushort)(SopClassUid.UID.Length));
-                pdu.Write("SOP Class UID", SopClassUid.UID);
-
-                SubItem.Write(pdu);
-
-                pdu.WriteLength16();
-            }
-        }
-
-        /// <summary>
-        /// Factory method for creating <see cref="DicomExtendedNegotiation"/> instances.
-        /// </summary>
-        /// <param name="raw">Raw PDU.</param>
-        /// <param name="length">Length.</param>
-        /// <returns>A new <see cref="DicomExtendedNegotiation"/> instance.</returns>
-        public static DicomExtendedNegotiation Create(RawPDU raw, ushort length)
-        {
-            var uidLen = raw.ReadUInt16("SOP Class UID Length");
-            var uidStr = raw.ReadString("SOP Class UID", uidLen);
-
-            var uid = DicomUID.Parse(uidStr);
-            IExtendedNegotiationSubItem subItem = null;
-            var subItemSize = 0;
-
-            var remaining = length - uidLen - 2;
-            if (subItemCreators.ContainsKey(uid))
-            {
-                subItem = subItemCreators[uid](raw, remaining, out subItemSize);
+                if (!RequestedApplicationInfo.Contains((byte)i))
+                    acceptedInfo.Remove((byte)i);
             }
 
-            remaining -= subItemSize;
-            if (remaining > 0)
-            {
-                raw.SkipBytes("Unread bytes", remaining);
-            }
-
-            return new DicomExtendedNegotiation(uid, subItem);
+            AcceptedApplicationInfo = acceptedInfo;
         }
     }
 }
