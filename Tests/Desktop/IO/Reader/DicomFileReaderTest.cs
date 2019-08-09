@@ -74,6 +74,22 @@ namespace Dicom.IO.Reader
             Assert.False(dcm.Dataset.Contains(DicomTag.PixelData));
         }
 
+        [Fact]
+        public void ReadingSkipLargeTags_GH893()
+        {
+            DicomFile dcm = null;
+            string filename = @".\Test Data\genFile.dcm";
+            if (File.Exists(filename))
+            {
+                byte[] buff = File.ReadAllBytes(filename);
+                using (MemoryStream stream = new MemoryStream(buff))
+                {
+                    dcm = DicomFile.Open(stream, FileReadOption.SkipLargeTags);
+                }
+            }
+            Assert.NotNull(dcm);
+        }
+
 
         [Fact]
         public void Read_ValidSource_ReturnsSuccess()
