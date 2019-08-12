@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Log;
 using Dicom.Network.Client.States;
-using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
