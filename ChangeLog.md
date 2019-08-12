@@ -1,5 +1,6 @@
 #### v.4.0.3 (TBD)
 * Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
+* Bug fix: Do not open new associations on the existing TCP connection (#896)
 
 #### v.4.0.2 (7/30/2019)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
