@@ -146,13 +146,13 @@ namespace Dicom.Network.Client.States
 
                 if (dicomRequest == null) continue;
 
-                _pendingRequests[dicomRequest.MessageID] = dicomRequest;
+                queuedItem.Value = null;
 
-                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
+                _pendingRequests[dicomRequest.MessageID] = dicomRequest;
 
                 _sentRequests.Add(dicomRequest);
 
-                queuedItem.Value = null;
+                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
             }
         }
 
