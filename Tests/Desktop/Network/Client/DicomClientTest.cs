@@ -1299,7 +1299,7 @@ namespace Dicom.Network.Client
                     var iLocal = i;
                     var dicomCEchoRequest = new DicomCEchoRequest
                     {
-                        OnResponseReceived                        = (request, response) =>
+                        OnResponseReceived = (request, response) =>
                         {
                             logger.Debug($"Request completed: {iLocal}");
                             responses.Add(response);
@@ -1310,7 +1310,7 @@ namespace Dicom.Network.Client
 
                 using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
                 {
-                    await client.SendAsync(cts.Token);
+                    await client.SendAsync(cts.Token).ConfigureAwait(false);
                 }
 
                 AllResponsesShouldHaveSucceeded(responses);
