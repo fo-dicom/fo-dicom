@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -29,23 +31,14 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of the <see cref="DicomCFindApplicationInfo"/> class.
         /// </summary>
-        /// <param name="relationalQueries">Relational queries flag.</param>
-        /// <param name="dateTimeMatching">Date time matching flag.</param>
-        /// <param name="fuzzySemanticMatching">Fuzzy semantic matching flag.</param>
-        /// <param name="timezoneQueryAdjustment">Time zone query adjustment flag.</param>
-        /// <param name="enhancedMultiFrameImageConversion">Enhanced multi-frame image conversion flag.</param>
-        public DicomCFindApplicationInfo(
-            bool relationalQueries,
-            bool dateTimeMatching,
-            bool fuzzySemanticMatching,
-            bool timezoneQueryAdjustment,
-            bool enhancedMultiFrameImageConversion)
+        /// <param name="options">The extended negotiation options for the C-Find SOP classes.</param>
+        public DicomCFindApplicationInfo(DicomCFindOption options)
         {
-            RelationalQueries = relationalQueries;
-            DateTimeMatching = dateTimeMatching;
-            FuzzySemanticMatching = fuzzySemanticMatching;
-            TimezoneQueryAdjustment = timezoneQueryAdjustment;
-            EnhancedMultiFrameImageConversion = enhancedMultiFrameImageConversion;
+            RelationalQueries = options.HasFlag(DicomCFindOption.RelationalQueries);
+            DateTimeMatching = options.HasFlag(DicomCFindOption.DateTimeMatching);
+            FuzzySemanticMatching = options.HasFlag(DicomCFindOption.FuzzySemanticMatching);
+            TimezoneQueryAdjustment = options.HasFlag(DicomCFindOption.TimezoneQueryAdjustment);
+            EnhancedMultiFrameImageConversion = options.HasFlag(DicomCFindOption.EnhancedMultiFrameImageConversion);
         }
 
         /// <summary>
@@ -114,5 +107,42 @@ namespace Dicom.Network
                 TimezoneQueryAdjustment = timezoneQueryAdjustment
             };
         }
+    }
+
+    /// <summary>
+    /// Specifies the options for C-Find SOP Class Extended Negotiation.
+    /// </summary>
+    [Flags]
+    public enum DicomCFindOption
+    {
+        /// <summary>
+        /// None of the extended negotiation options.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Request/indicate Relational-Queries support.
+        /// </summary>
+        RelationalQueries = 2,
+
+        /// <summary>
+        /// Request/indicate support for Date-Time combined matching.
+        /// </summary>
+        DateTimeMatching = 4,
+
+        /// <summary>
+        /// Request/indicate support for Fuzzy Semantic Matching Of Person Names.
+        /// </summary>
+        FuzzySemanticMatching = 8,
+
+        /// <summary>
+        /// Request/indicate Timezone Query Adjustment support.
+        /// </summary>
+        TimezoneQueryAdjustment = 16,
+
+        /// <summary>
+        /// Request/indicate Enhanced Multi-Frame Image Conversion support.
+        /// </summary>
+        EnhancedMultiFrameImageConversion = 32
     }
 }

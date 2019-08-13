@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -29,12 +31,11 @@ namespace Dicom.Network
         /// <summary>
         /// Initializes an instance of the <see cref="DicomCGetApplicationInfo"/> class.
         /// </summary>
-        /// <param name="relationalRetrieval">Relational-retrieval flag.</param>
-        /// <param name="enhancedMultiFrameImageConversion">Enhanced Multi-Frame Image Conversion flag.</param>
-        public DicomCGetApplicationInfo(bool relationalRetrieval, bool enhancedMultiFrameImageConversion)
+        /// <param name="options">The extended negotiation options for C-Get SOP Classes.</param>
+        public DicomCGetApplicationInfo(DicomCGetOption options)
         {
-            RelationalRetrieval = relationalRetrieval;
-            EnhancedMultiFrameImageConversion = enhancedMultiFrameImageConversion;
+            RelationalRetrieval = options.HasFlag(DicomCGetOption.RelationalRetrieval);
+            EnhancedMultiFrameImageConversion = options.HasFlag(DicomCGetOption.EnhancedMultiFrameImageConversion);
         }
 
         /// <summary>
@@ -58,5 +59,27 @@ namespace Dicom.Network
             get => GetValueAsBoolean(2, false);
             set => AddOrUpdate(2, value);
         }
+    }
+
+    /// <summary>
+    /// Specifies the options for C-Get SOP Class Extended Negotiation.
+    /// </summary>
+    [Flags]
+    public enum DicomCGetOption
+    {
+        /// <summary>
+        /// None of the extended negotiation options.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Request/indicate Relational-retrieval support.
+        /// </summary>
+        RelationalRetrieval = 2,
+
+        /// <summary>
+        /// Request/indicate Enhanced Multi-Frame Image Conversion support.
+        /// </summary>
+        EnhancedMultiFrameImageConversion = 4
     }
 }

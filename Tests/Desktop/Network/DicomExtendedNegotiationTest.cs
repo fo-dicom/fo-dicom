@@ -15,7 +15,7 @@ namespace Dicom.Network
         public void AcceptApplicationInfo_WhenNotRequested_ApplicationInfoIsNotSet()
         {
             var negotiation = new DicomExtendedNegotiation(DicomUID.Verification, (DicomServiceApplicationInfo) null);
-            negotiation.AcceptApplicationInfo(new DicomCFindApplicationInfo(true, false, false, false, false));
+            negotiation.AcceptApplicationInfo(new DicomCFindApplicationInfo(DicomCFindOption.DateTimeMatching | DicomCFindOption.FuzzySemanticMatching));
             Assert.Null(negotiation.RequestedApplicationInfo);
             Assert.Null(negotiation.AcceptedApplicationInfo);
         }
@@ -92,17 +92,17 @@ namespace Dicom.Network
         {
             new object[]
             {
-                new DicomCFindApplicationInfo(true, false, true, false, true),
+                new DicomCFindApplicationInfo(DicomCFindOption.RelationalQueries | DicomCFindOption.FuzzySemanticMatching |DicomCFindOption.EnhancedMultiFrameImageConversion),
                 new byte[] { 1, 0, 1, 0, 1 }
             },
             new object[]
             {
-                new DicomCMoveApplicationInfo(true, false), 
+                new DicomCMoveApplicationInfo(DicomCMoveOption.RelationalRetrieval), 
                 new byte[] { 1, 0 }
             },
             new object[]
             {
-                new DicomCGetApplicationInfo(false, true),
+                new DicomCGetApplicationInfo(DicomCGetOption.EnhancedMultiFrameImageConversion),
                 new byte[] { 0, 1 }
             },
             new object[]

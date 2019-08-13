@@ -163,7 +163,7 @@ namespace Dicom.Network
             new object[]
             {
                 DicomUID.StudyRootQueryRetrieveInformationModelFIND,
-                new DicomCFindApplicationInfo(true, true, false, true, true),
+                new DicomCFindApplicationInfo(DicomCFindOption.RelationalQueries | DicomCFindOption.DateTimeMatching),
                 null,
                 new DicomUID[] {}
             },

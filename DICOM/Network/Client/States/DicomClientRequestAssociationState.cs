@@ -116,7 +116,7 @@ namespace Dicom.Network.Client.States
                 associationToRequest.PresentationContexts.Add(
                     context.AbstractSyntax,
                     context.UserRole,
-                    context.ProviderRole, 
+                    context.ProviderRole,
                     context.GetTransferSyntaxes().ToArray());
             }
             
