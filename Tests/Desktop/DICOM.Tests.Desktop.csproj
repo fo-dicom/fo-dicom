@@ -242,6 +242,9 @@
     <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test Data\genFile.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\GH487.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

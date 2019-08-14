@@ -169,7 +169,7 @@ namespace Dicom.IO
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
-            IByteBuffer buffer = null;
+            IByteBuffer buffer;
             if (count == 0)
             {
                 buffer = EmptyBuffer.Value;
@@ -182,6 +182,7 @@ namespace Dicom.IO
             else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
             {
                 buffer = null;
+                Skip((int)count);
             }
             else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
             {
