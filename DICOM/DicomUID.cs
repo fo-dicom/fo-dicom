@@ -13,52 +13,31 @@ namespace Dicom
     public enum DicomUidType
     {
         TransferSyntax,
-
         SOPClass,
-
         MetaSOPClass,
-
         ServiceClass,
-
         SOPInstance,
-
         ApplicationContextName,
-
         ApplicationHostingModel,
-
         CodingScheme,
-
         FrameOfReference,
-
         LDAP,
-
         MappingResource,
-
         ContextGroupName,
-
         Unknown
     }
 
     public enum DicomStorageCategory
     {
         None,
-
         Image,
-
         PresentationState,
-
         StructuredReport,
-
         Waveform,
-
         Document,
-
         Raw,
-
         Other,
-
         Private,
-
         Volume
     }
 
@@ -108,14 +87,15 @@ namespace Dicom
             return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
         }
 
+        [Obsolete("This validation of Uid also accepts invalid uids like leading zeros or multiple dots without numbers etc", false)]
         public static bool IsValid(string uid)
         {
-            if (String.IsNullOrEmpty(uid)) return false;
+            if (string.IsNullOrEmpty(uid)) return false;
 
             // only checks that the UID contains valid characters
             foreach (char c in uid)
             {
-                if (c != '.' && !Char.IsDigit(c)) return false;
+                if (c != '.' && !char.IsDigit(c)) return false;
             }
 
             return true;
@@ -130,17 +110,15 @@ namespace Dicom
         {
             string u = s.TrimEnd(' ', '\0');
 
-            DicomUID uid = null;
-            if (_uids.TryGetValue(u, out uid)) return uid;
+            if (_uids.TryGetValue(u, out DicomUID uid)) return uid;
 
             return new DicomUID(u, name, type);
         }
 
-        private static IDictionary<string, DicomUID> _uids;
+        private static readonly IDictionary<string, DicomUID> _uids = new ConcurrentDictionary<string, DicomUID>();
 
         static DicomUID()
         {
-            _uids = new ConcurrentDictionary<string, DicomUID>();
             LoadInternalUIDs();
             LoadPrivateUIDs();
         }
@@ -193,8 +171,8 @@ namespace Dicom
 
         public static bool operator ==(DicomUID a, DicomUID b)
         {
-            if (((object)a == null) && ((object)b == null)) return true;
-            if (((object)a == null) || ((object)b == null)) return false;
+            if ((a is null) && (b is null)) return true;
+            if ((a is null) || (b is null)) return false;
             return a.UID == b.UID;
         }
 
