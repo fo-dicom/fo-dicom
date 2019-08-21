@@ -1011,16 +1011,13 @@ namespace Dicom.Network
         private async Task DoSendMessageAsync(DicomMessage msg)
         {
             DicomPresentationContext pc;
-            if (msg is DicomCStoreRequest)
+            if (msg is DicomCStoreRequest msgCStoreReq)
             {
-                pc =
-                    Association.PresentationContexts.FirstOrDefault(
-                        x =>
-                            x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
-                            && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
+                pc = Association.PresentationContexts.FirstOrDefault(
+                        x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
+                            && x.AcceptedTransferSyntax == msgCStoreReq.TransferSyntax);
                 if (pc == null)
-                    pc =
-                        Association.PresentationContexts.FirstOrDefault(
+                    pc = Association.PresentationContexts.FirstOrDefault(
                             x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
             }
             else if (msg is DicomResponse)
@@ -1031,16 +1028,15 @@ namespace Dicom.Network
                 //fail safe if no presentation context is already assigned to the response (is this going to happen)
                 if (pc == null)
                 {
-                    pc =
-                        this.Association.PresentationContexts.FirstOrDefault<DicomPresentationContext>(
+                    pc = Association.PresentationContexts.FirstOrDefault(
                             x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
                 }
             }
             else
             {
-                pc =
-                    Association.PresentationContexts.FirstOrDefault(
-                        x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+                var metaSopClasses = MetaSopClasses.GetMetaSopClass(msg.SOPClassUID);
+                pc = Association.PresentationContexts.FirstOrDefault(
+                        x => x.Result == DicomPresentationContextResult.Accept && metaSopClasses.Contains(x.AbstractSyntax));
             }
 
             if (pc == null)
