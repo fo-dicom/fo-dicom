@@ -94,6 +94,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         private async Task SendAssociationRequest()
         {
             var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe)
@@ -101,7 +106,8 @@ namespace Dicom.Network.Client.States
                 MaxAsyncOpsInvoked = _dicomClient.AsyncInvoked,
                 MaxAsyncOpsPerformed = _dicomClient.AsyncPerformed,
                 RemoteHost = _initialisationParameters.Connection.NetworkStream.RemoteHost,
-                RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort
+                RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort,
+                MaximumPDULength = _dicomClient.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength
             };
 
             foreach (var queuedItem in _dicomClient.QueuedRequests.ToList())

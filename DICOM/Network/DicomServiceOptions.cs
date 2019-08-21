@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
     /// <summary>
@@ -13,25 +15,18 @@ namespace Dicom.Network
         /// <summary>Default options for use with the <see cref="DicomService"/> base class.</summary>
         public static class Default
         {
-            public static readonly bool LogDataPDUs = false;
-
-            public static readonly bool LogDimseDatasets = false;
-
-            public static readonly bool UseRemoteAEForLogName = false;
-
-            public static readonly uint MaxCommandBuffer = 1 * 1024; //1KB
-
-            public static readonly uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
-
-            public static readonly bool IgnoreSslPolicyErrors = false;
-
-            public static readonly bool TcpNoDelay = true;
-
-            public static readonly int MaxPDVsPerPDU = 0;
-
-            public static readonly int MaxClientsAllowed = 0;
-
-            public static readonly bool IgnoreUnsupportedTransferSyntaxChange = false;
+            public const bool LogDataPDUs = false;
+            public const bool LogDimseDatasets = false;
+            public const bool UseRemoteAEForLogName = false;
+            public const uint MaxCommandBuffer = 1 * 1024; //1KB
+            public const uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
+            public const bool IgnoreSslPolicyErrors = false;
+            public const bool TcpNoDelay = true;
+            public const int MaxPDVsPerPDU = 0;
+            public const int MaxClientsAllowed = 0;
+            public const bool IgnoreUnsupportedTransferSyntaxChange = false;
+            public static readonly TimeSpan? RequestTimeout = null;
+            public const uint MaxPDULength = 262144; // 256 Kb
         }
 
         #endregion
@@ -51,6 +46,8 @@ namespace Dicom.Network
             MaxPDVsPerPDU = Default.MaxPDVsPerPDU;
             MaxClientsAllowed = Default.MaxClientsAllowed;
             IgnoreUnsupportedTransferSyntaxChange = Default.IgnoreUnsupportedTransferSyntaxChange;
+            MaxPDULength = Default.MaxPDULength;
+            RequestTimeout = Default.RequestTimeout;
         }
 
         #endregion
@@ -78,7 +75,7 @@ namespace Dicom.Network
         /// <summary>Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; }
 
-        /// <summary>Gets or sets the maximum number of PDVs per PDU, or unlimited if set to zero. 
+        /// <summary>Gets or sets the maximum number of PDVs per PDU, or unlimited if set to zero.
         /// Setting this to 1 can work around common bugs in other implementations.</summary>
         public int MaxPDVsPerPDU { get; set; }
 
@@ -94,6 +91,16 @@ namespace Dicom.Network
         /// then the pixeldata is removed from the DICOM dataset.
         /// </summary>
         public bool IgnoreUnsupportedTransferSyntaxChange { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amount of time the client will wait for responses from the PACS
+        /// </summary>
+        public TimeSpan? RequestTimeout { get; set; }
+
+        /// <summary>
+        /// Gets the maximum PDU length, increasing this may speed up the sending of C-Store requests, but beware too high values in spotty networks.
+        /// </summary>
+        public uint MaxPDULength { get; set; }
 
         #endregion
     }

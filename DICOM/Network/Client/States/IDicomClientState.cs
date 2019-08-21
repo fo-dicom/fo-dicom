@@ -68,5 +68,12 @@ namespace Dicom.Network.Client.States
         /// <param name="request">The original request that was sent, which has now been fulfilled.</param>
         /// <param name="response">The final response from the DICOM server</param>
         Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+
+        /// <summary>
+        /// Callback when a request has timed out (no final response was received, but the timeout was exceeded and the request has been removed from the pending queue)
+        /// </summary>
+        /// <param name="request">The original request that was sent, which could not be fulfilled</param>
+        /// <param name="timeout">The timeout duration that has been exceeded</param>
+        Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout);
     }
 }

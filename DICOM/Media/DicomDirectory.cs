@@ -91,6 +91,18 @@ namespace Dicom.Media
             set => FileMetaInfo.MediaStorageSOPInstanceUID = value;
         }
 
+        internal bool ValidateItems { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset
+        /// </summary>
+        [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you need to set this property.", false)]
+        public bool AutoValidate
+        {
+            get => ValidateItems;
+            set => ValidateItems = value;
+        }
+
         #endregion
 
         #region Constructors
@@ -652,7 +664,7 @@ namespace Dicom.Media
             if (recordType == null) throw new ArgumentNullException(nameof(recordType));
             if (dataset == null) throw new ArgumentNullException(nameof(dataset));
 
-            var sequenceItem = new DicomDirectoryRecord
+            var sequenceItem = new DicomDirectoryRecord(ValidateItems)
             {
                 //add record item attributes
                 { DicomTag.OffsetOfTheNextDirectoryRecord, 0U },
