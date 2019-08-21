@@ -495,6 +495,7 @@ namespace Dicom.Network
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
             }
 
+            // SCP-SCU Role Selection Negotiation
             foreach (var pc in _assoc.PresentationContexts)
             {
                 if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
@@ -518,9 +519,40 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            foreach (var exNeg in _assoc.ExtendedNegotiations)
+            // SOP Class Extended Negotiation
+            foreach (var ex in _assoc.ExtendedNegotiations.Where(e => e.RequestedApplicationInfo?.Contains(1) == true))
             {
-                exNeg.Write(pdu);
+                pdu.Write("Item-Type", 0x56);
+                pdu.Write("Reserved", 0x00);
+                pdu.MarkLength16("Item-Length");
+                pdu.MarkLength16("SOP Class UID-Length");
+                pdu.Write("SOP Class UID", ex.SopClassUid.UID);
+                pdu.WriteLength16();
+                pdu.Write("Service Class Application Information", ex.RequestedApplicationInfo.GetValues());
+                pdu.WriteLength16();
+            }
+
+            // SOP Class Common Extended Negotiation (only in A-ASSOCIATE-RQ)
+            foreach (var commonExNeg in _assoc.ExtendedNegotiations.Where(e => e.ServiceClassUid != null))
+            {
+                pdu.Write("Item-Type", 0x57);
+                pdu.Write("Sub-item-version", 0);
+                pdu.MarkLength16("Item-Length");
+                pdu.MarkLength16("SOP Class UID-Length");
+                pdu.Write("SOP Class UID", commonExNeg.SopClassUid.UID);
+                pdu.WriteLength16();
+                pdu.MarkLength16("Service Class UID-Length");
+                pdu.Write("Service Class UID", commonExNeg.ServiceClassUid.UID);
+                pdu.WriteLength16();
+                pdu.MarkLength16("Related SOP Class Identification-Length");
+                foreach (var relatedSopClass in commonExNeg.RelatedGeneralSopClasses)
+                {
+                    pdu.MarkLength16("Related SOP Class UID-Length");
+                    pdu.Write("Related SOP Class UID", relatedSopClass.UID);
+                    pdu.WriteLength16();
+                }
+                pdu.WriteLength16();
+                pdu.WriteLength16();
             }
 
             pdu.WriteLength16();
@@ -633,7 +665,35 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x56)
                         {
-                            _assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
+                            var uidLen = raw.ReadUInt16("SOP Class UID Length");
+                            var uid = DicomUID.Parse(raw.ReadString("SOP Class UID", uidLen));
+                            var infoLen = ul - uidLen - 2;
+                            var info = raw.ReadBytes("Service Class Application Information", infoLen);
+                            var appInfo = DicomServiceApplicationInfo.Create(uid, info);
+                            _assoc.ExtendedNegotiations.AddOrUpdate(uid, appInfo);
+                        }
+                        else if (ut == 0x57)
+                        {
+                            var uidLen = raw.ReadUInt16("SOP Class UID Length");
+                            var uid = DicomUID.Parse(raw.ReadString("SOP Class UID", uidLen));
+                            var serviceUidLen = raw.ReadUInt16("Service Class UID Length");
+                            var serviceUid = DicomUID.Parse(raw.ReadString("Service Class UID", serviceUidLen));
+                            var relLen = raw.ReadUInt16("Related General SOP Class Identification Length");
+                            var relatedUids = new List<DicomUID>();
+                            var rl = relLen;
+                            while (rl > 1)
+                            {
+                                var relUidLen = raw.ReadUInt16("Related General SOP Class UID Length");
+                                relatedUids.Add(DicomUID.Parse(raw.ReadString("Related General SOP Class UID", relUidLen)));
+                                rl -= (ushort)(relUidLen + 2);
+                            }
+                            _assoc.ExtendedNegotiations.AddOrUpdate(uid, serviceUid, relatedUids.ToArray());
+
+                            var remaining = ul - 2 - uidLen - 2 - serviceUidLen - 2 - relLen;
+                            if (remaining > 0)
+                            {
+                                raw.SkipBytes("User Item Value", remaining);
+                            }
                         }
                         else
                         {
@@ -754,6 +814,7 @@ namespace Dicom.Network
                 pdu.Write("Asynchronous Operations Performed", (ushort)_assoc.MaxAsyncOpsPerformed);
             }
 
+            // SCP-SCU Role Selection Negotiation
             foreach (var pc in _assoc.PresentationContexts)
             {
                 if (pc.UserRole.HasValue || pc.ProviderRole.HasValue)
@@ -777,9 +838,17 @@ namespace Dicom.Network
             pdu.Write("Implementation Version", DicomImplementation.Version);
             pdu.WriteLength16();
 
-            foreach (var exNeg in _assoc.ExtendedNegotiations)
+            // SOP Class Extended Negotiation
+            foreach (var ex in _assoc.ExtendedNegotiations.Where(e => e.AcceptedApplicationInfo?.Contains(1) == true))
             {
-                exNeg.Write(pdu);
+                pdu.Write("Item-Type", 0x56);
+                pdu.Write("Reserved", 0x00);
+                pdu.MarkLength16("Item-Length");
+                pdu.MarkLength16("SOP Class UID-Length");
+                pdu.Write("SOP Class UID", ex.SopClassUid.UID);
+                pdu.WriteLength16();
+                pdu.Write("Service Class Application Information", ex.AcceptedApplicationInfo.GetValues());
+                pdu.WriteLength16();
             }
 
             pdu.WriteLength16();
@@ -901,7 +970,12 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x56)
                         {
-                            _assoc.ExtendedNegotiations.Add(DicomExtendedNegotiation.Create(raw, ul));
+                            var uidLen = raw.ReadUInt16("SOP Class UID Length");
+                            var uid = DicomUID.Parse(raw.ReadString("SOP Class UID", uidLen));
+                            var infoLen = ul - 2 - uidLen;
+                            var info = raw.ReadBytes("Service Class Application Information", infoLen);
+                            var appInfo = DicomServiceApplicationInfo.Create(uid, info);
+                            _assoc.ExtendedNegotiations.AcceptApplicationInfo(uid, appInfo);
                         }
                         else
                         {
