@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
-namespace Dicom.Network
-{
 
 namespace Dicom.Network
 {
