@@ -282,9 +282,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\INetworkStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\PDU.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\RootQueryRetrieveInfoMove.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ScopedNetworkManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\StudyRootQueryRetrieveInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\FilmSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Printing\ImageBox.cs" />
