@@ -1275,6 +1275,57 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Theory]
+        [InlineData(2,1,2 )]
+        [InlineData(10,2,5)]
+        [InlineData(10,10,1)]
+        [InlineData(100,10,10 )]
+        public async Task SendAsync_MaxRequestsPerAssoc_ShouldAlwaysCreateCorrectNumberOfAssociations(int numberOfRequests, int maxRequestsPerAssoc, int expectedNumberOfAssociations)
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(10, 10);
+                client.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
+
+                logger.Info($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
+
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
+                for (var i = 1; i <= numberOfRequests; i++)
+                {
+                    var iLocal = i;
+                    var dicomCEchoRequest = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) =>
+                        {
+                            logger.Debug($"Request completed: {iLocal}");
+                            responses.Add(response);
+                        }
+                    };
+                    await client.AddRequestAsync(dicomCEchoRequest).ConfigureAwait(false);
+                }
+
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+                {
+                    await client.SendAsync(cts.Token).ConfigureAwait(false);
+                }
+
+                AllResponsesShouldHaveSucceeded(responses);
+
+                Assert.Equal(numberOfRequests, responses.Count());
+
+                Assert.Equal(expectedNumberOfAssociations, server.Providers.Count());
+
+                foreach (var provider in server.Providers)
+                {
+                    Assert.InRange(provider.Requests.Count(), 0, maxRequestsPerAssoc);
+                }
+            }
+        }
+
         #region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider

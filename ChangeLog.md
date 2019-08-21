@@ -1,6 +1,7 @@
 #### v.4.0.3 (TBD)
 * Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
 * Bug fix: Do not open new associations on the existing TCP connection (#896)
+* New feature: Add the ability to enforce a maximum number of DICOM requests per association to the new DICOM client (#898)
 * Add AutoValidate property also to DicomDirectory class.
 * Add support for timeout detection on DICOM requests. Events on Requests and DicomClient are thrown in case of timeout (#666, #236)
 * New Option MaxPDULength in DicomServiceOption.
