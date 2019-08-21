@@ -95,6 +95,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             // We can mostly ignore the cancellation token in this state, unless the cancellation mode is set to "Immediately abort"
