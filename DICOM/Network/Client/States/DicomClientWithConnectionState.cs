@@ -28,6 +28,8 @@ namespace Dicom.Network.Client.States
         public abstract Task OnSendQueueEmptyAsync();
 
         public abstract Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+        
+        public abstract Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout);
 
         public abstract Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation);
 

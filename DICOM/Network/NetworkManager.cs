@@ -63,11 +63,25 @@ namespace Dicom.Network
         /// <summary>
         /// Implementation of the machine name getter.
         /// </summary>
-        protected abstract string MachineNameImpl { get; }
+        protected internal abstract string MachineNameImpl { get; }
+
+        /// <summary>
+        /// Gets the currently active, static implementation
+        /// </summary>
+        internal static NetworkManager Implementation => _implementation;
 
         #endregion
 
         #region METHODS
+
+        /// <summary>
+        /// Instead of statically 'setting' the network manager (which changes the behavior for everything in the same AppDomain)
+        /// it is also possible to use a scoped network manager which only impacts consumers with a reference to this scoped network manager.
+        /// </summary>
+        public static ScopedNetworkManager Use(NetworkManager implementation)
+        {
+            return new ScopedNetworkManager(implementation);
+        }
 
         /// <summary>
         /// Sets the network manager implementation to use.
@@ -86,7 +100,7 @@ namespace Dicom.Network
         [Obsolete("Use the CreateNetworkListener(string, int) overload with IPv4Any in string argument.")]
         public static INetworkListener CreateNetworkListener(int port)
         {
-            return CreateNetworkListener(IPv4Any, port);
+            return Use(_implementation).CreateNetworkListener(IPv4Any, port);
         }
 
         /// <summary>
@@ -97,7 +111,7 @@ namespace Dicom.Network
         /// <returns>Network listener implementation.</returns>
         public static INetworkListener CreateNetworkListener(string ipAddress, int port)
         {
-            return _implementation.CreateNetworkListenerImpl(ipAddress, port);
+            return Use(_implementation).CreateNetworkListener(ipAddress, port);
         }
 
         /// <summary>
@@ -112,7 +126,7 @@ namespace Dicom.Network
         /// <returns>Network stream implementation.</returns>
         public static INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout = DefaultAssociationTimeout)
         {
-            return _implementation.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
+            return Use(_implementation).CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
         /// <summary>
@@ -124,7 +138,7 @@ namespace Dicom.Network
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
         public static bool IsSocketException(Exception exception, out int errorCode, out string errorDescriptor)
         {
-            return _implementation.IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
+            return Use(_implementation).IsSocketException(exception, out errorCode, out errorDescriptor);
         }
 
         /// <summary>
@@ -134,7 +148,7 @@ namespace Dicom.Network
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
         public static bool TryGetNetworkIdentifier(out DicomUID identifier)
         {
-            return _implementation.TryGetNetworkIdentifierImpl(out identifier);
+            return Use(_implementation).TryGetNetworkIdentifier(out identifier);
         }
 
         /// <summary>
@@ -143,7 +157,7 @@ namespace Dicom.Network
         /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
-        protected abstract INetworkListener CreateNetworkListenerImpl(string ipAddress, int port);
+        protected internal abstract INetworkListener CreateNetworkListenerImpl(string ipAddress, int port);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -155,7 +169,7 @@ namespace Dicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
-        protected abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
+        protected internal abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
@@ -164,14 +178,14 @@ namespace Dicom.Network
         /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
-        protected abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor);
+        protected internal abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor);
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
         /// </summary>
         /// <param name="identifier">Unique network identifier, if found.</param>
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
-        protected abstract bool TryGetNetworkIdentifierImpl(out DicomUID identifier);
+        protected internal abstract bool TryGetNetworkIdentifierImpl(out DicomUID identifier);
 
         #endregion
     }

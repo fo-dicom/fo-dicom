@@ -82,6 +82,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             var sendAbort = _initialisationParameters.Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified);
