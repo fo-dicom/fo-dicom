@@ -95,6 +95,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
             // We can mostly ignore the cancellation token in this state, unless the cancellation mode is set to "Immediately abort"
@@ -128,15 +133,7 @@ namespace Dicom.Network.Client.States
             {
                 _dicomClient.NotifyAssociationReleased();
 
-                if (!cancellation.Token.IsCancellationRequested && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _))
-                {
-                    _dicomClient.Logger.Debug($"[{this}] More requests need to be sent after association release, creating new association");
-                    return await _dicomClient.TransitionToRequestAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
-                }
-
-                _dicomClient.Logger.Debug(cancellation.Token.IsCancellationRequested
-                    ? $"[{this}] Cancellation requested, disconnecting..."
-                    : $"[{this}] No more requests to be sent, disconnecting...");
+                _dicomClient.Logger.Debug($"[{this}] Association release response received, disconnecting...");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
 
 namespace Dicom.Network
@@ -12,14 +13,14 @@ namespace Dicom.Network
     /// The following example shows how to use the <see cref="DicomClient"/> class to send DICOM C-Store requests to a DICOM C-Store SCP.
     /// <code>
     /// var client = new DicomClient();
-    /// 
+    ///
     /// // queue C-Store request to send DICOM file
     /// client.Add(new DicomCStoreRequest(@"test1.dcm") {
     ///		OnResponseReceived = (DicomCStoreRequest req, DicomCStoreResponse rsp) => {
     ///			Console.WriteLine("{0}: {1}", req.SOPInstanceUID, rsp.Status);
     ///		}
     /// });
-    /// 
+    ///
     /// // queue C-Store request with additional proposed transfer syntaxes
     /// client.Add(new DicomCStoreRequest(@"test2.dcm") {
     ///		AdditionalTransferSyntaxes = new DicomTransferSyntax[] {
@@ -27,7 +28,7 @@ namespace Dicom.Network
     ///			DicomTransferSyntax.JPEG2000Lossless
     ///		}
     /// });
-    /// 
+    ///
     /// // connect and send queued requests
     /// client.Send("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
     /// </code>
@@ -53,11 +54,11 @@ namespace Dicom.Network
         /// <param name="priority">Priority of request</param>
         public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium)
             : base(DicomCommandField.CStoreRequest, file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID), priority)
-        {            
+        {
             File = file;
             Dataset = file.Dataset;
 
-            // for potentially invalid UID values, we have to disable validation 
+            // for potentially invalid UID values, we have to disable validation
             using (var unvalidated = new UnvalidatedScope(Command))
             {
                 SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
@@ -95,7 +96,7 @@ namespace Dicom.Network
 
         /// <summary>
         /// Additional transfer syntaxes to propose in the association request.
-        /// 
+        ///
         /// DICOM dataset will be transcoded on the fly if necessary.
         /// </summary>
         public DicomTransferSyntax[] AdditionalTransferSyntaxes { get; set; }
@@ -136,6 +137,5 @@ namespace Dicom.Network
                 // ignore exceptions
             }
         }
-
     }
 }

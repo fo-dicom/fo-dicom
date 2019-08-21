@@ -99,6 +99,11 @@ namespace Dicom.Network.Client.States
             return CompletedTaskProvider.CompletedTask;
         }
 
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+        {
+            return CompletedTaskProvider.CompletedTask;
+        }
+
         private async Task<IDicomClientState> OnCancel(DicomClientCancellation cancellation)
         {
             switch (cancellation.Mode)

@@ -59,17 +59,29 @@ namespace Dicom.Network.Client
         int AssociationLingerTimeoutInMs { get; }
 
         /// <summary>
+        /// Gets the maximum number of DICOM requests that are allowed to be sent over one single association.
+        /// When this limit is reached, the DICOM client will wait for pending requests to complete, and then open a new association
+        /// to send the remaining requests, if any.
+        /// </summary>
+        int? MaximumNumberOfRequestsPerAssociation { get; }
+
+        /// <summary>
         /// Gets or sets the handler of a client C-STORE request.
         /// </summary>
         DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
         /// <summary>
-        /// Representation of the DICOM association accepted event.
+        /// Gets or sets the network manager that will be used to open connections.
+        /// </summary>
+        NetworkManager NetworkManager { get; set; }
+
+        /// <summary>
+        /// Triggers when an association is accepted
         /// </summary>
         event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
 
         /// <summary>
-        /// Representation of the DICOM association rejected event.
+        /// Triggers when an association is rejected.
         /// </summary>
         event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
 
@@ -81,7 +93,12 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
         /// </summary>
-        event EventHandler<StateChangedEventArgs> StateChanged;
+        event EventHandler<EventArguments.StateChangedEventArgs> StateChanged;
+
+        /// <summary>
+        /// Triggered when a DICOM request times out.
+        /// </summary>
+        event EventHandler<EventArguments.RequestTimedOutEventArgs> RequestTimedOut;
 
         /// <summary>
         /// Set negotiation asynchronous operations.
@@ -130,6 +147,7 @@ namespace Dicom.Network.Client
         public int AssociationRequestTimeoutInMs { get; set; }
         public int AssociationReleaseTimeoutInMs { get; set; }
         public int AssociationLingerTimeoutInMs { get; set; }
+        public int? MaximumNumberOfRequestsPerAssociation { get; set; }
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
         public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
         public DicomServiceOptions Options { get; set; }
@@ -137,11 +155,13 @@ namespace Dicom.Network.Client
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+        public NetworkManager NetworkManager { get; set; }
 
         public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
         public event EventHandler<StateChangedEventArgs> StateChanged;
+        public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
@@ -154,10 +174,12 @@ namespace Dicom.Network.Client
         /// <param name="associationRequestTimeoutInMs">Timeout in milliseconds for establishing association.</param>
         /// <param name="associationReleaseTimeoutInMs">Timeout in milliseconds to break off association</param>
         /// <param name="associationLingerTimeoutInMs">Timeout in milliseconds to keep open association after all requests have been processed.</param>
+        /// <param name="maximumNumberOfRequestsPerAssociation">The maximum number of DICOM requests that can be sent over a single DICOM association</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             int associationRequestTimeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs,
             int associationReleaseTimeoutInMs = DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,
-            int associationLingerTimeoutInMs = DicomClientDefaults.DefaultAssociationLingerInMs)
+            int associationLingerTimeoutInMs = DicomClientDefaults.DefaultAssociationLingerInMs,
+            int? maximumNumberOfRequestsPerAssociation = null)
         {
             Host = host;
             Port = port;
@@ -167,6 +189,7 @@ namespace Dicom.Network.Client
             AssociationRequestTimeoutInMs = associationRequestTimeoutInMs;
             AssociationReleaseTimeoutInMs = associationReleaseTimeoutInMs;
             AssociationLingerTimeoutInMs = associationLingerTimeoutInMs;
+            MaximumNumberOfRequestsPerAssociation = maximumNumberOfRequestsPerAssociation;
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
@@ -219,11 +242,17 @@ namespace Dicom.Network.Client
         internal void NotifyAssociationReleased()
             => AssociationReleased?.Invoke(this, EventArgs.Empty);
 
+        internal void NotifyRequestTimedOut(EventArguments.RequestTimedOutEventArgs eventArgs)
+            => RequestTimedOut?.Invoke(this, eventArgs);
+
         internal Task OnSendQueueEmptyAsync()
             => State.OnSendQueueEmptyAsync();
 
         internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
             => State.OnRequestCompletedAsync(request, response);
+
+        internal Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
+            => State.OnRequestTimedOutAsync(request, timeout);
 
         internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
             => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));

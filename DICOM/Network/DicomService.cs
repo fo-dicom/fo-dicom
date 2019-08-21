@@ -110,6 +110,8 @@ namespace Dicom.Network
 
         protected IFileReference _dimseStreamFile;
 
+        private int _isCheckingForTimeouts = 0;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -840,6 +842,10 @@ namespace Dicom.Network
                                 await connection.OnRequestCompletedAsync(req, rsp).ConfigureAwait(false);
                             }
                         }
+                        else
+                        {
+                            req.LastPendingResponseReceived = DateTime.Now;
+                        }
                     }
                 }
 
@@ -986,9 +992,15 @@ namespace Dicom.Network
 
                     msg = _msgQueue.Dequeue();
 
-                    if (msg is DicomRequest)
+                    if (msg is DicomRequest dicomRequest)
                     {
-                        _pending.Add(msg as DicomRequest);
+                        _pending.Add(dicomRequest);
+
+                        dicomRequest.PendingSince = DateTime.Now;
+
+#pragma warning disable 4014 This call should not be awaited because it can only complete when the pending queue is empty
+                        Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
+#pragma warning restore 4014
                     }
                 }
 
@@ -1011,13 +1023,13 @@ namespace Dicom.Network
         private async Task DoSendMessageAsync(DicomMessage msg)
         {
             DicomPresentationContext pc;
-            if (msg is DicomCStoreRequest)
+            if (msg is DicomCStoreRequest dicomCStoreRequest)
             {
                 pc =
                     Association.PresentationContexts.FirstOrDefault(
                         x =>
                             x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
-                            && x.AcceptedTransferSyntax == (msg as DicomCStoreRequest).TransferSyntax);
+                            && x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax);
                 if (pc == null)
                     pc =
                         Association.PresentationContexts.FirstOrDefault(
@@ -1169,7 +1181,7 @@ namespace Dicom.Network
                 PDataTFStream stream = null;
                 try
                 {
-                    stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength);
+                    stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength, msg);
 
                     var writer = new DicomWriter(
                         DicomTransferSyntax.ImplicitVRLittleEndian,
@@ -1202,9 +1214,61 @@ namespace Dicom.Network
                     {
                         await stream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                         stream.Dispose();
+                        msg.LastPDUSent = DateTime.Now;
                     }
                 }
             }
+        }
+
+        private async Task CheckForTimeouts()
+        {
+            if (Options?.RequestTimeout == null)
+                return;
+
+            var requestTimeout = Options.RequestTimeout.Value;
+
+            if (Interlocked.CompareExchange(ref _isCheckingForTimeouts, 1, 0) != 0)
+                return;
+
+            List<DicomRequest> timedOutPendingRequests;
+            lock (_lock)
+            {
+                if (!_pending.Any())
+                    return;
+
+                timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
+            }
+
+            if (timedOutPendingRequests.Any())
+            {
+                for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
+                {
+                    DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
+                    try
+                    {
+                        Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                        timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
+                    }
+                    finally
+                    {
+                        lock (_lock)
+                        {
+                            _pending.Remove(timedOutPendingRequest);
+                        }
+
+                        if (this is IDicomClientConnection connection)
+                        {
+                            await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+
+            _isCheckingForTimeouts = 0;
+
+            await CheckForTimeouts().ConfigureAwait(false);
         }
 
         private async Task<bool> TryCloseConnectionAsync(Exception exception = null, bool force = false)
@@ -1250,6 +1314,14 @@ namespace Dicom.Network
 
             if (exception != null) throw exception;
             return true;
+        }
+
+        private bool IsStillPending(DicomRequest request)
+        {
+            lock (_lock)
+            {
+                return _pending.Contains(request);
+            }
         }
 
         #endregion
@@ -1401,6 +1473,8 @@ namespace Dicom.Network
 
             private readonly byte _pcid;
 
+            private readonly DicomMessage _dicomMessage;
+
             private PDataTF _pdu;
 
             private byte[] _bytes;
@@ -1411,11 +1485,12 @@ namespace Dicom.Network
 
             #region Public Constructors
 
-            public PDataTFStream(DicomService service, byte pcid, uint max)
+            public PDataTFStream(DicomService service, byte pcid, uint max, DicomMessage dicomMessage)
             {
                 _service = service;
                 _command = true;
                 _pcid = pcid;
+                _dicomMessage = dicomMessage;
                 _pduMax = Math.Min(max, Int32.MaxValue);
                 _max = _pduMax == 0
                            ? _service.Options.MaxCommandBuffer
@@ -1490,6 +1565,13 @@ namespace Dicom.Network
 
             private async Task WritePDUAsync(bool last)
             {
+                // Immediately stop sending PDUs if the message is no longer pending (e.g. because it timed out)
+                if (_dicomMessage is DicomRequest req && !_service.IsStillPending(req))
+                {
+                    _pdu = new PDataTF();
+                    return;
+                }
+
                 if (_length > 0) await CreatePDVAsync(last).ConfigureAwait(false);
 
                 if (_pdu.PDVs.Count > 0)
@@ -1497,6 +1579,8 @@ namespace Dicom.Network
                     if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
 
                     await _service.SendPDUAsync(_pdu).ConfigureAwait(false);
+
+                    _dicomMessage.LastPDUSent = DateTime.Now;
 
                     _pdu = new PDataTF();
                 }

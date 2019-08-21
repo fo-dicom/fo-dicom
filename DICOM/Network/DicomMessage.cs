@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace Dicom.Network
 {
     using System.Text;
-
     using Dicom.Log;
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace Dicom.Network
         public DicomCommandField Type
         {
             get => Command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
-            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
+            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort) value);
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Dicom.Network
         /// <summary>
         /// Gets a value indicating whether the message contains a dataset.
         /// </summary>
-        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort)0x0101) != 0x0101;
+        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort) 0x0101) != 0x0101;
 
         /// <summary>
         /// Gets or sets the presentation Context.
@@ -119,7 +120,7 @@ namespace Dicom.Network
             set
             {
                 _dataset = value;
-                Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort)0x0202 : (ushort)0x0101);
+                Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort) 0x0202 : (ushort) 0x0101);
             }
         }
 
@@ -127,6 +128,40 @@ namespace Dicom.Network
         /// Gets or sets the state object that will be passed from request to response objects.
         /// </summary>
         public object UserState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp when the message was taken from the message queue and added to the pending list (i.e. the DICOM request is being sent or already waiting for a response)
+        /// </summary>
+        public DateTime? PendingSince { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp of when the last PDU was sent
+        /// </summary>
+        public DateTime? LastPDUSent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp of when the last response with status 'Pending' was received
+        /// </summary>
+        public DateTime? LastPendingResponseReceived { get; set; }
+
+        /// <summary>
+        /// Given a timeout duration, returns whether this DICOM message is considered timed out or not.
+        /// </summary>
+        /// <param name="timeout">The timeout duration that should be taken into account</param>
+        /// <returns>Whether this DICOM message is considered timed out or not.</returns>
+        public bool IsTimedOut(TimeSpan timeout)
+        {
+            if (LastPendingResponseReceived != null)
+                return LastPendingResponseReceived.Value.Add(timeout) < DateTime.Now;
+
+            if (LastPDUSent != null)
+                return LastPDUSent.Value.Add(timeout) < DateTime.Now;
+
+            if(PendingSince != null)
+                return PendingSince.Value.Add(timeout) < DateTime.Now;
+
+            return false;
+        }
 
         /// <summary>
         /// Formatted output of the DICOM message.
@@ -235,7 +270,7 @@ namespace Dicom.Network
         /// <returns>True if message is a request, false otherwise.</returns>
         public static bool IsRequest(DicomCommandField type)
         {
-            return ((int)type & 0x8000) == 0;
+            return ((int) type & 0x8000) == 0;
         }
     }
 }

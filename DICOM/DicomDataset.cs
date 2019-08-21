@@ -1318,6 +1318,8 @@ namespace Dicom
             if (vr == DicomVR.DS)
             {
                 if (values == null) return DoAdd(new DicomDecimalString(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(float)) return DoAdd(new DicomDecimalString(tag, values.Cast<float>().Select(Convert.ToDecimal).ToArray()), allowUpdate);
+                if (typeof(T) == typeof(double)) return DoAdd(new DicomDecimalString(tag, values.Cast<double>().Select(Convert.ToDecimal).ToArray()), allowUpdate);
                 if (typeof(T) == typeof(decimal)) return DoAdd(new DicomDecimalString(tag, values.Cast<decimal>().ToArray()), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomDecimalString(tag, values.Cast<string>().ToArray()), allowUpdate);
             }
@@ -1338,6 +1340,7 @@ namespace Dicom
             if (vr == DicomVR.FD)
             {
                 if (values == null) return DoAdd(new DicomFloatingPointDouble(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<float>().Select(Convert.ToDouble).ToArray()), allowUpdate);
                 if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out IEnumerable<double> parsedValues))
@@ -1350,6 +1353,7 @@ namespace Dicom
             {
                 if (values == null) return DoAdd(new DicomFloatingPointSingle(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()), allowUpdate);
+                if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<double>().Select(Convert.ToSingle).ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out IEnumerable<float> parsedValues))
                 {
