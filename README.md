@@ -117,7 +117,7 @@ image.RenderImage().AsUIImage().AsJPEG().Save(@"test.jpg", true);     // iOS
 #### C-Store SCU
 ```csharp
 var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
-client.AddRequest(new DicomCStoreRequest(@"test.dcm"));
+await client.AddRequestAsync(new DicomCStoreRequest(@"test.dcm"));
 await client.SendAsync();
 ```
 
@@ -128,7 +128,7 @@ var server = new DicomServer<DicomCEchoProvider>(12345);
 var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 client.NegotiateAsyncOps();
 for (int i = 0; i < 10; i++)
-    client.AddRequest(new DicomCEchoRequest());
+    await client.AddRequestAsync(new DicomCEchoRequest());
 await client.SendAsync();
 ```
 
@@ -140,7 +140,7 @@ cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
 };
 
 var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
-client.AddRequest(cfind);
+await client.AddRequestAsync(cfind);
 await client.SendAsync();
 ```
 
@@ -149,7 +149,7 @@ await client.SendAsync();
 var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
 
 var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
-client.AddRequest(cmove);
+await client.AddRequestAsync(cmove);
 await client.SendAsync(); 
 ```
 
