@@ -11,6 +11,20 @@ namespace Dicom
     public static class DicomValidation
     {
 
+        internal static bool PerformValidation { get; set; } = true;
+
+
+        /// <summary>
+        /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset.
+        /// This gobal property enables you to disable validation gobally instead of turning validation off for every single DicomDataset.
+        /// </summary>
+        [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you set this property to true.", false)]
+        public static bool AutoValidation
+        {
+            get => PerformValidation;
+            set => PerformValidation = value;
+        }
+
 
         public static void ValidateAE(string content)
         {

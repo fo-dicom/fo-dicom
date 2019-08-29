@@ -119,7 +119,12 @@ namespace Dicom
         }
 
 
-        internal bool ValidateItems { get; set; } = true;
+        internal bool _validateItems = true;
+        internal bool ValidateItems
+        {
+            get => _validateItems && DicomValidation.PerformValidation;
+            set => _validateItems = value;
+        }
 
         /// <summary>
         /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset
@@ -127,7 +132,7 @@ namespace Dicom
         [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you need to set this property.", false)]
         public bool AutoValidate
         {
-            get => ValidateItems;
+            get => _validateItems;
             set => ValidateItems = value;
         }
 
@@ -663,7 +668,8 @@ namespace Dicom
         #region METHODS
 
         /// <summary>
-        /// Performs a validation of all DICOM items that are contained in this DicomDataset
+        /// Performs a validation of all DICOM items that are contained in this DicomDataset. This explicit call for validation ignores the
+        /// gobal DicomValidation.AutoValidate and DicomDataset.AutoValidate property.
         /// </summary>
         /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
         public void Validate()
@@ -1588,7 +1594,7 @@ namespace Dicom
     public class UnvalidatedScope : IDisposable
     {
         private DicomDataset _dataset;
-        private bool _validation;
+        private readonly bool _validation;
 
         public UnvalidatedScope(DicomDataset dataSet)
         {

@@ -79,6 +79,21 @@ namespace Dicom
 
 
         [Fact]
+        public void DicomValidation_ValidateCodeStringWithGlobalSuppression()
+        {
+            DicomValidation.AutoValidation = false;
+            var ds = new DicomDataset();
+            var validAETitle = "HUGO1";
+            ds.Add(DicomTag.ReferencedFileID, validAETitle);
+
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "Hugo1")));
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGO-1")));
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGOHUGOHUGOHUGO1")));
+            DicomValidation.AutoValidation = true;
+        }
+
+
+        [Fact]
         public void AddInvalidUIDMultiplicity()
         {
             Assert.Throws<DicomValidationException>(() =>
@@ -100,6 +115,30 @@ namespace Dicom
             });
         }
 
+
+        [Fact()]
+        public void AddInvalidUIDMultiplicityWithGlobalSuppression()
+        {
+            DicomValidation.PerformValidation = false;
+            Assert.Null(Record.Exception(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5");
+            }));
+
+            Assert.Null(Record.Exception(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4");
+            }));
+
+            Assert.Null(Record.Exception(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5"));
+            }));
+            DicomValidation.PerformValidation = true;
+        }
 
         #endregion
 
