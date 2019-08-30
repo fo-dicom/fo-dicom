@@ -6,8 +6,9 @@
 * Add support for timeout detection on DICOM requests. Events on Requests and DicomClient are thrown in case of timeout (#666, #236)
 * New Option MaxPDULength in DicomServiceOption.
 * Rewrite SOP class extended negotiation support (#740)
-* Bub fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
+* Bug fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
 * Global static property DicomValidation.PerformValidation to turn off validation for every DicomDataset. 
+* Bug fix: Prevent DICOM client from freezing when too many DICOM requests time out and async operations invoked is a low number
 
 #### v.4.0.2 (7/30/2019)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
