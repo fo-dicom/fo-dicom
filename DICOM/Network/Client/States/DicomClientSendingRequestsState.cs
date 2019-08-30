@@ -132,6 +132,10 @@ namespace Dicom.Network.Client.States
                 {
                     _sendMoreRequests.Set();
                 }
+            } 
+            else if (Connection.IsSendNextMessageRequired)
+            {
+                _sendMoreRequests.Set();
             }
         }
 
