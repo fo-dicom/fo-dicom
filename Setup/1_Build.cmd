@@ -1,6 +1,6 @@
 @echo off
 
-@set "VS17COMMONTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\"
+@set "VS17COMMONTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\"
 @if NOT EXIST "%VS17COMMONTOOLS%" goto error_VS17_notfound
 
 echo.

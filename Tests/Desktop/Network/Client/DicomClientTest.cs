@@ -323,6 +323,32 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
+        public async Task SendAsync_RecordAssociationData_AssociationContainsExtendedNegotiation()
+        {
+            int port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var requestedNegotiation = new DicomExtendedNegotiation(
+                    DicomUID.Verification,
+                    new DicomServiceApplicationInfo(new byte[] {1, 1, 1}));
+                DicomExtendedNegotiationCollection acceptedNegotiations = null;
+
+                client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
+                client.AssociationAccepted += (sender, args) => acceptedNegotiations = args.Association.ExtendedNegotiations;
+
+                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
+
+                Assert.NotNull(acceptedNegotiations);
+                Assert.NotEmpty(acceptedNegotiations);
+                var acceptedNegotiation = acceptedNegotiations.First();
+                Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
+                Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
+            }
+        }
+
+        [Fact]
         public async Task SendAsync_RejectedAssociation_ShouldYieldException()
         {
             var port = Ports.GetNext();
@@ -1275,6 +1301,57 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Theory]
+        [InlineData(2,1,2 )]
+        [InlineData(10,2,5)]
+        [InlineData(10,10,1)]
+        [InlineData(100,10,10 )]
+        public async Task SendAsync_MaxRequestsPerAssoc_ShouldAlwaysCreateCorrectNumberOfAssociations(int numberOfRequests, int maxRequestsPerAssoc, int expectedNumberOfAssociations)
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
+            {
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(10, 10);
+                client.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
+
+                logger.Info($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
+
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
+                for (var i = 1; i <= numberOfRequests; i++)
+                {
+                    var iLocal = i;
+                    var dicomCEchoRequest = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (request, response) =>
+                        {
+                            logger.Debug($"Request completed: {iLocal}");
+                            responses.Add(response);
+                        }
+                    };
+                    await client.AddRequestAsync(dicomCEchoRequest).ConfigureAwait(false);
+                }
+
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+                {
+                    await client.SendAsync(cts.Token).ConfigureAwait(false);
+                }
+
+                AllResponsesShouldHaveSucceeded(responses);
+
+                Assert.Equal(numberOfRequests, responses.Count());
+
+                Assert.Equal(expectedNumberOfAssociations, server.Providers.Count());
+
+                foreach (var provider in server.Providers)
+                {
+                    Assert.InRange(provider.Requests.Count(), 0, maxRequestsPerAssoc);
+                }
+            }
+        }
+
         #region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1289,6 +1366,11 @@ namespace Dicom.Network.Client
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.AcceptTransferSyntaxes(DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
+
+                foreach (var exNeg in association.ExtendedNegotiations)
+                {
+                    exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
                 }
 
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))

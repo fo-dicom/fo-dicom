@@ -39,7 +39,7 @@ namespace Dicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        protected override string MachineNameImpl
+        protected internal override string MachineNameImpl
         {
             get
             {
@@ -89,19 +89,19 @@ namespace Dicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        protected override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
+        protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
         {
             return new WindowsNetworkListener(ipAddress, port);
         }
 
         /// <inheritdoc />
-        protected override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
+        protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
         {
             return new WindowsNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
         /// <inheritdoc />
-        protected override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
+        protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
         {
             var socketEx = exception as SocketException;
             if (socketEx != null)
@@ -117,7 +117,7 @@ namespace Dicom.Network
         }
 
         /// <inheritdoc />
-        protected override bool TryGetNetworkIdentifierImpl(out DicomUID identifier)
+        protected internal override bool TryGetNetworkIdentifierImpl(out DicomUID identifier)
         {
             var profile = NetworkInformation.GetInternetConnectionProfile();
 

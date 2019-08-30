@@ -119,7 +119,12 @@ namespace Dicom
         }
 
 
-        internal bool ValidateItems { get; set; } = true;
+        internal bool _validateItems = true;
+        internal bool ValidateItems
+        {
+            get => _validateItems && DicomValidation.PerformValidation;
+            set => _validateItems = value;
+        }
 
         /// <summary>
         /// Gets or sets if the content of DicomItems shall be validated as soon as they are added to the DicomDataset
@@ -127,7 +132,7 @@ namespace Dicom
         [Obsolete("Use this property with care. You can suppress validation, but be aware you might create invalid Datasets if you need to set this property.", false)]
         public bool AutoValidate
         {
-            get => ValidateItems;
+            get => _validateItems;
             set => ValidateItems = value;
         }
 
@@ -663,7 +668,8 @@ namespace Dicom
         #region METHODS
 
         /// <summary>
-        /// Performs a validation of all DICOM items that are contained in this DicomDataset
+        /// Performs a validation of all DICOM items that are contained in this DicomDataset. This explicit call for validation ignores the
+        /// gobal DicomValidation.AutoValidate and DicomDataset.AutoValidate property.
         /// </summary>
         /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
         public void Validate()
@@ -1318,6 +1324,8 @@ namespace Dicom
             if (vr == DicomVR.DS)
             {
                 if (values == null) return DoAdd(new DicomDecimalString(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(float)) return DoAdd(new DicomDecimalString(tag, values.Cast<float>().Select(Convert.ToDecimal).ToArray()), allowUpdate);
+                if (typeof(T) == typeof(double)) return DoAdd(new DicomDecimalString(tag, values.Cast<double>().Select(Convert.ToDecimal).ToArray()), allowUpdate);
                 if (typeof(T) == typeof(decimal)) return DoAdd(new DicomDecimalString(tag, values.Cast<decimal>().ToArray()), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomDecimalString(tag, values.Cast<string>().ToArray()), allowUpdate);
             }
@@ -1338,6 +1346,7 @@ namespace Dicom
             if (vr == DicomVR.FD)
             {
                 if (values == null) return DoAdd(new DicomFloatingPointDouble(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<float>().Select(Convert.ToDouble).ToArray()), allowUpdate);
                 if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out IEnumerable<double> parsedValues))
@@ -1350,6 +1359,7 @@ namespace Dicom
             {
                 if (values == null) return DoAdd(new DicomFloatingPointSingle(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()), allowUpdate);
+                if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<double>().Select(Convert.ToSingle).ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out IEnumerable<float> parsedValues))
                 {
@@ -1584,7 +1594,7 @@ namespace Dicom
     public class UnvalidatedScope : IDisposable
     {
         private DicomDataset _dataset;
-        private bool _validation;
+        private readonly bool _validation;
 
         public UnvalidatedScope(DicomDataset dataSet)
         {

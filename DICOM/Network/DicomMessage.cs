@@ -102,6 +102,11 @@ namespace Dicom.Network
         public DicomPresentationContext PresentationContext { get; set; }
 
         /// <summary>
+        /// Gets or sets the SOP Class Extended Negotiation Service Class Application Information.
+        /// </summary>
+        public DicomServiceApplicationInfo ApplicationInfo { get; set; }
+
+        /// <summary>
         /// Gets or sets the associated DICOM command.
         /// </summary>
         public DicomDataset Command { get; protected set; }
