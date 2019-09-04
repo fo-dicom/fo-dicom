@@ -72,8 +72,7 @@ namespace Dicom.Dump
 
         public void OpenFile(string fileName)
         {
-            DicomFile file = null;
-
+            DicomFile file;
             try
             {
                 file = DicomFile.Open(fileName);
@@ -132,30 +131,33 @@ namespace Dicom.Dump
 
         private void OnClickOpen(object sender, EventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "DICOM Files (*.dcm;*.dic)|*.dcm;*.dic|All Files (*.*)|*.*";
+            using (var ofd = new OpenFileDialog { Filter = "DICOM Files (*.dcm;*.dic)|*.dcm;*.dic|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.Cancel) return;
 
-            if (ofd.ShowDialog() == DialogResult.Cancel) return;
-
-            OpenFile(ofd.FileName);
+                OpenFile(ofd.FileName);
+            }
         }
 
         private void OnClickSave(object sender, EventArgs e)
         {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "DICOM (*.dcm)|*.dcm|Image (*.bmp;*.jpg;*.png;*.gif)|*.bmp;*.jpg;*.png;*.gif";
-
-            if (sfd.ShowDialog() == DialogResult.Cancel) return;
-
-            if (sfd.FilterIndex == 1)
+            using (var sfd = new SaveFileDialog
             {
-                var file = new DicomFile(_file.Dataset);
-                file.Save(sfd.FileName);
-            }
-            else
+                Filter = "DICOM (*.dcm)|*.dcm|Image (*.bmp;*.jpg;*.png;*.gif)|*.bmp;*.jpg;*.png;*.gif"
+            })
             {
-                var image = new DicomImage(_file.Dataset);
-                image.RenderImage().As<Image>().Save(sfd.FileName);
+                if (sfd.ShowDialog() == DialogResult.Cancel) return;
+
+                if (sfd.FilterIndex == 1)
+                {
+                    var file = new DicomFile(_file.Dataset);
+                    file.Save(sfd.FileName);
+                }
+                else
+                {
+                    var image = new DicomImage(_file.Dataset);
+                    image.RenderImage().As<Image>().Save(sfd.FileName);
+                }
             }
         }
 
@@ -178,15 +180,11 @@ namespace Dicom.Dump
 
             public int Level
             {
-                get
-                {
-                    return _level;
-                }
+                get => _level;
                 set
                 {
                     _level = value;
-                    Indent = String.Empty;
-                    for (int i = 0; i < _level; i++) Indent += "    ";
+                    Indent = string.Empty.PadLeft(4 * _level);
                 }
             }
 
@@ -198,20 +196,20 @@ namespace Dicom.Dump
 
             public bool OnElement(DicomElement element)
             {
-                var tag = String.Format(
+                var tag = string.Format(
                     "{0}{1}  {2}",
                     Indent,
                     element.Tag.ToString().ToUpperInvariant(),
                     element.Tag.DictionaryEntry.Name);
 
                 string value = "<large value not displayed>";
-                if (element.Length <= 2048) value = String.Join("\\", element.Get<string[]>());
+                if (element.Length <= 2048) value = string.Join("\\", element.Get<string[]>());
 
                 if (element.ValueRepresentation == DicomVR.UI && element.Count > 0)
                 {
                     var uid = element.Get<DicomUID>(0);
                     var name = uid.Name;
-                    if (name != "Unknown") value = String.Format("{0} ({1})", value, name);
+                    if (name != "Unknown") value = $"{value} ({name})";
                 }
 
                 Form.AddItem(tag, element.ValueRepresentation.Code, element.Length.ToString(), value);
@@ -221,19 +219,19 @@ namespace Dicom.Dump
 #if !NET35
             public Task<bool> OnElementAsync(DicomElement element)
             {
-                return Task.FromResult(this.OnElement(element));
+                return Task.FromResult(OnElement(element));
             }
 #endif
 
             public bool OnBeginSequence(DicomSequence sequence)
             {
-                var tag = String.Format(
+                var tag = string.Format(
                     "{0}{1}  {2}",
                     Indent,
                     sequence.Tag.ToString().ToUpperInvariant(),
                     sequence.Tag.DictionaryEntry.Name);
 
-                Form.AddItem(tag, "SQ", String.Empty, String.Empty);
+                Form.AddItem(tag, "SQ", string.Empty, string.Empty);
 
                 Level++;
                 return true;
@@ -241,9 +239,9 @@ namespace Dicom.Dump
 
             public bool OnBeginSequenceItem(DicomDataset dataset)
             {
-                var tag = String.Format("{0}Sequence Item:", Indent);
+                var tag = $"{Indent}Sequence Item:";
 
-                Form.AddItem(tag, String.Empty, String.Empty, String.Empty);
+                Form.AddItem(tag, string.Empty, string.Empty, string.Empty);
 
                 Level++;
                 return true;
@@ -263,13 +261,13 @@ namespace Dicom.Dump
 
             public bool OnBeginFragment(DicomFragmentSequence fragment)
             {
-                var tag = String.Format(
+                var tag = string.Format(
                     "{0}{1}  {2}",
                     Indent,
                     fragment.Tag.ToString().ToUpperInvariant(),
                     fragment.Tag.DictionaryEntry.Name);
 
-                Form.AddItem(tag, fragment.ValueRepresentation.Code, String.Empty, String.Empty);
+                Form.AddItem(tag, fragment.ValueRepresentation.Code, string.Empty, string.Empty);
 
                 Level++;
                 return true;
@@ -277,16 +275,19 @@ namespace Dicom.Dump
 
             public bool OnFragmentItem(IByteBuffer item)
             {
-                var tag = String.Format("{0}Fragment", Indent);
+                if (item != null)
+                {
+                    var tag = $"{Indent}Fragment";
 
-                Form.AddItem(tag, String.Empty, item.Size.ToString(), String.Empty);
+                    Form.AddItem(tag, string.Empty, item.Size.ToString(), string.Empty);
+                }
                 return true;
             }
 
 #if !NET35
             public Task<bool> OnFragmentItemAsync(IByteBuffer item)
             {
-                return Task.FromResult(this.OnFragmentItem(item));
+                return Task.FromResult(OnFragmentItem(item));
             }
 #endif
 

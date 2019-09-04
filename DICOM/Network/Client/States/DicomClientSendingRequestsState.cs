@@ -28,6 +28,8 @@ namespace Dicom.Network.Client.States
         private readonly IList<IDisposable> _disposables;
         private readonly Tasks.AsyncManualResetEvent _sendMoreRequests;
         private readonly ConcurrentDictionary<int, DicomRequest> _pendingRequests;
+        private readonly ConcurrentBag<DicomRequest> _sentRequests;
+        private readonly int _maximumNumberOfRequestsPerAssociation;
 
         /**
          * Safety flag that prevents parallel sending of DICOM requests
@@ -57,7 +59,9 @@ namespace Dicom.Network.Client.States
             _allRequestsHaveCompletedTaskCompletionSource = TaskCompletionSourceFactory.Create<AllRequestsHaveCompletedEvent>();
             _disposables = new List<IDisposable>();
             _pendingRequests = new ConcurrentDictionary<int, DicomRequest>();
+            _sentRequests = new ConcurrentBag<DicomRequest>();
             _sendMoreRequests = new Tasks.AsyncManualResetEvent(set: true);
+            _maximumNumberOfRequestsPerAssociation = _dicomClient.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
@@ -120,7 +124,7 @@ namespace Dicom.Network.Client.States
 
             if (_pendingRequests.IsEmpty)
             {
-                if (_dicomClient.QueuedRequests.IsEmpty)
+                if (_dicomClient.QueuedRequests.IsEmpty || _sentRequests.Count >= _maximumNumberOfRequestsPerAssociation)
                 {
                     _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
                 }
@@ -128,6 +132,10 @@ namespace Dicom.Network.Client.States
                 {
                     _sendMoreRequests.Set();
                 }
+            } 
+            else if (Connection.IsSendNextMessageRequired)
+            {
+                _sendMoreRequests.Set();
             }
         }
 
@@ -149,18 +157,21 @@ namespace Dicom.Network.Client.States
 
         private async Task SendRequests()
         {
-            while (!_sendRequestsCancellationTokenSource.IsCancellationRequested &&
-                   _dicomClient.QueuedRequests.TryDequeue(out StrongBox<DicomRequest> queuedItem))
+            while (!_sendRequestsCancellationTokenSource.IsCancellationRequested
+                   && _sentRequests.Count < _maximumNumberOfRequestsPerAssociation
+                   && _dicomClient.QueuedRequests.TryDequeue(out StrongBox<DicomRequest> queuedItem))
             {
                 var dicomRequest = queuedItem.Value;
 
                 if (dicomRequest == null) continue;
 
+                queuedItem.Value = null;
+
                 _pendingRequests[dicomRequest.MessageID] = dicomRequest;
 
-                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
+                _sentRequests.Add(dicomRequest);
 
-                queuedItem.Value = null;
+                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
             }
         }
 
@@ -211,11 +222,19 @@ namespace Dicom.Network.Client.States
                 {
                     if (!_dicomClient.QueuedRequests.IsEmpty)
                     {
-                        _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
+                        if (_sentRequests.Count >= _maximumNumberOfRequestsPerAssociation)
+                        {
+                            _dicomClient.Logger.Debug($"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
+                        }
+                        else
+                        {
+                            _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
 
-                        await SendRequests().ConfigureAwait(false);
+                            await SendRequests().ConfigureAwait(false);
+                        }
                     }
-                    else if (Connection.IsSendNextMessageRequired)
+
+                    if (Connection.IsSendNextMessageRequired)
                     {
                         _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
 
@@ -272,8 +291,14 @@ namespace Dicom.Network.Client.States
 
             if (winner == allRequestsHaveCompleted)
             {
-                _dicomClient.Logger.Debug($"[{this}] All requests are done, going to linger association now...");
-                return await _dicomClient.TransitionToLingerState(_initialisationParameters, cancellation).ConfigureAwait(false);
+                if (_sentRequests.Count < _maximumNumberOfRequestsPerAssociation)
+                {
+                    _dicomClient.Logger.Debug($"[{this}] All requests are done, going to linger association now...");
+                    return await _dicomClient.TransitionToLingerState(_initialisationParameters, cancellation).ConfigureAwait(false);
+                }
+
+                _dicomClient.Logger.Debug($"[{this}] The maximum number of requests per association ({_maximumNumberOfRequestsPerAssociation}) have been sent, immediately releasing association now...");
+                return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onCancellation)

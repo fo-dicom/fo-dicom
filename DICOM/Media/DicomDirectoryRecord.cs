@@ -28,6 +28,12 @@ namespace Dicom.Media
         {
         }
 
+        internal DicomDirectoryRecord(bool validateItems)
+            : base(Enumerable.Empty<DicomItem>(), validateItems)
+        {
+            ValidateItems = validateItems;
+        }
+
         public DicomDirectoryRecord(DicomDataset dataset)
             : base(dataset, dataset.ValidateItems)
         {

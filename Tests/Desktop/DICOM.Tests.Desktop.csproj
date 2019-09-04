@@ -191,6 +191,7 @@
     <Compile Include="Network\DicomClientTest.cs" />
     <Compile Include="Network\DicomCMoveRequestTest.cs" />
     <Compile Include="Network\DicomCStoreRequestTest.cs" />
+    <Compile Include="Network\DicomExtendedNegotiationTest.cs" />
     <Compile Include="Network\DicomPresentationContextTest.cs" />
     <Compile Include="Network\DicomStatusTest.cs" />
     <Compile Include="Network\DicomNCreateRequestTest.cs" />
@@ -240,6 +241,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\genFile.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH487.dcm">

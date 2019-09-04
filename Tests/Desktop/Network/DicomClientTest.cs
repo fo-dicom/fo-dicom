@@ -161,10 +161,11 @@ namespace Dicom.Network
                                 if (actual == expected) flag.Set();
                             }
                         });
-                    client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                    if(client.IsSendRequired)
+                        client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 }
 
-                flag.Wait(10000);
+                flag.Wait(TimeSpan.FromSeconds(10));
                 Assert.Equal(expected, actual);
             }
         }

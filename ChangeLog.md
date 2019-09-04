@@ -1,4 +1,16 @@
-#### v.4.0.2 (TBD)
+#### v.4.0.3 (TBD)
+* Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
+* Bug fix: Do not open new associations on the existing TCP connection (#896)
+* New feature: Add the ability to enforce a maximum number of DICOM requests per association to the new DICOM client (#898)
+* Add AutoValidate property also to DicomDirectory class.
+* Add support for timeout detection on DICOM requests. Events on Requests and DicomClient are thrown in case of timeout (#666, #236)
+* New Option MaxPDULength in DicomServiceOption.
+* Rewrite SOP class extended negotiation support (#740)
+* Bug fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
+* Global static property DicomValidation.PerformValidation to turn off validation for every DicomDataset. 
+* Bug fix: Prevent DICOM client from freezing when too many DICOM requests time out and async operations invoked is a low number
+
+#### v.4.0.2 (7/30/2019)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
 * Updated to DICOM Dictionary 2019a (#724)
 * Add pure managed JpegLosses Decoder to DICOM.NetCore project

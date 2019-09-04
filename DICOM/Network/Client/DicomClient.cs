@@ -34,6 +34,11 @@ namespace Dicom.Network.Client
         List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
 
         /// <summary>
+        /// Gets or sets extended negotiation items to negotiate with association.
+        /// </summary>
+        List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+
+        /// <summary>
         /// Gets or sets the fallback encoding.
         /// </summary>
         Encoding FallbackEncoding { get; set; }
@@ -52,6 +57,13 @@ namespace Dicom.Network.Client
         /// Gets or sets the timeout (in ms) that associations need to be held open after all requests have been processed
         /// </summary>
         int AssociationLingerTimeoutInMs { get; }
+
+        /// <summary>
+        /// Gets the maximum number of DICOM requests that are allowed to be sent over one single association.
+        /// When this limit is reached, the DICOM client will wait for pending requests to complete, and then open a new association
+        /// to send the remaining requests, if any.
+        /// </summary>
+        int? MaximumNumberOfRequestsPerAssociation { get; }
 
         /// <summary>
         /// Gets or sets the handler of a client C-STORE request.
@@ -135,10 +147,12 @@ namespace Dicom.Network.Client
         public int AssociationRequestTimeoutInMs { get; set; }
         public int AssociationReleaseTimeoutInMs { get; set; }
         public int AssociationLingerTimeoutInMs { get; set; }
+        public int? MaximumNumberOfRequestsPerAssociation { get; set; }
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
         public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
         public DicomServiceOptions Options { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
+        public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
         public NetworkManager NetworkManager { get; set; }
@@ -160,10 +174,12 @@ namespace Dicom.Network.Client
         /// <param name="associationRequestTimeoutInMs">Timeout in milliseconds for establishing association.</param>
         /// <param name="associationReleaseTimeoutInMs">Timeout in milliseconds to break off association</param>
         /// <param name="associationLingerTimeoutInMs">Timeout in milliseconds to keep open association after all requests have been processed.</param>
+        /// <param name="maximumNumberOfRequestsPerAssociation">The maximum number of DICOM requests that can be sent over a single DICOM association</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             int associationRequestTimeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs,
             int associationReleaseTimeoutInMs = DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,
-            int associationLingerTimeoutInMs = DicomClientDefaults.DefaultAssociationLingerInMs)
+            int associationLingerTimeoutInMs = DicomClientDefaults.DefaultAssociationLingerInMs,
+            int? maximumNumberOfRequestsPerAssociation = null)
         {
             Host = host;
             Port = port;
@@ -173,8 +189,10 @@ namespace Dicom.Network.Client
             AssociationRequestTimeoutInMs = associationRequestTimeoutInMs;
             AssociationReleaseTimeoutInMs = associationReleaseTimeoutInMs;
             AssociationLingerTimeoutInMs = associationLingerTimeoutInMs;
+            MaximumNumberOfRequestsPerAssociation = maximumNumberOfRequestsPerAssociation;
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
+            AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             State = new DicomClientIdleState(this);

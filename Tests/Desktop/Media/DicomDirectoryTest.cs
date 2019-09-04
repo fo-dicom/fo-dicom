@@ -168,6 +168,40 @@ namespace Dicom.Media
             Assert.Equal(4, dicomDir.RootDirectoryRecordCollection.Count());
         }
 
+
+        [Fact]
+        public void AddFile_LongFilename()
+        {
+            string filename = "TestPattern_Palette_16.dcm";
+            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+
+            var dicomDir = new DicomDirectory();
+            Assert.Throws<DicomValidationException>(()
+                => dicomDir.AddFile(dicomFile, filename));
+
+            dicomDir.AutoValidate = false;
+            dicomDir.AddFile(dicomFile, filename);
+            Assert.Single(dicomDir.RootDirectoryRecordCollection);
+        }
+
+
+        [Fact]
+        public void AddFile_LongFilename_WithGlobalValidationSupression()
+        {
+            string filename = "TestPattern_Palette_16.dcm";
+            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+
+            DicomValidation.AutoValidation = false;
+
+            var dicomDir = new DicomDirectory();
+            Assert.Null(Record.Exception(()
+                => dicomDir.AddFile(dicomFile, filename)));
+            Assert.Single(dicomDir.RootDirectoryRecordCollection);
+
+            DicomValidation.AutoValidation = true;
+        }
+
+
         private static IList<DicomFile> GetDicomFilesFromZip(string fileName)
         {
             var dicomFiles = new List<DicomFile>();

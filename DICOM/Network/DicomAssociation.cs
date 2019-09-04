@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Linq;
+using System.Text;
+
 namespace Dicom.Network
 {
-    using System.Collections.Generic;
-    using System.Text;
-
     /// <summary>
     /// Representation of a DICOM association.
     /// </summary>
@@ -17,9 +17,9 @@ namespace Dicom.Network
         public DicomAssociation()
         {
             PresentationContexts = new DicomPresentationContextCollection();
+            ExtendedNegotiations = new DicomExtendedNegotiationCollection();
             MaxAsyncOpsInvoked = 1;
             MaxAsyncOpsPerformed = 1;
-            ExtendedNegotiations = new List<DicomExtendedNegotiation>();
         }
 
         /// <summary>
@@ -87,10 +87,10 @@ namespace Dicom.Network
         public DicomPresentationContextCollection PresentationContexts { get; private set; }
 
         /// <summary>
-        /// Gets supported extended negotiations
+        /// Gets the (common) extended negotiations
         /// </summary>
-        public List<DicomExtendedNegotiation> ExtendedNegotiations { get; private set; }
-
+        public DicomExtendedNegotiationCollection ExtendedNegotiations { get; private set; }
+        
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
@@ -116,12 +116,9 @@ namespace Dicom.Network
             foreach (var pc in PresentationContexts)
             {
                 sb.AppendFormat("  Presentation Context:  {0} [{1}]\n", pc.ID, pc.Result);
-                if (pc.AbstractSyntax.Name != "Unknown") sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
-                else
-                    sb.AppendFormat(
-                        "       Abstract Syntax:  {0} [{1}]\n",
-                        pc.AbstractSyntax.Name,
-                        pc.AbstractSyntax.UID);
+                if (pc.AbstractSyntax.Name != "Unknown")
+                    sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
+                else sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax);
                 foreach (var tx in pc.GetTransferSyntaxes())
                 {
                     sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
@@ -130,10 +127,24 @@ namespace Dicom.Network
 
             if (ExtendedNegotiations.Count > 0)
             {
-                sb.AppendFormat("Extended Negotiations: {0}\n", ExtendedNegotiations.Count);
-                foreach (DicomExtendedNegotiation exNeg in ExtendedNegotiations)
+                sb.AppendFormat("Extended Negotiations:  {0}\n", ExtendedNegotiations.Count);
+                foreach (DicomExtendedNegotiation ex in ExtendedNegotiations)
                 {
-                    sb.AppendFormat("  Extended Negotiation: {0}\n", exNeg.SopClassUid);
+                    if (ex.SopClassUid.Name != "Unknown")
+                        sb.AppendFormat("  Extended Negotiation:  {0}\n", ex.SopClassUid.Name);
+                    else sb.AppendFormat("  Extended Negotiation:  {0}\n", ex.SopClassUid);
+                    if (ex.RequestedApplicationInfo != null)
+                        sb.AppendFormat("      Application Info:  {0}\n", ex.GetApplicationInfo());
+                    if (ex.ServiceClassUid != null)
+                        sb.AppendFormat("         Service Class:  {0}\n", ex.ServiceClassUid);
+                    if (ex.RelatedGeneralSopClasses.Any())
+                    {
+                        sb.AppendFormat("   Related SOP Classes:  {0}\n", ex.RelatedGeneralSopClasses.Count);
+                        foreach (var rel in ex.RelatedGeneralSopClasses)
+                        {
+                            sb.AppendFormat("      Related SOP Class:  {0}\n", rel);
+                        }
+                    }
                 }
             }
 

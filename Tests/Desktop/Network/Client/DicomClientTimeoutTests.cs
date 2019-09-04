@@ -2,8 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Text;
@@ -385,6 +387,68 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Theory]
+        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 1)]
+        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 1)]
+        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 2, /* async ops invoked: */ 1)]
+        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 2)]
+        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 6)]
+        public async Task ShouldSendAllRequestsEvenThoughTheyAllTimeOut(int numberOfRequests, int maximumRequestsPerAssociation, int asyncOpsInvoked)
+        {
+            var options = new
+            {
+                Requests = numberOfRequests,
+                TimeBetweenRequests = TimeSpan.FromMilliseconds(100),
+                MaxRequestsPerAssoc = maximumRequestsPerAssociation,
+            };
+
+            var port = Ports.GetNext();
+            using (CreateServer<NeverRespondingDicomServer>(port))
+            {
+                var client = CreateClient(port);
+                client.NegotiateAsyncOps(asyncOpsInvoked);
+
+                // Ensure the client is quite impatient
+                client.Options.RequestTimeout = TimeSpan.FromMilliseconds(200);
+
+                var testLogger = _logger.IncludePrefix("Test");
+                testLogger.Info($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+
+                var requests = new List<DicomRequest>();
+                for (var i = 1; i <= options.Requests; i++)
+                {
+                    var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
+
+                    requests.Add(request);
+                    await client.AddRequestAsync(request).ConfigureAwait(false);
+
+                    if (i < options.Requests)
+                    {
+                        testLogger.Info($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                        await Task.Delay(options.TimeBetweenRequests);
+                        testLogger.Info($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
+                    }
+                }
+
+                var timedOutRequests = new List<DicomRequest>();
+                client.RequestTimedOut += (sender, args) => { timedOutRequests.Add(args.Request); };
+
+                var sendTask = client.SendAsync();
+                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+                var sendTimeout = Task.Delay(TimeSpan.FromMinutes(1), sendTimeoutCancellationTokenSource.Token);
+
+                var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
+
+                sendTimeoutCancellationTokenSource.Cancel();
+                sendTimeoutCancellationTokenSource.Dispose();
+
+                if (winner != sendTask)
+                    throw new Exception("DicomClient.SendAsync timed out");
+
+                Assert.Equal(requests.OrderBy(m => m.MessageID), timedOutRequests.OrderBy(m => m.MessageID));
+            }
+        }
+
         #endregion
 
         #region Support classes
@@ -621,8 +685,13 @@ namespace Dicom.Network.Client
 
         private class NeverRespondingDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
+            private readonly ConcurrentBag<DicomRequest> _requests;
+
+            public IEnumerable<DicomRequest> Requests => _requests;
+
             public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
             {
+                _requests = new ConcurrentBag<DicomRequest>();
             }
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -654,11 +723,13 @@ namespace Dicom.Network.Client
 
             public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
             {
+                _requests.Add(request);
                 yield break;
             }
 
             public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
             {
+                _requests.Add(request);
                 yield break;
             }
         }
