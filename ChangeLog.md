@@ -6,7 +6,8 @@
 * Add support for timeout detection on DICOM requests. Events on Requests and DicomClient are thrown in case of timeout (#666, #236)
 * New Option MaxPDULength in DicomServiceOption.
 * Rewrite SOP class extended negotiation support (#740)
-* Bub fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
+* Bug fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
+* Bug fix: Send only PrintManagementMetaSopClassUid on AssociationRequest instead of all the various SopClassUids of the NCreate and NSet requests (#667)
 * Global static property DicomValidation.PerformValidation to turn off validation for every DicomDataset. 
 
 #### v.4.0.2 (7/30/2019)

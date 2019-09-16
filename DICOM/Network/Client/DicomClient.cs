@@ -300,6 +300,18 @@ namespace Dicom.Network.Client
                 await State.AddRequestAsync(request).ConfigureAwait(false);
         }
 
+        public async Task AddRequestsAsync(params DicomRequest[] requests)
+        {
+            if (requests == null)
+                return;
+
+            if (!requests.Any())
+                return;
+
+            foreach (var request in requests)
+                await State.AddRequestAsync(request).ConfigureAwait(false);
+        }
+
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)
         {
