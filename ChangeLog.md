@@ -1,4 +1,5 @@
 #### v.4.0.3 (TBD)
+* Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
 * Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
 * Bug fix: Do not open new associations on the existing TCP connection (#896)
 * New feature: Add the ability to enforce a maximum number of DICOM requests per association to the new DICOM client (#898)

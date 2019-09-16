@@ -1383,7 +1383,7 @@ namespace Dicom
             if (vr == DicomVR.LT)
             {
                 if (values == null) return DoAdd(new DicomLongText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, encoding, values.Cast<string>().First()), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
             }
 
             if (vr == DicomVR.OB)
@@ -1486,7 +1486,7 @@ namespace Dicom
             if (vr == DicomVR.ST)
             {
                 if (values == null) return DoAdd(new DicomShortText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, encoding, values.Cast<string>().First()), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
             }
 
             if (vr == DicomVR.TM)
@@ -1538,7 +1538,7 @@ namespace Dicom
             if (vr == DicomVR.UR)
             {
                 if (values == null) return DoAdd(new DicomUniversalResource(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, encoding, values.Cast<string>().First()), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
             }
 
             if (vr == DicomVR.US)
@@ -1555,7 +1555,7 @@ namespace Dicom
             if (vr == DicomVR.UT)
             {
                 if (values == null) return DoAdd(new DicomUnlimitedText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, encoding, values.Cast<string>().First()), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
             }
 
             throw new InvalidOperationException(
