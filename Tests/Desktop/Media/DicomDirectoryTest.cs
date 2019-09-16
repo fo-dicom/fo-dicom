@@ -185,6 +185,23 @@ namespace Dicom.Media
         }
 
 
+        [Fact]
+        public void AddFile_LongFilename_WithGlobalValidationSupression()
+        {
+            string filename = "TestPattern_Palette_16.dcm";
+            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+
+            DicomValidation.AutoValidation = false;
+
+            var dicomDir = new DicomDirectory();
+            Assert.Null(Record.Exception(()
+                => dicomDir.AddFile(dicomFile, filename)));
+            Assert.Single(dicomDir.RootDirectoryRecordCollection);
+
+            DicomValidation.AutoValidation = true;
+        }
+
+
         private static IList<DicomFile> GetDicomFilesFromZip(string fileName)
         {
             var dicomFiles = new List<DicomFile>();
