@@ -1,62 +1,43 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace Dicom
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Text;
 
     public enum DicomUidType
     {
         TransferSyntax,
-
         SOPClass,
-
         MetaSOPClass,
-
         ServiceClass,
-
         SOPInstance,
-
         ApplicationContextName,
-
         ApplicationHostingModel,
-
         CodingScheme,
-
         FrameOfReference,
-
         LDAP,
-
         MappingResource,
-
         ContextGroupName,
-
         Unknown
     }
 
     public enum DicomStorageCategory
     {
         None,
-
         Image,
-
         PresentationState,
-
         StructuredReport,
-
         Waveform,
-
         Document,
-
         Raw,
-
         Other,
-
         Private,
-
         Volume
     }
 
@@ -106,14 +87,15 @@ namespace Dicom
             return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
         }
 
+        [Obsolete("This validation of Uid also accepts invalid uids like leading zeros or multiple dots without numbers etc", false)]
         public static bool IsValid(string uid)
         {
-            if (String.IsNullOrEmpty(uid)) return false;
+            if (string.IsNullOrEmpty(uid)) return false;
 
             // only checks that the UID contains valid characters
             foreach (char c in uid)
             {
-                if (c != '.' && !Char.IsDigit(c)) return false;
+                if (c != '.' && !char.IsDigit(c)) return false;
             }
 
             return true;
@@ -128,20 +110,15 @@ namespace Dicom
         {
             string u = s.TrimEnd(' ', '\0');
 
-            DicomUID uid = null;
-            if (_uids.TryGetValue(u, out uid)) return uid;
-
-            //if (!IsValid(u))
-            //	throw new DicomDataException("Invalid characters in UID string ['" + u + "']");
+            if (_uids.TryGetValue(u, out DicomUID uid)) return uid;
 
             return new DicomUID(u, name, type);
         }
 
-        private static IDictionary<string, DicomUID> _uids;
+        private static readonly IDictionary<string, DicomUID> _uids = new ConcurrentDictionary<string, DicomUID>();
 
         static DicomUID()
         {
-            _uids = new ConcurrentDictionary<string, DicomUID>();
             LoadInternalUIDs();
             LoadPrivateUIDs();
         }
@@ -151,21 +128,9 @@ namespace Dicom
             return _uids.Values;
         }
 
-        public bool IsImageStorage
-        {
-            get
-            {
-                return StorageCategory == DicomStorageCategory.Image;
-            }
-        }
+        public bool IsImageStorage => StorageCategory == DicomStorageCategory.Image;
 
-        public bool IsVolumeStorage
-        {
-            get
-            {
-                return StorageCategory == DicomStorageCategory.Volume;
-            }
-        }
+        public bool IsVolumeStorage => StorageCategory == DicomStorageCategory.Volume;
 
         public DicomStorageCategory StorageCategory
         {
@@ -206,8 +171,8 @@ namespace Dicom
 
         public static bool operator ==(DicomUID a, DicomUID b)
         {
-            if (((object)a == null) && ((object)b == null)) return true;
-            if (((object)a == null) || ((object)b == null)) return false;
+            if ((a is null) && (b is null)) return true;
+            if ((a is null) || (b is null)) return false;
             return a.UID == b.UID;
         }
 
@@ -230,7 +195,47 @@ namespace Dicom
 
         public override string ToString()
         {
-            return String.Format("{0} [{1}]", Name, UID);
+            return $"{Name} [{UID}]";
         }
+
     }
+
+
+    public static class MetaSopClasses
+    {
+
+        public static Dictionary<DicomUID, DicomUID[]> Instances { get; } = new Dictionary<DicomUID, DicomUID[]>
+        {
+            {
+                DicomUID.BasicGrayscalePrintManagementMetaSOPClass, new DicomUID[]
+                {
+                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmBoxSOPClass,
+                    DicomUID.BasicGrayscaleImageBoxSOPClass,
+                    DicomUID.PrinterSOPClass
+                }
+            },
+            {
+                DicomUID.BasicColorPrintManagementMetaSOPClass, new DicomUID[]
+                {
+                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmBoxSOPClass,
+                    DicomUID.BasicColorImageBoxSOPClass,
+                    DicomUID.PrinterSOPClass
+                }
+            }
+        };
+
+
+        public static DicomUID[] GetMetaSopClass(DicomUID sopClass)
+        {
+            return Instances
+                .Where(kvp => kvp.Value.Contains(sopClass))
+                .Select(kvp => kvp.Key)
+                .DefaultIfEmpty(sopClass)
+                .ToArray();
+        }
+
+    }
+
 }

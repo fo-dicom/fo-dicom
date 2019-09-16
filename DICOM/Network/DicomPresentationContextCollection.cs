@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,7 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly object locker = new object();
+        private readonly object _locker = new object();
 
         private readonly SortedDictionary<byte, DicomPresentationContext> _pc;
 
@@ -101,10 +102,8 @@ namespace Dicom.Network
         /// <param name="request">Request from which presentation context(s) should be obtained.</param>
         public void AddFromRequest(DicomRequest request)
         {
-            if (request is DicomCStoreRequest)
+            if (request is DicomCStoreRequest cstore)
             {
-                var cstore = request as DicomCStoreRequest;
-
                 var pcs = _pc.Values.Where(x => x.AbstractSyntax == request.SOPClassUID);
                 if (cstore.TransferSyntax == DicomTransferSyntax.ImplicitVRLittleEndian)
                 {
@@ -150,9 +149,14 @@ namespace Dicom.Network
                 }
                 else
                 {
-                    var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == request.SOPClassUID);
-                    if (pc == null)
-                        Add(request.SOPClassUID, DicomTransferSyntax.ImplicitVRLittleEndian);
+                    foreach (var sopclass in MetaSopClasses.GetMetaSopClass(request.SOPClassUID))
+                    {
+                        var pc = _pc.Values.FirstOrDefault(x => x.AbstractSyntax == sopclass);
+                        if (pc == null)
+                        {
+                            Add(sopclass, DicomTransferSyntax.ImplicitVRLittleEndian);
+                        }
+                    }
                 }
             }
         }
@@ -215,7 +219,7 @@ namespace Dicom.Network
         /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>2</filterpriority>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -226,7 +230,7 @@ namespace Dicom.Network
         /// <returns>Unique presentation context ID.</returns>
         private byte GetNextPresentationContextID()
         {
-            lock (locker)
+            lock (_locker)
             {
                 if (_pc.Count == 0) return 1;
 

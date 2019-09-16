@@ -185,6 +185,7 @@
     <Compile Include="Media\DicomFileScannerTest.cs" />
     <Compile Include="Network\Client\DicomClientTest.cs" />
     <Compile Include="Network\Client\DicomClientTimeoutTests.cs" />
+    <Compile Include="Network\DicomAcceptedPresentationContextTest.cs" />
     <Compile Include="Network\DicomCEchoProviderTest.cs" />
     <Compile Include="Network\DicomCFindRequestTest.cs" />
     <Compile Include="Network\DicomCGetRequestTest.cs" />

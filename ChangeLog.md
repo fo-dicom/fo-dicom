@@ -1,4 +1,5 @@
 #### v.4.0.3 (TBD)
+* Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
 * Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
 * Bug fix: Do not open new associations on the existing TCP connection (#896)
 * New feature: Add the ability to enforce a maximum number of DICOM requests per association to the new DICOM client (#898)
@@ -7,6 +8,7 @@
 * New Option MaxPDULength in DicomServiceOption.
 * Rewrite SOP class extended negotiation support (#740)
 * Bug fix: extended negotiations have been accepted by default, but should be explicitly accepted (#900)
+* Bug fix: Send only PrintManagementMetaSopClassUid on AssociationRequest instead of all the various SopClassUids of the NCreate and NSet requests (#667)
 * Global static property DicomValidation.PerformValidation to turn off validation for every DicomDataset. 
 * Bug fix: Prevent DICOM client from freezing when too many DICOM requests time out and async operations invoked is a low number
 

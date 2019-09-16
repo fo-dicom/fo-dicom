@@ -58,6 +58,67 @@ namespace Dicom
         }
 
         [Fact]
+        public void Add_UnlimitedTextElementWithEmptyValues_Succeeds()
+        {
+            var tag = DicomTag.SelectorUTValue;
+            var dataset = new DicomDataset();
+            dataset.Add<string>(tag);
+            Assert.IsType<DicomUnlimitedText>(dataset.First(item => item.Tag.Equals(tag)));
+
+            var data = dataset.GetValues<string>(tag);
+            Assert.Single(data, (item) => item == string.Empty);
+        }
+
+        [Fact]
+        public void Add_ShortTextElementWithEmptyValues_Succeeds()
+        {
+            var tag = DicomTag.SelectorSTValue;
+            var dataset = new DicomDataset();
+            dataset.Add<string>(tag);
+            Assert.IsType<DicomShortText>(dataset.First(item => item.Tag.Equals(tag)));
+
+            var data = dataset.GetValues<string>(tag);
+            Assert.Single(data, (item) => item == string.Empty);
+        }
+
+        [Fact]
+        public void Add_LongTextElementWithEmptyValues_Succeeds()
+        {
+            var tag = DicomTag.SelectorLTValue;
+            var dataset = new DicomDataset();
+            dataset.Add<string>(tag);
+            Assert.IsType<DicomLongText>(dataset.First(item => item.Tag.Equals(tag)));
+
+            var data = dataset.GetValues<string>(tag);
+            Assert.Single(data, (item) => item == string.Empty);
+        }
+
+        [Fact]
+        public void Add_UniversalResourceElementWithEmptyValues_Succeeds()
+        {
+            var tag = DicomTag.URNCodeValue;
+            var dataset = new DicomDataset();
+            dataset.Add<string>(tag);
+            Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
+
+            var data = dataset.GetValues<string>(tag);
+            Assert.Single(data, (item) => item == string.Empty);
+        }
+
+        [Fact]
+        public void Add_UnsignedShortElementWithEmptyValues_Succeeds()
+        {
+            var tag = DicomTag.SamplesPerPixel;
+            var dataset = new DicomDataset();
+            dataset.Add<ushort>(tag);
+            Assert.IsType<DicomUnsignedShort>(dataset.First(item => item.Tag.Equals(tag)));
+
+            var data = dataset.GetValues<ushort>(tag);
+
+            Assert.Empty(data);
+        }
+
+        [Fact]
         public void Add_UniversalResourceElement_Succeeds()
         {
             var tag = DicomTag.URNCodeValue;
