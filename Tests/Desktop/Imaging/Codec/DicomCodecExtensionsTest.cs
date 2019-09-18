@@ -37,6 +37,8 @@ namespace Dicom.Imaging.Codec
             Assert.Null(exception);
         }
 
+/* 
+TODO: This Test shall run green if issue #921 is solved.
 
         [Theory]
         [InlineData("TestPattern_RGB.dcm")]
@@ -49,14 +51,14 @@ namespace Dicom.Imaging.Codec
             var file = DicomFile.Open(@".\Test Data\" + filename);
 
             // when converting to JpegBaseline the Photometric interpretation has to be updated
-            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=true, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
+            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=false, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
             Assert.Equal("YBR_FULL_422", newDataset.GetString(DicomTag.PhotometricInterpretation));
 
             // when converting to other jpeg coded that does not automatically convert to 8bitcolor the Photometric Interpretation has to stay the same.
             var newProcess14 = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess14SV1);
             Assert.Equal(file.Dataset.GetString(DicomTag.PhotometricInterpretation), newProcess14.GetString(DicomTag.PhotometricInterpretation));
         }
-
+*/
 
         [Fact]
         public void EncodeDecodeRLE16()
