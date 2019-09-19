@@ -184,6 +184,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomDirectoryRecordType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Media\DicomFileScanner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncDicomCEchoProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\AsyncManualResetEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCancellation.cs" />

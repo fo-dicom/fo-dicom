@@ -16,6 +16,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-FIND request subject to handling.</param>
         /// <returns>Collection of C-FIND responses based on <paramref name="request"/>.</returns>
-        IEnumerable<Task<DicomCFindResponse>> OnCFindRequestAsync(DicomCFindRequest request);
+        Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request);
     }
 }

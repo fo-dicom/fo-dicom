@@ -16,6 +16,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-GET request.</param>
         /// <returns>Collection of C-GET responses resulting from the <paramref name="request"/>.</returns>
-        IEnumerable<Task<DicomCGetResponse>> OnCGetRequestAsync(DicomCGetRequest request);
+        Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request);
     }
 }

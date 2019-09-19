@@ -16,6 +16,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-MOVE request subject to handling.</param>
         /// <returns>Collection of C-MOVE responses based on <paramref name="request"/>.</returns>
-        IEnumerable<Task<DicomCMoveResponse>> OnCMoveRequestAsync(DicomCMoveRequest request);
+        Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request);
     }
 }
