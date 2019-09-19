@@ -267,6 +267,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomServiceOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DicomTimeout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomCEchoProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomCFindProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomCGetProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomCMoveProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomCStoreProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IAsyncDicomNServiceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCEchoProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCFindProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCGetProvider.cs" />
