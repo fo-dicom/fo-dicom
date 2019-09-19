@@ -61,14 +61,7 @@ namespace Dicom.Network
                 ssl.ReadTimeout = millisecondsTimeout;
                 ssl.WriteTimeout = millisecondsTimeout;
 
-                var authenticate = Task.Run(async () =>
-                {
-                    var authenticateAsClient = ssl.AuthenticateAsClientAsync(host);
-                    var authenticateAsClientTimeout = Task.Delay(SslHandshakeTimeout);
-                    return await Task.WhenAny(authenticateAsClient, authenticateAsClientTimeout).ConfigureAwait(false) == authenticateAsClient;
-                });
-
-                var authenticationSucceeded = authenticate.GetAwaiter().GetResult();
+                var authenticationSucceeded = Task.Run(async () => await ssl.AuthenticateAsClientAsync(host).ConfigureAwait(false)).Wait(SslHandshakeTimeout);
                 if (!authenticationSucceeded)
                 {
                     throw new DicomNetworkException($"SSL client authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
@@ -109,14 +102,10 @@ namespace Dicom.Network
             {
                 var ssl = new SslStream(stream, false);
 
-                var authenticate = Task.Run(async () =>
-                {
-                    var authenticateAsServer = ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
-                    var authenticateAsServerTimeout = Task.Delay(SslHandshakeTimeout);
-                    return await Task.WhenAny(authenticateAsServer, authenticateAsServerTimeout).ConfigureAwait(false) == authenticateAsServer;
-                });
+                var authenticationSucceeded = Task.Run(
+                    async () => await ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).ConfigureAwait(false)
+                ).Wait(SslHandshakeTimeout);
 
-                var authenticationSucceeded = authenticate.GetAwaiter().GetResult();
                 if (!authenticationSucceeded)
                 {
                     throw new DicomNetworkException($"SSL server authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
