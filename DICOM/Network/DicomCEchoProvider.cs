@@ -3,7 +3,10 @@
 
 using System;
 using System.Text;
+
+#if !NET35
 using System.Threading.Tasks;
+#endif
 
 using Dicom.Log;
 
@@ -25,6 +28,7 @@ namespace Dicom.Network
         {
         }
 
+#if !NET35
         /// <inheritdoc />
         public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
@@ -43,6 +47,7 @@ namespace Dicom.Network
         {
             return SendAssociationReleaseResponseAsync();
         }
+#endif
 
         /// <inheritdoc />
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
