@@ -343,7 +343,8 @@ void JPEGCODEC::Encode(NativePixelData^ oldPixelData, NativePixelData^ newPixelD
         jpeg_finish_compress(&cinfo);
         jpeg_destroy_compress(&cinfo);
 
-        if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb && cinfo.jpeg_color_space == JCS_YCbCr) {
+		if (oldPixelData->PhotometricInterpretation == PhotometricInterpretation::Rgb && cinfo.jpeg_color_space == JCS_YCbCr) 
+		{
             if (params->SampleFactor == DicomJpegSampleFactor::SF422)
                 newPixelData->PhotometricInterpretation = PhotometricInterpretation::YbrFull422;
             else
