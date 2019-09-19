@@ -793,7 +793,7 @@ namespace Dicom.Network
                                     }
                                     else if (this is IAsyncDicomCStoreProvider thisAsAsyncCStoreProvider)
                                     {
-                                        await thisAsAsyncCStoreProvider.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
+                                        await thisAsAsyncCStoreProvider.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e).ConfigureAwait(false);
                                     }
 
                                     return;
