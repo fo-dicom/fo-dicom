@@ -15,6 +15,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-ECHO request.</param>
         /// <returns>C-ECHO response.</returns>
-        Task<DicomCEchoResponse> OnCEchoRequest(DicomCEchoRequest request);
+        Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request);
     }
 }
