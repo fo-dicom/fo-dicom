@@ -1,4 +1,7 @@
-#### v.4.0.3 (TBD)
+#### v.4.0.4 (TBD)
+
+
+#### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
 * Bug fix: Exception when opening a file with FileReadOption.SkipLargeTags (#893)
 * Bug fix: Do not open new associations on the existing TCP connection (#896)
