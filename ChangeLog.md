@@ -1,5 +1,5 @@
 #### v.4.0.4 (TBD)
-
+* New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
@@ -15,7 +15,6 @@
 * Bug fix: Send only PrintManagementMetaSopClassUid on AssociationRequest instead of all the various SopClassUids of the NCreate and NSet requests (#667)
 * Global static property DicomValidation.PerformValidation to turn off validation for every DicomDataset. 
 * Bug fix: Prevent DICOM client from freezing when too many DICOM requests time out and async operations invoked is a low number
-* New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
 
 #### v.4.0.2 (7/30/2019)
 * Bug fix: prevent resource leak when DesktopNetworkListener waits for new TCP clients
