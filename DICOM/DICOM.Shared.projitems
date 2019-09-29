@@ -296,6 +296,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomReferencedSOP.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomStructuredReport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StructuredReport\DicomStructuredReportException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomNServiceProviderAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCStoreProviderAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\IDicomCEchoProviderAsync.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)DicomAnonymizerGenerated.tt" />
