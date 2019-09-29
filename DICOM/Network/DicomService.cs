@@ -790,7 +790,7 @@ namespace Dicom.Network
                                     if (this is IDicomCStoreProvider thisAsIDicomCStoreProvider)
                                         thisAsIDicomCStoreProvider.OnCStoreRequestException(_dimseStreamFile?.Name, e);
                                     else if (this is IDicomCStoreProviderAsync thisAsIDicomCStoreProviderAsync)
-                                        await thisAsIDicomCStoreProviderAsync.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
+                                        await thisAsIDicomCStoreProviderAsync.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e).ConfigureAwait(false);
                                     return;
                                 }
                             }
@@ -859,7 +859,7 @@ namespace Dicom.Network
             {
                 if (this is IDicomCStoreProviderAsync thisDicomCStoreProviderAsync)
                 {
-                    var response = await thisDicomCStoreProviderAsync.OnCStoreRequestAsync(dimse as DicomCStoreRequest);
+                    var response = await thisDicomCStoreProviderAsync.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -919,7 +919,7 @@ namespace Dicom.Network
             {
                 if (this is IDicomCEchoProviderAsync thisAsCEchoProviderAsync)
                 {
-                    var response = await thisAsCEchoProviderAsync.OnCEchoRequestAsync(dimse as DicomCEchoRequest);
+                    var response = await thisAsCEchoProviderAsync.OnCEchoRequestAsync(dimse as DicomCEchoRequest).ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -945,22 +945,22 @@ namespace Dicom.Network
                     switch (dimse.Type)
                     {
                         case DicomCommandField.NActionRequest:
-                            response = await thisAsNServiceProviderAsync.OnNActionRequestAsync(dimse as DicomNActionRequest);
+                            response = await thisAsNServiceProviderAsync.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false); ;
                             break;
                         case DicomCommandField.NCreateRequest:
-                            response = await thisAsNServiceProviderAsync.OnNCreateRequestAsync(dimse as DicomNCreateRequest);
+                            response = await thisAsNServiceProviderAsync.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false); ;
                             break;
                         case DicomCommandField.NDeleteRequest:
-                            response = await thisAsNServiceProviderAsync.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest);
+                            response = await thisAsNServiceProviderAsync.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest).ConfigureAwait(false); ;
                             break;
                         case DicomCommandField.NEventReportRequest:
-                            response = await thisAsNServiceProviderAsync.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest);
+                            response = await thisAsNServiceProviderAsync.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false); ;
                             break;
                         case DicomCommandField.NGetRequest:
-                            response = await thisAsNServiceProviderAsync.OnNGetRequestAsync(dimse as DicomNGetRequest);
+                            response = await thisAsNServiceProviderAsync.OnNGetRequestAsync(dimse as DicomNGetRequest).ConfigureAwait(false); ;
                             break;
                         case DicomCommandField.NSetRequest:
-                            response = await thisAsNServiceProviderAsync.OnNSetRequestAsync(dimse as DicomNSetRequest);
+                            response = await thisAsNServiceProviderAsync.OnNSetRequestAsync(dimse as DicomNSetRequest).ConfigureAwait(false); ;
                             break;
                     }
 

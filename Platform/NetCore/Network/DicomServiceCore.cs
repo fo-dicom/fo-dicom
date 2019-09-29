@@ -34,7 +34,7 @@ namespace Dicom.Network
                 return;
             }
 
-            await base.PerformDimseAsync(dimse);
+            await base.PerformDimseAsync(dimse).ConfigureAwait(false);
         }
     }
 }
