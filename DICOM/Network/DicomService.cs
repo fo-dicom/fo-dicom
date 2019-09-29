@@ -787,7 +787,10 @@ namespace Dicom.Network
                                         .ConfigureAwait(false);
 
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile?.Name, e);
+                                    if (this is IDicomCStoreProvider thisAsIDicomCStoreProvider)
+                                        thisAsIDicomCStoreProvider.OnCStoreRequestException(_dimseStreamFile?.Name, e);
+                                    else if (this is IDicomCStoreProviderAsync thisAsIDicomCStoreProviderAsync)
+                                        await thisAsIDicomCStoreProviderAsync.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
                                     return;
                                 }
                             }
