@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Dicom.Network
 {
     /// <summary>
-    /// Interface representing event handlers for DIMSE services applicable to C-MOVE SOP instances.
+    /// Interface representing async event handlers for DIMSE services applicable to C-MOVE SOP instances.
     /// </summary>
     public interface IDicomCMoveProviderAsync
     {

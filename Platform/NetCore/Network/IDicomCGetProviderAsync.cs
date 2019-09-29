@@ -7,7 +7,7 @@ namespace Dicom.Network
 {
 
     /// <summary>
-    /// Interface for methods related to a C-GET SCP.
+    /// Interface for async methods related to a C-GET SCP.
     /// </summary>
     public interface IDicomCGetProviderAsync
     {

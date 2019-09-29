@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Dicom.Network
 {
     /// <summary>
-    /// Interface for C-ECHO service class providers.
+    /// Interface for async C-ECHO service class providers.
     /// </summary>
     public interface IDicomCEchoProviderAsync
     {

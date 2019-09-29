@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Dicom.Network
 {
     /// <summary>
-    /// Interface for a DICOM C-STORE Service Class Provider.
+    /// Interface for an async DICOM C-STORE Service Class Provider.
     /// </summary>
     public interface IDicomCStoreProviderAsync
     {
