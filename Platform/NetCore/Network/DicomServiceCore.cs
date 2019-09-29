@@ -11,11 +11,24 @@ namespace Dicom.Network
 
         protected override async Task PerformDimseAsync(DicomMessage dimse)
         {
-            if (dimse.Type == DicomCommandField.CMoveRequest && this is IDicomCMoveProviderAsync)
+            if (dimse.Type == DicomCommandField.CMoveRequest && this is IDicomCMoveProviderAsync thisAsCMoveProviderAsync)
             {
-                var thisAsCMoveProviderAsync = (IDicomCMoveProviderAsync)this;
-
                 await foreach (var response in thisAsCMoveProviderAsync.OnCMoveRequestAsync(dimse as DicomCMoveRequest).ConfigureAwait(false))
+                    await SendResponseAsync(response).ConfigureAwait(false);
+
+                return;
+            }
+
+            if (dimse.Type == DicomCommandField.CFindRequest && this is IDicomCFindProviderAsync thisAsCFindProviderAsync)
+            {
+                await foreach (var response in thisAsCFindProviderAsync.OnCFindRequestAsync(dimse as DicomCFindRequest).ConfigureAwait(false))
+                    await SendResponseAsync(response).ConfigureAwait(false);
+
+                return;
+            }
+            if (dimse.Type == DicomCommandField.CGetRequest && this is IDicomCGetProviderAsync thisAsCGetProviderAsync)
+            {
+                await foreach (var response in thisAsCGetProviderAsync.OnCGetRequestAsync(dimse as DicomCGetRequest).ConfigureAwait(false))
                     await SendResponseAsync(response).ConfigureAwait(false);
 
                 return;

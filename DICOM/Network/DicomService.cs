@@ -854,6 +854,13 @@ namespace Dicom.Network
 
             if (dimse.Type == DicomCommandField.CStoreRequest)
             {
+                if (this is IDicomCStoreProviderAsync thisDicomCStoreProviderAsync)
+                {
+                    var response = await thisDicomCStoreProviderAsync.OnCStoreRequestAsync(dimse as DicomCStoreRequest);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+
                 if (this is IDicomCStoreProvider thisDicomCStoreProvider)
                 {
                     var response = thisDicomCStoreProvider.OnCStoreRequest(dimse as DicomCStoreRequest);
@@ -907,11 +914,21 @@ namespace Dicom.Network
 
             if (dimse.Type == DicomCommandField.CEchoRequest)
             {
-                var thisAsCEchoProvider = this as IDicomCEchoProvider ?? throw new DicomNetworkException("C-Echo SCP not implemented");
-
-                var response = thisAsCEchoProvider.OnCEchoRequest(dimse as DicomCEchoRequest);
-                await SendResponseAsync(response).ConfigureAwait(false);
-                return;
+                if (this is IDicomCEchoProviderAsync thisAsCEchoProviderAsync)
+                {
+                    var response = await thisAsCEchoProviderAsync.OnCEchoRequestAsync(dimse as DicomCEchoRequest);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+                else if(this is IDicomCEchoProvider thisAsCEchoProvider) {
+                    var response = thisAsCEchoProvider.OnCEchoRequest(dimse as DicomCEchoRequest);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+                else
+                {
+                    throw new DicomNetworkException("C-Echo SCP not implemented");
+                }
             }
 
             if (dimse.Type == DicomCommandField.NActionRequest || dimse.Type == DicomCommandField.NCreateRequest
@@ -919,33 +936,66 @@ namespace Dicom.Network
                 || dimse.Type == DicomCommandField.NEventReportRequest
                 || dimse.Type == DicomCommandField.NGetRequest || dimse.Type == DicomCommandField.NSetRequest)
             {
-                var thisAsNServiceProvider = this as IDicomNServiceProvider ?? throw new DicomNetworkException("N-Service SCP not implemented");
-
-                DicomResponse response = null;
-                switch (dimse.Type)
+                if (this is IDicomNServiceProviderAsync thisAsNServiceProviderAsync)
                 {
-                    case DicomCommandField.NActionRequest:
-                        response = thisAsNServiceProvider.OnNActionRequest(dimse as DicomNActionRequest);
-                        break;
-                    case DicomCommandField.NCreateRequest:
-                        response = thisAsNServiceProvider.OnNCreateRequest(dimse as DicomNCreateRequest);
-                        break;
-                    case DicomCommandField.NDeleteRequest:
-                        response = thisAsNServiceProvider.OnNDeleteRequest(dimse as DicomNDeleteRequest);
-                        break;
-                    case DicomCommandField.NEventReportRequest:
-                        response = thisAsNServiceProvider.OnNEventReportRequest(dimse as DicomNEventReportRequest);
-                        break;
-                    case DicomCommandField.NGetRequest:
-                        response = thisAsNServiceProvider.OnNGetRequest(dimse as DicomNGetRequest);
-                        break;
-                    case DicomCommandField.NSetRequest:
-                        response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
-                        break;
-                }
+                    DicomResponse response = null;
+                    switch (dimse.Type)
+                    {
+                        case DicomCommandField.NActionRequest:
+                            response = await thisAsNServiceProviderAsync.OnNActionRequestAsync(dimse as DicomNActionRequest);
+                            break;
+                        case DicomCommandField.NCreateRequest:
+                            response = await thisAsNServiceProviderAsync.OnNCreateRequestAsync(dimse as DicomNCreateRequest);
+                            break;
+                        case DicomCommandField.NDeleteRequest:
+                            response = await thisAsNServiceProviderAsync.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest);
+                            break;
+                        case DicomCommandField.NEventReportRequest:
+                            response = await thisAsNServiceProviderAsync.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest);
+                            break;
+                        case DicomCommandField.NGetRequest:
+                            response = await thisAsNServiceProviderAsync.OnNGetRequestAsync(dimse as DicomNGetRequest);
+                            break;
+                        case DicomCommandField.NSetRequest:
+                            response = await thisAsNServiceProviderAsync.OnNSetRequestAsync(dimse as DicomNSetRequest);
+                            break;
+                    }
 
-                await SendResponseAsync(response).ConfigureAwait(false);
-                return;
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+                else if (this is IDicomNServiceProvider thisAsNServiceProvider)
+                {
+                    DicomResponse response = null;
+                    switch (dimse.Type)
+                    {
+                        case DicomCommandField.NActionRequest:
+                            response = thisAsNServiceProvider.OnNActionRequest(dimse as DicomNActionRequest);
+                            break;
+                        case DicomCommandField.NCreateRequest:
+                            response = thisAsNServiceProvider.OnNCreateRequest(dimse as DicomNCreateRequest);
+                            break;
+                        case DicomCommandField.NDeleteRequest:
+                            response = thisAsNServiceProvider.OnNDeleteRequest(dimse as DicomNDeleteRequest);
+                            break;
+                        case DicomCommandField.NEventReportRequest:
+                            response = thisAsNServiceProvider.OnNEventReportRequest(dimse as DicomNEventReportRequest);
+                            break;
+                        case DicomCommandField.NGetRequest:
+                            response = thisAsNServiceProvider.OnNGetRequest(dimse as DicomNGetRequest);
+                            break;
+                        case DicomCommandField.NSetRequest:
+                            response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
+                            break;
+                    }
+
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+                else
+                {
+                    throw new DicomNetworkException("N-Service SCP not implemented");
+                }
             }
 
             throw new DicomNetworkException("Operation not implemented");
