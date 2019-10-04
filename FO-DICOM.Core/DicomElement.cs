@@ -203,14 +203,7 @@ namespace FellowOakDicom
         protected override void ValidateString()
         {
             EnsureSplitValues();
-#if PORTABLE
-            foreach(var value in _values)
-            {
-                ValueRepresentation.ValidateString(value);
-            }
-#else
             _values.ToList().ForEach(ValueRepresentation.ValidateString);
-#endif
         }
 
         public override T Get<T>(int item = -1)

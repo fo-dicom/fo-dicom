@@ -142,11 +142,7 @@ namespace FellowOakDicom.Printing
 
             if (sopInstance == null || sopInstance.UID == string.Empty)
             {
-#if NET35
-                SOPInstanceUID = DicomUID.Generate();
-#else
                 SOPInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID();
-#endif
             }
             else
             {

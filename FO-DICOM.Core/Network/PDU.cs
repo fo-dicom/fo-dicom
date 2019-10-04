@@ -406,12 +406,10 @@ namespace FellowOakDicom.Network
 
         #region EVENTS
 
-#if !NET35
         /// <summary>
         /// Event to handle unsupported PDU bytes.
         /// </summary>
         public event PDUBytesHandler HandlePDUBytes;
-#endif
 
         #endregion
 
@@ -697,7 +695,6 @@ namespace FellowOakDicom.Network
                         }
                         else
                         {
-#if !NET35
                             if (HandlePDUBytes != null)
                             {
                                 HandlePDUBytes(raw.ReadBytes("Unhandled User Item", ul));
@@ -706,9 +703,6 @@ namespace FellowOakDicom.Network
                             {
                                 raw.SkipBytes("Unhandled User Item", ul);
                             }
-#else
-                            raw.SkipBytes("Unhandled User Item", ul);
-#endif
                         }
                     }
                 }

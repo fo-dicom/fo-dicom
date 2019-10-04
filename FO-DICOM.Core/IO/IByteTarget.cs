@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO
 {
@@ -92,7 +90,6 @@ namespace FellowOakDicom.IO
         /// <param name="count">Number of bytes to write to byte target.</param>
         void Write(byte[] buffer, uint offset, uint count);
 
-#if !NET35
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -101,6 +98,6 @@ namespace FellowOakDicom.IO
         /// <param name="count">Number of bytes to write to byte target.</param>
         /// <returns>Avaitable <see cref="Task"/>.</returns>
         Task WriteAsync(byte[] buffer, uint offset, uint count);
-#endif
+
     }
 }

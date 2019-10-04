@@ -1,21 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
-
-#if NET35
-    using Unity.IO.Compression;
-#else
-using System.IO.Compression;
 using System.Threading.Tasks;
-#endif
-
-using FellowOakDicom.Imaging.Mathematics;
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.IO.Reader
 {
@@ -75,7 +69,6 @@ namespace FellowOakDicom.IO.Reader
             return worker.DoWork(source);
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>
@@ -88,7 +81,7 @@ namespace FellowOakDicom.IO.Reader
             var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private);
             return worker.DoWorkAsync(source);
         }
-#endif
+
         #endregion
 
         #region INNER TYPES
@@ -192,7 +185,6 @@ namespace FellowOakDicom.IO.Reader
                 return _result;
             }
 
-#if !NET35
             /// <summary>
             /// Asynchronously read the byte source.
             /// </summary>
@@ -204,7 +196,6 @@ namespace FellowOakDicom.IO.Reader
                 await ParseDatasetAsync(source).ConfigureAwait(false);
                 return _result;
             }
-#endif
 
             private void ParseDataset(IByteSource source)
             {
@@ -236,7 +227,6 @@ namespace FellowOakDicom.IO.Reader
                 _result = DicomReaderResult.Success;
             }
 
-#if !NET35
             private async Task ParseDatasetAsync(IByteSource source)
             {
                 if (_isDeflated)
@@ -266,7 +256,6 @@ namespace FellowOakDicom.IO.Reader
                 // end of processing
                 _result = DicomReaderResult.Success;
             }
-#endif
 
             private IByteSource Decompress(IByteSource source)
             {
@@ -668,7 +657,6 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-#if !NET35
             private async Task<bool> ParseValueAsync(IByteSource source)
             {
                 if (_parseStage == ParseStage.Value)
@@ -811,7 +799,6 @@ namespace FellowOakDicom.IO.Reader
                 }
                 return true;
             }
-#endif
 
             private void ParseItemSequence(IByteSource source)
             {
@@ -826,7 +813,6 @@ namespace FellowOakDicom.IO.Reader
                 ParseItemSequencePostProcess(source);
             }
 
-#if !NET35
             private async Task ParseItemSequenceAsync(IByteSource source)
             {
                 _result = DicomReaderResult.Processing;
@@ -839,7 +825,6 @@ namespace FellowOakDicom.IO.Reader
 
                 ParseItemSequencePostProcess(source);
             }
-#endif
 
             private bool ParseItemSequenceTag(IByteSource source)
             {
@@ -951,7 +936,6 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-#if !NET35
             private async Task<bool> ParseItemSequenceValueAsync(IByteSource source)
             {
                 if (_parseStage == ParseStage.Value)
@@ -996,7 +980,6 @@ namespace FellowOakDicom.IO.Reader
                 }
                 return true;
             }
-#endif
 
             private void ParseItemSequencePostProcess(IByteSource source)
             {
@@ -1027,7 +1010,6 @@ namespace FellowOakDicom.IO.Reader
                 }
             }
 
-#if !NET35
             private async Task ParseFragmentSequenceAsync(IByteSource source)
             {
                 _result = DicomReaderResult.Processing;
@@ -1038,7 +1020,6 @@ namespace FellowOakDicom.IO.Reader
                     if (!await ParseFragmentSequenceValueAsync(source).ConfigureAwait(false)) return;
                 }
             }
-#endif
 
             private bool ParseFragmentSequenceTag(IByteSource source)
             {
@@ -1098,7 +1079,6 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-#if !NET35
             private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source)
             {
                 if (_parseStage == ParseStage.Value)
@@ -1117,7 +1097,6 @@ namespace FellowOakDicom.IO.Reader
                 }
                 return true;
             }
-#endif
 
             private void ResetState()
             {

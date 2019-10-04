@@ -1,16 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
 
+using FellowOakDicom.Log;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-using FellowOakDicom.Log;
-
 namespace FellowOakDicom.Network
 {
+
     /// <summary>
     /// Interface representing a DICOM server instance.
     /// </summary>
@@ -84,4 +83,3 @@ namespace FellowOakDicom.Network
 
 }
 
-#endif

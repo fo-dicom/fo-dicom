@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
-using System.Threading.Tasks;
-#endif
-
 using FellowOakDicom.IO.Buffer;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
 {
@@ -120,14 +117,12 @@ namespace FellowOakDicom.IO
         /// <returns>Byte buffer containing the read bytes.</returns>
         IByteBuffer GetBuffer(uint count);
 
-#if !NET35
         /// <summary>
         /// Asynchronously gets a byte buffer of specified length from the current position and moves to subsequent position.
         /// </summary>
         /// <param name="count">Number of bytes to read.</param>
         /// <returns>Awaitable byte buffer containing the read bytes.</returns>
         Task<IByteBuffer> GetBufferAsync(uint count);
-#endif
 
         /// <summary>
         /// Skip position <paramref name="count"/> number of bytes.

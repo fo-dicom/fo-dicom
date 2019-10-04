@@ -3,9 +3,7 @@
 
 using System;
 using System.IO;
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO
 {
@@ -163,7 +161,6 @@ namespace FellowOakDicom.IO
             _stream.Write(buffer, (int)offset, (int)count);
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -175,7 +172,6 @@ namespace FellowOakDicom.IO
         {
             return _stream.WriteAsync(buffer, (int)offset, (int)count);
         }
-#endif
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

@@ -372,11 +372,7 @@ namespace FellowOakDicom
         private static Type ElementValueType(DicomItem item)
         {
             var t = item.GetType();
-#if NET35
-            if (t.IsGenericType && !t.ContainsGenericParameters && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GetGenericArguments()[0];
-#else
             if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GenericTypeArguments[0];
-#endif
             return null;
         }
 
@@ -398,16 +394,12 @@ namespace FellowOakDicom
         /// <returns>Constructor info corresponding to <paramref name="item"/> and <paramref name="parameterTypes"/>.</returns>
         private static ConstructorInfo GetConstructor(DicomItem item, params Type[] parameterTypes)
         {
-#if PORTABLE || NETSTANDARD || NETFX_CORE
             return item.GetType().GetTypeInfo().DeclaredConstructors.Single(
                 ci =>
                     {
                         var pars = ci.GetParameters().Select(par => par.ParameterType);
                         return pars.SequenceEqual(parameterTypes);
                     });
-#else
-            return item.GetType().GetConstructor(parameterTypes);
-#endif
         }
 
         #endregion

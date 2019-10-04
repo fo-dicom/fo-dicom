@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.Imaging.Algorithms
 {
@@ -27,11 +25,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -62,9 +56,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -87,11 +79,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -122,9 +110,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -147,11 +133,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -182,9 +164,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -207,11 +187,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -242,9 +218,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -267,11 +241,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -302,9 +272,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                                 + (dy1 * ((dx2 * input[yo2 + ox1]) + (dx1 * input[yo2 + ox2]))));
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -327,11 +295,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -384,9 +348,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                         x2++;
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;
@@ -409,11 +371,7 @@ namespace FellowOakDicom.Imaging.Algorithms
 
             unchecked
             {
-#if NET35
-                for (var y = 0; y < outputHeight; ++y)
-#else
                 Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     double oy0 = y * yF;
                     int oy1 = (int)oy0; // rounds down
@@ -471,9 +429,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                         ox2++;
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             return output;

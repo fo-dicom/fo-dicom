@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -262,13 +260,11 @@ namespace FellowOakDicom.IO.Buffer
             return new MemoryByteBuffer(GetBytes((int)count));
         }
 
-#if !NET35
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
             return Task.FromResult(GetBuffer(count));
         }
-#endif
 
         /// <inheritdoc />
         public void Skip(int count)

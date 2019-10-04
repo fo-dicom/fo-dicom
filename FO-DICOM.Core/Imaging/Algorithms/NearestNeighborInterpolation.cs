@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.Imaging.Algorithms
 {
@@ -38,11 +36,7 @@ namespace FellowOakDicom.Imaging.Algorithms
             var xMax = inputWidth - 1;
             var yMax = inputHeight - 1;
 
-#if NET35
-            for (var y = 0; y < outputHeight; ++y)
-#else
             Parallel.For(0, outputHeight, y =>
-#endif
                 {
                     var iy0 = y * yF;
                     var iy1 = (int) iy0; // rounds down
@@ -59,9 +53,7 @@ namespace FellowOakDicom.Imaging.Algorithms
                         output[yx] = input[iyx0 + ix];
                     }
                 }
-#if !NET35
             );
-#endif
 
             return output;
         }

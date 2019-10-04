@@ -1,50 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if NET35
-
-using System.Text;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
+using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Log;
-
-namespace FellowOakDicom.Network
-{
-    /// <summary>
-    /// Dummy base class for DICOM network services in Unity.
-    /// </summary>
-    public abstract class DicomService
-    {
-        #region CONSTRUCTORS
-
-        protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-        {
-        }
-
-        #endregion
-
-        #region Send Methods
-
-        protected void SendAssociationRequest(DicomAssociation association) { }
-
-        protected void SendAssociationAccept(DicomAssociation association) { }
-
-        protected void SendAssociationReject(
-            DicomRejectResult result,
-            DicomRejectSource source,
-            DicomRejectReason reason)
-        { }
-
-        protected void SendAssociationReleaseRequest() { }
-
-        protected void SendAssociationReleaseResponse() { }
-
-        protected void SendAbort(DicomAbortSource source, DicomAbortReason reason) { }
-
-        #endregion
-    }
-}
-
-#else
-
+using FellowOakDicom.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,21 +15,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.IO;
-using FellowOakDicom.IO.Reader;
-using FellowOakDicom.IO.Writer;
-using FellowOakDicom.Log;
-using FellowOakDicom.Network.Client;
-
 namespace FellowOakDicom.Network
 {
 
-	/// <summary>
-	/// Delegate for passing byte array
-	/// </summary>
-	/// <param name="unsupportedBytes">byte array to be passed to the delegate.</param>
-	public delegate void PDUBytesHandler(byte[] unsupportedBytes);
+    /// <summary>
+    /// Delegate for passing byte array
+    /// </summary>
+    /// <param name="unsupportedBytes">byte array to be passed to the delegate.</param>
+    public delegate void PDUBytesHandler(byte[] unsupportedBytes);
 
     /// <summary>
     /// Base class for DICOM network services.
@@ -1699,4 +1654,3 @@ namespace FellowOakDicom.Network
     }
 }
 
-#endif

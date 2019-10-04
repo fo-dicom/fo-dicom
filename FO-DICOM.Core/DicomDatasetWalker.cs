@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
-#if !NET35
 using System.Threading.Tasks;
-#endif
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom
 {
@@ -28,14 +26,12 @@ namespace FellowOakDicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnElement(DicomElement element);
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
         /// <param name="element">Element to traverse.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         Task<bool> OnElementAsync(DicomElement element);
-#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -77,14 +73,12 @@ namespace FellowOakDicom
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         bool OnFragmentItem(IByteBuffer item);
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
         /// <param name="item">Buffer containing the fragment item.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         Task<bool> OnFragmentItemAsync(IByteBuffer item);
-#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.
@@ -196,7 +190,6 @@ namespace FellowOakDicom
                 DoWalk(walker, items);
         }
 
-#if !NET35
         /// <summary>
         /// Perform an asynchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
         /// </summary>
@@ -209,7 +202,6 @@ namespace FellowOakDicom
 
             return DoWalkAsync(walker, items);
         }
-#endif
 
         /// <summary>
         /// Populate the <paramref name="items"/> queue.
@@ -314,7 +306,6 @@ namespace FellowOakDicom
             }
         }
 
-#if !NET35
         /// <summary>
         /// Perform an asynchronous dataset walk.
         /// </summary>
@@ -379,7 +370,6 @@ namespace FellowOakDicom
                 }
             }
         }
-#endif
 
         #endregion
     }

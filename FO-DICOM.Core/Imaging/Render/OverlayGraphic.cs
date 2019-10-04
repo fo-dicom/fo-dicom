@@ -2,11 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Mathematics;
-using System;
-
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.Imaging.Render
 {
@@ -82,11 +78,7 @@ namespace FellowOakDicom.Imaging.Render
             var ox = (int)(_offsetX * _scale);
             var oy = (int)(_offsetY * _scale);
 
-#if NET35
-            for (var y = 0; y < _scaledData.Height; ++y)
-#else
             Parallel.For(0, _scaledData.Height, y =>
-#endif
             {
                 if (oy + y >= height) return;
                 for (int i = _scaledData.Width * y, e = i + _scaledData.Width, p = (oy + y) * width + ox, x = 0; i < e; i++, p++, x++)
@@ -98,9 +90,7 @@ namespace FellowOakDicom.Imaging.Render
                     }
                 }
             }
-#if !NET35
             );
-#endif
         }
 
         #endregion

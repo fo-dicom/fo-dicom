@@ -56,11 +56,7 @@ namespace FellowOakDicom.Imaging.Codec
             Assembly assembly = null;
             if (search == null)
             {
-#if NET35
-                assembly = typeof(MonoTranscoderManager).Assembly;
-#else
                 assembly = IntrospectionExtensions.GetTypeInfo(typeof(MonoTranscoderManager)).Assembly;
-#endif
             }
             else
             {
@@ -70,17 +66,6 @@ namespace FellowOakDicom.Imaging.Codec
 
             if (assembly == null) return;
 
-#if NET35
-            var types =
-                assembly.GetTypes().Where(
-                    ti => ti.IsClass && !ti.IsAbstract && ti.GetInterfaces().Contains(typeof(IDicomCodec)));
-
-            foreach (var type in types)
-            {
-                var codec = (IDicomCodec)Activator.CreateInstance(type);
-                Codecs[codec.TransferSyntax] = codec;
-            }
-#else
             var types =
                 assembly.DefinedTypes.Where(
                     ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
@@ -90,7 +75,6 @@ namespace FellowOakDicom.Imaging.Codec
                 var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
                 Codecs[codec.TransferSyntax] = codec;
             }
-#endif
         }
 
         #endregion

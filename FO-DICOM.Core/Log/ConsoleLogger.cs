@@ -70,17 +70,11 @@ namespace FellowOakDicom.Log
         {
             get
             {
-#if __IOS__ || __ANDROID__ || NET35
-                return ConsoleColor.Black;
-#else
                 return Console.ForegroundColor;
-#endif
             }
             set
             {
-#if !__IOS__ && !__ANDROID__ && !NET35
                 Console.ForegroundColor = value;
-#endif
             }
         }
     }

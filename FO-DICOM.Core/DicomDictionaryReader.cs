@@ -38,15 +38,7 @@ namespace FellowOakDicom
         {
             DicomDictionary dict = _dict;
 
-#if NET35
-            XDocument xdoc;
-            using (var reader = new StreamReader(_stream))
-            {
-                xdoc = XDocument.Load(reader);
-            }
-#else
             var xdoc = XDocument.Load(_stream);
-#endif
 
             IEnumerable<XElement> xdicts;
 

@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Text;
-#if !NET35
 using System.Threading.Tasks;
-#endif
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.Log
 {
@@ -109,7 +107,6 @@ namespace FellowOakDicom.Log
             return true;
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -119,7 +116,6 @@ namespace FellowOakDicom.Log
         {
             return Task.FromResult(this.OnElement(element));
         }
-#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -199,7 +195,6 @@ namespace FellowOakDicom.Log
             return true;
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
@@ -209,7 +204,6 @@ namespace FellowOakDicom.Log
         {
             return Task.FromResult(this.OnFragmentItem(item));
         }
-#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.

@@ -42,12 +42,8 @@ namespace FellowOakDicom.Network
             this.RemoteHost = host;
             this.RemotePort = port;
 
-#if NETSTANDARD
             this.tcpClient = new TcpClient { NoDelay = noDelay };
             this.tcpClient.ConnectAsync(host, port).Wait();
-#else
-            this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
-#endif
 
             Stream stream = this.tcpClient.GetStream();
             if (useTls)
@@ -59,11 +55,7 @@ namespace FellowOakDicom.Network
                 ssl.ReadTimeout = millisecondsTimeout;
                 ssl.WriteTimeout = millisecondsTimeout;
 
-#if NETSTANDARD
                 ssl.AuthenticateAsClientAsync(host).Wait();
-#else
-                ssl.AuthenticateAsClient(host);
-#endif
                 stream = ssl;
             }
 
@@ -98,11 +90,7 @@ namespace FellowOakDicom.Network
             if (certificate != null)
             {
                 var ssl = new SslStream(stream, false);
-#if NETSTANDARD
                 ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).Wait();
-#else
-                ssl.AuthenticateAsServer(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
-#endif
                 stream = ssl;
             }
 
@@ -180,11 +168,7 @@ namespace FellowOakDicom.Network
 
             if (this.tcpClient != null)
             {
-#if NETSTANDARD
                 this.tcpClient.Dispose();
-#else
-                this.tcpClient.Close();
-#endif
             }
 
             this.disposed = true;

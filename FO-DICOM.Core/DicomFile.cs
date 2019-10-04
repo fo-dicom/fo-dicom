@@ -1,17 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.IO;
-using System.Text;
-
-#if !NET35
-using System.Threading.Tasks;
-#endif
-
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
@@ -154,7 +150,6 @@ namespace FellowOakDicom
             writer.Write(target, FileMetaInfo, Dataset);
         }
 
-#if !NET35
         /// <summary>
         /// Save to file asynchronously.
         /// </summary>
@@ -192,7 +187,6 @@ namespace FellowOakDicom
             var writer = new DicomFileWriter(options);
             await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
         }
-#endif
 
         /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
@@ -324,7 +318,6 @@ namespace FellowOakDicom
             }
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
         /// DICOM elements (e.g. PixelData) are read in "on demand" to conserve memory.  Large DICOM elements
@@ -455,7 +448,6 @@ namespace FellowOakDicom
                 throw new DicomFileException(df, e.Message, e);
             }
         }
-#endif
 
         /// <summary>
         /// Test if file has a valid preamble and DICOM 3.0 header.

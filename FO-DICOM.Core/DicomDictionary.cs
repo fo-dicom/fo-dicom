@@ -146,16 +146,6 @@ namespace FellowOakDicom
                             DicomVR.UL));
                     try
                     {
-#if NET35 || HOLOLENS
-                        using (
-                            var stream =
-                                new MemoryStream(
-                                    UnityEngine.Resources.Load<UnityEngine.TextAsset>("DICOM Dictionary").bytes))
-                        {
-                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, stream);
-                            reader.Process();
-                        }
-#else
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                         using (
                             var stream = assembly.GetManifestResourceStream(
@@ -165,7 +155,6 @@ namespace FellowOakDicom
                             var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                             reader.Process();
                         }
-#endif
                     }
                     catch (Exception e)
                     {
@@ -177,16 +166,6 @@ namespace FellowOakDicom
                     {
                         try
                         {
-#if NET35 || HOLOLENS
-                            using (
-                                var stream =
-                                    new MemoryStream(
-                                        UnityEngine.Resources.Load<UnityEngine.TextAsset>("Private Dictionary").bytes))
-                            {
-                                var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, stream);
-                                reader.Process();
-                            }
-#else
                             var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
                             using (
                                 var stream =
@@ -196,7 +175,6 @@ namespace FellowOakDicom
                                 var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
                                 reader.Process();
                             }
-#endif
                         }
                         catch (Exception e)
                         {
@@ -358,12 +336,10 @@ namespace FellowOakDicom
             using (var fs = IOManager.CreateFileReference(file).OpenRead())
             {
                 var s = fs;
-#if !NET35
                 if (file.EndsWith(".gz"))
                 {
                     s = new GZipStream(s, CompressionMode.Decompress);
                 }
-#endif
                 var reader = new DicomDictionaryReader(this, format, s);
                 reader.Process();
             }

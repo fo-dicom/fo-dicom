@@ -27,9 +27,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         static DesktopIOManager()
         {
-#if NETSTANDARD
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
             Instance = new DesktopIOManager();
         }
 

@@ -1,14 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System.Collections.Generic;
 using System.IO;
-
-#if !NET35
 using System.Threading.Tasks;
-#endif
-
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.IO
 {
@@ -187,13 +183,11 @@ namespace FellowOakDicom.IO
             return buffer;
         }
 
-#if !NET35
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
             return Task.FromResult(this.GetBuffer(count));
         }
-#endif
 
         /// <inheritdoc />
         public void Skip(int count)

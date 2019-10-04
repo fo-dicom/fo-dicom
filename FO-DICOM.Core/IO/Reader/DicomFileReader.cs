@@ -3,10 +3,7 @@
 
 using System;
 using System.Text;
-
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO.Reader
 {
@@ -110,7 +107,6 @@ namespace FellowOakDicom.IO.Reader
             return parse.Result;
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronously read DICOM file object.
         /// </summary>
@@ -133,7 +129,6 @@ namespace FellowOakDicom.IO.Reader
             }
             return parse.Item1;
         }
-#endif
 
         private static ParseResult Parse(
             IByteSource source,
@@ -162,7 +157,6 @@ namespace FellowOakDicom.IO.Reader
             return new ParseResult(result, fileFormat, syntax);
         }
 
-#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> ParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -183,7 +177,6 @@ namespace FellowOakDicom.IO.Reader
                 await
                 DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, stop, syntax, fileFormat).ConfigureAwait(false);
         }
-#endif
 
         private static void Preprocess(
             IByteSource source,
@@ -338,7 +331,6 @@ namespace FellowOakDicom.IO.Reader
             return result;
         }
 
-#if !NET35
         private static async Task<Tuple<DicomReaderResult, DicomFileFormat, DicomTransferSyntax>> DoParseAsync(
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
@@ -413,7 +405,6 @@ namespace FellowOakDicom.IO.Reader
 
             return Tuple.Create(result, fileFormat, syntax);
         }
-#endif
 
         private static void UpdateFileFormatAndSyntax(
             string code,

@@ -4,10 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
-
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO
 {
@@ -258,11 +255,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="short"/> values.</param>
         public static void Swap(short[] values)
         {
-#if NET35
-            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
-#else
             Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
-#endif
         }
 
         /// <summary>
@@ -271,11 +264,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="ushort"/> values.</param>
         public static void Swap(ushort[] values)
         {
-#if NET35
-            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
-#else
             Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
-#endif
         }
 
         /// <summary>
@@ -284,11 +273,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="int"/> values.</param>
         public static void Swap(int[] values)
         {
-#if NET35
-            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
-#else
             Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
-#endif
         }
 
         /// <summary>
@@ -297,11 +282,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="uint"/> values.</param>
         public static void Swap(uint[] values)
         {
-#if NET35
-            for (var i = 0; i < values.Length; ++i) values[i] = Swap(values[i]);
-#else
             Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
-#endif
         }
 
         /// <summary>

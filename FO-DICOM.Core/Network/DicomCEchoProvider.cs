@@ -1,17 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
 using System;
 using System.Text;
-
-#if !NET35
 using System.Threading.Tasks;
-#endif
-
-using FellowOakDicom.Log;
 
 namespace FellowOakDicom.Network
 {
+
     /// <summary>
     /// Implementation of a C-ECHO Service Class Provider.
     /// </summary>
@@ -28,7 +25,6 @@ namespace FellowOakDicom.Network
         {
         }
 
-#if !NET35
         /// <inheritdoc />
         public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
@@ -47,7 +43,6 @@ namespace FellowOakDicom.Network
         {
             return SendAssociationReleaseResponseAsync();
         }
-#endif
 
         /// <inheritdoc />
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)

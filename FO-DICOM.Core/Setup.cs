@@ -26,17 +26,10 @@ namespace FellowOakDicom
             try
             {
                 var assemblies = GetPlatformAssemblies();
-#if NET35
-                var type =
-                    assemblies.SelectMany(assembly => assembly.GetTypes())
-                        .Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
-                var instance = (T)Activator.CreateInstance(type);
-#else
                 var type =
                     assemblies.SelectMany(assembly => assembly.DefinedTypes)
                         .Single(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = (T)Activator.CreateInstance(type.AsType());
-#endif
 
                 return instance;
             }
@@ -58,17 +51,10 @@ namespace FellowOakDicom
             try
             {
                 var assemblies = GetPlatformAssemblies();
-#if NET35
-                var types =
-                    assemblies.SelectMany(assembly => assembly.GetTypes())
-                        .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
-                var instance = types.Select(t => (T)Activator.CreateInstance(t)).Single(obj => obj.IsDefault);
-#else
                 var types =
                     assemblies.SelectMany(assembly => assembly.DefinedTypes)
                         .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
                 var instance = types.Select(t => (T)Activator.CreateInstance(t.AsType())).Single(obj => obj.IsDefault);
-#endif
                 return instance;
             }
             catch (Exception)
@@ -79,11 +65,7 @@ namespace FellowOakDicom
 
         private static IEnumerable<Assembly> GetPlatformAssemblies()
         {
-#if NET35
-            return new[] { typeof(Setup).Assembly };
-#else
             return new[] { typeof(Setup).GetTypeInfo().Assembly };
-#endif
         }
     }
 }

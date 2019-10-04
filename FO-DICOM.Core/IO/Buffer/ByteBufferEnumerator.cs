@@ -14,11 +14,7 @@ namespace FellowOakDicom.IO.Buffer
         protected ByteBufferEnumerator(IByteBuffer buffer)
         {
             Buffer = buffer;
-#if NETFX_CORE || NETSTANDARD
             UnitSize = Marshal.SizeOf<T>();
-#else
-            UnitSize = Marshal.SizeOf(typeof(T));
-#endif
             Position = -UnitSize;
         }
 

@@ -11,11 +11,7 @@ namespace FellowOakDicom.Network.Client
     {
         public static TaskCompletionSource<T> Create<T>()
         {
-#if NETSTANDARD
             return new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-#else
-            return new TaskCompletionSource<T>();
-#endif
         }
     }
 }

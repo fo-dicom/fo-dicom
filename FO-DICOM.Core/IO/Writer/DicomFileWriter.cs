@@ -1,15 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.IO;
-
-#if NET35
-using Unity.IO.Compression;
-#else
 using System.IO.Compression;
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO.Writer
 {
@@ -53,7 +47,6 @@ namespace FellowOakDicom.IO.Writer
             WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this.options);
         }
 
-#if !NET35
         /// <summary>
         /// Write DICOM Part 10 object to <paramref name="target"/> asynchronously.
         /// </summary>
@@ -67,7 +60,6 @@ namespace FellowOakDicom.IO.Writer
             await WriteFileMetaInfoAsync(target, fileMetaInfo, this.options).ConfigureAwait(false);
             await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this.options).ConfigureAwait(false);
         }
-#endif
 
         /// <summary>
         /// Write DICOM file preamble.
@@ -84,7 +76,6 @@ namespace FellowOakDicom.IO.Writer
             target.Write(preamble, 0, 132);
         }
 
-#if !NET35
         /// <summary>
         /// Write DICOM file preamble.
         /// </summary>
@@ -99,7 +90,6 @@ namespace FellowOakDicom.IO.Writer
 
             return target.WriteAsync(preamble, 0, 132);
         }
-#endif
 
         /// <summary>
         /// Write DICOM file meta information.
@@ -120,7 +110,6 @@ namespace FellowOakDicom.IO.Writer
             walker.Walk(writer);
         }
 
-#if !NET35
         /// <summary>
         /// Write DICOM file meta information.
         /// </summary>
@@ -139,7 +128,6 @@ namespace FellowOakDicom.IO.Writer
             var walker = new DicomDatasetWalker(fileMetaInfo);
             return walker.WalkAsync(writer);
         }
-#endif
 
         /// <summary>
         /// Write DICOM dataset.
@@ -192,7 +180,6 @@ namespace FellowOakDicom.IO.Writer
             walker.Walk(writer);
         }
 
-#if !NET35
         /// <summary>
         /// Write DICOM dataset.
         /// </summary>
@@ -243,7 +230,6 @@ namespace FellowOakDicom.IO.Writer
             var walker = new DicomDatasetWalker(dataset);
             return walker.WalkAsync(writer);
         }
-#endif
 
         /// <summary>
         /// If necessary, update dataset syntax and group lengths.

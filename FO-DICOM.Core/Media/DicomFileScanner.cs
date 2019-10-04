@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if NET35
-using System.Threading;
-#else
 using System.Threading.Tasks;
-#endif
 using FellowOakDicom.IO;
 
 namespace FellowOakDicom.Media
@@ -64,11 +60,7 @@ namespace FellowOakDicom.Media
         {
             _stop = false;
             _count = 0;
-#if NET35
-            ScanProc(directory);
-#else
             Task.Run(() => ScanProc(directory));
-#endif
         }
 
         public void Stop()

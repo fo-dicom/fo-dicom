@@ -2,9 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO.Reader
 {
@@ -66,7 +64,6 @@ namespace FellowOakDicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
 
-#if !NET35
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
         /// </summary>
@@ -75,6 +72,6 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
         Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
-#endif
+
     }
 }

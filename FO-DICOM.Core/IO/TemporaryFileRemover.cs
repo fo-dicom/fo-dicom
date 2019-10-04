@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FellowOakDicom.IO
 {
@@ -26,9 +24,7 @@ namespace FellowOakDicom.IO
 
         private readonly List<IFileReference> files = new List<IFileReference>();
 
-#if !NET35
         private Task running;
-#endif
 
         #endregion
 
@@ -111,14 +107,10 @@ namespace FellowOakDicom.IO
                     lock (this.locker)
                     {
                         this.files.Add(file);
-#if NET35
-                        this.DeleteAll();
-#else
                         if (this.running == null || this.running.IsCompleted)
                         { 
                             this.running = this.DeleteAllAsync();
                         }
-#endif
                     }
                 }
             }
@@ -127,27 +119,6 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Event handler for repeated file removal attempts.
         /// </summary>
-#if NET35
-        /// <remarks>Only make one attempt, since Unity does not support multiple threads out-of-the-box.</remarks>
-        private void DeleteAll()
-        {
-            lock (this.locker)
-            {
-                foreach (var file in this.files)
-                {
-                    try
-                    {
-                        file.Delete();
-                    }
-                    catch
-                    {
-                        // Just ignore if deletion fails.
-                    }
-                }
-                this.files.RemoveAll(file => !file.Exists);
-            }
-        }
-#else
         private async Task DeleteAllAsync()
         {
             while (true)
@@ -176,7 +147,6 @@ namespace FellowOakDicom.IO
                 await Task.Delay(1000).ConfigureAwait(false);
             }
         }
-#endif
 
         #endregion
     }

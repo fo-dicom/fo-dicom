@@ -1,19 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections;
-using System.Linq;
-
-#if !NET35
-using System.Threading.Tasks;
-#endif
-
 using FellowOakDicom.Imaging.Algorithms;
 using FellowOakDicom.Imaging.LUT;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Imaging.Render
 {
@@ -318,37 +314,25 @@ namespace FellowOakDicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = data[i];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[data[i]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 
@@ -472,11 +456,7 @@ namespace FellowOakDicom.Imaging.Render
                 // should also be discarded.
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
@@ -486,9 +466,7 @@ namespace FellowOakDicom.Imaging.Render
                         shortData[i] = (short)(d >> shiftRight);
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             Data = shortData;
@@ -579,37 +557,25 @@ namespace FellowOakDicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = data[i];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[data[i]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 
@@ -667,11 +633,7 @@ namespace FellowOakDicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
@@ -680,9 +642,7 @@ namespace FellowOakDicom.Imaging.Render
                         ushortData[i] = (ushort)(d >> shiftRight);
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             Data = ushortData;
@@ -773,37 +733,25 @@ namespace FellowOakDicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = data[i];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[data[i]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 
@@ -854,11 +802,7 @@ namespace FellowOakDicom.Imaging.Render
             // should also be discarded.
             int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
             int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-#if NET35
-            for (var y = 0; y < Height; ++y)
-#else
             Parallel.For(0, Height, y =>
-#endif
             {
                 for (int i = Width * y, e = i + Width; i < e; i++)
                 {
@@ -868,9 +812,7 @@ namespace FellowOakDicom.Imaging.Render
                     intData[i] = d >> shiftRight;
                 }
             }
-#if !NET35
             );
-#endif
 
             Data = intData;
         }
@@ -960,37 +902,25 @@ namespace FellowOakDicom.Imaging.Render
 
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = data[i];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[data[i]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 
@@ -1037,11 +967,7 @@ namespace FellowOakDicom.Imaging.Render
                 int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
                 int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
 
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
@@ -1050,9 +976,7 @@ namespace FellowOakDicom.Imaging.Render
                         uintData[i] = d >> shiftRight;
                     }
                 }
-#if !NET35
                 );
-#endif
             }
 
             Data = uintData;
@@ -1142,37 +1066,25 @@ namespace FellowOakDicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = (int)data[i];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
                         output[i] = lut[(int)data[i]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 
@@ -1285,37 +1197,25 @@ namespace FellowOakDicom.Imaging.Render
             var data = Data;
             if (lut == null)
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
                         output[i] = alphaFF | (data[p++] << 16) | (data[p++] << 8) | data[p++];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
             else
             {
-#if NET35
-                for (var y = 0; y < Height; ++y)
-#else
                 Parallel.For(0, Height, y =>
-#endif
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
                         output[i] = alphaFF | (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
                     }
                 }
-#if !NET35
                 );
-#endif
             }
         }
 

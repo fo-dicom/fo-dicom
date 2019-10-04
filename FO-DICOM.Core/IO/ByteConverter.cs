@@ -49,11 +49,7 @@ namespace FellowOakDicom.IO
 
         public static T[] ToArray<T>(IByteBuffer buffer)
         {
-#if NETFX_CORE || NETSTANDARD
             uint size = (uint)Marshal.SizeOf<T>();
-#else
-            uint size = (uint)Marshal.SizeOf(typeof(T));
-#endif
             uint padding = (uint)(buffer.Size % size);
             uint count = (uint)(buffer.Size / size);
             T[] values = new T[count];
@@ -63,11 +59,7 @@ namespace FellowOakDicom.IO
 
         public static T[] ToArray<T>(IByteBuffer buffer, int bitsAllocated)
         {
-#if NETFX_CORE || NETSTANDARD
             var bytesRequested = Marshal.SizeOf<T>();
-#else
-            var bytesRequested = Marshal.SizeOf(typeof(T));
-#endif
             var bitsRequested = 8 * bytesRequested;
             if (bitsAllocated > bitsRequested)
             {
@@ -98,11 +90,7 @@ namespace FellowOakDicom.IO
 
         public static T Get<T>(IByteBuffer buffer, int n)
         {
-#if NETFX_CORE || NETSTANDARD
             int size = Marshal.SizeOf<T>();
-#else
-            int size = Marshal.SizeOf(typeof(T));
-#endif
             T[] values = new T[1];
             if (buffer.IsMemory) System.Buffer.BlockCopy(buffer.Data, size * n, values, 0, size);
             else

@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Generic;
-#if !NET35
-using System.Threading.Tasks;
-#endif
 using FellowOakDicom.IO.Buffer;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Writer
 {
@@ -89,7 +87,6 @@ namespace FellowOakDicom.IO.Writer
             return true;
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing a DICOM element.
         /// </summary>
@@ -113,7 +110,6 @@ namespace FellowOakDicom.IO.Writer
             await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
             return true;
         }
-#endif
 
         /// <summary>
         /// Handler for traversing beginning of sequence.
@@ -227,7 +223,6 @@ namespace FellowOakDicom.IO.Writer
             return true;
         }
 
-#if !NET35
         /// <summary>
         /// Asynchronous handler for traversing fragment item.
         /// </summary>
@@ -250,7 +245,6 @@ namespace FellowOakDicom.IO.Writer
 
             return true;
         }
-#endif
 
         /// <summary>
         /// Handler for traversing end of fragment.
@@ -326,7 +320,6 @@ namespace FellowOakDicom.IO.Writer
             target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize);
         }
 
-#if !NET35
         private static async Task WriteBufferAsync(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
         {
             var offset = 0;
@@ -343,6 +336,6 @@ namespace FellowOakDicom.IO.Writer
 
             await target.WriteAsync(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize).ConfigureAwait(false);
         }
-#endif
+
     }
 }

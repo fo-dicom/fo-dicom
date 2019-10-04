@@ -85,17 +85,7 @@ namespace FellowOakDicom.IO
                 throw new ArgumentNullException(nameof(paths));
             }
 
-#if NET35
-            var combined = string.Empty;
-            foreach (var path in paths)
-            {
-                combined = Path.Combine(combined, path);
-            }
-
-            return combined;
-#else
             return Path.Combine(paths);
-#endif
         }
 
         #endregion
