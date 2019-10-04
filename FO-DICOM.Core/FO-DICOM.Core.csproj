@@ -1,0 +1,119 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>FellowOakDicom</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Compatibility\**" />
+    <EmbeddedResource Remove="Compatibility\**" />
+    <None Remove="Compatibility\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DatabaseQueryTransformRule.cs" />
+    <Compile Remove="Imaging\AndroidImage.cs" />
+    <Compile Remove="Imaging\AndroidImageManager.cs" />
+    <Compile Remove="Imaging\Codec\DesktopTranscoderManager.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpeg2000LosslessCodec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpeg2000LossyCodec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegCodecImpl.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegLossless14Codec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegLossless14SV1Codec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegLsCodecImpl.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegLsLosslessCodec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegLsNearLosslessCodec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegNativeCodec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegProcess1Codec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegProcess1Codec.Mono.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegProcess4Codec.cs" />
+    <Compile Remove="Imaging\Codec\DicomJpegProcess4Codec.Mono.cs" />
+    <Compile Remove="Imaging\Codec\DicomRleCodecImpl.cs" />
+    <Compile Remove="Imaging\Codec\DicomRleCodecImpl.Mono.cs" />
+    <Compile Remove="Imaging\Codec\NativeJpeg2000ParametersExtensions.cs" />
+    <Compile Remove="Imaging\Codec\NativeJpegLsParametersExtensions.cs" />
+    <Compile Remove="Imaging\Codec\NativeJpegParametersExtensions.cs" />
+    <Compile Remove="Imaging\Codec\NativePixelDataExtensions.cs" />
+    <Compile Remove="Imaging\IOSImage.cs" />
+    <Compile Remove="Imaging\IOSImageManager.cs" />
+    <Compile Remove="Imaging\UnityImage.cs" />
+    <Compile Remove="Imaging\UnityImageManager.cs" />
+    <Compile Remove="Imaging\WindowsImage.cs" />
+    <Compile Remove="Imaging\WindowsImageManager.cs" />
+    <Compile Remove="Imaging\WinFormsImage.cs" />
+    <Compile Remove="Imaging\WinFormsImageManager.cs" />
+    <Compile Remove="Imaging\WPFImage.cs" />
+    <Compile Remove="Imaging\WPFImageManager.cs" />
+    <Compile Remove="IO\WindowsFileReference.cs" />
+    <Compile Remove="IO\WindowsIOManager.cs" />
+    <Compile Remove="Network\WindowsNetworkListener.cs" />
+    <Compile Remove="Network\WindowsNetworkManager.cs" />
+    <Compile Remove="Network\WindowsNetworkStream.cs" />
+    <Compile Remove="Printing\FilmBoxExtensions.cs" />
+    <Compile Remove="Printing\ImageBoxExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Dictionaries\DICOMDictionary.xml.gz" />
+    <None Remove="Dictionaries\PrivateDictionary.xml.gz" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Dictionaries\DICOMDictionary.xml.gz" />
+    <EmbeddedResource Include="Dictionaries\PrivateDictionary.xml.gz" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DicomAnonymizerGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomAnonymizerGenerated.cs</LastGenOutput>
+    </None>
+    <None Update="DicomTagGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomTagGenerated.cs</LastGenOutput>
+    </None>
+    <None Update="DicomUIDGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DicomUIDGenerated.cs</LastGenOutput>
+    </None>
+    <None Update="Dictionaries\DICOM Dictionary.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DICOM Dictionary.xml</LastGenOutput>
+    </None>
+    <None Update="Dictionaries\DICOM Dictionary.xml">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DICOM Dictionary.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="DicomAnonymizerGenerated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DicomAnonymizerGenerated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="DicomTagGenerated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DicomTagGenerated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="DicomUIDGenerated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DicomUIDGenerated.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

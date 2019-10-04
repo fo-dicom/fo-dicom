@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<dictionary version="minimum">
+  <tag group="0004" element="1130" keyword="FileSetID" vr="CS" vm="1">File-set ID</tag>
+</dictionary>

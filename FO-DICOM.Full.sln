@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.Core", "fo-dicom.core\FO-DICOM.Core.csproj", "{823BE9FE-62BB-43E6-A920-9ADC09F7F836}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{43ED1185-9895-4B31-8889-7C0477591BF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FO-DICOM.Tests.NetCore", "Tests\FO-DICOM.Tests.NetCore\FO-DICOM.Tests.NetCore.csproj", "{FB7608E8-FA90-4445-A7F2-430E6A518798}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{3CAE7F87-9013-49B0-96B7-8C96055B8380}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FO-DICOM.Json", "Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj", "{50FAD02E-6763-47A4-8592-A8BEC8658948}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logging", "Logging", "{D0E1FAE5-EA1F-46EC-B1B0-7FE05C09BF98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FO-DICOM.NLog", "Logging\FO-DICOM.NLog\FO-DICOM.NLog.csproj", "{C8E554D2-A63B-405E-A047-E792A7AC42AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{823BE9FE-62BB-43E6-A920-9ADC09F7F836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{823BE9FE-62BB-43E6-A920-9ADC09F7F836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{823BE9FE-62BB-43E6-A920-9ADC09F7F836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{823BE9FE-62BB-43E6-A920-9ADC09F7F836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB7608E8-FA90-4445-A7F2-430E6A518798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB7608E8-FA90-4445-A7F2-430E6A518798}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB7608E8-FA90-4445-A7F2-430E6A518798}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB7608E8-FA90-4445-A7F2-430E6A518798}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50FAD02E-6763-47A4-8592-A8BEC8658948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50FAD02E-6763-47A4-8592-A8BEC8658948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50FAD02E-6763-47A4-8592-A8BEC8658948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FAD02E-6763-47A4-8592-A8BEC8658948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FB7608E8-FA90-4445-A7F2-430E6A518798} = {43ED1185-9895-4B31-8889-7C0477591BF1}
+		{50FAD02E-6763-47A4-8592-A8BEC8658948} = {3CAE7F87-9013-49B0-96B7-8C96055B8380}
+		{C8E554D2-A63B-405E-A047-E792A7AC42AD} = {D0E1FAE5-EA1F-46EC-B1B0-7FE05C09BF98}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A7E4FCE-FCEB-485B-AE5F-ECF6918D5DA7}
+	EndGlobalSection
+EndGlobal
