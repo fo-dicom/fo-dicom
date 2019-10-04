@@ -5,10 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Dicom.Media
+namespace FellowOakDicom.Media
 {
+
     public class DicomDirectoryRecordCollection : IEnumerable<DicomDirectoryRecord>
     {
+
         #region Properties and Attributes
 
         private readonly DicomDirectoryRecord _firstRecord;

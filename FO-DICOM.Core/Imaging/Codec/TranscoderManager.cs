@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     /// <summary>
     /// Abstract manager class for DICOM transcoder operations.
     /// </summary>

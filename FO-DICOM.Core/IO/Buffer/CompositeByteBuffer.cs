@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     /// <summary>
     /// Implementation of an <see cref="IByteBuffer"/> consisting of a collection of <see cref="IByteBuffer"/> instances.
     /// </summary>

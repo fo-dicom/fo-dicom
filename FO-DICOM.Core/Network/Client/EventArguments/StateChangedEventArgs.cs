@@ -2,10 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using Dicom.Network.Client.States;
+using FellowOakDicom.Network.Client.States;
 
-namespace Dicom.Network.Client.EventArguments
+namespace FellowOakDicom.Network.Client.EventArguments
 {
+
     public class StateChangedEventArgs : EventArgs
     {
         /// <summary>

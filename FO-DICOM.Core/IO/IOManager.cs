@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+using System.Text;
+
+namespace FellowOakDicom.IO
 {
-    using System.Text;
 
     /// <summary>
     /// Abstract manager class for file and directory based I/O.

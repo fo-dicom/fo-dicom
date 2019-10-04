@@ -14,10 +14,10 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 #endif
 
-using Dicom.Imaging.Mathematics;
-using Dicom.IO.Buffer;
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
 
     /// <summary>

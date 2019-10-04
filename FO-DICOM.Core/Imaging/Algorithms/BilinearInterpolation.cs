@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Algorithms
-{
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+
+namespace FellowOakDicom.Imaging.Algorithms
+{
 
     public static class BilinearInterpolation
     {

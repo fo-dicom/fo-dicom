@@ -3,10 +3,10 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using Xunit;
 
     public class DicomFileMetaInformationTest
     {

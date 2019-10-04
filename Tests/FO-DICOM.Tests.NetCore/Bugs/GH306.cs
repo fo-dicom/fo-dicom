@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
+using System;
+using System.Text;
 using System.Threading.Tasks;
-using Dicom.Helpers;
-using Dicom.Network.Client;
+using Xunit;
 using Xunit.Abstractions;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
-    using System;
-    using System.Text;
-    using Dicom.Log;
-    using Dicom.Network;
-    using Xunit;
 
     public class GH306
     {
@@ -58,7 +58,7 @@ namespace Dicom.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
 
-                var client = new Dicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
@@ -102,7 +102,7 @@ namespace Dicom.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new Dicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };

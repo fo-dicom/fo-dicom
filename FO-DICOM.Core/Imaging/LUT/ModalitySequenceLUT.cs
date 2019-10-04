@@ -1,10 +1,12 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO;
 using System;
 
-namespace Dicom.Imaging.LUT
+namespace FellowOakDicom.Imaging.LUT
 {
+
     /// <summary>
     /// Modality Sequence LUT implementation of <seealso cref="IModalityLUT"/> and <seealso cref="ILUT"/>
     /// </summary>
@@ -77,19 +79,19 @@ namespace Dicom.Imaging.LUT
                 case "OW":
                 {
                     var LUTData = LUTDataElement as DicomOtherWord;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "US":
                 {
                     var LUTData = LUTDataElement as DicomUnsignedShort;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "SS":
                 {
                     var LUTData = LUTDataElement as DicomSignedShort;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
                     break;
                 }
             }

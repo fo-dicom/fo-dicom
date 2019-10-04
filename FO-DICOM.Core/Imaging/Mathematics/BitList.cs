@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Imaging.Mathematics
 {
+
     public class BitList
     {
         private List<byte> _bytes;

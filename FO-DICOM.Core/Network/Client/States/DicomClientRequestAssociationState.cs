@@ -7,11 +7,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Network.Client.Events;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Network.Client.Events;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     /// <summary>
     /// The DICOM client is connected to the server and requires an association. When transitioning into this state, a new association request will be sent
     /// </summary>

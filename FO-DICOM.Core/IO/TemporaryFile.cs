@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+using System;
+
+namespace FellowOakDicom.IO
 {
-    using System;
 
     /// <summary>
     /// Support class for creating a temporary file.

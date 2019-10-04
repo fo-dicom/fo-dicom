@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom
-{
-    using System.Text;
+using System.Text;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests
+{
 
     /// <summary>
     ///This is a test class for DicomPersonNameTest and is intended

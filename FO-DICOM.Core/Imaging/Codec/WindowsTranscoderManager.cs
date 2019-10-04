@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Linq;
+using System.Reflection;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
-    using System;
-    using System.Reflection;
 
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Universal Windows Platform applications.

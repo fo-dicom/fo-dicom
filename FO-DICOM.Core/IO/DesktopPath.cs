@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
-    using System.IO;
 
     /// <summary>
     /// .NET/Windows Desktop implementation of the <see cref="IPath"/> interface.

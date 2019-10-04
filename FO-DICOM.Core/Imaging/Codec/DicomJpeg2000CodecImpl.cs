@@ -1,17 +1,16 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Linq;
-
 using CSJ2K;
 using CSJ2K.j2k.util;
 using CSJ2K.Util;
+using FellowOakDicom.IO.Buffer;
+using System;
+using System.Linq;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     internal static class DicomJpeg2000CodecImpl
     {
         internal static void Encode(

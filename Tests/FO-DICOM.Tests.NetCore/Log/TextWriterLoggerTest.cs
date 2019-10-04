@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
 using System.IO;
-using Dicom.Network;
 using Xunit;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Tests.Log
 {
+
     public class TextWriterLoggerTest
     {
         [Fact]

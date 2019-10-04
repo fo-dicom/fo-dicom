@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging;
 using Xunit;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Tests.Imaging
 {
+
     public class DicomOverlayDataTest
     {
         [Fact]

@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Network;
+using FellowOakDicom.Tests.Network.Client;
 using System.Threading.Tasks;
-using Dicom.Network;
-using Dicom.Network.Client;
-
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     [Collection("Network"), Trait("Category", "Network")]
     public class GH433
     {
@@ -26,7 +27,7 @@ namespace Dicom.Bugs
                 var expected = DicomStatus.Success;
                 DicomStatus actual = null;
 
-                var client = new Dicom.Network.DicomClient();
+                var client = new DicomClient();
                 client.AddRequest(
                     new DicomCEchoRequest
                         {
@@ -53,7 +54,7 @@ namespace Dicom.Bugs
                 var expected = DicomStatus.Success;
                 DicomStatus actual = null;
 
-                var client = new Dicom.Network.Client.DicomClient("localhost", port, false, "SCU", "ANY-SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                         {
@@ -78,7 +79,7 @@ namespace Dicom.Bugs
                 var locker = new object();
                 DicomStatus status = null;
 
-                var client = new Dicom.Network.DicomClient();
+                var client = new DicomClient();
                 client.AddRequest(
                     new DicomCEchoRequest
                     {
@@ -110,7 +111,7 @@ namespace Dicom.Bugs
                 var locker = new object();
                 DicomStatus status = null;
 
-                var client = new Dicom.Network.Client.DicomClient("localhost", port, false, "SCU", "WRONG-SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "SCU", "WRONG-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                     {

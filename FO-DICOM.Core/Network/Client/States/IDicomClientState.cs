@@ -4,8 +4,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     public interface IDicomClientState : IDisposable
     {
         /// <summary>

@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System.Collections.Generic;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>
     /// Abstract class for representing fragment sequences of DICOM pixel data.
     /// </summary>

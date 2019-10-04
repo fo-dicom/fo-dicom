@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public class DicomVM
     {
         private static IDictionary<string, DicomVM> _vm = new Dictionary<string, DicomVM>();

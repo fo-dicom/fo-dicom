@@ -3,8 +3,9 @@
 
 using System.IO;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public sealed class StreamByteBuffer : IByteBuffer
     {
 

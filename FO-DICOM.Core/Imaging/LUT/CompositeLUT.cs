@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.Imaging.LUT
+namespace FellowOakDicom.Imaging.LUT
 {
+
     public class CompositeLUT : ILUT
     {
         #region Private Members

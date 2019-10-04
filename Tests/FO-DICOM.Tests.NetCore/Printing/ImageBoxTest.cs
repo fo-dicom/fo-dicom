@@ -2,12 +2,13 @@
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
-using System.Collections;
+using FellowOakDicom.Printing;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Tests.Printing
 {
+
     public class ImageBoxTest
     {
         #region Unit tests

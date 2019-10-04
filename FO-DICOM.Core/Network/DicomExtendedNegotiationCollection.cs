@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     public class DicomExtendedNegotiationCollection : ICollection<DicomExtendedNegotiation>
     {

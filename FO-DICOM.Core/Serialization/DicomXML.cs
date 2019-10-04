@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Text;
 
-namespace Dicom.Serialization
+namespace FellowOakDicom.Serialization
 {
     /// <summary>
     /// Does the conversion of <see cref="Dicom.DicomDataset"/> to an XML string

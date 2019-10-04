@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
+
     public class DicomReaderMultiObserver : IDicomReaderObserver
     {
+
         private IDicomReaderObserver[] _observers;
 
         public DicomReaderMultiObserver(params IDicomReaderObserver[] observers)

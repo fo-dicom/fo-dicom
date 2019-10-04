@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec
-{
-    using System;
-    using System.Linq;
-    using System.Reflection;
+using System;
+using System.Linq;
+using System.Reflection;
+using FellowOakDicom.Log;
 
-    using Dicom.Log;
+namespace FellowOakDicom.Imaging.Codec
+{
 
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Mono applications.

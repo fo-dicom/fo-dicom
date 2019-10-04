@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Imaging.LUT
+namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>

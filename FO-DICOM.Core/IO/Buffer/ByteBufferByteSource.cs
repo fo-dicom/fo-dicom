@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Buffer
-{
-    using System;
-    using System.Collections.Generic;
-
+using System;
+using System.Collections.Generic;
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+
+namespace FellowOakDicom.IO.Buffer
+{
 
     /// <summary>
     /// Byte source for reading in form of byte buffer.

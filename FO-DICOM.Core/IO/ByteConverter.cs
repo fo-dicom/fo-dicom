@@ -6,15 +6,15 @@ using System.Collections;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Imaging.Mathematics;
 
-using Dicom.IO.Buffer;
-using Dicom.Imaging.Mathematics
-;
-
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     public static class ByteConverter
     {
+
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding = null)
         {
             if (encoding == null) encoding = Encoding.UTF8;

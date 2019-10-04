@@ -3,10 +3,10 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     using System.Text;
-    using Dicom.Log;
+    using FellowOakDicom.Log;
 
     /// <summary>
     /// Base class for DIMSE-C and DIMSE-N message items.

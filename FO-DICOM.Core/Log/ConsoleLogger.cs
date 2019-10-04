@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Log
 {
+
     /// <summary>
     /// Logger for output to the <see cref="Console"/>.
     /// </summary>

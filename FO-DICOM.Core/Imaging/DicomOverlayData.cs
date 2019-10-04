@@ -5,12 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 
-using Dicom.Imaging.Mathematics;
-using Dicom.IO.Buffer;
-
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// Representation of enumerated DICOM overlay types.
     /// </summary>

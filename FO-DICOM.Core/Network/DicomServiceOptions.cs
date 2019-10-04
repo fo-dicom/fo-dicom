@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Options to control the behavior of the <see cref="DicomService"/> base class.

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.StructuredReport
+namespace FellowOakDicom.StructuredReport
 {
     public enum DicomValueType
     {

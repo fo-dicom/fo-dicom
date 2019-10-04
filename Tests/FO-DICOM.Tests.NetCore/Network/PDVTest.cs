@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
 using System;
+using Xunit;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
-    using Xunit;
 
     public class PDVTest
     {

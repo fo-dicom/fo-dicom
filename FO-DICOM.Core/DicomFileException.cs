@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public class DicomFileException : DicomDataException
     {
         public DicomFileException(DicomFile file, string message)

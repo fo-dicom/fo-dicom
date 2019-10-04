@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>State of a DICOM status code</summary>
     public enum DicomState

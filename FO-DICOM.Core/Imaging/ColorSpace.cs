@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom.Imaging
 {
+
     public class ColorSpace
     {
         public ColorSpace(string name, params Component[] components)

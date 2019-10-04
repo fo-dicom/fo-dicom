@@ -7,8 +7,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml;
 
-namespace Dicom.Helpers
+namespace FellowOakDicom.Tests.Helpers
 {
+
     public static class SerializationExtensions
     {
         public static T GetDataContractSerializerDeserializedObject<T>(this T tag)

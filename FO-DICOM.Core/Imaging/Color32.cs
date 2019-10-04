@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     public struct Color32
     {
         public Color32(byte a, byte r, byte g, byte b)

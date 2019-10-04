@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Serialization;
 using System.Text;
 using Xunit;
 
-namespace Dicom.Serialization
+namespace FellowOakDicom.Tests.Serialization
 {
 
     [Collection("General")]

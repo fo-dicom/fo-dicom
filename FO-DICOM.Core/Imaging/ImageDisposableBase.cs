@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
-{
-    using System;
+using System;
+using FellowOakDicom.IO;
 
-    using Dicom.IO;
+namespace FellowOakDicom.Imaging
+{
 
     /// <summary>
     /// Base class for image implementations where underlying image type is disposable.

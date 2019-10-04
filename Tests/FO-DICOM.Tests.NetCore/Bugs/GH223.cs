@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Linq;
 using System.Threading.Tasks;
-
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     [Collection("General")]
     public class GH223
     {

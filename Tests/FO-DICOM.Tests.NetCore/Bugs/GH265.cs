@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Bugs
-{
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests.Bugs
+{
 
     public class GH265
     {

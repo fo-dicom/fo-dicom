@@ -4,10 +4,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.IO.Writer
+namespace FellowOakDicom.IO.Writer
 {
+
     public static class DicomDatasetExtensions
     {
+
         /// <summary>
         /// Recalculates the group length element for the specified group. Removes the group length element if no elements exist for the specified group.
         /// </summary>

@@ -1,11 +1,11 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client.Tasks
+namespace FellowOakDicom.Network.Client.Tasks
 {
+
     internal static class TaskCompletionSourceExtensions
     {
         public static void TrySetResultAsynchronously<T>(this TaskCompletionSource<T> @this, T result)

@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dicom.Log;
-using Dicom.Network;
-
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     internal class VideoCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
         private static readonly DicomTransferSyntax[] AcceptedVideoTransferSyntaxes =

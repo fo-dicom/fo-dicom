@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
     /// <summary>
     /// Convenience representation of a Presentation LUT Information Object.

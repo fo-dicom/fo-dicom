@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Network.Client.EventArguments;
-using Dicom.Network.Client.Events;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Network.Client.Events;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     /// <summary>
     /// The DICOM client is connected and has an active DICOM association. Every queued request will be sent one by one.
     /// </summary>

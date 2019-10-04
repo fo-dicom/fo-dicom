@@ -3,9 +3,8 @@
 
 using System.IO;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Log
 {
-    using System;
 
     /// <summary>
     /// Logger for output to a <see cref="TextWriter"/> implmentation.

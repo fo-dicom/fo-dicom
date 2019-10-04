@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Network;
-using Dicom.Network.Client;
-
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     public class GH538
     {
         #region Unit Tests
@@ -42,7 +42,7 @@ namespace Dicom.Bugs
                     handle2.Set();
                 };
 
-                var client = new Network.DicomClient();
+                var client = new DicomClient();
                 client.AddRequest(request1);
                 client.AddRequest(request2);
 
@@ -82,7 +82,7 @@ namespace Dicom.Bugs
                     handle2.Set();
                 };
 
-                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request1).ConfigureAwait(false);
                 await client.AddRequestAsync(request2).ConfigureAwait(false);
 

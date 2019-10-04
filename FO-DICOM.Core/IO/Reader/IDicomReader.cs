@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Reader
-{
-    using System;
-
+using System;
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+
+namespace FellowOakDicom.IO.Reader
+{
 
     /// <summary>
     /// Possible DICOM reader results.

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Collection of presentation contexts, with unique ID:s.

@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>DICOM Value Representation</summary>
     public sealed class DicomVR
     {

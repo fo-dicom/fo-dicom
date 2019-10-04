@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Represents a DICOM C-Store request to be sent to a C-Store SCP or a C-Store request that has been received from a C-Store SCU.

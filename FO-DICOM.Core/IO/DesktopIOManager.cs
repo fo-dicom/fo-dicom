@@ -3,8 +3,9 @@
 
 using System.Text;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     /// <summary>
     /// .NET/Windows Desktop implementation of the I/O manager.
     /// </summary>

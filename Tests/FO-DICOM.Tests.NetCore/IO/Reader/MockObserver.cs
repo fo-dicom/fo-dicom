@@ -1,10 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.IO.Reader;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.Tests.IO.Reader
 {
+
     public class MockObserver : IDicomReaderObserver
     {
         public MockObserver()

@@ -1,19 +1,18 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Helpers;
-using Dicom.Network;
-
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Xunit;
 using Xunit.Abstractions;
+using DicomClient = FellowOakDicom.Network.DicomClient;
 
-using DicomClient = Dicom.Network.DicomClient;
-
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     public class GH859
     {
         private readonly XUnitDicomLogger _output;
@@ -30,7 +29,7 @@ namespace Dicom.Bugs
         public async Task DicomService_reading_messages_with_invalid_UIDs_does_not_fail()
         {
             int port = Ports.GetNext();
-            var clientLogger = _output.IncludePrefix(nameof(Network.DicomClient));
+            var clientLogger = _output.IncludePrefix(nameof(DicomClient));
             var serverLogger = _output.IncludePrefix(nameof(DicomCEchoProvider));
             var source = new CancellationTokenSource();
 

@@ -3,10 +3,12 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.Media
+namespace FellowOakDicom.Media
 {
+
     public class DicomDirectoryRecordType
     {
+
         #region Properties and Attributes
 
         private readonly string _recordName;

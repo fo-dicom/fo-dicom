@@ -1,15 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Reader
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.IO.Reader;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Xunit;
+
+namespace FellowOakDicom.Tests.IO.Reader
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-
-    using Dicom.IO.Buffer;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomReaderTest

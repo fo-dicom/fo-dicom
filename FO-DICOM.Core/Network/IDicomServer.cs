@@ -7,9 +7,9 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dicom.Log;
+using FellowOakDicom.Log;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Interface representing a DICOM server instance.

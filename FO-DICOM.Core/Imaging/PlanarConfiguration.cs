@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// Planar Configuration (0028,0006) indicates whether the color pixel data are sent color-by-plane
     /// or color-by-pixel. This Attribute shall be present if Samples per Pixel (0028,0002) has a value

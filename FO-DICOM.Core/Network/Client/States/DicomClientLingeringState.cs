@@ -7,11 +7,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Network.Client.Events;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Network.Client.Events;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     /// <summary>
     /// When we have an active association, but no more DICOM requests to send (and all responses for previous requests have already arrived)
     /// we will keep the association open for just a little longer in case we get any more requests

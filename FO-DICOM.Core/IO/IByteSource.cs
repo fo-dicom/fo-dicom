@@ -5,10 +5,11 @@
 using System.Threading.Tasks;
 #endif
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     /// <summary>
     /// Delegate for <see cref="IByteSource"/> callback functions.
     /// </summary>

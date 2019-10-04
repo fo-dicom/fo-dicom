@@ -1,6 +1,11 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Tests.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,14 +15,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Helpers;
-using Dicom.Log;
-using Dicom.Network.Client.EventArguments;
 using Xunit;
 using Xunit.Abstractions;
+using DicomClient = FellowOakDicom.Network.Client.DicomClient;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Tests.Network.Client
 {
+
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTimeoutTest
     {

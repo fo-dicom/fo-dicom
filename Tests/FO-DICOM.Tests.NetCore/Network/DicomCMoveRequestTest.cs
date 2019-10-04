@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
 using System.Collections.Generic;
-
 using Xunit;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
+
     public class DicomCMoveRequestTest
     {
         #region Unit Tests

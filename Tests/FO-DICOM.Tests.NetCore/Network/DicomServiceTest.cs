@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Network.Client;
+using FellowOakDicom.Network;
 using System.Threading.Tasks;
-
 using Xunit;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
+
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomServiceTest
     {
@@ -54,7 +54,7 @@ namespace Dicom.Network
                         dataset = request.Dataset;
                     };
 
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -163,7 +163,7 @@ namespace Dicom.Network
                     responseDataset = res.Dataset;
                 };
 
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -223,7 +223,7 @@ namespace Dicom.Network
                     dataset = request.Dataset;
                 };
 
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);

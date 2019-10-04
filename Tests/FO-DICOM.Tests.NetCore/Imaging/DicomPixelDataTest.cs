@@ -2,10 +2,12 @@
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
+using FellowOakDicom.Imaging;
 using Xunit;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Tests.Imaging
 {
+
     public class DicomPixelDataTest
     {
         [Fact]

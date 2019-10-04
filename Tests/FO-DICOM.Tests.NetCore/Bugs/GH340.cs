@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Imaging;
-using Dicom.Imaging.Render;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Render;
+using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
-    using Xunit;
 
     [Collection("General")]
     public class GH340

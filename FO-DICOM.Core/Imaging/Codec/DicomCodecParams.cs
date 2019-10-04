@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Log;
+using FellowOakDicom.Log;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     /// <summary>
     /// Base class for DICOM codec parameters.
     /// </summary>

@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
+using FellowOakDicom.Imaging.Mathematics;
+
+namespace FellowOakDicom.Imaging
 {
-    using Dicom.Imaging.Mathematics;
 
     /// <summary>
     /// Representation of a spatial 2D transform.

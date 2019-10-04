@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Helpers
+namespace FellowOakDicom.Tests.Helpers
 {
+
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class TestPriorityAttribute : Attribute
     {

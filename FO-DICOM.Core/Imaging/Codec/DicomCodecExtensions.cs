@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     /// <summary>
     /// Extension methods associated with DICOM transfer syntax change.
     /// </summary>

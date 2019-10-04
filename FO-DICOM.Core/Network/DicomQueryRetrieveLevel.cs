@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Query&#47;Retrieve level of DICOM command messages, applicable to C-FIND, C-GET and C-MOVE.

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,13 +11,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Helpers;
-using Dicom.Log;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
+
     [Collection("Network"), Trait("Category", "Network")]
     public class OldDicomClientTest
     {

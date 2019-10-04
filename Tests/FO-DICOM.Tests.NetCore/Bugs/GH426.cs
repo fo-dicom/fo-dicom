@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Network;
 using System.Threading.Tasks;
-using Dicom.Network;
-
-using Dicom.Network.Client;
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     [Collection("Network"), Trait("Category", "Network")]
     public class GH426
     {
@@ -21,7 +21,7 @@ namespace Dicom.Bugs
 
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new Network.DicomClient();
+                var client = new DicomClient();
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =
@@ -43,7 +43,7 @@ namespace Dicom.Bugs
 
             using (DicomServer.Create<DicomCEchoProvider>(port))
             {
-                var client = new Network.Client.DicomClient("localhost", port, false, "SCU", "SCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "SCU", "SCP");
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =

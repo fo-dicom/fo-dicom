@@ -1,21 +1,19 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Media
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+#if !NET35
+using System.Threading.Tasks;
+#endif
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
+using FellowOakDicom.IO.Writer;
+
+namespace FellowOakDicom.Media
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-
-    #if !NET35
-    using System.Threading.Tasks;
-    #endif
-
-    using Dicom.IO;
-    using Dicom.IO.Reader;
-    using Dicom.IO.Writer;
-
 
     /// <summary>
     /// Class that holds the Record entries of an entry across the different levels 

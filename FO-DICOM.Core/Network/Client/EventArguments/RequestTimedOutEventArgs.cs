@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Network.Client.EventArguments
+namespace FellowOakDicom.Network.Client.EventArguments
 {
+
     public class RequestTimedOutEventArgs : EventArgs
     {
         /// <summary>

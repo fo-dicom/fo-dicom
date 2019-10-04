@@ -1,16 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Network;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Helpers;
-using Dicom.Log;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("Network")]
@@ -34,7 +35,7 @@ namespace Dicom.Bugs
         {
             var port = Ports.GetNext();
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(Network.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -44,7 +45,7 @@ namespace Dicom.Bugs
 
                 var actual = 0;
 
-                var client = new Network.DicomClient()
+                var client = new DicomClient()
                 {
                     Logger = clientLogger,
                     Linger = 1 // No need to linger, we only send one request at a time
@@ -86,7 +87,7 @@ namespace Dicom.Bugs
         {
             var port = Ports.GetNext();
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(Network.Client.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(FellowOakDicom.Network.Client.DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -96,7 +97,7 @@ namespace Dicom.Bugs
 
                 var actual = 0;
 
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
                 {
                     Logger = clientLogger,
                     AssociationLingerTimeoutInMs = 1 // No need to linger, we only send one request at a time
@@ -139,7 +140,7 @@ namespace Dicom.Bugs
             int port = Ports.GetNext();
 
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(Network.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -152,7 +153,7 @@ namespace Dicom.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = new Network.DicomClient()
+                        var client = new DicomClient()
                         {
                             Logger = clientLogger
                         };
@@ -188,7 +189,7 @@ namespace Dicom.Bugs
             int port = Ports.GetNext();
 
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(Network.Client.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(FellowOakDicom.Network.Client.DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
@@ -201,7 +202,7 @@ namespace Dicom.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
+                        var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
                         {
                             Logger = clientLogger
                         };

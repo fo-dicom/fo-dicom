@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using FellowOakDicom.IO;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
-    using Dicom.IO;
 
     /// <summary>
     /// Convenience class for managing color look-up tables with 256 color items.

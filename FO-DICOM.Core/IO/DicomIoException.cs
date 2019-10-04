@@ -3,10 +3,12 @@
 
 using System;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     public class DicomIoException : DicomException
     {
+
         public DicomIoException(string message)
             : base(message)
         {

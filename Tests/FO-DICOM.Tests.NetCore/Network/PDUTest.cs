@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
+
     [Collection("Network")]
     public class PDUTest
     {

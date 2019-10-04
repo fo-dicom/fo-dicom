@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     public class DicomCodecException : DicomException
     {
         public DicomCodecException(string message)

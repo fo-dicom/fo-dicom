@@ -3,17 +3,16 @@
 
 using System.IO;
 
-using Dicom.IO;
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     public enum DicomJpegSampleFactor
     {
         SF444,
-
         SF422,
-
         Unknown
     }
 

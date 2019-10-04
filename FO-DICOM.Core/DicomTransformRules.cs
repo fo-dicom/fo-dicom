@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public interface IDicomTransformRule
     {
         void Transform(DicomDataset dataset, DicomDataset modifiedAttributesSequenceItem = null);

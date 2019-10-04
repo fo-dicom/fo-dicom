@@ -5,12 +5,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Imaging.Render;
 
-using Dicom.Imaging.Codec;
-using Dicom.Imaging.Render;
-
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// DICOM Image class for image rendering.
     /// </summary>

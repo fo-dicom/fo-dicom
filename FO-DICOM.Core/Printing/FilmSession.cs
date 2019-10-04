@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
     /// <summary>
     /// Basic film session

@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Network.Client.EventArguments
+namespace FellowOakDicom.Network.Client.EventArguments
 {
+
     /// <summary>
     /// Container class for arguments associated with the <see cref="Dicom.Network.Client.DicomClient.AssociationRejected"/> event.
     /// </summary>

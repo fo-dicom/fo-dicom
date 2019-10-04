@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
+
     public interface IDicomReaderObserver
     {
+
         void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data);
 
         void OnBeginSequence(IByteSource source, DicomTag tag, uint length);

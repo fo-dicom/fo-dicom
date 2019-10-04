@@ -11,12 +11,11 @@ using System.Data.SqlClient;
 
 namespace Dicom
 {
+
     public enum DatabaseType
     {
         Odbc,
-
         MsSql,
-
         DB2
     }
 

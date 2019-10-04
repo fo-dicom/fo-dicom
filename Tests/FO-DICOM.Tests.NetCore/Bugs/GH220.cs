@@ -3,8 +3,9 @@
 
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     [Collection("General")]
     public class GH220
     {

@@ -9,14 +9,15 @@ using System.Linq;
 using System.Threading.Tasks;
 #endif
 
-using Dicom.Imaging.Algorithms;
-using Dicom.Imaging.LUT;
-using Dicom.Imaging.Mathematics;
-using Dicom.IO;
-using Dicom.IO.Buffer;
+using FellowOakDicom.Imaging.Algorithms;
+using FellowOakDicom.Imaging.LUT;
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.Imaging.Render
+namespace FellowOakDicom.Imaging.Render
 {
+
     /// <summary>
     /// Pixel data interface implemented by various pixel format classes
     /// </summary>

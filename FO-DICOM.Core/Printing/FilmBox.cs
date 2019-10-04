@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
-    using Dicom.Imaging.Mathematics;
-    using Dicom.IO;
-    using Dicom.Log;
+    using FellowOakDicom.Imaging.Mathematics;
+    using FellowOakDicom.IO;
+    using FellowOakDicom.Log;
 
     /// <summary>
     /// Basic film box

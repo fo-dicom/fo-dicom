@@ -2,17 +2,14 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Xunit;
-    using Xunit.Abstractions;
 
     [Collection("General")]
     public class DicomDictionaryTest : IDisposable

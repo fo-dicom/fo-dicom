@@ -4,11 +4,11 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     public class GH597
     {
         [Fact]

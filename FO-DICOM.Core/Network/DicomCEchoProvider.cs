@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 #endif
 
-using Dicom.Log;
+using FellowOakDicom.Log;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Implementation of a C-ECHO Service Class Provider.

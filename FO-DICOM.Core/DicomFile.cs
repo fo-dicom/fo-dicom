@@ -9,11 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 #endif
 
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
+using FellowOakDicom.IO.Writer;
 
-namespace Dicom
+namespace FellowOakDicom
 {
 
     /// <summary>

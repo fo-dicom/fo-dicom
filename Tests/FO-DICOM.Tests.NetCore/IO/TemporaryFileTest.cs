@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
-{
-    using System.IO;
+using FellowOakDicom.IO;
+using System.IO;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests.IO
+{
 
     [Collection("General")]
     public class TemporaryFileTest

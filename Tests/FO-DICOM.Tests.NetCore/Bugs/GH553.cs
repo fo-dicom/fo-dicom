@@ -2,14 +2,13 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Drawing;
-
 using Dicom.Imaging;
 using Dicom.IO.Buffer;
-
 using Xunit;
 
 namespace Dicom.Bugs
 {
+
     public class GH553
     {
         [Fact(Skip = "Fails for unknown reason when run on CI server.")]

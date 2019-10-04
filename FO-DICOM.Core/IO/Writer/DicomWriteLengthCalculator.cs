@@ -2,13 +2,14 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
+using FellowOakDicom.IO.Buffer;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom.IO.Writer
+namespace FellowOakDicom.IO.Writer
 {
+
     public class DicomWriteLengthCalculator
     {
+
         private DicomTransferSyntax _syntax;
 
         private DicomWriteOptions _options;

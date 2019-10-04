@@ -9,8 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 #endif
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     #region Endian
 
     /// <summary>

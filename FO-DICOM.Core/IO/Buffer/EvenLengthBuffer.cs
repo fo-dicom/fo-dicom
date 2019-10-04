@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     /// <summary>
     /// Wrapper class for uneven length buffers that needs to be represented as even length buffers.
     /// </summary>

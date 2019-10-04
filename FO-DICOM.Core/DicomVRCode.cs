@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>Code String for DICOM Value Representation</summary>
     public static class DicomVRCode
     {

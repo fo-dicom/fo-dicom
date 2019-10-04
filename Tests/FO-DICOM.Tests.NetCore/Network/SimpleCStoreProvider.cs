@@ -1,15 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Log;
-
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
+
     internal class SimpleCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
         private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Representation of a C-FIND request.

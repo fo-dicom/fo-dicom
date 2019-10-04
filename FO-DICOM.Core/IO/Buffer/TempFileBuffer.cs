@@ -3,13 +3,15 @@
 
 using System.IO;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     /// <summary>
     /// Temporary file-based byte buffer.
     /// </summary>
     public sealed class TempFileBuffer : IByteBuffer
     {
+
         #region FIELDS
 
         private readonly IFileReference _file;
@@ -76,5 +78,6 @@ namespace Dicom.IO.Buffer
         }
 
         #endregion
+
     }
 }

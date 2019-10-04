@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
     using System.IO;
 
-    using Dicom.IO;
-    using Dicom.Log;
+    using FellowOakDicom.IO;
+    using FellowOakDicom.Log;
     using System.Linq;
 
     /// <summary>

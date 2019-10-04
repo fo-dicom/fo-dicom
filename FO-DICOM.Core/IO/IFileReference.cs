@@ -1,9 +1,10 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+using System.IO;
+
+namespace FellowOakDicom.IO
 {
-    using System.IO;
 
     /// <summary>
     /// Interface representing reference to a single file.

@@ -1,11 +1,12 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.Imaging.Render;
-using Dicom.IO.Buffer;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     /// <summary>
     /// DICOM transcoder interface.
     /// </summary>

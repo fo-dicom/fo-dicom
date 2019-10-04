@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using FellowOakDicom.Imaging.LUT;
+using FellowOakDicom.Imaging.Mathematics;
 
-using Dicom.Imaging.LUT;
-using Dicom.Imaging.Mathematics;
-
-namespace Dicom.Imaging.Render
+namespace FellowOakDicom.Imaging.Render
 {
+
     /// <summary>
     /// The Image Graphic implementation of <seealso cref="IGraphic"/>
     /// </summary>

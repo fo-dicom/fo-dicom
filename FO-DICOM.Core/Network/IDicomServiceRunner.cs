@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 #endif
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Interface for initializing long-running operations in a DICOM service.

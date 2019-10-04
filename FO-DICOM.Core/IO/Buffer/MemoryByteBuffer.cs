@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public sealed class MemoryByteBuffer : IByteBuffer
     {
         public MemoryByteBuffer(byte[] Data)

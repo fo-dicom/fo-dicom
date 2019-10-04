@@ -2,11 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using FellowOakDicom.Imaging.Codec;
 
-using Dicom.Imaging.Codec;
-
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// Grayscale rendering options class
     /// </summary>

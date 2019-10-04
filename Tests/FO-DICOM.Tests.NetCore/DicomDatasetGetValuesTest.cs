@@ -2,12 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Linq;
-using System.Text;
-using Dicom.IO.Buffer;
 using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
 
     [Collection("General")]

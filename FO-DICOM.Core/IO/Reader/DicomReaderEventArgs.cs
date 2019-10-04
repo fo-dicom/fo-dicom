@@ -2,12 +2,14 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
+
     public class DicomReaderEventArgs : EventArgs
     {
+
         public readonly long Position;
 
         public readonly DicomTag Tag;

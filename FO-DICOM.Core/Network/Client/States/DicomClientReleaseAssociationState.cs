@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Network.Client.Events;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Network.Client.Events;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     public class DicomClientReleaseAssociationState : DicomClientWithAssociationState
     {
         private readonly DicomClient _dicomClient;

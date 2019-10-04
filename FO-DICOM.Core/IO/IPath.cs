@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     /// <summary>
     /// Interface for convenience methods associated with file or directory paths.
     /// </summary>

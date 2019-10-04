@@ -3,7 +3,7 @@
 
 using System.Threading;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Network.Client
 {
     /// <summary>
     /// Contains information pertaining to the cancellation behavior of a <see cref="DicomClient"/>

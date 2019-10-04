@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Log
 {
+
     /// <summary>
     /// LogManager for the NLog logging framework.
     /// </summary>

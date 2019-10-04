@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.StructuredReport;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using Dicom.IO.Buffer;
-using Dicom.StructuredReport;
-
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>

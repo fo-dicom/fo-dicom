@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     public abstract class DicomClientWithAssociationState : DicomClientWithConnectionState
     {
         /// <summary>

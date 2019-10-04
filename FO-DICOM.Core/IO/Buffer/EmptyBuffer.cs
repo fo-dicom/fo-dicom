@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public sealed class EmptyBuffer : IByteBuffer
     {
         public static readonly IByteBuffer Value = new EmptyBuffer();

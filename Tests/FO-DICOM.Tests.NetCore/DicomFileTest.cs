@@ -1,16 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Writer;
+using FellowOakDicom.IO.Writer;
+using System;
+using System.IO;
+using System.IO.MemoryMappedFiles;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using System;
-    using System.IO;
-    using System.IO.MemoryMappedFiles;
-    using System.Threading.Tasks;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomFileTest

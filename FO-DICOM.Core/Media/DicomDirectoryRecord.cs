@@ -4,10 +4,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dicom.Media
+namespace FellowOakDicom.Media
 {
+
     public class DicomDirectoryRecord : DicomDataset
     {
+
         #region Properties
 
         public DicomDirectoryRecord LowerLevelDirectoryRecord { get; set; }

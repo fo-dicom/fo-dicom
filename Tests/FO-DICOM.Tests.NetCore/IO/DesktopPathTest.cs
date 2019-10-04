@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+using FellowOakDicom.IO;
+using Xunit;
+
+namespace FellowOakDicom.Tests.IO
 {
-    using Xunit;
 
     [Collection("General")]
     public class DesktopPathTest

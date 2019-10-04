@@ -8,10 +8,10 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom.IO;
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom
+namespace FellowOakDicom
 {
 
     [DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]

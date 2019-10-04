@@ -4,8 +4,9 @@
 using System.IO;
 using System.Text;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Log
 {
+
     public class HexWriter
     {
         public HexWriter(byte[] data)

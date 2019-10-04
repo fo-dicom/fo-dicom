@@ -1,15 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Helpers;
-using Dicom.Network;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     public class GH526
     {
         private readonly XUnitDicomLogger _logger;
@@ -69,7 +71,7 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
                 handle.Wait(10000);
@@ -97,7 +99,7 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.DicomClient();
+                var client = new DicomClient();
                 client.AddRequest(request);
                 client.Send("localhost", port, false, "STORESCU", "STORESCP");
                 handle.Wait(10000);
@@ -126,7 +128,7 @@ namespace Dicom.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP")
+                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };

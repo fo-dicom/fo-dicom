@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Network.Client
 {
     /// <summary>
     /// Delegate for client handling the C-STORE request immediately.

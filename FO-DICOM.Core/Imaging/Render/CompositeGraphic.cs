@@ -1,12 +1,12 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Render
-{
-    using System.Collections.Generic;
-    using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using FellowOakDicom.Imaging.LUT;
 
-    using Dicom.Imaging.LUT;
+namespace FellowOakDicom.Imaging.Render
+{
 
     /// <summary>
     /// The Composite Graphic implementation of <seealso cref="IGraphic"/> which layers graphics one over the other

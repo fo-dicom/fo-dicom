@@ -5,8 +5,9 @@
 using System.Threading.Tasks;
 #endif
 
-namespace Dicom.Imaging.Algorithms
+namespace FellowOakDicom.Imaging.Algorithms
 {
+
     /// <summary>
     /// 2D interpolation methods using the nearest neighbor algorithm.
     /// </summary>

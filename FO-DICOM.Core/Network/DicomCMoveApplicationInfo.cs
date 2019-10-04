@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Implementation of the Retrieve Service Application Information field for the SOP Class Extended Negotiation

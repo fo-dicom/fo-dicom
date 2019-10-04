@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Reflection;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Reflection;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO;
 
-    using Dicom.Imaging.Render;
-    using Dicom.IO;
+namespace FellowOakDicom.Imaging
+{
 
     /// <summary>
     /// Base class for image implementations.

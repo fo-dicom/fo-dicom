@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
-{
-    using System.Drawing;
+using System.Drawing;
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 
-    using Dicom.Imaging.Mathematics;
-    using Dicom.IO.Buffer;
+namespace FellowOakDicom.Imaging
+{
 
     /// <summary>
     /// Bitmap related factory methods for <see cref="DicomOverlayData"/>.

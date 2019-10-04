@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Imaging.Mathematics
 {
 
     public static class Extensions

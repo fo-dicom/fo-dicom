@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>
     /// Abstract base class for representing one DICOM item.
     /// </summary>

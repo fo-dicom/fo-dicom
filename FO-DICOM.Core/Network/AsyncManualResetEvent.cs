@@ -6,7 +6,7 @@ using System;
 #if !NET35
 using System.Threading.Tasks;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Asynchronous manual reset event class, enabling the possibility to set a return value of <typeparamref name="T"/>.

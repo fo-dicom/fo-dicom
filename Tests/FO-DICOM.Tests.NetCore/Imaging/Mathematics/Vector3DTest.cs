@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Mathematics;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Tests.Imaging.Mathematics
 {
 
     [Collection("General")]

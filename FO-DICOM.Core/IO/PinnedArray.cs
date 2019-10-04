@@ -4,8 +4,9 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     public class PinnedArray<T> : IDisposable
     {
         #region Private Members

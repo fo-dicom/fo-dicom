@@ -3,8 +3,9 @@
 
 using System.Text;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// Extract image bit depth infomation from dataset and provide information for image rendering process
     /// </summary>

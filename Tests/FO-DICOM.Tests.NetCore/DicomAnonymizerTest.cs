@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Xunit;
+using System.Text;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using System.Text;
 
     [Collection("General")]
     public class DicomAnonymizerTest
@@ -224,10 +224,10 @@ namespace Dicom
             var orignalDicom = DicomFile.Open($"./Test Data/{fileName}");
 #endif
 
-            var securityProfile = Dicom.DicomAnonymizer.SecurityProfile.LoadProfile(null, Dicom.DicomAnonymizer.SecurityProfileOptions.BasicProfile);
+            var securityProfile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
             securityProfile.PatientName = "kökö";
 
-            var dicomAnonymizer = new Dicom.DicomAnonymizer(securityProfile);
+            var dicomAnonymizer = new DicomAnonymizer(securityProfile);
             var anonymizedDicom = dicomAnonymizer.Anonymize(orignalDicom);
 
             // Ensure that we are using valid input data for test.

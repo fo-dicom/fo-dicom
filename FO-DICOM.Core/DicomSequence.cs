@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Dicom
+namespace FellowOakDicom
 {
 
     /// <summary>

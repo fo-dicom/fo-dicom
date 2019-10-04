@@ -4,14 +4,12 @@
 using System;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
+using Xunit;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Network;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
-    using Dicom.Helpers;
-    using Dicom.Log;
-    using Dicom.Network.Client;
-
-    using Xunit;
 
     [Collection("Network")]
     [Trait("Category", "Network")]
@@ -31,7 +29,7 @@ namespace Dicom.Network
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = new Network.DicomClient
+                var client = new DicomClient
                 {
                     Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
                 };
@@ -64,7 +62,7 @@ namespace Dicom.Network
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
                 };

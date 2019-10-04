@@ -6,8 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public abstract class ByteBufferEnumerator<T> : IEnumerable<T>, IEnumerator<T>
     {
         protected ByteBufferEnumerator(IByteBuffer buffer)

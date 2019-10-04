@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec
-{
-    using System.Collections.Generic;
+using FellowOakDicom.Imaging.Codec;
+using System.Collections.Generic;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests.Imaging.Codec
+{
 
     [Collection("General")]
     public class DicomTranscoderTest

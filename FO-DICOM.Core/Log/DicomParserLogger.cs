@@ -3,14 +3,16 @@
 
 using System;
 
-using Dicom.IO;
-using Dicom.IO.Buffer;
-using Dicom.IO.Reader;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.IO.Reader;
 
-namespace Dicom.Log
+namespace FellowOakDicom.Log
 {
+
     public class DicomParserLogger : IDicomReaderObserver
     {
+
         private Logger _log;
 
         private LogLevel _level;

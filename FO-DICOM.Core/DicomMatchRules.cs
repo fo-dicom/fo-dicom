@@ -7,8 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public interface IDicomMatchRule
     {
         bool Match(DicomDataset dataset);

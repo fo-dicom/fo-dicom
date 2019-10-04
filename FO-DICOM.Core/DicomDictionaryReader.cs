@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public enum DicomDictionaryFormat
     {
         XML

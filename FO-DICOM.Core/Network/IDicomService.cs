@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Common interface for DICOM service users and providers.

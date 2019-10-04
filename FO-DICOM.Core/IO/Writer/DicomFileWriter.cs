@@ -1,17 +1,18 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Writer
-{
-    using System;
-    using System.IO;
+using System;
+using System.IO;
 
 #if NET35
-    using Unity.IO.Compression;
+using Unity.IO.Compression;
 #else
-    using System.IO.Compression;
-    using System.Threading.Tasks;
+using System.IO.Compression;
+using System.Threading.Tasks;
 #endif
+
+namespace FellowOakDicom.IO.Writer
+{
 
     /// <summary>
     /// Writer for DICOM Part 10 objects.

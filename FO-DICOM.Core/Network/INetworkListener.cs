@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 #endif
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Interface for listening to network stream connections.

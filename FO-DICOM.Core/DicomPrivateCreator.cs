@@ -4,8 +4,9 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     [DataContract]
     public sealed class DicomPrivateCreator : IEquatable<DicomPrivateCreator>,
                                               IComparable<DicomPrivateCreator>,

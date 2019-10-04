@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Interface representing event handlers for DIMSE services applicable to C-MOVE SOP instances.

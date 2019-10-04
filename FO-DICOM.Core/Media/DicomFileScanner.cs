@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Media
-{
 #if NET35
-    using System.Threading;
+using System.Threading;
 #else
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+using FellowOakDicom.IO;
 
-    using Dicom.IO;
+namespace FellowOakDicom.Media
+{
 
     public delegate void DicomScanProgressCallback(DicomFileScanner scanner, string directory, int count);
 

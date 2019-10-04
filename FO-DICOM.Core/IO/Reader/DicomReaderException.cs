@@ -3,10 +3,12 @@
 
 using System;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
+
     public class DicomReaderException : DicomException
     {
+
         public DicomReaderException(string message)
             : base(message)
         {

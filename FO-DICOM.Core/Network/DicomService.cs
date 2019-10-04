@@ -4,9 +4,9 @@
 #if NET35
 
 using System.Text;
-using Dicom.Log;
+using FellowOakDicom.Log;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Dummy base class for DICOM network services in Unity.
@@ -53,14 +53,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Dicom.Imaging.Codec;
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Writer;
-using Dicom.Log;
-using Dicom.Network.Client;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
+using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
 
 	/// <summary>

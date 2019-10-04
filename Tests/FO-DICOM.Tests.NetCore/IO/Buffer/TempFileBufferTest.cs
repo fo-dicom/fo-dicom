@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Buffer
-{
-    using System;
-    using System.Linq;
+using FellowOakDicom.IO.Buffer;
+using System;
+using System.Linq;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests.IO.Buffer
+{
 
     [Collection("General")]
     public class TempFileBufferTest

@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace FellowOakDicom.IO
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
 
     /// <summary>
     /// .NET/Windows Desktop implementation of the <see cref="IDirectoryReference"/> interface.

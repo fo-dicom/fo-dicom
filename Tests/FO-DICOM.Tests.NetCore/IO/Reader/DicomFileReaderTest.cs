@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.Tests.IO.Reader
 {
 
     [Collection("General")]

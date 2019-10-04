@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// <seealso cref="DicomImage"/> operations related exceptions
     /// </summary>

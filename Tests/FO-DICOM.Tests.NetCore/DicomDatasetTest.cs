@@ -1,17 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Xunit;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomDatasetTest
@@ -383,7 +381,7 @@ namespace Dicom
         public void AddOrUpdatePixelData_InternalTransferSyntax_Succeeds()
         {
             var ds        = new DicomDataset ( );
-            var data      = new IO.Buffer.MemoryByteBuffer ( new byte[] { 255 } ); //dummy data
+            var data      = new MemoryByteBuffer ( new byte[] { 255 } ); //dummy data
             var newSyntax = DicomTransferSyntax.DeflatedExplicitVRLittleEndian;
 
             ds.AddOrUpdatePixelData ( DicomVR.OB, data );

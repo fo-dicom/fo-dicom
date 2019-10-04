@@ -4,8 +4,9 @@
 using System;
 using System.Text;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Imaging.Mathematics
 {
+
     public class Matrix
     {
         #region Members

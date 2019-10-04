@@ -4,14 +4,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Dicom.IO;
-using Dicom.IO.Reader;
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Reader;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.Media
+namespace FellowOakDicom.Media
 {
+
     public class DicomDirectoryReaderObserver : IDicomReaderObserver
     {
+
         private DicomSequence _directoryRecordSequence = null;
 
         private readonly Stack<DicomTag> _currentSequenceTag = new Stack<DicomTag>();

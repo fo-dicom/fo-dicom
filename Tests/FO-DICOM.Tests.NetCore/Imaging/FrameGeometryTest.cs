@@ -2,10 +2,11 @@
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
-using Dicom.Imaging.Mathematics;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Mathematics;
 using Xunit;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Tests.Imaging
 {
 
     public class FrameGeometryTest

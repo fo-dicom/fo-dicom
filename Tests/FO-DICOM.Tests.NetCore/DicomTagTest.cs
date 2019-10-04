@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
+using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
-    using System;
-
-    using Xunit;
 
     /// <summary>
     ///     This is a test class for DicomTagTest and is intended

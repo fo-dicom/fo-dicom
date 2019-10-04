@@ -3,8 +3,9 @@
 
 using System.Linq;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Imaging.Mathematics
 {
+
     public class MovingAverage
     {
         private readonly int _window;

@@ -1,21 +1,21 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Writer
-{
-    using System.Collections.Generic;
-
+using System.Collections.Generic;
 #if !NET35
-    using System.Threading.Tasks;
+using System.Threading.Tasks;
 #endif
+using FellowOakDicom.IO.Buffer;
 
-    using Dicom.IO.Buffer;
+namespace FellowOakDicom.IO.Writer
+{
 
     /// <summary>
     /// DICOM object writer.
     /// </summary>
     public class DicomWriter : IDicomDatasetWalker
     {
+
         private const uint UndefinedLength = 0xffffffff;
 
         private DicomTransferSyntax _syntax;

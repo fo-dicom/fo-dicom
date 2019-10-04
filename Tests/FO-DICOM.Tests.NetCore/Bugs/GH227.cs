@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Codec;
 using System.IO;
 using System.Threading.Tasks;
+using Xunit;
 
-using Dicom.Imaging.Codec;
-
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
-    using Xunit;
 
     [Collection("General")]
     public class GH227

@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Network.Client.Events
+namespace FellowOakDicom.Network.Client.Events
 {
+
     internal class DicomAssociationAcceptedEvent
     {
         public DicomAssociation Association { get; }

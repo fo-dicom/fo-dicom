@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Helpers
+using NLog.Config;
+using NLog.Targets;
+
+namespace FellowOakDicom.Tests.Helpers
 {
-    using NLog.Config;
-    using NLog.Targets;
 
     internal static class NLogHelper
     {

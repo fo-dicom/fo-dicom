@@ -2,11 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
-
 using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
+
     [Collection("General")]
     public class DicomEncodingTest
     {

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Dicom.IO;
+using FellowOakDicom.IO;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     #region Raw PDU
 

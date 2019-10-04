@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client.States
+namespace FellowOakDicom.Network.Client.States
 {
+
     /// <summary>
     /// The DICOM client is connecting to the DICOM server.
     /// </summary>

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public partial class DicomTag
     {
+
         ///<summary>(0000,0000) VR=UL VM=1 Command Group Length</summary>
         public readonly static DicomTag CommandGroupLength = new DicomTag(0x0000, 0x0000);
 

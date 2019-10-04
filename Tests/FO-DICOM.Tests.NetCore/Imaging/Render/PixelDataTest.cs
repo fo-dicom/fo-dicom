@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Linq;
-
 using Xunit;
 
-namespace Dicom.Imaging.Render
+namespace FellowOakDicom.Tests.Imaging.Render
 {
 
     public class PixelDataTest

@@ -8,10 +8,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-using Dicom.Network;
+using FellowOakDicom.Network;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>
     /// Class for generating DICOM UIDs.
     /// </summary>

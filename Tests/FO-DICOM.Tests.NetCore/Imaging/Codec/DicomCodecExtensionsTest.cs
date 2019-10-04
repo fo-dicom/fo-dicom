@@ -1,15 +1,18 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Dicom.IO.Buffer;
 using Xunit;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Tests.Imaging.Codec
 {
+
     public class DicomCodecExtensionsTest
     {
         #region Unit tests

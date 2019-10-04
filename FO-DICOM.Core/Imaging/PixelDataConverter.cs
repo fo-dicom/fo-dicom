@@ -2,11 +2,12 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Runtime.CompilerServices;
+using FellowOakDicom.IO.Buffer;
 
-using Dicom.IO.Buffer;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// Convert pixels from presentation from interleaved to planar and from planar to interleaved
     /// </summary>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>FO_DICOM.Tests.NetCore</RootNamespace>
+    <RootNamespace>FellowOakDicom.Tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
 

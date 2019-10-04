@@ -1,15 +1,16 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Writer
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.IO.Writer;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using Xunit;
+
+namespace FellowOakDicom.Tests.IO.Writer
 {
-    using System.IO;
-    using System.Linq;
-    using System.Threading;
-
-    using Dicom.IO.Buffer;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomWriterTest

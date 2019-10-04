@@ -4,8 +4,9 @@
 using System.IO;
 using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
+
     [Collection("General")]
     public class DicomValidationTest
     {

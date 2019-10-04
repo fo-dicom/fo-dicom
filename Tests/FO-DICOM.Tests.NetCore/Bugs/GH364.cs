@@ -2,11 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading.Tasks;
-
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     [Collection("General")]
     public class GH364
     {

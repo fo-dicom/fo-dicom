@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
 
     public class RangeByteBuffer : IByteBuffer

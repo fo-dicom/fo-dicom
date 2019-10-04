@@ -1,10 +1,10 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO;
+using FellowOakDicom.IO;
 using Xunit;
 
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
 
     /// <summary>

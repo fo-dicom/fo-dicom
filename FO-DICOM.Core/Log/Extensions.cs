@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Log
+using System.Collections.Generic;
+using System.Text;
+
+namespace FellowOakDicom.Log
 {
-    using System.Collections.Generic;
-    using System.Text;
 
     public static class Extensions
     {
+
         public static void WriteToLog(this IEnumerable<DicomItem> dataset, Logger log, LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);

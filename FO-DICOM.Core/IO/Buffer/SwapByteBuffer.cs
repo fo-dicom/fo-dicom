@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public class SwapByteBuffer : IByteBuffer
     {
+
         public SwapByteBuffer(IByteBuffer buffer, int unitSize)
         {
             Internal = buffer;

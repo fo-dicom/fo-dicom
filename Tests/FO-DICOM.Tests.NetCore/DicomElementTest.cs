@@ -1,19 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-
-using Dicom.IO.Buffer;
-
 using Xunit;
 
-
-namespace Dicom
+namespace FellowOakDicom.Tests
 {
+
     [Collection("General")]
     public class DicomElementTest
     {

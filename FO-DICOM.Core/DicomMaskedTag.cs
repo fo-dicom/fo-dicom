@@ -4,8 +4,9 @@
 using System;
 using System.Globalization;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public sealed class DicomMaskedTag : IFormattable
     {
         public const uint FullMask = 0xffffffff;

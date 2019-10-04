@@ -10,7 +10,7 @@ using Xunit;
 
 using Dicom.Helpers;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("Dicom.Helpers.PriorityOrderer", "DICOM [Unit Tests]")]
     public class DicomServerTest

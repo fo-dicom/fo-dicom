@@ -3,11 +3,11 @@
 
 using System;
 using System.Linq;
+using FellowOakDicom.IO.Buffer;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
     /// DICOM Pixel Data abstract class for reading and writing DICOM images pixel data according to the specified transfer syntax
     /// </summary>

@@ -3,9 +3,9 @@
 
 using System;
 using System.Threading.Tasks;
-using Dicom.Network.Client.States;
+using FellowOakDicom.Network.Client.States;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Network.Client
 {
     /// <summary>
     /// Internal extension methods that provide easy access to the various transitions a DICOM client can go through

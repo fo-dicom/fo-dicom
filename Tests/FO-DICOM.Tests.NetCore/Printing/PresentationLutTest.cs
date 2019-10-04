@@ -2,11 +2,13 @@
 // // Licensed under the Microsoft Public License (MS-PL).
 // 
 
+using FellowOakDicom.Printing;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Tests.Printing
 {
+
     public class PresentationLutTest
     {
         #region Unit tests

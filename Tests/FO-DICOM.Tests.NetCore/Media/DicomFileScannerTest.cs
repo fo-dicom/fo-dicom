@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Media
-{
-    using System.Threading;
+using FellowOakDicom.Media;
+using System.Threading;
+using Xunit;
 
-    using Xunit;
+namespace FellowOakDicom.Tests.Media
+{
 
     [Collection("General")]
     public class DicomFileScannerTest

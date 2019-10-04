@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Dicom
+namespace FellowOakDicom
 {
 
     public static class DicomValidation

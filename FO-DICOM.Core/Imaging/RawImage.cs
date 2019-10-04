@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging
-{
-    using System;
-    using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO;
 
-    using Dicom.Imaging.Render;
-    using Dicom.IO;
+namespace FellowOakDicom.Imaging
+{
 
     /// <summary>
     /// Convenience class for non-generic access to <see cref="RawImage"/> image objects.

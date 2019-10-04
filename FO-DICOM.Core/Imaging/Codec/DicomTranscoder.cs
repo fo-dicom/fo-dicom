@@ -4,12 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Dicom.Imaging.Render;
-using Dicom.IO.Buffer;
-using Dicom.IO.Writer;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.IO.Writer;
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
+
     /// <summary>
     /// Generic DICOM transcoder.
     /// </summary>

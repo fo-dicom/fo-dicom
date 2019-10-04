@@ -1,7 +1,7 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +10,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     /// <summary>
     /// Class for performing anonymization actions on DICOM file or dataset based on selected confidentiality profile.
     /// </summary>

@@ -9,13 +9,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Dicom.Log;
-using Dicom.Network.Client.EventArguments;
-using Dicom.Network.Client.States;
-using Dicom.Network.Client.Tasks;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Network.Client.States;
+using FellowOakDicom.Network.Client.Tasks;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Network.Client
 {
+
     public interface IDicomClient
     {
         /// <summary>

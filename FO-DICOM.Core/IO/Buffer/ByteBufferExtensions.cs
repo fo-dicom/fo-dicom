@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Dicom.IO.Buffer
+namespace FellowOakDicom.IO.Buffer
 {
+
     public static class ByteBufferExtensions
     {
         public static IEnumerable<T> Enumerate<T>(this IByteBuffer buffer)

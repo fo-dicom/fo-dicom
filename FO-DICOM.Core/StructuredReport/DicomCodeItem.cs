@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Dicom.StructuredReport
+namespace FellowOakDicom.StructuredReport
 {
     public class DicomCodeItem : DicomDataset
     {

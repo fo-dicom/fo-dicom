@@ -3,13 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using FellowOakDicom.IO.Buffer;
 
-using Dicom.IO.Buffer;
-
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
+
     public class DicomReaderCallbackObserver : IDicomReaderObserver
     {
+
         private Stack<DicomReaderEventArgs> _stack;
 
         private IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;

@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public class DicomRange<T>
         where T : IComparable<T>
     {

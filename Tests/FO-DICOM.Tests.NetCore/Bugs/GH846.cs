@@ -1,15 +1,14 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
-using Dicom.Log;
-using Dicom.Network;
 using Xunit;
 
-namespace Dicom.Bugs
+namespace FellowOakDicom.Tests.Bugs
 {
+
     public class GH846
     {
         [Fact]

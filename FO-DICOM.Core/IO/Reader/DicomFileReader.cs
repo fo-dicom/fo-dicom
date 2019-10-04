@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 #endif
 
-namespace Dicom.IO.Reader
+namespace FellowOakDicom.IO.Reader
 {
 
     /// <summary>
@@ -16,6 +16,7 @@ namespace Dicom.IO.Reader
     /// </summary>
     public class DicomFileReader
     {
+
         #region INNER TYPES
 
         private class ParseResult

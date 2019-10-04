@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.LUT;
 using Xunit;
 
-namespace Dicom.Imaging.LUT
+namespace FellowOakDicom.Tests.Imaging.LUT
 {
+
     #region Unit tests
 
     [Collection("General")]

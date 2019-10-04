@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -8,17 +12,12 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-
-using Dicom.IO.Buffer;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dicom.Serialization
+namespace FellowOakDicom.Tests.Serialization
 {
+
     /// <summary>
     /// The json dicom converter test.
     /// </summary>

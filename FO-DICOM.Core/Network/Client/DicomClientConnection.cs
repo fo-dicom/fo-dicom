@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Dicom.Network.Client
+namespace FellowOakDicom.Network.Client
 {
     public interface IDicomClientConnection : IDisposable
     {

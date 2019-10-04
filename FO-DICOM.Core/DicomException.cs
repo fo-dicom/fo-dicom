@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     public class DicomExceptionEventArgs : EventArgs
     {
         public readonly DicomException Exception;

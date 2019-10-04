@@ -4,7 +4,7 @@
 using System;
 using System.Text;
 
-namespace Dicom.Network
+namespace FellowOakDicom.Network
 {
     public sealed class DicomCMoveResponse : DicomResponse
     {

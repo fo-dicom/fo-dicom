@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dicom
+namespace FellowOakDicom
 {
+
     internal static class StringExtensions
     {
         public static bool IsDigits(this string s)

@@ -2,13 +2,13 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO;
 
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
-    using System.Collections.Generic;
-    using System.Drawing;
-    using Dicom.Imaging.Render;
-    using Dicom.IO;
 
     /// <summary>
     /// Image interface.

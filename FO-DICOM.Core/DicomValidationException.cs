@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-
-namespace Dicom
+namespace FellowOakDicom
 {
 
     /// <summary>

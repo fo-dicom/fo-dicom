@@ -9,10 +9,11 @@ using System.IO;
 using System.Threading.Tasks;
 #endif
 
-using Dicom.IO.Buffer;
+using FellowOakDicom.IO.Buffer;
 
-namespace Dicom.IO
+namespace FellowOakDicom.IO
 {
+
     /// <summary>
     /// File byte source for reading.
     /// </summary>

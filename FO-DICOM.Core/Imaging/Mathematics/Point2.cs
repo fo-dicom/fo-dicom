@@ -3,8 +3,9 @@
 
 using System;
 
-namespace Dicom.Imaging.Mathematics
+namespace FellowOakDicom.Imaging.Mathematics
 {
+
     /// <summary>
     /// Coordinate in 2D space
     /// </summary>
