@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom.Json</RootNamespace>
+    <AssemblyName>fo-dicom.json</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

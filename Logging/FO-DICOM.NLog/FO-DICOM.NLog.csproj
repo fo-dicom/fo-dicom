@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom.NLog</RootNamespace>
+    <AssemblyName>fo-dicom.NLog</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
