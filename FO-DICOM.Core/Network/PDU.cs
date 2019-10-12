@@ -103,7 +103,7 @@ namespace FellowOakDicom.Network
         /// <param name="file">Filename</param>
         public void Save(string file)
         {
-            var f = IOManager.CreateFileReference(file);
+            var f = new FileReference(file);
             var d = f.Directory;
 
             if (!d.Exists)

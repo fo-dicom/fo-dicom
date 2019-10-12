@@ -729,17 +729,17 @@ namespace FellowOakDicom.Printing
             var file = new DicomFile(this);
             file.Save(filmBoxDicomFile);
 
-            using (var stream = IOManager.CreateFileReference(filmBoxTextFile).Create())
-            using (var writer = new StreamWriter(stream))
+            var filmBoxFile = new FileReference(filmBoxTextFile);
+            using (var writer = new StreamWriter(filmBoxFile.Create()))
             {
                 writer.Write(this.WriteToString());
             }
 
-            var imageBoxFolderInfo = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            var imageBoxFolderInfo = new DirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
             imageBoxFolderInfo.Create();
-            for (int i = 0; i < this.BasicImageBoxes.Count; i++)
+            for (int i = 0; i < BasicImageBoxes.Count; i++)
             {
-                var imageBox = this.BasicImageBoxes[i];
+                var imageBox = BasicImageBoxes[i];
                 imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.Name, i + 1));
             }
         }
@@ -758,7 +758,7 @@ namespace FellowOakDicom.Printing
 
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
-            var imagesFolder = IOManager.CreateDirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            var imagesFolder = new DirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
             foreach (var image in imagesFolder.EnumerateFileNames("*.dcm"))
             {
                 var imageBox = ImageBox.Load(filmBox, image);

@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.IO
             var path = @".\Test Data\tmp.tmp";
             File.Create(path).Dispose();
 
-            var file = new DesktopFileReference(path) { IsTempFile = true };
+            var file = new FileReference(path) { IsTempFile = true };
             Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
         }
 
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.IO
             var path = @".\Test Data\nontmp.tmp";
             File.Create(path).Dispose();
 
-            var file = new DesktopFileReference(path);
+            var file = new FileReference(path);
             Assert.False((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
         }
 

@@ -333,7 +333,7 @@ namespace FellowOakDicom
         /// <param name="format">File format.</param>
         public void Load(string file, DicomDictionaryFormat format)
         {
-            using (var fs = IOManager.CreateFileReference(file).OpenRead())
+            using (var fs = new FileReference(file).OpenRead())
             {
                 var s = fs;
                 if (file.EndsWith(".gz"))
@@ -344,6 +344,7 @@ namespace FellowOakDicom
                 reader.Process();
             }
         }
+
         #endregion
 
         #region IEnumerable Members

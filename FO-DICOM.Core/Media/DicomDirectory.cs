@@ -167,7 +167,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                df.File = IOManager.CreateFileReference(fileName);
+                df.File = new FileReference(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -276,7 +276,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                df.File = IOManager.CreateFileReference(fileName);
+                df.File = new FileReference(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))

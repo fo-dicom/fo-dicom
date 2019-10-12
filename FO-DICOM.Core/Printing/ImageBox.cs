@@ -304,8 +304,8 @@ namespace FellowOakDicom.Printing
             var imageBoxDicomFile = imageBoxFile + ".dcm";
             var imageBoxTextFile = imageBoxFile + ".txt";
 
-            using (var stream = IOManager.CreateFileReference(imageBoxTextFile).Create())
-            using (var writer = new StreamWriter(stream))
+            var imageBoxFileRef = new FileReference(imageBoxTextFile);
+            using (var writer = new StreamWriter(imageBoxFileRef.Create()))
             {
                 writer.Write(this.WriteToString());
             }

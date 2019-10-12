@@ -3,7 +3,6 @@
 
 using System;
 using System.Text;
-using FellowOakDicom.IO;
 
 namespace FellowOakDicom
 {
@@ -13,10 +12,16 @@ namespace FellowOakDicom
     /// </summary>
     public static class DicomEncoding
     {
+
+        static DicomEncoding()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
         /// <summary>
         /// Default DICOM encoding.
         /// </summary>
-        public static readonly Encoding Default = IOManager.BaseEncoding;
+        public static readonly Encoding Default = Encoding.ASCII;
 
         /// <summary>
         /// Get encoding from charset.
@@ -25,7 +30,10 @@ namespace FellowOakDicom
         /// <returns>DICOM encoding.</returns>
         public static Encoding GetEncoding(string charset)
         {
-            if (string.IsNullOrEmpty(charset?.Trim())) return Default;
+            if (string.IsNullOrEmpty(charset?.Trim()))
+            {
+                return Default;
+            }
 
             switch (charset.Trim())
             {
@@ -110,7 +118,10 @@ namespace FellowOakDicom
         /// <returns>Charset.</returns>
         public static string GetCharset(Encoding encoding)
         {
-            if (encoding == null) return "ISO 2022 IR 6";
+            if (encoding == null)
+            {
+                return "ISO 2022 IR 6";
+            }
 
             // Do we always want the extended charsets?
             switch (encoding.WebName)

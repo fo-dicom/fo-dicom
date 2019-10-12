@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Linq;
 using FellowOakDicom.IO;
 
 namespace FellowOakDicom.Imaging
@@ -72,10 +73,13 @@ namespace FellowOakDicom.Imaging
             try
             {
                 byte[] data;
-                using (var stream = IOManager.CreateFileReference(path).OpenRead())
+                using (var stream = new FileReference(path).OpenRead())
                 {
                     var length = (int)stream.Length;
-                    if (length != (256 * 3)) return null;
+                    if (length != (256 * 3))
+                    {
+                        return null;
+                    }
 
                     data = new byte[length];
                     stream.Read(data, 0, length);
@@ -102,14 +106,17 @@ namespace FellowOakDicom.Imaging
         /// <param name="lut">Look-up table to save.</param>
         public static void SaveLUT(string path, Color32[] lut)
         {
-            if (lut.Length != 256) return;
+            if (lut.Length != 256)
+            {
+                return;
+            }
 
-            var file = IOManager.CreateFileReference(path);
+            var file = new FileReference(path);
             using (var fs = file.Create())
             {
-                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].R);
-                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].G);
-                for (var i = 0; i < 256; i++) fs.WriteByte(lut[i].B);
+                lut.Each(c => fs.WriteByte(c.R));
+                lut.Each(c => fs.WriteByte(c.G));
+                lut.Each(c => fs.WriteByte(c.B));
             }
         }
     }

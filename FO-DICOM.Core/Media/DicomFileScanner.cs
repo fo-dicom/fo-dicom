@@ -80,31 +80,37 @@ namespace FellowOakDicom.Media
 
         private void ScanDirectory(string path)
         {
-            if (_stop) return;
+            if (_stop) { return; }
 
-            if (Progress != null && ProgressOnDirectoryChange) Progress(this, path, _count);
+            if (Progress != null && ProgressOnDirectoryChange)
+            {
+                Progress(this, path, _count);
+            }
 
             try
             {
-                var directory = IOManager.CreateDirectoryReference(path);
+                var directory = new DirectoryReference(path);
                 var files = directory.EnumerateFileNames(_pattern);
 
                 foreach (string file in files)
                 {
-                    if (_stop) return;
+                    if (_stop) { return; }
 
                     ScanFile(file);
 
                     _count++;
-                    if ((_count % ProgressFilesCount) == 0 && Progress != null) Progress(this, path, _count);
+                    if ((_count % ProgressFilesCount) == 0 && Progress != null)
+                    {
+                        Progress(this, path, _count);
+                    }
                 }
 
-                if (!_recursive) return;
+                if (!_recursive) { return; }
 
                 var dirs = directory.EnumerateDirectoryNames();
                 foreach (string dir in dirs)
                 {
-                    if (_stop) return;
+                    if (_stop) { return; }
 
                     ScanDirectory(dir);
                 }

@@ -9,13 +9,14 @@ namespace FellowOakDicom.IO
 {
 
     /// <summary>
-    /// .NET/Windows Desktop implementation of the <see cref="IDirectoryReference"/> interface.
+    /// Implementation of the <see cref="IDirectoryReference"/> interface.
     /// </summary>
-    public class DesktopDirectoryReference : IDirectoryReference
+    public class DirectoryReference : IDirectoryReference
     {
+
         #region FIELDS
 
-        private readonly DirectoryInfo directoryInfo;
+        private readonly DirectoryInfo _directoryInfo;
 
         #endregion
 
@@ -25,9 +26,9 @@ namespace FellowOakDicom.IO
         /// Initializes a <see cref="DesktopDirectoryReference"/> object.
         /// </summary>
         /// <param name="directoryName">Name of the directory.</param>
-        public DesktopDirectoryReference(string directoryName)
+        public DirectoryReference(string directoryName)
         {
-            this.directoryInfo = new DirectoryInfo(directoryName);
+            _directoryInfo = new DirectoryInfo(directoryName);
         }
 
         #endregion
@@ -37,31 +38,19 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Path name of the current directory.
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return this.directoryInfo.FullName;
-            }
-        }
+        public string Name => _directoryInfo.FullName;
 
         /// <summary>
         /// Gets whether the directory exists or not.
         /// </summary>
-        public bool Exists
-        {
-            get
-            {
-                return this.directoryInfo.Exists;
-            }
-        }
+        public bool Exists => _directoryInfo.Exists;
 
         /// <summary>
         /// Create the directory path.
         /// </summary>
         public void Create()
         {
-            this.directoryInfo.Create();
+            _directoryInfo.Create();
         }
 
         /// <summary>
@@ -69,21 +58,17 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="searchPattern">File search pattern; if null or empty all files in the directory should be returned.</param>
         /// <returns>File names of the files in the current directory.</returns>
-        public IEnumerable<string> EnumerateFileNames(string searchPattern = null)
-        {
-            return string.IsNullOrEmpty(searchPattern?.Trim())
-                       ? this.directoryInfo.GetFiles().Select(fi => fi.FullName)
-                       : this.directoryInfo.GetFiles(searchPattern).Select(fi => fi.FullName);
-        }
+        public IEnumerable<string> EnumerateFileNames(string searchPattern = null) 
+            => string.IsNullOrEmpty(searchPattern?.Trim())
+                       ? _directoryInfo.GetFiles().Select(fi => fi.FullName)
+                       : _directoryInfo.GetFiles(searchPattern).Select(fi => fi.FullName);
 
         /// <summary>
         /// Gets the names of the sub-directories in the current directory.
         /// </summary>
         /// <returns>Names of the sub-directories in the current directory.</returns>
-        public IEnumerable<string> EnumerateDirectoryNames()
-        {
-            return this.directoryInfo.EnumerateDirectories().Select(di => di.FullName);
-        }
+        public IEnumerable<string> EnumerateDirectoryNames() 
+            => _directoryInfo.EnumerateDirectories().Select(di => di.FullName);
 
         #endregion
     }

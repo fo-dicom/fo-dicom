@@ -123,7 +123,7 @@ namespace FellowOakDicom
         {
             PreprocessFileMetaInformation();
 
-            File = IOManager.CreateFileReference(fileName);
+            File = new FileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -160,7 +160,7 @@ namespace FellowOakDicom
         {
             PreprocessFileMetaInformation();
 
-            File = IOManager.CreateFileReference(fileName);
+            File = new FileReference(fileName);
             File.Delete();
 
             OnSave();
@@ -216,11 +216,11 @@ namespace FellowOakDicom
             {
                 throw new ArgumentNullException(nameof(fallbackEncoding));
             }
-            DicomFile df = new DicomFile();
+            var df = new DicomFile();
 
             try
             {
-                df.File = IOManager.CreateFileReference(fileName);
+                df.File = new FileReference(fileName);
 
                 using (var unvalidatedDataset = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -350,7 +350,7 @@ namespace FellowOakDicom
 
             try
             {
-                df.File = IOManager.CreateFileReference(fileName);
+                df.File = new FileReference(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -458,7 +458,7 @@ namespace FellowOakDicom
         {
             try
             {
-                var file = IOManager.CreateFileReference(path);
+                var file = new FileReference(path);
                 using (var fs = file.OpenRead())
                 {
                     fs.Seek(128, SeekOrigin.Begin);

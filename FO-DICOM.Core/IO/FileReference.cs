@@ -7,9 +7,9 @@ namespace FellowOakDicom.IO
 {
 
     /// <summary>
-    /// .NET/Windows Desktop implementation of the <see cref="IFileReference"/> interface.
+    /// Implementation of the <see cref="IFileReference"/> interface.
     /// </summary>
-    public sealed class DesktopFileReference : IFileReference
+    public sealed class FileReference : IFileReference
     {
         private bool _isTempFile;
 
@@ -17,7 +17,7 @@ namespace FellowOakDicom.IO
         /// Initializes a <see cref="DesktopFileReference"/> object.
         /// </summary>
         /// <param name="fileName">File name.</param>
-        public DesktopFileReference(string fileName)
+        public FileReference(string fileName)
         {
             Name = fileName;
             IsTempFile = false;
@@ -26,7 +26,7 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Destructor.
         /// </summary>
-        ~DesktopFileReference()
+        ~FileReference()
         {
             if (IsTempFile)
             {
@@ -51,7 +51,7 @@ namespace FellowOakDicom.IO
             get => _isTempFile;
             set
             {
-                if (value && this.Exists)
+                if (value && Exists)
                 {
                     try
                     {
@@ -72,51 +72,36 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Gets the directory reference of the file.
         /// </summary>
-        public IDirectoryReference Directory => new DesktopDirectoryReference(Path.GetDirectoryName(Name));
+        public IDirectoryReference Directory => new DirectoryReference(Path.GetDirectoryName(Name));
 
         /// <summary>
         /// Creates a new file for reading and writing. Overwrites existing file.
         /// </summary>
         /// <returns>Stream to the created file.</returns>
-        public Stream Create()
-        {
-            return File.Create(Name);
-        }
+        public Stream Create() => File.Create(Name);
 
         /// <summary>
         /// Open an existing file stream for reading and writing.
         /// </summary>
         /// <returns></returns>
-        public Stream Open()
-        {
-            return File.Open(Name, FileMode.Open, FileAccess.ReadWrite);
-        }
+        public Stream Open() => File.Open(Name, FileMode.Open, FileAccess.ReadWrite);
 
         /// <summary>
         /// Open a file stream for reading.
         /// </summary>
         /// <returns>Stream to the opened file.</returns>
-        public Stream OpenRead()
-        {
-            return File.OpenRead(Name);
-        }
+        public Stream OpenRead() => File.OpenRead(Name);
 
         /// <summary>
         /// Open a file stream for writing, creates the file if not existing.
         /// </summary>
         /// <returns>Stream to the opened file.</returns>
-        public Stream OpenWrite()
-        {
-            return File.OpenWrite(Name);
-        }
+        public Stream OpenWrite() => File.OpenWrite(Name);
 
         /// <summary>
         /// Delete the file.
         /// </summary>
-        public void Delete()
-        {
-            File.Delete(Name);
-        }
+        public void Delete() => File.Delete(Name);
 
         /// <summary>
         /// Moves file and updates internal reference.
@@ -128,7 +113,10 @@ namespace FellowOakDicom.IO
         public void Move(string dstFileName, bool overwrite = false)
         {
             // delete if overwriting; let File.Move thow IOException if not
-            if (File.Exists(dstFileName) && overwrite) File.Delete(dstFileName);
+            if (File.Exists(dstFileName) && overwrite)
+            {
+                File.Delete(dstFileName);
+            }
 
             File.Move(Name, dstFileName);
             Name = Path.GetFullPath(dstFileName);
@@ -160,9 +148,6 @@ namespace FellowOakDicom.IO
         /// <returns>
         /// A string that represents the current object.
         /// </returns>
-        public override string ToString()
-        {
-            return IsTempFile ? $"{Name} [TEMP]" : Name;
-        }
+        public override string ToString() => IsTempFile ? $"{Name} [TEMP]" : Name;
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
 
 namespace FellowOakDicom.IO
 {
@@ -13,7 +14,7 @@ namespace FellowOakDicom.IO
     {
         #region FIELDS
 
-        private static string storagePath;
+        private static string _storagePath;
 
         #endregion
 
@@ -24,18 +25,17 @@ namespace FellowOakDicom.IO
         /// </summary>
         public static string StoragePath
         {
-            get
-            {
-                if (storagePath != null) return storagePath;
-                return IOManager.Path.GetTempDirectory();
-            }
+            get => _storagePath != null ? _storagePath : Path.GetTempPath();
             set
             {
-                storagePath = value;
-                if (storagePath != null)
+                _storagePath = value;
+                if (_storagePath != null)
                 {
-                    var directory = IOManager.CreateDirectoryReference(storagePath);
-                    if (!directory.Exists) directory.Create();
+                    var directory = new DirectoryReference(_storagePath);
+                    if (!directory.Exists)
+                    {
+                        directory.Create();
+                    }
                 }
             }
         }
@@ -52,17 +52,17 @@ namespace FellowOakDicom.IO
         {
             IFileReference file;
 
-            if (storagePath != null)
+            if (_storagePath != null)
             {
                 // create file in user specified path
-                var path = IOManager.Path.Combine(storagePath, Guid.NewGuid().ToString());
-                file = IOManager.CreateFileReference(path);
+                var path = Path.Combine(_storagePath, Guid.NewGuid().ToString());
+                file = new FileReference(path);
                 file.Create().Dispose();
             }
             else
             {
                 // allow OS to create file in system temp path
-                file = IOManager.CreateFileReference(IOManager.Path.GetTempFileName());
+                file = new FileReference(Path.GetTempFileName());
             }
             file.IsTempFile = true;
 
