@@ -8,6 +8,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -18,6 +19,8 @@ namespace FellowOakDicom.Network
     public sealed class DesktopNetworkStream : INetworkStream
     {
         #region FIELDS
+
+        private static readonly TimeSpan SslHandshakeTimeout = TimeSpan.FromMinutes(1);
 
         private bool disposed = false;
 
@@ -55,7 +58,12 @@ namespace FellowOakDicom.Network
                 ssl.ReadTimeout = millisecondsTimeout;
                 ssl.WriteTimeout = millisecondsTimeout;
 
-                ssl.AuthenticateAsClientAsync(host).Wait();
+                var authenticationSucceeded = Task.Run(async () => await ssl.AuthenticateAsClientAsync(host).ConfigureAwait(false)).Wait(SslHandshakeTimeout);
+                if (!authenticationSucceeded)
+                {
+                    throw new DicomNetworkException($"SSL client authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
+                }
+
                 stream = ssl;
             }
 
@@ -73,10 +81,10 @@ namespace FellowOakDicom.Network
         /// <param name="ownsTcpClient">dispose tcpClient on Dispose</param>
         /// <remarks>
         /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
-        /// 
+        ///
         /// if <paramref name="ownsTcpClient"/> is false, <paramref name="tcpClient"/> must be disposed by caller.
         /// this is default so that compatible with older versions.
-        /// 
+        ///
         /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
         /// </remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate, bool ownsTcpClient = false)
@@ -90,7 +98,16 @@ namespace FellowOakDicom.Network
             if (certificate != null)
             {
                 var ssl = new SslStream(stream, false);
-                ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).Wait();
+
+                var authenticationSucceeded = Task.Run(
+                    async () => await ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).ConfigureAwait(false)
+                    ).Wait(SslHandshakeTimeout);
+
+                if (!authenticationSucceeded)
+                {
+                    throw new DicomNetworkException($"SSL server authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
+                }
+
                 stream = ssl;
             }
 
