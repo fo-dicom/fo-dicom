@@ -1,4 +1,5 @@
 #### v.4.0.4 (TBD)
+* Bug fix: Prevent SSL handshake freeze from blocking the TCP listener (#923)
 
 
 #### v.4.0.3 (9/21/2019)
