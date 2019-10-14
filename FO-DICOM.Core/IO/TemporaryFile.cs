@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 
@@ -56,13 +57,13 @@ namespace FellowOakDicom.IO
             {
                 // create file in user specified path
                 var path = Path.Combine(_storagePath, Guid.NewGuid().ToString());
-                file = new FileReference(path);
+                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
                 file.Create().Dispose();
             }
             else
             {
                 // allow OS to create file in system temp path
-                file = new FileReference(Path.GetTempFileName());
+                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(Path.GetTempFileName());
             }
             file.IsTempFile = true;
 

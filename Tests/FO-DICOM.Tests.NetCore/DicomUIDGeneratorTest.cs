@@ -11,6 +11,8 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
+
+    [Collection("General")]
     public class DicomUIDGeneratorTest
     {
         #region Unit tests

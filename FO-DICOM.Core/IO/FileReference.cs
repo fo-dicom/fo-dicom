@@ -6,6 +6,13 @@ using System.IO;
 namespace FellowOakDicom.IO
 {
 
+    public class FileReferenceFactory : IFileReferenceFactory
+    {
+
+        public IFileReference Create(string fileName) => new FileReference(fileName);
+
+    }
+
     /// <summary>
     /// Implementation of the <see cref="IFileReference"/> interface.
     /// </summary>

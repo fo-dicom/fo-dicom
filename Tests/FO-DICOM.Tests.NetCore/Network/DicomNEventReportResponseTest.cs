@@ -7,6 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Network
 {
 
+    [Collection("Network")]
     public class DicomNEventReportResponseTest
     {
         #region Unit tests

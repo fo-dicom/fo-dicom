@@ -9,6 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Log
 {
 
+    [Collection("General")]
     public class TextWriterLoggerTest
     {
         [Fact]

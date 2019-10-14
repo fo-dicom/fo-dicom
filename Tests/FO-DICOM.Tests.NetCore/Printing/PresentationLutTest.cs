@@ -9,6 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Printing
 {
 
+    [Collection("General")]
     public class PresentationLutTest
     {
         #region Unit tests

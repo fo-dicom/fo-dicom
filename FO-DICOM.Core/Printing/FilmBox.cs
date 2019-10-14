@@ -11,6 +11,7 @@ namespace FellowOakDicom.Printing
     using FellowOakDicom.Imaging.Mathematics;
     using FellowOakDicom.IO;
     using FellowOakDicom.Log;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Basic film box
@@ -729,7 +730,7 @@ namespace FellowOakDicom.Printing
             var file = new DicomFile(this);
             file.Save(filmBoxDicomFile);
 
-            var filmBoxFile = new FileReference(filmBoxTextFile);
+            var filmBoxFile = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(filmBoxTextFile);
             using (var writer = new StreamWriter(filmBoxFile.Create()))
             {
                 writer.Write(this.WriteToString());

@@ -14,6 +14,16 @@ namespace FellowOakDicom
     /// </summary>
     internal static class Setup
     {
+
+
+        internal static IServiceProvider ServiceProvider { get; private set; }
+
+        public static void SetupDI(IServiceProvider diProvider)
+        {
+            ServiceProvider = diProvider;
+        }
+
+
         /// <summary>
         /// Gets a single instance from the platform assembly implementing the <typeparamref name="T"/> type.
         /// </summary>

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 
 using FellowOakDicom.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Network
 {
@@ -103,7 +104,7 @@ namespace FellowOakDicom.Network
         /// <param name="file">Filename</param>
         public void Save(string file)
         {
-            var f = new FileReference(file);
+            var f = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(file);
             var d = f.Directory;
 
             if (!d.Exists)

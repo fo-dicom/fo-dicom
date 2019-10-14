@@ -6,6 +6,7 @@ using Xunit;
 namespace FellowOakDicom.TestsBugs
 {
 
+    [Collection("General")]
     public class GH177
     {
         [Theory]

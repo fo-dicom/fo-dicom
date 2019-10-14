@@ -11,6 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
+    [Collection("General")]
     public class GH549
     {
         #region Unit Tests

@@ -4,6 +4,7 @@
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Text;
@@ -123,7 +124,7 @@ namespace FellowOakDicom
         {
             PreprocessFileMetaInformation();
 
-            File = new FileReference(fileName);
+            File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
             File.Delete();
 
             OnSave();
@@ -160,7 +161,7 @@ namespace FellowOakDicom
         {
             PreprocessFileMetaInformation();
 
-            File = new FileReference(fileName);
+            File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
             File.Delete();
 
             OnSave();
@@ -220,7 +221,7 @@ namespace FellowOakDicom
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using (var unvalidatedDataset = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -350,7 +351,7 @@ namespace FellowOakDicom
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -458,7 +459,7 @@ namespace FellowOakDicom
         {
             try
             {
-                var file = new FileReference(path);
+                var file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
                 using (var fs = file.OpenRead())
                 {
                     fs.Seek(128, SeekOrigin.Begin);

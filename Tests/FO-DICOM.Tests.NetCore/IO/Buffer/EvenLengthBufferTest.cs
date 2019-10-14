@@ -7,6 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO.Buffer
 {
 
+    [Collection("General")]
     public class EvenLengthBufferTest
     {
         [Theory]

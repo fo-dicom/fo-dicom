@@ -9,6 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
+    [Collection("General")]
     public class GH265
     {
         #region Unit tests

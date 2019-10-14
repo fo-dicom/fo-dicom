@@ -8,6 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging
 {
 
+    [Collection("General")]
     public class DicomJpegLossessTest
     {
 

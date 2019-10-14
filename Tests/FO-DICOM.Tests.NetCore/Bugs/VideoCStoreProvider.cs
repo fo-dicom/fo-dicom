@@ -7,10 +7,12 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
 
+    [Collection("General")]
     internal class VideoCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
         private static readonly DicomTransferSyntax[] AcceptedVideoTransferSyntaxes =

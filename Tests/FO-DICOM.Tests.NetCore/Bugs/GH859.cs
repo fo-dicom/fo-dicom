@@ -13,6 +13,7 @@ using DicomClient = FellowOakDicom.Network.DicomClient;
 namespace FellowOakDicom.Tests.Bugs
 {
 
+    [Collection("General")]
     public class GH859
     {
         private readonly XUnitDicomLogger _output;

@@ -8,6 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Network
 {
 
+    [Collection("Network")]
     public class PDVTest
     {
         #region Unit tests

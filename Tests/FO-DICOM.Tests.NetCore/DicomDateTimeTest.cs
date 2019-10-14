@@ -7,6 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
 
+    [Collection("General")]
     public class DicomDateTimeTest
     {
         [Fact]

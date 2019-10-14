@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using FellowOakDicom.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
@@ -333,7 +334,9 @@ namespace FellowOakDicom
         /// <param name="format">File format.</param>
         public void Load(string file, DicomDictionaryFormat format)
         {
-            using (var fs = new FileReference(file).OpenRead())
+            
+            var fileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(file);
+            using (var fs = fileRef.OpenRead())
             {
                 var s = fs;
                 if (file.EndsWith(".gz"))

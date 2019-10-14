@@ -7,6 +7,14 @@ namespace FellowOakDicom.IO
 {
 
     /// <summary>
+    /// Interface for a factory to create <see cref="IFileReference"/>
+    /// </summary>
+    public interface IFileReferenceFactory
+    {
+        IFileReference Create(string fileName);
+    }
+
+    /// <summary>
     /// Interface representing reference to a single file.
     /// </summary>
     public interface IFileReference

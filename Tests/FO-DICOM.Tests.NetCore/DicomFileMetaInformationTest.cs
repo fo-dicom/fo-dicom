@@ -8,6 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
 
+    [Collection("General")]
     public class DicomFileMetaInformationTest
     {
         #region Unit tests

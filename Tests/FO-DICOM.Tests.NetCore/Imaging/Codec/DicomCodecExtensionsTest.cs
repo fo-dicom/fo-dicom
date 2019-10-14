@@ -13,6 +13,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Codec
 {
 
+    [Collection("General")]
     public class DicomCodecExtensionsTest
     {
         #region Unit tests

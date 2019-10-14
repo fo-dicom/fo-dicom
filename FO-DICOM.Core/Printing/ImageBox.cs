@@ -8,6 +8,7 @@ namespace FellowOakDicom.Printing
     using FellowOakDicom.IO;
     using FellowOakDicom.Log;
     using System.Linq;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Color or gray scale basic image box
@@ -304,7 +305,7 @@ namespace FellowOakDicom.Printing
             var imageBoxDicomFile = imageBoxFile + ".dcm";
             var imageBoxTextFile = imageBoxFile + ".txt";
 
-            var imageBoxFileRef = new FileReference(imageBoxTextFile);
+            var imageBoxFileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(imageBoxTextFile);
             using (var writer = new StreamWriter(imageBoxFileRef.Create()))
             {
                 writer.Write(this.WriteToString());

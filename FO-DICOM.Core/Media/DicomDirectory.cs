@@ -4,6 +4,7 @@
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Linq;
@@ -167,7 +168,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))
@@ -276,7 +277,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                df.File = new FileReference(fileName);
+                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 using (var source = new FileByteSource(df.File, readOption))

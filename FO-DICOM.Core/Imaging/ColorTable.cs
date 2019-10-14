@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using FellowOakDicom.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Imaging
 {
@@ -73,7 +74,8 @@ namespace FellowOakDicom.Imaging
             try
             {
                 byte[] data;
-                using (var stream = new FileReference(path).OpenRead())
+                var fileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
+                using (var stream = fileRef.OpenRead())
                 {
                     var length = (int)stream.Length;
                     if (length != (256 * 3))
@@ -111,7 +113,7 @@ namespace FellowOakDicom.Imaging
                 return;
             }
 
-            var file = new FileReference(path);
+            var file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
             using (var fs = file.Create())
             {
                 lut.Each(c => fs.WriteByte(c.R));
