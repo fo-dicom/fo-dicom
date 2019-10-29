@@ -6,6 +6,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
+
     public class GlobalFixture : IDisposable
     {
 
@@ -27,6 +28,7 @@ namespace FellowOakDicom.Tests
 
     }
 
+
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
     { }
@@ -34,6 +36,11 @@ namespace FellowOakDicom.Tests
     [CollectionDefinition("Network")]
     public class NetworkCollection : ICollectionFixture<GlobalFixture>
     { }
+
+    [CollectionDefinition("Imaging")]
+    public class ImagingCollection : ICollectionFixture<GlobalFixture>
+    { }
+
 
 
 }

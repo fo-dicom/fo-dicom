@@ -9,17 +9,18 @@
     <SignAssembly>true</SignAssembly>
 
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+
+    <AssemblyName>fo-dicom.Tests.NetCore</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Bugs\GH553.cs" />
-    <Compile Remove="Imaging\DicomImageTest.cs" />
-    <Compile Remove="Imaging\ImageManagerTest.cs" />
     <Compile Remove="Imaging\WinFormsImageTest.cs" />
     <Compile Remove="Imaging\WPFImageTest.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Efferent.Native" Version="3.9.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />

@@ -49,30 +49,6 @@ namespace FellowOakDicom
             }
         }
 
-        /// <summary>
-        /// Gets the default classified instance from the platform assembly implementing the <typeparamref name="T"/> type.
-        /// </summary>
-        /// <typeparam name="T">(Abstract) type for which implementation is requested.</typeparam>
-        /// <returns>The single instance from the platform assembly implementing the <typeparamref name="T"/> type that is classified as default, 
-        /// or null if no or more than one default classified implementations are available.</returns>
-        /// <remarks>It is implicitly assumed that all implementation classes has a public, parameterless constructor.</remarks>
-        internal static T GetDefaultPlatformInstance<T>() where T : class, IClassifiedManager
-        {
-            try
-            {
-                var assemblies = GetPlatformAssemblies();
-                var types =
-                    assemblies.SelectMany(assembly => assembly.DefinedTypes)
-                        .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
-                var instance = types.Select(t => (T)Activator.CreateInstance(t.AsType())).Single(obj => obj.IsDefault);
-                return instance;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
         private static IEnumerable<Assembly> GetPlatformAssemblies()
         {
             return new[] { typeof(Setup).GetTypeInfo().Assembly };

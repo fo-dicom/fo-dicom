@@ -1,0 +1,363 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\xunit.runner.visualstudio.2.4.1\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.4.1\build\net20\xunit.runner.visualstudio.props')" />
+  <Import Project="..\..\packages\xunit.core.2.4.1\build\xunit.core.props" Condition="Exists('..\..\packages\xunit.core.2.4.1\build\xunit.core.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BF12C2F6-5AE4-4D05-9DA5-D6C3C34228D8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FO_DICOM.Tests.Desktop</RootNamespace>
+    <AssemblyName>FO-DICOM.Tests.Desktop</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.3.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.6.7\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.abstractions.2.0.3\lib\net35\xunit.abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.assert.2.4.1\lib\netstandard1.1\xunit.assert.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.core.2.4.1\lib\net452\xunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.execution.2.4.1\lib\net452\xunit.execution.desktop.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bugs\GH064.cs" />
+    <Compile Include="Bugs\GH133.cs" />
+    <Compile Include="Bugs\GH177.cs" />
+    <Compile Include="Bugs\GH178.cs" />
+    <Compile Include="Bugs\GH179.cs" />
+    <Compile Include="Bugs\GH195.cs" />
+    <Compile Include="Bugs\GH220.cs" />
+    <Compile Include="Bugs\GH223.cs" />
+    <Compile Include="Bugs\GH227.cs" />
+    <Compile Include="Bugs\GH258.cs" />
+    <Compile Include="Bugs\GH265.cs" />
+    <Compile Include="Bugs\GH306.cs" />
+    <Compile Include="Bugs\GH319.cs" />
+    <Compile Include="Bugs\GH328.cs" />
+    <Compile Include="Bugs\GH340.cs" />
+    <Compile Include="Bugs\GH342.cs" />
+    <Compile Include="Bugs\GH364.cs" />
+    <Compile Include="Bugs\GH426.cs" />
+    <Compile Include="Bugs\GH433.cs" />
+    <Compile Include="Bugs\GH487.cs" />
+    <Compile Include="Bugs\GH526.cs" />
+    <Compile Include="Bugs\GH538.cs" />
+    <Compile Include="Bugs\GH549.cs" />
+    <Compile Include="Bugs\GH553.cs" />
+    <Compile Include="Bugs\GH597.cs" />
+    <Compile Include="Bugs\GH625.cs" />
+    <Compile Include="Bugs\GH626.cs" />
+    <Compile Include="Bugs\GH745.cs" />
+    <Compile Include="Bugs\GH846.cs" />
+    <Compile Include="Bugs\GH859.cs" />
+    <Compile Include="Bugs\VideoCStoreProvider.cs" />
+    <Compile Include="DicomAnonymizerTest.cs" />
+    <Compile Include="DicomDatasetExtensionsTest.cs" />
+    <Compile Include="DicomDatasetGetValuesTest.cs" />
+    <Compile Include="DicomDatasetTest.cs" />
+    <Compile Include="DicomDatasetWalkerTest.cs" />
+    <Compile Include="DicomDateRangeTest.cs" />
+    <Compile Include="DicomDateTimeTest.cs" />
+    <Compile Include="DicomDictionaryTest.cs" />
+    <Compile Include="DicomElementTest.cs" />
+    <Compile Include="DicomEncodingTest.cs" />
+    <Compile Include="DicomFileMetaInformationTest.cs" />
+    <Compile Include="DicomFileTest.cs" />
+    <Compile Include="DicomOtherByteTest.cs" />
+    <Compile Include="DicomParseableTest.cs" />
+    <Compile Include="DicomPersonNameTest.cs" />
+    <Compile Include="DicomTagTest.cs" />
+    <Compile Include="DicomTransferSyntaxTest.cs" />
+    <Compile Include="DicomUIDGeneratorTest.cs" />
+    <Compile Include="DicomUIDTest.cs" />
+    <Compile Include="DicomValidationTest.cs" />
+    <Compile Include="DicomVMTest.cs" />
+    <Compile Include="DicomVRTest.cs" />
+    <Compile Include="Fixture.cs" />
+    <Compile Include="Helpers\NLogHelper.cs" />
+    <Compile Include="Helpers\PriorityOrderer.cs" />
+    <Compile Include="Helpers\SerializationExtensions.cs" />
+    <Compile Include="Helpers\TestPriorityAttribute.cs" />
+    <Compile Include="Helpers\XUnitDicomLogger.cs" />
+    <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
+    <Compile Include="Imaging\Codec\DicomTranscoderTest.cs" />
+    <Compile Include="Imaging\ColorTableTest.cs" />
+    <Compile Include="Imaging\DicomImageTest.cs" />
+    <Compile Include="Imaging\DicomJpegLossessTest.cs" />
+    <Compile Include="Imaging\DicomOverlayDataTest.cs" />
+    <Compile Include="Imaging\DicomPixelDataTest.cs" />
+    <Compile Include="Imaging\FrameGeometryTest.cs" />
+    <Compile Include="Imaging\GrayscaleRenderOptionsTest.cs" />
+    <Compile Include="Imaging\ImageManagerTest.cs" />
+    <Compile Include="Imaging\LUT\ModalityRescaleLUTTest.cs" />
+    <Compile Include="Imaging\LUT\ModalitySequenceLUTTest.cs" />
+    <Compile Include="Imaging\LUT\OutputLUTTest.cs" />
+    <Compile Include="Imaging\LUT\PrecalculatedLUTTest.cs" />
+    <Compile Include="Imaging\Mathematics\Point2Tests.cs" />
+    <Compile Include="Imaging\Mathematics\RectFTest.cs" />
+    <Compile Include="Imaging\Mathematics\Vector3DTest.cs" />
+    <Compile Include="Imaging\Render\PixelDataTest.cs" />
+    <Compile Include="Imaging\SpatialTransformTest.cs" />
+    <Compile Include="Imaging\WinFormsImageTest.cs" />
+    <Compile Include="Imaging\WPFImageTest.cs" />
+    <Compile Include="IO\Buffer\EvenLengthBufferTest.cs" />
+    <Compile Include="IO\Buffer\TempFileBufferTest.cs" />
+    <Compile Include="IO\DesktopFileReferenceTest.cs" />
+    <Compile Include="IO\DesktopPathTest.cs" />
+    <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
+    <Compile Include="IO\Reader\DicomFileReaderTest.cs" />
+    <Compile Include="IO\Reader\DicomReaderTest.cs" />
+    <Compile Include="IO\Reader\MockObserver.cs" />
+    <Compile Include="IO\TemporaryFileTest.cs" />
+    <Compile Include="IO\Writer\DicomFileWriterTest.cs" />
+    <Compile Include="IO\Writer\DicomWriterTest.cs" />
+    <Compile Include="Log\MessageNameFormatToOrdinalFormatTests.cs" />
+    <Compile Include="Log\TextWriterLoggerTest.cs" />
+    <Compile Include="Media\DicomDirectoryTest.cs" />
+    <Compile Include="Media\DicomFileScannerTest.cs" />
+    <Compile Include="Network\Client\DicomClientTest.cs" />
+    <Compile Include="Network\Client\DicomClientTimeoutTests.cs" />
+    <Compile Include="Network\DicomAcceptedPresentationContextTest.cs" />
+    <Compile Include="Network\DicomCEchoProviderTest.cs" />
+    <Compile Include="Network\DicomCFindRequestTest.cs" />
+    <Compile Include="Network\DicomCGetRequestTest.cs" />
+    <Compile Include="Network\DicomClientTest.cs" />
+    <Compile Include="Network\DicomCMoveRequestTest.cs" />
+    <Compile Include="Network\DicomCStoreRequestTest.cs" />
+    <Compile Include="Network\DicomExtendedNegotiationTest.cs" />
+    <Compile Include="Network\DicomNActionResponseTest.cs" />
+    <Compile Include="Network\DicomNCreateRequestTest.cs" />
+    <Compile Include="Network\DicomNCreateResponseTest.cs" />
+    <Compile Include="Network\DicomNEventReportResponseTest.cs" />
+    <Compile Include="Network\DicomPresentationContextTest.cs" />
+    <Compile Include="Network\DicomServerTest.cs" />
+    <Compile Include="Network\DicomServiceTest.cs" />
+    <Compile Include="Network\DicomStatusTest.cs" />
+    <Compile Include="Network\PDUTest.cs" />
+    <Compile Include="Network\PDVTest.cs" />
+    <Compile Include="Network\Ports.cs" />
+    <Compile Include="Network\SimpleCStoreProvider.cs" />
+    <Compile Include="Printing\FilmBoxTest.cs" />
+    <Compile Include="Printing\ImageBoxTest.cs" />
+    <Compile Include="Printing\PresentationLutTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\JsonDicomConverterTest.cs" />
+    <Compile Include="Serialization\XmlDicomConverterTest.cs" />
+    <Compile Include="StructuredReport\DicomContentItemTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fo-dicom.snk" />
+    <None Include="packages.config" />
+    <None Include="Test Data\10200904.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\abd1.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\CR-ModalitySequenceLUT.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\CR-MONO1-10-chest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\CT-MONO2-16-ankle">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\CT1_J2KI">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\DICOMDIR">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\ETIAM_video_002.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\genFile.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH064.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH133.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH177_D_CLUNIE_CT1_IVRLE_BigEndian_ELE_undefinded_length.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH178.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH179A.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH179B.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH184.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH195.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH220.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH223.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH227.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH340.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH342.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH355.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH364.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH487.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH538-jpeg1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH538-jpeg14sv1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH610.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH626.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\IM-0001-0001-0001.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\minimumdict.xml.gz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_Palette.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_Palette_16.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\TestPattern_RGB.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\test_720.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Test Data\minimumdict.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\fo-dicom.core\FO-DICOM.Core.csproj">
+      <Project>{823be9fe-62bb-43e6-a920-9adc09f7f836}</Project>
+      <Name>FO-DICOM.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\FO-DICOM.NLog\FO-DICOM.NLog.csproj">
+      <Project>{c8e554d2-a63b-405e-a047-e792a7ac42ad}</Project>
+      <Name>FO-DICOM.NLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj">
+      <Project>{f0617c96-0ced-4215-99ca-bbf278d6f1aa}</Project>
+      <Name>FO-DICOM.Imaging.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj">
+      <Project>{50fad02e-6763-47a4-8592-a8bec8658948}</Project>
+      <Name>FO-DICOM.Json</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\xunit.core.2.4.1\build\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.core.2.4.1\build\xunit.core.props'))" />
+    <Error Condition="!Exists('..\..\packages\xunit.core.2.4.1\build\xunit.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.core.2.4.1\build\xunit.core.targets'))" />
+    <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.4.1\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.4.1\build\net20\xunit.runner.visualstudio.props'))" />
+  </Target>
+  <Import Project="..\..\..\packages\xunit.core.2.4.0\build\xunit.core.targets" Condition="Exists('..\..\..\packages\xunit.core.2.4.0\build\xunit.core.targets')" />
+  <Import Project="..\..\packages\xunit.core.2.4.1\build\xunit.core.targets" Condition="Exists('..\..\packages\xunit.core.2.4.1\build\xunit.core.targets')" />
+</Project>

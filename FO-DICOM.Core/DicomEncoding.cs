@@ -15,6 +15,15 @@ namespace FellowOakDicom
 
         static DicomEncoding()
         {
+            try
+            {
+                RegisterEncodingProvider();
+            }
+            catch { /* do nothing */ }
+        }
+
+        static void RegisterEncodingProvider()
+        {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 

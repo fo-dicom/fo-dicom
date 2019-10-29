@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom.Json</RootNamespace>
     <AssemblyName>fo-dicom.json</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

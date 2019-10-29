@@ -1,14 +1,10 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
 using System.Threading.Tasks;
-using System.Windows.Media;
-
 using Xunit;
 
-
-namespace Dicom.Imaging
+namespace FellowOakDicom.Imaging
 {
     [Collection("Imaging")]
     public class DicomImageTest
@@ -22,35 +18,12 @@ namespace Dicom.Imaging
         #region Unit tests
 
         [Fact]
-        public void RenderImage_WinFormsManager_AsReturnsImage()
+        public void RenderImage_RawImageManager_AsReturnsRawImage()
         {
             lock (_lock)
             {
-                ImageManager.SetImplementation(WinFormsImageManager.Instance);
                 var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
-                Assert.IsAssignableFrom<Image>(image.As<Image>());
-            }
-        }
-
-        [Fact]
-        public void RenderImage_WinFormsManager_AsReturnsBitmap()
-        {
-            lock (_lock)
-            {
-                ImageManager.SetImplementation(WinFormsImageManager.Instance);
-                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
-                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
-            }
-        }
-
-        [Fact]
-        public void RenderImage_WPFManager_AsReturnsImageSource()
-        {
-            lock (_lock)
-            {
-                ImageManager.SetImplementation(WPFImageManager.Instance);
-                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
-                Assert.IsAssignableFrom<ImageSource>(image.As<ImageSource>());
+                Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }
         }
 
@@ -59,14 +32,12 @@ namespace Dicom.Imaging
         {
             lock (_lock)
             {
-                ImageManager.SetImplementation(WinFormsImageManager.Instance);
-
                 var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle");
                 var exception = Record.Exception(() =>
                 {
                     Parallel.For(0, 1000, i =>
                     {
-                        image.RenderImage().AsBitmap();
+                        image.RenderImage().AsBytes();
                         image.Scale = 0.999;
                     });
                 });
@@ -81,10 +52,9 @@ namespace Dicom.Imaging
         {
             lock (_lock)
             {
-                ImageManager.SetImplementation(WinFormsImageManager.Instance);
                 var file = new DicomImage(@".\Test Data\10200904.dcm");
                 var image = file.RenderImage(0);
-                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+                Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }
         }
 
@@ -96,10 +66,9 @@ namespace Dicom.Imaging
         {
             lock (_lock)
             {
-                ImageManager.SetImplementation(WinFormsImageManager.Instance);
                 var file = new DicomImage(@".\Test Data\" + filename);
                 var image = file.RenderImage(0);
-                Assert.IsAssignableFrom<Bitmap>(image.As<Bitmap>());
+                Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }
 
         }
