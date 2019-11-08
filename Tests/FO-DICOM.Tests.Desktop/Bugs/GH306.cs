@@ -132,14 +132,11 @@ namespace FellowOakDicom.Tests.Bugs
             {
             }
 
-            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+                => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+                => Task.CompletedTask;
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {

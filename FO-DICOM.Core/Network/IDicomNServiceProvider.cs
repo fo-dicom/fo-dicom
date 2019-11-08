@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
+
 namespace FellowOakDicom.Network
 {
     /// <summary>
@@ -13,41 +15,41 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">N-ACTION request subject to handling.</param>
         /// <returns>N-ACTION response based on <paramref name="request"/>.</returns>
-        DicomNActionResponse OnNActionRequest(DicomNActionRequest request);
+        Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request);
 
         /// <summary>
         /// Handler of N-CREATE request.
         /// </summary>
         /// <param name="request">N-CREATE request subject to handling.</param>
         /// <returns>N-CREATE response based on <paramref name="request"/>.</returns>
-        DicomNCreateResponse OnNCreateRequest(DicomNCreateRequest request);
+        Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request);
 
         /// <summary>
         /// Handler of N-DELETE request.
         /// </summary>
         /// <param name="request">N-DELETE request subject to handling.</param>
         /// <returns>N-DELETE response based on <paramref name="request"/>.</returns>
-        DicomNDeleteResponse OnNDeleteRequest(DicomNDeleteRequest request);
+        Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request);
 
         /// <summary>
         /// Handler of N-EVENT-REPORT request.
         /// </summary>
         /// <param name="request">N-EVENT-REPORT request subject to handling.</param>
         /// <returns>N-EVENT-REPORT response based on <paramref name="request"/>.</returns>
-        DicomNEventReportResponse OnNEventReportRequest(DicomNEventReportRequest request);
+        Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request);
 
         /// <summary>
         /// Handler of N-GET request.
         /// </summary>
         /// <param name="request">N-GET request subject to handling.</param>
         /// <returns>N-GET response based on <paramref name="request"/>.</returns>
-        DicomNGetResponse OnNGetRequest(DicomNGetRequest request);
+        Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request);
 
         /// <summary>
         /// Handler of N-SET request.
         /// </summary>
         /// <param name="request">N-SET request subject to handling.</param>
         /// <returns>N-SET response based on <paramref name="request"/>.</returns>
-        DicomNSetResponse OnNSetRequest(DicomNSetRequest request);
+        Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request);
     }
 }

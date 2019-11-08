@@ -9,8 +9,8 @@
     <ProjectGuid>{BF12C2F6-5AE4-4D05-9DA5-D6C3C34228D8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FO_DICOM.Tests.Desktop</RootNamespace>
-    <AssemblyName>FO-DICOM.Tests.Desktop</AssemblyName>
+    <RootNamespace>FellowOakDicom.Tests</RootNamespace>
+    <AssemblyName>fo-dicom.Tests.Desktop</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -178,6 +178,11 @@
     <Compile Include="Log\TextWriterLoggerTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="Media\DicomFileScannerTest.cs" />
+    <Compile Include="Network\AsyncDicomCEchoproviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCFindProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCGetProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCStoreProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomNServiceProviderTests.cs" />
     <Compile Include="Network\Client\DicomClientTest.cs" />
     <Compile Include="Network\Client\DicomClientTimeoutTests.cs" />
     <Compile Include="Network\DicomAcceptedPresentationContextTest.cs" />

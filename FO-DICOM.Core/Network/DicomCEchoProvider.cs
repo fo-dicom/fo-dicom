@@ -59,9 +59,9 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-ECHO request.</param>
         /// <returns>C-ECHO response with Success status.</returns>
-        public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
+        public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {
-            return new DicomCEchoResponse(request, DicomStatus.Success);
+            return Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
         }
     }
 }

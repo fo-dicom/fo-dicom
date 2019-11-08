@@ -742,12 +742,12 @@ namespace FellowOakDicom.Network
                                         .ConfigureAwait(false);
 
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
-                                    (this as IDicomCStoreProvider).OnCStoreRequestException(_dimseStreamFile?.Name, e);
+                                    await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
                                     return;
                                 }
                             }
 
-                            await PerformDimseAsync(this._dimse).ConfigureAwait(false);
+                            await PerformDimseAsync(_dimse).ConfigureAwait(false);
                             _dimse = null;
                         }
                     }
@@ -811,7 +811,7 @@ namespace FellowOakDicom.Network
             {
                 if (this is IDicomCStoreProvider thisDicomCStoreProvider)
                 {
-                    var response = thisDicomCStoreProvider.OnCStoreRequest(dimse as DicomCStoreRequest);
+                    var response = await thisDicomCStoreProvider.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -837,8 +837,13 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCFindProvider = this as IDicomCFindProvider ?? throw new DicomNetworkException("C-Find SCP not implemented");
 
-                var responses = thisAsCFindProvider.OnCFindRequest(dimse as DicomCFindRequest);
-                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                var asyncResponses = await thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest).ConfigureAwait(false);
+                foreach (var asyncResponse in asyncResponses)
+                {
+                    var response = await asyncResponse.ConfigureAwait(false);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+
                 return;
             }
 
@@ -846,8 +851,13 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCGetProvider = this as IDicomCGetProvider ?? throw new DicomNetworkException("C-GET SCP not implemented");
 
-                var responses = thisAsCGetProvider.OnCGetRequest(dimse as DicomCGetRequest);
-                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                var asyncResponses = await thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest).ConfigureAwait(false);
+                foreach (var asyncResponse in asyncResponses)
+                {
+                    var response = await asyncResponse.ConfigureAwait(false);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+
                 return;
             }
 
@@ -855,8 +865,13 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCMoveProvider = this as IDicomCMoveProvider ?? throw new DicomNetworkException("C-Move SCP not implemented");
 
-                var responses = thisAsCMoveProvider.OnCMoveRequest(dimse as DicomCMoveRequest);
-                foreach (var response in responses) await SendResponseAsync(response).ConfigureAwait(false);
+                var asyncResponses = await thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest).ConfigureAwait(false);
+                foreach (var asyncResponse in asyncResponses)
+                {
+                    var response = await asyncResponse.ConfigureAwait(false);
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+
                 return;
             }
 
@@ -864,7 +879,7 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCEchoProvider = this as IDicomCEchoProvider ?? throw new DicomNetworkException("C-Echo SCP not implemented");
 
-                var response = thisAsCEchoProvider.OnCEchoRequest(dimse as DicomCEchoRequest);
+                var response = await thisAsCEchoProvider.OnCEchoRequestAsync(dimse as DicomCEchoRequest).ConfigureAwait(false);
                 await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
@@ -880,22 +895,22 @@ namespace FellowOakDicom.Network
                 switch (dimse.Type)
                 {
                     case DicomCommandField.NActionRequest:
-                        response = thisAsNServiceProvider.OnNActionRequest(dimse as DicomNActionRequest);
+                        response = await thisAsNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
                         break;
                     case DicomCommandField.NCreateRequest:
-                        response = thisAsNServiceProvider.OnNCreateRequest(dimse as DicomNCreateRequest);
+                        response = await thisAsNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false);
                         break;
                     case DicomCommandField.NDeleteRequest:
-                        response = thisAsNServiceProvider.OnNDeleteRequest(dimse as DicomNDeleteRequest);
+                        response = await thisAsNServiceProvider.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest).ConfigureAwait(false);
                         break;
                     case DicomCommandField.NEventReportRequest:
-                        response = thisAsNServiceProvider.OnNEventReportRequest(dimse as DicomNEventReportRequest);
+                        response = await thisAsNServiceProvider.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
                         break;
                     case DicomCommandField.NGetRequest:
-                        response = thisAsNServiceProvider.OnNGetRequest(dimse as DicomNGetRequest);
+                        response = await thisAsNServiceProvider.OnNGetRequestAsync(dimse as DicomNGetRequest).ConfigureAwait(false);
                         break;
                     case DicomCommandField.NSetRequest:
-                        response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
+                        response = await thisAsNServiceProvider.OnNSetRequestAsync(dimse as DicomNSetRequest).ConfigureAwait(false);
                         break;
                 }
 

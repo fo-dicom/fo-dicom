@@ -1390,9 +1390,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             public Task OnReceiveAssociationReleaseRequestAsync()
-            {
-                return SendAssociationReleaseResponseAsync();
-            }
+                => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
@@ -1402,10 +1400,8 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
-            {
-                return new DicomCEchoResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+                => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
         }
 
         /// <summary>
@@ -1439,9 +1435,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             public Task OnReceiveAssociationReleaseRequestAsync()
-            {
-                return SendAssociationReleaseResponseAsync();
-            }
+                => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
@@ -1451,14 +1445,10 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+                => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e) => Task.CompletedTask;
         }
 
         public class RecordingDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1518,17 +1508,17 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
+            public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
             {
                 _requests.Add(request);
 
-                _onRequest(request).GetAwaiter().GetResult();
+                await _onRequest(request);
 
-                WaitForALittleBit().GetAwaiter().GetResult();
+                await WaitForALittleBit();
 
                 if (_responseTimeout.HasValue)
                 {
-                    Task.Delay(_responseTimeout.Value).GetAwaiter().GetResult();
+                    await Task.Delay(_responseTimeout.Value);
                 }
 
                 return new DicomCEchoResponse(request, DicomStatus.Success);
@@ -1620,33 +1610,39 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public IEnumerable<DicomCGetResponse> OnCGetRequest(DicomCGetRequest request)
+            public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
             {
                 _requests.Add(request);
 
-                WaitForALittleBit().GetAwaiter().GetResult();
+                await WaitForALittleBit().ConfigureAwait(false);
 
-                yield return new DicomCGetResponse(request, DicomStatus.Pending);
+                return InnerOnCGetRequestAsync();
 
-                DicomCGetResponse nextResponse;
-
-                try
+                IEnumerable<Task<DicomCGetResponse>> InnerOnCGetRequestAsync()
                 {
-                    var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+                    yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Pending));
 
-                    var cStoreRequest = new DicomCStoreRequest(file);
+                    Func<Task<DicomCGetResponse>> nextAsyncResponse = async () =>
+                    {
+                        try
+                        {
+                            var file = await DicomFile.OpenAsync(@".\Test Data\10200904.dcm").ConfigureAwait(false);
 
-                    SendRequestAsync(cStoreRequest).Wait();
+                            var cStoreRequest = new DicomCStoreRequest(file);
 
-                    nextResponse = new DicomCGetResponse(request, DicomStatus.Success);
+                            await SendRequestAsync(cStoreRequest).ConfigureAwait(false);
+
+                            return new DicomCGetResponse(request, DicomStatus.Success);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Could not send file via C-Store request: {error}", e);
+                            return new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
+                        }
+                    };
+
+                    yield return nextAsyncResponse();
                 }
-                catch (Exception e)
-                {
-                    Logger.Error("Could not send file via C-Store request: {error}", e);
-                    nextResponse = new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
-                }
-
-                yield return nextResponse;
             }
         }
 
@@ -1670,5 +1666,6 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
         #endregion
+
     }
 }

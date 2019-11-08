@@ -29,17 +29,6 @@ namespace FellowOakDicom.Imaging
             }
         }
 
-        [Fact]
-        public void SetImplementation_WPF_ImageManagerUsesWPFImplementation()
-        {
-            lock (@lock)
-            {
-                var image = ImageManager.CreateImage(100, 100);
-                image.Render(4, false, false, 0);
-                Assert.IsType<WPFImage>(image);
-            }
-        }
-
         #endregion
     }
 }

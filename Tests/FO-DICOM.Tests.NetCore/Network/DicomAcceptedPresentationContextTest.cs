@@ -181,73 +181,32 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-        {
-            return new DicomCStoreResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+            => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public void OnCStoreRequestException(string tempFileName, Exception e)
-        {
-        }
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            => Task.CompletedTask;
 
-        public DicomNActionResponse OnNActionRequest(DicomNActionRequest request)
-        {
-            return new DicomNActionResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
+            => Task.FromResult(new DicomNActionResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomNCreateResponse OnNCreateRequest(DicomNCreateRequest request)
-        {
-            return new DicomNCreateResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request)
+            => Task.FromResult(new DicomNCreateResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomNDeleteResponse OnNDeleteRequest(DicomNDeleteRequest request)
-        {
-            return new DicomNDeleteResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request)
+            => Task.FromResult(new DicomNDeleteResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomNEventReportResponse OnNEventReportRequest(DicomNEventReportRequest request)
-        {
-            return new DicomNEventReportResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
+            => Task.FromResult(new DicomNEventReportResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomNGetResponse OnNGetRequest(DicomNGetRequest request)
-        {
-            return new DicomNGetResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request)
+            => Task.FromResult(new DicomNGetResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomNSetResponse OnNSetRequest(DicomNSetRequest request)
-        {
-            return new DicomNSetResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request)
+            => Task.FromResult(new DicomNSetResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
-        {
-            return new DicomCEchoResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
-        }
+        public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+            => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
     }
 
 }

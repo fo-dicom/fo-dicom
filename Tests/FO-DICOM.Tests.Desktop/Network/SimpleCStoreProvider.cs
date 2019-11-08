@@ -58,9 +58,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         public Task OnReceiveAssociationReleaseRequestAsync()
-        {
-            return SendAssociationReleaseResponseAsync();
-        }
+            => SendAssociationReleaseResponseAsync();
 
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
@@ -70,7 +68,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
             Logger.Info(tempName);
@@ -79,7 +77,7 @@ namespace FellowOakDicom.Tests.Network
             request.File.Dataset.ValidateItems = false;
             request.File.FileMetaInfo.ValidateItems = false;
 
-            request.File.Save(tempName);
+            await request.File.SaveAsync(tempName).ConfigureAwait(false);
 
             return new DicomCStoreResponse(request, DicomStatus.Success)
             {
@@ -87,8 +85,7 @@ namespace FellowOakDicom.Tests.Network
             };
         }
 
-        public void OnCStoreRequestException(string tempFileName, Exception e)
-        {
-        }
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            => Task.CompletedTask;
     }
 }

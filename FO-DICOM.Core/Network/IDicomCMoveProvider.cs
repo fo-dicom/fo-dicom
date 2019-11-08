@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -15,6 +16,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-MOVE request subject to handling.</param>
         /// <returns>Collection of C-MOVE responses based on <paramref name="request"/>.</returns>
-        IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request);
+        Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request);
     }
 }

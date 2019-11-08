@@ -50,17 +50,17 @@ namespace FellowOakDicom.Tests.Bugs
         {
         }
 
-        public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
             Logger.Info(tempName);
-            request.File.Save(tempName);
+            await request.File.SaveAsync(tempName);
 
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
 
-        public void OnCStoreRequestException(string tempFileName, Exception e)
-        {
-        }
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            => Task.CompletedTask;
+
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -19,7 +20,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-STORE request.</param>
         /// <returns>C-STORE response.</returns>
-        DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request);
+        Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
 
         /// <summary>
         /// Callback for exceptions raised during the parsing of the received SopInstance.  Note that
@@ -28,6 +29,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="tempFileName">Name of the temporary file, may be null.</param>
         /// <param name="e">Thrown exception.</param>
-        void OnCStoreRequestException(string tempFileName, Exception e);
+        Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e);
     }
 }

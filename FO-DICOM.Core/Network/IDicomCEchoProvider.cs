@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
+
 namespace FellowOakDicom.Network
 {
     /// <summary>
@@ -13,6 +15,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-ECHO request.</param>
         /// <returns>C-ECHO response.</returns>
-        DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request);
+        Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request);
     }
 }

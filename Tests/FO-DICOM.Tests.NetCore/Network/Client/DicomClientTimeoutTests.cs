@@ -672,14 +672,12 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+                => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+                => Task.CompletedTask;
+
         }
 
         private class NeverRespondingDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
@@ -720,16 +718,21 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-            public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
+            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
             {
                 _requests.Add(request);
-                yield break;
+                return InternalOnCFindRequestAsync();
+
+                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
+                {
+                    yield break;
+                }
             }
 
-            public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
+            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
                 _requests.Add(request);
-                yield break;
+                return Enumerable.Empty<Task<DicomCMoveResponse>>();
             }
         }
 
@@ -766,28 +769,38 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-            public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
+            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
             {
-                Thread.Sleep(1000);
-                yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCFindResponse(request, DicomStatus.Success);
+                return InternalOnCFindRequestAsync();
+
+                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
+                {
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
+                }
             }
 
-            public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
+            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
-                Thread.Sleep(1000);
-                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                Thread.Sleep(1000);
-                yield return new DicomCMoveResponse(request, DicomStatus.Success);
+                return InternalOnCMoveRequestAsync();
+
+                IEnumerable<Task<DicomCMoveResponse>> InternalOnCMoveRequestAsync()
+                {
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(1000);
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Success));
+                }
             }
         }
 
@@ -824,18 +837,28 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-            public IEnumerable<DicomCFindResponse> OnCFindRequest(DicomCFindRequest request)
+            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
             {
-                yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                Thread.Sleep(3000);
-                yield return new DicomCFindResponse(request, DicomStatus.Success);
+                return InternalOnCFindRequestAsync();
+
+                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
+                {
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(3000);
+                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
+                }
             }
 
-            public IEnumerable<DicomCMoveResponse> OnCMoveRequest(DicomCMoveRequest request)
+            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
-                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                Thread.Sleep(3000);
-                yield return new DicomCMoveResponse(request, DicomStatus.Success);
+                return InternalOnCMoveRequestAsync();
+
+                IEnumerable<Task<DicomCMoveResponse>> InternalOnCMoveRequestAsync()
+                {
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
+                    Thread.Sleep(3000);
+                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Success));
+                }
             }
         }
 

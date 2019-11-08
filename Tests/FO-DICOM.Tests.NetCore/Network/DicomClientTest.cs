@@ -973,9 +973,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             public Task OnReceiveAssociationReleaseRequestAsync()
-            {
-                return SendAssociationReleaseResponseAsync();
-            }
+                => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
@@ -985,10 +983,8 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
-            {
-                return new DicomCEchoResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+                => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
         }
 
         /// <summary>
@@ -1022,9 +1018,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             public Task OnReceiveAssociationReleaseRequestAsync()
-            {
-                return SendAssociationReleaseResponseAsync();
-            }
+                => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
@@ -1034,14 +1028,11 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.Success);
-            }
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+                => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+                => Task.CompletedTask;
         }
 
         public class RecordingDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1098,13 +1089,13 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public DicomCEchoResponse OnCEchoRequest(DicomCEchoRequest request)
+            public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
             {
                 _onRequest(request);
 
                 _requests.Add(request);
 
-                WaitForALittleBit().GetAwaiter().GetResult();
+                await WaitForALittleBit();
 
                 return new DicomCEchoResponse(request, DicomStatus.Success);
             }

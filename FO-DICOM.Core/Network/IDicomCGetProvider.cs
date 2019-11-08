@@ -4,6 +4,7 @@
 namespace FellowOakDicom.Network
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for methods related to a C-GET SCP.
@@ -15,6 +16,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-GET request.</param>
         /// <returns>Collection of C-GET responses resulting from the <paramref name="request"/>.</returns>
-        IEnumerable<DicomCGetResponse> OnCGetRequest(DicomCGetRequest request);
+        Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request);
     }
 }
