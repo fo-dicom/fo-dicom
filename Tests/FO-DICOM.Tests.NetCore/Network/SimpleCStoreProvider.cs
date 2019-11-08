@@ -50,8 +50,18 @@ namespace FellowOakDicom.Tests.Network
         {
             foreach (var pc in association.PresentationContexts)
             {
-                if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
+                if (pc.AbstractSyntax == DicomUID.Verification)
+                {
+                    pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
+                }
+                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
+                {
+                    pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
+                }
+                else
+                {
+                    pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
+                }
             }
 
             return SendAssociationAcceptAsync(association);

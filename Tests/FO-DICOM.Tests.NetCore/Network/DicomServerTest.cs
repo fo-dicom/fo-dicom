@@ -1,14 +1,14 @@
-﻿/*
-// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-using Dicom.Network.Client;
+using System.Threading.Tasks;
+using FellowOakDicom.Network;
+using FellowOakDicom.Tests.Helpers;
 using Xunit;
-
-using Dicom.Helpers;
+using DicomClient = FellowOakDicom.Network.Client.DicomClient;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -127,7 +127,7 @@ namespace FellowOakDicom.Tests.Network
             foreach (var port in ports)
             {
                 var server = DicomServer.Create<DicomCEchoProvider>(port);
-                while (!server.IsListening) Thread.Sleep(10);
+                while (!server.IsListening) { Thread.Sleep(10); }
             }
 
             foreach (var port in ports)
@@ -148,7 +148,7 @@ namespace FellowOakDicom.Tests.Network
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
-                while (!server.IsListening) Thread.Sleep(10);
+                while (!server.IsListening) { Thread.Sleep(10); }
                 Assert.True(DicomServer.IsListening(port));
             }
         }
@@ -180,55 +180,57 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void Send_KnownSOPClass_SendSucceeds()
+        public async Task Send_KnownSOPClass_SendSucceeds()
         {
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
-                request.OnResponseReceived = (req, res) =>
-                    { status = res.Status; };
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle")
+                {
+                    OnResponseReceived = (req, res) => status = res.Status
+                };
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 Assert.Equal(DicomStatus.Success, status);
             }
         }
 
         [Fact, TestPriority(1)]
-        public void Send_PrivateNotRegisteredSOPClass_SendFails()
+        public async Task Send_PrivateNotRegisteredSOPClass_SendFails()
         {
             var uid = new DicomUID("1.1.1.1", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
-            DicomDataset ds = new DicomDataset(
+            var ds = new DicomDataset(
                new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(new DicomFile(ds));
-                request.OnResponseReceived = (req, res) =>
-                    { status = res.Status; };
+                var request = new DicomCStoreRequest(new DicomFile(ds))
+                {
+                    OnResponseReceived = (req, res) => status = res.Status
+                };
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 Assert.Equal(DicomStatus.SOPClassNotSupported, status);
             }
         }
 
         [Fact, TestPriority(2)]
-        public void Send_PrivateRegisteredSOPClass_SendSucceeds()
+        public async Task Send_PrivateRegisteredSOPClass_SendSucceeds()
         {
             var uid = new DicomUID("1.1.1.1", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
             DicomUID.Register(uid);
-            DicomDataset ds = new DicomDataset(
+            var ds = new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
 
@@ -236,32 +238,32 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(new DicomFile(ds));
-                request.OnResponseReceived = (req, res) =>
-                    { status = res.Status; };
+                var request = new DicomCStoreRequest(new DicomFile(ds))
+                {
+                    OnResponseReceived = (req, res) => status = res.Status
+                };
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 Assert.Equal(DicomStatus.Success, status);
             }
         }
 
         [Fact]
-        public void Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
+        public async Task Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
             var port = Ports.GetNext();
 
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
-                while (!server.IsListening) Thread.Sleep(10);
+                while (!server.IsListening) { Thread.Sleep(10); }
 
-                var client = new DicomClient();
-                client.AddRequest(new DicomCEchoRequest());
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Release(0);
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
                 Thread.Sleep(100);
 
                 server.Stop();
@@ -273,76 +275,58 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void Send_LoopbackListenerKnownSOPClass_SendSucceeds()
+        public async Task Send_LoopbackListenerKnownSOPClass_SendSucceeds()
         {
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
-                request.OnResponseReceived = (req, res) =>
-                    { status = res.Status; };
+                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle")
+                {
+                    OnResponseReceived = (req, res) => status = res.Status
+                };
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
-
-                Assert.Equal(DicomStatus.Success, status);
-            }
-        }
-
-        [Fact]
-        public void Send_Ipv6AnyListenerKnownSOPClass_SendSucceeds()
-        {
-            var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
-            {
-                DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
-                request.OnResponseReceived = (req, res) =>
-                    { status = res.Status; };
-
-                var client = new DicomClient();
-                client.AddRequest(request);
-
-                client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 Assert.Equal(DicomStatus.Success, status);
             }
         }
 
         [Fact]
-        public void Send_FromIpv4ToIpv6AnyListenerKnownSOPClass_SendFails()
+        public async Task Send_FromIpv4ToIpv6AnyListenerKnownSOPClass_SendFails()
         {
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
             {
                 var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                var exception = Record.Exception(() => client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP"));
+                var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
 
-                Assert.IsType<SocketException>(exception);
+                Assert.NotNull(exception);
+                Assert.Contains("Socket", (exception.InnerException ?? exception).GetType().Name);
             }
         }
 
         [Fact]
-        public void Send_FromIpv6ToIpv4AnyListenerKnownSOPClass_SendFails()
+        public async Task Send_FromIpv6ToIpv4AnyListenerKnownSOPClass_SendFails()
         {
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
             {
                 var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new DicomClient();
-                client.AddRequest(request);
+                var client = new DicomClient(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(request);
 
-                var exception = Record.Exception(() => client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP"));
+                var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
 
-                Assert.IsType<SocketException>(exception);
+                Assert.NotNull(exception);
             }
         }
 
@@ -365,7 +349,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void Create_SubclassedServer_SufficientlyCreated()
+        public async Task Create_SubclassedServer_SufficientlyCreated()
         {
             var port = Ports.GetNext();
 
@@ -377,8 +361,8 @@ namespace FellowOakDicom.Tests.Network
                 var status = DicomStatus.UnrecognizedOperation;
                 var handle = new ManualResetEventSlim();
 
-                var client = new DicomClient();
-                client.AddRequest(new DicomCEchoRequest
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestAsync(new DicomCEchoRequest
                 {
                     OnResponseReceived = (req, rsp) =>
                     {
@@ -386,7 +370,7 @@ namespace FellowOakDicom.Tests.Network
                         handle.Set();
                     }
                 });
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
 
                 handle.Wait(1000);
                 Assert.Equal(DicomStatus.Success, status);
@@ -400,12 +384,10 @@ namespace FellowOakDicom.Tests.Network
         public class DicomCEchoProviderServer : DicomServer<DicomCEchoProvider>
         {
             protected override DicomCEchoProvider CreateScp(INetworkStream stream)
-            {
-                return new DicomCEchoProvider(stream, null, null);
-            }
+                => new DicomCEchoProvider(stream, null, null);
         }
 
         #endregion
     }
 }
-*/
+
