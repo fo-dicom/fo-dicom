@@ -183,6 +183,11 @@
     <Compile Include="IO\Reader\DicomReaderTest.cs" />
     <Compile Include="IO\Reader\DicomDatasetReaderObserverTest.cs" />
     <Compile Include="Media\DicomFileScannerTest.cs" />
+    <Compile Include="Network\AsyncDicomCEchoProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCFindProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCGetProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomCStoreProviderTests.cs" />
+    <Compile Include="Network\AsyncDicomNServiceProviderTests.cs" />
     <Compile Include="Network\Client\DicomClientTest.cs" />
     <Compile Include="Network\Client\DicomClientTimeoutTests.cs" />
     <Compile Include="Network\DicomAcceptedPresentationContextTest.cs" />
