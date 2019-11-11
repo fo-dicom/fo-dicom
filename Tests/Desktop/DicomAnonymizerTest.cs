@@ -239,6 +239,30 @@ namespace Dicom
             Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
+        [Fact]
+        public void Anonymize_AvoidValidationOnAnonymization()
+        {
+            const string fileName = "GH064.dcm";
+#if NETFX_CORE
+            var orignalDicom = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result;
+#else
+            var orignalDicom = DicomFile.Open($"./Test Data/{fileName}");
+#endif
+
+            var ds = new DicomDataset(orignalDicom.Dataset).NotValidated();
+            var invalidUid = "1.2.315.6666.008965..19187632.1";
+            ds.AddOrUpdate(DicomTag.StudyInstanceUID, invalidUid);
+            ds = ds.Validated();
+
+            var anonymizer = new DicomAnonymizer();
+            var anonymizedDs = anonymizer.Anonymize(ds);
+            Assert.NotNull(anonymizedDs);
+
+            var df = new DicomFile(ds);
+            var anonymizedDf = anonymizer.Anonymize(df);
+            Assert.NotNull(anonymizedDf);
+        }
+
         #endregion
     }
 }
