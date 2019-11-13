@@ -2,6 +2,7 @@
 * New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
 * Bug fix: Prevent SSL handshake freeze from blocking the TCP listener (#923)
 * disable validation when cloning/copying existing DicomDatasets. Exceptions has been thrown when anonymizing files that contain invalid content.
+* Bug fix: FileReadOption.SkipLargeTags caused that only parts of a FragmentSequece have been read, which then lead to further errors. Now the whole FragmentSequence is skipped if only one part of this sequence is skipped.
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
