@@ -143,7 +143,10 @@ namespace FellowOakDicom.IO.Reader
             if (element.Tag == DicomTag.SpecificCharacterSet)
             {
                 Encoding encoding = _encodings.Peek();
-                if (element.Count > 0) encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
+                if (element.Count > 0)
+                {
+                    encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
+                }
                 _encodings.Pop();
                 _encodings.Push(encoding);
             }
@@ -154,7 +157,7 @@ namespace FellowOakDicom.IO.Reader
 
         public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
         {
-            DicomSequence sq = new DicomSequence(tag);
+            var sq = new DicomSequence(tag);
             _sequences.Push(sq);
 
             DicomDataset ds = _datasets.Peek();
@@ -175,33 +178,53 @@ namespace FellowOakDicom.IO.Reader
 
         public void OnEndSequenceItem()
         {
-            if (_encodings.Count > 1) _encodings.Pop();
+            if (_encodings.Count > 1)
+            {
+                _encodings.Pop();
+            }
 
             _datasets.Pop();
         }
 
-        public void OnEndSequence()
-        {
-            _sequences.Pop();
-        }
+        public void OnEndSequence() => _sequences.Pop();
 
         public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
         {
-            if (vr == DicomVR.OB) _fragment = new DicomOtherByteFragment(tag);
-            else if (vr == DicomVR.OW) _fragment = new DicomOtherWordFragment(tag);
-            else throw new DicomDataException("Unexpected VR found for DICOM fragment sequence: {0}", vr.Code);
-
-            DicomDataset ds = _datasets.Peek();
-            ds.AddOrUpdate(_fragment);
+            if (vr == DicomVR.OB)
+            {
+                _fragment = new DicomOtherByteFragment(tag);
+            }
+            else if (vr == DicomVR.OW)
+            {
+                _fragment = new DicomOtherWordFragment(tag);
+            }
+            else
+            {
+                throw new DicomDataException("Unexpected VR found for DICOM fragment sequence: {0}", vr.Code);
+            }
         }
 
         public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
         {
-            _fragment.Add(data);
+            if (data == null)
+            {
+                // if a null-buffer is added, then the FragmentSequence is not complete and shall not be added to the DicomDataset
+                _fragment = null;
+            }
+            else
+            {
+                _fragment?.Add(data);
+            }
         }
 
         public void OnEndFragmentSequence()
         {
+            if (_fragment != null)
+            {
+                // only add the dicomtag if no fragment has been skipped due to SkipLargeTags
+                DicomDataset ds = _datasets.Peek();
+                ds.AddOrUpdate(_fragment);
+            }
             _fragment = null;
         }
 

@@ -208,10 +208,22 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
-                    if (!ParseTag(source)) return;
-                    if (!ParseVR(source)) return;
-                    if (!ParseLength(source)) return;
-                    if (!ParseValue(source)) return;
+                    if (!ParseTag(source))
+                    {
+                        return;
+                    }
+                    if (!ParseVR(source))
+                    {
+                        return;
+                    }
+                    if (!ParseLength(source))
+                    {
+                        return;
+                    }
+                    if (!ParseValue(source))
+                    {
+                        return;
+                    }
                 }
 
                 if (source.HasReachedMilestone())
@@ -221,7 +233,10 @@ namespace FellowOakDicom.IO.Reader
                     return;
                 }
 
-                if (_result != DicomReaderResult.Processing) return;
+                if (_result != DicomReaderResult.Processing)
+                {
+                    return;
+                }
 
                 // end of processing
                 _result = DicomReaderResult.Success;
@@ -238,10 +253,22 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
-                    if (!ParseTag(source)) return;
-                    if (!ParseVR(source)) return;
-                    if (!ParseLength(source)) return;
-                    if (!await ParseValueAsync(source).ConfigureAwait(false)) return;
+                    if (!ParseTag(source))
+                    {
+                        return;
+                    }
+                    if (!ParseVR(source))
+                    {
+                        return;
+                    }
+                    if (!ParseLength(source))
+                    {
+                        return;
+                    }
+                    if (!await ParseValueAsync(source).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
 
                 if (source.HasReachedMilestone())
@@ -251,7 +278,10 @@ namespace FellowOakDicom.IO.Reader
                     return;
                 }
 
-                if (_result != DicomReaderResult.Processing) return;
+                if (_result != DicomReaderResult.Processing)
+                {
+                    return;
+                }
 
                 // end of processing
                 _result = DicomReaderResult.Success;
@@ -806,8 +836,14 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
-                    if (!ParseItemSequenceTag(source)) return;
-                    if (!ParseItemSequenceValue(source)) return;
+                    if (!ParseItemSequenceTag(source))
+                    {
+                        return;
+                    }
+                    if (!ParseItemSequenceValue(source))
+                    {
+                        return;
+                    }
                 }
 
                 ParseItemSequencePostProcess(source);
@@ -819,8 +855,14 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
-                    if (!ParseItemSequenceTag(source)) return;
-                    if (!await ParseItemSequenceValueAsync(source).ConfigureAwait(false)) return;
+                    if (!ParseItemSequenceTag(source))
+                    {
+                        return;
+                    }
+                    if (!await ParseItemSequenceValueAsync(source).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
 
                 ParseItemSequencePostProcess(source);
@@ -1005,8 +1047,14 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF)
                 {
-                    if (!ParseFragmentSequenceTag(source)) return;
-                    if (!ParseFragmentSequenceValue(source)) return;
+                    if (!ParseFragmentSequenceTag(source))
+                    {
+                        return;
+                    }
+                    if (!ParseFragmentSequenceValue(source))
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -1016,8 +1064,14 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF)
                 {
-                    if (!ParseFragmentSequenceTag(source)) return;
-                    if (!await ParseFragmentSequenceValueAsync(source).ConfigureAwait(false)) return;
+                    if (!ParseFragmentSequenceTag(source))
+                    {
+                        return;
+                    }
+                    if (!await ParseFragmentSequenceValueAsync(source).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -1036,7 +1090,7 @@ namespace FellowOakDicom.IO.Reader
                     var group = source.GetUInt16();
                     var element = source.GetUInt16();
 
-                    DicomTag tag = new DicomTag(@group, element);
+                    var tag = new DicomTag(@group, element);
 
                     if (tag != DicomTag.Item && tag != DicomTag.SequenceDelimitationItem)
                     {
@@ -1117,7 +1171,10 @@ namespace FellowOakDicom.IO.Reader
                     var element = source.GetUInt16();
                     var tag = new DicomTag(group, element);
 
-                    if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem) return true;
+                    if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem)
+                    {
+                        return true;
+                    }
                 }
                 finally
                 {
@@ -1142,12 +1199,16 @@ namespace FellowOakDicom.IO.Reader
                     {
                         // Length non-zero, end skipping (#223)
                         if (length > 0)
+                        {
                             break;
+                        }
 
                         // Handle scenario where last tag is private sequence with empty items (#487)
                         count -= 8;
                         if (count <= 0)
+                        {
                             return false;
+                        }
                     }
 
                     source.GetUInt16(); // group
@@ -1155,9 +1216,15 @@ namespace FellowOakDicom.IO.Reader
 
                     var bytes = source.GetBytes(2);
                     var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                    if (DicomVR.TryParse(vr, out DicomVR dummy)) return !isExplicitVR;
+                    if (DicomVR.TryParse(vr, out DicomVR dummy))
+                    {
+                        return !isExplicitVR;
+                    }
                     // unable to parse VR
-                    if (isExplicitVR) return true;
+                    if (isExplicitVR)
+                    {
+                        return true;
+                    }
                 }
                 finally
                 {
