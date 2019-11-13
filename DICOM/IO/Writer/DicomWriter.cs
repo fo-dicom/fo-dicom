@@ -1,15 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+using System.Collections.Generic;
+#if !NET35
+using System.Threading.Tasks;
+#endif
+using Dicom.IO.Buffer;
 
 namespace Dicom.IO.Writer
 {
-    using System.Collections.Generic;
-
-#if !NET35
-    using System.Threading.Tasks;
-#endif
-
-    using Dicom.IO.Buffer;
 
     /// <summary>
     /// DICOM object writer.
@@ -17,9 +15,6 @@ namespace Dicom.IO.Writer
     public class DicomWriter : IDicomDatasetWalker
     {
         private const uint UndefinedLength = 0xffffffff;
-
-        private DicomTransferSyntax _syntax;
-
         private readonly DicomWriteOptions _options;
 
         private readonly IByteTarget _target;
@@ -34,7 +29,7 @@ namespace Dicom.IO.Writer
         /// <param name="target">Target to which to write the DICOM object.</param>
         public DicomWriter(DicomTransferSyntax syntax, DicomWriteOptions options, IByteTarget target)
         {
-            _syntax = syntax;
+            Syntax = syntax;
             _options = options ?? DicomWriteOptions.Default;
             _target = target;
         }
@@ -42,24 +37,14 @@ namespace Dicom.IO.Writer
         /// <summary>
         /// Gets or sets the DICOM transfer syntax to apply in writing.
         /// </summary>
-        public DicomTransferSyntax Syntax
-        {
-            get
-            {
-                return _syntax;
-            }
-            set
-            {
-                _syntax = value;
-            }
-        }
+        public DicomTransferSyntax Syntax { get; set; }
 
         /// <summary>
         /// Handler for beginning the traversal.
         /// </summary>
         public void OnBeginWalk()
         {
-            _target.Endian = _syntax.Endian;
+            _target.Endian = Syntax.Endian;
             _sequences = new Stack<DicomSequence>();
         }
 
@@ -74,14 +59,19 @@ namespace Dicom.IO.Writer
             WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
 
             var buffer = element.Buffer;
-            if (buffer is EndianByteBuffer)
+            if (buffer is EndianByteBuffer ebb)
             {
-                var ebb = (EndianByteBuffer)buffer;
-                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
+                {
+                    buffer = ebb.Internal;
+                }
             }
             else if (_target.Endian != Endian.LocalMachine)
             {
-                if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+                if (element.ValueRepresentation.UnitSize > 1)
+                {
+                    buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+                }
             }
 
             WriteBuffer(_target, buffer, _options.LargeObjectSize);
@@ -100,14 +90,19 @@ namespace Dicom.IO.Writer
             WriteTagHeader(element.Tag, element.ValueRepresentation, element.Length);
 
             var buffer = element.Buffer;
-            if (buffer is EndianByteBuffer)
+            if (buffer is EndianByteBuffer ebb)
             {
-                var ebb = (EndianByteBuffer)buffer;
-                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian) buffer = ebb.Internal;
+                if (ebb.Endian != Endian.LocalMachine && ebb.Endian == _target.Endian)
+                {
+                    buffer = ebb.Internal;
+                }
             }
             else if (_target.Endian != Endian.LocalMachine)
             {
-                if (element.ValueRepresentation.UnitSize > 1) buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+                if (element.ValueRepresentation.UnitSize > 1)
+                {
+                    buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
+                }
             }
 
             await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
@@ -127,7 +122,7 @@ namespace Dicom.IO.Writer
 
             if (_options.ExplicitLengthSequences || sequence.Tag.IsPrivate)
             {
-                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
+                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(Syntax, _options);
                 length = calc.Calculate(sequence);
             }
 
@@ -149,7 +144,7 @@ namespace Dicom.IO.Writer
 
             if (_options.ExplicitLengthSequenceItems)
             {
-                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(_syntax, _options);
+                DicomWriteLengthCalculator calc = new DicomWriteLengthCalculator(Syntax, _options);
                 length = calc.Calculate(dataset);
             }
 
@@ -282,7 +277,7 @@ namespace Dicom.IO.Writer
             _target.Write(tag.Group);
             _target.Write(tag.Element);
 
-            if (_syntax.IsExplicitVR && vr != DicomVR.NONE)
+            if (Syntax.IsExplicitVR && vr != DicomVR.NONE)
             {
                 // Comply with CP-1066 (#597)
                 if (vr.Is16bitLength && length > 0xfffe)
