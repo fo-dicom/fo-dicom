@@ -386,7 +386,7 @@ namespace Dicom
         /// <param name="newString">The replacement string.</param>
         private static void ReplaceString(DicomDataset dataset, Encoding encoding, DicomItem item, string newString)
         {
-            dataset.AddOrUpdate(item.Tag, encoding, newString);
+            dataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encoding, newString);
         }
 
         /// <summary>
