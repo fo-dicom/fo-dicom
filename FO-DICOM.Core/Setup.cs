@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,49 @@ using System.Reflection;
 namespace FellowOakDicom
 {
 
+    public class DicomSetupBuilder
+    {
+        private readonly IServiceCollection _serviceCollection;
+
+        public DicomSetupBuilder()
+        {
+            _serviceCollection = new ServiceCollection();
+            _serviceCollection.AddDefaultDicomServices();
+        }
+
+        public void Build()
+        {
+            var provider = _serviceCollection.BuildServiceProvider();
+            Setup.SetupDI(provider);
+        }
+
+        public DicomSetupBuilder RegisterServices(Action<IServiceCollection> registerAction)
+        {
+            registerAction?.Invoke(_serviceCollection);
+            return this;
+        }
+
+    }
+
     /// <summary>
     /// Setup helper methods for initializing library.
     /// </summary>
     internal static class Setup
     {
 
-
-        internal static IServiceProvider ServiceProvider { get; private set; }
+        private static IServiceProvider _serviceProvider;
+        internal static IServiceProvider ServiceProvider
+        { 
+            get
+            {
+                if (_serviceProvider == null)
+                {
+                    new DicomSetupBuilder().Build();
+                }
+                return _serviceProvider;
+            }
+            private set => _serviceProvider = value;
+        }
 
         public static void SetupDI(IServiceProvider diProvider)
         {

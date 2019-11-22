@@ -1,8 +1,5 @@
-﻿using FellowOakDicom.Imaging;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using FellowOakDicom.Imaging;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -13,13 +10,11 @@ namespace FellowOakDicom.Tests
 
         public GlobalFixture()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddDefaultDicomServices()
-                .UseImageManager<WinFormsImageManager>();
-//                .UseTranscoderManager<Native.Codec.NativeTranscoderManager>();
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-            Setup.SetupDI(ServiceProvider);
+            new DicomSetupBuilder()
+                .RegisterServices(x
+                => x.UseImageManager<WinFormsImageManager>()
+                )
+                .Build();
         }
 
         public void Dispose()

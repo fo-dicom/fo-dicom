@@ -15,18 +15,18 @@ namespace FellowOakDicom.Network
         /// <summary>Default options for use with the <see cref="DicomService"/> base class.</summary>
         public static class Default
         {
-            public const bool LogDataPDUs = false;
-            public const bool LogDimseDatasets = false;
-            public const bool UseRemoteAEForLogName = false;
-            public const uint MaxCommandBuffer = 1 * 1024; //1KB
-            public const uint MaxDataBuffer = 1 * 1024 * 1024; //1MB
-            public const bool IgnoreSslPolicyErrors = false;
-            public const bool TcpNoDelay = true;
-            public const int MaxPDVsPerPDU = 0;
-            public const int MaxClientsAllowed = 0;
-            public const bool IgnoreUnsupportedTransferSyntaxChange = false;
-            public static readonly TimeSpan? RequestTimeout = null;
-            public const uint MaxPDULength = 262144; // 256 Kb
+            public static bool LogDataPDUs { get; internal set; } = false;
+            public static bool LogDimseDatasets { get; internal set; } = false;
+            public static bool UseRemoteAEForLogName { get; internal set; } = false;
+            public static uint MaxCommandBuffer { get; internal set; } = 1 * 1024; //1KB
+            public static uint MaxDataBuffer { get; internal set; } = 1 * 1024 * 1024; //1MB
+            public static bool IgnoreSslPolicyErrors { get; internal set; } = false;
+            public static bool TcpNoDelay { get; internal set; } = true;
+            public static int MaxPDVsPerPDU { get; internal set; } = 0;
+            public static int MaxClientsAllowed { get; internal set; } = 0;
+            public static bool IgnoreUnsupportedTransferSyntaxChange { get; internal set; } = false;
+            public static TimeSpan? RequestTimeout { get; internal set; } = null;
+            public static uint MaxPDULength { get; internal set; } = 262144; // 256 Kb
         }
 
         #endregion
@@ -103,5 +103,17 @@ namespace FellowOakDicom.Network
         public uint MaxPDULength { get; set; }
 
         #endregion
+    }
+
+    public static class DicomServiceOptionsBuilderExtensions
+    {
+
+        public static DicomSetupBuilder SetDicomServiceLogging(this DicomSetupBuilder builder, bool logDataPDUs, bool logDimseDataset)
+        {
+            DicomServiceOptions.Default.LogDataPDUs = logDataPDUs;
+            DicomServiceOptions.Default.LogDimseDatasets = logDimseDataset;
+            return builder;
+        }
+
     }
 }

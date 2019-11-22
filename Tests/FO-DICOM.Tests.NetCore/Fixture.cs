@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -12,11 +9,11 @@ namespace FellowOakDicom.Tests
 
         public GlobalFixture()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddDefaultDicomServices();
+            //var serviceCollection = new ServiceCollection();
+            //serviceCollection.AddDefaultDicomServices();
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-            Setup.SetupDI(ServiceProvider);
+            //ServiceProvider = serviceCollection.BuildServiceProvider();
+            //Setup.SetupDI(ServiceProvider);
         }
 
         public void Dispose()
