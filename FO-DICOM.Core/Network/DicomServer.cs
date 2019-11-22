@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -214,7 +215,7 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            var instance = (T)Activator.CreateInstance(typeof(T), stream, _fallbackEncoding, Logger);
+            var instance = ActivatorUtilities.CreateInstance<T>( Setup.ServiceProvider, stream, _fallbackEncoding, Logger);
             instance.UserState = _userState;
             return instance;
         }
