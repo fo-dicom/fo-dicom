@@ -105,6 +105,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Benchmarks.Desktop", "Benchmarks\Desktop\DICOM.Benchmarks.Desktop.csproj", "{7C92284F-28C0-470C-B252-3650D51E2AD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.ImageSharp", "Drawing\ImageSharp\DICOM.ImageSharp\DICOM.ImageSharp.csproj", "{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DICOM\DICOM.Shared.projitems*{322dd2ff-c0b7-4cbf-be95-f0032fd94e02}*SharedItemsImports = 4
@@ -465,6 +467,22 @@ Global
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|ARM.ActiveCfg = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x64.ActiveCfg = Release|Any CPU
 		{7C92284F-28C0-470C-B252-3650D51E2AD2}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|ARM.Build.0 = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x86.Build.0 = Debug|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|ARM.ActiveCfg = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|ARM.Build.0 = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x64.Build.0 = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -503,10 +521,11 @@ Global
 		{A661D347-CF7D-4F36-8101-0544AE85EEEC} = {97271825-84EF-4DD0-922F-9B84E629C388}
 		{6467B08B-1E19-430D-ADAB-C4CD65730290} = {479C8BA1-3659-4EBD-AB6B-651FC1CF43FA}
 		{7C92284F-28C0-470C-B252-3650D51E2AD2} = {F499BA50-436A-4F84-9C02-DEF6EA77579A}
+		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045} = {620C62DE-243D-4FDC-B856-FE9C486C7712}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 		BuildVersion_UseGlobalSettings = True
+		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
