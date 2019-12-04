@@ -5,6 +5,7 @@
 * Bug fix: FileReadOption.SkipLargeTags caused that only parts of a FragmentSequece have been read, which then lead to further errors. Now the whole FragmentSequence is skipped if only one part of this sequence is skipped.
 * Bug fix: Exception when anonymizing private tags, where the value representation is not known.
 * Implementation of IImage with ImageSharp, which is pure managed and can be used on any operation system. (#693)
+* Add link to wiki entry in DicomCodecException (#948)
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
