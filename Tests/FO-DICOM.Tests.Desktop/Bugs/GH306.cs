@@ -27,28 +27,6 @@ namespace FellowOakDicom.Tests.Bugs
         #region Unit tests
 
         [Fact]
-        public void OldDicomClientSend_StoreNonPart10File_ShouldSucceed()
-        {
-            var port = Ports.GetNext();
-
-            using (var server = DicomServer.Create<CStoreScp>(port))
-            {
-                server.Logger = _logger.IncludePrefix("CStoreScp");
-
-                var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
-
-                var client = new DicomClient
-                {
-                    Logger = _logger.IncludePrefix("DicomClient")
-                };
-                client.AddRequest(new DicomCStoreRequest(file));
-
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
-                Assert.Null(exception);
-            }
-        }
-
-        [Fact]
         public async Task DicomClientSend_StoreNonPart10File_ShouldSucceed()
         {
             var port = Ports.GetNext();
@@ -66,28 +44,6 @@ namespace FellowOakDicom.Tests.Bugs
                 await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
                 var exception = await Record.ExceptionAsync(async () => await client.SendAsync().ConfigureAwait(false));
-                Assert.Null(exception);
-            }
-        }
-
-        [Fact]
-        public void OldDicomClientSend_StorePart10File_ShouldSucceed()
-        {
-            var port = Ports.GetNext();
-
-            using (var server = DicomServer.Create<CStoreScp>(port))
-            {
-                server.Logger = _logger.IncludePrefix("CStoreScp");
-
-                var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
-
-                var client = new DicomClient
-                {
-                    Logger = _logger.IncludePrefix("DicomClient")
-                };
-                client.AddRequest(new DicomCStoreRequest(file));
-
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
                 Assert.Null(exception);
             }
         }

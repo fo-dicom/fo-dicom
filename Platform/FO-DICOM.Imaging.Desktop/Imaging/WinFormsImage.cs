@@ -179,18 +179,6 @@ namespace FellowOakDicom.Imaging
             }
         }
 
-        /// <summary>
-        /// Cast <see cref="IImage"/> object to specific (real image) type.
-        /// The returned bitmap will be disposed when the <see cref="IImage"/> is disposed.
-        /// </summary>
-        /// <typeparam name="T">Real image type to cast to.</typeparam>
-        /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
-        /// <remarks>overridden only for obsolete warning</remarks>
-        [Obsolete("do NOT invoke this method directly, use extention methods GetClonedBitmap, GetSharedBitmap, GetClonedWriteableBitmap instead.")]
-        public override T As<T>()
-        {
-            return base.As<T>();
-        }
 
         #endregion
     }

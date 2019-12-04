@@ -16,33 +16,6 @@ namespace FellowOakDicom.Tests.Bugs
         #region Unit tests
 
         [Fact]
-        public void OldDicomClientSend_ToAcceptedAssociation_ShouldSendRequest()
-        {
-            var port = Ports.GetNext();
-
-            using (DicomServer.Create<DicomClientTest.MockCEchoProvider>(port))
-            {
-                var locker = new object();
-
-                var expected = DicomStatus.Success;
-                DicomStatus actual = null;
-
-                var client = new DicomClient();
-                client.AddRequest(
-                    new DicomCEchoRequest
-                        {
-                            OnResponseReceived = (rq, rsp) =>
-                                {
-                                    lock (locker) actual = rsp.Status;
-                                }
-                        });
-                client.Send("localhost", port, false, "SCU", "ANY-SCP");
-
-                Assert.Equal(expected, actual);
-            }
-        }
-
-        [Fact]
         public async Task DicomClientSend_ToAcceptedAssociation_ShouldSendRequest()
         {
             var port = Ports.GetNext();
@@ -66,38 +39,6 @@ namespace FellowOakDicom.Tests.Bugs
                 await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
-            }
-        }
-
-        [Fact]
-        public void OldDicomClientSend_ToRejectedAssociation_ShouldNotSendRequest()
-        {
-            var port = Ports.GetNext();
-
-            using (DicomServer.Create<DicomClientTest.MockCEchoProvider>(port))
-            {
-                var locker = new object();
-                DicomStatus status = null;
-
-                var client = new DicomClient();
-                client.AddRequest(
-                    new DicomCEchoRequest
-                    {
-                        OnResponseReceived = (rq, rsp) =>
-                        {
-                            lock (locker) status = rsp.Status;
-                        }
-                    });
-
-                try
-                {
-                    client.Send("localhost", port, false, "SCU", "WRONG-SCP");
-                }
-                catch
-                {
-                }
-
-                Assert.Null(status);
             }
         }
 

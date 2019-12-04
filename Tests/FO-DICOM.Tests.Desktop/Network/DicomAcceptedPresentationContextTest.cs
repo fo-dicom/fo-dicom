@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Printing;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using DicomClient = FellowOakDicom.Network.Client.DicomClient;
 
 namespace FellowOakDicom.Tests.Network
 {

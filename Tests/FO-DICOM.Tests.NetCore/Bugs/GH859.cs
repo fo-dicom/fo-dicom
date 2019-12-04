@@ -2,13 +2,13 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using DicomClient = FellowOakDicom.Network.DicomClient;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Tests.Bugs
                 while (!server.IsListening)
                     await Task.Delay(50);
 
-                var client = new DicomClient
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = clientLogger
                 };
@@ -72,9 +72,9 @@ namespace FellowOakDicom.Tests.Bugs
                     source.CancelAfter(100);
                 };
 
-                client.AddRequest(request);
+                await client.AddRequestAsync(request);
 
-                await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.SendAsync();
             }
         }
 

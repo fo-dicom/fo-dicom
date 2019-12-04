@@ -1,48 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
-using Xunit;
-using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-
-    [Collection("Network")]
-    [Trait("Category", "Network")]
-    public class OldDicomCEchoProviderTest
-    {
-        private readonly ITestOutputHelper _output;
-
-        public OldDicomCEchoProviderTest(ITestOutputHelper output)
-        {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
-
-        [Fact]
-        public void Send_FromDicomClient_DoesNotDeadlock()
-        {
-            var port = Ports.GetNext();
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
-            {
-                server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = new DicomClient
-                {
-                    Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
-                };
-                for (var i = 0; i < 10; i++)
-                {
-                    client.AddRequest(new DicomCEchoRequest());
-                }
-
-                client.Send("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                Assert.False(client.IsSendRequired);
-            }
-        }
-    }
 
     [Collection("Network")]
     [Trait("Category", "Network")]
@@ -62,7 +29,7 @@ namespace FellowOakDicom.Tests.Network
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
                 };

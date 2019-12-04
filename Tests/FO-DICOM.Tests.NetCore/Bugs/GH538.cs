@@ -16,46 +16,6 @@ namespace FellowOakDicom.Tests.Bugs
         #region Unit Tests
 
         [Fact]
-        public void OldCStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
-        {
-            const string file1 = @"Test Data/GH538-jpeg1.dcm";
-            const string file2 = @"Test Data/GH538-jpeg14sv1.dcm";
-            var handle1 = new ManualResetEventSlim();
-            var handle2 = new ManualResetEventSlim();
-            var successes = 0;
-
-            var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
-            {
-                var request1 = new DicomCStoreRequest(file1);
-                request1.OnResponseReceived = (req, rsp) =>
-                {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
-                        rsp.Status == DicomStatus.Success) ++successes;
-                    handle1.Set();
-                };
-
-                var request2 = new DicomCStoreRequest(file2);
-                request2.OnResponseReceived = (req, rsp) =>
-                {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
-                        rsp.Status == DicomStatus.Success) ++successes;
-                    handle2.Set();
-                };
-
-                var client = new DicomClient();
-                client.AddRequest(request1);
-                client.AddRequest(request2);
-
-                client.Send("localhost", port, false, "STORESCU", "STORESCP");
-                handle1.Wait(10000);
-                handle2.Wait(10000);
-
-                Assert.Equal(2, successes);
-            }
-        }
-
-        [Fact]
         public async Task CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
         {
             const string file1 = @"Test Data/GH538-jpeg1.dcm";

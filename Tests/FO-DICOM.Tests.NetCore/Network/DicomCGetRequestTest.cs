@@ -2,8 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -15,9 +17,9 @@ namespace FellowOakDicom.Tests.Network
         #region Unit tests
 
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
-        public void DicomCGetRequest_OneImageInSeries_Received()
+        public async Task DicomCGetRequest_OneImageInSeries_Received()
         {
-            var client = new DicomClient();
+            var client = new DicomClient("localhost", 11112, false, "SCU", "COMMON");
 
             var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
                 DicomStorageCategory.Image,
@@ -30,7 +32,7 @@ namespace FellowOakDicom.Tests.Network
             client.OnCStoreRequest = request =>
                 {
                     dataset = request.Dataset;
-                    return new DicomCStoreResponse(request, DicomStatus.Success);
+                    return Task.FromResult( new DicomCStoreResponse(request, DicomStatus.Success));
                 };
 
             var get = new DicomCGetRequest(
@@ -42,8 +44,8 @@ namespace FellowOakDicom.Tests.Network
             {
                 handle.Set();
             };
-            client.AddRequest(get);
-            client.Send("localhost", 11112, false, "SCU", "COMMON");
+            await client.AddRequestAsync(get);
+            await client.SendAsync();
             handle.Wait();
 
             Assert.Equal("RT ANKLE", dataset.Get<string>(DicomTag.StudyDescription));
@@ -51,9 +53,9 @@ namespace FellowOakDicom.Tests.Network
 
 
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
-        public void DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
+        public async Task DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
-            var client = new DicomClient();
+            var client = new DicomClient("localhost", 11112, false, "SCU", "COMMON");
 
             var pc = DicomPresentationContext.GetScpRolePresentationContext(DicomUID.CTImageStorage);
             client.AdditionalPresentationContexts.Add(pc);
@@ -67,7 +69,7 @@ namespace FellowOakDicom.Tests.Network
                     ++counter;
                 }
 
-                return new DicomCStoreResponse(request, DicomStatus.Success);
+                return Task.FromResult( new DicomCStoreResponse(request, DicomStatus.Success));
             };
 
             var get = new DicomCGetRequest("1.2.840.113619.2.55.3.2609388324.145.1222836278.84");
@@ -80,8 +82,8 @@ namespace FellowOakDicom.Tests.Network
                     handle.Set();
                 }
             };
-            client.AddRequest(get);
-            client.Send("localhost", 11112, false, "SCU", "COMMON");
+            await client.AddRequestAsync(get);
+            await client.SendAsync().ConfigureAwait(false);
             handle.Wait();
 
             Assert.Equal(140, counter);

@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Network;
-using FellowOakDicom.Tests.Helpers;
 using Xunit;
-using DicomClient = FellowOakDicom.Network.Client.DicomClient;
 
 namespace FellowOakDicom.Tests.Network
 {

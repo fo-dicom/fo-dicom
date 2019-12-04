@@ -15,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using DicomClient = FellowOakDicom.Network.Client.DicomClient;
 
 namespace FellowOakDicom.Tests.Network.Client
 {

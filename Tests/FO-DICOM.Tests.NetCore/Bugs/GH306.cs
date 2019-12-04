@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
 using System;
@@ -27,7 +28,7 @@ namespace FellowOakDicom.Tests.Bugs
         #region Unit tests
 
         [Fact]
-        public void OldDicomClientSend_StoreNonPart10File_ShouldSucceed()
+        public async Task OldDicomClientSend_StoreNonPart10File_ShouldSucceed()
         {
             var port = Ports.GetNext();
 
@@ -37,13 +38,13 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
 
-                var client = new DicomClient
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
-                client.AddRequest(new DicomCStoreRequest(file));
+                await client.AddRequestAsync(new DicomCStoreRequest(file));
 
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
                 Assert.Null(exception);
             }
         }
@@ -59,7 +60,7 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
@@ -71,7 +72,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
         [Fact]
-        public void OldDicomClientSend_StorePart10File_ShouldSucceed()
+        public async Task OldDicomClientSend_StorePart10File_ShouldSucceed()
         {
             var port = Ports.GetNext();
 
@@ -81,13 +82,13 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new DicomClient
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
-                client.AddRequest(new DicomCStoreRequest(file));
+                await client.AddRequestAsync(new DicomCStoreRequest(file));
 
-                var exception = Record.Exception(() => client.Send("127.0.0.1", port, false, "SCU", "SCP"));
+                var exception = await Record.ExceptionAsync(() => client.SendAsync());
                 Assert.Null(exception);
             }
         }
@@ -103,7 +104,7 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "SCP")
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
                     Logger = _logger.IncludePrefix("DicomClient")
                 };
