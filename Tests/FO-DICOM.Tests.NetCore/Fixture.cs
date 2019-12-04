@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom.Imaging;
+using System;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -17,12 +18,22 @@ namespace FellowOakDicom.Tests
         }
 
         public void Dispose()
-        {
+        { }
+    }
 
+    public class ImageSharpFixture : IDisposable
+    {
+        public ImageSharpFixture()
+        {
+            new DicomSetupBuilder()
+                .RegisterServices(s => s
+                .AddDefaultDicomServices()
+                .UseImageManager<ImageSharpImageManager>())
+                .Build();
         }
 
-        public IServiceProvider ServiceProvider { get; private set; }
-
+        public void Dispose()
+        { }
     }
 
 
@@ -38,6 +49,9 @@ namespace FellowOakDicom.Tests
     public class ImagingCollection : ICollectionFixture<GlobalFixture>
     { }
 
+    [CollectionDefinition("ImageSharp")]
+    public class ImageSharpCollection : ICollectionFixture<ImageSharpFixture>
+    {}
 
 
 }
