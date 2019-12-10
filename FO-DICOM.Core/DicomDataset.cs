@@ -608,7 +608,10 @@ namespace FellowOakDicom
             {
                 try
                 {
-                    stringValue = element.Get<string>(-1);
+                    stringValue = 
+                        element.Count == 0 
+                        ? string.Empty 
+                        : element.Get<string>(-1);
                     return true;
                 }
                 catch (DicomDataException)

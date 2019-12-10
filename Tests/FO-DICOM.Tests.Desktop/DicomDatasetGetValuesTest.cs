@@ -71,9 +71,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_Value_Success()
         {
-            long testValue;
-
-            bool success = ULTestData.Dataset.TryGetValue(ULTestData.Tag, 0, out testValue);
+            bool success = ULTestData.Dataset.TryGetValue(ULTestData.Tag, 0, out long testValue);
 
             Assert.True(success);
             Assert.Equal(ULTestData.Values[0], testValue);
@@ -82,9 +80,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_Value_Empty_Fail()
         {
-            string testValue;
-
-            bool success = EmptyStringTestData.Dataset.TryGetValue(EmptyStringTestData.Tag, 0, out testValue);
+            bool success = EmptyStringTestData.Dataset.TryGetValue(EmptyStringTestData.Tag, 0, out string _);
 
             Assert.False(success);
         }
@@ -99,7 +95,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Values_Throw()
         {
-            DicomDataset ds = new DicomDataset();
+            var ds = new DicomDataset();
 
             var e = Record.Exception(() => ds.GetValues<uint>(ULTestData.Tag));
 
@@ -109,15 +105,14 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Values_EmptyArray_Success()
         {
-            Assert.Equal(EmptyStringTestData.Dataset.GetValues<string>(EmptyStringTestData.Tag), new string[0]);
+            Assert.Equal(EmptyStringTestData.Dataset.GetValues<string>(EmptyStringTestData.Tag), Array.Empty<string>());
         }
 
         [Fact]
         public void Try_Get_Values_TagMissing_Fails()
         {
             var dataset = new DicomDataset();
-            string[] testValues;
-            bool success = dataset.TryGetValues<string>(DicomTag.SOPClassesSupported, out testValues);
+            bool success = dataset.TryGetValues(DicomTag.SOPClassesSupported, out string[] _);
 
             Assert.False(success);
         }
@@ -125,11 +120,10 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Try_Get_Values_TagEmpty_Success()
         {
-            string[] testValues;
-            bool success = EmptyStringTestData.Dataset.TryGetValues(EmptyStringTestData.Tag, out testValues);
+            bool success = EmptyStringTestData.Dataset.TryGetValues(EmptyStringTestData.Tag, out string[] testValues);
 
             Assert.True(success);
-            Assert.Equal(new string[0], testValues);
+            Assert.Equal(Array.Empty<string>(), testValues);
         }
 
         [Fact]
@@ -148,9 +142,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_SingleValue_Success()
         {
-            string testValue;
-
-            bool success = SingleValueTestData.Dataset.TryGetSingleValue(SingleValueTestData.Tag, out testValue);
+            bool success = SingleValueTestData.Dataset.TryGetSingleValue(SingleValueTestData.Tag, out string testValue);
 
             Assert.True(success);
             Assert.Equal(SingleValueTestData.Values[0], testValue);
@@ -159,10 +151,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_SingleValue_Fail()
         {
-            DicomDataset ds = new DicomDataset();
-            string testValue;
-
-            bool success = ds.TryGetSingleValue(DicomTag.Modality, out testValue);
+            var ds = new DicomDataset();
+            bool success = ds.TryGetSingleValue(DicomTag.Modality, out string _);
 
             Assert.False(success);
         }
@@ -186,8 +176,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_String_EmptyTag_Success()
         {
-            string testValue;
-            bool success = EmptyStringTestData.Dataset.TryGetString(EmptyStringTestData.Tag, out testValue);
+            bool success = EmptyStringTestData.Dataset.TryGetString(EmptyStringTestData.Tag, out string testValue);
 
             Assert.True(success);
             Assert.Equal(string.Empty, testValue);
@@ -196,9 +185,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_String_TagMissing_Fail()
         {
-            DicomDataset ds = new DicomDataset();
-            string testValue;
-            bool success = ds.TryGetString(DicomTag.Modality, out testValue);
+            var ds = new DicomDataset();
+            bool success = ds.TryGetString(DicomTag.Modality, out string testValue);
 
             Assert.False(success);
         }
@@ -214,12 +202,29 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(ValueElementsWithTwoValues))]
         public void Get_Values_ObjectArray_Success(DicomElement element, object[] expected)
         {
-            DicomDataset ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
+            var ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
 
             object[] objects = ds.GetValues<object>(element.Tag);
 
             Assert.Equal(expected, objects);
         }
+
+
+        [Fact]
+        public void TryGetStringMayNeverThrow()
+        {
+            var ds = new DicomDataset
+            {
+                // add some empty values
+                { DicomTag.PregnancyStatus, "" }
+            };
+
+            foreach (var item in ds)
+            {
+                Assert.Null(Record.Exception(() => Assert.True(ds.TryGetString(item.Tag, out var _))));
+            }
+        }
+
 
         #endregion
 

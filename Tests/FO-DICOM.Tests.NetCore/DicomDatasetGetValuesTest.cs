@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_ValueCount_Succeeds()
         {
-            Assert.Equal(StringTestData.Values.Length, StringTestData.Dataset.GetValueCount(StringTestData.Tag));
+            Assert.Equal(_stringTestData.Values.Length, _stringTestData.Dataset.GetValueCount(_stringTestData.Tag));
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Value_Succeeds()
         {
-            Assert.Equal(ULTestData.Values[1], ULTestData.Dataset.GetValue<long>(ULTestData.Tag, 1));
+            Assert.Equal(_uLTestData.Values[1], _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, 1));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Value_OutOfRange_ShouldThrow()
         {
-            var e = Record.Exception(() => ULTestData.Dataset.GetValue<long>(ULTestData.Tag, ULTestData.Values.Length));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, _uLTestData.Values.Length));
 
             Assert.IsType<DicomDataException>(e);
         }
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Value_NegativeIndex_OutOfRange_ShouldThrow()
         {
-            var e = Record.Exception(() => ULTestData.Dataset.GetValue<long>(ULTestData.Tag, -1));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, -1));
 
             Assert.IsType<ArgumentOutOfRangeException>(e);
         }
@@ -63,7 +63,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Value_ArrayType_InvalidOperation_ShouldThrow()
         {
-            var e = Record.Exception(() => ULTestData.Dataset.GetValue<long[]>(ULTestData.Tag, 0));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long[]>(_uLTestData.Tag, 0));
 
             Assert.IsType<DicomDataException>(e);
         }
@@ -71,20 +71,16 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_Value_Success()
         {
-            long testValue;
-
-            bool success = ULTestData.Dataset.TryGetValue(ULTestData.Tag, 0, out testValue);
+            bool success = _uLTestData.Dataset.TryGetValue(_uLTestData.Tag, 0, out long testValue);
 
             Assert.True(success);
-            Assert.Equal(ULTestData.Values[0], testValue);
+            Assert.Equal(_uLTestData.Values[0], testValue);
         }
 
         [Fact]
         public void TryGet_Value_Empty_Fail()
         {
-            string testValue;
-
-            bool success = EmptyStringTestData.Dataset.TryGetValue(EmptyStringTestData.Tag, 0, out testValue);
+            bool success = _emptyStringTestData.Dataset.TryGetValue(_emptyStringTestData.Tag, 0, out string _);
 
             Assert.False(success);
         }
@@ -92,16 +88,16 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Values_Succeeds()
         {
-            Assert.Equal(ULTestData.Values,
-                           ULTestData.Dataset.GetValues<uint>(ULTestData.Tag));
+            Assert.Equal(_uLTestData.Values,
+                           _uLTestData.Dataset.GetValues<uint>(_uLTestData.Tag));
         }
 
         [Fact]
         public void Get_Values_Throw()
         {
-            DicomDataset ds = new DicomDataset();
+            var ds = new DicomDataset();
 
-            var e = Record.Exception(() => ds.GetValues<uint>(ULTestData.Tag));
+            var e = Record.Exception(() => ds.GetValues<uint>(_uLTestData.Tag));
 
             Assert.IsType<DicomDataException>(e);
         }
@@ -109,15 +105,14 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Values_EmptyArray_Success()
         {
-            Assert.Equal(EmptyStringTestData.Dataset.GetValues<string>(EmptyStringTestData.Tag), new string[0]);
+            Assert.Equal(_emptyStringTestData.Dataset.GetValues<string>(_emptyStringTestData.Tag), Array.Empty<string>());
         }
 
         [Fact]
         public void Try_Get_Values_TagMissing_Fails()
         {
             var dataset = new DicomDataset();
-            string[] testValues;
-            bool success = dataset.TryGetValues<string>(DicomTag.SOPClassesSupported, out testValues);
+            bool success = dataset.TryGetValues(DicomTag.SOPClassesSupported, out string[] _);
 
             Assert.False(success);
         }
@@ -125,44 +120,39 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Try_Get_Values_TagEmpty_Success()
         {
-            string[] testValues;
-            bool success = EmptyStringTestData.Dataset.TryGetValues(EmptyStringTestData.Tag, out testValues);
+            bool success = _emptyStringTestData.Dataset.TryGetValues(_emptyStringTestData.Tag, out string[] testValues);
 
             Assert.True(success);
-            Assert.Equal(new string[0], testValues);
+            Assert.Equal(Array.Empty<string>(), testValues);
         }
 
         [Fact]
         public void Get_SingleValue_Success()
         {
-            Assert.Equal(SingleValueTestData.Values[0], SingleValueTestData.Dataset.GetSingleValue<string>(SingleValueTestData.Tag));
+            Assert.Equal(_singleValueTestData.Values[0], _singleValueTestData.Dataset.GetSingleValue<string>(_singleValueTestData.Tag));
         }
 
         [Fact]
         public void Get_SingleValue_MultiValue_Throws()
         {
-            var e = Record.Exception(() => StringTestData.Dataset.GetSingleValue<string>(StringTestData.Tag));
+            var e = Record.Exception(() => _stringTestData.Dataset.GetSingleValue<string>(_stringTestData.Tag));
             Assert.IsType<DicomDataException>(e);
         }
 
         [Fact]
         public void TryGet_SingleValue_Success()
         {
-            string testValue;
-
-            bool success = SingleValueTestData.Dataset.TryGetSingleValue(SingleValueTestData.Tag, out testValue);
+            bool success = _singleValueTestData.Dataset.TryGetSingleValue(_singleValueTestData.Tag, out string testValue);
 
             Assert.True(success);
-            Assert.Equal(SingleValueTestData.Values[0], testValue);
+            Assert.Equal(_singleValueTestData.Values[0], testValue);
         }
 
         [Fact]
         public void TryGet_SingleValue_Fail()
         {
-            DicomDataset ds = new DicomDataset();
-            string testValue;
-
-            bool success = ds.TryGetSingleValue(DicomTag.Modality, out testValue);
+            var ds = new DicomDataset();
+            bool success = ds.TryGetSingleValue(DicomTag.Modality, out string _);
 
             Assert.False(success);
         }
@@ -170,15 +160,15 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_String_Success()
         {
-            string testValue = StringTestData.Dataset.GetString(StringTestData.Tag);
+            string testValue = _stringTestData.Dataset.GetString(_stringTestData.Tag);
 
-            Assert.Equal(string.Join("\\", StringTestData.Values), testValue);
+            Assert.Equal(string.Join("\\", _stringTestData.Values), testValue);
         }
 
         [Fact]
         public void Get_String_NonStringTag_ShouldThrow()
         {
-            var e = Record.Exception(() => ULTestData.Dataset.GetString(StringTestData.Tag));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetString(_stringTestData.Tag));
 
             Assert.IsType<DicomDataException>(e);
         }
@@ -186,8 +176,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_String_EmptyTag_Success()
         {
-            string testValue;
-            bool success = EmptyStringTestData.Dataset.TryGetString(EmptyStringTestData.Tag, out testValue);
+            bool success = _emptyStringTestData.Dataset.TryGetString(_emptyStringTestData.Tag, out string testValue);
 
             Assert.True(success);
             Assert.Equal(string.Empty, testValue);
@@ -196,9 +185,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void TryGet_String_TagMissing_Fail()
         {
-            DicomDataset ds = new DicomDataset();
-            string testValue;
-            bool success = ds.TryGetString(DicomTag.Modality, out testValue);
+            var ds = new DicomDataset();
+            bool success = ds.TryGetString(DicomTag.Modality, out _);
 
             Assert.False(success);
         }
@@ -214,20 +202,36 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(ValueElementsWithTwoValues))]
         public void Get_Values_ObjectArray_Success(DicomElement element, object[] expected)
         {
-            DicomDataset ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
+            var ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
 
             object[] objects = ds.GetValues<object>(element.Tag);
 
             Assert.Equal(expected, objects);
         }
 
+        [Fact]
+        public void TryGetStringMayNeverThrow()
+        {
+            var ds = new DicomDataset
+            {
+                // add some empty values
+                { DicomTag.PregnancyStatus, "" }
+            };
+
+            foreach (var item in ds)
+            {
+                Assert.Null(Record.Exception(() => Assert.True(ds.TryGetString(item.Tag, out var _))));
+            }
+        }
+
+
         #endregion
 
         #region Support data
-        private DatasetTestData<uint> ULTestData = new DatasetTestData<uint>(DicomTag.SimpleFrameList, new uint[] { 1, 2, 3 });
-        private DatasetTestData<string> StringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, new string[] { "1.2.3", "4.5.6", "7.8.8.9" });
-        private DatasetTestData<string> EmptyStringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, new string[] { });
-        private DatasetTestData<string> SingleValueTestData = new DatasetTestData<string>(DicomTag.Modality, new string[] { "CT" });
+        private readonly DatasetTestData<uint> _uLTestData = new DatasetTestData<uint>(DicomTag.SimpleFrameList, new uint[] { 1, 2, 3 });
+        private readonly DatasetTestData<string> _stringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, new string[] { "1.2.3", "4.5.6", "7.8.8.9" });
+        private readonly DatasetTestData<string> _emptyStringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, Array.Empty<string>());
+        private readonly DatasetTestData<string> _singleValueTestData = new DatasetTestData<string>(DicomTag.Modality, new string[] { "CT" });
 
         private class DatasetTestData<T>
         {
@@ -249,17 +253,17 @@ namespace FellowOakDicom.Tests
         /// instances of DicomValueElement-derived classes with no values
         /// </summary>
         public static readonly object[][] ValueElementsWithNoValues = new[]{
-            new object[] { new DicomFloatingPointDouble(DicomTag.SelectorFDValue), new object[0] },
-            new object[] { new DicomFloatingPointSingle(DicomTag.SelectorFLValue), new object[0] },
-            new object[] { new DicomOtherByte(DicomTag.SelectorOBValue), new object[0] },
-            new object[] { new DicomOtherDouble(DicomTag.SelectorODValue), new object[0] },
-            new object[] { new DicomOtherFloat(DicomTag.SelectorOFValue), new object[0] },
-            new object[] { new DicomOtherLong(DicomTag.SelectorOLValue), new object[0] },
-            new object[] { new DicomOtherWord(DicomTag.SelectorOWValue), new object[0] },
-            new object[] { new DicomSignedLong(DicomTag.SelectorSLValue), new object[0] },
-            new object[] { new DicomSignedShort(DicomTag.SelectorSSValue), new object[0] },
-            new object[] { new DicomUnsignedLong(DicomTag.SelectorULValue), new object[0] },
-            new object[] { new DicomUnsignedShort(DicomTag.SelectorUSValue), new object[0] },
+            new object[] { new DicomFloatingPointDouble(DicomTag.SelectorFDValue), Array.Empty<object>() },
+            new object[] { new DicomFloatingPointSingle(DicomTag.SelectorFLValue), Array.Empty<object>() },
+            new object[] { new DicomOtherByte(DicomTag.SelectorOBValue), Array.Empty<object>() },
+            new object[] { new DicomOtherDouble(DicomTag.SelectorODValue), Array.Empty<object>() },
+            new object[] { new DicomOtherFloat(DicomTag.SelectorOFValue), Array.Empty<object>() },
+            new object[] { new DicomOtherLong(DicomTag.SelectorOLValue), Array.Empty<object>() },
+            new object[] { new DicomOtherWord(DicomTag.SelectorOWValue), Array.Empty<object>() },
+            new object[] { new DicomSignedLong(DicomTag.SelectorSLValue), Array.Empty<object>() },
+            new object[] { new DicomSignedShort(DicomTag.SelectorSSValue), Array.Empty<object>() },
+            new object[] { new DicomUnsignedLong(DicomTag.SelectorULValue), Array.Empty<object>() },
+            new object[] { new DicomUnsignedShort(DicomTag.SelectorUSValue), Array.Empty<object>() },
         };
 
         /// <summary>
