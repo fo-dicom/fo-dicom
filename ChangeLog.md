@@ -6,6 +6,7 @@
 * Bug fix: Exception when anonymizing private tags, where the value representation is not known.
 * Implementation of IImage with ImageSharp, which is pure managed and can be used on any operation system. (#693)
 * Add link to wiki entry in DicomCodecException (#948)
+* Bug fix: DicomDataset.TryGetString throws if the element is an empty number-based element (#932)
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)

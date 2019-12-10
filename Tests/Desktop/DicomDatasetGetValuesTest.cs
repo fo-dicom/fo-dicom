@@ -224,6 +224,20 @@ namespace Dicom
             Assert.Equal(expected, objects);
         }
 
+        [Fact]
+        public void TryGetStringMayNeverThrow()
+        {
+            DicomDataset dataSet = new DicomDataset();
+
+            // add some empty value
+            dataSet.Add(DicomTag.PregnancyStatus, "");
+
+            foreach (var item in dataSet)
+            {
+                Assert.Null(Record.Exception(() => dataSet.TryGetString(item.Tag, out string _)));
+            }
+        }
+
         #endregion
 
         #region Support data
