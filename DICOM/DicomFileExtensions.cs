@@ -17,7 +17,11 @@ namespace Dicom
         {
             var df = new DicomFile();
             df.FileMetaInfo.Add(original.FileMetaInfo);
+
+            df.Dataset.ValidateItems = false;
             df.Dataset.Add(original.Dataset);
+            df.Dataset.ValidateItems = original.Dataset.ValidateItems;
+
             df.Dataset.InternalTransferSyntax = original.Dataset.InternalTransferSyntax;
             return df;
         }

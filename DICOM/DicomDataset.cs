@@ -608,7 +608,7 @@ namespace Dicom
             {
                 try
                 {
-                    stringValue = element.Get<string>(-1);
+                    stringValue = element.Count == 0 ? string.Empty : element.Get<string>(-1);
                     return true;
                 }
                 catch (DicomDataException)
@@ -1039,7 +1039,14 @@ namespace Dicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination)
         {
-            if (destination != null) destination.AddOrUpdate(this);
+            if (destination != null)
+            {
+                var priorValidation = destination.ValidateItems;
+                destination.ValidateItems = false;
+                destination.AddOrUpdate(this);
+                destination.ValidateItems = priorValidation;
+            }
+
             return this;
         }
 
@@ -1053,7 +1060,13 @@ namespace Dicom
         {
             if (destination != null)
             {
-                foreach (var tag in tags) destination.AddOrUpdate(GetDicomItem<DicomItem>(tag));
+                var priorValidation = destination.ValidateItems;
+                destination.ValidateItems = false;
+                foreach (var tag in tags)
+                {
+                    destination.AddOrUpdate(GetDicomItem<DicomItem>(tag));
+                }
+                destination.ValidateItems = priorValidation;
             }
             return this;
         }
@@ -1066,7 +1079,13 @@ namespace Dicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask)
         {
-            destination?.AddOrUpdate(_items.Values.Where(x => mask.IsMatch(x.Tag)));
+            if (destination != null)
+            {
+                var priorValidation = destination.ValidateItems;
+                destination.ValidateItems = false;
+                destination.AddOrUpdate(_items.Values.Where(x => mask.IsMatch(x.Tag)));
+                destination.ValidateItems = priorValidation;
+            }
             return this;
         }
 

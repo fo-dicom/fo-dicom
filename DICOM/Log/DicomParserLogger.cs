@@ -84,7 +84,7 @@ namespace Dicom.Log
 
         public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
         {
-            _log.Log(_level, "{marker:x8}: {padding}Fragment [{size}]", source.Marker, _pad, data.Size);
+            _log.Log(_level, "{marker:x8}: {padding}Fragment [{size}]", source.Marker, _pad, data?.Size ?? 0);
         }
 
         public void OnEndFragmentSequence()

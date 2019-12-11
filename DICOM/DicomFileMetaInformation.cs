@@ -60,6 +60,7 @@ namespace Dicom
             {
                 PrivateInformation = privInfo;
             }
+            ValidateItems = dataset.ValidateItems;
         }
 
         /// <summary>

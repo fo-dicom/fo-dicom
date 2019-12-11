@@ -19,11 +19,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Drawing\ImageSharp\DICOM.ImageSharp\DICOM.ImageSharp.csproj" />
     <ProjectReference Include="..\..\Platform\NetCore\DICOM.NetCore.csproj" />
   </ItemGroup>
 
@@ -61,6 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Desktop\DicomDatasetGetValuesTest.cs" Link="DicomDatasetGetValuesTest.cs" />
     <Compile Include="..\Desktop\Helpers\XUnitDicomLogger.cs" Link="Helpers\XUnitDicomLogger.cs" />
     <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
     <Compile Include="..\Desktop\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
