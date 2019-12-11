@@ -1,5 +1,6 @@
 #### v.4.0.4 (TBD)
 * New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
+* Bug fix: Prevent SSL handshake freeze from blocking the TCP listener (#923)
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
