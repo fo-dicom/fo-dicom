@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,34 +13,6 @@ namespace FellowOakDicom.Tests.Network
     public class DicomServiceTest
     {
         #region Unit tests
-
-        [Fact]
-        public async Task Send_SingleRequest_DataSufficientlyTransported()
-        {
-            int port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
-            {
-                DicomDataset command = null, dataset = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
-                request.OnResponseReceived = (req, res) =>
-                    {
-                        command = request.Command;
-                        dataset = request.Dataset;
-                    };
-
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-
-                await client.SendAsync().ConfigureAwait(false);
-
-                var commandField = command.Get<ushort>(DicomTag.CommandField);
-                Assert.Equal((ushort)1, commandField);
-
-                var modality = dataset.Get<string>(DicomTag.Modality);
-                Assert.Equal("CT", modality);
-            }
-        }
-
 
         [Fact]
         public async Task Send_PrivateTags_DataSufficientlyTransported()
@@ -62,15 +35,12 @@ namespace FellowOakDicom.Tests.Network
                 DicomDictionary.Default.Add(new DicomDictionaryEntry(privTag1, "testTag1", "testKey1", DicomVM.VM_1, false, DicomVR.CS));
                 DicomDictionary.Default.Add(new DicomDictionaryEntry(privTag2, "testTag2", "testKey2", DicomVM.VM_1, false, DicomVR.CS));
 
-                request.Dataset = new DicomDataset();
-                request.Dataset.Add(DicomTag.Modality, "CT");
-                request.Dataset.Add(privTag1, "TESTA");
-                request.Dataset.Add(new DicomCodeString(privTag2, "TESTB"));
-                //{
-                //    { DicomTag.Modality, "CT" },
-                //    new DicomCodeString(privTag1, "test1"),
-                //    { privTag2, "test2" },
-                //};
+                request.Dataset = new DicomDataset
+                {
+                    { DicomTag.Modality, "CT" },
+                    { privTag1, "TESTA" },
+                    new DicomCodeString(privTag2, "TESTB")
+                };
 
                 request.OnResponseReceived = (req, res) =>
                 {
@@ -79,21 +49,20 @@ namespace FellowOakDicom.Tests.Network
                     responseDataset = res.Dataset;
                 };
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
 
-                Assert.Equal((ushort)1, command.Get<ushort>(DicomTag.CommandField));
+                Assert.Equal((ushort)1, command.GetSingleValue<ushort>(DicomTag.CommandField));
 
-                Assert.Equal("CT", requestDataset.Get<string>(DicomTag.Modality));
-                Assert.Equal("TESTB", requestDataset.Get<string>(privTag2, null));
-                Assert.Equal("TESTA", requestDataset.Get<string>(privTag1, null));
+                Assert.Equal("CT", requestDataset.GetString(DicomTag.Modality));
+                Assert.Equal("TESTB", requestDataset.GetSingleValueOrDefault<string>(privTag2, null));
+                Assert.Equal("TESTA", requestDataset.GetSingleValueOrDefault<string>(privTag1, null));
 
-                Assert.Equal("CT", responseDataset.Get<string>(DicomTag.Modality));
-               // Assert.Equal("test1", responseDataset.Get<DicomCodeString>(privTag1).Get<string>());
-                Assert.Equal("TESTB", responseDataset.Get<string>(privTag2,-1, null));
-                Assert.Equal("TESTA", responseDataset.Get<string>(privTag1, null));
+                Assert.Equal("CT", responseDataset.GetSingleValue<string>(DicomTag.Modality));
+                Assert.Equal("TESTB", responseDataset.GetValueOrDefault<string>(privTag2, 0, null));
+                Assert.Equal("TESTA", responseDataset.GetSingleValueOrDefault<string>(privTag1, null));
             }
         }
 
@@ -112,15 +81,15 @@ namespace FellowOakDicom.Tests.Network
                     dataset = request.Dataset;
                 };
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
 
-                var commandField = command.Get<ushort>(DicomTag.CommandField);
+                var commandField = command.GetSingleValue<ushort>(DicomTag.CommandField);
                 Assert.Equal((ushort)1, commandField);
 
-                var modality = dataset.Get<string>(DicomTag.Modality);
+                var modality = dataset.GetSingleValue<string>(DicomTag.Modality);
                 Assert.Equal("CT", modality);
             }
         }
