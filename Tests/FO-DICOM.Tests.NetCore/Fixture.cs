@@ -12,6 +12,10 @@ namespace FellowOakDicom.Tests
 
         public GlobalFixture()
         {
+            new DicomSetupBuilder()
+                .RegisterServices(s => s
+                .AddDefaultDicomServices())
+                .Build();
         }
 
         public void Dispose()
