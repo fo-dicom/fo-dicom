@@ -1,5 +1,7 @@
-﻿using FellowOakDicom.Imaging;
-using System;
+﻿using System;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -10,11 +12,6 @@ namespace FellowOakDicom.Tests
 
         public GlobalFixture()
         {
-            //var serviceCollection = new ServiceCollection();
-            //serviceCollection.AddDefaultDicomServices();
-
-            //ServiceProvider = serviceCollection.BuildServiceProvider();
-            //Setup.SetupDI(ServiceProvider);
         }
 
         public void Dispose()
@@ -28,6 +25,23 @@ namespace FellowOakDicom.Tests
             new DicomSetupBuilder()
                 .RegisterServices(s => s
                 .AddDefaultDicomServices()
+                .UseImageManager<ImageSharpImageManager>())
+                .Build();
+        }
+
+        public void Dispose()
+        { }
+    }
+
+
+    public class DependencyFixture : IDisposable
+    {
+        public DependencyFixture()
+        {
+            new DicomSetupBuilder()
+                .RegisterServices(s => s
+                .AddDefaultDicomServices()
+                .AddTransient<ISomeInterface, SomeInterfaceImplementation>()
                 .UseImageManager<ImageSharpImageManager>())
                 .Build();
         }
@@ -52,6 +66,12 @@ namespace FellowOakDicom.Tests
     [CollectionDefinition("ImageSharp")]
     public class ImageSharpCollection : ICollectionFixture<ImageSharpFixture>
     {}
+
+    [CollectionDefinition("Dependency")]
+    public class DependencyCollection: ICollectionFixture<DependencyFixture>
+    {
+
+    }
 
 
 }

@@ -4,7 +4,6 @@
 using FellowOakDicom.Imaging;
 using FellowOakDicom.IO;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 
 namespace FellowOakDicom
 {

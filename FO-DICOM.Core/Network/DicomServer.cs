@@ -217,6 +217,18 @@ namespace FellowOakDicom.Network
         {
             var creator = ActivatorUtilities.CreateFactory(typeof(T), new Type[] { typeof(INetworkStream), typeof(Encoding), typeof(Logger) });
             var instance = (T)creator(Setup.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
+            foreach (var propertyInfo in typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                .Where(p => p.CanWrite))
+            {
+                if (propertyInfo.GetValue(instance) is null)
+                {
+                    var service = Setup.ServiceProvider.GetService(propertyInfo.PropertyType);
+                    if (service != null)
+                    {
+                        propertyInfo.SetValue(instance, service);
+                    }
+                }
+            }
             instance.UserState = _userState;
             return instance;
         }

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "FO-DICOM.Tests.NetCore": {
+      "commandName": "Project"
+    }
+  }
+}

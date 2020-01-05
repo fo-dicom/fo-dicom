@@ -26,7 +26,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -39,18 +39,16 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public Task OnReceiveAssociationReleaseRequestAsync()
-        {
-            return SendAssociationReleaseResponseAsync();
-        }
+        public virtual Task OnReceiveAssociationReleaseRequestAsync()
+            => SendAssociationReleaseResponseAsync();
 
         /// <inheritdoc />
-        public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+        public virtual void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public virtual void OnConnectionClosed(Exception exception)
         {
         }
 
@@ -59,9 +57,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-ECHO request.</param>
         /// <returns>C-ECHO response with Success status.</returns>
-        public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
-        {
-            return Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
-        }
+        public virtual Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+            => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
     }
 }
