@@ -215,7 +215,8 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            var instance = ActivatorUtilities.CreateInstance<T>( Setup.ServiceProvider, stream, _fallbackEncoding, Logger);
+            var creator = ActivatorUtilities.CreateFactory(typeof(T), new Type[] { typeof(INetworkStream), typeof(Encoding), typeof(Logger) });
+            var instance = (T)creator(Setup.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
             instance.UserState = _userState;
             return instance;
         }
