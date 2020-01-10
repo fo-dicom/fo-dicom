@@ -117,7 +117,7 @@ namespace Dicom.Network.Client.States
                 }
                 else
                 {
-                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation).ConfigureAwait(false);
                 }
             }
 

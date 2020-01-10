@@ -671,10 +671,7 @@ namespace Dicom.Network.Client
 
                         await client.AddRequestAsync(new DicomCEchoRequest
                         {
-                            OnResponseReceived = (req, res) =>
-                            {
-                                Interlocked.Increment(ref numberOfResponsesReceived);
-                            }
+                            OnResponseReceived = (req, res) => { Interlocked.Increment(ref numberOfResponsesReceived); }
                         }).ConfigureAwait(false);
                     }
                 });
@@ -685,10 +682,7 @@ namespace Dicom.Network.Client
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
-                        OnResponseReceived = (request, response) =>
-                        {
-                            Interlocked.Increment(ref numberOfResponsesReceived);
-                        }
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
                     });
                 }
 
@@ -751,10 +745,7 @@ namespace Dicom.Network.Client
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
-                        OnResponseReceived = (request, response) =>
-                        {
-                            Interlocked.Increment(ref numberOfResponsesReceived);
-                        }
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
                     });
                 }
 
@@ -823,10 +814,7 @@ namespace Dicom.Network.Client
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
-                        OnResponseReceived = (request, response) =>
-                        {
-                            Interlocked.Increment(ref numberOfResponsesReceived);
-                        }
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
                     }).ConfigureAwait(false);
                 }
 
@@ -882,10 +870,7 @@ namespace Dicom.Network.Client
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
-                        OnResponseReceived = (request, response) =>
-                        {
-                            Interlocked.Increment(ref numberOfResponsesReceived);
-                        }
+                        OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
                     }).ConfigureAwait(false);
                 }
 
@@ -1238,7 +1223,6 @@ namespace Dicom.Network.Client
                         await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
                         logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
                     }
-
                 }
 
                 var responses = await Task.WhenAll(requests).ConfigureAwait(false);
@@ -1302,11 +1286,12 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(2,1,2 )]
-        [InlineData(10,2,5)]
-        [InlineData(10,10,1)]
-        [InlineData(100,10,10 )]
-        public async Task SendAsync_MaxRequestsPerAssoc_ShouldAlwaysCreateCorrectNumberOfAssociations(int numberOfRequests, int maxRequestsPerAssoc, int expectedNumberOfAssociations)
+        [InlineData(2, 1, 2)]
+        [InlineData(10, 2, 5)]
+        [InlineData(10, 10, 1)]
+        [InlineData(100, 10, 10)]
+        public async Task SendAsync_MaxRequestsPerAssoc_ShouldAlwaysCreateCorrectNumberOfAssociations(int numberOfRequests, int maxRequestsPerAssoc,
+            int expectedNumberOfAssociations)
         {
             var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
@@ -1350,6 +1335,27 @@ namespace Dicom.Network.Client
                     Assert.InRange(provider.Requests.Count(), 0, maxRequestsPerAssoc);
                 }
             }
+        }
+
+        [Fact]
+        public async Task SendAsync_ToUnknownHost_ShouldNotLoopInfinitely()
+        {
+            var request = new DicomCEchoRequest();
+
+            var client = CreateClient("www.google.com", 4333, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(request).ConfigureAwait(false);
+
+            Exception capturedException = null;
+            try
+            {
+                await client.SendAsync().ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error("Error occurred during send {e}", exception);
+                capturedException = exception;
+            }
+            Assert.NotNull(capturedException);
         }
 
         #region Support classes
