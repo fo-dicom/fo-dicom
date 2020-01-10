@@ -184,7 +184,7 @@ namespace Dicom.Network
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 //await Task.WhenAny(task, Task.Delay(10000));
-                await task;
+                await task.ConfigureAwait(false);
                 Assert.Equal(1, counter);
             }
         }
@@ -208,7 +208,7 @@ namespace Dicom.Network
                     client.AddRequest(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)});
 
                 var task = client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await Task.WhenAny(task, Task.Delay(30000));
+                await Task.WhenAny(task, Task.Delay(30000)).ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }
@@ -288,7 +288,7 @@ namespace Dicom.Network
                         await client.SendAsync("127.0.0.1", port, false, "SCU", "ANY-SCP");
                         _testOutputHelper.WriteLine("Sent (or timed out) #{0}", requestIndex);
                     }).ToList();
-                await Task.WhenAll(requests);
+                await Task.WhenAll(requests).ConfigureAwait(false);
 
                 Assert.Equal(expected, actual);
             }

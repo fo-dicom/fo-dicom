@@ -181,7 +181,7 @@ namespace Dicom.Network.Client
 
             using (var server = CreateServer<DicomCEchoProvider>(port))
             {
-                while (!server.IsListening) await Task.Delay(50);
+                while (!server.IsListening) await Task.Delay(50).ConfigureAwait(false);
 
                 var actual = 0;
 
@@ -215,7 +215,7 @@ namespace Dicom.Network.Client
             using (
                 var server = CreateServer<DicomCEchoProvider>(port))
             {
-                await Task.Delay(500);
+                await Task.Delay(500).ConfigureAwait(false);
                 Assert.True(server.IsListening, "Server is not listening");
 
                 var actual = 0;
@@ -275,7 +275,7 @@ namespace Dicom.Network.Client
                 client.AssociationRejected += (sender, args) => reason = args.Reason;
 
                 await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+                var exception = await Record.ExceptionAsync(() => client.SendAsync()).ConfigureAwait(false);
 
                 Assert.Equal(DicomRejectReason.CalledAENotRecognized, reason);
                 Assert.NotNull(exception);
@@ -407,7 +407,7 @@ namespace Dicom.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
                 Assert.True(client.IsSendRequired);
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
                 Thread.Sleep(100);
 
                 await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
@@ -454,7 +454,7 @@ namespace Dicom.Network.Client
                             Interlocked.Increment(ref counter);
                             flag.Set();
                         }
-                    });
+                    }).ConfigureAwait(false);
                 Assert.False(client.IsSendRequired);
 
                 flag.Wait(1000);
@@ -474,7 +474,7 @@ namespace Dicom.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+                var exception = await Record.ExceptionAsync(() => client.SendAsync()).ConfigureAwait(false);
 
                 Assert.IsType<DicomAssociationRejectedException>(exception);
             }
@@ -500,7 +500,7 @@ namespace Dicom.Network.Client
 
                 await client.AddRequestsAsync(requests).ConfigureAwait(false);
 
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+                var exception = await Record.ExceptionAsync(() => client.SendAsync()).ConfigureAwait(false);
 
                 Assert.Null(exception);
                 Assert.Equal(expected, actual);
@@ -683,7 +683,7 @@ namespace Dicom.Network.Client
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
                         OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
-                    });
+                    }).ConfigureAwait(false);
                 }
 
                 bool connected = false, associated = false;
@@ -746,7 +746,7 @@ namespace Dicom.Network.Client
                     await client.AddRequestAsync(new DicomCEchoRequest
                     {
                         OnResponseReceived = (request, response) => { Interlocked.Increment(ref numberOfResponsesReceived); }
-                    });
+                    }).ConfigureAwait(false);
                 }
 
                 bool connected = false, associated = false, aborted = false;
@@ -986,10 +986,14 @@ namespace Dicom.Network.Client
 
             await dicomClient.AddRequestAsync(request).ConfigureAwait(false);
 
-            // ReSharper disable once MethodSupportsCancellation Let's not cancel the cancellation, ha ha!
-            responseCompletionSource.Task.ContinueWith(_ => cancellationRegistration.Dispose());
-
-            return await responseCompletionSource.Task;
+            try
+            {
+                return await responseCompletionSource.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                cancellationRegistration.Dispose();
+            }
         }
 
         private void AllResponsesShouldHaveSucceeded(IEnumerable<DicomCEchoResponse> responses)
@@ -1500,7 +1504,7 @@ namespace Dicom.Network.Client
 
                 _associations.Add(association);
 
-                await SendAssociationAcceptAsync(association);
+                await SendAssociationAcceptAsync(association).ConfigureAwait(false);
             }
 
             /// <inheritdoc />
@@ -1588,7 +1592,7 @@ namespace Dicom.Network.Client
             async Task WaitForALittleBit()
             {
                 var ms = new Random().Next(10);
-                await Task.Delay(ms);
+                await Task.Delay(ms).ConfigureAwait(false);
             }
 
             /// <inheritdoc />
@@ -1602,7 +1606,7 @@ namespace Dicom.Network.Client
 
                 _associations.Add(association);
 
-                await SendAssociationAcceptAsync(association);
+                await SendAssociationAcceptAsync(association).ConfigureAwait(false);
             }
 
             /// <inheritdoc />
