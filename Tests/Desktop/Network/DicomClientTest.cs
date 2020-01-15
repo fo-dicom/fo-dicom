@@ -1059,16 +1059,9 @@ namespace Dicom.Network
                 _associations = new ConcurrentBag<DicomAssociation>();
             }
 
-            async Task WaitForALittleBit()
-            {
-                var ms = new Random().Next(10);
-                await Task.Delay(ms);
-            }
-
             /// <inheritdoc />
             public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
-                await WaitForALittleBit();
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.SetResult(DicomPresentationContextResult.Accept);
@@ -1082,7 +1075,6 @@ namespace Dicom.Network
             /// <inheritdoc />
             public async Task OnReceiveAssociationReleaseRequestAsync()
             {
-                await WaitForALittleBit();
                 await SendAssociationReleaseResponseAsync();
             }
 
@@ -1101,8 +1093,6 @@ namespace Dicom.Network
                 _onRequest(request);
 
                 _requests.Add(request);
-
-                WaitForALittleBit().GetAwaiter().GetResult();
 
                 return new DicomCEchoResponse(request, DicomStatus.Success);
             }

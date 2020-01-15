@@ -1487,16 +1487,9 @@ namespace Dicom.Network.Client
                 _associations = new ConcurrentBag<DicomAssociation>();
             }
 
-            async Task WaitForALittleBit()
-            {
-                var ms = new Random().Next(10);
-                await Task.Delay(ms).ConfigureAwait(false);
-            }
-
             /// <inheritdoc />
             public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
-                await WaitForALittleBit().ConfigureAwait(false);
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.SetResult(DicomPresentationContextResult.Accept);
@@ -1510,7 +1503,6 @@ namespace Dicom.Network.Client
             /// <inheritdoc />
             public async Task OnReceiveAssociationReleaseRequestAsync()
             {
-                await WaitForALittleBit().ConfigureAwait(false);
                 await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
 
@@ -1529,8 +1521,6 @@ namespace Dicom.Network.Client
                 _requests.Add(request);
 
                 _onRequest(request).GetAwaiter().GetResult();
-
-                WaitForALittleBit().GetAwaiter().GetResult();
 
                 if (_responseTimeout.HasValue)
                 {
@@ -1589,16 +1579,9 @@ namespace Dicom.Network.Client
                 _associations = new ConcurrentBag<DicomAssociation>();
             }
 
-            async Task WaitForALittleBit()
-            {
-                var ms = new Random().Next(10);
-                await Task.Delay(ms).ConfigureAwait(false);
-            }
-
             /// <inheritdoc />
             public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
-                await WaitForALittleBit().ConfigureAwait(false);
                 foreach (var pc in association.PresentationContexts)
                 {
                     pc.SetResult(DicomPresentationContextResult.Accept);
@@ -1612,7 +1595,6 @@ namespace Dicom.Network.Client
             /// <inheritdoc />
             public async Task OnReceiveAssociationReleaseRequestAsync()
             {
-                await WaitForALittleBit().ConfigureAwait(false);
                 await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
 
@@ -1629,8 +1611,6 @@ namespace Dicom.Network.Client
             public IEnumerable<DicomCGetResponse> OnCGetRequest(DicomCGetRequest request)
             {
                 _requests.Add(request);
-
-                WaitForALittleBit().GetAwaiter().GetResult();
 
                 yield return new DicomCGetResponse(request, DicomStatus.Pending);
 
