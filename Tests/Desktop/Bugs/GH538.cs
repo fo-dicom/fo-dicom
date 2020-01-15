@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Dicom.Bugs
 {
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH538
     {
         #region Unit Tests

@@ -14,6 +14,7 @@ namespace Dicom.Bugs
     using Dicom.Network;
     using Xunit;
 
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH306
     {
         private readonly XUnitDicomLogger _logger;

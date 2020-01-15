@@ -14,6 +14,7 @@ using DicomClient = Dicom.Network.DicomClient;
 
 namespace Dicom.Bugs
 {
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH859
     {
         private readonly XUnitDicomLogger _output;
