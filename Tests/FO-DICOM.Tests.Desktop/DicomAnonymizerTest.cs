@@ -15,11 +15,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_Dataset_PatientDataEmpty()
         {
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result.Dataset;
-#else
             var dataset = DicomFile.Open(@"./Test Data/CT1_J2KI").Dataset;
-#endif
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
@@ -31,11 +27,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_File_SopInstanceUidTransferredToMetaInfo()
         {
-#if NETFX_CORE
-            var file = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result;
-#else
             var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
-#endif
             var old = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(file);
@@ -49,11 +41,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_File_ImplementationVersionNameMaintained()
         {
-#if NETFX_CORE
-            var file = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT1_J2KI").Result;
-#else
             var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
-#endif
             var expected = file.FileMetaInfo.ImplementationVersionName;
             Assert.False(string.IsNullOrEmpty(expected));
 
@@ -67,11 +55,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Anonymize_Dataset_OriginalDatasetNotModified()
         {
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync(@"Data/CT-MONO2-16-ankle").Result.Dataset;
-#else
             var dataset = DicomFile.Open(@"./Test Data/CT-MONO2-16-ankle").Dataset;
-#endif
             var expected = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
 
             var anonymizer = new DicomAnonymizer();
@@ -88,11 +72,7 @@ namespace FellowOakDicom.Tests
         public void Anonymize_UsePredefinedPatientNameAndId_ShouldBeSetInAnonymizedDataset()
         {
             const string fileName = "CT1_J2KI";
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
             const string expectedName = "fo-dicom";
             const string expectedId = "GH-575";
 
@@ -115,11 +95,7 @@ namespace FellowOakDicom.Tests
             const string fileName = "CT1_J2KI";
             var tag = DicomTag.StudyDate;
 
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
             Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
 
             var anonymizer = new DicomAnonymizer();
@@ -136,11 +112,7 @@ namespace FellowOakDicom.Tests
             const string fileName = "CT1_J2KI";
             var tag = DicomTag.SeriesDate;
 
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
             Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
 
             var anonymizer = new DicomAnonymizer();
@@ -156,11 +128,7 @@ namespace FellowOakDicom.Tests
             const string fileName = "GH610.dcm";
             var tag = DicomTag.OriginalAttributesSequence;
 
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
             Assert.True(dataset.Contains(tag));
 
             var anonymizer = new DicomAnonymizer();
@@ -175,11 +143,7 @@ namespace FellowOakDicom.Tests
             const string fileName = "GH610.dcm";
             var tag = DicomTag.PersonIdentificationCodeSequence;
 
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
             dataset.Add(new DicomSequence(tag,
                 new DicomDataset(new DicomLongString(DicomTag.CodeMeaning, "SOME MEANING"))));
 
@@ -197,11 +161,7 @@ namespace FellowOakDicom.Tests
         {
             const string fileName = "CT1_J2KI";
 
-#if NETFX_CORE
-            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
-#else
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-#endif
 
             var profile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
             var anony = new DicomAnonymizer(profile);
@@ -218,11 +178,7 @@ namespace FellowOakDicom.Tests
         {
             const string fileName = "GH064.dcm";
 
-#if NETFX_CORE
-            var orignalDicom = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result;
-#else
             var orignalDicom = DicomFile.Open($"./Test Data/{fileName}");
-#endif
 
             var securityProfile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
             securityProfile.PatientName = "kökö";

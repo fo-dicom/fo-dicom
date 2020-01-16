@@ -9,7 +9,7 @@ namespace FellowOakDicom.Imaging.LUT
 
     public class VOISequenceLUT : ILUT
     {
-        private GrayscaleRenderOptions _renderOptions;
+        private readonly GrayscaleRenderOptions _renderOptions;
 
         private int _nrOfEntries;
 
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="Dicom.Imaging.LUT.VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
+        /// Initialize new instance of <seealso cref="VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
         public VOISequenceLUT(GrayscaleRenderOptions options)

@@ -7,7 +7,7 @@ namespace FellowOakDicom.Network.Client.EventArguments
 {
 
     /// <summary>
-    /// Container class for arguments associated with the <see cref="Dicom.Network.Client.DicomClient.AssociationRejected"/> event.
+    /// Container class for arguments associated with the <see cref="DicomClient.AssociationRejected"/> event.
     /// </summary>
     public class AssociationRejectedEventArgs : EventArgs
     {

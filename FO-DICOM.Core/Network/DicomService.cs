@@ -90,7 +90,7 @@ namespace FellowOakDicom.Network
             _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
 
             MaximumPDUsInQueue = 16;
-            Logger = log ?? LogManager.GetLogger("Dicom.Network");
+            Logger = log ?? LogManager.GetLogger("FellowOakDicom.Network");
             Options = new DicomServiceOptions();
 
             _isInitialized = false;

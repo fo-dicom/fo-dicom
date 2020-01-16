@@ -60,7 +60,7 @@ namespace FellowOakDicom.Imaging.Codec
             }
             else
             {
-                var log = LogManager.GetLogger("Dicom.Imaging.Codec");
+                var log = LogManager.GetLogger("FellowOakDicom.Imaging.Codec");
                 log.Warn("Codec loading from external assemblies not yet implemented.");
             }
 

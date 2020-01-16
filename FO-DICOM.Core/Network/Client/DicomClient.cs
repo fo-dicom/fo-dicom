@@ -150,7 +150,7 @@ namespace FellowOakDicom.Network.Client
         public int AssociationLingerTimeoutInMs { get; set; }
         public int? MaximumNumberOfRequestsPerAssociation { get; set; }
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
-        public Logger Logger { get; set; } = LogManager.GetLogger("Dicom.Network");
+        public Logger Logger { get; set; } = LogManager.GetLogger("FellowOakDicom.Network");
         public DicomServiceOptions Options { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }

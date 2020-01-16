@@ -16,7 +16,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// </summary>
         protected DicomCodecParams()
         {
-            this.Logger = LogManager.GetLogger("Dicom.Imaging.Codec");
+            this.Logger = LogManager.GetLogger("FellowOakDicom.Imaging.Codec");
         }
 
         /// <summary>

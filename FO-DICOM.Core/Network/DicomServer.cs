@@ -115,7 +115,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public Logger Logger
         {
-            get { return _logger ?? (_logger = LogManager.GetLogger("Dicom.Network")); }
+            get { return _logger ?? (_logger = LogManager.GetLogger("FellowOakDicom.Network")); }
             set { _logger  = value; }
         }
 
