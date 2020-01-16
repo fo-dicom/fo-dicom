@@ -63,6 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Desktop\DicomDatasetGetValuesTest.cs" Link="DicomDatasetGetValuesTest.cs" />
     <Compile Include="..\Desktop\Helpers\XUnitDicomLogger.cs" Link="Helpers\XUnitDicomLogger.cs" />
     <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
     <Compile Include="..\Desktop\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />

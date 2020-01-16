@@ -400,7 +400,10 @@ namespace Dicom.Printing
             }
             Add(DicomTag.SOPClassUID, SOPClassUID);
             Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
-
+            Add(DicomTag.ReferencedFilmSessionSequence, new DicomDataset {
+                new DicomUniqueIdentifier(DicomTag.ReferencedSOPClassUID, filmSession.SOPClassUID),
+                new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUID, filmSession.SOPInstanceUID)
+            });
 
             BasicImageBoxes = new List<ImageBox>();
         }

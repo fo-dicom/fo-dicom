@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using Dicom.IO;
 
 namespace Dicom.Imaging.LUT
 {
@@ -77,19 +78,19 @@ namespace Dicom.Imaging.LUT
                 case "OW":
                 {
                     var LUTData = LUTDataElement as DicomOtherWord;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "US":
                 {
                     var LUTData = LUTDataElement as DicomUnsignedShort;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "SS":
                 {
                     var LUTData = LUTDataElement as DicomSignedShort;
-                    _LUTDataArray = ConvertAll(Dicom.IO.ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
+                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
                     break;
                 }
             }
