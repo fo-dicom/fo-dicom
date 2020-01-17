@@ -1624,7 +1624,7 @@ namespace Dicom
 
         #region IDisposable Support
 
-        private bool disposedValue = false; // for detecting renundant calling of Dispose
+        private bool disposedValue = false; // for detecting redundant calling of Dispose
 
         protected virtual void Dispose(bool disposing)
         {

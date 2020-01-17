@@ -9,6 +9,8 @@
 * Bug fix: DicomDataset.TryGetString throws if the element is an empty number-based element (#932)
 * Bug fix: VOI LUT was not applied correctly (#949)
 * Add ReferencedFilmSessionSequence in N-Create message of BasicFilmBox (#967)
+* Bug fix: Exception when cloning to Jpeg Process2_4 when parameters are set to null.
+
 
 #### v.4.0.3 (9/21/2019)
 * Bug fix: Exception when adding an element of VR UR/UT/LT/ST with empty value (#915)
