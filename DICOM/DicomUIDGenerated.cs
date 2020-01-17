@@ -1454,8 +1454,8 @@ namespace Dicom
             _uids.Add(DicomUID.RTProcessInputUsed7025.UID, DicomUID.RTProcessInputUsed7025);
             _uids.Add(DicomUID.ProstateSectorAnatomy6300.UID, DicomUID.ProstateSectorAnatomy6300);
             _uids.Add(DicomUID.ProstateSectorAnatomyFromPIRADSV26301.UID, DicomUID.ProstateSectorAnatomyFromPIRADSV26301);
-            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302);
-            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConsensus16SectorMinimalModel6302.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConsensus16SectorMinimalModel6302);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConsensus27SectorOptimalModel6303.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConsensus27SectorOptimalModel6303);
             _uids.Add(DicomUID.MeasurementSelectionReasons12301.UID, DicomUID.MeasurementSelectionReasons12301);
             _uids.Add(DicomUID.EchoFindingObservationTypes12302.UID, DicomUID.EchoFindingObservationTypes12302);
             _uids.Add(DicomUID.EchoMeasurementTypes12303.UID, DicomUID.EchoMeasurementTypes12303);
@@ -5921,11 +5921,11 @@ namespace Dicom
         ///<summary>Context Group Name: Prostate Sector Anatomy from PI-RADS v2 (6301)</summary>
         public static readonly DicomUID ProstateSectorAnatomyFromPIRADSV26301 = new DicomUID("1.2.840.10008.6.1.1139", "Prostate Sector Anatomy from PI-RADS v2 (6301)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)</summary>
-        public static readonly DicomUID ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302 = new DicomUID("1.2.840.10008.6.1.1140", "Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Prostate Sector Anatomy from European Consensus 16 Sector (Minimal) Model (6302)</summary>
+        public static readonly DicomUID ProstateSectorAnatomyFromEuropeanConsensus16SectorMinimalModel6302 = new DicomUID("1.2.840.10008.6.1.1140", "Prostate Sector Anatomy from European Consensus 16 Sector (Minimal) Model (6302)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)</summary>
-        public static readonly DicomUID ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303 = new DicomUID("1.2.840.10008.6.1.1141", "Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Prostate Sector Anatomy from European Consensus 27 Sector (Optimal) Model (6303)</summary>
+        public static readonly DicomUID ProstateSectorAnatomyFromEuropeanConsensus27SectorOptimalModel6303 = new DicomUID("1.2.840.10008.6.1.1141", "Prostate Sector Anatomy from European Consensus 27 Sector (Optimal) Model (6303)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Measurement Selection Reasons (12301)</summary>
         public static readonly DicomUID MeasurementSelectionReasons12301 = new DicomUID("1.2.840.10008.6.1.1142", "Measurement Selection Reasons (12301)", DicomUidType.ContextGroupName, false);

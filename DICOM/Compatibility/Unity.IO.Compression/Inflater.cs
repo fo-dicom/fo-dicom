@@ -396,7 +396,7 @@ namespace Unity.IO.Compression
                                 throw new InvalidDataException(SR.GetString(SR.GenericInvalidData));
                             }
                             extraBits = extraLengthBits[symbol];
-                            Debug.Assert(extraBits != 0, "We handle other cases seperately!"); 
+                            Debug.Assert(extraBits != 0, "We handle other cases separately!"); 
                         }
                         length = symbol;
                         goto case InflaterState.HaveInitialLength;

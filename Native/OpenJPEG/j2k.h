@@ -240,13 +240,13 @@ typedef struct opj_cp {
 	char *comment;
 	/** number of tiles in width */
 	int tw;
-	/** number of tiles in heigth */
+	/** number of tiles in height */
 	int th;
 	/** ID number of the tiles present in the codestream */
 	int *tileno;
 	/** size of the vector tileno */
 	int tileno_size;
-	/** packet header store there for futur use in t2_decode_packet */
+	/** packet header store there for future use in t2_decode_packet */
 	unsigned char *ppm_data;
 	/** pointer remaining on the first byte of the first header if ppm is used */
 	unsigned char *ppm_data_first;

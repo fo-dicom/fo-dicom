@@ -256,7 +256,7 @@ namespace Dicom.Network
         /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/>  is null.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception>
-        /// <exception cref="T:System.IO.IOException">An I/O error occured, such as the specified file cannot be found.</exception>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurred, such as the specified file cannot be found.</exception>
         /// <exception cref="T:System.NotSupportedException">The stream does not support writing.</exception>
         /// <exception cref="T:System.ObjectDisposedException"><see cref="M:System.IO.Stream.Write(System.Byte[],System.Int32,System.Int32)"/> was called after the stream was closed.</exception>
         /// <filterpriority>1</filterpriority>
