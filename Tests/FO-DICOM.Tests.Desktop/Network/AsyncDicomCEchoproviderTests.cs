@@ -65,17 +65,9 @@ namespace FellowOakDicom.Tests.Desktop.Network
         {
         }
 
-        async Task WaitForALittleBit()
-        {
-            var ms = new Random().Next(10);
-            await Task.Delay(ms).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             foreach (var pc in association.PresentationContexts)
             {
                 pc.SetResult(DicomPresentationContextResult.Accept);
@@ -102,8 +94,6 @@ namespace FellowOakDicom.Tests.Desktop.Network
 
         public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             return new DicomCEchoResponse(request, DicomStatus.Success);
         }
     }

@@ -163,14 +163,14 @@ namespace FellowOakDicom.Network.Client.States
                 }
                 else
                 {
-                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation).ConfigureAwait(false);
                 }
             }
 
             if (winner == onAbort)
             {
                 _dicomClient.Logger.Warn($"[{this}] Cancellation requested during association release, immediately aborting association");
-                return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation);
+                return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
