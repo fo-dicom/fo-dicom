@@ -15,6 +15,28 @@ namespace Dicom.Imaging.Codec
         #region Unit tests
 
         [Fact]
+        public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
+        {
+            var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+            var exception =
+                Record.Exception(
+                    () =>
+                    file.Clone(DicomTransferSyntax.JPEGProcess2_4));
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4_WithParameters()
+        {
+            var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+            var exception =
+                Record.Exception(
+                    () =>
+                    file.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { Quality = 50 }));
+            Assert.Null(exception);
+        }
+
+        [Fact]
         public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(@".\Test Data\CT1_J2KI");

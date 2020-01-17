@@ -150,6 +150,7 @@ namespace Dicom.Dump
 
             _image.WindowWidth += e.X - _lastPosition.X;
             _image.WindowCenter += e.Y - _lastPosition.Y;
+            _image.UseVOILUT = false;
 
             _lastPosition = e.Location;
 
@@ -206,6 +207,7 @@ namespace Dicom.Dump
             {
                 _image.WindowWidth = options.WindowWidth;
                 _image.WindowCenter = options.WindowCenter;
+                _image.UseVOILUT = options.UseVOILUT;
 
                 DisplayImage(_image);
             }

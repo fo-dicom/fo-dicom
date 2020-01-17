@@ -61,7 +61,7 @@ namespace Dicom.Imaging.LUT
 
         #region Public Methods
 
-        public void Recalculate()
+        public virtual void Recalculate()
         {
             if (_renderOptions.WindowWidth != WindowWidth || _renderOptions.WindowCenter != WindowCenter)
             {

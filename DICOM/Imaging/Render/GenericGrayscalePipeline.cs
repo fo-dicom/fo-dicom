@@ -39,13 +39,29 @@ namespace Dicom.Imaging.Render
         {
             _options = options;
             if (options.ModalityLUTSequence != null)
+            {
                 _modalityLut = new ModalitySequenceLUT(_options);
+            }
             else if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0)
+            {
                 _modalityLut = new ModalityRescaleLUT(_options);
-            if(_options.VOILUTSequence != null) _voiSequenceLut = new VOISequenceLUT(_options);
-            _voiLut = VOILUT.Create(_options);
+            }
+
+            if (_options.UseVOILUT && options.VOILUTSequence != null)
+            {
+                _voiSequenceLut = new VOISequenceLUT(_options);
+                _voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth, _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
+            }
+            else
+            {
+                _voiLut = VOILUT.Create(_options);
+            }
+
             _outputLut = new OutputLUT(_options);
-            if (_options.Invert) _invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);
+            if (_options.Invert)
+            {
+                _invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);
+            }
         }
 
         #endregion
@@ -61,12 +77,24 @@ namespace Dicom.Imaging.Render
             {
                 if (_lut == null)
                 {
-                    CompositeLUT composite = new CompositeLUT();
-                    if (_modalityLut != null) composite.Add(_modalityLut);
-                    if (_voiSequenceLut != null) composite.Add(_voiSequenceLut);
+                    var composite = new CompositeLUT();
+                    if (_modalityLut != null)
+                    {
+                        composite.Add(_modalityLut);
+                    }
+
+                    if (_voiSequenceLut != null)
+                    {
+                        composite.Add(_voiSequenceLut);
+                    }
+
                     composite.Add(_voiLut);
                     composite.Add(_outputLut);
-                    if (_invertLut != null) composite.Add(_invertLut);
+                    if (_invertLut != null)
+                    {
+                        composite.Add(_invertLut);
+                    }
+
                     _lut = composite;
                 }
                 return new PrecalculatedLUT(_lut, _options.BitDepth.MinimumValue, _options.BitDepth.MaximumValue);
