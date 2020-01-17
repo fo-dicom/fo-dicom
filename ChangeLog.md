@@ -1,4 +1,7 @@
-#### v.4.0.4 (TBD)
+#### v.4.0.5 (TBD)
+
+
+#### v.4.0.4 (1/17/2020)
 * New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
 * Bug fix: Prevent SSL handshake freeze from blocking the TCP listener (#923)
 * disable validation when cloning/copying existing DicomDatasets. Exceptions has been thrown when anonymizing files that contain invalid content.

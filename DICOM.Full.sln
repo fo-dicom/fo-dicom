@@ -105,7 +105,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.Benchmarks.Desktop", "Benchmarks\Desktop\DICOM.Benchmarks.Desktop.csproj", "{7C92284F-28C0-470C-B252-3650D51E2AD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOM.ImageSharp", "Drawing\ImageSharp\DICOM.ImageSharp\DICOM.ImageSharp.csproj", "{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOM.ImageSharp", "Drawing\ImageSharp\DICOM.ImageSharp\DICOM.ImageSharp.csproj", "{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -472,17 +472,13 @@ Global
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|ARM.Build.0 = Debug|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x64.Build.0 = Debug|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Debug|x86.Build.0 = Debug|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|ARM.ActiveCfg = Release|Any CPU
-		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|ARM.Build.0 = Release|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x64.ActiveCfg = Release|Any CPU
-		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x64.Build.0 = Release|Any CPU
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x86.ActiveCfg = Release|Any CPU
-		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -524,8 +520,8 @@ Global
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045} = {620C62DE-243D-4FDC-B856-FE9C486C7712}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = True
 		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
+		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi
