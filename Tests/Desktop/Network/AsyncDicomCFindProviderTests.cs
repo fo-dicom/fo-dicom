@@ -29,7 +29,7 @@ namespace Dicom.Network
 
             using (DicomServer.Create<ImmediateSuccessAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
                 };
@@ -58,7 +58,7 @@ namespace Dicom.Network
 
             using (DicomServer.Create<PendingAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
                 };
@@ -94,17 +94,9 @@ namespace Dicom.Network
         {
         }
 
-        async Task WaitForALittleBit()
-        {
-            var ms = new Random().Next(10);
-            await Task.Delay(ms).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             foreach (var pc in association.PresentationContexts)
             {
                 pc.SetResult(DicomPresentationContextResult.Accept);
@@ -131,8 +123,6 @@ namespace Dicom.Network
 
         public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             return InnerOnCFindRequestAsync();
 
             IEnumerable<Task<DicomCFindResponse>> InnerOnCFindRequestAsync()
@@ -149,17 +139,9 @@ namespace Dicom.Network
         {
         }
 
-        async Task WaitForALittleBit()
-        {
-            var ms = new Random().Next(10);
-            await Task.Delay(ms).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             foreach (var pc in association.PresentationContexts)
             {
                 pc.SetResult(DicomPresentationContextResult.Accept);
@@ -186,8 +168,6 @@ namespace Dicom.Network
 
         public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             return InnerOnCFindRequestAsync();
 
             IEnumerable<Task<DicomCFindResponse>> InnerOnCFindRequestAsync()

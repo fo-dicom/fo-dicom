@@ -12,8 +12,7 @@ using Xunit.Abstractions;
 
 namespace Dicom.Bugs
 {
-
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH745
     {
         private readonly XUnitDicomLogger _logger;
