@@ -138,7 +138,7 @@ namespace Dicom
 
         protected override void ValidateString()
         {
-            this.ValueRepresentation?.ValidateString(_value);
+            this.ValueRepresentation?.ValidateString(StringValue);
         }
     }
 

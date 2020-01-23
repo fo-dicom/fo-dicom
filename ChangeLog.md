@@ -1,5 +1,5 @@
 #### v.4.0.5 (TBD)
-
+* Bug fix: DicomTags of ValueRepresentation LT have not been validated.
 
 #### v.4.0.4 (1/17/2020)
 * New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider
