@@ -53,14 +53,14 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            _onAssociationAcceptedTaskCompletionSource.TrySetResultAsynchronously(new DicomAssociationAcceptedEvent(association));
+            _onAssociationAcceptedTaskCompletionSource.TrySetResult(new DicomAssociationAcceptedEvent(association));
 
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _onAssociationRejectedTaskCompletionSource.TrySetResultAsynchronously(new DicomAssociationRejectedEvent(result, source, reason));
+            _onAssociationRejectedTaskCompletionSource.TrySetResult(new DicomAssociationRejectedEvent(result, source, reason));
 
             return Task.CompletedTask;
         }
@@ -73,14 +73,14 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.CompletedTask;
         }
@@ -140,7 +140,14 @@ namespace FellowOakDicom.Network.Client.States
 
             await SendAssociationRequest().ConfigureAwait(false);
 
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
+            _disposables.Add(cancellation.Token.Register(() =>
+            {
+                /**
+             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
+             * Any continuations will run asynchronously by default.
+             */
+                _onCancellationRequestedTaskCompletionSource.TrySetResult(true);
+            }));
 
             var associationIsAccepted = _onAssociationAcceptedTaskCompletionSource.Task;
             var associationIsRejected = _onAssociationRejectedTaskCompletionSource.Task;
@@ -230,11 +237,11 @@ namespace FellowOakDicom.Network.Client.States
             foreach (var disposable in _disposables)
                 disposable.Dispose();
 
-            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAssociationAcceptedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAssociationRejectedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onCancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
+            _onAssociationAcceptedTaskCompletionSource.TrySetCanceled();
+            _onAssociationRejectedTaskCompletionSource.TrySetCanceled();
+            _onCancellationRequestedTaskCompletionSource.TrySetCanceled();
             _associationRequestTimeoutCancellationTokenSource.Cancel();
             _associationRequestTimeoutCancellationTokenSource.Dispose();
         }

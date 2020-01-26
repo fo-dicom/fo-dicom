@@ -75,14 +75,14 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.CompletedTask;
         }
@@ -120,7 +120,14 @@ namespace FellowOakDicom.Network.Client.States
                 return await _dicomClient.TransitionToSendingRequestsState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
+            _disposables.Add(cancellation.Token.Register(() =>
+            {
+                /**
+             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
+             * Any continuations will run asynchronously by default.
+             */
+                _onCancellationRequestedTaskCompletionSource.TrySetResult(true);
+            }));
 
             var onRequestIsAdded = _onRequestAddedTaskCompletionSource.Task;
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -175,7 +182,7 @@ namespace FellowOakDicom.Network.Client.States
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
 
-            _onRequestAddedTaskCompletionSource.TrySetResultAsynchronously(true);
+            _onRequestAddedTaskCompletionSource.TrySetResult(true);
 
             return Task.CompletedTask;
         }
@@ -187,10 +194,10 @@ namespace FellowOakDicom.Network.Client.States
 
             _lingerTimeoutCancellationTokenSource.Cancel();
             _lingerTimeoutCancellationTokenSource.Dispose();
-            _onRequestAddedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onCancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onRequestAddedTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onCancellationRequestedTaskCompletionSource.TrySetCanceled();
         }
 
         public override string ToString() => $"LINGERING ASSOCIATION";

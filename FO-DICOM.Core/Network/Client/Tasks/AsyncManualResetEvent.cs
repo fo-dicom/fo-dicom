@@ -64,7 +64,7 @@ namespace FellowOakDicom.Network.Client.Tasks
         {
             lock (_mutex)
             {
-                _tcs.TrySetResultAsynchronously(null);
+                _tcs.TrySetResult(null);
             }
         }
 
@@ -82,7 +82,7 @@ namespace FellowOakDicom.Network.Client.Tasks
 
         public void Dispose()
         {
-            _tcs.TrySetCanceledAsynchronously();
+            _tcs.TrySetCanceled();
         }
     }
 }

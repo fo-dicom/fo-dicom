@@ -49,14 +49,14 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.CompletedTask;
         }
@@ -122,8 +122,8 @@ namespace FellowOakDicom.Network.Client.States
         {
             _associationAbortTimeoutCancellationTokenSource.Cancel();
             _associationAbortTimeoutCancellationTokenSource.Dispose();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
         }
     }
 }

@@ -64,21 +64,21 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            _onAssociationReleasedTaskCompletionSource.TrySetResultAsynchronously(true);
+            _onAssociationReleasedTaskCompletionSource.TrySetResult(true);
 
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.CompletedTask;
         }
@@ -101,7 +101,14 @@ namespace FellowOakDicom.Network.Client.States
 
             if (cancellation.Mode == DicomClientCancellationMode.ImmediatelyAbortAssociation)
             {
-                _disposables.Add(cancellation.Token.Register(() => _onAbortRequestedTaskCompletionSource.TrySetResultAsynchronously(true)));
+                _disposables.Add(cancellation.Token.Register(() =>
+                {
+                    /**
+             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
+             * Any continuations will run asynchronously by default.
+             */
+                    _onAbortRequestedTaskCompletionSource.TrySetResult(true);
+                }));
             }
 
             var onAssociationRelease = _onAssociationReleasedTaskCompletionSource.Task;
@@ -181,10 +188,10 @@ namespace FellowOakDicom.Network.Client.States
 
             _associationReleaseTimeoutCancellationTokenSource.Cancel();
             _associationReleaseTimeoutCancellationTokenSource.Dispose();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAssociationReleasedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAbortRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
+            _onAssociationReleasedTaskCompletionSource.TrySetCanceled();
+            _onAbortRequestedTaskCompletionSource.TrySetCanceled();
         }
     }
 }

@@ -97,14 +97,14 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
-            _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
+            _onAbortReceivedTaskCompletionSource.TrySetResult(new DicomAbortedEvent(source, reason));
 
             return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
-            _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
+            _onConnectionClosedTaskCompletionSource.TrySetResult(new ConnectionClosedEvent(exception));
 
             return Task.CompletedTask;
         }
@@ -124,7 +124,7 @@ namespace FellowOakDicom.Network.Client.States
             {
                 if (_dicomClient.QueuedRequests.IsEmpty || _sentRequests.Count >= _maximumNumberOfRequestsPerAssociation)
                 {
-                    _allRequestsHaveCompletedTaskCompletionSource.TrySetResultAsynchronously(new AllRequestsHaveCompletedEvent());
+                    _allRequestsHaveCompletedTaskCompletionSource.TrySetResult(new AllRequestsHaveCompletedEvent());
                 }
                 else
                 {
@@ -268,7 +268,14 @@ namespace FellowOakDicom.Network.Client.States
             }
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
-            _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResultAsynchronously(true)));
+            _disposables.Add(cancellation.Token.Register(() =>
+            {
+                /**
+             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
+             * Any continuations will run asynchronously by default.
+             */
+                _onCancellationTaskCompletionSource.TrySetResult(true);
+            }));
 
             _dicomClient.Logger.Debug($"[{this}] Sending DICOM requests");
 
@@ -349,10 +356,10 @@ namespace FellowOakDicom.Network.Client.States
             _sendRequestsCancellationTokenSource.Cancel();
             _sendRequestsCancellationTokenSource.Dispose();
 
-            _onCancellationTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onAbortReceivedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _onConnectionClosedTaskCompletionSource.TrySetCanceledAsynchronously();
-            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _onCancellationTaskCompletionSource.TrySetCanceled();
+            _onAbortReceivedTaskCompletionSource.TrySetCanceled();
+            _onConnectionClosedTaskCompletionSource.TrySetCanceled();
+            _allRequestsHaveCompletedTaskCompletionSource.TrySetCanceled();
 
             _sendMoreRequests.Dispose();
         }

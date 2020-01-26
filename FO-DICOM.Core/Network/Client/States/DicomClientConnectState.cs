@@ -130,7 +130,7 @@ namespace FellowOakDicom.Network.Client.States
                 disposable.Dispose();
             }
 
-            _cancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
+            _cancellationRequestedTaskCompletionSource.TrySetCanceled();
         }
 
         public override string ToString() => $"CONNECTING";

@@ -3,15 +3,15 @@
 
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client
+namespace FellowOakDicom.Network.Client.Tasks
 {
-
-    // Remove this class when Fellow Oak DICOM is completely upgraded to .NET Standard 2.0 or higher
     internal static class TaskCompletionSourceFactory
     {
-        public static TaskCompletionSource<T> Create<T>()
-        {
-            return new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-        }
+        /// <summary>
+        /// Factory method to create a TaskCompletionSource. Its main purpose is so that you cannot forget to use RunContinuationsAsynchronously
+        /// </summary>
+        /// <typeparam name="T">The type of result</typeparam>
+        /// <returns>A new TaskCompletionSource</returns>
+        public static TaskCompletionSource<T> Create<T>() => new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 }
