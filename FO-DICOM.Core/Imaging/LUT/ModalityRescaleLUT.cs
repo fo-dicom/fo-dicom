@@ -22,7 +22,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="Dicom.Imaging.LUT.ModalityRescaleLUT"/> using the specified slope and intercept parameters
+        /// Initialize new instance of <seealso cref="ModalityRescaleLUT"/> using the specified slope and intercept parameters
         /// </summary>
         /// <param name="options">Render options</param>
         public ModalityRescaleLUT(GrayscaleRenderOptions options)

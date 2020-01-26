@@ -1608,11 +1608,11 @@ namespace FellowOakDicom
 
         #region IDisposable Support
 
-        private bool disposedValue = false; // for detecting renundant calling of Dispose
+        private bool _disposedValue = false; // for detecting redundant calling of Dispose
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -1620,7 +1620,7 @@ namespace FellowOakDicom
                     _dataset = null;
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

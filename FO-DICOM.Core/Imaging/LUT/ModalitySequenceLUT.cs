@@ -29,7 +29,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="Dicom.Imaging.LUT.ModalitySequenceLUT"/> using the specified Modality LUT Descriptor and Data
+        /// Initialize new instance of <seealso cref="ModalitySequenceLUT"/> using the specified Modality LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
         public ModalitySequenceLUT(GrayscaleRenderOptions options)

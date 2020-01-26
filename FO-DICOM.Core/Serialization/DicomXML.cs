@@ -8,7 +8,7 @@ using System.Text;
 namespace FellowOakDicom.Serialization
 {
     /// <summary>
-    /// Does the conversion of <see cref="Dicom.DicomDataset"/> to an XML string
+    /// Does the conversion of <see cref="DicomDataset"/> to an XML string
     /// </summary>
     public static class DicomXML
     {

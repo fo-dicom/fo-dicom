@@ -172,7 +172,7 @@ namespace FellowOakDicom.Network.Client.States
                     return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 }
 
-                return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onCancel)

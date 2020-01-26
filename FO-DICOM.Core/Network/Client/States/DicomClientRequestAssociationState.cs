@@ -126,7 +126,7 @@ namespace FellowOakDicom.Network.Client.States
                     context.ProviderRole,
                     context.GetTransferSyntaxes().ToArray());
             }
-            
+
             foreach (var extendedNegotiation in _dicomClient.AdditionalExtendedNegotiations)
             {
                 associationToRequest.ExtendedNegotiations.AddOrUpdate(
@@ -206,7 +206,7 @@ namespace FellowOakDicom.Network.Client.States
                 }
                 else
                 {
-                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation);
+                    return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, connectionClosedEvent.Exception, cancellation).ConfigureAwait(false);
                 }
             }
 

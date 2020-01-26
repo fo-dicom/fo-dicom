@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Imaging.Render;
+using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.Imaging
 {
@@ -157,6 +158,26 @@ namespace FellowOakDicom.Imaging
             }
         }
 
+        /// <summary>Gets or sets wether to use VOI LUT.</summary>
+        public virtual bool UseVOILUT
+        {
+            get
+            {
+                EstablishPipeline();
+                return _renderOptions?.UseVOILUT ?? false;
+            }
+            set
+            {
+                EstablishPipeline();
+
+                if (_renderOptions != null)
+                {
+                    _renderOptions.UseVOILUT = value;
+                    RecreatePipeline(_renderOptions);
+                }
+            }
+        }
+
         /// <summary>Gets or sets the color map to be applied when rendering grayscale images.</summary>
         public virtual Color32[] GrayscaleColorMap
         {
@@ -229,7 +250,10 @@ namespace FellowOakDicom.Imaging
                 }
             }
 
-            if (ShowOverlays) EstablishGraphicsOverlays();
+            if (ShowOverlays)
+            {
+                EstablishGraphicsOverlays();
+            }
 
             IImage image;
             lock (_lock)
@@ -240,8 +264,16 @@ namespace FellowOakDicom.Imaging
                 {
                     foreach (var overlay in _overlays)
                     {
+                        if (overlay.Data is EmptyBuffer) // fixed overlay.data is null, exception thrown
+                        {
+                            continue;
+                        }
+
                         if (frame + 1 < overlay.OriginFrame
-                            || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1) continue;
+                            || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1)
+                        {
+                            continue;
+                        }
 
                         var og = new OverlayGraphic(
                             PixelDataFactory.Create(overlay),
@@ -270,8 +302,7 @@ namespace FellowOakDicom.Imaging
 
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
-                int index;
-                if (!_frameIndices.TryGetValue(frame, out index))
+                if (!_frameIndices.TryGetValue(frame, out int index))
                 {
                     // decompress single frame from source dataset
                     var transcoder = new DicomTranscoder(
@@ -283,7 +314,7 @@ namespace FellowOakDicom.Imaging
                     {
                         // Additional check to ensure that frame has not been provided by other thread.
                         if (!_frameIndices.TryGetValue(frame, out index))
-                        { 
+                        {
                             // Get frame/index mapping for previously unstored frame.
                             index = _pixelData.NumberOfFrames;
                             _frameIndices.Add(frame, index);
@@ -451,6 +482,14 @@ namespace FellowOakDicom.Imaging
             }
 
             return new PipelineData { Pipeline = pipeline, RenderOptions = renderOptions };
+        }
+
+        private void RecreatePipeline(GrayscaleRenderOptions renderoptions)
+        {
+            if (_pipeline is GenericGrayscalePipeline)
+            {
+                _pipeline = new GenericGrayscalePipeline(renderoptions);
+            }
         }
 
         #endregion

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,9 +33,9 @@ namespace FellowOakDicom.Tests.Network
 
             using (DicomServer.Create<AsyncDicomCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
-                    Logger = _logger.IncludePrefix(typeof(FellowOakDicom.Network.Client.DicomClient).Name)
+                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
                 };
 
                 DicomCStoreResponse response = null;
@@ -64,17 +65,9 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        async Task WaitForALittleBit()
-        {
-            var ms = new Random().Next(10);
-            await Task.Delay(ms).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             foreach (var pc in association.PresentationContexts)
             {
                 pc.SetResult(DicomPresentationContextResult.Accept);
@@ -101,8 +94,6 @@ namespace FellowOakDicom.Tests.Network
 
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
 
