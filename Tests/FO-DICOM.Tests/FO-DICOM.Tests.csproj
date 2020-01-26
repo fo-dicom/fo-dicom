@@ -1,22 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFrameworks>netcoreapp2.2;net462</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Tests</RootNamespace>
-
     <IsPackable>false</IsPackable>
-
     <SignAssembly>true</SignAssembly>
-
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
-
     <AssemblyName>fo-dicom.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Bugs\GH553.cs" />
-    <Compile Remove="Imaging\WinFormsImageTest.cs" />
-    <Compile Remove="Imaging\WPFImageTest.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +20,30 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj">
+      <Project>{f0617c96-0ced-4215-99ca-bbf278d6f1aa}</Project>
+      <Name>FO-DICOM.Imaging.Desktop</Name>
+    </ProjectReference>
+    
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 
   <ItemGroup>

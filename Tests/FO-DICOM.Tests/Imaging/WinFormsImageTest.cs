@@ -1,9 +1,14 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-using System.Drawing;
-using Xunit;
 
-namespace FellowOakDicom.Imaging
+#if NET462
+
+using System.Drawing;
+using FellowOakDicom.Imaging;
+using Xunit;
+using Image = SixLabors.ImageSharp.Image;
+
+namespace FellowOakDicom.Tests.Imaging
 {
 
     [Collection("General")]
@@ -110,3 +115,5 @@ namespace FellowOakDicom.Imaging
         #endregion
     }
 }
+
+#endif

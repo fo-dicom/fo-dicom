@@ -2,9 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging;
 using Xunit;
 
-namespace FellowOakDicom.Imaging
+namespace FellowOakDicom.Tests.Imaging
 {
     [Collection("Imaging")]
     public class DicomImageTest

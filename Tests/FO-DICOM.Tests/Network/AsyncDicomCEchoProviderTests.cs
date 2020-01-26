@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Tests.Helpers;
-using FellowOakDicom.Tests.Network;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace FellowOakDicom.Tests.Desktop.Network
+namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
     public class AsyncDicomCEchoProviderTests

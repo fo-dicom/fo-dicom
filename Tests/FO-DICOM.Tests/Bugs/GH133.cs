@@ -3,7 +3,7 @@
 
 using Xunit;
 
-namespace FellowOakDicom.TestsBugs
+namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
