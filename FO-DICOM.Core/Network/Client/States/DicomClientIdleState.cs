@@ -5,7 +5,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Network.Client.Tasks;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Network.Client.States
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public async Task SendAsync(DicomClientCancellation cancellation)
@@ -59,50 +58,23 @@ namespace FellowOakDicom.Network.Client.States
             await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
         }
 
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => Task.CompletedTask;
 
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => Task.CompletedTask;
 
-        public Task OnReceiveAssociationReleaseResponseAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationReleaseResponseAsync() => Task.CompletedTask;
 
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => Task.CompletedTask;
 
-        public Task OnConnectionClosedAsync(Exception exception)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnConnectionClosedAsync(Exception exception) => Task.CompletedTask;
 
-        public Task OnSendQueueEmptyAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnSendQueueEmptyAsync() => Task.CompletedTask;
 
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
 
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Task.CompletedTask;
 
-        public override string ToString()
-        {
-            return $"IDLE";
-        }
+        public override string ToString() => $"IDLE";
 
         public void Dispose()
         {

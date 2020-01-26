@@ -52,58 +52,46 @@ namespace FellowOakDicom.Network.Client.States
             _disposables = new List<IDisposable>();
         }
 
-        public override Task SendAsync(DicomClientCancellation cancellation)
-        {
-            // Ignore, we will automatically send again if there are requests
-            return CompletedTaskProvider.CompletedTask;
-        }
+        // Ignore, we will automatically send again if there are requests
+        public override Task SendAsync(DicomClientCancellation cancellation) => Task.CompletedTask;
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             _dicomClient.Logger.Warn($"[{this}] Received association release but we did not expect this!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public override Task OnSendQueueEmptyAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public override Task OnSendQueueEmptyAsync() => Task.CompletedTask;
 
-        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
 
-        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Task.CompletedTask;
 
         private async Task<IDicomClientState> OnCancel(DicomClientCancellation cancellation)
         {
@@ -189,7 +177,7 @@ namespace FellowOakDicom.Network.Client.States
 
             _onRequestAddedTaskCompletionSource.TrySetResultAsynchronously(true);
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override void Dispose()
@@ -205,9 +193,6 @@ namespace FellowOakDicom.Network.Client.States
             _onCancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
 
-        public override string ToString()
-        {
-            return $"LINGERING ASSOCIATION";
-        }
+        public override string ToString() => $"LINGERING ASSOCIATION";
     }
 }

@@ -226,7 +226,7 @@ namespace FellowOakDicom.Network.Client
 
                 StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
 
-                return CompletedTaskProvider.CompletedTask;
+                return Task.CompletedTask;
             }
 
             await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);

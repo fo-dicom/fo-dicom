@@ -26,9 +26,8 @@ namespace FellowOakDicom.Network.Client.States
             _disposables = new List<IDisposable>();
         }
 
-        private async Task<IDicomClientConnection> Connect(DicomClientCancellation cancellation)
-        {
-            return await Task.Run<IDicomClientConnection>(() =>
+        private async Task<IDicomClientConnection> Connect(DicomClientCancellation cancellation) =>
+            await Task.Run<IDicomClientConnection>(() =>
             {
                 var host = _dicomClient.Host;
                 var port = _dicomClient.Port;
@@ -53,7 +52,6 @@ namespace FellowOakDicom.Network.Client.States
 
                 return connection;
             }, cancellation.Token).ConfigureAwait(false);
-        }
 
         public async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
         {
@@ -103,54 +101,27 @@ namespace FellowOakDicom.Network.Client.States
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             _dicomClient.QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public Task SendAsync(DicomClientCancellation cancellation)
-        {
-            // Ignore, we're already connecting
-            return CompletedTaskProvider.CompletedTask;
-        }
+        // Ignore, we're already connecting
+        public Task SendAsync(DicomClientCancellation cancellation) => Task.CompletedTask;
 
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => Task.CompletedTask;
 
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => Task.CompletedTask;
 
-        public Task OnReceiveAssociationReleaseResponseAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAssociationReleaseResponseAsync() => Task.CompletedTask;
 
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => Task.CompletedTask;
 
-        public Task OnConnectionClosedAsync(Exception exception)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnConnectionClosedAsync(Exception exception) => Task.CompletedTask;
 
-        public Task OnSendQueueEmptyAsync()
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnSendQueueEmptyAsync() => Task.CompletedTask;
 
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
 
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-        {
-            return CompletedTaskProvider.CompletedTask;
-        }
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Task.CompletedTask;
 
         public void Dispose()
         {
@@ -162,9 +133,6 @@ namespace FellowOakDicom.Network.Client.States
             _cancellationRequestedTaskCompletionSource.TrySetCanceledAsynchronously();
         }
 
-        public override string ToString()
-        {
-            return $"CONNECTING";
-        }
+        public override string ToString() => $"CONNECTING";
     }
 }

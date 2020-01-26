@@ -71,52 +71,49 @@ namespace FellowOakDicom.Network.Client.States
 
             _sendMoreRequests.Set();
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public override Task SendAsync(DicomClientCancellation cancellation)
-        {
-            // Ignore, we're already sending
-            return CompletedTaskProvider.CompletedTask;
-        }
+        // Ignore, we're already sending
+        public override Task SendAsync(DicomClientCancellation cancellation) => Task.CompletedTask;
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
             _dicomClient.Logger.Warn($"[{this}] Received association release response but we did not expect this!");
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             _onAbortReceivedTaskCompletionSource.TrySetResultAsynchronously(new DicomAbortedEvent(source, reason));
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnConnectionClosedAsync(Exception exception)
         {
             _onConnectionClosedTaskCompletionSource.TrySetResultAsynchronously(new ConnectionClosedEvent(exception));
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnSendQueueEmptyAsync()
         {
             _sendMoreRequests.Set();
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         private void RemoveRequestFromPendingList(DicomRequest request)
@@ -144,7 +141,7 @@ namespace FellowOakDicom.Network.Client.States
         {
             RemoveRequestFromPendingList(request);
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
@@ -153,7 +150,7 @@ namespace FellowOakDicom.Network.Client.States
 
             _dicomClient.NotifyRequestTimedOut(new RequestTimedOutEventArgs(request, timeout));
 
-            return CompletedTaskProvider.CompletedTask;
+            return Task.CompletedTask;
         }
 
         private async Task SendRequests()
@@ -360,9 +357,6 @@ namespace FellowOakDicom.Network.Client.States
             _sendMoreRequests.Dispose();
         }
 
-        public override string ToString()
-        {
-            return $"SENDING REQUESTS";
-        }
+        public override string ToString() => $"SENDING REQUESTS";
     }
 }
