@@ -85,7 +85,10 @@ namespace FellowOakDicom.Network
             protected set
             {
                 if (_isIpAddressSet && !string.Equals(_ipAddress, value, StringComparison.OrdinalIgnoreCase))
+                {
                     throw new DicomNetworkException("IP Address cannot be set twice. Current value: {0}", _ipAddress);
+                }
+
                 _ipAddress = value;
                 _isIpAddressSet = true;
             }
@@ -98,7 +101,10 @@ namespace FellowOakDicom.Network
             protected set
             {
                 if (_isPortSet && _port != value)
+                {
                     throw new DicomNetworkException("Port cannot be set twice. Current value: {0}", _port);
+                }
+
                 _port = value;
                 _isPortSet = true;
             }
@@ -266,7 +272,10 @@ namespace FellowOakDicom.Network
                         _services.Add(scp.RunAsync().ContinueWith(_ => scp.Dispose()));
 
                         _hasServicesFlag.Set();
-                        if (IsServicesAtMax) _hasNonMaxServicesFlag.Reset();
+                        if (IsServicesAtMax)
+                        {
+                            _hasNonMaxServicesFlag.Reset();
+                        }
                     }
                 }
             }
@@ -301,8 +310,15 @@ namespace FellowOakDicom.Network
 
                     _services.RemoveAll(service => service.IsCompleted);
 
-                    if (_services.Count == 0) _hasServicesFlag.Reset();
-                    if (!IsServicesAtMax) _hasNonMaxServicesFlag.Set();
+                    if (_services.Count == 0)
+                    {
+                        _hasServicesFlag.Reset();
+                    }
+
+                    if (!IsServicesAtMax)
+                    {
+                        _hasNonMaxServicesFlag.Set();
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -452,7 +468,10 @@ namespace FellowOakDicom.Network
             }
 
             var server = new TServer();
-            if (logger != null) server.Logger = logger;
+            if (logger != null)
+            {
+                server.Logger = logger;
+            }
 
             var runner = server.StartAsync(ipAddress, port, certificateName, fallbackEncoding, options, userState);
 

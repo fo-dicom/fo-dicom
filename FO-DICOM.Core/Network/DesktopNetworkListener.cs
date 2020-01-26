@@ -34,7 +34,10 @@ namespace FellowOakDicom.Network
         internal DesktopNetworkListener(string ipAddress, int port)
         {
             IPAddress addr;
-            if (!IPAddress.TryParse(ipAddress, out addr)) addr = IPAddress.Any;
+            if (!IPAddress.TryParse(ipAddress, out addr))
+            {
+                addr = IPAddress.Any;
+            }
 
             _listener = new TcpListener(addr, port);
         }

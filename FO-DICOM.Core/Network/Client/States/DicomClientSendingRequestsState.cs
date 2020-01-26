@@ -161,7 +161,10 @@ namespace FellowOakDicom.Network.Client.States
             {
                 var dicomRequest = queuedItem.Value;
 
-                if (dicomRequest == null) continue;
+                if (dicomRequest == null)
+                {
+                    continue;
+                }
 
                 queuedItem.Value = null;
 

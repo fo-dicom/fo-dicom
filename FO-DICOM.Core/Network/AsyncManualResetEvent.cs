@@ -34,7 +34,9 @@ namespace FellowOakDicom.Network
         {
             _tcs = new TaskCompletionSource<T>();
             if (isSet)
+            {
                 _tcs.TrySetResult(value);
+            }
         }
 
         /// <summary>
@@ -87,7 +89,10 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 if (_tcs.Task.IsCompleted)
+                {
                     _tcs = new TaskCompletionSource<T>();
+                }
+
                 _tcs.TrySetResult(value);
             }
         }
@@ -100,7 +105,10 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 if (_tcs.Task.IsCompleted)
+                {
                     _tcs = new TaskCompletionSource<T>();
+                }
+
                 _tcs.TrySetResult(default(T));
             }
         }

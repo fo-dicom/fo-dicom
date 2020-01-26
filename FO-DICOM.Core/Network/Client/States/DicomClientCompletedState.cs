@@ -58,7 +58,10 @@ namespace FellowOakDicom.Network.Client.States
 
         private async Task Cleanup(IDicomClientConnection connection)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (connection == null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
 
             var listener = connection.Listener;
             try

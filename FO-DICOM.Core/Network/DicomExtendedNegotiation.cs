@@ -101,12 +101,16 @@ namespace FellowOakDicom.Network
         public void AcceptApplicationInfo(DicomServiceApplicationInfo acceptedInfo)
         {
             if (RequestedApplicationInfo == null)
+            {
                 return;
+            }
 
             for (var i = acceptedInfo.Count + 1; i --> 1; )
             {
                 if (!RequestedApplicationInfo.Contains((byte)i))
+                {
                     acceptedInfo.Remove((byte)i);
+                }
             }
 
             AcceptedApplicationInfo = acceptedInfo;

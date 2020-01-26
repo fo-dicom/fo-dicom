@@ -133,7 +133,11 @@ namespace FellowOakDicom.Network
         {
             if (State == DicomState.Warning || State == DicomState.Failure)
             {
-                if (!String.IsNullOrEmpty(ErrorComment)) return String.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment);
+                if (!String.IsNullOrEmpty(ErrorComment))
+                {
+                    return String.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment);
+                }
+
                 return String.Format("{0} [{1:x4}: {2}]", State, Code, Description);
             }
             return Description;
@@ -147,7 +151,11 @@ namespace FellowOakDicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null) return false;
+            if ((object)s1 == null || (object)s2 == null)
+            {
+                return false;
+            }
+
             return (s1.Code & s2.Mask) == (s2.Code & s1.Mask);
         }
 
@@ -159,7 +167,11 @@ namespace FellowOakDicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null) return false;
+            if ((object)s1 == null || (object)s2 == null)
+            {
+                return false;
+            }
+
             return !(s1 == s2);
         }
 
@@ -278,7 +290,10 @@ namespace FellowOakDicom.Network
         {
             foreach (DicomStatus status in Entries)
             {
-                if (status.Code == (code & status.Mask)) return new DicomStatus(code, status);
+                if (status.Code == (code & status.Mask))
+                {
+                    return new DicomStatus(code, status);
+                }
             }
             return ProcessingFailure;
         }
@@ -288,8 +303,12 @@ namespace FellowOakDicom.Network
             int count = 0;
 
             for (int i = 0; i < 16; i++)
+            {
                 if ((value & (1 << i)) != 0)
+                {
                     count++;
+                }
+            }
 
             return count;
         }

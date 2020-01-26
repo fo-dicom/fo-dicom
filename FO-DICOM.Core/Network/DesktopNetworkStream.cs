@@ -181,7 +181,10 @@ namespace FellowOakDicom.Network
         /// is responsible for disposing the stream when appropriate. Therefore, the stream should not be disposed here.</remarks>
         private void Dispose(bool disposing)
         {
-            if (this.disposed) return;
+            if (this.disposed)
+            {
+                return;
+            }
 
             if (this.tcpClient != null)
             {

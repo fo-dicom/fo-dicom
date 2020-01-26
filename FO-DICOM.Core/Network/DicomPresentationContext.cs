@@ -241,8 +241,10 @@ namespace FellowOakDicom.Network
         public void SetResult(DicomPresentationContextResult result)
         {
             if (result == DicomPresentationContextResult.Accept && _transferSyntaxes.Count == 0)
+            {
                 throw new DicomNetworkException(
                     "For result Acceptance, at least one transfer syntax must be defined prior to SetResult call.");
+            }
 
             SetResult(result, _transferSyntaxes.FirstOrDefault());
         }
@@ -258,8 +260,10 @@ namespace FellowOakDicom.Network
         {
             var isAccept = result == DicomPresentationContextResult.Accept;
             if (isAccept && acceptedTransferSyntax == null)
+            {
                 throw new DicomNetworkException(
                     "Result Acceptance must be accompanied by a non-null accepted transfer syntax.");
+            }
 
             _transferSyntaxes.Clear();
             _transferSyntaxes.Add(acceptedTransferSyntax);
@@ -291,7 +295,10 @@ namespace FellowOakDicom.Network
         /// <returns>Returns <c>true</c> if an accepted transfer syntax was found. Returns <c>false</c> if no accepted transfer syntax was found.</returns>
         public bool AcceptTransferSyntaxes(DicomTransferSyntax[] acceptedTransferSyntaxes, bool scpPriority)
         {
-            if (Result == DicomPresentationContextResult.Accept) return true;
+            if (Result == DicomPresentationContextResult.Accept)
+            {
+                return true;
+            }
 
             if (scpPriority)
             {
@@ -329,7 +336,10 @@ namespace FellowOakDicom.Network
         /// <param name="ts">Transfer syntax to add to presentation context.</param>
         public void AddTransferSyntax(DicomTransferSyntax ts)
         {
-            if (ts != null && !_transferSyntaxes.Contains(ts)) _transferSyntaxes.Add(ts);
+            if (ts != null && !_transferSyntaxes.Contains(ts))
+            {
+                _transferSyntaxes.Add(ts);
+            }
         }
 
         /// <summary>
@@ -338,7 +348,10 @@ namespace FellowOakDicom.Network
         /// <param name="ts">Transfer syntax to remove from presentation context.</param>
         public void RemoveTransferSyntax(DicomTransferSyntax ts)
         {
-            if (ts != null && _transferSyntaxes.Contains(ts)) _transferSyntaxes.Remove(ts);
+            if (ts != null && _transferSyntaxes.Contains(ts))
+            {
+                _transferSyntaxes.Remove(ts);
+            }
         }
 
         /// <summary>

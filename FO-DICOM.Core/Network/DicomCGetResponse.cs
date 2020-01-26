@@ -90,20 +90,43 @@ namespace FellowOakDicom.Network
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
-            if (Completed != 0) sb.AppendFormat("\n\t\tCompleted:	{0}", Completed);
-            if (Remaining != 0) sb.AppendFormat("\n\t\tRemaining:	{0}", Remaining);
-            if (Warnings != 0) sb.AppendFormat("\n\t\tWarnings:	{0}", Warnings);
-            if (Failures != 0) sb.AppendFormat("\n\t\tFailures:	{0}", Failures);
+            if (Completed != 0)
+            {
+                sb.AppendFormat("\n\t\tCompleted:	{0}", Completed);
+            }
+
+            if (Remaining != 0)
+            {
+                sb.AppendFormat("\n\t\tRemaining:	{0}", Remaining);
+            }
+
+            if (Warnings != 0)
+            {
+                sb.AppendFormat("\n\t\tWarnings:	{0}", Warnings);
+            }
+
+            if (Failures != 0)
+            {
+                sb.AppendFormat("\n\t\tFailures:	{0}", Failures);
+            }
+
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
-                if (!String.IsNullOrEmpty(Status.ErrorComment)) sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                if (!String.IsNullOrEmpty(Status.ErrorComment))
+                {
+                    sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                }
+
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
                     string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:		");
-                        foreach (var tag in tags) sb.AppendFormat(" {0}", tag);
+                        foreach (var tag in tags)
+                        {
+                            sb.AppendFormat(" {0}", tag);
+                        }
                     }
                 }
             }

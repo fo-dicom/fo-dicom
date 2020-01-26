@@ -104,7 +104,11 @@ namespace FellowOakDicom.Network
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]", ToString(Type), MessageID);
-            if (Command.Contains(DicomTag.ActionTypeID)) sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
+            if (Command.Contains(DicomTag.ActionTypeID))
+            {
+                sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
+            }
+
             return sb.ToString();
         }
 

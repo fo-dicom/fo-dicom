@@ -25,10 +25,8 @@ namespace FellowOakDicom.Network.Client
         }
 
         public static Task<IDicomClientState> TransitionToRequestAssociationState(this DicomClient dicomClient, IInitialisationWithConnectionParameters parameters,
-            DicomClientCancellation cancellation)
-        {
-            return TransitionToRequestAssociationState(dicomClient, parameters.Connection, cancellation);
-        }
+            DicomClientCancellation cancellation) =>
+            TransitionToRequestAssociationState(dicomClient, parameters.Connection, cancellation);
 
         public static Task<IDicomClientState> TransitionToRequestAssociationState(this DicomClient dicomClient, IDicomClientConnection connection,
             DicomClientCancellation cancellation)
@@ -39,10 +37,8 @@ namespace FellowOakDicom.Network.Client
         }
 
         public static Task<IDicomClientState> TransitionToSendingRequestsState(this DicomClient dicomClient,
-            IInitialisationWithAssociationParameters parameters, DicomClientCancellation cancellation)
-        {
-            return TransitionToSendingRequestsState(dicomClient, parameters, parameters.Association, cancellation);
-        }
+            IInitialisationWithAssociationParameters parameters, DicomClientCancellation cancellation) =>
+            TransitionToSendingRequestsState(dicomClient, parameters, parameters.Association, cancellation);
 
         public static Task<IDicomClientState> TransitionToSendingRequestsState(this DicomClient dicomClient, IInitialisationWithConnectionParameters parameters,
             DicomAssociation association, DicomClientCancellation cancellation)
@@ -77,10 +73,8 @@ namespace FellowOakDicom.Network.Client
         }
 
         public static Task<IDicomClientState> TransitionToCompletedState(this DicomClient dicomClient, IInitialisationWithConnectionParameters parameters,
-            DicomClientCancellation cancellation)
-        {
-            return TransitionToCompletedState(dicomClient, parameters.Connection, cancellation);
-        }
+            DicomClientCancellation cancellation) =>
+            TransitionToCompletedState(dicomClient, parameters.Connection, cancellation);
 
         public static Task<IDicomClientState> TransitionToCompletedState(this DicomClient dicomClient, IDicomClientConnection connection,
             DicomClientCancellation cancellation)
@@ -92,10 +86,8 @@ namespace FellowOakDicom.Network.Client
 
         public static Task<IDicomClientState> TransitionToCompletedWithErrorState(this DicomClient dicomClient,
             IInitialisationWithConnectionParameters parameters,
-            Exception exception, DicomClientCancellation cancellation)
-        {
-            return TransitionToCompletedWithErrorState(dicomClient, parameters.Connection, exception, cancellation);
-        }
+            Exception exception, DicomClientCancellation cancellation) =>
+            TransitionToCompletedWithErrorState(dicomClient, parameters.Connection, exception, cancellation);
 
         public static Task<IDicomClientState> TransitionToCompletedWithErrorState(this DicomClient dicomClient,
             IDicomClientConnection connection,

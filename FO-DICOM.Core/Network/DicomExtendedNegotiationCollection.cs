@@ -61,7 +61,9 @@ namespace FellowOakDicom.Network
         public void Add(DicomExtendedNegotiation item)
         {
             if (item?.SopClassUid == null)
+            {
                 return;
+            }
 
             _ec.Add(item.SopClassUid, item);
         }
@@ -109,9 +111,10 @@ namespace FellowOakDicom.Network
             if (dicomRequest is DicomCStoreRequest cStoreRequest)
             {
                 if (cStoreRequest.ApplicationInfo != null || cStoreRequest.CommonServiceClassUid != null)
+                {
                     AddOrUpdate(cStoreRequest.SOPClassUID, cStoreRequest.ApplicationInfo,
                         cStoreRequest.CommonServiceClassUid, cStoreRequest.RelatedGeneralSopClasses?.ToArray());
-
+                }
             }
             else if (dicomRequest.ApplicationInfo != null)
             {
@@ -130,7 +133,10 @@ namespace FellowOakDicom.Network
             {
                 en.RequestedApplicationInfo = applicationInfo;
             }
-            else Add(sopClassUid, applicationInfo);
+            else
+            {
+                Add(sopClassUid, applicationInfo);
+            }
         }
 
         /// <summary>
@@ -147,7 +153,10 @@ namespace FellowOakDicom.Network
                 en.RelatedGeneralSopClasses.Clear();
                 en.RelatedGeneralSopClasses.AddRange(relatedGeneralSopClasses);
             }
-            else Add(sopClassUid, serviceClassUid, relatedGeneralSopClasses);
+            else
+            {
+                Add(sopClassUid, serviceClassUid, relatedGeneralSopClasses);
+            }
         }
 
         /// <summary>

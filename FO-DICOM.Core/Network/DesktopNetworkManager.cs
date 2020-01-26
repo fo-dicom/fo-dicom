@@ -84,10 +84,16 @@ namespace FellowOakDicom.Network
             for (var i = 0; i < interfaces.Length; i++)
             {
                 if (NetworkInterface.LoopbackInterfaceIndex == i
-                    || interfaces[i].OperationalStatus != OperationalStatus.Up) continue;
+                    || interfaces[i].OperationalStatus != OperationalStatus.Up)
+                {
+                    continue;
+                }
 
                 var hex = interfaces[i].GetPhysicalAddress().ToString();
-                if (string.IsNullOrEmpty(hex)) continue;
+                if (string.IsNullOrEmpty(hex))
+                {
+                    continue;
+                }
 
                 try
                 {

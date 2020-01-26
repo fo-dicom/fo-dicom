@@ -59,7 +59,9 @@ namespace FellowOakDicom.Network
             protected set
             {
                 if (index == 0)
+                {
                     throw new ArgumentException("0 is not a valid field index");
+                }
 
                 _fields[index] = value;
                 FillInTheGaps();
@@ -88,23 +90,33 @@ namespace FellowOakDicom.Network
         public static DicomServiceApplicationInfo Create(DicomUID sopClass, byte[] rawApplicationInfo)
         {
             if (OnCreateApplicationInfo != null)
+            {
                 return OnCreateApplicationInfo.Invoke(sopClass, rawApplicationInfo) ??
                        new DicomServiceApplicationInfo(rawApplicationInfo);
+            }
 
             if (sopClass.Name.Contains("Storage") &&
                 sopClass.Type == DicomUidType.SOPClass)
+            {
                 return new DicomCStoreApplicationInfo(rawApplicationInfo);
+            }
 
             if (sopClass.Name.Contains("- FIND") ||
                 sopClass == DicomUID.UnifiedProcedureStepPullSOPClass ||
                 sopClass == DicomUID.UnifiedProcedureStepWatchSOPClass)
+            {
                 return new DicomCFindApplicationInfo(rawApplicationInfo);
+            }
 
             if (sopClass.Name.Contains("- MOVE"))
+            {
                 return new DicomCMoveApplicationInfo(rawApplicationInfo);
+            }
 
             if (sopClass.Name.Contains("- GET"))
+            {
                 return new DicomCGetApplicationInfo(rawApplicationInfo);
+            }
 
             return new DicomServiceApplicationInfo(rawApplicationInfo);
         }
@@ -118,7 +130,9 @@ namespace FellowOakDicom.Network
         public void Add(byte index, byte value)
         {
             if (index == 0)
+            {
                 throw new ArgumentException("0 is not a valid field index");
+            }
 
             _fields.Add(index, value);
             FillInTheGaps();
@@ -186,7 +200,9 @@ namespace FellowOakDicom.Network
         public byte GetValueForEnum<T>(byte index, byte defaultValue)
         {
             if (Contains(index) && Enum.IsDefined(typeof(T), (int)this[index]))
+            {
                 return this[index];
+            }
 
             return defaultValue;
         }
@@ -250,11 +266,17 @@ namespace FellowOakDicom.Network
         /// <param name="defaultValue">The value to fill in the empty gaps</param>
         private void FillInTheGaps(byte defaultValue = 0)
         {
-            if (!_fields.Any()) return;
+            if (!_fields.Any())
+            {
+                return;
+            }
+
             for (byte i = 1; i < _fields.Keys.Max(); i++)
             {
                 if (!_fields.ContainsKey(i))
+                {
                     _fields[i] = defaultValue;
+                }
             }
         }
     }

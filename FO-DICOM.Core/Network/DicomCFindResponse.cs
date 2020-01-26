@@ -73,12 +73,28 @@ namespace FellowOakDicom.Network
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
-            if (Completed != 0) sb.AppendFormat("\n\t\tCompleted:	{0}", Completed);
-            if (Remaining != 0) sb.AppendFormat("\n\t\tRemaining:	{0}", Remaining);
-            if (Warnings != 0) sb.AppendFormat("\n\t\tWarnings:	{0}", Warnings);
-            if (Failures != 0) sb.AppendFormat("\n\t\tFailures:	{0}", Failures);
+            if (Completed != 0)
+            {
+                sb.AppendFormat("\n\t\tCompleted:	{0}", Completed);
+            }
+
+            if (Remaining != 0)
+            {
+                sb.AppendFormat("\n\t\tRemaining:	{0}", Remaining);
+            }
+
+            if (Warnings != 0)
+            {
+                sb.AppendFormat("\n\t\tWarnings:	{0}", Warnings);
+            }
+
+            if (Failures != 0)
+            {
+                sb.AppendFormat("\n\t\tFailures:	{0}", Failures);
+            }
+
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success
-                && !string.IsNullOrEmpty(Status.ErrorComment))
+                                                   && !string.IsNullOrEmpty(Status.ErrorComment))
             {
                 sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
             }

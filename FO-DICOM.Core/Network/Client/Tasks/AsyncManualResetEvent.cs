@@ -34,7 +34,9 @@ namespace FellowOakDicom.Network.Client.Tasks
             _mutex = new object();
             _tcs = TaskCompletionSourceFactory.Create<object>();
             if (set)
+            {
                 _tcs.TrySetResult(null);
+            }
         }
 
         /// <summary>
@@ -76,13 +78,12 @@ namespace FellowOakDicom.Network.Client.Tasks
             lock (_mutex)
             {
                 if (_tcs.Task.IsCompleted)
+                {
                     _tcs = TaskCompletionSourceFactory.Create<object>();
+                }
             }
         }
 
-        public void Dispose()
-        {
-            _tcs.TrySetCanceled();
-        }
+        public void Dispose() => _tcs.TrySetCanceled();
     }
 }

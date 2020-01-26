@@ -101,7 +101,11 @@ namespace FellowOakDicom.Network
         {
             lock (_lock)
             {
-                if (_messageId == ushort.MaxValue) _messageId = 1;
+                if (_messageId == ushort.MaxValue)
+                {
+                    _messageId = 1;
+                }
+
                 return _messageId++;
             }
         }

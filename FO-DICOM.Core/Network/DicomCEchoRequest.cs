@@ -23,7 +23,10 @@ namespace FellowOakDicom.Network
         {
             try
             {
-                if (OnResponseReceived != null) OnResponseReceived(this, (DicomCEchoResponse)response);
+                if (OnResponseReceived != null)
+                {
+                    OnResponseReceived(this, (DicomCEchoResponse)response);
+                }
             }
             catch
             {

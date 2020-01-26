@@ -104,7 +104,11 @@ namespace FellowOakDicom.Network
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]", ToString(Type), MessageID);
-            if (Command.Contains(DicomTag.EventTypeID)) sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
+            if (Command.Contains(DicomTag.EventTypeID))
+            {
+                sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
+            }
+
             return sb.ToString();
         }
 

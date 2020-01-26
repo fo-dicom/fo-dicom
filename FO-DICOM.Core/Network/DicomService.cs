@@ -185,7 +185,10 @@ namespace FellowOakDicom.Network
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             if (disposing)
             {
@@ -247,7 +250,11 @@ namespace FellowOakDicom.Network
         {
             if (_dimseStreamFile != null)
             {
-                if (_dimseStream != null) _dimseStream.Dispose();
+                if (_dimseStream != null)
+                {
+                    _dimseStream.Dispose();
+                }
+
                 return DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
             }
 
@@ -280,7 +287,10 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 _pduQueue.Enqueue(pdu);
-                if (_pduQueue.Count >= MaximumPDUsInQueue) _pduQueueWatcher.Reset();
+                if (_pduQueue.Count >= MaximumPDUsInQueue)
+                {
+                    _pduQueueWatcher.Reset();
+                }
             }
 
             return SendNextPDUAsync();
@@ -307,10 +317,16 @@ namespace FellowOakDicom.Network
                     _writing = true;
 
                     pdu = _pduQueue.Dequeue();
-                    if (_pduQueue.Count < MaximumPDUsInQueue) _pduQueueWatcher.Set();
+                    if (_pduQueue.Count < MaximumPDUsInQueue)
+                    {
+                        _pduQueueWatcher.Set();
+                    }
                 }
 
-                if (Options.LogDataPDUs && pdu is PDataTF) Logger.Info("{logId} -> {pdu}", LogID, pdu);
+                if (Options.LogDataPDUs && pdu is PDataTF)
+                {
+                    Logger.Info("{logId} -> {pdu}", LogID, pdu);
+                }
 
                 try
                 {
@@ -336,7 +352,10 @@ namespace FellowOakDicom.Network
                     await TryCloseConnectionAsync(e).ConfigureAwait(false);
                 }
 
-                lock (_lock) _writing = false;
+                lock (_lock)
+                {
+                    _writing = false;
+                }
             }
         }
 
@@ -426,13 +445,20 @@ namespace FellowOakDicom.Network
                             }
 
                             LogID = Association.CallingAE;
-                            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
+                            if (Options.UseRemoteAEForLogName)
+                            {
+                                Logger = LogManager.GetLogger(LogID);
+                            }
+
                             Logger.Info(
                                 "{callingAE} <- Association request:\n{association}",
                                 LogID,
                                 Association.ToString());
                             if (this is IDicomServiceProvider provider)
+                            {
                                 await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
+                            }
+
                             break;
                         }
                         case 0x02:
@@ -444,10 +470,11 @@ namespace FellowOakDicom.Network
                                 "{calledAE} <- Association accept:\n{assocation}",
                                 LogID,
                                 Association.ToString());
-                            if (this is IDicomServiceUser dicomServiceUser)
-                                dicomServiceUser.OnReceiveAssociationAccept(Association);
                             if (this is IDicomClientConnection connection)
+                            {
                                 await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
+                            }
+
                             break;
                         }
                         case 0x03:
@@ -460,18 +487,28 @@ namespace FellowOakDicom.Network
                                 pdu.Result,
                                 pdu.Source,
                                 pdu.Reason);
-                            if (this is IDicomServiceUser user)
-                                user.OnReceiveAssociationReject(pdu.Result, pdu.Source, pdu.Reason);
+
                             if (this is IDicomClientConnection connection)
+                            {
                                 await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
+                            }
+
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                            {
+                                return;
+                            }
+
                             break;
                         }
                         case 0x04:
                         {
                             var pdu = new PDataTF();
                             pdu.Read(raw);
-                            if (Options.LogDataPDUs) Logger.Info("{logId} <- {@pdu}", LogID, pdu);
+                            if (Options.LogDataPDUs)
+                            {
+                                Logger.Info("{logId} <- {@pdu}", LogID, pdu);
+                            }
+
                             await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
                             break;
                         }
@@ -481,7 +518,9 @@ namespace FellowOakDicom.Network
                             pdu.Read(raw);
                             Logger.Info("{logId} <- Association release request", LogID);
                             if(this is IDicomServiceProvider provider)
+                            {
                                 await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
+                            }
 
                             break;
                         }
@@ -490,11 +529,16 @@ namespace FellowOakDicom.Network
                             var pdu = new AReleaseRP();
                             pdu.Read(raw);
                             Logger.Info("{logId} <- Association release response", LogID);
-                            if (this is IDicomServiceUser user)
-                                user.OnReceiveAssociationReleaseResponse();
                             if (this is IDicomClientConnection connection)
+                            {
                                 await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
+                            }
+
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                            {
+                                return;
+                            }
+
                             break;
                         }
                         case 0x07:
@@ -507,10 +551,19 @@ namespace FellowOakDicom.Network
                                 pdu.Source,
                                 pdu.Reason);
                             if (this is IDicomService service)
+                            {
                                 service.OnReceiveAbort(pdu.Source, pdu.Reason);
+                            }
                             else if (this is IDicomClientConnection connection)
+                            {
                                 await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false)) return;
+                            }
+
+                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                            {
+                                return;
+                            }
+
                             break;
                         }
                         case 0xFF:
@@ -816,13 +869,6 @@ namespace FellowOakDicom.Network
                     return;
                 }
 
-                if (this is IDicomServiceUser thisDicomServiceUser)
-                {
-                    var response = thisDicomServiceUser.OnCStoreRequest(dimse as DicomCStoreRequest);
-                    await SendResponseAsync(response).ConfigureAwait(false);
-                    return;
-                }
-
                 if (this is IDicomClientConnection connection)
                 {
                     var response = await connection.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
@@ -947,7 +993,11 @@ namespace FellowOakDicom.Network
 
                     if (_msgQueue.Count == 0)
                     {
-                        if (_pending.Count == 0) sendQueueEmpty = true;
+                        if (_pending.Count == 0)
+                        {
+                            sendQueueEmpty = true;
+                        }
+
                         break;
                     }
 
@@ -980,7 +1030,10 @@ namespace FellowOakDicom.Network
                 }
                 finally
                 {
-                    lock (_lock) _sending = false;
+                    lock (_lock)
+                    {
+                        _sending = false;
+                    }
                 }
             }
 
@@ -1001,8 +1054,10 @@ namespace FellowOakDicom.Network
                             x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
                             && x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax);
                 if (pc == null)
+                {
                     pc = Association.PresentationContexts.FirstOrDefault(
-                            x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+                        x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+                }
             }
             else if (msg is DicomResponse)
             {
@@ -1191,18 +1246,24 @@ namespace FellowOakDicom.Network
         private async Task CheckForTimeouts()
         {
             if (Options?.RequestTimeout == null)
+            {
                 return;
+            }
 
             var requestTimeout = Options.RequestTimeout.Value;
 
             if (Interlocked.CompareExchange(ref _isCheckingForTimeouts, 1, 0) != 0)
+            {
                 return;
+            }
 
             List<DicomRequest> timedOutPendingRequests;
             lock (_lock)
             {
                 if (!_pending.Any())
+                {
                     return;
+                }
 
                 timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
             }
@@ -1243,7 +1304,10 @@ namespace FellowOakDicom.Network
         {
             try
             {
-                if (!IsConnected) return true;
+                if (!IsConnected)
+                {
+                    return true;
+                }
 
                 lock (_lock)
                 {
@@ -1266,9 +1330,13 @@ namespace FellowOakDicom.Network
                 }
 
                 if(this is IDicomService dicomService)
+                {
                     dicomService.OnConnectionClosed(exception);
+                }
                 else if (this is IDicomClientConnection connection)
+                {
                     await connection.OnConnectionClosedAsync(exception).ConfigureAwait(false);
+                }
             }
             catch (Exception e)
             {
@@ -1276,11 +1344,18 @@ namespace FellowOakDicom.Network
                 throw;
             }
 
-            lock (_lock) _isDisconnectedFlag.Set();
+            lock (_lock)
+            {
+                _isDisconnectedFlag.Set();
+            }
 
             Logger.Info("Connection closed");
 
-            if (exception != null) throw exception;
+            if (exception != null)
+            {
+                throw exception;
+            }
+
             return true;
         }
 
@@ -1303,7 +1378,10 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationRequestAsync(DicomAssociation association)
         {
             LogID = association.CalledAE;
-            if (Options.UseRemoteAEForLogName) Logger = LogManager.GetLogger(LogID);
+            if (Options.UseRemoteAEForLogName)
+            {
+                Logger = LogManager.GetLogger(LogID);
+            }
 
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
 
@@ -1322,7 +1400,10 @@ namespace FellowOakDicom.Network
             // reject all presentation contexts that have not already been accepted or rejected
             foreach (var pc in Association.PresentationContexts)
             {
-                if (pc.Result == DicomPresentationContextResult.Proposed) pc.SetResult(DicomPresentationContextResult.RejectNoReason);
+                if (pc.Result == DicomPresentationContextResult.Proposed)
+                {
+                    pc.SetResult(DicomPresentationContextResult.RejectNoReason);
+                }
             }
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
@@ -1382,7 +1463,11 @@ namespace FellowOakDicom.Network
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
         public virtual Task RunAsync()
         {
-            if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+            if (_isInitialized)
+            {
+                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+            }
+
             _isInitialized = true;
 
             return ListenAndProcessPDUAsync();
@@ -1504,9 +1589,15 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    if (_bytes == null) _bytes = new byte[0];
+                    if (_bytes == null)
+                    {
+                        _bytes = new byte[0];
+                    }
 
-                    if (_length < _bytes.Length) Array.Resize(ref _bytes, _length);
+                    if (_length < _bytes.Length)
+                    {
+                        Array.Resize(ref _bytes, _length);
+                    }
 
                     PDV pdv = new PDV(_pcid, _bytes, _command, last);
                     _pdu.PDVs.Add(pdv);
@@ -1540,11 +1631,17 @@ namespace FellowOakDicom.Network
                     return;
                 }
 
-                if (_length > 0) await CreatePDVAsync(last).ConfigureAwait(false);
+                if (_length > 0)
+                {
+                    await CreatePDVAsync(last).ConfigureAwait(false);
+                }
 
                 if (_pdu.PDVs.Count > 0)
                 {
-                    if (last) _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
+                    if (last)
+                    {
+                        _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
+                    }
 
                     await _service.SendPDUAsync(_pdu).ConfigureAwait(false);
 
@@ -1646,7 +1743,10 @@ namespace FellowOakDicom.Network
                         Array.Copy(buffer, offset, _bytes, _length, count);
                         _length += count;
 
-                        if (_bytes.Length == _length) await CreatePDVAsync(false).ConfigureAwait(false);
+                        if (_bytes.Length == _length)
+                        {
+                            await CreatePDVAsync(false).ConfigureAwait(false);
+                        }
                     }
                 }
                 catch (Exception e)

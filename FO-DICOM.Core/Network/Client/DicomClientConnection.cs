@@ -139,79 +139,40 @@ namespace FellowOakDicom.Network.Client
 
         public void StartListener()
         {
-            if (Listener != null) return;
+            if (Listener != null)
+            {
+                return;
+            }
 
             Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
         }
 
-        public new Task SendAssociationRequestAsync(DicomAssociation association)
-        {
-            return base.SendAssociationRequestAsync(association);
-        }
+        public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);
 
-        public new Task SendAssociationReleaseRequestAsync()
-        {
-            return base.SendAssociationReleaseRequestAsync();
-        }
+        public new Task SendAssociationReleaseRequestAsync() => base.SendAssociationReleaseRequestAsync();
 
-        public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-        {
-            return base.SendAbortAsync(source, reason);
-        }
+        public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason) => base.SendAbortAsync(source, reason);
 
-        public new Task SendRequestAsync(DicomRequest request)
-        {
-            return base.SendRequestAsync(request);
-        }
+        public new Task SendRequestAsync(DicomRequest request) => base.SendRequestAsync(request);
 
-        public new Task SendNextMessageAsync()
-        {
-            return base.SendNextMessageAsync();
-        }
+        public new Task SendNextMessageAsync() => base.SendNextMessageAsync();
 
-        protected override Task OnSendQueueEmptyAsync()
-        {
-            return DicomClient.OnSendQueueEmptyAsync();
-        }
+        protected override Task OnSendQueueEmptyAsync() => DicomClient.OnSendQueueEmptyAsync();
 
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-        {
-            return DicomClient.OnReceiveAssociationAcceptAsync(association);
-        }
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => DicomClient.OnReceiveAssociationAcceptAsync(association);
 
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-        {
-            return DicomClient.OnReceiveAssociationRejectAsync(result, source, reason);
-        }
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => DicomClient.OnReceiveAssociationRejectAsync(result, source, reason);
 
-        public Task OnReceiveAssociationReleaseResponseAsync()
-        {
-            return DicomClient.OnReceiveAssociationReleaseResponseAsync();
-        }
+        public Task OnReceiveAssociationReleaseResponseAsync() => DicomClient.OnReceiveAssociationReleaseResponseAsync();
 
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-        {
-            return DicomClient.OnReceiveAbortAsync(source, reason);
-        }
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => DicomClient.OnReceiveAbortAsync(source, reason);
 
-        public Task OnConnectionClosedAsync(Exception exception)
-        {
-            return DicomClient.OnConnectionClosedAsync(exception);
-        }
+        public Task OnConnectionClosedAsync(Exception exception) => DicomClient.OnConnectionClosedAsync(exception);
 
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-        {
-            return DicomClient.OnRequestCompletedAsync(request, response);
-        }
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => DicomClient.OnRequestCompletedAsync(request, response);
 
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-        {
-            return DicomClient.OnRequestTimedOutAsync(request, timeout);
-        }
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => DicomClient.OnRequestTimedOutAsync(request, timeout);
 
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
-        {
-            return DicomClient.OnCStoreRequestAsync(request);
-        }
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => DicomClient.OnCStoreRequestAsync(request);
     }
 }

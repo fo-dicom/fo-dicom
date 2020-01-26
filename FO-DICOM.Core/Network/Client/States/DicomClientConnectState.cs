@@ -43,7 +43,9 @@ namespace FellowOakDicom.Network.Client.States
                 var connection = new DicomClientConnection(_dicomClient, networkStream);
 
                 if (_dicomClient.Options != null)
+                {
                     connection.Options = _dicomClient.Options;
+                }
 
                 if (!cancellation.Token.IsCancellationRequested)
                 {
@@ -84,7 +86,9 @@ namespace FellowOakDicom.Network.Client.States
             }
 
             if (winner != cancel)
+            {
                 throw new DicomNetworkException("Unknown winner of Task.WhenAny in DICOM client, this is likely a bug: " + winner);
+            }
 
             // Cancellation or abort was triggered but wait for the connection anyway, because we need to dispose of it properly
             try

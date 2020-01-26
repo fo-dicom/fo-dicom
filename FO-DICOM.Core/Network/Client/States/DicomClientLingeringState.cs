@@ -190,7 +190,9 @@ namespace FellowOakDicom.Network.Client.States
         public override void Dispose()
         {
             foreach(var disposable in _disposables)
+            {
                 disposable.Dispose();
+            }
 
             _lingerTimeoutCancellationTokenSource.Cancel();
             _lingerTimeoutCancellationTokenSource.Dispose();

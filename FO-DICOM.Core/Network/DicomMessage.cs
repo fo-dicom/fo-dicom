@@ -152,13 +152,19 @@ namespace FellowOakDicom.Network
         public bool IsTimedOut(TimeSpan timeout)
         {
             if (LastPendingResponseReceived != null)
+            {
                 return LastPendingResponseReceived.Value.Add(timeout) < DateTime.Now;
+            }
 
             if (LastPDUSent != null)
+            {
                 return LastPDUSent.Value.Add(timeout) < DateTime.Now;
+            }
 
             if(PendingSince != null)
+            {
                 return PendingSince.Value.Add(timeout) < DateTime.Now;
+            }
 
             return false;
         }
@@ -182,7 +188,10 @@ namespace FellowOakDicom.Network
         {
             var output = new StringBuilder(ToString());
 
-            if (!printDatasets) return output.ToString();
+            if (!printDatasets)
+            {
+                return output.ToString();
+            }
 
             output.AppendLine();
             output.AppendLine("--------------------------------------------------------------------------------");

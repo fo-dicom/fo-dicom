@@ -117,8 +117,14 @@ namespace FellowOakDicom.Network
             {
                 sb.AppendFormat("  Presentation Context:  {0} [{1}]\n", pc.ID, pc.Result);
                 if (pc.AbstractSyntax.Name != "Unknown")
+                {
                     sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax.Name);
-                else sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax);
+                }
+                else
+                {
+                    sb.AppendFormat("       Abstract Syntax:  {0}\n", pc.AbstractSyntax);
+                }
+
                 foreach (var tx in pc.GetTransferSyntaxes())
                 {
                     sb.AppendFormat("       Transfer Syntax:  {0}\n", tx.UID.Name);
@@ -131,12 +137,24 @@ namespace FellowOakDicom.Network
                 foreach (DicomExtendedNegotiation ex in ExtendedNegotiations)
                 {
                     if (ex.SopClassUid.Name != "Unknown")
+                    {
                         sb.AppendFormat("  Extended Negotiation:  {0}\n", ex.SopClassUid.Name);
-                    else sb.AppendFormat("  Extended Negotiation:  {0}\n", ex.SopClassUid);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("  Extended Negotiation:  {0}\n", ex.SopClassUid);
+                    }
+
                     if (ex.RequestedApplicationInfo != null)
+                    {
                         sb.AppendFormat("      Application Info:  {0}\n", ex.GetApplicationInfo());
+                    }
+
                     if (ex.ServiceClassUid != null)
+                    {
                         sb.AppendFormat("         Service Class:  {0}\n", ex.ServiceClassUid);
+                    }
+
                     if (ex.RelatedGeneralSopClasses.Any())
                     {
                         sb.AppendFormat("   Related SOP Classes:  {0}\n", ex.RelatedGeneralSopClasses.Count);

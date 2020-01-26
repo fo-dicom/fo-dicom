@@ -15,7 +15,11 @@ namespace FellowOakDicom.Network.Client.States
 
         protected DicomClientWithAssociationState(IInitialisationWithAssociationParameters initialisationParameters) : base(initialisationParameters)
         {
-            if (initialisationParameters == null) throw new ArgumentNullException(nameof(initialisationParameters));
+            if (initialisationParameters == null)
+            {
+                throw new ArgumentNullException(nameof(initialisationParameters));
+            }
+
             Association = initialisationParameters.Association ?? throw new ArgumentNullException(nameof(initialisationParameters.Association));
         }
     }

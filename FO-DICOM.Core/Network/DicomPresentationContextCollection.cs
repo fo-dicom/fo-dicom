@@ -81,7 +81,10 @@ namespace FellowOakDicom.Network
         {
             var pc = new DicomPresentationContext(GetNextPresentationContextID(), abstractSyntax, userRole, providerRole);
 
-            foreach (var tx in transferSyntaxes) pc.AddTransferSyntax(tx);
+            foreach (var tx in transferSyntaxes)
+            {
+                pc.AddTransferSyntax(tx);
+            }
 
             Add(pc);
         }
@@ -118,8 +121,16 @@ namespace FellowOakDicom.Network
                 if (pc == null)
                 {
                     var tx = new List<DicomTransferSyntax>();
-                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian) tx.Add(cstore.TransferSyntax);
-                    if (cstore.AdditionalTransferSyntaxes != null) tx.AddRange(cstore.AdditionalTransferSyntaxes);
+                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
+                    {
+                        tx.Add(cstore.TransferSyntax);
+                    }
+
+                    if (cstore.AdditionalTransferSyntaxes != null)
+                    {
+                        tx.AddRange(cstore.AdditionalTransferSyntaxes);
+                    }
+
                     tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
 
                     Add(cstore.SOPClassUID, tx.ToArray());
@@ -139,7 +150,10 @@ namespace FellowOakDicom.Network
                     {
                         var transferSyntaxes = request.PresentationContext.GetTransferSyntaxes().ToArray();
                         if (!transferSyntaxes.Any())
+                        {
                             transferSyntaxes = new[] { DicomTransferSyntax.ImplicitVRLittleEndian };
+                        }
+
                         Add(
                             request.PresentationContext.AbstractSyntax,
                             request.PresentationContext.UserRole,
@@ -232,11 +246,17 @@ namespace FellowOakDicom.Network
         {
             lock (_locker)
             {
-                if (_pc.Count == 0) return 1;
+                if (_pc.Count == 0)
+                {
+                    return 1;
+                }
 
                 var id = _pc.Max(x => x.Key) + 2;
 
-                if (id >= 256) throw new DicomNetworkException("Too many presentation contexts configured for this association!");
+                if (id >= 256)
+                {
+                    throw new DicomNetworkException("Too many presentation contexts configured for this association!");
+                }
 
                 return (byte)id;
             }

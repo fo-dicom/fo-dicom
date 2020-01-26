@@ -273,7 +273,9 @@ namespace FellowOakDicom.Network.Client
         internal async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             if (OnCStoreRequest == null)
+            {
                 return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
+            }
 
             return await OnCStoreRequest(request).ConfigureAwait(false);
         }
@@ -290,27 +292,39 @@ namespace FellowOakDicom.Network.Client
         public async Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
         {
             if (dicomRequests == null)
+            {
                 return;
+            }
 
             var requests = dicomRequests.ToList();
 
             if (!requests.Any())
+            {
                 return;
+            }
 
             foreach (var request in requests)
+            {
                 await State.AddRequestAsync(request).ConfigureAwait(false);
+            }
         }
 
         public async Task AddRequestsAsync(params DicomRequest[] requests)
         {
             if (requests == null)
+            {
                 return;
+            }
 
             if (!requests.Any())
+            {
                 return;
+            }
 
             foreach (var request in requests)
+            {
                 await State.AddRequestAsync(request).ConfigureAwait(false);
+            }
         }
 
         public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),

@@ -239,7 +239,10 @@ namespace FellowOakDicom.Network
         /// <param name="count">Number of times to write PDU value</param>
         public void Write(string name, byte value, int count)
         {
-            for (var i = 0; i < count; i++) _bw.Write(value);
+            for (var i = 0; i < count; i++)
+            {
+                _bw.Write(value);
+            }
         }
 
         /// <summary>
@@ -343,8 +346,14 @@ namespace FellowOakDicom.Network
             var c = new char[l];
             for (var i = 0; i < l; i++)
             {
-                if (i < s.Length) c[i] = s[i];
-                else c[i] = p;
+                if (i < s.Length)
+                {
+                    c[i] = s[i];
+                }
+                else
+                {
+                    c[i] = p;
+                }
             }
             return c;
         }
@@ -1372,7 +1381,11 @@ namespace FellowOakDicom.Network
         public override string ToString()
         {
             var value = $"P-DATA-TF [Length: {6 + GetLengthOfPDVs()}]";
-            foreach (var pdv in PDVs) value += "\n\t" + pdv.ToString();
+            foreach (var pdv in PDVs)
+            {
+                value += "\n\t" + pdv.ToString();
+            }
+
             return value;
         }
 
