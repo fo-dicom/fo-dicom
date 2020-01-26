@@ -50,27 +50,15 @@ namespace FellowOakDicom.Tests.Network
         {
             foreach (var pc in association.PresentationContexts)
             {
-                if (pc.AbstractSyntax == DicomUID.Verification)
-                {
-                    pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-                }
-                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
-                {
-                    pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
-                }
-                else
-                {
-                    pc.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported);
-                }
+                if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
+                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
             }
 
             return SendAssociationAcceptAsync(association);
         }
 
         public Task OnReceiveAssociationReleaseRequestAsync()
-        {
-            return SendAssociationReleaseResponseAsync();
-        }
+            => SendAssociationReleaseResponseAsync();
 
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
@@ -89,7 +77,7 @@ namespace FellowOakDicom.Tests.Network
             request.File.Dataset.ValidateItems = false;
             request.File.FileMetaInfo.ValidateItems = false;
 
-            await request.File.SaveAsync(tempName);
+            await request.File.SaveAsync(tempName).ConfigureAwait(false);
 
             return new DicomCStoreResponse(request, DicomStatus.Success)
             {
@@ -97,6 +85,7 @@ namespace FellowOakDicom.Tests.Network
             };
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e) => Task.CompletedTask;
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            => Task.CompletedTask;
     }
 }

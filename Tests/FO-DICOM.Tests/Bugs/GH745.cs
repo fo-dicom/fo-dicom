@@ -83,6 +83,7 @@ namespace FellowOakDicom.Tests.Bugs
         [InlineData(10)]
         [InlineData(75)]
         [InlineData(200)]
+        [InlineData(1)]
         public async Task DicomClientShallNotCloseConnectionTooEarly_CEchoParallelAsync(int expected)
         {
             int port = Ports.GetNext();

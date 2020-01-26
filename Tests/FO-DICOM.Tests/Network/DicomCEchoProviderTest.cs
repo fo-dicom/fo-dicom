@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,7 +28,7 @@ namespace FellowOakDicom.Tests.Network
             using (var server = DicomServer.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
+                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
                 {
                     Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient")
                 };

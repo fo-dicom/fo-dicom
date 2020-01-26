@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace FellowOakDicom.Tests.Network
+namespace FellowOakDicom.Tests.Desktop.Network
 {
     [Collection("Network")]
     public class AsyncDicomCEchoProviderTests
@@ -64,17 +65,9 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        async Task WaitForALittleBit()
-        {
-            var ms = new Random().Next(10);
-            await Task.Delay(ms).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             foreach (var pc in association.PresentationContexts)
             {
                 pc.SetResult(DicomPresentationContextResult.Accept);
@@ -90,7 +83,7 @@ namespace FellowOakDicom.Tests.Network
         /// <inheritdoc />
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            // do nothing here
+            // do nothing, ignore
         }
 
         /// <inheritdoc />
@@ -101,8 +94,6 @@ namespace FellowOakDicom.Tests.Network
 
         public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {
-            await WaitForALittleBit().ConfigureAwait(false);
-
             return new DicomCEchoResponse(request, DicomStatus.Success);
         }
     }

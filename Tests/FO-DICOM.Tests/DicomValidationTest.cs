@@ -129,4 +129,26 @@ namespace FellowOakDicom.Tests
         #endregion
 
     }
+
+    [Collection("none")]
+    public class DicomValidationTestWithoutFixture
+    {
+
+        [Fact]
+        public void DicomValidation_ValidateCodeStringWithGlobalSuppression()
+        {
+            new DicomSetupBuilder()
+                .RegisterServices(s => s.AddDefaultDicomServices())
+                .SkipValidation()
+                .Build();
+
+            var ds = new DicomDataset();
+            var validAETitle = "HUGO1";
+            ds.Add(DicomTag.ReferencedFileID, validAETitle);
+
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "Hugo1")));
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGO-1")));
+            Assert.Null(Record.Exception(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGOHUGOHUGOHUGO1")));
+        }
+    }
 }
