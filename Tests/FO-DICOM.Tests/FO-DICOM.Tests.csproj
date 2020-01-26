@@ -10,7 +10,7 @@
 
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
 
-    <AssemblyName>fo-dicom.Tests.NetCore</AssemblyName>
+    <AssemblyName>fo-dicom.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
