@@ -1,0 +1,35 @@
+name: build
+
+on:
+  push:
+    branches:
+    - netstandard
+  pull_request:
+    branches:
+    - netstandard
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-18.04, macOS-latest]
+        dotnet-version: [2.1.803]
+
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+        
+    - name: Build solution
+      run: dotnet build ./FO-DICOM.Full.sln --configuration Release
+      
+    - name: Run tests on .NET Core
+      run: dotnet test ./FO-DICOM.Full.sln --configuration Release --framework netcoreapp2.2
+    
+    - name: Run tests on .NET Framework
+      run: dotnet test ./FO-DICOM.Full.sln --configuration Release --framework net462
+      if: matrix.os == 'windows-2019'
