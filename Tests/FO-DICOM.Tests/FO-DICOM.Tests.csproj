@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\fo-dicom.core\FO-DICOM.Core.csproj" />
+    <ProjectReference Include="..\..\FO-DICOM.core\FO-DICOM.Core.csproj" />
     <ProjectReference Include="..\..\Logging\FO-DICOM.NLog\FO-DICOM.NLog.csproj" />
     <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp\FO-DICOM.Imaging.ImageSharp.csproj" />
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\fo-dicom.core\FO-DICOM.Core.csproj" />
+    <ProjectReference Include="..\..\FO-DICOM.core\FO-DICOM.Core.csproj" />
   </ItemGroup>
 
 </Project>
