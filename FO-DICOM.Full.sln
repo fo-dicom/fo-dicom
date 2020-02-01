@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.Core", "fo-dicom.core\FO-DICOM.Core.csproj", "{823BE9FE-62BB-43E6-A920-9ADC09F7F836}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.Core", "FO-DICOM.Core\FO-DICOM.Core.csproj", "{823BE9FE-62BB-43E6-A920-9ADC09F7F836}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{43ED1185-9895-4B31-8889-7C0477591BF1}"
 EndProject
