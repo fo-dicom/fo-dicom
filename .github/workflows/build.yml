@@ -25,11 +25,11 @@ jobs:
         dotnet-version: ${{ matrix.dotnet-version }}
         
     - name: Build solution
-      run: dotnet build ./FO-DICOM.Full.sln --configuration Release
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release
       
     - name: Run tests on .NET Core
-      run: dotnet test ./FO-DICOM.Full.sln --configuration Release --framework netcoreapp2.2
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1
     
     - name: Run tests on .NET Framework
-      run: dotnet test ./FO-DICOM.Full.sln --configuration Release --framework net462
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net461
       if: matrix.os == 'windows-2019'
