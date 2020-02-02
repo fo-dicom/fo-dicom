@@ -15,7 +15,11 @@ namespace FellowOakDicom.Tests.Network
     public class DependencyInjectionTest
     {
 
+#if NET462
+        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
+#else
         [Fact]
+#endif
         public async Task DependencyPropertyHasValue()
         {
             var port = Ports.GetNext();

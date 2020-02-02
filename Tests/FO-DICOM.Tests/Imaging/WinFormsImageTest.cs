@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging
     {
         #region Unit tests
 
-        [Fact]
+        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
         public void As_Image_ReturnsImage()
         {
             var image = new WinFormsImage(100, 100);
