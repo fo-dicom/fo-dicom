@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void Open_FileWithEncapsulatedPixelDataInSequenceItem_DoesNotThrow()
         {
-            var file = DicomFile.Open(@"Test Data\GH133.dcm");
+            var file = DicomFile.Open(TestData.Resolve("GH133.dcm"));
             var dummy = file.Dataset.Get<string>(new DicomTag(0xeaea, 0x0102));
             Assert.Equal("DCM", dummy);
         }

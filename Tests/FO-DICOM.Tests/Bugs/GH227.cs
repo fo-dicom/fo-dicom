@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void Open_DeflatedFile_DatasetReadilyAvailable()
         {
-            var file = DicomFile.Open(@"Test Data\GH227.dcm");
+            var file = DicomFile.Open(TestData.Resolve("GH227.dcm"));
             const int expected = 512;
             var actual = file.Dataset.Get<int>(DicomTag.Rows);
             Assert.Equal(expected, actual);
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task OpenAsync_DeflatedFile_DatasetReadilyAvailable()
         {
-            var file = await DicomFile.OpenAsync(@"Test Data\GH227.dcm").ConfigureAwait(false);
+            var file = await DicomFile.OpenAsync(TestData.Resolve("GH227.dcm")).ConfigureAwait(false);
             const int expected = 512;
             var actual = file.Dataset.Get<int>(DicomTag.Columns);
             Assert.Equal(expected, actual);
@@ -36,7 +36,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void Save_FileAsDeflated_CorrectlyCompressed()
         {
             var deflated =
-                DicomFile.Open(@"Test Data\CT-MONO2-16-ankle")
+                DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"))
                     .Clone(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
 
             using (var stream = new MemoryStream())
@@ -57,7 +57,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task SaveAsync_FileAsDeflated_CorrectlyCompressed()
         {
             var deflated =
-                DicomFile.Open(@"Test Data\CT-MONO2-16-ankle")
+                DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"))
                     .Clone(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
 
             using (var stream = new MemoryStream())
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void Save_DeflatedFile_CorrectlyCompressed()
         {
-            var deflated = DicomFile.Open(@"Test Data\GH227.dcm");
+            var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
             using (var stream = new MemoryStream())
             {
@@ -95,7 +95,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task SaveAsync_DeflatedFile_CorrectlyCompressed()
         {
-            var deflated = DicomFile.Open(@"Test Data\GH227.dcm");
+            var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
             using (var stream = new MemoryStream())
             {
@@ -113,7 +113,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void Clone_DeflateFile_NewTransferSyntaxPixelDataMaintained()
         {
-            var deflated = DicomFile.Open(@"Test Data\GH227.dcm");
+            var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
             Assert.True(TranscoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
                 DicomTransferSyntax.ExplicitVRLittleEndian));

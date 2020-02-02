@@ -18,7 +18,7 @@ namespace FellowOakDicom.Tests.Imaging
         [InlineData("CR-MONO1-10-chest")]
         public void DicomJpegLosses_DecodingAvailable(string filename)
         {
-            var file = DicomFile.Open(@".\Test Data\" + filename, FileReadOption.ReadAll);
+            var file = DicomFile.Open(TestData.Resolve(filename), FileReadOption.ReadAll);
             var dcmImage = new DicomImage(file.Dataset);
             var image = dcmImage.RenderImage();
             Assert.NotNull(image);
@@ -27,7 +27,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void DicomJpegLosses_EncodingShallThrow()
         {
-            var file = DicomFile.Open(@".\Test Data\GH538-jpeg14sv1.dcm", FileReadOption.ReadAll);
+            var file = DicomFile.Open(TestData.Resolve("GH538-jpeg14sv1.dcm"), FileReadOption.ReadAll);
             var decoded = file.Dataset.Clone(DicomTransferSyntax.ImplicitVRLittleEndian);
             var ex = Record.Exception(() =>
             {

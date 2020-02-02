@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void TestActualRendering()
         {
-            var dcmImage = new DicomImage(@".\Test Data\CT-MONO2-16-ankle");
+            var dcmImage = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle"));
             var image = dcmImage.RenderImage();
             Assert.IsAssignableFrom<Image<Bgra32>>(image.AsSharpImage());
             var sharpImage = image.AsSharpImage();

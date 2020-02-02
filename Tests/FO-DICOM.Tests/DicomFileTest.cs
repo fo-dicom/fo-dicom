@@ -128,7 +128,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void HasValidHeader_Part10File_ReturnsTrue()
         {
-            var validHeader = DicomFile.HasValidHeader(@".\Test Data\CT1_J2KI");
+            var validHeader = DicomFile.HasValidHeader(TestData.Resolve("CT1_J2KI"));
             Assert.True(validHeader);
         }
 
@@ -136,7 +136,7 @@ namespace FellowOakDicom.Tests
         public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
         {
             Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
-            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
         }
 
@@ -144,7 +144,7 @@ namespace FellowOakDicom.Tests
         public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
         {
             Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
-            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
         }
 
@@ -152,7 +152,7 @@ namespace FellowOakDicom.Tests
         public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
         {
             bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
-            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
 
@@ -160,14 +160,14 @@ namespace FellowOakDicom.Tests
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
             Func<ParseState, bool> criterion = state => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
-            var file = DicomFile.Open(@"Test Data\GH064.dcm", DicomEncoding.Default, criterion);
+            var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
 
         [Fact]
         public void Save_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             using (var stream1 = new MemoryStream())
             using (var stream2 = new MemoryStream())
@@ -184,7 +184,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsync_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             using (var stream1 = new MemoryStream())
             using (var stream2 = new MemoryStream())
@@ -201,7 +201,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void SaveToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
             file.Save("saveasynctofile1", options1);
@@ -217,7 +217,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsyncToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
             await file.SaveAsync("saveasynctofile1", options1).ConfigureAwait(false);

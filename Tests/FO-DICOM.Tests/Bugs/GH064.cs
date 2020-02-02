@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void DicomFile_ContainingSequenceWithExplicitLengthAndDelimitationItem_CanBeCompletelyParsed()
         {
-            var file = DicomFile.Open(@".\Test Data\GH064.dcm");
+            var file = DicomFile.Open(TestData.Resolve("GH064.dcm"));
             var expected = DicomTag.PixelData;
             var actual = file.Dataset.Last().Tag;
             Assert.Equal(expected, actual);

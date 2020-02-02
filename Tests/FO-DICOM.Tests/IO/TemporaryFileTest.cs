@@ -24,7 +24,7 @@ namespace FellowOakDicom.Tests.IO
         {
             lock (this.locker)
             {
-                var path = @".\Test Data\Temporary Path 1";
+                var path = TestData.Resolve("Temporary Path 1");
                 if (Directory.Exists(path)) Directory.Delete(path, true);
 
                 TemporaryFile.StoragePath = path;
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.IO
         {
             lock (this.locker)
             {
-                var expected = @".\Test Data\Temporary Path 2";
+                var expected = TestData.Resolve("Temporary Path 2");
                 TemporaryFile.StoragePath = expected;
 
                 var temp = TemporaryFile.Create().Name;
@@ -86,7 +86,7 @@ namespace FellowOakDicom.Tests.IO
         {
             lock (this.locker)
             {
-                TemporaryFile.StoragePath = @".\Test Data\Temporary Path 3";
+                TemporaryFile.StoragePath = TestData.Resolve("Temporary Path 3");
                 var path = TemporaryFile.Create().Name;
                 Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
             }

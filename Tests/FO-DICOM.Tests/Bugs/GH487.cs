@@ -11,18 +11,18 @@ namespace FellowOakDicom.Tests.Bugs
     public class GH487
     {
         [Theory]
-        [InlineData(@".\Test Data\GH487.dcm")]
+        [InlineData(@"GH487.dcm")]
         public void DicomFileOpen_LastTagPrivateSequenceEmptyItems_DoesNotThrow(string fileName)
         {
-            var exception = Record.Exception(() => DicomFile.Open(fileName));
+            var exception = Record.Exception(() => DicomFile.Open(TestData.Resolve(fileName)));
             Assert.Null(exception);
         }
 
         [Theory]
-        [InlineData(@".\Test Data\GH487.dcm")]
+        [InlineData("GH487.dcm")]
         public async Task DicomFileOpenAsync_LastTagPrivateSequenceEmptyItems_DoesNotThrow(string fileName)
         {
-            var exception = await Record.ExceptionAsync(() => DicomFile.OpenAsync(fileName));
+            var exception = await Record.ExceptionAsync(() => DicomFile.OpenAsync(TestData.Resolve(fileName)));
             Assert.Null(exception);
         }
     }

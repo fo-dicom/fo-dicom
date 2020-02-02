@@ -28,7 +28,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task CStoreRequestSend_VideoFileServerSupportsMPEG2_TransferSuccessful()
         {
-            const string fileName = @".\Test Data\ETIAM_video_002.dcm";
+            string fileName = TestData.Resolve("ETIAM_video_002.dcm");
 
             var success = false;
             var handle = new ManualResetEventSlim();
@@ -56,7 +56,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task CStoreRequestSend_VideoFileServerSupportsMPEG4_TransferSuccessful()
         {
-            const string fileName = @"Test Data/test_720.dcm";
+            string fileName = TestData.Resolve("test_720.dcm");
             var success = false;
             var handle = new ManualResetEventSlim();
 

@@ -80,7 +80,7 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(NewOptionalAttributes))]
         public void Save_NewOptionalAttributes_SavedWhenExisting(DicomItem item)
         {
-            var inFile = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
             inFile.FileMetaInfo.Add(item);
 
             using (var saveStream = new MemoryStream())
@@ -96,7 +96,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void PrivateInformationCreatorUID_SetterGetter_DataIsMaintained()
         {
-            var inFile = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
             var expected = "1.2.3";
             inFile.FileMetaInfo.PrivateInformationCreatorUID = DicomUID.Parse(expected);
 
@@ -113,7 +113,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void PrivateInformation_SetterGetter_DataIsMaintained()
         {
-            var inFile = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
             var expected = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             inFile.FileMetaInfo.PrivateInformation = expected;
 
@@ -130,7 +130,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void NewProperties_Getters_ReturnsNullIfNonExisting()
         {
-            var file = DicomFile.Open(@"Test Data\CT-MONO2-16-ankle");
+            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             Assert.Null(file.FileMetaInfo.SendingApplicationEntityTitle);
             Assert.Null(file.FileMetaInfo.ReceivingApplicationEntityTitle);

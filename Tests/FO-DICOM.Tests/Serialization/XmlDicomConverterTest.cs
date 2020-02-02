@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Serialization
             finalXml.AppendLine(@"<Value number=""1"">1.2.345</Value>");
             finalXml.AppendLine(@"</DicomAttribute>");
             finalXml.AppendLine(@"</NativeDicomModel>");
-            string xml = DicomXML.ConvertDicomToXML(dataset);            
+            string xml = DicomXML.ConvertDicomToXML(dataset);
             Assert.True(!string.IsNullOrEmpty(xml));
             Assert.Equal(finalXml.ToString().Trim(), xml.Trim());
         }
@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Serialization
         [Fact]
         public void TestSequenceXmlSerialization()
         {
-            var file = DicomFile.Open(@".\Test Data\DICOMDIR");
+            var file = DicomFile.Open(TestData.Resolve("DICOMDIR"));
             var xml = DicomXML.ConvertDicomToXML(file.Dataset);
             var finalXml1 = new StringBuilder();
             finalXml1.AppendLine(@"<Item number=""44"">");

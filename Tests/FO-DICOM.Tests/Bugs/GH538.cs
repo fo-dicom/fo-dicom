@@ -18,8 +18,8 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task CStoreRequestSend_8And16BitJpegFiles_TransferSuccessful()
         {
-            const string file1 = @"Test Data/GH538-jpeg1.dcm";
-            const string file2 = @"Test Data/GH538-jpeg14sv1.dcm";
+            string file1 = TestData.Resolve("GH538-jpeg1.dcm");
+            string file2 = TestData.Resolve("GH538-jpeg14sv1.dcm");
             var handle1 = new ManualResetEventSlim();
             var handle2 = new ManualResetEventSlim();
             var successes = 0;
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void OldCStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
-            const string file = @"Test Data/GH538-jpeg14sv1.dcm";
+            const string file = TestData.Resolve("GH538-jpeg14sv1.dcm";
             var handle = new ManualResetEventSlim();
             var success = false;
 
@@ -86,7 +86,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
-            const string file = @"Test Data/GH538-jpeg14sv1.dcm";
+            const string file = TestData.Resolve("GH538-jpeg14sv1.dcm";
             var handle = new ManualResetEventSlim();
             var success = false;
 

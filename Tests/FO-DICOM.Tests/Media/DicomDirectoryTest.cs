@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void Open_DicomDirFile_Succeeds()
         {
-            var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
+            var dir = DicomDirectory.Open(TestData.Resolve("DICOMDIR"));
 
             var expected = DicomUID.MediaStorageDirectoryStorage.UID;
             var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public async Task OpenAsync_DicomDirFile_Succeeds()
         {
-            var dir = await DicomDirectory.OpenAsync(@".\Test Data\DICOMDIR");
+            var dir = await DicomDirectory.OpenAsync(TestData.Resolve("DICOMDIR"));
 
             var expected = DicomUID.MediaStorageDirectoryStorage.UID;
             var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
@@ -41,7 +41,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
         {
-            var dir = DicomDirectory.Open(@".\Test Data\DICOMDIR");
+            var dir = DicomDirectory.Open(TestData.Resolve("DICOMDIR"));
             var expected = dir.FileMetaInfo.Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
             var actual = dir.MediaStorageSOPInstanceUID.UID;
             Assert.Equal(expected, actual);
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void Open_DicomDirStream_Succeeds()
         {
-            using (var stream = File.OpenRead(@".\Test Data\DICOMDIR"))
+            using (var stream = File.OpenRead(TestData.Resolve("DICOMDIR")))
             {
                 DicomDirectory dir = DicomDirectory.Open(stream);
 
@@ -63,7 +63,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public async Task OpenAsync_DicomDirStream_Succeeds()
         {
-            using (var stream = File.OpenRead(@".\Test Data\DICOMDIR"))
+            using (var stream = File.OpenRead(TestData.Resolve("DICOMDIR")))
             {
                 DicomDirectory dir = await DicomDirectory.OpenAsync(stream);
 
@@ -76,7 +76,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToSameStudySeriesNode()
         {
-            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(TestData.Resolve("abd1.zip"));
 
             // Anonymize all files
             var anonymizer = new DicomAnonymizer();
@@ -103,7 +103,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToSamePatientNode()
         {
-            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(TestData.Resolve("abd1.zip"));
 
             // Anonymize all files
             var patname = "Pat^Name";
@@ -136,7 +136,7 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void AddFile_AnonymizedSeries_AllFilesAddedToDifferentPatientNodes()
         {
-            var dicomFiles = GetDicomFilesFromZip(@".\Test Data\abd1.zip");
+            var dicomFiles = GetDicomFilesFromZip(TestData.Resolve("abd1.zip"));
 
             // Anonymize all files
             var patname = "Pat^Name";
@@ -173,7 +173,7 @@ namespace FellowOakDicom.Tests.Media
         public void AddFile_LongFilename()
         {
             string filename = "TestPattern_Palette_16.dcm";
-            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+            var dicomFile = DicomFile.Open(TestData.Resolve(filename));
 
             var dicomDir = new DicomDirectory();
             Assert.Throws<DicomValidationException>(()
@@ -189,7 +189,7 @@ namespace FellowOakDicom.Tests.Media
         public void AddFile_LongFilename_WithGlobalValidationSupression()
         {
             string filename = "TestPattern_Palette_16.dcm";
-            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+            var dicomFile = DicomFile.Open(TestData.Resolve(filename));
 
             var dicomDir = new DicomDirectory() { AutoValidate = false };
             Assert.Null(Record.Exception(()

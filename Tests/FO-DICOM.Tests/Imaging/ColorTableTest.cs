@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void SaveLut_ValidTable_Succeeds()
         {
-            var path = @".\Test Data\monochrome1.lut";
+            var path = TestData.Resolve("monochrome1.lut");
             if (File.Exists(path)) File.Delete(path);
 
             ColorTable.SaveLUT(path, ColorTable.Monochrome1);
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void LoadLut_SavedMonochrome2_ReproduceMonochrome2Field()
         {
-            var path = @".\Test Data\monochrome2.lut";
+            var path = TestData.Resolve("monochrome2.lut");
             ColorTable.SaveLUT(path, ColorTable.Monochrome2);
 
             var expected = ColorTable.Monochrome2;

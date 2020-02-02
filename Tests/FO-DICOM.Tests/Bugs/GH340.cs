@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void Open_BitsAllocated12_NonZeroPixelsInLastQuarter()
         {
-            var file = DicomFile.Open(@"Test Data\GH340.dcm");
+            var file = DicomFile.Open(TestData.Resolve("GH340.dcm"));
 
             // Loop over last quarter of pixels; if one is non-zero test passes.
             var pixelData = PixelDataFactory.Create(DicomPixelData.Create(file.Dataset), 0);
