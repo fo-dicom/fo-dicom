@@ -472,7 +472,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             using (CreateServer<ExplicitLECStoreProvider>(port))
             {
-                var request = new DicomCStoreRequest(@"./Test Data/CR-MONO1-10-chest");
+                var request = new DicomCStoreRequest(TestData.Resolve("CR-MONO1-10-chest"));
 
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
@@ -496,7 +496,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.NegotiateAsyncOps(expected, 1);
 
                 var requests = Enumerable.Range(0, expected)
-                    .Select(i => new DicomCStoreRequest(@"./Test Data/CT1_J2KI")
+                    .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
                     {
                         OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
                     });
@@ -1615,7 +1615,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     {
                         try
                         {
-                            var file = await DicomFile.OpenAsync(@".\Test Data\10200904.dcm").ConfigureAwait(false);
+                            var file = await DicomFile.OpenAsync(TestData.Resolve("10200904.dcm")).ConfigureAwait(false);
 
                             var cStoreRequest = new DicomCStoreRequest(file);
 

@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Constructor_TempFile_TempFileAttributeSet()
         {
-            var path = @".\Test Data\tmp.tmp";
+            var path = TestData.Resolve("tmp.tmp");
             File.Create(path).Dispose();
 
             var file = new FileReference(path) { IsTempFile = true };
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Constructor_RegularFile_TempFileAttributeNotSet()
         {
-            var path = @".\Test Data\nontmp.tmp";
+            var path = TestData.Resolve("nontmp.tmp");
             File.Create(path).Dispose();
 
             var file = new FileReference(path);

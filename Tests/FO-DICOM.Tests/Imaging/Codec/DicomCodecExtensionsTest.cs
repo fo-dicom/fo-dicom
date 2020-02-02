@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [Fact]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
         {
-            var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+            var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
             var exception =
                 Record.Exception(
                     () =>
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [Fact]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4_WithParameters()
         {
-            var file = DicomFile.Open(@".\Test Data\10200904.dcm");
+            var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
             var exception =
                 Record.Exception(
                     () =>
@@ -43,7 +43,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [Fact]
         public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var exception =
                 Record.Exception(
                     () =>
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [Fact]
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var exception =
                 Record.Exception(
                     () =>
@@ -63,7 +63,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-/* 
+/*
 TODO: This Test shall run green if issue #921 is solved.
 
         [Theory]
@@ -74,7 +74,7 @@ TODO: This Test shall run green if issue #921 is solved.
 #endif
         public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline(string filename)
         {
-            var file = DicomFile.Open(@".\Test Data\" + filename);
+            var file = DicomFile.Open(TestData.Resolve("" + filename);
 
             // when converting to JpegBaseline the Photometric interpretation has to be updated
             var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=false, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
@@ -159,12 +159,12 @@ TODO: This Test shall run green if issue #921 is solved.
         }
 
         /// <summary>
-        /// White box testing of the RLELossless TS codec. 
+        /// White box testing of the RLELossless TS codec.
         /// </summary>
         [Fact]
         public void EncodeDecodeTestRLE2()
         {
-            var r = new Random(); 
+            var r = new Random();
             for (var i = 1; i < 1024; i++)
             {
                 for (var k = 0; k < 100; k++)
@@ -182,7 +182,7 @@ TODO: This Test shall run green if issue #921 is solved.
 
         /// <summary>
         /// Constructs a fake image of dimensions {w,h} with the given 2 byte per pixel data. Encodes and decodes
-        /// that data using the given Transfer Syntax on a fake 16 bit CT image and checks the data has not changed. 
+        /// that data using the given Transfer Syntax on a fake 16 bit CT image and checks the data has not changed.
         /// </summary>
         /// <param name="w">The w.</param>
         /// <param name="h">The h.</param>

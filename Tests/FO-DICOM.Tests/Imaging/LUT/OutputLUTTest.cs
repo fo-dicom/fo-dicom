@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         [Fact]
         public void ColorMap_Monochrome2ImageOptions_ReturnsMonochrome2ColorMap()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset);
             var lut = new OutputLUT(options);
             Assert.Same(ColorTable.Monochrome2, lut.ColorMap);

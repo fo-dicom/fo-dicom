@@ -10,10 +10,10 @@ namespace FellowOakDicom.Tests.Bugs
     public class GH220
     {
         [Theory]
-        [InlineData(@".\Test Data\GH220.dcm")]
+        [InlineData("GH220.dcm")]
         public void DicomFile_Open_DoesNotThrow(string fileName)
         {
-            var e = Record.Exception(() => DicomFile.Open(fileName));
+            var e = Record.Exception(() => DicomFile.Open(TestData.Resolve(fileName)));
             Assert.Null(e);
         }
     }

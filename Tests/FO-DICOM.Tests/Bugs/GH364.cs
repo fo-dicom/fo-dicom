@@ -11,19 +11,19 @@ namespace FellowOakDicom.Tests.Bugs
     public class GH364
     {
         [Theory]
-        [InlineData(@".\Test Data\GH364.dcm")]
+        [InlineData("GH364.dcm")]
         public void DicomFileOpen_Contains_TagBeyond00185020(string fileName)
         {
-            var file = DicomFile.Open(fileName);
+            var file = DicomFile.Open(TestData.Resolve(fileName));
             var actual = file.Dataset.Contains(DicomTag.StudyInstanceUID);
             Assert.True(actual);
         }
 
         [Theory]
-        [InlineData(@".\Test Data\GH364.dcm")]
+        [InlineData("GH364.dcm")]
         public async Task DicomFileOpenAsync_Contains_TagBeyond00185020(string fileName)
         {
-            var file = await DicomFile.OpenAsync(fileName).ConfigureAwait(false);
+            var file = await DicomFile.OpenAsync(TestData.Resolve(fileName)).ConfigureAwait(false);
             var actual = file.Dataset.Contains(DicomTag.StudyInstanceUID);
             Assert.True(actual);
         }

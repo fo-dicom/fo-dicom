@@ -15,7 +15,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_Dataset_PatientDataEmpty()
         {
-            var dataset = DicomFile.Open(@"./Test Data/CT1_J2KI").Dataset;
+            var dataset = DicomFile.Open(TestData.Resolve("CT1_J2KI")).Dataset;
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
@@ -27,7 +27,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_File_SopInstanceUidTransferredToMetaInfo()
         {
-            var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var old = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(file);
@@ -41,7 +41,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AnonymizeInPlace_File_ImplementationVersionNameMaintained()
         {
-            var file = DicomFile.Open(@"./Test Data/CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var expected = file.FileMetaInfo.ImplementationVersionName;
             Assert.False(string.IsNullOrEmpty(expected));
 
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Anonymize_Dataset_OriginalDatasetNotModified()
         {
-            var dataset = DicomFile.Open(@"./Test Data/CT-MONO2-16-ankle").Dataset;
+            var dataset = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle")).Dataset;
             var expected = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
 
             var anonymizer = new DicomAnonymizer();

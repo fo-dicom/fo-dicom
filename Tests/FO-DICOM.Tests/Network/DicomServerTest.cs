@@ -185,7 +185,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle")
+                var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
                 };
@@ -280,7 +280,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port))
             {
                 DicomStatus status = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle")
+                var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
                 };
@@ -300,7 +300,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
             {
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request);
@@ -318,7 +318,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
             {
-                var request = new DicomCStoreRequest(@".\Test Data\CT-MONO2-16-ankle");
+                var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request);

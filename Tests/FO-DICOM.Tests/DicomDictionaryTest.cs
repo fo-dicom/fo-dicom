@@ -56,7 +56,7 @@ namespace FellowOakDicom.Tests
         public void Load_UncompressedFile_LoadedTagFound()
         {
             var dict = new DicomDictionary();
-            dict.Load(@".\Test Data\minimumdict.xml", DicomDictionaryFormat.XML);
+            dict.Load(TestData.Resolve("minimumdict.xml"), DicomDictionaryFormat.XML);
 
             var expected = DicomVR.CS;
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();
@@ -67,7 +67,7 @@ namespace FellowOakDicom.Tests
         public void Load_CompressedFile_LoadedTagFound()
         {
             var dict = new DicomDictionary();
-            dict.Load(@".\Test Data\minimumdict.xml.gz", DicomDictionaryFormat.XML);
+            dict.Load(TestData.Resolve("minimumdict.xml.gz"), DicomDictionaryFormat.XML);
 
             var expected = DicomVR.CS;
             var actual = dict[DicomTag.FileSetID].ValueRepresentations.Single();

@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void Save_ToNonExistingDirectory_Succeeds()
         {
-            var path = @".\Test Data\PDU Test";
+            var path = TestData.Resolve("PDU Test");
             var name = Path.Combine(path, "assoc.pdu");
             if (Directory.Exists(path)) Directory.Delete(path, true);
 

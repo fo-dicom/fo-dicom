@@ -51,7 +51,7 @@ namespace FellowOakDicom.Tests.IO.Writer
         {
             lock (this.locker)
             {
-                const string fileName = @".\Test Data\dicomfilewriter_write.dcm";
+                string fileName = TestData.Resolve("dicomfilewriter_write.dcm");
                 var file = new FileReference(fileName);
 
                 using (var target = new FileByteTarget(file))

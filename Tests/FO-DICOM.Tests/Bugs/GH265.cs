@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void DicomFileOpen_StreamedObject_NoMetaInfo()
         {
-            var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+            var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             Assert.Equal(DicomFileFormat.DICOM3NoFileMetaInfo, file.Format);
             Assert.Equal(0, file.FileMetaInfo.Count());
         }
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void DicomFileSave_StreamedObject_ShouldContainMetaInfo()
         {
             var tempName = Path.GetTempFileName();
-            DicomFile.Open(@".\Test Data\CR-MONO1-10-chest").Save(tempName);
+            DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest")).Save(tempName);
 
             using (var stream = File.OpenRead(tempName))
             {
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             using (var stream = File.OpenWrite(tempName))
             {
-                var input = await DicomFile.OpenAsync(@".\Test Data\CT-MONO2-16-ankle").ConfigureAwait(false);
+                var input = await DicomFile.OpenAsync(TestData.Resolve("CT-MONO2-16-ankle")).ConfigureAwait(false);
                 expected = input.FileMetaInfo;
                 await input.SaveAsync(stream).ConfigureAwait(false);
             }
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var tempName = Path.GetTempFileName();
 
-            var input = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
+            var input = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
             var expected = input.FileMetaInfo;
             await input.SaveAsync(tempName).ConfigureAwait(false);
 
@@ -80,7 +80,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void DicomFileOpen_Part10File_MetaInfoUnmodified()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var metaInfo = file.FileMetaInfo;
 
             Assert.Equal(new byte[] { 0, 1 }, metaInfo.Version);

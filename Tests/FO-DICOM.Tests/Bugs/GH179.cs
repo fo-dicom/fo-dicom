@@ -10,19 +10,19 @@ namespace FellowOakDicom.Tests.Bugs
     public class GH179
     {
         [Theory]
-        [InlineData(@".\Test Data\GH179A.dcm")]
+        [InlineData("GH179A.dcm")]
         public void DicomFile_Contains_CommentsOnRadiationDoseIncluded(string fileName)
         {
-            var file = DicomFile.Open(fileName);
+            var file = DicomFile.Open(TestData.Resolve(fileName));
             var actual = file.Dataset.Contains(DicomTag.CommentsOnRadiationDose);
             Assert.True(actual);
         }
 
         [Theory]
-        [InlineData(@".\Test Data\GH179B.dcm")]
+        [InlineData("GH179B.dcm")]
         public void DicomFile_Open_PartialDatasetAvailable(string fileName)
         {
-            var file = DicomFile.Open(fileName);
+            var file = DicomFile.Open(TestData.Resolve(fileName));
             Assert.True(file.Dataset != null);
             Assert.True(file.IsPartial);
         }

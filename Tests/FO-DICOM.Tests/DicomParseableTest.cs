@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Parse_NonImplementingClass_Throws()
         {
-            Assert.Throws<DicomDataException>(() => DicomParseable.Parse<DicomFile>(@".\Test Data\CT1_J2KI"));
+            Assert.Throws<DicomDataException>(() => DicomParseable.Parse<DicomFile>(TestData.Resolve("CT1_J2KI")));
         }
     }
 }

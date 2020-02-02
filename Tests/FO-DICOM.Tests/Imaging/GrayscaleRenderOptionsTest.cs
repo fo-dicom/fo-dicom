@@ -15,7 +15,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void ColorMap_Monochrome2ImageOptions_ReturnsMonochrome2ColorMap()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset);
             Assert.Same(ColorTable.Monochrome2, options.ColorMap);
         }
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void ColorMap_Setter_ReturnsSetColorMap()
         {
-            var file = DicomFile.Open(@".\Test Data\CT1_J2KI");
+            var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset);
             options.ColorMap = ColorTable.Monochrome1;
             Assert.Same(ColorTable.Monochrome1, options.ColorMap);

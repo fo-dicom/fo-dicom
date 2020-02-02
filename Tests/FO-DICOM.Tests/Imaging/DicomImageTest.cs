@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             lock (_lock)
             {
-                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle").RenderImage();
+                var image = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle")).RenderImage();
                 Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }
         }
@@ -33,7 +33,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             lock (_lock)
             {
-                var image = new DicomImage(@".\Test Data\CT-MONO2-16-ankle");
+                var image = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle"));
                 var exception = Record.Exception(() =>
                 {
                     Parallel.For(0, 1000, i =>
@@ -53,7 +53,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             lock (_lock)
             {
-                var file = new DicomImage(@".\Test Data\10200904.dcm");
+                var file = new DicomImage(TestData.Resolve("10200904.dcm"));
                 var image = file.RenderImage(0);
                 Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }
@@ -67,7 +67,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             lock (_lock)
             {
-                var file = new DicomImage(@".\Test Data\" + filename);
+                var file = new DicomImage(TestData.Resolve(filename));
                 var image = file.RenderImage(0);
                 Assert.IsAssignableFrom<byte[]>(image.As<byte[]>());
             }

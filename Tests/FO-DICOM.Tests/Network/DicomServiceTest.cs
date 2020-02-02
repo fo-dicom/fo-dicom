@@ -74,7 +74,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServer.Create<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
-                var request = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
+                var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
                 request.OnResponseReceived = (req, res) =>
                 {
                     command = request.Command;

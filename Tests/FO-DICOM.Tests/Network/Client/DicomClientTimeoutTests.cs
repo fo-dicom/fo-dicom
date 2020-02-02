@@ -318,7 +318,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
                 // If stream timeout = 50ms, then total time to send will be 3s 250ms
-                var request = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
                 {
                     OnResponseReceived = (req, res) => response = res,
                 };
@@ -361,7 +361,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
                 // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
-                var request = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
                 {
                     OnResponseReceived = (req, res) => response = res,
                     OnTimeout = (sender, args) => onTimeoutEventArgs = args

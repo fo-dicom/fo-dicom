@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         [Fact]
         public void ModalitySequenceLutReturnsCorrectMinimumValue()
         {
-            var file = DicomFile.Open(@".\Test Data\CR-ModalitySequenceLUT.dcm");
+            var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset);
             var lut = new ModalitySequenceLUT(options);
             Assert.Equal(0, lut.MinimumOutputValue);
@@ -25,7 +25,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         [Fact]
         public void ModalitySequenceLutReturnsCorrectMaximumValue()
         {
-            var file = DicomFile.Open(@".\Test Data\CR-ModalitySequenceLUT.dcm");
+            var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset);
             var lut = new ModalitySequenceLUT(options);
             Assert.Equal(1023, lut.MaximumOutputValue);

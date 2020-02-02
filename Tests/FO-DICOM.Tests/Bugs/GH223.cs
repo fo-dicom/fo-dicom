@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task DicomFile_OpenAsync_FirstPrivateSeqItemEmtpySecondContainsData()
         {
-            var file = await DicomFile.OpenAsync(@".\Test Data\GH223.dcm").ConfigureAwait(false);
+            var file = await DicomFile.OpenAsync(TestData.Resolve("GH223.dcm")).ConfigureAwait(false);
 
             var seq = file.Dataset.Get<DicomSequence>(new DicomTag(0x01f3, 0x1011, "ELSCINT1"));
 

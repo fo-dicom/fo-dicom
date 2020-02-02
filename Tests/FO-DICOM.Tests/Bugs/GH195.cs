@@ -11,10 +11,10 @@ namespace FellowOakDicom.Tests.Bugs
     public class GH195
     {
         [Theory]
-        [InlineData(@".\Test Data\GH195.dcm")]
+        [InlineData("GH195.dcm")]
         public void DicomImage_Constructor_DoesNotThrow(string fileName)
         {
-            var file = DicomFile.Open(fileName);
+            var file = DicomFile.Open(TestData.Resolve(fileName));
             var e = Record.Exception(() => new DicomImage(file.Dataset));
             Assert.Null(e);
         }

@@ -36,7 +36,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
-                var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+                var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
@@ -58,7 +58,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
-                var file = DicomFile.Open(@".\Test Data\CR-MONO1-10-chest");
+                var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
@@ -80,7 +80,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
-                var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
+                var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {
@@ -102,7 +102,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
-                var file = DicomFile.Open(@".\Test Data\CT-MONO2-16-ankle");
+                var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "SCP")
                 {

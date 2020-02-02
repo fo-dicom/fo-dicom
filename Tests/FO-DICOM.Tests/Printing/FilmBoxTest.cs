@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Printing
         [Fact]
         public void Save_BasicFilmBox_CreatesRelevantFilesAndFolders()
         {
-            var path = @".\Test Data\Film Box Test 1";
+            var path = TestData.Resolve("Film Box Test 1");
             if (Directory.Exists(path)) Directory.Delete(path, true);
             Directory.CreateDirectory(path);
 
@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Printing
         [Fact]
         public void Load_BasicFilmBox_ExpectedSopClassFound()
         {
-            var path = @".\Test Data\Film Box Test 2";
+            var path = TestData.Resolve("Film Box Test 2");
             if (Directory.Exists(path)) Directory.Delete(path, true);
             Directory.CreateDirectory(path);
 

@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
 
-                var storeReq = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
+                var storeReq = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
 
-                var storeReq = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
+                var storeReq = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
@@ -89,7 +89,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
 
-                var storeReq = new DicomCStoreRequest(@".\Test Data\CT1_J2KI");
+                var storeReq = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 

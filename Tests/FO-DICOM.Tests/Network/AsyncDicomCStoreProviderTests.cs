@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Network
 
                 DicomCStoreResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
                 {
                     OnResponseReceived = (req, res) => response = res,
                     OnTimeout = (sender, args) => timeout = args

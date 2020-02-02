@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void ReadLargeFileFromStream()
         {
             DicomFile dcm = null;
-            string filename = @".\Test Data\GH355.dcm";
+            string filename = TestData.Resolve("GH355.dcm");
             if (File.Exists(filename))
             {
                 byte[] buff = File.ReadAllBytes(filename);
@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void ReadLargeFileFromStream_Error()
         {
             DicomFile dcm = null;
-            string filename = @".\Test Data\GH355.dcm";
+            string filename = TestData.Resolve("GH355.dcm");
             if (File.Exists(filename))
             {
                 byte[] buff = File.ReadAllBytes(filename);
@@ -67,12 +67,13 @@ namespace FellowOakDicom.Tests.IO.Reader
 
 
         [Theory]
-        [InlineData(@".\Test Data\GH355.dcm")]
-        [InlineData(@".\Test Data\10200904.dcm")]
-        [InlineData(@".\Test Data\CR-MONO1-10-chest")]
-        [InlineData(@".\Test Data\TestPattern_RGB.dcm")]
+        [InlineData("GH355.dcm")]
+        [InlineData("10200904.dcm")]
+        [InlineData("CR-MONO1-10-chest")]
+        [InlineData("TestPattern_RGB.dcm")]
         public void ReadLargeFileFromStream_WithoutPixeldata(string filename)
         {
+            filename = TestData.Resolve(filename);
             DicomFile dcm = null;
             if (File.Exists(filename))
             {
@@ -91,7 +92,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void ReadingSkipLargeTags_GH893()
         {
             DicomFile dcm = null;
-            string filename = @".\Test Data\genFile.dcm";
+            string filename = TestData.Resolve("genFile.dcm");
             if (File.Exists(filename))
             {
                 byte[] buff = File.ReadAllBytes(filename);
@@ -107,7 +108,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         [Fact]
         public void Read_ValidSource_ReturnsSuccess()
         {
-            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
+            using (var stream = File.OpenRead(TestData.Resolve("CT1_J2KI")))
             {
                 var source = new StreamByteSource(stream);
                 var reader = new DicomFileReader();
@@ -132,7 +133,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         [Fact]
         public void Read_CompressedImage_RecognizeTransferSyntax()
         {
-            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
+            using (var stream = File.OpenRead(TestData.Resolve("CT1_J2KI")))
             {
                 var source = new StreamByteSource(stream);
                 var reader = new DicomFileReader();
@@ -155,7 +156,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         [Fact]
         public async Task ReadAsync_CompressedImage_RecognizeTransferSyntax()
         {
-            using (var stream = File.OpenRead(@".\Test Data\CT1_J2KI"))
+            using (var stream = File.OpenRead(TestData.Resolve("CT1_J2KI")))
             {
                 var source = new StreamByteSource(stream);
                 var reader = new DicomFileReader();
