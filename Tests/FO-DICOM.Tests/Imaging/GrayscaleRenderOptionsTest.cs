@@ -12,7 +12,7 @@ namespace FellowOakDicom.Tests.Imaging
     {
         #region Unit tests
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ColorMap_Monochrome2ImageOptions_ReturnsMonochrome2ColorMap()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Same(ColorTable.Monochrome2, options.ColorMap);
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ColorMap_Setter_ReturnsSetColorMap()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));

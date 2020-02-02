@@ -12,7 +12,7 @@ namespace FellowOakDicom.Tests.Imaging
     public class DicomJpegLossessTest
     {
 
-        [Theory]
+        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         [InlineData("GH538-jpeg1.dcm")]
         [InlineData("GH538-jpeg14sv1.dcm")]
         [InlineData("CR-MONO1-10-chest")]
@@ -24,7 +24,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.NotNull(image);
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void DicomJpegLosses_EncodingShallThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("GH538-jpeg14sv1.dcm"), FileReadOption.ReadAll);

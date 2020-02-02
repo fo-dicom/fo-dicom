@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging.Render
     {
         #region Unit tests
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void DicomPixelData_TestDefaultWindowing()
         {
             // an image, that contains several values in 0028,1050 and 0028,1051

@@ -12,7 +12,7 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection("ImageSharp")]
     public class ImageSharpRenderingTests
     {
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void TestRenderImage()
         {
             var image = ImageManager.CreateImage(100, 100);
@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.IsType<ImageSharpImage>(image);
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void TestActualRendering()
         {
             var dcmImage = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle"));

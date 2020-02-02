@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Bugs
     {
         #region Unit Tests
 
-        [Theory]
+        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         [MemberData(nameof(CodecsNumbers))]
         public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.Bugs
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         [MemberData(nameof(CodecsNumbers))]
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)

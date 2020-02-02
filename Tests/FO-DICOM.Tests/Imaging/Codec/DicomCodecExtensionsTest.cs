@@ -18,7 +18,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
     {
         #region Unit tests
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4_WithParameters()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -86,7 +86,7 @@ TODO: This Test shall run green if issue #921 is solved.
         }
 */
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void EncodeDecodeRLE16()
         {
             var files = Directory.GetFiles(@"Test Data");
@@ -151,7 +151,7 @@ TODO: This Test shall run green if issue #921 is solved.
         /// Uses the RLELossless Transfer Syntax to encode and decode an image and makes sure
         /// that this is idempotent with respect to the pixel data.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void EncodeDecodeTestRLE()
         {
             var bytes = new byte[] { 0, 0, 1, 0, 1, 0, 1, 0 };
@@ -161,7 +161,7 @@ TODO: This Test shall run green if issue #921 is solved.
         /// <summary>
         /// White box testing of the RLELossless TS codec.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void EncodeDecodeTestRLE2()
         {
             var r = new Random();

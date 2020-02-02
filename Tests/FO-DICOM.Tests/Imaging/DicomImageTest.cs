@@ -48,7 +48,7 @@ namespace FellowOakDicom.Tests.Imaging
         }
 
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void RenderImage_ColorPalette()
         {
             lock (_lock)
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Tests.Imaging
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         [InlineData("TestPattern_Palette.dcm")]
         [InlineData("TestPattern_Palette_16.dcm")]
         [InlineData("TestPattern_RGB.dcm")]
