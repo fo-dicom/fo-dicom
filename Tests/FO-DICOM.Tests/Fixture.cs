@@ -77,5 +77,9 @@ namespace FellowOakDicom.Tests
 
     }
 
+    [CollectionDefinition("Validation")]
+    public class ValidationCollection: ICollectionFixture<GlobalFixture>
+    { }
+
 
 }

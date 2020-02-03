@@ -7,7 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
 
-    [Collection("General")]
+    [Collection("Validation")]
     public class DicomValidationTest
     {
 
