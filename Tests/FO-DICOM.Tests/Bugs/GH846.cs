@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
@@ -28,7 +29,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             walker.Walk(dumper);
 
-            var expected = "(0029,1009:A VERY LONG PRIVATE CREATOR THAT SHOULD WORK BUT IT DOESN'T) UI [123456789.123456789.123456789]#    30, Unknown\r\n";
+            var expected = "(0029,1009:A VERY LONG PRIVATE CREATOR THAT SHOULD WORK BUT IT DOESN'T) UI [123456789.123456789.123456789]#    30, Unknown" + Environment.NewLine;
             var actual = stringBuilder.ToString();
 
             Assert.Equal(expected, actual);

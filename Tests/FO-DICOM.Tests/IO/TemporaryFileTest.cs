@@ -60,7 +60,7 @@ namespace FellowOakDicom.Tests.IO
                 TemporaryFile.StoragePath = null;
                 var temp = TemporaryFile.Create().Name;
 
-                var expected = Path.GetTempPath().TrimEnd('\\');
+                var expected = Path.GetTempPath().TrimEnd('\\').TrimEnd('/');
                 var actual = Path.GetDirectoryName(temp);
                 Assert.Equal(expected, actual);
             }

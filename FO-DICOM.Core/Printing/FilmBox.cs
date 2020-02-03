@@ -728,8 +728,8 @@ namespace FellowOakDicom.Printing
         /// <param name="filmBoxFolder">Folder in which to save the film box contents.</param>
         public void Save(string filmBoxFolder)
         {
-            var filmBoxDicomFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
-            var filmBoxTextFile = string.Format(@"{0}\FilmBox.txt", filmBoxFolder);
+            var filmBoxDicomFile = Path.Combine(filmBoxFolder, "FilmBox.dcm");
+            var filmBoxTextFile = Path.Combine(filmBoxFolder, "FilmBox.txt");
             var file = new DicomFile(this);
             file.Save(filmBoxDicomFile);
 
@@ -739,12 +739,12 @@ namespace FellowOakDicom.Printing
                 writer.Write(this.WriteToString());
             }
 
-            var imageBoxFolderInfo = new DirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            var imageBoxFolderInfo = new DirectoryReference(Path.Combine(filmBoxFolder, "Images"));
             imageBoxFolderInfo.Create();
             for (int i = 0; i < BasicImageBoxes.Count; i++)
             {
                 var imageBox = BasicImageBoxes[i];
-                imageBox.Save(string.Format(@"{0}\I{1:000000}", imageBoxFolderInfo.Name, i + 1));
+                imageBox.Save(Path.Combine(imageBoxFolderInfo.Name, string.Format(@"I{0:000000}", i + 1)));
             }
         }
 
@@ -756,13 +756,13 @@ namespace FellowOakDicom.Printing
         /// <returns>Film box for the specified <paramref name="filmSession"/> located in the <paramref name="filmBoxFolder"/>.</returns>
         public static FilmBox Load(FilmSession filmSession, string filmBoxFolder)
         {
-            var filmBoxFile = string.Format(@"{0}\FilmBox.dcm", filmBoxFolder);
+            var filmBoxFile = Path.Combine(filmBoxFolder, "FilmBox.dcm");
 
             var file = DicomFile.Open(filmBoxFile);
 
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
-            var imagesFolder = new DirectoryReference(string.Format(@"{0}\Images", filmBoxFolder));
+            var imagesFolder = new DirectoryReference(Path.Combine(filmBoxFolder, "Images"));
             foreach (var image in imagesFolder.EnumerateFileNames("*.dcm"))
             {
                 var imageBox = ImageBox.Load(filmBox, image);
