@@ -2,10 +2,6 @@
 using FellowOakDicom.Tests.Helpers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -13,7 +9,12 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection("ImageSharp")]
     public class ImageSharpRenderingTests
     {
-        [IgnoreOnDesktopFact]
+
+#if NET462
+        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
+#else
+        [Fact]
+#endif
         public void TestRenderImage()
         {
             var image = ImageManager.CreateImage(100, 100);
@@ -21,7 +22,11 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.IsType<ImageSharpImage>(image);
         }
 
-        [IgnoreOnDesktopFact]
+#if NET462
+        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
+#else
+        [Fact]
+#endif
         public void TestActualRendering()
         {
             var dcmImage = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle"));

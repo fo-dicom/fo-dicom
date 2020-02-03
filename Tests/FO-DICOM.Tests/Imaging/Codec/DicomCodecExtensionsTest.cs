@@ -63,18 +63,14 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-/*
-TODO: This Test shall run green if issue #921 is solved.
 
-        [Theory]
+        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO: This Test shall run green if issue #921 is solved.
         [InlineData("TestPattern_RGB.dcm")]
-#if !NETSTANDARD
         [InlineData("CR-MONO1-10-chest")]
         [InlineData("GH064.dcm")]
-#endif
         public void ChangeTransferSyntax_UpdatePhotometricInterpretationOnJPEGBaseline(string filename)
         {
-            var file = DicomFile.Open(TestData.Resolve("" + filename);
+            var file = DicomFile.Open(TestData.Resolve("" + filename));
 
             // when converting to JpegBaseline the Photometric interpretation has to be updated
             var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=false, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
@@ -84,7 +80,7 @@ TODO: This Test shall run green if issue #921 is solved.
             var newProcess14 = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess14SV1);
             Assert.Equal(file.Dataset.GetString(DicomTag.PhotometricInterpretation), newProcess14.GetString(DicomTag.PhotometricInterpretation));
         }
-*/
+
 
         [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void EncodeDecodeRLE16()
