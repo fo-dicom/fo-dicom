@@ -102,30 +102,6 @@ namespace FellowOakDicom.Tests
         }
 
 
-        [Fact()]
-        public void AddInvalidUIDMultiplicityWithGlobalSuppression()
-        {
-            DicomValidation.PerformValidation = false;
-            Assert.Null(Record.Exception(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5");
-            }));
-
-            Assert.Null(Record.Exception(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4");
-            }));
-
-            Assert.Null(Record.Exception(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5"));
-            }));
-            DicomValidation.PerformValidation = true;
-        }
-
         #endregion
 
     }
