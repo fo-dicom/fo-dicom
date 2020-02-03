@@ -608,8 +608,7 @@ namespace FellowOakDicom.Tests.Serialization
         {
             File.WriteAllText("test.txt", "xxx!");
             var path = Path.GetFullPath("test.txt");
-            var filePrefix = Environment.OSVersion.Platform == PlatformID.MacOSX ? "smb://" : "file:";
-            var bulkData = new BulkDataUriByteBuffer(filePrefix + path);
+            var bulkData = new BulkDataUriByteBuffer(new Uri(path).AbsoluteUri);
 
             Assert.Throws<InvalidOperationException>(() => bulkData.Data);
             Assert.Throws<InvalidOperationException>(() => bulkData.Size);
