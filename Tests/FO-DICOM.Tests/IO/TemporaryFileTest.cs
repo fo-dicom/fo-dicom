@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
+using System;
 using System.IO;
 using Xunit;
 
@@ -60,7 +61,7 @@ namespace FellowOakDicom.Tests.IO
                 TemporaryFile.StoragePath = null;
                 var temp = TemporaryFile.Create().Name;
 
-                var expected = Path.GetTempPath().TrimEnd('\\');
+                var expected = Path.GetTempPath().TrimEnd('\\').TrimEnd('/');
                 var actual = Path.GetDirectoryName(temp);
                 Assert.Equal(expected, actual);
             }
@@ -84,11 +85,14 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Create_StoragePathNonNull_FileAttributesContainTempFlag()
         {
-            lock (this.locker)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                TemporaryFile.StoragePath = TestData.Resolve("Temporary Path 3");
-                var path = TemporaryFile.Create().Name;
-                Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+                lock (this.locker)
+                {
+                    TemporaryFile.StoragePath = TestData.Resolve("Temporary Path 3");
+                    var path = TemporaryFile.Create().Name;
+                    Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
+                }
             }
         }
 

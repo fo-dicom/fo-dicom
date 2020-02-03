@@ -115,7 +115,8 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
-            Assert.True(TranscoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
+            var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+            Assert.True(transcoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
                 DicomTransferSyntax.ExplicitVRLittleEndian));
 
             var clone = deflated.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);

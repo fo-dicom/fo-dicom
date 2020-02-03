@@ -176,6 +176,7 @@ namespace FellowOakDicom.Tests.Media
             var dicomFile = DicomFile.Open(TestData.Resolve(filename));
 
             var dicomDir = new DicomDirectory();
+            Assert.True(dicomDir.ValidateItems);
             Assert.Throws<DicomValidationException>(()
                 => dicomDir.AddFile(dicomFile, filename));
 

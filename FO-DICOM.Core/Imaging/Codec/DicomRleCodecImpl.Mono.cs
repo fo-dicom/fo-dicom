@@ -1,14 +1,13 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
+using System;
+using System.IO;
+
+namespace FellowOakDicom.Imaging.Codec
 {
-    using System;
-    using System.IO;
-
-    using Dicom.IO;
-    using Dicom.IO.Buffer;
-
     /// <summary>
     /// Implementation of the RLE codec for Mono based platforms.
     /// </summary>

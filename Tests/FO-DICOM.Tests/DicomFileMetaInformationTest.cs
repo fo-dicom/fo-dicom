@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
 
-    [Collection("General")]
+    [Collection("Validation")]
     public class DicomFileMetaInformationTest
     {
         #region Unit tests
@@ -204,7 +204,6 @@ namespace FellowOakDicom.Tests
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.456"));
             var metaInfo = new DicomFileMetaInformation(dataset);
 
-            Assert.Equal(validate, metaInfo.AutoValidate);
             Assert.Equal(validate, metaInfo.ValidateItems);
             Assert.Equal("1.2.3.456", metaInfo.MediaStorageSOPInstanceUID.UID);
         }

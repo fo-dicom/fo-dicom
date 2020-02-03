@@ -1173,7 +1173,8 @@ namespace FellowOakDicom.Network
                     {
                         var changeTransferSyntax = true;
 
-                        if (!TranscoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
+                        var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+                        if (!transcoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
                                 pc.AcceptedTransferSyntax) && msg.Dataset.Contains(DicomTag.PixelData))
                         {
                             Logger.Warn(

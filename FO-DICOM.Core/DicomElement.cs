@@ -1441,11 +1441,11 @@ namespace FellowOakDicom
         {
             if (nameA == null && nameB == null) { return true; } // both are null
             if (nameA == null || nameB == null) { return false; } // one us null but the other is not
-            return string.Compare(nameA.Last, nameB.Last, StringComparison.CurrentCultureIgnoreCase) == 0
-                && string.Compare(nameA.First, nameB.First, StringComparison.CurrentCultureIgnoreCase) == 0
-                && string.Compare(nameA.Middle, nameB.Middle, StringComparison.CurrentCultureIgnoreCase) == 0
-                && string.Compare(nameA.Prefix, nameB.Prefix, StringComparison.CurrentCultureIgnoreCase) == 0
-                && string.Compare(nameA.Suffix, nameB.Suffix, StringComparison.CurrentCultureIgnoreCase) == 0;
+            return string.Compare(nameA.Last.ToLowerInvariant(), nameB.Last.ToLowerInvariant(), StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.First.ToLowerInvariant(), nameB.First.ToLowerInvariant(), StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Middle.ToLowerInvariant(), nameB.Middle.ToLowerInvariant(), StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Prefix.ToLowerInvariant(), nameB.Prefix.ToLowerInvariant(), StringComparison.CurrentCultureIgnoreCase) == 0
+                && string.Compare(nameA.Suffix.ToLowerInvariant(), nameB.Suffix.ToLowerInvariant(), StringComparison.CurrentCultureIgnoreCase) == 0;
         }
 
         #endregion

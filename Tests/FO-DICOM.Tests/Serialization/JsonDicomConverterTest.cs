@@ -608,7 +608,7 @@ namespace FellowOakDicom.Tests.Serialization
         {
             File.WriteAllText("test.txt", "xxx!");
             var path = Path.GetFullPath("test.txt");
-            var bulkData = new BulkDataUriByteBuffer("file:" + path);
+            var bulkData = new BulkDataUriByteBuffer(new Uri(path).AbsoluteUri);
 
             Assert.Throws<InvalidOperationException>(() => bulkData.Data);
             Assert.Throws<InvalidOperationException>(() => bulkData.Size);

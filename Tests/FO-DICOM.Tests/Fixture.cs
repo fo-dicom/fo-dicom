@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Tests.Network;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using Xunit;
+
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace FellowOakDicom.Tests
 {
@@ -20,6 +25,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         { }
+
     }
 
     public class ImageSharpFixture : IDisposable
@@ -35,6 +41,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         { }
+
     }
 
 
@@ -52,6 +59,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         { }
+
     }
 
 
@@ -76,6 +84,10 @@ namespace FellowOakDicom.Tests
     {
 
     }
+
+    [CollectionDefinition("Validation")]
+    public class ValidationCollection: ICollectionFixture<GlobalFixture>
+    { }
 
 
 }

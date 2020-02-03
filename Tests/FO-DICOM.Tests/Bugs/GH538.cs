@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,38 +56,11 @@ namespace FellowOakDicom.Tests.Bugs
             }
         }
 
-#if NETSTANDARD
-        [Fact]
-        public void OldCStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
-        {
-            const string file = TestData.Resolve("GH538-jpeg14sv1.dcm";
-            var handle = new ManualResetEventSlim();
-            var success = false;
 
-            var port = Ports.GetNext();
-            using (DicomServer.Create<VideoCStoreProvider>(port))
-            {
-                var request = new DicomCStoreRequest(file);
-                request.OnResponseReceived = (req, rsp) =>
-                {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
-                        !req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success) success = true;
-                    handle.Set();
-                };
-
-                var client = new Network.DicomClient();
-                client.AddRequest(request);
-
-                client.Send("localhost", port, false, "STORESCU", "STORESCP");
-                handle.Wait(10000);
-
-                Assert.True(success);
-            }
-        }
         [Fact]
         public async Task CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
-            const string file = TestData.Resolve("GH538-jpeg14sv1.dcm";
+            string file = TestData.Resolve("GH538-jpeg14sv1.dcm");
             var handle = new ManualResetEventSlim();
             var success = false;
 
@@ -101,7 +75,7 @@ namespace FellowOakDicom.Tests.Bugs
                     handle.Set();
                 };
 
-                var client = new Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = new DicomClient("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -110,7 +84,6 @@ namespace FellowOakDicom.Tests.Bugs
                 Assert.True(success);
             }
         }
-#endif
 
         #endregion
     }

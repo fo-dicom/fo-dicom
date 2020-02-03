@@ -13,31 +13,15 @@ namespace FellowOakDicom.Imaging.Codec
     /// </summary>
     public sealed class WindowsTranscoderManager : TranscoderManager
     {
-        #region FIELDS
-
-        /// <summary>
-        /// Singleton instance of the <see cref="WindowsTranscoderManager"/>.
-        /// </summary>
-        public static readonly TranscoderManager Instance;
-
-        #endregion
 
         #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="WindowsTranscoderManager"/>.
-        /// </summary>
-        static WindowsTranscoderManager()
-        {
-            Instance = new WindowsTranscoderManager();
-        }
 
         /// <summary>
         /// Initializes an instance of <see cref="WindowsTranscoderManager"/>.
         /// </summary>
         public WindowsTranscoderManager()
         {
-            this.LoadCodecsImpl(null, null);
+            LoadCodecs(null, null);
         }
 
         #endregion
@@ -50,7 +34,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// </summary>
         /// <param name="path">Directory path to codec assemblies.</param>
         /// <param name="search">Search pattern for codec assemblies.</param>
-        protected override void LoadCodecsImpl(string path, string search)
+        public override void LoadCodecs(string path, string search)
         {
             var assembly = typeof(WindowsTranscoderManager).GetTypeInfo().Assembly;
             var types =
