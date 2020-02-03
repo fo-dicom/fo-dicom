@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
+// TODO Re-enable parallelization, this really slows down things by A LOT
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
-
 namespace FellowOakDicom.Tests
 {
 

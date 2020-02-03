@@ -18,7 +18,7 @@ namespace FellowOakDicom.Tests.Imaging
 
         #region Unit tests
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void RenderImage_RawImageManager_AsReturnsRawImage()
         {
             lock (_lock)
@@ -28,7 +28,7 @@ namespace FellowOakDicom.Tests.Imaging
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public void ManipulatedImage_MultithreadedAccess_ShouldNotThrow()
         {
             lock (_lock)

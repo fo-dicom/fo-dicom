@@ -8,12 +8,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("Dicom.Helpers.PriorityOrderer", "DICOM [Unit Tests]")]
     public class DicomServerTest
     {
+        private XUnitDicomLogger _logger;
+
+        public DicomServerTest(ITestOutputHelper testOutputHelper)
+        {
+            _logger = new XUnitDicomLogger(testOutputHelper).IncludeTimestamps().IncludeThreadId();
+        }
+
         #region Unit Tests
 
         [Fact]
@@ -21,10 +29,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            var server1 = DicomServer.Create<DicomCEchoProvider>(port);
+            var server1 = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server1.IsListening) Thread.Sleep(10);
 
-            var exception = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port));
+            var exception = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")));
             Assert.IsType<DicomNetworkException>(exception);
 
             Assert.True(server1.IsListening);
@@ -36,7 +44,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            var server = DicomServer.Create<DicomCEchoProvider>(port);
+            var server = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server.IsListening) Thread.Sleep(10);
 
             for (var i = 0; i < 10; ++i)
@@ -56,7 +64,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var server = DicomServer.GetInstance(port);
                 Assert.Equal(port, server.Port);
@@ -68,7 +76,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port)) { }
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"))) { }
 
             var server = DicomServer.GetInstance(port);
             Assert.Null(server);
@@ -79,14 +87,14 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
             }
 
             var e = Record.Exception(
                 () =>
                     {
-                        using (DicomServer.Create<DicomCEchoProvider>(port))
+                        using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
                         {
                             Assert.NotNull(DicomServer.GetInstance(port));
                         }
@@ -99,7 +107,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var server = DicomServer.GetInstance(Ports.GetNext());
                 Assert.Null(server);
@@ -111,9 +119,9 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var e = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port));
+                var e = Record.Exception(() => DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")));
                 Assert.IsType<DicomNetworkException>(e);
             }
         }
@@ -125,7 +133,7 @@ namespace FellowOakDicom.Tests.Network
 
             foreach (var port in ports)
             {
-                var server = DicomServer.Create<DicomCEchoProvider>(port);
+                var server = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
                 while (!server.IsListening) { Thread.Sleep(10); }
             }
 
@@ -145,7 +153,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 while (!server.IsListening) { Thread.Sleep(10); }
                 Assert.True(DicomServer.IsListening(port));
@@ -157,7 +165,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 server.Stop();
                 Thread.Sleep(500);
@@ -172,7 +180,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 Assert.False(DicomServer.IsListening(Ports.GetNext()));
             }
@@ -182,7 +190,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_KnownSOPClass_SendSucceeds()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (DicomServer.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 DicomStatus status = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
@@ -191,6 +199,7 @@ namespace FellowOakDicom.Tests.Network
                 };
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
                 await client.SendAsync();
@@ -207,7 +216,7 @@ namespace FellowOakDicom.Tests.Network
                new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (DicomServer.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 DicomStatus status = null;
                 var request = new DicomCStoreRequest(new DicomFile(ds))
@@ -216,9 +225,10 @@ namespace FellowOakDicom.Tests.Network
                 };
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(request);
+                client.Logger = _logger.IncludePrefix("DicomClient");
+                await client.AddRequestAsync(request).ConfigureAwait(false);
 
-                await client.SendAsync();
+                await client.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(DicomStatus.SOPClassNotSupported, status);
             }
@@ -234,7 +244,7 @@ namespace FellowOakDicom.Tests.Network
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (DicomServer.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 DicomStatus status = null;
                 var request = new DicomCStoreRequest(new DicomFile(ds))
@@ -243,6 +253,7 @@ namespace FellowOakDicom.Tests.Network
                 };
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
                 await client.SendAsync();
@@ -256,11 +267,12 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 while (!server.IsListening) { Thread.Sleep(10); }
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCEchoRequest());
                 await client.SendAsync();
                 Thread.Sleep(100);
@@ -277,7 +289,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_LoopbackListenerKnownSOPClass_SendSucceeds()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port))
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 DicomStatus status = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
@@ -286,6 +298,7 @@ namespace FellowOakDicom.Tests.Network
                 };
 
                 var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
                 await client.SendAsync();
@@ -298,11 +311,12 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_FromIpv4ToIpv6AnyListenerKnownSOPClass_SendFails()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port))
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv6Any, port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
                 var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
@@ -316,11 +330,12 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_FromIpv6ToIpv4AnyListenerKnownSOPClass_SendFails()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port))
+            using (DicomServer.Create<SimpleCStoreProvider>(NetworkManager.IPv4Any, port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
                 var client = new DicomClient(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
                 var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
@@ -333,12 +348,12 @@ namespace FellowOakDicom.Tests.Network
         public void CanCreateIpv4AndIpv6()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (DicomServer.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var e = Record.Exception(
                     () =>
                     {
-                        using (DicomServer.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, port))
+                        using (DicomServer.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, port, logger: _logger.IncludePrefix("DicomServer")))
                         {
 
                         }
@@ -352,7 +367,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (var server = DicomServer.Create<DicomCEchoProvider, DicomCEchoProviderServer>(null, port))
+            using (var server = DicomServer.Create<DicomCEchoProvider, DicomCEchoProviderServer>(null, port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 Assert.IsType<DicomCEchoProviderServer>(server);
                 Assert.Equal(DicomServer.GetInstance(port), server);
@@ -361,6 +376,7 @@ namespace FellowOakDicom.Tests.Network
                 var handle = new ManualResetEventSlim();
 
                 var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCEchoRequest
                 {
                     OnResponseReceived = (req, rsp) =>

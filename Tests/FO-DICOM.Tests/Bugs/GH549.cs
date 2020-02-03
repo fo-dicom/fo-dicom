@@ -16,7 +16,9 @@ namespace FellowOakDicom.Tests.Bugs
     {
         #region Unit Tests
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        // TODO re-enable this
+
+        /*[Theory]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
@@ -46,7 +48,7 @@ namespace FellowOakDicom.Tests.Bugs
             }
         }
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Theory]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
@@ -74,22 +76,23 @@ namespace FellowOakDicom.Tests.Bugs
                 var pixelData = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
                 Assert.Equal(refPixelData, pixelData);
             }
-        }
+        }*/
 
         #endregion
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> CodecsNumbers = new[]
+        public static readonly IEnumerable<object[]> CodecsNumbers = new []
         {
-            new object[] { DicomTransferSyntax.JPEGLSLossless, 100 },
-            new object[] { DicomTransferSyntax.JPEGLSNearLossless, 200 },
-            new object[] { DicomTransferSyntax.JPEG2000Lossless, 100 },
-            new object[] { DicomTransferSyntax.JPEG2000Lossy, 200 },
-            new object[] { DicomTransferSyntax.JPEGProcess14SV1, 100 },
-            new object[] { DicomTransferSyntax.RLELossless, 100 }
+
+            new object[] {DicomTransferSyntax.JPEGLSLossless, 100},
+            new object[] {DicomTransferSyntax.JPEGLSNearLossless, 200},
+            new object[] {DicomTransferSyntax.JPEG2000Lossless, 100},
+            new object[] {DicomTransferSyntax.JPEG2000Lossy, 200},
+            new object[] {DicomTransferSyntax.JPEGProcess14SV1, 100},
+            new object[] {DicomTransferSyntax.RLELossless, 100}
         };
 
-        #endregion
-    }
+    #endregion
+}
 }
