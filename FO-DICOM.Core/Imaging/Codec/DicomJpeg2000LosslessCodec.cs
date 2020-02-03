@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-namespace Dicom.Imaging.Codec
+namespace FellowOakDicom.Imaging.Codec
 {
     public class DicomJpeg2000LosslessCodec : DicomJpeg2000Codec
     {
@@ -12,14 +12,7 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE && !HOLOLENS
-            DicomJpeg2000NativeCodec.Encode(
-                oldPixelData.ToNativePixelData(),
-                newPixelData.ToNativePixelData(),
-                parameters.ToNativeJpeg2000Parameters());
-#else
             DicomJpeg2000CodecImpl.Encode(oldPixelData, newPixelData, parameters as DicomJpeg2000Params);
-#endif
         }
 
         public override void Decode(
@@ -27,14 +20,8 @@ namespace Dicom.Imaging.Codec
             DicomPixelData newPixelData,
             DicomCodecParams parameters)
         {
-#if NETFX_CORE && !HOLOLENS
-            DicomJpeg2000NativeCodec.Decode(
-                oldPixelData.ToNativePixelData(),
-                newPixelData.ToNativePixelData(),
-                parameters.ToNativeJpeg2000Parameters());
-#else
             DicomJpeg2000CodecImpl.Decode(oldPixelData, newPixelData, parameters as DicomJpeg2000Params);
-#endif
         }
+
     }
 }
