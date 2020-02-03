@@ -17,7 +17,8 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
-            var codec = TranscoderManager.GetCodec(transferSyntax);
+            var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+            var codec = transcoderManager.GetCodec(transferSyntax);
             var actual = codec.Name;
             Assert.Equal(expected, actual);
         }
