@@ -131,7 +131,12 @@ namespace FellowOakDicom.Network.Client
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
-            : base(networkStream, dicomClient.FallbackEncoding, dicomClient.Logger)
+            : base(networkStream, 
+                dicomClient.FallbackEncoding,
+                dicomClient.Logger, 
+                dicomClient.LogManager,
+                dicomClient.NetworkManager,
+                dicomClient.TranscoderManager)
         {
             DicomClient = dicomClient;
             NetworkStream = networkStream;

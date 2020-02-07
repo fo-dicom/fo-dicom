@@ -8,11 +8,56 @@ using System.Text.RegularExpressions;
 
 namespace FellowOakDicom.Log
 {
+    public interface ILogger
+    {
+        /// <summary>
+        /// Log a message to the logger.
+        /// </summary>
+        /// <param name="level">Log level.</param>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Log(LogLevel level, string msg, params object[] args);
+
+        /// <summary>
+        /// Log a debug message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Debug(string msg, params object[] args);
+
+        /// <summary>
+        /// Log an informational message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Info(string msg, params object[] args);
+
+        /// <summary>
+        /// Log a warning message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Warn(string msg, params object[] args);
+
+        /// <summary>
+        /// Log an error message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Error(string msg, params object[] args);
+
+        /// <summary>
+        /// Log a fatal error message to the logger.
+        /// </summary>
+        /// <param name="msg">Log message (format string).</param>
+        /// <param name="args">Log message arguments.</param>
+        void Fatal(string msg, params object[] args);
+    }
 
     /// <summary>
     /// Abstract base class for loggers.
     /// </summary>
-    public abstract class Logger
+    public abstract class Logger : ILogger
     {
         /// <summary>
         /// Log a message to the logger.

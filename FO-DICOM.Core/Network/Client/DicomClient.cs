@@ -9,10 +9,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
-using FellowOakDicom.Network.Client.Tasks;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Gets or sets the logger that will be used by this DicomClient
         /// </summary>
-        Logger Logger { get; set; }
+        ILogger Logger { get; set; }
 
         /// <summary>
         /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
@@ -72,19 +72,29 @@ namespace FellowOakDicom.Network.Client
         DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets the network manager that will be used to open connections.
+        /// Gets the network manager that will be used to open connections.
         /// </summary>
-        NetworkManager NetworkManager { get; set; }
+        INetworkManager NetworkManager { get; }
+        
+        /// <summary>
+        /// Gets the log manager that will be used to log information to.
+        /// </summary>
+        ILogManager LogManager { get; }
+        
+        /// <summary>
+        /// Gets the transcoder manager that will be used to transcode incoming or outgoing DICOM files.
+        /// </summary>
+        ITranscoderManager TranscoderManager { get; }
 
         /// <summary>
         /// Triggers when an association is accepted
         /// </summary>
-        event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
+        event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
 
         /// <summary>
         /// Triggers when an association is rejected.
         /// </summary>
-        event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
+        event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
 
         /// <summary>
         /// Representation of the DICOM association released event.
@@ -94,12 +104,12 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
         /// </summary>
-        event EventHandler<EventArguments.StateChangedEventArgs> StateChanged;
+        event EventHandler<StateChangedEventArgs> StateChanged;
 
         /// <summary>
         /// Triggered when a DICOM request times out.
         /// </summary>
-        event EventHandler<EventArguments.RequestTimedOutEventArgs> RequestTimedOut;
+        event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
         /// <summary>
         /// Set negotiation asynchronous operations.
@@ -150,16 +160,18 @@ namespace FellowOakDicom.Network.Client
         public int AssociationLingerTimeoutInMs { get; set; }
         public int? MaximumNumberOfRequestsPerAssociation { get; set; }
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
-        public Logger Logger { get; set; } = LogManager.GetLogger("FellowOakDicom.Network");
+        public ILogger Logger { get; set; }
         public DicomServiceOptions Options { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
-        public NetworkManager NetworkManager { get; set; }
+        public INetworkManager NetworkManager { get; }
+        public ILogManager LogManager { get; }
+        public ITranscoderManager TranscoderManager { get; }
 
-        public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
-        public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
+        public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
+        public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
@@ -172,31 +184,35 @@ namespace FellowOakDicom.Network.Client
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        /// <param name="associationRequestTimeoutInMs">Timeout in milliseconds for establishing association.</param>
-        /// <param name="associationReleaseTimeoutInMs">Timeout in milliseconds to break off association</param>
-        /// <param name="associationLingerTimeoutInMs">Timeout in milliseconds to keep open association after all requests have been processed.</param>
-        /// <param name="maximumNumberOfRequestsPerAssociation">The maximum number of DICOM requests that can be sent over a single DICOM association</param>
+        /// <param name="options">The options that further modify the behavior of this DICOM client</param>
+        /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
+        /// <param name="logManager">The log manager that will be used to extract a default logger</param>
+        /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
-            int associationRequestTimeoutInMs = DicomClientDefaults.DefaultAssociationRequestTimeoutInMs,
-            int associationReleaseTimeoutInMs = DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,
-            int associationLingerTimeoutInMs = DicomClientDefaults.DefaultAssociationLingerInMs,
-            int? maximumNumberOfRequestsPerAssociation = null)
+            DicomClientOptions options, 
+            INetworkManager networkManager, 
+            ILogManager logManager,
+            ITranscoderManager transcoderManager)
         {
             Host = host;
             Port = port;
             UseTls = useTls;
             CallingAe = callingAe;
             CalledAe = calledAe;
-            AssociationRequestTimeoutInMs = associationRequestTimeoutInMs;
-            AssociationReleaseTimeoutInMs = associationReleaseTimeoutInMs;
-            AssociationLingerTimeoutInMs = associationLingerTimeoutInMs;
-            MaximumNumberOfRequestsPerAssociation = maximumNumberOfRequestsPerAssociation;
+            AssociationRequestTimeoutInMs = options.AssociationRequestTimeoutInMs;
+            AssociationReleaseTimeoutInMs = options.AssociationReleaseTimeoutInMs;
+            AssociationLingerTimeoutInMs = options.AssociationLingerTimeoutInMs;
+            MaximumNumberOfRequestsPerAssociation = options.MaximumNumberOfRequestsPerAssociation;
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             State = new DicomClientIdleState(this);
+            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
+            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            Logger = logManager.GetLogger("FellowOakDicom.Network");
         }
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task)
@@ -234,16 +250,16 @@ namespace FellowOakDicom.Network.Client
             return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
         }
 
-        internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
+        internal void NotifyAssociationAccepted(AssociationAcceptedEventArgs eventArgs)
             => AssociationAccepted?.Invoke(this, eventArgs);
 
-        internal void NotifyAssociationRejected(EventArguments.AssociationRejectedEventArgs eventArgs)
+        internal void NotifyAssociationRejected(AssociationRejectedEventArgs eventArgs)
             => AssociationRejected?.Invoke(this, eventArgs);
 
         internal void NotifyAssociationReleased()
             => AssociationReleased?.Invoke(this, EventArgs.Empty);
 
-        internal void NotifyRequestTimedOut(EventArguments.RequestTimedOutEventArgs eventArgs)
+        internal void NotifyRequestTimedOut(RequestTimedOutEventArgs eventArgs)
             => RequestTimedOut?.Invoke(this, eventArgs);
 
         internal Task OnSendQueueEmptyAsync()

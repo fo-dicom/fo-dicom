@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
-
     /// <summary>
     /// Delegate for passing byte array
     /// </summary>
@@ -76,8 +75,17 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="stream">Network stream.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
-        /// <param name="log">Logger</param>
-        protected DicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+        /// <param name="logger">Logger</param>
+        /// <param name="logManager">The log manager</param>
+        /// <param name="networkManager">The network manager</param>
+        /// <param name="transcoderManager">The transcoder manager</param>
+        protected DicomService(
+            INetworkStream stream, 
+            Encoding fallbackEncoding,
+            ILogger logger,
+            ILogManager logManager,
+            INetworkManager networkManager,
+            ITranscoderManager transcoderManager)
         {
             _isDisconnectedFlag = new AsyncManualResetEvent();
 
@@ -90,7 +98,12 @@ namespace FellowOakDicom.Network
             _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
 
             MaximumPDUsInQueue = 16;
-            Logger = log ?? LogManager.GetLogger("FellowOakDicom.Network");
+            
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
+            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            
             Options = new DicomServiceOptions();
 
             _isInitialized = false;
@@ -103,7 +116,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
-        public Logger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// Gets or sets the DICOM service options.
@@ -169,6 +182,21 @@ namespace FellowOakDicom.Network
         /// Gets or sets an event handler to handle unsupported PDU bytes.
         /// </summary>
         public PDUBytesHandler DoHandlePDUBytes { get; set; }
+        
+        /// <summary>
+        /// The network manager being used by this DICOM service
+        /// </summary>
+        private INetworkManager NetworkManager { get; }
+        
+        /// <summary>
+        /// The log manager being used by this DICOM service
+        /// </summary>
+        private ILogManager LogManager { get; }
+        
+        /// <summary>
+        /// The transcoder manager being used by this DICOM service
+        /// </summary>
+        private ITranscoderManager TranscoderManager { get; }
 
         #endregion
 
@@ -1173,7 +1201,7 @@ namespace FellowOakDicom.Network
                     {
                         var changeTransferSyntax = true;
 
-                        var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+                        var transcoderManager = TranscoderManager;
                         if (!transcoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
                                 pc.AcceptedTransferSyntax) && msg.Dataset.Contains(DicomTag.PixelData))
                         {
@@ -1486,7 +1514,7 @@ namespace FellowOakDicom.Network
 
         #region Helper methods
 
-        private static bool LogIOException(Exception e, Logger logger, bool reading)
+        private bool LogIOException(Exception e, ILogger logger, bool reading)
         {
             if (NetworkManager.IsSocketException(e.InnerException, out int errorCode, out string errorDescriptor))
             {

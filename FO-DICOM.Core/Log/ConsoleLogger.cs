@@ -85,11 +85,6 @@ namespace FellowOakDicom.Log
     public class ConsoleLogManager : LogManager
     {
         /// <summary>
-        /// Singleton instance of the <see cref="ConsoleLogManager"/>.
-        /// </summary>
-        public static readonly LogManager Instance = new ConsoleLogManager();
-
-        /// <summary>
         /// Initializes an instance of the <see cref="ConsoleLogManager"/>.
         /// </summary>
         private ConsoleLogManager()

@@ -3,50 +3,22 @@
 
 namespace FellowOakDicom.Log
 {
-
-    /// <summary>
-    /// Main class for logging management.
-    /// </summary>
-    public abstract class LogManager
+    public interface ILogManager
     {
-        #region FIELDS
-
-        private static LogManager implementation;
-
-        #endregion
-
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="LogManager"/>.
-        /// </summary>
-        static LogManager()
-        {
-            SetImplementation(NullLoggerManager.Instance);
-        }
-
-        #endregion
-
-        #region METHODS
-
-        /// <summary>
-        /// Set the log manager implementation to use for logging.
-        /// </summary>
-        /// <param name="impl"></param>
-        public static void SetImplementation(LogManager impl)
-        {
-            implementation = impl ?? NullLoggerManager.Instance;
-        }
-
         /// <summary>
         /// Get logger.
         /// </summary>
         /// <param name="name">Classifier name, typically namespace or type name.</param>
-        /// <returns>Logger from the current log manager implementation.</returns>
-        public static Logger GetLogger(string name)
-        {
-            return implementation.GetLoggerImpl(name);
-        }
+        /// <returns>A logger</returns>
+        ILogger GetLogger(string name);
+    }
+
+    /// <summary>
+    /// Main class for logging management.
+    /// </summary>
+    public abstract class LogManager : ILogManager
+    {
+        #region METHODS
 
         /// <summary>
         /// Get logger from the current log manager implementation.
@@ -54,6 +26,8 @@ namespace FellowOakDicom.Log
         /// <param name="name">Classifier name, typically namespace or type name.</param>
         /// <returns>Logger from the current log manager implementation.</returns>
         protected abstract Logger GetLoggerImpl(string name);
+
+        ILogger ILogManager.GetLogger(string name) => GetLoggerImpl(name);
 
         #endregion
 
