@@ -1,4 +1,5 @@
 ﻿using System;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 
 namespace FellowOakDicom.Network.Client
@@ -21,16 +22,18 @@ namespace FellowOakDicom.Network.Client
     {
         private readonly ILogManager _logManager;
         private readonly INetworkManager _networkManager;
+        private readonly ITranscoderManager _transcoderManager;
 
-        public DicomClientFactory(ILogManager logManager, INetworkManager networkManager)
+        public DicomClientFactory(ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
         {
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
+            _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
         }
 
         public IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe, DicomClientOptions options = null)
         {
-            return new DicomClient(host, port, useTls, callingAe, calledAe, options ?? new DicomClientOptions(), _networkManager, _logManager);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, options ?? new DicomClientOptions(), _networkManager, _logManager, _transcoderManager);
         }
     }
 }
