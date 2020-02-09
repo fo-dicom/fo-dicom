@@ -69,6 +69,8 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         ITranscoderManager TranscoderManager { get; }
 
+        bool IsSendRequired { get; }
+
         /// <summary>
         /// Triggers when an association is accepted
         /// </summary>

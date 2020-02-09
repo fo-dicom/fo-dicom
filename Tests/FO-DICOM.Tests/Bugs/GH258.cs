@@ -8,10 +8,14 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
-
     [Collection("General")]
     public class GH258
     {
+        public GH258()
+        {
+
+        }
+
         [Fact]
         public void Log_ExceptionInFormattedString_DisplaysExceptionMessage()
         {

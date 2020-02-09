@@ -4,14 +4,22 @@
 using FellowOakDicom.Imaging.Codec;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH227
+    public class GH227 : IClassFixture<GlobalFixture>
     {
+        private readonly ITranscoderManager _transcoderManager;
+
+        public GH227(GlobalFixture globalFixture)
+        {
+            _transcoderManager = globalFixture.ServiceProvider.GetRequiredService<ITranscoderManager>();
+        }
+
         #region Unit tests
 
         [Fact]
@@ -115,7 +123,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
-            var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+            var transcoderManager = _transcoderManager;
             Assert.True(transcoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
                 DicomTransferSyntax.ExplicitVRLittleEndian));
 

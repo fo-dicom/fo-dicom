@@ -7,58 +7,60 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-// TODO Re-enable parallelization, this really slows down things by A LOT
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace FellowOakDicom.Tests
 {
-
     public class GlobalFixture : IDisposable
     {
+        public readonly IServiceProvider ServiceProvider;
 
         public GlobalFixture()
         {
-            new DicomSetupBuilder()
-                .RegisterServices(s => s
-                .AddDefaultDicomServices())
-                .Build();
+            var serviceCollection = new ServiceCollection().AddFellowOakDicom();
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
         public void Dispose()
-        { }
-
+        {
+        }
     }
 
     public class ImageSharpFixture : IDisposable
     {
+        public readonly IServiceProvider ServiceProvider;
+
         public ImageSharpFixture()
         {
-            new DicomSetupBuilder()
-                .RegisterServices(s => s
-                .AddDefaultDicomServices()
-                .UseImageManager<ImageSharpImageManager>())
-                .Build();
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddImageManager<ImageSharpImageManager>();
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
         public void Dispose()
-        { }
-
+        {
+        }
     }
 
 
     public class DependencyFixture : IDisposable
     {
+        public readonly IServiceProvider ServiceProvider;
+
         public DependencyFixture()
         {
-            new DicomSetupBuilder()
-                .RegisterServices(s => s
-                .AddDefaultDicomServices()
-                .AddTransient<ISomeInterface, SomeInterfaceImplementation>()
-                .UseImageManager<ImageSharpImageManager>())
-                .Build();
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddImageManager<ImageSharpImageManager>()
+                .AddTransient<ISomeInterface, SomeInterfaceImplementation>();
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
         public void Dispose()
-        { }
+        {
+        }
 
     }
 

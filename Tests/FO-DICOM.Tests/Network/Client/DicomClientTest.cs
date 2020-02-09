@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +22,7 @@ namespace FellowOakDicom.Tests.Network.Client
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomClientTest
+    public class DicomClientTest : IClassFixture<GlobalFixture>
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly XUnitDicomLogger _logger;
@@ -30,18 +32,22 @@ namespace FellowOakDicom.Tests.Network.Client
         private static string remoteHost;
 
         private static int remotePort;
+        private readonly IDicomClientFactory _clientFactory;
+        private readonly IDicomServerFactory _serverFactory;
 
         #endregion
 
         #region Constructors
 
-        public DicomClientTest(ITestOutputHelper testOutputHelper)
+        public DicomClientTest(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
         {
             _testOutputHelper = testOutputHelper;
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
+            _clientFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomClientFactory>();
+            _serverFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomServerFactory>();
             remoteHost = null;
             remotePort = 0;
         }
@@ -52,32 +58,30 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
-            var server = DicomServer.Create<T>(port);
+            var server = _serverFactory.Create<T>(port);
             server.Logger = _logger.IncludePrefix(nameof(IDicomServer));
             return server;
         }
 
         private TServer CreateServer<TProvider, TServer>(int port)
             where TProvider : DicomService, IDicomServiceProvider
-            where TServer : class, IDicomServer<TProvider>, new()
+            where TServer : class, IDicomServer<TProvider>
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
-            var options = new DicomServiceOptions
-            {
-                LogDimseDatasets = false,
-                LogDataPDUs = false,
-            };
             var ipAddress = NetworkManager.IPv4Any;
-            var server = DicomServer.Create<TProvider, TServer>(ipAddress, port, logger: logger, options: options);
+            Action<DicomServiceOptions> configureOptions = o =>
+            {
+                o.LogDimseDatasets = false;
+                o.LogDataPDUs = false;
+            };
+            var server = _serverFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, configureOptions: configureOptions);
             return server as TServer;
         }
 
-        private DicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
+        private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe, Action<DicomClientOptions> configureClientOptions = null)
         {
-            var client = new DicomClient(host, port, useTls, callingAe, calledAe)
-            {
-                Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-            };
+            var client = _clientFactory.Create(host, port, useTls, callingAe, calledAe, configureClientOptions);
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
             return client;
         }
 
@@ -105,21 +109,16 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     if (moreRequestsSent)
                         return;
-                    if (args.NewState is DicomClientSendingRequestsState)
+                    if (args.NewState is DicomClientSendingRequestsState s)
                     {
-                        while (!client.QueuedRequests.IsEmpty)
+                        for (var i = 0; i < 5; i++)
                         {
-                            await Task.Delay(10).ConfigureAwait(false);
+                            var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                            await client.AddRequestAsync(request).ConfigureAwait(false);
                         }
-                    }
 
-                    for (var i = 0; i < 5; i++)
-                    {
-                        var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
-                        await client.AddRequestAsync(request).ConfigureAwait(false);
+                        moreRequestsSent = true;
                     }
-
-                    moreRequestsSent = true;
                 };
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -442,8 +441,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 var counter = 0;
                 var flag = new ManualResetEventSlim();
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.AssociationLingerTimeoutInMs = 100;
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP", o => o.AssociationLingerTimeoutInMs= 100);
                 await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)})
                     .ConfigureAwait(false);
 
@@ -861,9 +859,9 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
+                    o => o.AssociationLingerTimeoutInMs = 10000);
                 client.NegotiateAsyncOps(1, 1);
-                client.AssociationLingerTimeoutInMs = 10000;
                 var cancellationTokenSource = new CancellationTokenSource();
 
                 var numberOfRequestsToSend = 5;
@@ -967,7 +965,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        private async Task<DicomCEchoResponse> SendEchoRequestWithTimeout(DicomClient dicomClient, int timeoutInMilliseconds = 3000)
+        private async Task<DicomCEchoResponse> SendEchoRequestWithTimeout(IDicomClient dicomClient, int timeoutInMilliseconds = 3000)
         {
             var request = new DicomCEchoRequest();
             var logger = _logger.IncludePrefix("C-Echo request");
@@ -1025,9 +1023,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                client.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
+                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1083,9 +1080,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var expectedNumberOfAssociations = 1;
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                client.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
+                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1142,9 +1138,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var expectedNumberOfAssociations = 2;
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-
-                client.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
+                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1202,9 +1197,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP"
+                    , o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
 
-                client.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
 
@@ -1305,9 +1300,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
+                    o => o.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc);
                 client.NegotiateAsyncOps(10, 10);
-                client.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
 
                 logger.Info($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
 
@@ -1369,8 +1364,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-                : base(stream, fallbackEncoding, log)
+            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
             }
 
@@ -1424,8 +1420,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 DicomTransferSyntax.ExplicitVRLittleEndian
             };
 
-            public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-                : base(stream, fallbackEncoding, log)
+            public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
             }
 
@@ -1470,9 +1467,9 @@ namespace FellowOakDicom.Tests.Network.Client
             public IEnumerable<DicomCEchoRequest> Requests => _requests;
             public IEnumerable<DicomAssociation> Associations => _associations;
 
-            public RecordingDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, Func<DicomCEchoRequest, Task> onRequest,
-                TimeSpan? responseTimeout)
-                : base(stream, fallbackEncoding, log)
+            public RecordingDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, Func<DicomCEchoRequest, Task> onRequest,
+                TimeSpan? responseTimeout, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
                 _onRequest = onRequest ?? throw new ArgumentNullException(nameof(onRequest));
                 _responseTimeout = responseTimeout;
@@ -1526,14 +1523,21 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class RecordingDicomCEchoProviderServer : DicomServer<RecordingDicomCEchoProvider>
         {
+            private readonly INetworkManager _networkManager;
+            private readonly ILogManager _logManager;
+            private readonly ITranscoderManager _transcoderManager;
             private readonly ConcurrentBag<RecordingDicomCEchoProvider> _providers;
             private Func<DicomCEchoRequest, Task> _onRequest;
             private TimeSpan? _responseTimeout;
 
             public IEnumerable<RecordingDicomCEchoProvider> Providers => _providers;
 
-            public RecordingDicomCEchoProviderServer()
+            public RecordingDicomCEchoProviderServer(INetworkManager networkManager, ILogManager logManager,
+                ITranscoderManager transcoderManager) : base(networkManager, logManager)
             {
+                _networkManager = networkManager;
+                _logManager = logManager;
+                _transcoderManager = transcoderManager;
                 _providers = new ConcurrentBag<RecordingDicomCEchoProvider>();
                 _onRequest = _ => Task.FromResult(0);
             }
@@ -1550,7 +1554,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             protected sealed override RecordingDicomCEchoProvider CreateScp(INetworkStream stream)
             {
-                var provider = new RecordingDicomCEchoProvider(stream, Encoding.UTF8, Logger, _onRequest, _responseTimeout);
+                var provider = new RecordingDicomCEchoProvider(stream, Encoding.UTF8, Logger, _onRequest, _responseTimeout,
+                    _logManager, _networkManager, _transcoderManager);
                 _providers.Add(provider);
                 return provider;
             }
@@ -1565,8 +1570,9 @@ namespace FellowOakDicom.Tests.Network.Client
             public IEnumerable<DicomCGetRequest> Requests => _requests;
             public IEnumerable<DicomAssociation> Associations => _associations;
 
-            public RecordingDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-                : base(stream, fallbackEncoding, log)
+            public RecordingDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
+                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
                 _requests = new ConcurrentBag<DicomCGetRequest>();
                 _associations = new ConcurrentBag<DicomAssociation>();
@@ -1637,18 +1643,24 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class RecordingDicomCGetProviderServer : DicomServer<RecordingDicomCGetProvider>
         {
+            private readonly INetworkManager _networkManager;
+            private readonly ILogManager _logManager;
             private readonly ConcurrentBag<RecordingDicomCGetProvider> _providers;
+            private readonly ITranscoderManager _transcoderManager;
 
             public IEnumerable<RecordingDicomCGetProvider> Providers => _providers;
 
-            public RecordingDicomCGetProviderServer()
+            public RecordingDicomCGetProviderServer(INetworkManager networkManager, ILogManager logManager, ITranscoderManager transcoderManager) : base(networkManager, logManager)
             {
+                _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
+                _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+                _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
                 _providers = new ConcurrentBag<RecordingDicomCGetProvider>();
             }
 
             protected sealed override RecordingDicomCGetProvider CreateScp(INetworkStream stream)
             {
-                var provider = new RecordingDicomCGetProvider(stream, Encoding.UTF8, Logger);
+                var provider = new RecordingDicomCGetProvider(stream, Encoding.UTF8, Logger, _logManager, _networkManager, _transcoderManager);
                 _providers.Add(provider);
                 return provider;
             }
