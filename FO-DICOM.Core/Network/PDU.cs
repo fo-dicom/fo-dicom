@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 
 using FellowOakDicom.IO;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Network
 {
@@ -101,17 +100,16 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Saves PDU to file
         /// </summary>
-        /// <param name="file">Filename</param>
-        public void Save(string file)
+        /// <param name="file">file</param>
+        public void Save(IFileReference file)
         {
-            var f = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(file);
-            var d = f.Directory;
+            var d = file.Directory;
 
             if (!d.Exists)
             {
                 d.Create();
             }
-            using (var fs = f.OpenWrite())
+            using (var fs = file.OpenWrite())
             {
                 WritePDU(fs);
             }

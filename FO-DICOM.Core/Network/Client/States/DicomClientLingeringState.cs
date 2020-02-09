@@ -122,17 +122,17 @@ namespace FellowOakDicom.Network.Client.States
 
             _disposables.Add(cancellation.Token.Register(() =>
             {
-                /**
-             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
-             * Any continuations will run asynchronously by default.
-             */
+                /*
+                 * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
+                 * Any continuations will run asynchronously by default.
+                 */
                 _onCancellationRequestedTaskCompletionSource.TrySetResult(true);
             }));
 
             var onRequestIsAdded = _onRequestAddedTaskCompletionSource.Task;
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
-            var onLingerTimeout = Task.Delay(_dicomClient.AssociationLingerTimeoutInMs, _lingerTimeoutCancellationTokenSource.Token);
+            var onLingerTimeout = Task.Delay(_dicomClient.ClientOptions.AssociationLingerTimeoutInMs, _lingerTimeoutCancellationTokenSource.Token);
             var onCancel = _onCancellationRequestedTaskCompletionSource.Task;
 
             var winner = await Task.WhenAny(onRequestIsAdded, onReceiveAbort, onDisconnect, onLingerTimeout, onCancel)
@@ -140,13 +140,13 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onRequestIsAdded)
             {
-                _dicomClient.Logger.Debug($"[{this}] A new request was added before linger timeout of {_dicomClient.AssociationLingerTimeoutInMs}ms, reusing association");
+                _dicomClient.Logger.Debug($"[{this}] A new request was added before linger timeout of {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, reusing association");
                 return await _dicomClient.TransitionToSendingRequestsState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onLingerTimeout)
             {
-                _dicomClient.Logger.Debug($"[{this}] Linger timed out after {_dicomClient.AssociationLingerTimeoutInMs}ms, releasing association");
+                _dicomClient.Logger.Debug($"[{this}] Linger timed out after {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, releasing association");
                 return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 

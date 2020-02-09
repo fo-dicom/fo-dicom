@@ -32,17 +32,17 @@ namespace FellowOakDicom.Network.Client.States
                 var host = _dicomClient.Host;
                 var port = _dicomClient.Port;
                 var useTls = _dicomClient.UseTls;
-                var millisecondsTimeout = _dicomClient.AssociationRequestTimeoutInMs;
-                var noDelay = _dicomClient.Options?.TcpNoDelay ?? DicomServiceOptions.Default.TcpNoDelay;
-                var ignoreSslPolicyErrors = _dicomClient.Options?.IgnoreSslPolicyErrors ?? DicomServiceOptions.Default.IgnoreSslPolicyErrors;
+                var millisecondsTimeout = _dicomClient.ClientOptions.AssociationRequestTimeoutInMs;
+                var noDelay = _dicomClient.ServiceOptions.TcpNoDelay;
+                var ignoreSslPolicyErrors = _dicomClient.ServiceOptions.IgnoreSslPolicyErrors;
 
                 var networkStream = _dicomClient.NetworkManager.CreateNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
 
                 var connection = new DicomClientConnection(_dicomClient, networkStream);
 
-                if (_dicomClient.Options != null)
+                if (_dicomClient.ServiceOptions != null)
                 {
-                    connection.Options = _dicomClient.Options;
+                    connection.Options = _dicomClient.ServiceOptions;
                 }
 
                 if (!cancellation.Token.IsCancellationRequested)

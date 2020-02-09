@@ -6,6 +6,7 @@ using FellowOakDicom.Log;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Network
 {
@@ -46,7 +47,19 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the logger used by <see cref="DicomServer{T}"/>
         /// </summary>
-        Logger Logger { get; set; }
+        ILogger Logger { get; set; }
+        
+        /// <summary>
+        /// Gets the service scope that will live as long as the DICOM server lives. Must be disposed alongside the DicomServer instance.
+        /// </summary>
+        IServiceScope ServiceScope { get; set; }
+        
+        /// <summary>
+        /// Gets the DICOM server registration ticket with the central registry.
+        /// The registry prevents multiple DICOM servers from being created for the same IP address and port.
+        /// This registration must be disposed alongside the DICOM server itself.
+        /// </summary>
+        DicomServerRegistration Registration { get; set; }
 
         #endregion
 
@@ -56,7 +69,7 @@ namespace FellowOakDicom.Network
         /// Starts the DICOM server listening for connections on the specified IP address(es) and port.
         /// </summary>
         /// <param name="ipAddress">IP address(es) for the server to listen to.</param>
-        /// <param name="port">Port to which the servier should be litening.</param>
+        /// <param name="port">Port to which the server should be listening.</param>
         /// <param name="certificateName">Certificate name for secure connections.</param>
         /// <param name="fallbackEncoding">Encoding to apply if no encoding is identified.</param>
         /// <param name="options">Service options.</param>
@@ -76,8 +89,8 @@ namespace FellowOakDicom.Network
     /// <summary>
     /// Helper interface to ensure type safety when creating DICOM server objects via <code>DicomServer.Create</code> overloads.
     /// </summary>
-    /// <typeparam name="T">DICOM service class consumed by the DICOM server object.</typeparam>
-    public interface IDicomServer<T> : IDicomServer where T : DicomService, IDicomServiceProvider
+    /// <typeparam name="TServiceProvider">DICOM service class consumed by the DICOM server object.</typeparam>
+    public interface IDicomServer<TServiceProvider> : IDicomServer where TServiceProvider : DicomService, IDicomServiceProvider
     {
     }
 

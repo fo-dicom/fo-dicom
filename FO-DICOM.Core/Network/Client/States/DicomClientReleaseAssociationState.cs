@@ -101,18 +101,11 @@ namespace FellowOakDicom.Network.Client.States
 
             if (cancellation.Mode == DicomClientCancellationMode.ImmediatelyAbortAssociation)
             {
-                _disposables.Add(cancellation.Token.Register(() =>
-                {
-                    /**
-             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
-             * Any continuations will run asynchronously by default.
-             */
-                    _onAbortRequestedTaskCompletionSource.TrySetResult(true);
-                }));
+                _disposables.Add(cancellation.Token.Register(() => _onAbortRequestedTaskCompletionSource.TrySetResult(true)));
             }
 
             var onAssociationRelease = _onAssociationReleasedTaskCompletionSource.Task;
-            var onAssociationReleaseTimeout = Task.Delay(_dicomClient.AssociationReleaseTimeoutInMs, _associationReleaseTimeoutCancellationTokenSource.Token);
+            var onAssociationReleaseTimeout = Task.Delay(_dicomClient.ClientOptions.AssociationReleaseTimeoutInMs, _associationReleaseTimeoutCancellationTokenSource.Token);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
             var onAbort = _onAbortRequestedTaskCompletionSource.Task;

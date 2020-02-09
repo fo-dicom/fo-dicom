@@ -93,13 +93,13 @@ namespace FellowOakDicom.Network.Client.States
 
         private async Task SendAssociationRequest()
         {
-            var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe)
+            var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe, _dicomClient.ServiceOptions.MaxPDULength)
             {
                 MaxAsyncOpsInvoked = _dicomClient.AsyncInvoked,
                 MaxAsyncOpsPerformed = _dicomClient.AsyncPerformed,
                 RemoteHost = _initialisationParameters.Connection.NetworkStream.RemoteHost,
                 RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort,
-                MaximumPDULength = _dicomClient.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength
+                MaximumPDULength = _dicomClient.ServiceOptions.MaxPDULength
             };
 
             foreach (var queuedItem in _dicomClient.QueuedRequests.ToList())
@@ -140,20 +140,13 @@ namespace FellowOakDicom.Network.Client.States
 
             await SendAssociationRequest().ConfigureAwait(false);
 
-            _disposables.Add(cancellation.Token.Register(() =>
-            {
-                /**
-             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
-             * Any continuations will run asynchronously by default.
-             */
-                _onCancellationRequestedTaskCompletionSource.TrySetResult(true);
-            }));
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationRequestedTaskCompletionSource.TrySetResult(true)));
 
             var associationIsAccepted = _onAssociationAcceptedTaskCompletionSource.Task;
             var associationIsRejected = _onAssociationRejectedTaskCompletionSource.Task;
             var abortReceived = _onAbortReceivedTaskCompletionSource.Task;
             var onDisconnect = _onConnectionClosedTaskCompletionSource.Task;
-            var associationRequestTimesOut = Task.Delay(_dicomClient.AssociationRequestTimeoutInMs, _associationRequestTimeoutCancellationTokenSource.Token);
+            var associationRequestTimesOut = Task.Delay(_dicomClient.ClientOptions.AssociationRequestTimeoutInMs, _associationRequestTimeoutCancellationTokenSource.Token);
             var onCancellationRequested = _onCancellationRequestedTaskCompletionSource.Task;
 
             var winner = await Task.WhenAny(

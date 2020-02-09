@@ -27,7 +27,12 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
-        DicomServiceOptions Options { get; set; }
+        DicomServiceOptions ServiceOptions { get; }
+        
+        /// <summary>
+        /// Gets or sets options to control behavior of this DICOM client.
+        /// </summary>
+        DicomClientOptions ClientOptions { get; }
 
         /// <summary>
         /// Gets or sets additional presentation contexts to negotiate with association.
@@ -43,28 +48,6 @@ namespace FellowOakDicom.Network.Client
         /// Gets or sets the fallback encoding.
         /// </summary>
         Encoding FallbackEncoding { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timeout (in ms) to wait for an association response after sending an association request
-        /// </summary>
-        int AssociationRequestTimeoutInMs { get; }
-
-        /// <summary>
-        /// Gets or sets the timeout (in ms) to wait for an association release response after sending an association release request
-        /// </summary>
-        int AssociationReleaseTimeoutInMs { get; }
-
-        /// <summary>
-        /// Gets or sets the timeout (in ms) that associations need to be held open after all requests have been processed
-        /// </summary>
-        int AssociationLingerTimeoutInMs { get; }
-
-        /// <summary>
-        /// Gets the maximum number of DICOM requests that are allowed to be sent over one single association.
-        /// When this limit is reached, the DICOM client will wait for pending requests to complete, and then open a new association
-        /// to send the remaining requests, if any.
-        /// </summary>
-        int? MaximumNumberOfRequestsPerAssociation { get; }
 
         /// <summary>
         /// Gets or sets the handler of a client C-STORE request.
@@ -155,13 +138,10 @@ namespace FellowOakDicom.Network.Client
         public bool UseTls { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
-        public int AssociationRequestTimeoutInMs { get; set; }
-        public int AssociationReleaseTimeoutInMs { get; set; }
-        public int AssociationLingerTimeoutInMs { get; set; }
-        public int? MaximumNumberOfRequestsPerAssociation { get; set; }
         public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
         public ILogger Logger { get; set; }
-        public DicomServiceOptions Options { get; set; }
+        public DicomClientOptions ClientOptions { get; set; }
+        public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
@@ -184,12 +164,14 @@ namespace FellowOakDicom.Network.Client
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        /// <param name="options">The options that further modify the behavior of this DICOM client</param>
+        /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
+        /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
         /// <param name="logManager">The log manager that will be used to extract a default logger</param>
         /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
-            DicomClientOptions options, 
+            DicomClientOptions clientOptions, 
+            DicomServiceOptions serviceOptions,
             INetworkManager networkManager, 
             ILogManager logManager,
             ITranscoderManager transcoderManager)
@@ -199,10 +181,8 @@ namespace FellowOakDicom.Network.Client
             UseTls = useTls;
             CallingAe = callingAe;
             CalledAe = calledAe;
-            AssociationRequestTimeoutInMs = options.AssociationRequestTimeoutInMs;
-            AssociationReleaseTimeoutInMs = options.AssociationReleaseTimeoutInMs;
-            AssociationLingerTimeoutInMs = options.AssociationLingerTimeoutInMs;
-            MaximumNumberOfRequestsPerAssociation = options.MaximumNumberOfRequestsPerAssociation;
+            ClientOptions = clientOptions;
+            ServiceOptions = serviceOptions;
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();

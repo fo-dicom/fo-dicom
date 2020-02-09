@@ -1,6 +1,7 @@
 ﻿using System;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using Microsoft.Extensions.Options;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -14,8 +15,11 @@ namespace FellowOakDicom.Network.Client
         /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        /// <param name="options">An optional set of parameters that further modify the behavior of this DICOM client</param>
-        IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe, DicomClientOptions options = null);
+        /// <param name="configureClientOptions">An optional modifier that can change the client options of this DICOM client</param>
+        /// <param name="configureServiceOptions">An optional modifier action that can change the service options of this DICOM client</param>
+        IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe, 
+            Action<DicomClientOptions> configureClientOptions = null,
+            Action<DicomServiceOptions> configureServiceOptions = null);
     }
 
     public class DicomClientFactory : IDicomClientFactory
@@ -23,17 +27,33 @@ namespace FellowOakDicom.Network.Client
         private readonly ILogManager _logManager;
         private readonly INetworkManager _networkManager;
         private readonly ITranscoderManager _transcoderManager;
+        private readonly IOptions<DicomClientOptions> _defaultClientOptions;
+        private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
-        public DicomClientFactory(ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+        public DicomClientFactory(
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
+            IOptions<DicomClientOptions> defaultClientOptions,
+            IOptions<DicomServiceOptions> defaultServiceOptions
+            )
         {
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
+            _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
         }
 
-        public IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe, DicomClientOptions options = null)
+        public IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe,
+            Action<DicomClientOptions> configureClientOptions = null,
+            Action<DicomServiceOptions> configureServiceOptions = null)
         {
-            return new DicomClient(host, port, useTls, callingAe, calledAe, options ?? new DicomClientOptions(), _networkManager, _logManager, _transcoderManager);
+            var clientOptions = _defaultClientOptions.Value.Clone();
+            var serviceOptions = _defaultServiceOptions.Value.Clone();
+
+            configureClientOptions?.Invoke(clientOptions);
+            configureServiceOptions?.Invoke(serviceOptions);
+
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _logManager, _transcoderManager);
         }
     }
 }

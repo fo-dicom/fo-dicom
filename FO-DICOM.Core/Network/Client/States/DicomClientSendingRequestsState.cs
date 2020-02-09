@@ -62,7 +62,7 @@ namespace FellowOakDicom.Network.Client.States
             _pendingRequests = new ConcurrentDictionary<int, DicomRequest>();
             _sentRequests = new ConcurrentBag<DicomRequest>();
             _sendMoreRequests = new Tasks.AsyncManualResetEvent(set: true);
-            _maximumNumberOfRequestsPerAssociation = _dicomClient.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
+            _maximumNumberOfRequestsPerAssociation = _dicomClient.ClientOptions.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
         }
 
         public override Task AddRequestAsync(DicomRequest dicomRequest)
@@ -195,17 +195,17 @@ namespace FellowOakDicom.Network.Client.States
             var cancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
             using (_sendRequestsCancellationTokenSource.Token.Register(() => cancellationTaskCompletionSource.SetResult(true)))
             {
-                /**
+                /*
                  * This event will be triggered when the DicomClientConnection believes it has finished its work by triggering the OnSendQueueEmpty event
                  */
                 var sendMoreRequests = _sendMoreRequests.WaitAsync();
 
-                /**
+                /*
                  * This event will be triggered when the CancellationToken passed into SendAsync is cancelled
                  */
                 var onCancel = cancellationTaskCompletionSource.Task;
 
-                /**
+                /*
                  * This event will be triggered when the pending queue becomes empty
                  */
                 var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
@@ -271,14 +271,7 @@ namespace FellowOakDicom.Network.Client.States
             }
 
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
-            _disposables.Add(cancellation.Token.Register(() =>
-            {
-                /**
-             * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
-             * Any continuations will run asynchronously by default.
-             */
-                _onCancellationTaskCompletionSource.TrySetResult(true);
-            }));
+            _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
 
             _dicomClient.Logger.Debug($"[{this}] Sending DICOM requests");
 

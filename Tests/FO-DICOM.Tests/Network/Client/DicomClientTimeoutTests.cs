@@ -56,7 +56,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
             {
                 Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug),
-                Options = new DicomServiceOptions()
+                ServiceOptions = new DicomServiceOptions()
             };
             return client;
         }
@@ -69,7 +69,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
                 {
@@ -100,7 +100,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotNull(eventArgsFromRequestTimeout);
                 Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
                 Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
+                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -112,7 +112,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 var request = new DicomCMoveRequest("another-AE", "study123")
                 {
@@ -139,7 +139,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotNull(onTimeoutEventArgs);
                 Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
                 Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
+                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -151,7 +151,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 DicomCFindResponse lastResponse = null;
                 var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
@@ -192,7 +192,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 DicomCMoveResponse lastResponse = null;
                 var request = new DicomCMoveRequest("another-AE", "study123")
@@ -229,7 +229,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
                 {
@@ -259,7 +259,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotNull(onTimeoutEventArgs);
                 Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
                 Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
+                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -271,7 +271,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
                 var request = new DicomCMoveRequest("another-AE", "study123");
 
@@ -295,7 +295,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotNull(onTimeoutEventArgs);
                 Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
                 Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
+                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -307,8 +307,8 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(2);
-                client.Options.MaxPDULength = 16 * 1024; // 16 KB
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+                client.ServiceOptions.MaxPDULength = 16 * 1024; // 16 KB
 
                 TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(10);
 
@@ -349,8 +349,8 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
 
-                client.Options.RequestTimeout = TimeSpan.FromSeconds(1);
-                client.Options.MaxPDULength = 16 * 1024;
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
+                client.ServiceOptions.MaxPDULength = 16 * 1024;
 
                 TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
 
@@ -385,7 +385,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotNull(onTimeoutEventArgs);
                 Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
                 Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.Options.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
+                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
             }
         }
 
@@ -411,7 +411,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.NegotiateAsyncOps(asyncOpsInvoked);
 
                 // Ensure the client is quite impatient
-                client.Options.RequestTimeout = TimeSpan.FromMilliseconds(200);
+                client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
 
                 var testLogger = _logger.IncludePrefix("Test");
                 testLogger.Info($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
