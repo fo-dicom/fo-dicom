@@ -46,8 +46,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            _clientFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomClientFactory>();
-            _serverFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
             remoteHost = null;
             remotePort = 0;
         }

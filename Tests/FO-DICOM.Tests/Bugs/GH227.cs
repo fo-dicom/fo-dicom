@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Bugs
 
         public GH227(GlobalFixture globalFixture)
         {
-            _transcoderManager = globalFixture.ServiceProvider.GetRequiredService<ITranscoderManager>();
+            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
         }
 
         #region Unit tests

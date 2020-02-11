@@ -48,12 +48,12 @@ namespace FellowOakDicom.Tests.Network.Client
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
 
-            _clientFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomClientFactory>();
-            _serverFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomServerFactory>();
-            _logManager = globalFixture.ServiceProvider.GetRequiredService<ILogManager>();
-            _transcoderManager = globalFixture.ServiceProvider.GetRequiredService<ITranscoderManager>();
-            _defaultClientOptions = globalFixture.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
-            _defaultServiceOptions = globalFixture.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _logManager = globalFixture.GetRequiredService<ILogManager>();
+            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
+            _defaultClientOptions = globalFixture.GetRequiredService<IOptions<DicomClientOptions>>();
+            _defaultServiceOptions = globalFixture.GetRequiredService<IOptions<DicomServiceOptions>>();
         }
 
         #endregion

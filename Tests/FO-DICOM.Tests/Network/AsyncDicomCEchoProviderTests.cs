@@ -4,25 +4,32 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
-    public class AsyncDicomCEchoProviderTests
+    public class AsyncDicomCEchoProviderTests : IClassFixture<GlobalFixture>
     {
         private readonly XUnitDicomLogger _logger;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
 
-        public AsyncDicomCEchoProviderTests(ITestOutputHelper testOutputHelper)
+        public AsyncDicomCEchoProviderTests(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -30,12 +37,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(FellowOakDicom.Network.Client.DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomCEchoResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -59,8 +64,9 @@ namespace FellowOakDicom.Tests.Network
 
     public class AsyncDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
     {
-        public AsyncDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public AsyncDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 

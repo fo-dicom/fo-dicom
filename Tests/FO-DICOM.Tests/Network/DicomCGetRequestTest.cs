@@ -6,20 +6,28 @@ using FellowOakDicom.Network.Client;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
 {
 
     [Collection("Network")]
-    public class DicomCGetRequestTest
+    public class DicomCGetRequestTest : IClassFixture<GlobalFixture>
     {
+        private readonly IDicomClientFactory _clientFactory;
+
+        public DicomCGetRequestTest(GlobalFixture globalFixture)
+        {
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+        }
+
         #region Unit tests
 
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public async Task DicomCGetRequest_OneImageInSeries_Received()
         {
-            var client = new DicomClient("localhost", 11112, false, "SCU", "COMMON");
+            var client = _clientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
                 DicomStorageCategory.Image,
@@ -55,7 +63,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
         public async Task DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
-            var client = new DicomClient("localhost", 11112, false, "SCU", "COMMON");
+            var client = _clientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pc = DicomPresentationContext.GetScpRolePresentationContext(DicomUID.CTImageStorage);
             client.AdditionalPresentationContexts.Add(pc);
@@ -167,6 +175,7 @@ namespace FellowOakDicom.Tests.Network
             new object[] { new DicomCGetRequest("1.2.3", "2.3.4"), DicomQueryRetrieveLevel.Series },
             new object[] { new DicomCGetRequest("1.2.3", "2.3.4", "3.4.5"), DicomQueryRetrieveLevel.Image },
         };
+
 
         #endregion
     }

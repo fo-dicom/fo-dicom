@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -41,7 +42,8 @@ namespace FellowOakDicom.Tests.Network
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 
-        public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+        public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
             : base(stream, fallbackEncoding, log)
         {
         }

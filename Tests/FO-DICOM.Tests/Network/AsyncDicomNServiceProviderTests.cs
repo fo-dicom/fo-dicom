@@ -4,6 +4,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -14,16 +15,20 @@ using Xunit.Abstractions;
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
-    public class AsyncDicomNServiceProviderTests
+    public class AsyncDicomNServiceProviderTests : IClassFixture<GlobalFixture>
     {
         private readonly XUnitDicomLogger _logger;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
 
-        public AsyncDicomNServiceProviderTests(ITestOutputHelper testOutputHelper)
+        public AsyncDicomNServiceProviderTests(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -31,12 +36,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNActionResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -63,12 +66,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNCreateResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -94,12 +95,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNDeleteResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -125,12 +124,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNEventReportResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -157,12 +154,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNGetResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -188,12 +183,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomNSetResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -219,8 +212,9 @@ namespace FellowOakDicom.Tests.Network
 
     public class AsyncDicomNServiceProvider : DicomService, IDicomServiceProvider, IDicomNServiceProvider
     {
-        public AsyncDicomNServiceProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public AsyncDicomNServiceProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 

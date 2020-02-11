@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Network
     {
         private readonly ITestOutputHelper _output;
 
-        public DicomCEchoProviderTest(ITestOutputHelper output)
+        public DicomCEchoProviderTest(ITestOutputHelper output, GlobalFixture globalFixture)
         {
             _output = output;
         }

@@ -6,26 +6,32 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
-    public class AsyncDicomCGetProviderTests
+    public class AsyncDicomCGetProviderTests : IClassFixture<GlobalFixture>
     {
         private readonly XUnitDicomLogger _logger;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
 
-        public AsyncDicomCGetProviderTests(ITestOutputHelper testOutputHelper)
+        public AsyncDicomCGetProviderTests(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -33,12 +39,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<ImmediateSuccessAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<ImmediateSuccessAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomCGetResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -63,12 +67,10 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<PendingAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (_serverFactory.Create<PendingAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-                {
-                    Logger = _logger.IncludePrefix(typeof(DicomClient).Name)
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 var responses = new ConcurrentQueue<DicomCGetResponse>();
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -97,8 +99,9 @@ namespace FellowOakDicom.Tests.Network
 
     public class ImmediateSuccessAsyncDicomCGetProvider : DicomService, IDicomServiceProvider, IDicomCGetProvider
     {
-        public ImmediateSuccessAsyncDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public ImmediateSuccessAsyncDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 
@@ -142,8 +145,10 @@ namespace FellowOakDicom.Tests.Network
 
     public class PendingAsyncDicomCGetProvider : DicomService, IDicomServiceProvider, IDicomCGetProvider
     {
-        public PendingAsyncDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public PendingAsyncDicomCGetProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager,
+            ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 

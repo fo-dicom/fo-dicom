@@ -5,20 +5,27 @@ using FellowOakDicom.Imaging;
 using FellowOakDicom.Tests.Network;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using FellowOakDicom.Network;
 using Xunit;
 
 namespace FellowOakDicom.Tests
 {
     public class GlobalFixture : IDisposable
     {
+        private static readonly IDicomServerRegistry _dicomServerRegistry = new DicomServerRegistry();
+
         public readonly IServiceProvider ServiceProvider;
 
         public GlobalFixture()
         {
-            var serviceCollection = new ServiceCollection().AddFellowOakDicom();
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddSingleton(_dicomServerRegistry); // Use static registry for our tests
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }
+
+        public T GetRequiredService<T>() => ServiceProvider.GetRequiredService<T>();
 
         public void Dispose()
         {

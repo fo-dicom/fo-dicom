@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
@@ -22,8 +23,8 @@ namespace FellowOakDicom.Tests.Bugs
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 
-        public VideoCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public VideoCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 
