@@ -1,11 +1,6 @@
 // Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Tests.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,6 +10,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,22 +25,35 @@ namespace FellowOakDicom.Tests.Network.Client
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomClientTimeoutTest
+    public class DicomClientTimeoutTest : IClassFixture<GlobalFixture>
     {
         #region Fields
 
         private readonly XUnitDicomLogger _logger;
+        private readonly IDicomClientFactory _clientFactory;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly ILogManager _logManager;
+        private readonly ITranscoderManager _transcoderManager;
+        private readonly IOptions<DicomClientOptions> _defaultClientOptions;
+        private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
         #endregion
 
         #region Constructors
 
-        public DicomClientTimeoutTest(ITestOutputHelper testOutputHelper)
+        public DicomClientTimeoutTest(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
+
+            _clientFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomClientFactory>();
+            _serverFactory = globalFixture.ServiceProvider.GetRequiredService<IDicomServerFactory>();
+            _logManager = globalFixture.ServiceProvider.GetRequiredService<ILogManager>();
+            _transcoderManager = globalFixture.ServiceProvider.GetRequiredService<ITranscoderManager>();
+            _defaultClientOptions = globalFixture.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
+            _defaultServiceOptions = globalFixture.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
         }
 
         #endregion
@@ -46,19 +62,21 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
-            var server = DicomServer.Create<T>(port);
+            var server = _serverFactory.Create<T>(port);
             server.Logger = _logger.IncludePrefix(typeof(T).Name).WithMinimumLevel(LogLevel.Debug);
             return server;
         }
 
-        private DicomClient CreateClient(int port)
+        private IDicomClient CreateClient(int port)
         {
-            var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP")
-            {
-                Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug),
-                ServiceOptions = new DicomServiceOptions()
-            };
+            var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
             return client;
+        }
+
+        private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
+        {
+            return new DicomClientFactory(_logManager, networkManager, _transcoderManager, _defaultClientOptions, _defaultServiceOptions);
         }
 
         [Fact]
@@ -305,14 +323,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
-                var client = CreateClient(port);
-
+                TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(10);
+                var clientFactory = CreateClientFactory(new VerySlowNetworkManager(streamWriteTimeout));
+                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
                 client.ServiceOptions.MaxPDULength = 16 * 1024; // 16 KB
-
-                TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(10);
-
-                client.NetworkManager = new VerySlowNetworkManager(streamWriteTimeout);
 
                 DicomResponse response = null;
 
@@ -347,14 +363,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
-                var client = CreateClient(port);
-
+                TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
+                var clientFactory = CreateClientFactory(new VerySlowNetworkManager(streamWriteTimeout));
+                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
                 client.ServiceOptions.MaxPDULength = 16 * 1024;
-
-                TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
-
-                client.NetworkManager = new VerySlowNetworkManager(streamWriteTimeout);
 
                 DicomResponse response = null;
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
@@ -640,7 +654,10 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class InMemoryDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
-            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+                ILogManager logManager, INetworkManager networkManager,
+                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
+                logManager, networkManager, transcoderManager)
             {
             }
 
@@ -685,7 +702,10 @@ namespace FellowOakDicom.Tests.Network.Client
 
             public IEnumerable<DicomRequest> Requests => _requests;
 
-            public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding,
+                Logger log, ILogManager logManager, INetworkManager networkManager,
+                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
+                logManager, networkManager, transcoderManager)
             {
                 _requests = new ConcurrentBag<DicomRequest>();
             }
@@ -737,7 +757,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager,
+                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
+                logManager, networkManager, transcoderManager)
             {
             }
 
@@ -805,7 +827,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(
+                stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
             }
 

@@ -78,9 +78,9 @@ namespace FellowOakDicom.Tests.Network.Client
             return server as TServer;
         }
 
-        private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe, Action<DicomClientOptions> configureClientOptions = null)
+        private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            var client = _clientFactory.Create(host, port, useTls, callingAe, calledAe, configureClientOptions);
+            var client = _clientFactory.Create(host, port, useTls, callingAe, calledAe);
             client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
             return client;
         }
@@ -441,7 +441,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 var counter = 0;
                 var flag = new ManualResetEventSlim();
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP", o => o.AssociationLingerTimeoutInMs= 100);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs= 100;
+
                 await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)})
                     .ConfigureAwait(false);
 
@@ -859,8 +861,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
-                    o => o.AssociationLingerTimeoutInMs = 10000);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs = 10000;
                 client.NegotiateAsyncOps(1, 1);
                 var cancellationTokenSource = new CancellationTokenSource();
 
@@ -1023,8 +1025,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
-                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1080,8 +1082,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var expectedNumberOfAssociations = 1;
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
-                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1138,8 +1140,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var expectedNumberOfAssociations = 2;
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
-                    o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
@@ -1197,8 +1199,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP"
-                    , o => o.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
@@ -1300,8 +1302,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using (var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port))
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP",
-                    o => o.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc);
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
                 client.NegotiateAsyncOps(10, 10);
 
                 logger.Info($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
