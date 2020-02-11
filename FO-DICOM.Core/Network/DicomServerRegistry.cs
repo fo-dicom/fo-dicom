@@ -8,7 +8,16 @@ namespace FellowOakDicom.Network
     /// </summary>
     public interface IDicomServerRegistry
     {
+        /// <summary>
+        /// Checks whether listening to the provided port at the provided IP address is still possible
+        /// </summary>
+        /// <param name="ipAddress">The bound IP address</param>
+        /// <param name="port">The port</param>
+        /// <returns>True when a new DICOM server can be set up for that IP address and port</returns>
         bool IsAvailable(string ipAddress, int port);
+
+        // TODO document
+        DicomServerRegistration Get(int port);
 
         /// <summary>
         /// Register a new DICOM server

@@ -9,15 +9,22 @@ namespace FellowOakDicom.Tests.Imaging.Codec
 {
 
     [Collection("General")]
-    public class DicomTranscoderTest
+    public class DicomTranscoderTest : IClassFixture<GlobalFixture>
     {
+        private readonly ITranscoderManager _transcoderManager;
+
+        public DicomTranscoderTest(GlobalFixture globalFixture)
+        {
+            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
+        }
+
         #region Unit tests
 
         [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
-            var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+            var transcoderManager = _transcoderManager;
             var codec = transcoderManager.GetCodec(transferSyntax);
             var actual = codec.Name;
             Assert.Equal(expected, actual);

@@ -1,19 +1,25 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
 {
-
-    [Collection("Dependency")]
     public class DependencyInjectionTest
     {
+
+        public DependencyInjectionTest()
+        {
+
+        }
 
 #if NET462
         [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
@@ -23,9 +29,16 @@ namespace FellowOakDicom.Tests.Network
         public async Task DependencyPropertyHasValue()
         {
             var port = Ports.GetNext();
-            using (var server = DicomServer.Create<EchoProviderWithDependency>(port))
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddTransient<ISomeInterface, SomeInterfaceImplementation>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var dicomServerFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
+            var dicomClientFactory = serviceProvider.GetRequiredService<IDicomClientFactory>();
+
+            using (var server = dicomServerFactory.Create<EchoProviderWithDependency>(port))
             {
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = dicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
                 string value = string.Empty;
                 var request = new DicomCEchoRequest();
@@ -46,23 +59,24 @@ namespace FellowOakDicom.Tests.Network
 
     public class EchoProviderWithDependency : DicomCEchoProvider
     {
-        public ISomeInterface InterfaceImplementation { get; set; }
+        private readonly ISomeInterface _someInterface;
 
-        public EchoProviderWithDependency(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-            : base(stream, fallbackEncoding, log)
+        public EchoProviderWithDependency(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
+            ISomeInterface someInterface)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
+            _someInterface = someInterface ?? throw new ArgumentNullException(nameof(someInterface));
         }
 
         public override Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {
-            var response = new DicomCEchoResponse(request, DicomStatus.Success);
-            if (InterfaceImplementation != null)
+            var response = new DicomCEchoResponse(request, DicomStatus.Success)
             {
-                response.Dataset = new DicomDataset
-                {
-                    { DicomTag.PatientComments, InterfaceImplementation.GetValue() }
-                };
-            }
+                Dataset = new DicomDataset {
+                    { DicomTag.PatientComments, _someInterface.GetValue() }
+                }
+            };
             return Task.FromResult(response);
         }
 

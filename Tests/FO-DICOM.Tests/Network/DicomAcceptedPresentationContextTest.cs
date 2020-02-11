@@ -10,20 +10,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomAcceptedPresentationContextTest
+    public class DicomAcceptedPresentationContextTest : IClassFixture<GlobalFixture>
     {
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
+
+        public DicomAcceptedPresentationContextTest(GlobalFixture globalFixture)
+        {
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+        }
 
         [Fact]
         public async Task AcceptEchoButNotStoreContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServer.Create<AcceptOnlyEchoProvider>(port))
+            using (_serverFactory.Create<AcceptOnlyEchoProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -38,8 +47,8 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestsAsync(echoReq, storeReq, printReq);
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
 
@@ -53,7 +62,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptPrintContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServer.Create<AcceptOnlyEchoPrintManagementProvider>(port))
+            using (_serverFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -68,8 +77,8 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestsAsync(echoReq, storeReq, printReq);
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
 
@@ -83,7 +92,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptStoreContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServer.Create<AcceptOnlyEchoStoreProvider>(port))
+            using (_serverFactory.Create<AcceptOnlyEchoStoreProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -98,8 +107,8 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestsAsync(echoReq, storeReq, printReq);
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
 
@@ -115,7 +124,8 @@ namespace FellowOakDicom.Tests.Network
 
     internal class AcceptOnlyEchoProvider : SimpleAssociationAcceptProvider
     {
-        public AcceptOnlyEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+        public AcceptOnlyEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
             AcceptedSopClasses.Add(DicomUID.Verification);
         }
@@ -123,7 +133,8 @@ namespace FellowOakDicom.Tests.Network
 
     internal class AcceptOnlyEchoPrintManagementProvider : SimpleAssociationAcceptProvider
     {
-        public AcceptOnlyEchoPrintManagementProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+        public AcceptOnlyEchoPrintManagementProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
             AcceptedSopClasses.AddRange(new[] { DicomUID.Verification, DicomUID.BasicGrayscalePrintManagementMetaSOPClass });
         }
@@ -131,7 +142,8 @@ namespace FellowOakDicom.Tests.Network
 
     internal class AcceptOnlyEchoStoreProvider : SimpleAssociationAcceptProvider
     {
-        public AcceptOnlyEchoStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
+        public AcceptOnlyEchoStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
             AcceptedSopClasses.Add(DicomUID.Verification);
             AcceptedSopClasses.AddRange(DicomUID.Enumerate().Where(u => u.IsImageStorage));
@@ -150,8 +162,9 @@ namespace FellowOakDicom.Tests.Network
 
         protected List<DicomUID> AcceptedSopClasses { get; } = new List<DicomUID>();
 
-        public SimpleAssociationAcceptProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
-          : base(stream, fallbackEncoding, log)
+        public SimpleAssociationAcceptProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+          : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 
