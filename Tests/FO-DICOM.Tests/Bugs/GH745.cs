@@ -8,6 +8,7 @@ using FellowOakDicom.Tests.Network;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Network.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,16 +16,20 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("Network")]
-    public class GH745
+    public class GH745: IClassFixture<GlobalFixture>
     {
         private readonly XUnitDicomLogger _logger;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
 
-        public GH745(ITestOutputHelper output)
+        public GH745(ITestOutputHelper output, GlobalFixture globalFixture)
         {
             _logger = new XUnitDicomLogger(output)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Warning);
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Theory]
@@ -35,21 +40,21 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(FellowOakDicom.Network.Client.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = _serverFactory.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
 
                 var actual = 0;
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
-                {
-                    Logger = clientLogger,
-                    AssociationLingerTimeoutInMs = 1 // No need to linger, we only send one request at a time
-                };
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = clientLogger;
+                client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
+                client.ClientOptions.AssociationLingerTimeoutInMs = 1; // No need to linger, we only send one request at a time
+
                 for (var i = 0; i < expected; i++)
                 {
                     await client.AddRequestAsync(
@@ -89,10 +94,10 @@ namespace FellowOakDicom.Tests.Bugs
             int port = Ports.GetNext();
 
             var testLogger = _logger.IncludePrefix("GH745");
-            var clientLogger = _logger.IncludePrefix(nameof(FellowOakDicom.Network.Client.DicomClient));
+            var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using (var server = DicomServer.Create<DicomCEchoProvider>(port))
+            using (var server = _serverFactory.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
@@ -102,10 +107,10 @@ namespace FellowOakDicom.Tests.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = new FellowOakDicom.Network.Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP", 600 * 1000)
-                        {
-                            Logger = clientLogger
-                        };
+                        var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                        client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
+                        client.Logger = clientLogger;
+
                         await client.AddRequestAsync(
                             new DicomCEchoRequest
                             {

@@ -12,8 +12,17 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH538
+    public class GH538: IClassFixture<GlobalFixture>
     {
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
+
+        public GH538(GlobalFixture globalFixture)
+        {
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+        }
+
         #region Unit Tests
 
         [Fact]
@@ -26,7 +35,7 @@ namespace FellowOakDicom.Tests.Bugs
             var successes = 0;
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (_serverFactory.Create<SimpleCStoreProvider>(port))
             {
                 var request1 = new DicomCStoreRequest(file1);
                 request1.OnResponseReceived = (req, rsp) =>
@@ -44,7 +53,7 @@ namespace FellowOakDicom.Tests.Bugs
                     handle2.Set();
                 };
 
-                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request1).ConfigureAwait(false);
                 await client.AddRequestAsync(request2).ConfigureAwait(false);
 
@@ -65,7 +74,7 @@ namespace FellowOakDicom.Tests.Bugs
             var success = false;
 
             var port = Ports.GetNext();
-            using (DicomServer.Create<VideoCStoreProvider>(port))
+            using (_serverFactory.Create<VideoCStoreProvider>(port))
             {
                 var request = new DicomCStoreRequest(file);
                 request.OnResponseReceived = (req, rsp) =>
@@ -75,7 +84,7 @@ namespace FellowOakDicom.Tests.Bugs
                     handle.Set();
                 };
 
-                var client = new DicomClient("localhost", port, false, "STORESCU", "STORESCP");
+                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);

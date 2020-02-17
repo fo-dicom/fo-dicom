@@ -4,14 +4,24 @@
 using FellowOakDicom.Network;
 using FellowOakDicom.Tests.Network;
 using System.Threading.Tasks;
+using FellowOakDicom.Network.Client;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class GH426
+    public class GH426 : IClassFixture<GlobalFixture>
     {
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IDicomClientFactory _clientFactory;
+
+        public GH426(GlobalFixture globalFixture)
+        {
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+        }
+
         #region Unit tests
 
         [Fact]
@@ -19,9 +29,9 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (DicomServer.Create<DicomCEchoProvider>(port))
+            using (_serverFactory.Create<DicomCEchoProvider>(port))
             {
-                var client = new FellowOakDicom.Network.Client.DicomClient("localhost", port, false, "SCU", "SCP");
+                var client = _clientFactory.Create("localhost", port, false, "SCU", "SCP");
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =
