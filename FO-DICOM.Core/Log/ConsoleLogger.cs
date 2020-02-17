@@ -87,7 +87,7 @@ namespace FellowOakDicom.Log
         /// <summary>
         /// Initializes an instance of the <see cref="ConsoleLogManager"/>.
         /// </summary>
-        private ConsoleLogManager()
+        public ConsoleLogManager()
         {
         }
 

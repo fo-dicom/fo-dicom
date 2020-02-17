@@ -103,7 +103,8 @@ namespace FellowOakDicom.Network
                 throw new DicomNetworkException("There is already a DICOM server registered on port: {0}", port);
             }
 
-            var server = dicomServerScope.ServiceProvider.GetRequiredService<TServer>();
+            var creator = ActivatorUtilities.CreateFactory(typeof(TServer), new Type[0]);
+            var server = (TServer) creator(dicomServerScope.ServiceProvider, new object[0]);
             
             if (logger != null)
             {
