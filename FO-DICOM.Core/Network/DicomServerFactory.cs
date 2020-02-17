@@ -14,14 +14,29 @@ namespace FellowOakDicom.Network
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <param name="port">Port to listen to.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        /// <param name="configureOptions">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T>(
             int port,
             string certificateName = null,
-            Action<DicomServiceOptions> configureOptions = null,
+            Encoding fallbackEncoding = null,
+            Logger logger = null) where T : DicomService, IDicomServiceProvider;
+        
+        /// <summary>
+        /// Creates a DICOM server object.
+        /// </summary>
+        /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
+        /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
+        /// <param name="port">Port to listen to.</param>
+        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="fallbackEncoding">Fallback encoding.</param>
+        /// <param name="logger">Logger, if null default logger will be applied.</param>
+        /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
+        IDicomServer Create<T>(
+            string ipAddress,
+            int port,
+            string certificateName = null,
             Encoding fallbackEncoding = null,
             Logger logger = null) where T : DicomService, IDicomServiceProvider;
         
@@ -34,7 +49,6 @@ namespace FellowOakDicom.Network
         /// <param name="port">Port to listen to.</param>
         /// <param name="userState">Optional optional parameters.</param>
         /// <param name="certificateName">Certificate name for authenticated connections.</param>
-        /// <param name="configureOptions">Service options.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
@@ -43,7 +57,6 @@ namespace FellowOakDicom.Network
             int port,
             object userState = null,
             string certificateName = null,
-            Action<DicomServiceOptions> configureOptions = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
     }
@@ -67,24 +80,25 @@ namespace FellowOakDicom.Network
         public IDicomServer Create<T>(
             int port, 
             string certificateName = null,
-            Action<DicomServiceOptions> configureOptions = null, 
             Encoding fallbackEncoding = null, 
             Logger logger = null)
             where T : DicomService, IDicomServiceProvider 
-            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, configureOptions, fallbackEncoding, logger);
+            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, fallbackEncoding, logger);
+
+        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, Logger logger = null) where T : DicomService, IDicomServiceProvider
+            => Create<T, DicomServer<T>>(ipAddress, port, null, certificateName, fallbackEncoding, logger);
 
         public IDicomServer Create<TServiceProvider, TServer>(
             string ipAddress, 
             int port, 
             object userState = null, 
             string certificateName = null, 
-            Action<DicomServiceOptions> configureOptions = null, 
             Encoding fallbackEncoding = null, 
             ILogger logger = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
         {
             var dicomServerScope = _serviceScopeFactory.CreateScope();
             
-            if (!_dicomServerRegistry.IsAvailable(ipAddress, port))
+            if (!_dicomServerRegistry.IsAvailable(port))
             {
                 throw new DicomNetworkException("There is already a DICOM server registered on port: {0}", port);
             }
@@ -96,9 +110,7 @@ namespace FellowOakDicom.Network
                 server.Logger = logger;
             }
 
-            var serviceOptions = _defaultServiceOptions.Value;
-            
-            configureOptions?.Invoke(serviceOptions);
+            var serviceOptions = _defaultServiceOptions.Value.Clone();
             
             var runner = server.StartAsync(ipAddress, port, certificateName, fallbackEncoding, serviceOptions, userState);
 

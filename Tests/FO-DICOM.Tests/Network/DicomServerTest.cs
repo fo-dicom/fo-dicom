@@ -7,6 +7,8 @@ using FellowOakDicom.Tests.Helpers;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Log;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -162,7 +164,7 @@ namespace FellowOakDicom.Tests.Network
             using (var server = _serverFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 while (!server.IsListening) { Thread.Sleep(10); }
-                Assert.True(DicomServer.IsListening(port));
+                Assert.True(_serverRegistry.Get(port).DicomServer.IsListening);
             }
         }
 
@@ -176,8 +178,9 @@ namespace FellowOakDicom.Tests.Network
                 server.Stop();
                 Thread.Sleep(500);
 
-                Assert.NotNull(_serverRegistry.Get(port)?.DicomServer);
-                Assert.False(DicomServer.IsListening(port));
+                var dicomServer = _serverRegistry.Get(port)?.DicomServer;
+                Assert.NotNull(dicomServer);
+                Assert.False(dicomServer.IsListening);
             }
         }
 
@@ -188,7 +191,7 @@ namespace FellowOakDicom.Tests.Network
 
             using (_serverFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                Assert.False(DicomServer.IsListening(Ports.GetNext()));
+                Assert.False(_serverRegistry.Get(Ports.GetNext())?.DicomServer?.IsListening ?? false);
             }
         }
 
@@ -204,7 +207,7 @@ namespace FellowOakDicom.Tests.Network
                     OnResponseReceived = (req, res) => status = res.Status
                 };
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
@@ -230,7 +233,7 @@ namespace FellowOakDicom.Tests.Network
                     OnResponseReceived = (req, res) => status = res.Status
                 };
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
@@ -258,7 +261,7 @@ namespace FellowOakDicom.Tests.Network
                     OnResponseReceived = (req, res) => status = res.Status
                 };
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
@@ -277,7 +280,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 while (!server.IsListening) { Thread.Sleep(10); }
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCEchoRequest());
                 await client.SendAsync();
@@ -303,7 +306,7 @@ namespace FellowOakDicom.Tests.Network
                     OnResponseReceived = (req, res) => status = res.Status
                 };
 
-                var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
@@ -321,7 +324,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = new DicomClient(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
@@ -340,7 +343,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = new DicomClient(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(request);
 
@@ -381,7 +384,7 @@ namespace FellowOakDicom.Tests.Network
                 var status = DicomStatus.UnrecognizedOperation;
                 var handle = new ManualResetEventSlim();
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCEchoRequest
                 {
@@ -404,8 +407,20 @@ namespace FellowOakDicom.Tests.Network
 
         public class DicomCEchoProviderServer : DicomServer<DicomCEchoProvider>
         {
+            private readonly ILogManager _logManager;
+            private readonly INetworkManager _networkManager;
+            private readonly ITranscoderManager _transcoderManager;
+
+            public DicomCEchoProviderServer(ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) :
+                base(networkManager, logManager)
+            {
+                _logManager = logManager;
+                _networkManager = networkManager;
+                _transcoderManager = transcoderManager;
+            }
+
             protected override DicomCEchoProvider CreateScp(INetworkStream stream)
-                => new DicomCEchoProvider(stream, null, null);
+                => new DicomCEchoProvider(stream, null, null, _logManager, _networkManager, _transcoderManager);
         }
 
         #endregion
