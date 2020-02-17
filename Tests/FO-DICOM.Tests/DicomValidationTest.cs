@@ -114,7 +114,7 @@ namespace FellowOakDicom.Tests
         public void DicomValidation_ValidateCodeStringWithGlobalSuppression()
         {
             new DicomSetupBuilder()
-                .RegisterServices(s => s.AddDefaultDicomServices())
+                .RegisterServices(s => s.AddFellowOakDicom())
                 .SkipValidation()
                 .Build();
 

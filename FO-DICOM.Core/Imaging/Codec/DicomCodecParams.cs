@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Imaging.Codec
 {
@@ -16,12 +17,12 @@ namespace FellowOakDicom.Imaging.Codec
         /// </summary>
         protected DicomCodecParams()
         {
-            this.Logger = LogManager.GetLogger("FellowOakDicom.Imaging.Codec");
+            this.Logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.Imaging.Codec");
         }
 
         /// <summary>
         /// Gets or sets the DICOM codec parameters <see cref="Logger"/>.
         /// </summary>
-        public Logger Logger { get; protected set; }
+        public ILogger Logger { get; protected set; }
     }
 }

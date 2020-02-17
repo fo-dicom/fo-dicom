@@ -42,6 +42,11 @@ namespace FellowOakDicom.Network
         /// <param name="identifier">Unique network identifier, if found.</param>
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
         bool TryGetNetworkIdentifier(out DicomUID identifier);
+
+        /// <summary>
+        /// Gets the machine name
+        /// </summary>
+        string MachineName { get; }
     }
     
     /// <summary>
@@ -71,8 +76,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         public const string IPv6Loopback = "::1";
 
-        private const int DefaultAssociationTimeout = 5000;
-
         #endregion
 
         #region PROPERTIES
@@ -85,15 +88,6 @@ namespace FellowOakDicom.Network
         #endregion
 
         #region METHODS
-
-        /// <summary>
-        /// Instead of statically 'setting' the network manager (which changes the behavior for everything in the same AppDomain)
-        /// it is also possible to use a scoped network manager which only impacts consumers with a reference to this scoped network manager.
-        /// </summary>
-        public static ScopedNetworkManager Use(NetworkManager implementation)
-        {
-            return new ScopedNetworkManager(implementation);
-        }
 
         /// <summary>
         /// Platform-specific implementation to create a network listener object.
@@ -142,6 +136,8 @@ namespace FellowOakDicom.Network
 
         bool INetworkManager.TryGetNetworkIdentifier(out DicomUID identifier)
             => TryGetNetworkIdentifierImpl(out identifier);
+
+        string INetworkManager.MachineName => MachineNameImpl;
 
         #endregion
     }

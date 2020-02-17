@@ -20,7 +20,8 @@ namespace FellowOakDicom.Printing
     {
         #region Properties and Attributes
 
-        private static readonly Logger Logger = LogManager.GetLogger("FellowOakDicom.Printing");
+        private static ILogger _logger;
+        private static ILogger Logger => _logger ?? (_logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.Printing"));
 
         private readonly FilmSession _filmSession = null;
 

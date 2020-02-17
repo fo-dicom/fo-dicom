@@ -12,10 +12,59 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
+    public class DicomSetupBuilder
+    {
+        private readonly IServiceCollection _serviceCollection;
+
+        public DicomSetupBuilder()
+        {
+            _serviceCollection = new ServiceCollection();
+            _serviceCollection.AddFellowOakDicom();
+        }
+
+        public void Build()
+        {
+            var provider = _serviceCollection.BuildServiceProvider();
+            Setup.SetupDI(provider);
+        }
+
+        public DicomSetupBuilder RegisterServices(Action<IServiceCollection> registerAction)
+        {
+            registerAction?.Invoke(_serviceCollection);
+            return this;
+        }
+
+    }
+    
+    /// <summary>
+    /// Setup helper methods for initializing library.
+    /// </summary>
+    internal static class Setup
+    {
+        private static IServiceProvider _serviceProvider;
+
+        internal static IServiceProvider ServiceProvider
+        {
+            get
+            {
+                if (_serviceProvider == null)
+                {
+                    new DicomSetupBuilder().Build();
+                }
+
+                return _serviceProvider;
+            }
+            private set => _serviceProvider = value;
+        }
+
+        public static void SetupDI(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+    }
+
     public static class IServiceCollectionExtension
     {
         public static IServiceCollection AddFellowOakDicom(this IServiceCollection services)
             => services
+                .AddInternals()    
                 .AddTranscoderManager<WindowsTranscoderManager>()
                 .AddImageManager<RawImageManager>()
                 .AddLogManager<ConsoleLogManager>()
@@ -49,11 +98,5 @@ namespace FellowOakDicom
 
         public static IServiceCollection AddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
             => services.AddSingleton<INetworkManager, TNetworkManager>();
-
-        public static IServiceCollection ConfigureDicomClients(this IServiceCollection services, Action<DicomClientOptions> configure)
-            => services.Configure(configure);
-
-        public static IServiceCollection ConfigureDicomServers(this IServiceCollection services, Action<DicomServiceOptions> configure)
-            => services.Configure(configure);
     }
 }

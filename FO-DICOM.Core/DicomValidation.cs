@@ -10,9 +10,7 @@ namespace FellowOakDicom
 
     public static class DicomValidation
     {
-
         internal static bool PerformValidation { get; set; } = true;
-
 
         public static void ValidateAE(string content)
         {

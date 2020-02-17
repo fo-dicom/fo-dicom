@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
@@ -221,7 +222,7 @@ namespace FellowOakDicom
         /// </returns>
         public static string CreateSourceApplicationEntityTitle()
         {
-            var machine = NetworkManager.MachineName;
+            var machine = Setup.ServiceProvider.GetRequiredService<INetworkManager>().MachineName;
             if (machine != null && machine.Length > 16)
             {
                 machine = machine.Substring(0, 16);

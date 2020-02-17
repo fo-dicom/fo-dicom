@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Text;
 
 using FellowOakDicom.Network;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
@@ -46,7 +47,7 @@ namespace FellowOakDicom
                     if (_instanceRootUid != null) return _instanceRootUid;
 
                     DicomUID dicomUid;
-                    _instanceRootUid = NetworkManager.TryGetNetworkIdentifier(out dicomUid)
+                    _instanceRootUid = Setup.ServiceProvider.GetRequiredService<INetworkManager>().TryGetNetworkIdentifier(out dicomUid)
                         ? dicomUid
                         : DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
                 }
