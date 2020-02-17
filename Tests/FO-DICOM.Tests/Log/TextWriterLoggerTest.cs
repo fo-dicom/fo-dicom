@@ -16,14 +16,12 @@ namespace FellowOakDicom.Tests.Log
         public void Log_ToTextWriterLogger_SufficientlyLogged()
         {
             var writer = new StringWriter();
-            LogManager.SetImplementation(new TextWriterLogManager(writer));
+            ILogManager logManager = new TextWriterLogManager(writer);
 
             const string expected = "[INFO] A: 1 B: Permanent";
 
-            LogManager.GetLogger(null).Info("A: {0} B: {err}", 1, DicomRejectResult.Permanent);
+            logManager.GetLogger(null).Info("A: {0} B: {err}", 1, DicomRejectResult.Permanent);
             var actual = writer.ToString().Replace("\r", "").Replace("\n", "");
-
-            LogManager.SetImplementation(null);
 
             Assert.Equal(expected, actual);
         }
