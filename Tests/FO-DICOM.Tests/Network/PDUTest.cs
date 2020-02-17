@@ -5,6 +5,7 @@ using FellowOakDicom.Network;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FellowOakDicom.IO;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -39,7 +40,7 @@ namespace FellowOakDicom.Tests.Network
             if (Directory.Exists(path)) Directory.Delete(path, true);
 
             var pdu = new RawPDU(0x01);
-            pdu.Save(name);
+            pdu.Save(new FileReference(name));
 
             Assert.True(File.Exists(name));
         }

@@ -69,12 +69,9 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
             var ipAddress = NetworkManager.IPv4Any;
-            Action<DicomServiceOptions> configureOptions = o =>
-            {
-                o.LogDimseDatasets = false;
-                o.LogDataPDUs = false;
-            };
-            var server = _serverFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, configureOptions: configureOptions);
+            var server = _serverFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger);
+            server.Options.LogDimseDatasets = false;
+            server.Options.LogDataPDUs = false;
             return server as TServer;
         }
 

@@ -28,7 +28,7 @@ namespace FellowOakDicom.Network
         /// <param name="callingAe">The calling Application Entity.</param>
         /// <param name="calledAe">The called Application Entity.</param>
         /// <param name="maxPduLength">Maximum PDU length.</param>
-        public DicomAssociation(string callingAe, string calledAe, uint maxPduLength)
+        public DicomAssociation(string callingAe, string calledAe, uint maxPduLength = 262144)
             : this()
         {
             CallingAE = callingAe;

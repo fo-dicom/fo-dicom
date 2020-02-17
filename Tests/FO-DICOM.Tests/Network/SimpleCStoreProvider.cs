@@ -44,7 +44,7 @@ namespace FellowOakDicom.Tests.Network
 
         public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
             ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, log)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
         }
 

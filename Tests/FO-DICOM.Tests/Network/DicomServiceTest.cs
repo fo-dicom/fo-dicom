@@ -10,15 +10,24 @@ namespace FellowOakDicom.Tests.Network
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomServiceTest
+    public class DicomServiceTest : IClassFixture<GlobalFixture>
     {
+        private IDicomClientFactory _clientFactory;
+        private IDicomServerFactory _serverFactory;
+
+        public DicomServiceTest(GlobalFixture globalFixture)
+        {
+            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
+            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
+        }
+
         #region Unit tests
 
         [Fact]
         public async Task Send_PrivateTags_DataSufficientlyTransported()
         {
             var port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (_serverFactory.Create<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, requestDataset = null, responseDataset = null;
                 var request = new DicomCStoreRequest(new DicomDataset
@@ -49,7 +58,7 @@ namespace FellowOakDicom.Tests.Network
                     responseDataset = res.Dataset;
                 };
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -71,7 +80,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task SendAsync_SingleRequest_DataSufficientlyTransported()
         {
             int port = Ports.GetNext();
-            using (DicomServer.Create<SimpleCStoreProvider>(port))
+            using (_serverFactory.Create<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
@@ -81,7 +90,7 @@ namespace FellowOakDicom.Tests.Network
                     dataset = request.Dataset;
                 };
 
-                var client = new DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
