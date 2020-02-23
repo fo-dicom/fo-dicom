@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Imaging;
-using FellowOakDicom.Tests.Network;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using FellowOakDicom.Network;
+using FellowOakDicom.Imaging;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -20,6 +18,7 @@ namespace FellowOakDicom.Tests
                 .AddFellowOakDicom();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
+            Setup.SetupDI(ServiceProvider);
         }
 
         public T GetRequiredService<T>() => ServiceProvider.GetRequiredService<T>();
@@ -40,6 +39,7 @@ namespace FellowOakDicom.Tests
                 .AddImageManager<ImageSharpImageManager>();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
+            Setup.SetupDI(ServiceProvider);
         }
 
         public void Dispose()

@@ -110,7 +110,7 @@ namespace FellowOakDicom.Tests
     public class DicomValidationTestWithoutFixture
     {
 
-        [Fact]
+        [Fact(Skip ="Do not use global Validation option in unittest")] // TODO: enable again
         public void DicomValidation_ValidateCodeStringWithGlobalSuppression()
         {
             new DicomSetupBuilder()

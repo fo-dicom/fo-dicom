@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.States;
-using FellowOakDicom.Tests.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,7 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
-using Microsoft.Extensions.DependencyInjection;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.States;
+using FellowOakDicom.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 

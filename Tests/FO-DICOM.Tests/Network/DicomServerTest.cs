@@ -11,6 +11,7 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using Xunit;
 using Xunit.Abstractions;
+using System;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -364,7 +365,7 @@ namespace FellowOakDicom.Tests.Network
                     {
                         using (_serverFactory.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, port, logger: _logger.IncludePrefix("DicomServer")))
                         {
-
+                            // do nothing here
                         }
                     });
                 Assert.Null(e);
@@ -414,13 +415,13 @@ namespace FellowOakDicom.Tests.Network
             public DicomCEchoProviderServer(ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) :
                 base(networkManager, logManager)
             {
-                _logManager = logManager;
+                _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
                 _networkManager = networkManager;
                 _transcoderManager = transcoderManager;
             }
 
             protected override DicomCEchoProvider CreateScp(INetworkStream stream)
-                => new DicomCEchoProvider(stream, null, null, _logManager, _networkManager, _transcoderManager);
+                => new DicomCEchoProvider(stream, null, _logManager.GetLogger("DicomEchoProvider"), _logManager, _networkManager, _transcoderManager);
         }
 
         #endregion

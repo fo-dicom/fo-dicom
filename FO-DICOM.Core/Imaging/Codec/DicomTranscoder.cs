@@ -203,7 +203,7 @@ namespace FellowOakDicom.Imaging.Codec
 
         private static IDicomCodec InitializeCodec(DicomTransferSyntax syntax)
         {
-            var transcoderManager = Setup.ServiceProvider.GetService(typeof(TranscoderManager)) as TranscoderManager;
+            var transcoderManager = Setup.ServiceProvider.GetService(typeof(ITranscoderManager)) as ITranscoderManager;
             return syntax.IsEncapsulated && transcoderManager.HasCodec(syntax)
                 ? transcoderManager.GetCodec(syntax)
                 : null;

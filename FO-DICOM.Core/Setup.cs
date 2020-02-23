@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Linq;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
@@ -88,15 +89,33 @@ namespace FellowOakDicom
                 .Configure(options ?? (o => {}));
 
         public static IServiceCollection AddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
-            => services.AddSingleton<ITranscoderManager, TTranscoderManager>();
+            => services.Replace<ITranscoderManager, TTranscoderManager>(ServiceLifetime.Singleton);
 
         public static IServiceCollection AddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
-            => services.AddSingleton<IImageManager, TImageManager>();
+            => services.Replace<IImageManager, TImageManager>(ServiceLifetime.Singleton);
 
         public static IServiceCollection AddLogManager<TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
-            => services.AddSingleton<ILogManager, TLogManager>();
+            => services.Replace<ILogManager, TLogManager>(ServiceLifetime.Singleton);
 
         public static IServiceCollection AddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
-            => services.AddSingleton<INetworkManager, TNetworkManager>();
+            => services.Replace<INetworkManager, TNetworkManager>(ServiceLifetime.Singleton);
+
+        // Helper methods
+
+        public static IServiceCollection Replace<TService, TImplementation>(
+            this IServiceCollection services,
+            ServiceLifetime lifetime) where TService : class where TImplementation : class, TService
+        {
+            var descriptorToRemove = services.FirstOrDefault(d => d.ServiceType == typeof(TService));
+
+            services.Remove(descriptorToRemove);
+
+            var descriptorToAdd = new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime);
+
+            services.Add(descriptorToAdd);
+
+            return services;
+        }
+
     }
 }

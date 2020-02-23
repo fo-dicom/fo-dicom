@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -12,15 +15,17 @@ namespace FellowOakDicom.Network
         /// Checks whether listening to the provided port at the provided IP address is still possible
         /// </summary>
         /// <param name="port">The port</param>
+        /// <param name="ipAddress">The IP address</param>
         /// <returns>True when a new DICOM server can be set up for that IP address and port</returns>
-        bool IsAvailable(int port);
+        bool IsAvailable(int port, string ipAddress = NetworkManager.IPv4Any);
 
         /// <summary>
         /// Gets a running DICOM server listening on the provided port, or NULL if no such DICOM server exists.
         /// </summary>
         /// <param name="port">The port</param>
+        /// <param name="ipAddress">The IP address</param>
         /// <returns>A DICOM server registration or null</returns>
-        DicomServerRegistration Get(int port);
+        DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any);
 
         /// <summary>
         /// Register a new DICOM server
@@ -38,21 +43,23 @@ namespace FellowOakDicom.Network
     
     public class DicomServerRegistry : IDicomServerRegistry
     {
-        private readonly ConcurrentDictionary<int, DicomServerRegistration> _servers;
+        private readonly ConcurrentDictionary<(int, string), DicomServerRegistration> _servers;
 
         public DicomServerRegistry()
         {
-            _servers  = new ConcurrentDictionary<int, DicomServerRegistration>();
+            _servers  = new ConcurrentDictionary<(int, string), DicomServerRegistration>();
         }
 
-        public bool IsAvailable(int port) => !_servers.ContainsKey(port);
+        public bool IsAvailable(int port, string ipAddress = NetworkManager.IPv4Any)
+            => !_servers.ContainsKey((port, ipAddress));
 
-        public DicomServerRegistration Get(int port) => _servers.TryGetValue(port, out var registration) ? registration : null;
+        public DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any)
+            => _servers.TryGetValue((port, ipAddress), out var registration) ? registration : null;
 
         public DicomServerRegistration Register(IDicomServer dicomServer, Task task)
         {
             var registration = new DicomServerRegistration(this, dicomServer, task);
-            if (!_servers.TryAdd(dicomServer.Port, registration))
+            if (!_servers.TryAdd((dicomServer.Port, dicomServer.IPAddress), registration))
             {
                 throw new DicomNetworkException(
                     "Could not register DICOM server on port {0}, probably because another server just registered to the same port.",
@@ -62,7 +69,9 @@ namespace FellowOakDicom.Network
             return registration;
         }
 
-        public void Unregister(DicomServerRegistration registration) => _servers.TryRemove(registration.DicomServer.Port, out _);
+        public void Unregister(DicomServerRegistration registration)
+            => _servers.TryRemove((registration.DicomServer.Port, registration.DicomServer.IPAddress), out _);
+
     }
     
 }

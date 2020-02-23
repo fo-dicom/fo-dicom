@@ -8,17 +8,17 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Gets or sets the timeout (in ms) that associations need to be held open after all requests have been processed
         /// </summary>
-        public int AssociationRequestTimeoutInMs { get; set; } = 50;
+        public int AssociationRequestTimeoutInMs { get; set; } = 5000;
 
         /// <summary>
         /// Gets or sets the timeout (in ms) to wait for an association response after sending an association request
         /// </summary>
-        public int AssociationReleaseTimeoutInMs { get; set; } = 5000;
+        public int AssociationReleaseTimeoutInMs { get; set; } = 10000;
 
         /// <summary>
         /// Gets or sets the timeout (in ms) to wait for an association response after sending an association release request
         /// </summary>
-        public int AssociationLingerTimeoutInMs { get; set; } = 10000;
+        public int AssociationLingerTimeoutInMs { get; set; } = 50;
 
         /// <summary>
         /// Gets the maximum number of DICOM requests that are allowed to be sent over one single association.

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Text;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
@@ -98,7 +101,7 @@ namespace FellowOakDicom.Network
         {
             var dicomServerScope = _serviceScopeFactory.CreateScope();
             
-            if (!_dicomServerRegistry.IsAvailable(port))
+            if (!_dicomServerRegistry.IsAvailable(port, ipAddress))
             {
                 throw new DicomNetworkException("There is already a DICOM server registered on port: {0}", port);
             }
