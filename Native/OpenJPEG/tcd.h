@@ -104,7 +104,7 @@ FIXME: documentation
 */
 typedef struct opj_tcd_precinct {
   int x0, y0, x1, y1;		/* dimension of the precinct : left upper corner (x0, y0) right low corner (x1,y1) */
-  int cw, ch;			/* number of precinct in width and heigth */
+  int cw, ch;			/* number of precinct in width and height */
   union{		/* code-blocks informations */
 	  opj_tcd_cblk_enc_t* enc;
 	  opj_tcd_cblk_dec_t* dec;
@@ -163,7 +163,7 @@ typedef struct opj_tcd_tile {
 FIXME: documentation
 */
 typedef struct opj_tcd_image {
-  int tw, th;			/* number of tiles in width and heigth */
+  int tw, th;			/* number of tiles in width and height */
   opj_tcd_tile_t *tiles;		/* Tiles information */
 } opj_tcd_image_t;
 
