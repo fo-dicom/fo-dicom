@@ -9,26 +9,23 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
-    public class AsyncDicomCStoreProviderTests : IClassFixture<GlobalFixture>
+    public class AsyncDicomCStoreProviderTests
     {
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public AsyncDicomCStoreProviderTests(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
+        public AsyncDicomCStoreProviderTests(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -36,9 +33,9 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (_serverFactory.Create<AsyncDicomCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AsyncDicomCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomCStoreResponse response = null;

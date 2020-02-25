@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Codec;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using Xunit;
 
@@ -11,12 +12,6 @@ namespace FellowOakDicom.Tests.Imaging.Codec
     [Collection("General")]
     public class DicomTranscoderTest : IClassFixture<GlobalFixture>
     {
-        private readonly ITranscoderManager _transcoderManager;
-
-        public DicomTranscoderTest(GlobalFixture globalFixture)
-        {
-            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
-        }
 
         #region Unit tests
 
@@ -24,7 +19,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
-            var transcoderManager = _transcoderManager;
+            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
             var codec = transcoderManager.GetCodec(transferSyntax);
             var actual = codec.Name;
             Assert.Equal(expected, actual);

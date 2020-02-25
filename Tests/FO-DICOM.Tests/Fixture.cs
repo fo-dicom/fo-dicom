@@ -10,42 +10,30 @@ namespace FellowOakDicom.Tests
 {
     public class GlobalFixture : IDisposable
     {
-        public readonly IServiceProvider ServiceProvider;
 
         public GlobalFixture()
         {
             var serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom();
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-            Setup.SetupDI(ServiceProvider);
-        }
+            var defaultServiceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
 
-        public T GetRequiredService<T>() => ServiceProvider.GetRequiredService<T>();
-
-        public void Dispose()
-        {
-        }
-    }
-
-    public class ImageSharpFixture : IDisposable
-    {
-        public readonly IServiceProvider ServiceProvider;
-
-        public ImageSharpFixture()
-        {
-            var serviceCollection = new ServiceCollection()
+            serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddImageManager<ImageSharpImageManager>();
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-            Setup.SetupDI(ServiceProvider);
+            var imageSharpServiceProvider = serviceCollection.BuildServiceProvider();
+            serviceProviders.Register("ImageSharp", imageSharpServiceProvider);
+
+            Setup.SetupDI(serviceProviders);
         }
 
         public void Dispose()
         {
         }
     }
+
 
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
@@ -60,7 +48,7 @@ namespace FellowOakDicom.Tests
     { }
 
     [CollectionDefinition("ImageSharp")]
-    public class ImageSharpCollection : ICollectionFixture<ImageSharpFixture>
+    public class ImageSharpCollection : ICollectionFixture<GlobalFixture>
     {}
 
     [CollectionDefinition("Validation")]

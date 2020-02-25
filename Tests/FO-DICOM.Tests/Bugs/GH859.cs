@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading;
+using System.Threading.Tasks;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,20 +15,16 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH859: IClassFixture<GlobalFixture>
+    public class GH859
     {
         private readonly XUnitDicomLogger _output;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public GH859(ITestOutputHelper output, GlobalFixture globalFixture)
+        public GH859(ITestOutputHelper output)
         {
             _output = new XUnitDicomLogger(output)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .IncludePrefix("GH859");
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -38,7 +35,7 @@ namespace FellowOakDicom.Tests.Bugs
             var serverLogger = _output.IncludePrefix(nameof(DicomCEchoProvider));
             var source = new CancellationTokenSource();
 
-            using (var server = _serverFactory.Create<SimpleCStoreProvider>(port, logger: serverLogger))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<SimpleCStoreProvider>(port, logger: serverLogger))
             {
                 server.Options.LogDataPDUs = true;
                 server.Options.LogDimseDatasets = true;
@@ -46,7 +43,7 @@ namespace FellowOakDicom.Tests.Bugs
                 while (!server.IsListening)
                     await Task.Delay(50);
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = clientLogger;
 
                 var command = new DicomDataset();

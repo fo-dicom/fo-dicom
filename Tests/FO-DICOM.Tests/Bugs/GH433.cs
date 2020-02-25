@@ -1,27 +1,20 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Network;
 using FellowOakDicom.Tests.Network.Client;
-using System.Threading.Tasks;
-using FellowOakDicom.Network.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class GH433 : IClassFixture<GlobalFixture>
+    public class GH433
     {
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
-
-        public GH433(GlobalFixture globalFixture)
-        {
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
-        }
 
         #region Unit tests
 
@@ -30,14 +23,14 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (_serverFactory.Create<DicomClientTest.MockCEchoProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomClientTest.MockCEchoProvider>(port))
             {
                 var locker = new object();
 
                 var expected = DicomStatus.Success;
                 DicomStatus actual = null;
 
-                var client = _clientFactory.Create("localhost", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                         {
@@ -57,12 +50,12 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (_serverFactory.Create<DicomClientTest.MockCEchoProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomClientTest.MockCEchoProvider>(port))
             {
                 var locker = new object();
                 DicomStatus status = null;
 
-                var client = _clientFactory.Create("localhost", port, false, "SCU", "WRONG-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "SCU", "WRONG-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                     {

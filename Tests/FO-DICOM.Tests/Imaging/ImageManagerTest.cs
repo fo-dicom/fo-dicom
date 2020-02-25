@@ -12,7 +12,7 @@ namespace FellowOakDicom.Tests.Imaging
     {
         #region Fields
 
-        private readonly object @lock = new object();
+        private readonly object _lock = new object();
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void SetImplementation_RawImage_ImageManagerUsesRawImageImplementation()
         {
-            lock (@lock)
+            lock (_lock)
             {
                 var image = ImageManager.CreateImage(100, 100);
                 image.Render(4, false, false, 0);

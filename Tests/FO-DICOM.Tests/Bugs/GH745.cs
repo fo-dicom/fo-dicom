@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
-using FellowOakDicom.Network;
-using FellowOakDicom.Tests.Helpers;
-using FellowOakDicom.Tests.Network;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,20 +17,16 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("Network")]
-    public class GH745: IClassFixture<GlobalFixture>
+    public class GH745
     {
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public GH745(ITestOutputHelper output, GlobalFixture globalFixture)
+        public GH745(ITestOutputHelper output)
         {
             _logger = new XUnitDicomLogger(output)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Warning);
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Theory]
@@ -43,14 +40,14 @@ namespace FellowOakDicom.Tests.Bugs
             var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using (var server = _serverFactory.Create<DicomCEchoProvider>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomCEchoProvider>(port))
             {
                 server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
 
                 var actual = 0;
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = clientLogger;
                 client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
                 client.ClientOptions.AssociationLingerTimeoutInMs = 1; // No need to linger, we only send one request at a time
@@ -97,7 +94,7 @@ namespace FellowOakDicom.Tests.Bugs
             var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using (var server = _serverFactory.Create<DicomCEchoProvider>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomCEchoProvider>(port))
             {
                 server.Logger = serverLogger;
                 while (!server.IsListening) await Task.Delay(50);
@@ -107,7 +104,7 @@ namespace FellowOakDicom.Tests.Bugs
                 var requests = Enumerable.Range(0, expected).Select(
                     async requestIndex =>
                     {
-                        var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                        var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                         client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
                         client.Logger = clientLogger;
 

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -15,19 +15,13 @@ namespace FellowOakDicom.Tests.Network
     [Collection("Network")]
     public class DicomCGetRequestTest : IClassFixture<GlobalFixture>
     {
-        private readonly IDicomClientFactory _clientFactory;
-
-        public DicomCGetRequestTest(GlobalFixture globalFixture)
-        {
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
-        }
 
         #region Unit tests
 
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public async Task DicomCGetRequest_OneImageInSeries_Received()
         {
-            var client = _clientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
+            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
                 DicomStorageCategory.Image,
@@ -63,7 +57,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
         public async Task DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
-            var client = _clientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
+            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pc = DicomPresentationContext.GetScpRolePresentationContext(DicomUID.CTImageStorage);
             client.AdditionalPresentationContexts.Add(pc);

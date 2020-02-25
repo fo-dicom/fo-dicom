@@ -25,35 +25,22 @@ namespace FellowOakDicom.Tests.Network.Client
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomClientTimeoutTest : IClassFixture<GlobalFixture>
+    public class DicomClientTimeoutTest
     {
         #region Fields
 
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomClientFactory _clientFactory;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly ILogManager _logManager;
-        private readonly ITranscoderManager _transcoderManager;
-        private readonly IOptions<DicomClientOptions> _defaultClientOptions;
-        private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
         #endregion
 
         #region Constructors
 
-        public DicomClientTimeoutTest(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
+        public DicomClientTimeoutTest(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _logManager = globalFixture.GetRequiredService<ILogManager>();
-            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
-            _defaultClientOptions = globalFixture.GetRequiredService<IOptions<DicomClientOptions>>();
-            _defaultServiceOptions = globalFixture.GetRequiredService<IOptions<DicomServiceOptions>>();
         }
 
         #endregion
@@ -62,21 +49,26 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
-            var server = _serverFactory.Create<T>(port);
+            var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<T>(port);
             server.Logger = _logger.IncludePrefix(typeof(T).Name).WithMinimumLevel(LogLevel.Debug);
             return server;
         }
 
         private IDicomClient CreateClient(int port)
         {
-            var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
             return client;
         }
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
-            return new DicomClientFactory(_logManager, networkManager, _transcoderManager, _defaultClientOptions, _defaultServiceOptions);
+            return new DicomClientFactory(
+                Setup.ServiceProvider.GetRequiredService<ILogManager>(),
+                networkManager,
+                Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(),
+                Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>(),
+                Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>());
         }
 
         [Fact]
@@ -178,7 +170,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     {
                         {DicomTag.PatientID, "PAT123"}
                     },
-                    OnResponseReceived = (req, res) => { lastResponse = res; }
+                    OnResponseReceived = (req, res) => lastResponse = res
                 };
 
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
@@ -215,7 +207,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 DicomCMoveResponse lastResponse = null;
                 var request = new DicomCMoveRequest("another-AE", "study123")
                 {
-                    OnResponseReceived = (req, res) => { lastResponse = res; }
+                    OnResponseReceived = (req, res) => lastResponse = res
                 };
 
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;

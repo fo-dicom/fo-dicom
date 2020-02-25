@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Linq;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
@@ -10,6 +8,8 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
 
 namespace FellowOakDicom
 {
@@ -42,23 +42,25 @@ namespace FellowOakDicom
     /// </summary>
     internal static class Setup
     {
-        private static IServiceProvider _serviceProvider;
+        private static IServiceProviderHost _serviceProviderHost;
 
         internal static IServiceProvider ServiceProvider
         {
             get
             {
-                if (_serviceProvider == null)
+                if (_serviceProviderHost == null)
                 {
                     new DicomSetupBuilder().Build();
                 }
 
-                return _serviceProvider;
+                return _serviceProviderHost.GetServiceProvider();
             }
-            private set => _serviceProvider = value;
+            private set => _serviceProviderHost = new DefaultServiceProviderHost(value);
         }
 
         public static void SetupDI(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+
+        public static void SetupDI(IServiceProviderHost serviceProviderHost) => _serviceProviderHost = serviceProviderHost;
     }
 
     public static class IServiceCollectionExtension

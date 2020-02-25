@@ -12,27 +12,20 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Network
 {
 
     [Collection("Network"), Trait("Category", "Network")]
-    public class DicomAcceptedPresentationContextTest : IClassFixture<GlobalFixture>
+    public class DicomAcceptedPresentationContextTest
     {
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
-
-        public DicomAcceptedPresentationContextTest(GlobalFixture globalFixture)
-        {
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
-        }
 
         [Fact]
         public async Task AcceptEchoButNotStoreContexts()
         {
             int port = Ports.GetNext();
-            using (_serverFactory.Create<AcceptOnlyEchoProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -47,7 +40,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -62,7 +55,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptPrintContexts()
         {
             int port = Ports.GetNext();
-            using (_serverFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoPrintManagementProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -77,7 +70,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -92,7 +85,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptStoreContexts()
         {
             int port = Ports.GetNext();
-            using (_serverFactory.Create<AcceptOnlyEchoStoreProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoStoreProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -107,7 +100,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();

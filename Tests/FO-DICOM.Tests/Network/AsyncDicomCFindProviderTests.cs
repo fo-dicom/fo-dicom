@@ -11,26 +11,23 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
-    public class AsyncDicomCFindProviderTests : IClassFixture<GlobalFixture>
+    public class AsyncDicomCFindProviderTests
     {
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public AsyncDicomCFindProviderTests(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
+        public AsyncDicomCFindProviderTests(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
@@ -38,9 +35,9 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (_serverFactory.Create<ImmediateSuccessAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<ImmediateSuccessAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 DicomCFindResponse response = null;
@@ -65,9 +62,9 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (_serverFactory.Create<PendingAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<PendingAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
 
                 var responses = new ConcurrentQueue<DicomCFindResponse>();

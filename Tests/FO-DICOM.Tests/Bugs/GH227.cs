@@ -11,14 +11,8 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH227 : IClassFixture<GlobalFixture>
+    public class GH227
     {
-        private readonly ITranscoderManager _transcoderManager;
-
-        public GH227(GlobalFixture globalFixture)
-        {
-            _transcoderManager = globalFixture.GetRequiredService<ITranscoderManager>();
-        }
 
         #region Unit tests
 
@@ -123,7 +117,8 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var deflated = DicomFile.Open(TestData.Resolve("GH227.dcm"));
 
-            var transcoderManager = _transcoderManager;
+            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
+
             Assert.True(transcoderManager.CanTranscode(DicomTransferSyntax.DeflatedExplicitVRLittleEndian,
                 DicomTransferSyntax.ExplicitVRLittleEndian));
 

@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Network;
-using FellowOakDicom.Tests.Helpers;
-using FellowOakDicom.Tests.Network;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,17 +15,13 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH526 : IClassFixture<GlobalFixture>
+    public class GH526
     {
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public GH526(ITestOutputHelper output, GlobalFixture globalFixture)
+        public GH526(ITestOutputHelper output)
         {
             _logger = new XUnitDicomLogger(output).IncludeTimestamps().IncludeThreadId();
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         #region Unit Tests
@@ -38,7 +35,7 @@ namespace FellowOakDicom.Tests.Bugs
             var handle = new ManualResetEventSlim();
 
             var port = Ports.GetNext();
-            using (_serverFactory.Create<VideoCStoreProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<VideoCStoreProvider>(port))
             {
                 var request = new DicomCStoreRequest(fileName);
                 request.OnResponseReceived = (req, rsp) =>
@@ -48,7 +45,7 @@ namespace FellowOakDicom.Tests.Bugs
                     handle.Set();
                 };
 
-                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
                 handle.Wait(10000);
@@ -65,7 +62,7 @@ namespace FellowOakDicom.Tests.Bugs
             var handle = new ManualResetEventSlim();
 
             var port = Ports.GetNext();
-            using (var server = _serverFactory.Create<VideoCStoreProvider>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<VideoCStoreProvider>(port))
             {
                 server.Logger = _logger.IncludePrefix("VideoCStoreProvider");
                 var request = new DicomCStoreRequest(fileName);
@@ -77,7 +74,7 @@ namespace FellowOakDicom.Tests.Bugs
                     handle.Set();
                 };
 
-                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "STORESCU", "STORESCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);

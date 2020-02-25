@@ -4,6 +4,7 @@
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,16 +13,8 @@ namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH538: IClassFixture<GlobalFixture>
+    public class GH538
     {
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
-
-        public GH538(GlobalFixture globalFixture)
-        {
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
-        }
 
         #region Unit Tests
 
@@ -35,13 +28,17 @@ namespace FellowOakDicom.Tests.Bugs
             var successes = 0;
 
             var port = Ports.GetNext();
-            using (_serverFactory.Create<SimpleCStoreProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<SimpleCStoreProvider>(port))
             {
                 var request1 = new DicomCStoreRequest(file1);
                 request1.OnResponseReceived = (req, rsp) =>
                 {
                     if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
-                        rsp.Status == DicomStatus.Success) ++successes;
+                        rsp.Status == DicomStatus.Success)
+                    {
+                        ++successes;
+                    }
+
                     handle1.Set();
                 };
 
@@ -49,11 +46,15 @@ namespace FellowOakDicom.Tests.Bugs
                 request2.OnResponseReceived = (req, rsp) =>
                 {
                     if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
-                        rsp.Status == DicomStatus.Success) ++successes;
+                        rsp.Status == DicomStatus.Success)
+                    {
+                        ++successes;
+                    }
+
                     handle2.Set();
                 };
 
-                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request1).ConfigureAwait(false);
                 await client.AddRequestAsync(request2).ConfigureAwait(false);
 
@@ -74,17 +75,21 @@ namespace FellowOakDicom.Tests.Bugs
             var success = false;
 
             var port = Ports.GetNext();
-            using (_serverFactory.Create<VideoCStoreProvider>(port))
+            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<VideoCStoreProvider>(port))
             {
                 var request = new DicomCStoreRequest(file);
                 request.OnResponseReceived = (req, rsp) =>
                 {
                     if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
-                        !req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success) success = true;
+                        !req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success)
+                    {
+                        success = true;
+                    }
+
                     handle.Set();
                 };
 
-                var client = _clientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "STORESCU", "STORESCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);

@@ -12,22 +12,19 @@ using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Bugs
 {
 
     [Collection("General")]
-    public class GH306 : IClassFixture<GlobalFixture>
+    public class GH306
     {
         private readonly XUnitDicomLogger _logger;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public GH306(ITestOutputHelper testOutputHelper, GlobalFixture globalFixture)
+        public GH306(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitDicomLogger(testOutputHelper).IncludeTimestamps().IncludeThreadId();
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         #region Unit tests
@@ -37,13 +34,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = _serverFactory.Create<CStoreScp>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file));
 
@@ -57,13 +54,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = _serverFactory.Create<CStoreScp>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
@@ -77,13 +74,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = _serverFactory.Create<CStoreScp>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file));
 
@@ -97,13 +94,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = _serverFactory.Create<CStoreScp>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
 
                 await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);

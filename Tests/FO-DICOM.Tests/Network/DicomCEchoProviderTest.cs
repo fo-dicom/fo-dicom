@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Network.Client;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -16,24 +17,20 @@ namespace FellowOakDicom.Tests.Network
     public class DicomCEchoProviderTest
     {
         private readonly ITestOutputHelper _output;
-        private readonly IDicomServerFactory _serverFactory;
-        private readonly IDicomClientFactory _clientFactory;
 
-        public DicomCEchoProviderTest(ITestOutputHelper output, GlobalFixture globalFixture)
+        public DicomCEchoProviderTest(ITestOutputHelper output)
         {
             _output = output;
-            _serverFactory = globalFixture.GetRequiredService<IDicomServerFactory>();
-            _clientFactory = globalFixture.GetRequiredService<IDicomClientFactory>();
         }
 
         [Fact]
         public async Task Send_FromDicomClient_DoesNotDeadlock()
         {
             var port = Ports.GetNext();
-            using (var server = _serverFactory.Create<DicomCEchoProvider>(port))
+            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = _clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient");
 
                 for (var i = 0; i < 10; i++)
