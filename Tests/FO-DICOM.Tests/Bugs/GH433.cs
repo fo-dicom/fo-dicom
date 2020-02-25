@@ -6,7 +6,6 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Network;
 using FellowOakDicom.Tests.Network.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
@@ -23,14 +22,14 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomClientTest.MockCEchoProvider>(port))
+            using (DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(port))
             {
                 var locker = new object();
 
                 var expected = DicomStatus.Success;
                 DicomStatus actual = null;
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                         {
@@ -50,12 +49,12 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomClientTest.MockCEchoProvider>(port))
+            using (DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(port))
             {
                 var locker = new object();
                 DicomStatus status = null;
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "SCU", "WRONG-SCP");
+                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "WRONG-SCP");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                     {

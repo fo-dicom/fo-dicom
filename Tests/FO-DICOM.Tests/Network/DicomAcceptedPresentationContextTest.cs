@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Printing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Printing;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -25,7 +24,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptEchoButNotStoreContexts()
         {
             int port = Ports.GetNext();
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoProvider>(port))
+            using (DicomServerFactory.Create<AcceptOnlyEchoProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -40,7 +39,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -55,7 +54,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptPrintContexts()
         {
             int port = Ports.GetNext();
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoPrintManagementProvider>(port))
+            using (DicomServerFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -70,7 +69,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -85,7 +84,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptStoreContexts()
         {
             int port = Ports.GetNext();
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<AcceptOnlyEchoStoreProvider>(port))
+            using (DicomServerFactory.Create<AcceptOnlyEchoStoreProvider>(port))
             {
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
@@ -100,7 +99,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();

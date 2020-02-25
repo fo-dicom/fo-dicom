@@ -7,7 +7,6 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,7 +34,7 @@ namespace FellowOakDicom.Tests.Bugs
             var serverLogger = _output.IncludePrefix(nameof(DicomCEchoProvider));
             var source = new CancellationTokenSource();
 
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<SimpleCStoreProvider>(port, logger: serverLogger))
+            using (var server = DicomServerFactory.Create<SimpleCStoreProvider>(port, logger: serverLogger))
             {
                 server.Options.LogDataPDUs = true;
                 server.Options.LogDimseDatasets = true;
@@ -43,7 +42,7 @@ namespace FellowOakDicom.Tests.Bugs
                 while (!server.IsListening)
                     await Task.Delay(50);
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = clientLogger;
 
                 var command = new DicomDataset();

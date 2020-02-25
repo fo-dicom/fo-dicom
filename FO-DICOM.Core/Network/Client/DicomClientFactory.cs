@@ -4,6 +4,7 @@
 using System;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace FellowOakDicom.Network.Client
@@ -21,7 +22,22 @@ namespace FellowOakDicom.Network.Client
         IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe);
     }
 
-    public class DicomClientFactory : IDicomClientFactory
+    public static class DicomClientFactory
+    {
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomClient"/> out of DI-container.
+        /// </summary>
+        /// <param name="host">DICOM host.</param>
+        /// <param name="port">Port.</param>
+        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
+        public static IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
+            => Setup.ServiceProvider
+            .GetRequiredService<IDicomClientFactory>().Create(host, port, useTls, callingAe, calledAe);
+    }
+
+    public class DefaultDicomClientFactory : IDicomClientFactory
     {
         private readonly ILogManager _logManager;
         private readonly INetworkManager _networkManager;
@@ -29,7 +45,7 @@ namespace FellowOakDicom.Network.Client
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
-        public DicomClientFactory(
+        public DefaultDicomClientFactory(
             ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
             IOptions<DicomClientOptions> defaultClientOptions,
             IOptions<DicomServiceOptions> defaultServiceOptions
@@ -42,7 +58,7 @@ namespace FellowOakDicom.Network.Client
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
         }
 
-        public IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
+        public virtual IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
         {
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();

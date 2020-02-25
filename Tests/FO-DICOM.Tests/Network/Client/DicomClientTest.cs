@@ -14,7 +14,6 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,7 +53,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
-            var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<T>(port);
+            var server = DicomServerFactory.Create<T>(port);
             server.Logger = _logger.IncludePrefix(nameof(IDicomServer));
             return server;
         }
@@ -65,7 +64,7 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
             var ipAddress = NetworkManager.IPv4Any;
-            var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<TProvider, TServer>(ipAddress, port, logger: logger);
+            var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
             return server as TServer;
@@ -73,7 +72,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create(host, port, useTls, callingAe, calledAe);
+            var client = DicomClientFactory.Create(host, port, useTls, callingAe, calledAe);
             client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
             return client;
         }

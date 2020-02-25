@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -40,12 +41,51 @@ namespace FellowOakDicom.Network
         /// <param name="registration"></param>
         void Unregister(DicomServerRegistration registration);
     }
-    
-    public class DicomServerRegistry : IDicomServerRegistry
+
+    /// <summary>
+    /// Register where we keep the running DICOM servers
+    /// </summary>
+    public static class DicomServerRegistry
+    {
+        /// <summary>
+        /// Checks whether listening to the provided port at the provided IP address is still possible
+        /// </summary>
+        /// <param name="port">The port</param>
+        /// <param name="ipAddress">The IP address</param>
+        /// <returns>True when a new DICOM server can be set up for that IP address and port</returns>
+        public static bool IsAvailable(int port, string ipAddress = NetworkManager.IPv4Any)
+            => Setup.ServiceProvider.GetRequiredService<IDicomServerRegistry>().IsAvailable(port, ipAddress);
+
+        /// <summary>
+        /// Gets a running DICOM server listening on the provided port, or NULL if no such DICOM server exists.
+        /// </summary>
+        /// <param name="port">The port</param>
+        /// <param name="ipAddress">The IP address</param>
+        /// <returns>A DICOM server registration or null</returns>
+        public static DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any)
+            => Setup.ServiceProvider.GetRequiredService<IDicomServerRegistry>().Get(port, ipAddress);
+
+        /// <summary>
+        /// Register a new DICOM server
+        /// </summary>
+        /// <param name="dicomServer">The DICOM server that is now running</param>
+        /// <param name="task">The task that represents the running of the DICOM server</param>
+        public static DicomServerRegistration Register(IDicomServer dicomServer, Task task)
+            => Setup.ServiceProvider.GetRequiredService<IDicomServerRegistry>().Register(dicomServer, task);
+
+        /// <summary>
+        /// Unregisters a DICOM server. This needs to happen when the DICOM server is stopped.
+        /// </summary>
+        /// <param name="registration"></param>
+        public static void Unregister(DicomServerRegistration registration)
+            => Setup.ServiceProvider.GetRequiredService<IDicomServerRegistry>().Unregister(registration);
+    }
+
+    public class DefaultDicomServerRegistry : IDicomServerRegistry
     {
         private readonly ConcurrentDictionary<(int, string), DicomServerRegistration> _servers;
 
-        public DicomServerRegistry()
+        public DefaultDicomServerRegistry()
         {
             _servers  = new ConcurrentDictionary<(int, string), DicomServerRegistration>();
         }

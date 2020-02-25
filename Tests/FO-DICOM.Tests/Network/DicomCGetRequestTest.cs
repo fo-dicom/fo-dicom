@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -21,7 +20,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact(Skip = "Require running Q/R SCP containing CT-MONO2-16-ankle image")]
         public async Task DicomCGetRequest_OneImageInSeries_Received()
         {
-            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", 11112, false, "SCU", "COMMON");
+            var client = DicomClientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
                 DicomStorageCategory.Image,
@@ -57,7 +56,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact(Skip = "Require running Q/R SCP containing specific study")]
         public async Task DicomCGetRequest_PickCTImagesInStudy_OnlyCTImagesRetrieved()
         {
-            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", 11112, false, "SCU", "COMMON");
+            var client = DicomClientFactory.Create("localhost", 11112, false, "SCU", "COMMON");
 
             var pc = DicomPresentationContext.GetScpRolePresentationContext(DicomUID.CTImageStorage);
             client.AdditionalPresentationContexts.Add(pc);

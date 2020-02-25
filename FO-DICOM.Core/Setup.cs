@@ -81,13 +81,13 @@ namespace FellowOakDicom
         
         public static IServiceCollection AddDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
             => services   
-                .AddSingleton<IDicomClientFactory, DicomClientFactory>()
+                .AddSingleton<IDicomClientFactory, DefaultDicomClientFactory>()
                 .Configure(options ?? (o => {}));
         
         public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null) 
             => services   
-                .AddSingleton<IDicomServerRegistry, DicomServerRegistry>()
-                .AddSingleton<IDicomServerFactory, DicomServerFactory>()
+                .AddSingleton<IDicomServerRegistry, DefaultDicomServerRegistry>()
+                .AddSingleton<IDicomServerFactory, DefaultDicomServerFactory>()
                 .Configure(options ?? (o => {}));
 
         public static IServiceCollection AddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager

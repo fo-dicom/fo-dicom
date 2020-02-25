@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Network;
-using FellowOakDicom.Tests.Network;
 using System.Threading.Tasks;
+using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Network;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -22,9 +21,9 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomCEchoProvider>(port))
+            using (DicomServerFactory.Create<DicomCEchoProvider>(port))
             {
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("localhost", port, false, "SCU", "SCP");
+                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "SCP");
 
                 // this just illustrates the issue of too many presentation contexts, not real world application.
                 var pcs =

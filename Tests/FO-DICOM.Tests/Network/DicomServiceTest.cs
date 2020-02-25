@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Threading.Tasks;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -20,7 +19,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_PrivateTags_DataSufficientlyTransported()
         {
             var port = Ports.GetNext();
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<SimpleCStoreProvider>(port))
+            using (DicomServerFactory.Create<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, requestDataset = null, responseDataset = null;
                 var request = new DicomCStoreRequest(new DicomDataset
@@ -51,7 +50,7 @@ namespace FellowOakDicom.Tests.Network
                     responseDataset = res.Dataset;
                 };
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);
@@ -73,7 +72,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task SendAsync_SingleRequest_DataSufficientlyTransported()
         {
             int port = Ports.GetNext();
-            using (Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<SimpleCStoreProvider>(port))
+            using (DicomServerFactory.Create<SimpleCStoreProvider>(port))
             {
                 DicomDataset command = null, dataset = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
@@ -83,7 +82,7 @@ namespace FellowOakDicom.Tests.Network
                     dataset = request.Dataset;
                 };
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 await client.SendAsync().ConfigureAwait(false);

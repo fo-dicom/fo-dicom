@@ -49,21 +49,21 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
         {
-            var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<T>(port);
+            var server = DicomServerFactory.Create<T>(port);
             server.Logger = _logger.IncludePrefix(typeof(T).Name).WithMinimumLevel(LogLevel.Debug);
             return server;
         }
 
         private IDicomClient CreateClient(int port)
         {
-            var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
             return client;
         }
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
-            return new DicomClientFactory(
+            return new DefaultDicomClientFactory(
                 Setup.ServiceProvider.GetRequiredService<ILogManager>(),
                 networkManager,
                 Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(),

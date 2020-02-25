@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Network;
-using FellowOakDicom.Tests.Helpers;
 using System.Threading.Tasks;
+using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -27,10 +26,10 @@ namespace FellowOakDicom.Tests.Network
         public async Task Send_FromDicomClient_DoesNotDeadlock()
         {
             var port = Ports.GetNext();
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<DicomCEchoProvider>(port))
+            using (var server = DicomServerFactory.Create<DicomCEchoProvider>(port))
             {
                 server.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomCEchoProvider");
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = new XUnitDicomLogger(_output).IncludeTimestamps().IncludeThreadId().IncludePrefix("DicomClient");
 
                 for (var i = 0; i < 10; i++)

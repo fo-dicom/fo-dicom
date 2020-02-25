@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -34,13 +33,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
+            using (var server = DicomServerFactory.Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file));
 
@@ -54,13 +53,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
+            using (var server = DicomServerFactory.Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
@@ -74,13 +73,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
+            using (var server = DicomServerFactory.Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
                 await client.AddRequestAsync(new DicomCStoreRequest(file));
 
@@ -94,13 +93,13 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var port = Ports.GetNext();
 
-            using (var server = Setup.ServiceProvider.GetRequiredService<IDicomServerFactory>().Create<CStoreScp>(port))
+            using (var server = DicomServerFactory.Create<CStoreScp>(port))
             {
                 server.Logger = _logger.IncludePrefix("CStoreScp");
 
                 var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-                var client = Setup.ServiceProvider.GetRequiredService<IDicomClientFactory>().Create("127.0.0.1", port, false, "SCU", "SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
 
                 await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
