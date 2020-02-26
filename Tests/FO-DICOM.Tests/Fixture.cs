@@ -19,12 +19,14 @@ namespace FellowOakDicom.Tests
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
 
+#if !NET462
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddImageManager<ImageSharpImageManager>();
 
             var imageSharpServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register("ImageSharp", imageSharpServiceProvider);
+#endif
 
             Setup.SetupDI(serviceProviders);
         }
