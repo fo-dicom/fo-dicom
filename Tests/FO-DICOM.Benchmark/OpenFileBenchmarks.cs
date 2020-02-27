@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Serialization;
@@ -29,30 +26,34 @@ namespace FellowOakDicom.Benchmark
         }
 
         [Benchmark]
-        public void OpenFile()
+        public DicomFile OpenFile()
         {
             var file = DicomFile.Open(Path.Combine(_rootpath, "Data\\GH355.dcm"));
+            return file;
         }
 
         [Benchmark]
-        public void OpenFileReadAll()
+        public DicomFile OpenFileReadAll()
         {
             var file = DicomFile.Open(Path.Combine(_rootpath, "Data\\GH355.dcm"), FileReadOption.ReadAll);
+            return file;
         }
 
         [Benchmark]
-        public void OpenFileAndRender()
+        public IImage OpenFileAndRender()
         {
             var file = DicomFile.Open(Path.Combine(_rootpath, "Data\\GH355.dcm"));
             var image = new DicomImage(file.Dataset);
             var rendered = image.RenderImage();
+            return rendered;
         }
 
         [Benchmark]
-        public void JsonSerialization()
+        public DicomDataset JsonSerialization()
         {
             var json = JsonConvert.SerializeObject(_dicomDir, new JsonDicomConverter());
             var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            return reconstituatedDataset;
         }
 
     }
