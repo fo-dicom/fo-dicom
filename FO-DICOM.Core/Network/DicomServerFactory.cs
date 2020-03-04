@@ -164,7 +164,7 @@ namespace FellowOakDicom.Network
             
             if (!_dicomServerRegistry.IsAvailable(port, ipAddress))
             {
-                throw new DicomNetworkException("There is already a DICOM server registered on port: {0}", port);
+                throw new DicomNetworkException($"There is already a DICOM server registered on port: {port}");
             }
 
             var creator = ActivatorUtilities.CreateFactory(typeof(TServer), new Type[0]);

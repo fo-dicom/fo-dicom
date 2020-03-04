@@ -12,11 +12,6 @@ namespace FellowOakDicom.Network
         {
         }
 
-        public DicomNetworkException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomNetworkException(string message, Exception innerException)
             : base(message, innerException)
         {

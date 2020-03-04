@@ -117,7 +117,7 @@ namespace FellowOakDicom.Imaging
                     return YbrRct;
             }
 
-            throw new DicomImagingException("Unknown Photometric Interpretation [{0}]", photometricInterpretation);
+            throw new DicomImagingException($"Unknown Photometric Interpretation [{photometricInterpretation}]");
         }
 
         /// <summary>

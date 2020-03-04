@@ -1094,7 +1094,7 @@ namespace FellowOakDicom.IO.Reader
 
                     if (tag != DicomTag.Item && tag != DicomTag.SequenceDelimitationItem)
                     {
-                        throw new DicomReaderException("Unexpected tag in DICOM fragment sequence: {0}", tag);
+                        throw new DicomReaderException($"Unexpected tag in DICOM fragment sequence: {tag}");
                     }
 
                     _length = source.GetUInt32();

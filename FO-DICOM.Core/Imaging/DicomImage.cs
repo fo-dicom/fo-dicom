@@ -193,9 +193,7 @@ namespace FellowOakDicom.Imaging
                 }
                 else
                 {
-                    throw new DicomImagingException(
-                        "Grayscale color map not applicable for photometric interpretation: {0}",
-                        _pixelData.PhotometricInterpretation);
+                    throw new DicomImagingException($"Grayscale color map not applicable for photometric interpretation: {_pixelData.PhotometricInterpretation}");
                 }
             }
         }
@@ -491,7 +489,7 @@ namespace FellowOakDicom.Imaging
             }
             else
             {
-                throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi);
+                throw new DicomImagingException($"Unsupported pipeline photometric interpretation: {pi}");
             }
 
             return new PipelineData { Pipeline = pipeline, RenderOptions = renderOptions };

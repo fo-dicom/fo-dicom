@@ -97,10 +97,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public Endian Endian
         {
-            get
-            {
-                return _endian;
-            }
+            get => _endian;
             set
             {
                 _endian = value;
@@ -130,7 +127,7 @@ namespace FellowOakDicom.IO.Buffer
         public bool CanRewind => true;
 
         /// <inheritdoc />
-        public int MilestonesCount => this._milestones.Count;
+        public int MilestonesCount => _milestones.Count;
 
         #endregion
 
@@ -138,69 +135,41 @@ namespace FellowOakDicom.IO.Buffer
 
         /// <inheritdoc />
         public byte GetUInt8()
-        {
-            return NextByte();
-        }
+            => NextByte();
 
         /// <inheritdoc />
         public short GetInt16()
-        {
-            if (Endian == Endian.LocalMachine)
-            {
-                return unchecked((short)((NextByte() << 0) | (NextByte() << 8)));
-            }
-            else
-            {
-                return unchecked((short)((NextByte() << 8) | (NextByte() << 0)));
-            }
-        }
+            => Endian == Endian.LocalMachine
+                ? (short)((NextByte() << 0) | (NextByte() << 8))
+                : (short)((NextByte() << 8) | (NextByte() << 0));
 
         /// <inheritdoc />
         public ushort GetUInt16()
-        {
-            if (Endian == Endian.LocalMachine)
-            {
-                return unchecked((ushort)((NextByte() << 0) | (NextByte() << 8)));
-            }
-            else
-            {
-                return unchecked((ushort)((NextByte() << 8) | (NextByte() << 0)));
-            }
-        }
+            => Endian == Endian.LocalMachine
+                ? (ushort)((NextByte() << 0) | (NextByte() << 8))
+                : (ushort)((NextByte() << 8) | (NextByte() << 0));
 
         /// <inheritdoc />
         public int GetInt32()
-        {
-            if (Endian == Endian.LocalMachine)
-            {
-                return unchecked((int)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)));
-            }
-            else
-            {
-                return unchecked((int)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0)));
-            }
-        }
+            => Endian == Endian.LocalMachine
+                ? (NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)
+                : (NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0);
 
         /// <inheritdoc />
         public uint GetUInt32()
-        {
-            if (Endian == Endian.LocalMachine)
-            {
-                return
-                    unchecked((uint)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)));
-            }
-            else
-            {
-                return
-                    unchecked((uint)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0)));
-            }
-        }
+            => Endian == Endian.LocalMachine
+                ? (uint)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24))
+                : (uint)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0));
 
         /// <inheritdoc />
         public long GetInt64()
         {
             byte[] b = GetBytes(8);
-            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            if (Endian != Endian.LocalMachine)
+            {
+                Array.Reverse(b);
+            }
+
             return BitConverter.ToInt64(b, 0);
         }
 
@@ -208,7 +177,11 @@ namespace FellowOakDicom.IO.Buffer
         public ulong GetUInt64()
         {
             byte[] b = GetBytes(8);
-            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            if (Endian != Endian.LocalMachine)
+            {
+                Array.Reverse(b);
+            }
+
             return BitConverter.ToUInt64(b, 0);
         }
 
@@ -216,7 +189,11 @@ namespace FellowOakDicom.IO.Buffer
         public float GetSingle()
         {
             byte[] b = GetBytes(4);
-            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            if (Endian != Endian.LocalMachine)
+            {
+                Array.Reverse(b);
+            }
+
             return BitConverter.ToSingle(b, 0);
         }
 
@@ -224,7 +201,11 @@ namespace FellowOakDicom.IO.Buffer
         public double GetDouble()
         {
             byte[] b = GetBytes(8);
-            if (Endian != Endian.LocalMachine) Array.Reverse(b);
+            if (Endian != Endian.LocalMachine)
+            {
+                Array.Reverse(b);
+            }
+
             return BitConverter.ToDouble(b, 0);
         }
 
@@ -239,7 +220,10 @@ namespace FellowOakDicom.IO.Buffer
                 {
                     if (_current == -1 || _currentPos >= _currentData.Length)
                     {
-                        if (!SwapBuffers()) throw new DicomIoException("Tried to retrieve {0} bytes past end of source.", count);
+                        if (!SwapBuffers())
+                        {
+                            throw new DicomIoException($"Tried to retrieve {count} bytes past end of source.");
+                        }
                     }
 
                     int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
@@ -335,17 +319,18 @@ namespace FellowOakDicom.IO.Buffer
         {
             lock (_lock)
             {
-                if ((_position + count) <= _length) return true;
+                if ((_position + count) <= _length)
+                {
+                    return true;
+                }
 
-                if (_fixed) throw new DicomIoException("Requested {0} bytes past end of byte source.", count);
-
-                if (callback == null)
-                    throw new DicomIoException(
-                        "Requested {0} bytes past end of byte source without providing a callback.",
-                        count);
+                if (_fixed)
+                {
+                    throw new DicomIoException($"Requested {count} bytes past end of byte source.");
+                }
 
                 _required = count;
-                _callback = callback;
+                _callback = callback ?? throw new DicomIoException($"Requested {count} bytes past end of byte source without providing a callback.");
                 _callbackState = state;
 
                 return false;

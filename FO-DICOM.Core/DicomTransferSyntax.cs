@@ -680,7 +680,7 @@ namespace FellowOakDicom
                 };
             }
 
-            throw new DicomDataException("UID: {0} is not a transfer syntax type.", uid);
+            throw new DicomDataException($"UID: {uid} is not a transfer syntax type.");
         }
 
         /// <summary>
@@ -704,13 +704,21 @@ namespace FellowOakDicom
         {
             lock (Entries)
             {
-                DicomTransferSyntax tx;
-
                 //  return cached transfer syntax from internal dictionary.
-                if (Entries.TryGetValue(uid, out tx)) return tx;
+                if (Entries.TryGetValue(uid, out DicomTransferSyntax tx))
+                {
+                    return tx;
+                }
 
-                if (uid == null) throw new ArgumentNullException(nameof(uid));
-                if (uid.Type != DicomUidType.TransferSyntax) throw new DicomDataException("UID: {0} is not a transfer syntax type.", uid);
+                if (uid == null)
+                {
+                    throw new ArgumentNullException(nameof(uid));
+                }
+
+                if (uid.Type != DicomUidType.TransferSyntax)
+                {
+                    throw new DicomDataException($"UID: {uid} is not a transfer syntax type.");
+                }
 
                 //  cache transfer syntax into internal dictionary.
                 tx = new DicomTransferSyntax(uid)

@@ -84,14 +84,11 @@ namespace FellowOakDicom.Imaging
                 var type = Dataset.GetSingleValue<string>(OverlayTag(DicomTag.OverlayType));
                 if (type.StartsWith("R")) return DicomOverlayType.ROI;
                 if (type.StartsWith("G")) return DicomOverlayType.Graphics;
-                throw new DicomImagingException("Unsupported overlay type: {0}", type);
+                throw new DicomImagingException($"Unsupported overlay type: {type}");
             }
-            set
-            {
-                Dataset.AddOrUpdate(
+            set => Dataset.AddOrUpdate(
                     OverlayTag(DicomTag.OverlayType),
                     value.ToString().Substring(0, 1).ToUpperInvariant());
-            }
         }
 
         /// <summary>

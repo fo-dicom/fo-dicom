@@ -12,11 +12,6 @@ namespace FellowOakDicom.StructuredReport
         {
         }
 
-        public DicomStructuredReportException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomStructuredReportException(string message, Exception innerException)
             : base(message, innerException)
         {

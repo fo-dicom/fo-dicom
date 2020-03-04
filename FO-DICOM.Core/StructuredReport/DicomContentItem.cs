@@ -80,12 +80,18 @@ namespace FellowOakDicom.StructuredReport
             Relationship = relationship;
             Type = type;
 
-            if (type == DicomValueType.Text) Dataset.Add(DicomTag.TextValue, value);
-            else if (type == DicomValueType.PersonName) Dataset.Add(DicomTag.PersonName, value);
+            if (type == DicomValueType.Text)
+            {
+                Dataset.Add(DicomTag.TextValue, value);
+            }
+            else if (type == DicomValueType.PersonName)
+            {
+                Dataset.Add(DicomTag.PersonName, value);
+            }
             else
-                throw new DicomStructuredReportException(
-                    "Type of string is not the correct value type for {0} content item.",
-                    type);
+            {
+                throw new DicomStructuredReportException($"Type of string is not the correct value type for {type} content item.");
+            }
         }
 
         public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomValueType type, DateTime value)
@@ -95,13 +101,22 @@ namespace FellowOakDicom.StructuredReport
             Relationship = relationship;
             Type = type;
 
-            if (type == DicomValueType.Date) Dataset.Add(DicomTag.Date, value);
-            else if (type == DicomValueType.Time) Dataset.Add(DicomTag.Time, value);
-            else if (type == DicomValueType.DateTime) Dataset.Add(DicomTag.DateTime, value);
+            if (type == DicomValueType.Date)
+            {
+                Dataset.Add(DicomTag.Date, value);
+            }
+            else if (type == DicomValueType.Time)
+            {
+                Dataset.Add(DicomTag.Time, value);
+            }
+            else if (type == DicomValueType.DateTime)
+            {
+                Dataset.Add(DicomTag.DateTime, value);
+            }
             else
-                throw new DicomStructuredReportException(
-                    "Type of DateTime is not the correct value type for {0} content item.",
-                    type);
+            {
+                throw new DicomStructuredReportException($"Type of DateTime is not the correct value type for {type} content item.");
+            }
         }
 
         public DicomContentItem(DicomCodeItem code, DicomRelationship relationship, DicomUID value)
@@ -145,11 +160,14 @@ namespace FellowOakDicom.StructuredReport
             Relationship = relationship;
             Type = type;
 
-            if (type == DicomValueType.Composite || type == DicomValueType.Image || type == DicomValueType.Waveform) Dataset.Add(DicomTag.ReferencedSOPSequence, value);
+            if (type == DicomValueType.Composite || type == DicomValueType.Image || type == DicomValueType.Waveform)
+            {
+                Dataset.Add(DicomTag.ReferencedSOPSequence, value);
+            }
             else
-                throw new DicomStructuredReportException(
-                    "Type of DicomReferencedSOP is not the correct value type for {0} content item.",
-                    type);
+            {
+                throw new DicomStructuredReportException($"Type of DicomReferencedSOP is not the correct value type for {type} content item.");
+            }
         }
 
         public DicomContentItem(
@@ -215,7 +233,7 @@ namespace FellowOakDicom.StructuredReport
                     case "TCOORD":
                         return DicomValueType.TemporalCoordinate;
                     default:
-                        throw new DicomStructuredReportException("Unknown value type: {0}", type);
+                        throw new DicomStructuredReportException($"Unknown value type: {type}");
                 }
             }
             private set
@@ -292,7 +310,7 @@ namespace FellowOakDicom.StructuredReport
                     case "HAS CONCEPT MOD":
                         return DicomRelationship.HasConceptModifier;
                     default:
-                        throw new DicomStructuredReportException("Unknown relationship type: {0}", type);
+                        throw new DicomStructuredReportException($"Unknown relationship type: {type}");
                 }
             }
             private set
@@ -488,10 +506,7 @@ namespace FellowOakDicom.StructuredReport
                 if (Type == DicomValueType.Composite || Type == DicomValueType.Image || Type == DicomValueType.Waveform) return (T)(object)Dataset.GetReferencedSOP(DicomTag.ReferencedSOPSequence);
             }
 
-            throw new DicomStructuredReportException(
-                "Unable to get type of {0} from {1} content item.",
-                typeof(T),
-                Type);
+            throw new DicomStructuredReportException($"Unable to get type of {typeof(T)} from {Type} content item.");
         }
 
         public T Get<T>(DicomCodeItem code, T defaultValue)

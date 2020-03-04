@@ -161,9 +161,9 @@ namespace FellowOakDicom.Imaging.Render
                             pixelData.GetFrame(frame));
                 }
                 else
-                    throw new DicomImagingException(
-                        "Unsupported pixel data value for bits stored: {0}",
-                        pixelData.BitsStored);
+                {
+                    throw new DicomImagingException($"Unsupported pixel data value for bits stored: {pixelData.BitsStored}");
+                }
             }
             else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
                      || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
@@ -186,9 +186,7 @@ namespace FellowOakDicom.Imaging.Render
             }
             else
             {
-                throw new DicomImagingException(
-                    "Unsupported pixel data photometric interpretation: {0}",
-                    pi.Value);
+                throw new DicomImagingException($"Unsupported pixel data photometric interpretation: {pi.Value}");
             }
         }
 

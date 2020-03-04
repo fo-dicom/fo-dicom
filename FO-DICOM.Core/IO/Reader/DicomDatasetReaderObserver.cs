@@ -137,7 +137,7 @@ namespace FellowOakDicom.IO.Reader
                     element = new DicomUnlimitedText(tag, _encodings.Peek(), data);
                     break;
                 default:
-                    throw new DicomDataException("Unhandled VR in DICOM parser observer: {0}", vr.Code);
+                    throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}");
             }
 
             if (element.Tag == DicomTag.SpecificCharacterSet)
@@ -200,7 +200,7 @@ namespace FellowOakDicom.IO.Reader
             }
             else
             {
-                throw new DicomDataException("Unexpected VR found for DICOM fragment sequence: {0}", vr.Code);
+                throw new DicomDataException($"Unexpected VR found for DICOM fragment sequence: {vr.Code}");
             }
         }
 

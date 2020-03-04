@@ -14,11 +14,6 @@ namespace FellowOakDicom.IO
         {
         }
 
-        public DicomIoException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomIoException(string message, Exception innerException)
             : base(message, innerException)
         {

@@ -14,12 +14,6 @@ namespace FellowOakDicom
             File = file;
         }
 
-        public DicomFileException(DicomFile file, string format, params object[] args)
-            : base(format, args)
-        {
-            File = file;
-        }
-
         public DicomFileException(DicomFile file, string message, Exception innerException)
             : base(message, innerException)
         {

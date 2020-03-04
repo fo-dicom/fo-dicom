@@ -87,20 +87,17 @@ namespace FellowOakDicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public virtual T As<T>()
         {
-            if (this.image == null)
+            if (image == null)
             {
                 throw new DicomImagingException("Image has not yet been rendered.");
             }
 
             if (!typeof(T).GetTypeInfo().IsAssignableFrom(typeof(TImage).GetTypeInfo()))
             {
-                throw new DicomImagingException(
-                    "Cannot cast to '{0}'; type must be assignable from '{1}'",
-                    typeof(T).Name,
-                    typeof(TImage).Name);
+                throw new DicomImagingException($"Cannot cast to '{typeof(T).Name}'; type must be assignable from '{typeof(TImage).Name}'");
             }
 
-            return (T)(object)this.image;
+            return (T)(object)image;
         }
 
         /// <summary>

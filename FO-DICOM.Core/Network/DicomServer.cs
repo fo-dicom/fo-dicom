@@ -95,7 +95,7 @@ namespace FellowOakDicom.Network
             {
                 if (_isIpAddressSet && !string.Equals(_ipAddress, value, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new DicomNetworkException("IP Address cannot be set twice. Current value: {0}", _ipAddress);
+                    throw new DicomNetworkException($"IP Address cannot be set twice. Current value: {_ipAddress}");
                 }
 
                 _ipAddress = value;
@@ -111,7 +111,7 @@ namespace FellowOakDicom.Network
             {
                 if (_isPortSet && _port != value)
                 {
-                    throw new DicomNetworkException("Port cannot be set twice. Current value: {0}", _port);
+                    throw new DicomNetworkException($"Port cannot be set twice. Current value: {_port}");
                 }
 
                 _port = value;

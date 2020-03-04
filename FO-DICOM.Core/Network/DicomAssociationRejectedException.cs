@@ -9,7 +9,7 @@ namespace FellowOakDicom.Network
             DicomRejectResult result,
             DicomRejectSource source,
             DicomRejectReason reason)
-            : base("Association rejected [result: {0}; source: {1}; reason: {2}]", result, source, reason)
+            : base($"Association rejected [result: {result}; source: {source}; reason: {reason}]")
         {
             RejectResult = result;
             RejectSource = source;

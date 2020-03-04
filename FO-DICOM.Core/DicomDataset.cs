@@ -636,7 +636,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
             }
         }
 
@@ -660,7 +660,7 @@ namespace FellowOakDicom
         {
             if (!_items.TryGetValue(tag, out item))
             {
-                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
             }
         }
 
@@ -1119,8 +1119,12 @@ namespace FellowOakDicom
                 var privateTag = GetPrivateTag(tag, false);
                 if (privateTag == null)
                 {
-                    if (useDefault) return defaultValue;
-                    throw new DicomDataException("Tag: {0} not found in dataset", tag);
+                    if (useDefault)
+                    {
+                        return defaultValue;
+                    }
+
+                    throw new DicomDataException($"Tag: {tag} not found in dataset");
                 }
 
                 tag = privateTag;
@@ -1128,8 +1132,12 @@ namespace FellowOakDicom
 
             if (!_items.TryGetValue(tag, out DicomItem item))
             {
-                if (useDefault) return defaultValue;
-                throw new DicomDataException("Tag: {0} not found in dataset", tag);
+                if (useDefault)
+                {
+                    return defaultValue;
+                }
+
+                throw new DicomDataException($"Tag: {tag} not found in dataset");
             }
 
             if (typeof(T) == typeof(DicomItem)) return (T)(object)item;
@@ -1138,10 +1146,8 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(DicomVR)) return (T)(object)item.ValueRepresentation;
 
-            if (item.GetType().GetTypeInfo().IsSubclassOf(typeof(DicomElement)))
+            if (item is DicomElement element)
             {
-                DicomElement element = (DicomElement)item;
-
                 if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) return (T)(object)element.Buffer;
 
                 if (typeof(T) == typeof(byte[])) return (T)(object)element.Buffer.Data;
@@ -1149,7 +1155,7 @@ namespace FellowOakDicom
                 if (!typeof(T).GetTypeInfo().IsArray && (n >= element.Count || element.Count == 0))
                 {
                     if (useDefault) return defaultValue;
-                    throw new DicomDataException("Element empty or index: {0} exceeds element count: {1}", n, element.Count);
+                    throw new DicomDataException($"Element empty or index: {n} exceeds element count: {element.Count}");
                 }
 
                 return element.Get<T>(n);
@@ -1164,10 +1170,7 @@ namespace FellowOakDicom
                 if (typeof(T) == typeof(DicomReferencedSOP)) return (T)(object)new DicomReferencedSOP((DicomSequence)item);
             }
 
-            throw new DicomDataException(
-                "Unable to get a value type of {0} from DICOM item of type {1}",
-                typeof(T),
-                item.GetType());
+            throw new DicomDataException($"Unable to get a value type of {typeof(T)} from DICOM item of type {item.GetType()}");
         }
 
         /// <summary>
@@ -1257,9 +1260,7 @@ namespace FellowOakDicom
         {
             var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
             if (entry == null)
-                throw new DicomDataException(
-                    "Tag {0} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.",
-                    tag);
+                throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.");
 
             DicomVR vr = null;
             if (values != null) vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));

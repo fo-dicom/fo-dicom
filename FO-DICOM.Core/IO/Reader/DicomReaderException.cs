@@ -14,11 +14,6 @@ namespace FellowOakDicom.IO.Reader
         {
         }
 
-        public DicomReaderException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomReaderException(string message, Exception innerException)
             : base(message, innerException)
         {

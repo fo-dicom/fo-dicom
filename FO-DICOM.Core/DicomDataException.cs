@@ -13,11 +13,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomDataException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomDataException(string message, Exception innerException)
             : base(message, innerException)
         {

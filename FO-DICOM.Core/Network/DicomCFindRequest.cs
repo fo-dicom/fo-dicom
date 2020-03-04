@@ -44,7 +44,7 @@ namespace FellowOakDicom.Network
         {
             if (affectedSopClassUid.Type != DicomUidType.SOPClass)
             {
-                throw new DicomNetworkException("Overloaded constructor does not support Affected SOP Class UID: {0}", affectedSopClassUid.Name);
+                throw new DicomNetworkException($"Overloaded constructor does not support Affected SOP Class UID: {affectedSopClassUid.Name}");
             }
 
             // when creating requests, one may be forced to use invalid UIDs. So turn off validation

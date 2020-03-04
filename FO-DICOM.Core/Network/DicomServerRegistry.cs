@@ -101,9 +101,7 @@ namespace FellowOakDicom.Network
             var registration = new DicomServerRegistration(this, dicomServer, task);
             if (!_servers.TryAdd((dicomServer.Port, dicomServer.IPAddress), registration))
             {
-                throw new DicomNetworkException(
-                    "Could not register DICOM server on port {0}, probably because another server just registered to the same port.",
-                    dicomServer.Port);
+                throw new DicomNetworkException($"Could not register DICOM server on port {dicomServer.Port}, probably because another server just registered to the same port.");
             }
 
             return registration;
