@@ -25,11 +25,6 @@ namespace FellowOakDicom
             DicomExceptionConstructed(this);
         }
 
-        protected DicomException(string format, params object[] args)
-            : this(String.Format(format, args))
-        {
-        }
-
         protected DicomException(string message, Exception innerException)
             : base(message, innerException)
         {

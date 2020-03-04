@@ -68,7 +68,7 @@ namespace FellowOakDicom
         public static IServiceCollection AddFellowOakDicom(this IServiceCollection services)
             => services
                 .AddInternals()    
-                .AddTranscoderManager<WindowsTranscoderManager>()
+                .AddTranscoderManager<DefaultTranscoderManager>()
                 .AddImageManager<RawImageManager>()
                 .AddLogManager<ConsoleLogManager>()
                 .AddNetworkManager<DesktopNetworkManager>()

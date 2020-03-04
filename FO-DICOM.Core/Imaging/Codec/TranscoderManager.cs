@@ -85,7 +85,7 @@ namespace FellowOakDicom.Imaging.Codec
         {
             if (!Codecs.TryGetValue(syntax, out IDicomCodec codec))
             {
-                throw new DicomCodecException("No codec registered for tranfer syntax: {0}", syntax);
+                throw new DicomCodecException($"No codec registered for tranfer syntax: {syntax}");
             }
 
             return codec;

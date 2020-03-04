@@ -13,11 +13,6 @@ namespace FellowOakDicom.Imaging.Codec
         {
         }
 
-        public DicomCodecException(string format, params object[] args)
-            : base(format, args)
-        {
-        }
-
         public DicomCodecException(string message, Exception innerException)
             : base(message, innerException)
         {

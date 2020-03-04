@@ -84,7 +84,9 @@ namespace FellowOakDicom.Imaging
             set
             {
                 if (value > BitsAllocated)
+                {
                     throw new DicomImagingException($"Value: {value} > Bits Allocated: {BitsAllocated}");
+                }
 
                 Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.BitsStored, value));
             }
@@ -99,7 +101,9 @@ namespace FellowOakDicom.Imaging
             set
             {
                 if (value >= BitsAllocated)
+                {
                     throw new DicomImagingException($"Value: {value} >= Bits Allocated: {BitsAllocated}");
+                }
 
                 Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.HighBit, value));
             }
@@ -160,15 +164,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets number of bytes allocated per pixel sample.
         /// </summary>
-        public int BytesAllocated
-        {
-            get
-            {
-                var bytes = BitsAllocated / 8;
-                if (BitsAllocated % 8 > 0) bytes++;
-                return bytes;
-            }
-        }
+        public int BytesAllocated => (BitsAllocated - 1) / 8 + 1;
 
         /// <summary>
         /// Gets uncompressed frame size in bytes.
@@ -179,9 +175,7 @@ namespace FellowOakDicom.Imaging
             {
                 if (BitsAllocated == 1)
                 {
-                    var bytes = Width * Height / 8;
-                    if ((Width * Height) % 8 > 0) bytes++;
-                    return bytes;
+                    return (Width * Height - 1) / 8 + 1;
                 }
 
                 // Issue #471, handle special case with invalid uneven width for YBR_*_422 and YBR_PARTIAL_420 images
@@ -211,10 +205,14 @@ namespace FellowOakDicom.Imaging
         private Color32[] GetPaletteColorLUT()
         {
             if (PhotometricInterpretation != PhotometricInterpretation.PaletteColor)
-                throw new DicomImagingException(
-                    "Attempted to get Palette Color LUT from image with invalid photometric interpretation.");
+            {
+                throw new DicomImagingException("Attempted to get Palette Color LUT from image with invalid photometric interpretation.");
+            }
 
-            if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor)) throw new DicomImagingException("Palette Color LUT missing from dataset.");
+            if (!Dataset.Contains(DicomTag.RedPaletteColorLookupTableDescriptor))
+            {
+                throw new DicomImagingException("Palette Color LUT missing from dataset.");
+            }
 
             var size = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
             var bits = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
@@ -224,14 +222,20 @@ namespace FellowOakDicom.Imaging
             var b = Dataset.GetValues<byte>(DicomTag.BluePaletteColorLookupTableData);
 
             // If the LUT size is 0, that means it's 65536 in size.
-            if (size == 0) size = 65536;
+            if (size == 0)
+            {
+                size = 65536;
+            }
 
             var lut = new Color32[size];
 
             if (r.Length == size)
             {
                 // 8-bit LUT entries
-                for (var i = 0; i < size; i++) lut[i] = new Color32(0xff, r[i], g[i], b[i]);
+                for (var i = 0; i < size; i++)
+                {
+                    lut[i] = new Color32(0xff, r[i], g[i], b[i]);
+                }
             }
             else
             {
@@ -241,9 +245,15 @@ namespace FellowOakDicom.Imaging
                 var offset = 0;
 
                 // 16-bit entries with 8-bits stored
-                if (bits == 16) offset = 1;
+                if (bits == 16)
+                {
+                    offset = 1;
+                }
 
-                for (var i = 0; i < size; i++, offset += 2) lut[i] = new Color32(0xff, r[offset], g[offset], b[offset]);
+                for (var i = 0; i < size; i++, offset += 2)
+                {
+                    lut[i] = new Color32(0xff, r[offset], g[offset], b[offset]);
+                }
             }
 
             return lut;
@@ -281,8 +291,9 @@ namespace FellowOakDicom.Imaging
                 if (syntax.IsEncapsulated)
                 {
                     if (bitsAllocated > 16)
-                        throw new DicomImagingException(
-                            $"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
+                    {
+                        throw new DicomImagingException($"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
+                    }
 
                     return new EncapsulatedPixelData(dataset, bitsAllocated);
                 }
@@ -301,11 +312,25 @@ namespace FellowOakDicom.Imaging
             }
 
             var item = dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
-            if (item == null) throw new DicomImagingException("DICOM dataset is missing pixel data element.");
+            if (item == null)
+            {
+                throw new DicomImagingException("DICOM dataset is missing pixel data element.");
+            }
 
-            if (item is DicomOtherByte) return new OtherBytePixelData(dataset, false);
-            if (item is DicomOtherWord) return new OtherWordPixelData(dataset, false);
-            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment) return new EncapsulatedPixelData(dataset);
+            if (item is DicomOtherByte)
+            {
+                return new OtherBytePixelData(dataset, false);
+            }
+
+            if (item is DicomOtherWord)
+            {
+                return new OtherWordPixelData(dataset, false);
+            }
+
+            if (item is DicomOtherByteFragment || item is DicomOtherWordFragment)
+            {
+                return new EncapsulatedPixelData(dataset);
+            }
 
             throw new DicomImagingException($"Unexpected or unhandled pixel data element type: {item.GetType()}");
         }
@@ -354,7 +379,9 @@ namespace FellowOakDicom.Imaging
             public override IByteBuffer GetFrame(int frame)
             {
                 if (frame < 0 || frame >= NumberOfFrames)
+                {
                     throw new IndexOutOfRangeException("Requested frame out of range!");
+                }
 
                 var offset = (long)UncompressedFrameSize * frame;
                 return new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
@@ -418,7 +445,9 @@ namespace FellowOakDicom.Imaging
             public override IByteBuffer GetFrame(int frame)
             {
                 if (frame < 0 || frame >= NumberOfFrames)
+                {
                     throw new IndexOutOfRangeException("Requested frame out of range!");
+                }
 
                 var offset = (long)UncompressedFrameSize * frame;
                 IByteBuffer buffer = new RangeByteBuffer(_element.Buffer, offset, UncompressedFrameSize);
@@ -435,7 +464,10 @@ namespace FellowOakDicom.Imaging
                 var buffer = (_element.Buffer as CompositeByteBuffer)
                     ?? throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer.");
 
-                if (Syntax.SwapPixelData) data = new SwapByteBuffer(data, 2);
+                if (Syntax.SwapPixelData)
+                {
+                    data = new SwapByteBuffer(data, 2);
+                }
 
                 buffer.Buffers.Add(data);
                 NumberOfFrames++;
@@ -496,7 +528,9 @@ namespace FellowOakDicom.Imaging
             public override IByteBuffer GetFrame(int frame)
             {
                 if (frame < 0 || frame >= NumberOfFrames)
+                {
                     throw new IndexOutOfRangeException("Requested frame out of range!");
+                }
 
                 IByteBuffer buffer;
 
@@ -529,7 +563,10 @@ namespace FellowOakDicom.Imaging
                         frag++;
                     }
 
-                    if (pos != start) throw new DicomImagingException("Fragment start position does not match offset table.");
+                    if (pos != start)
+                    {
+                        throw new DicomImagingException("Fragment start position does not match offset table.");
+                    }
 
                     while (pos < stop && frag < _element.Fragments.Count)
                     {
@@ -541,17 +578,22 @@ namespace FellowOakDicom.Imaging
                     }
 
                     if (pos < stop && stop != uint.MaxValue)
-                        throw new DicomImagingException(
-                            "Image frame truncated while reading fragments from offset table.");
+                    {
+                        throw new DicomImagingException("Image frame truncated while reading fragments from offset table.");
+                    }
 
                     buffer = composite;
                 }
                 else
-                    throw new DicomImagingException(
-                        "Support for multi-frame images with varying fragment sizes and no offset table has not been implemented.");
+                {
+                    throw new DicomImagingException("Support for multi-frame images with varying fragment sizes and no offset table has not been implemented.");
+                }
 
                 // mainly for GE Private Implicit VR Little Endian
-                if (!Syntax.IsEncapsulated && BitsAllocated == 16 && Syntax.SwapPixelData) buffer = new SwapByteBuffer(buffer, 2);
+                if (!Syntax.IsEncapsulated && BitsAllocated == 16 && Syntax.SwapPixelData)
+                {
+                    buffer = new SwapByteBuffer(buffer, 2);
+                }
 
                 return EndianByteBuffer.Create(buffer, Syntax.Endian, BytesAllocated);
             }

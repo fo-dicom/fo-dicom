@@ -11,15 +11,15 @@ namespace FellowOakDicom.Imaging.Codec
     /// <summary>
     /// Implementation of <see cref="TranscoderManager"/> for Universal Windows Platform applications.
     /// </summary>
-    public sealed class WindowsTranscoderManager : TranscoderManager
+    public sealed class DefaultTranscoderManager : TranscoderManager
     {
 
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes an instance of <see cref="WindowsTranscoderManager"/>.
+        /// Initializes an instance of <see cref="DefaultTranscoderManager"/>.
         /// </summary>
-        public WindowsTranscoderManager()
+        public DefaultTranscoderManager()
         {
             LoadCodecs(null, null);
         }
@@ -36,7 +36,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         public override void LoadCodecs(string path, string search)
         {
-            var assembly = typeof(WindowsTranscoderManager).GetTypeInfo().Assembly;
+            var assembly = typeof(DefaultTranscoderManager).GetTypeInfo().Assembly;
             var types =
                 assembly.DefinedTypes.Where(
                     ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));

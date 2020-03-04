@@ -99,10 +99,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>Scaling factor of the rendered image</summary>
         public double Scale
         {
-            get
-            {
-                return _scale;
-            }
+            get => _scale;
             set
             {
                 lock (_lock)
@@ -333,7 +330,10 @@ namespace FellowOakDicom.Imaging
         private void EstablishPipeline()
         {
             bool create;
-            lock (_lock) create = _pipeline == null;
+            lock (_lock)
+            {
+                create = _pipeline == null;
+            }
 
             var tuple = create ? CreatePipelineData(_dataset, _pixelData) : null;
 
@@ -351,13 +351,19 @@ namespace FellowOakDicom.Imaging
         private void EstablishGraphicsOverlays()
         {
             bool create;
-            lock (_lock) create = _overlays == null;
+            lock (_lock)
+            {
+                create = _overlays == null;
+            }
 
             var overlays = create ? CreateGraphicsOverlays(_dataset) : null;
 
             lock (_lock)
             {
-                if (_overlays == null) _overlays = overlays;
+                if (_overlays == null)
+                {
+                    _overlays = overlays;
+                }
             }
         }
 
@@ -370,7 +376,10 @@ namespace FellowOakDicom.Imaging
         private static DicomPixelData CreateDicomPixelData(DicomDataset dataset)
         {
             var inputTransferSyntax = dataset.InternalTransferSyntax;
-            if (!inputTransferSyntax.IsEncapsulated) return DicomPixelData.Create(dataset);
+            if (!inputTransferSyntax.IsEncapsulated)
+            {
+                return DicomPixelData.Create(dataset);
+            }
 
             // Clone the encapsulated dataset because modifying the pixel data modifies the dataset
             var clone = dataset.Clone();
@@ -419,11 +428,9 @@ namespace FellowOakDicom.Imaging
         /// <param name="dataset">Dataset potentially containing overlays.</param>
         /// <returns>Array of overlays of type <see cref="DicomOverlayType.Graphics"/>.</returns>
         private static DicomOverlayData[] CreateGraphicsOverlays(DicomDataset dataset)
-        {
-            return DicomOverlayData.FromDataset(dataset)
+            => DicomOverlayData.FromDataset(dataset)
                 .Where(x => x.Type == DicomOverlayType.Graphics && x.Data != null)
                 .ToArray();
-        }
 
         /// <summary>
         /// Create image rendering pipeline according to the <see cref="DicomPixelData.PhotometricInterpretation">photometric interpretation</see>
@@ -436,10 +443,16 @@ namespace FellowOakDicom.Imaging
 
             // temporary fix for JPEG compressed YBR images
             if ((dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
-                 || dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3) pi = PhotometricInterpretation.Rgb;
+                 || dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+            {
+                pi = PhotometricInterpretation.Rgb;
+            }
 
             // temporary fix for JPEG 2000 Lossy images
-            if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct) pi = PhotometricInterpretation.Rgb;
+            if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
+            {
+                pi = PhotometricInterpretation.Rgb;
+            }
 
             if (pi == null)
             {

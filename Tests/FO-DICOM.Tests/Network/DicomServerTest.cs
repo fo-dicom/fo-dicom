@@ -63,7 +63,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             server.Stop();
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             Assert.False(server.IsListening);
         }

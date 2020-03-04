@@ -135,7 +135,7 @@ namespace FellowOakDicom.Imaging.Codec
         {
             #region FIELDS
 
-            private bool disposed = false;
+            private bool _disposed = false;
 
             private int _count;
 
@@ -159,7 +159,7 @@ namespace FellowOakDicom.Imaging.Codec
 
             internal RLEEncoder()
             {
-                this.Length = 0;
+                Length = 0;
                 _count = 0;
                 _offsets = new uint[15];
                 _stream = new MemoryStream();
@@ -168,7 +168,10 @@ namespace FellowOakDicom.Imaging.Codec
 
                 // Write header
                 AppendUInt32((uint)_count);
-                for (var i = 0; i < 15; i++) AppendUInt32(_offsets[i]);
+                for (var i = 0; i < 15; i++)
+                {
+                    AppendUInt32(_offsets[i]);
+                }
 
                 _prevByte = -1;
                 _repeatCount = 0;
@@ -187,16 +190,15 @@ namespace FellowOakDicom.Imaging.Codec
 
             public void Dispose()
             {
-                if (this.disposed) return;
+                if (_disposed)
+                {
+                    return;
+                }
 
-#if NET35
-                this._writer.Close();
-#else
-                this._writer.Dispose();
-#endif
-                this._stream.Dispose();
+                _writer.Dispose();
+                _stream.Dispose();
 
-                this.disposed = true;
+                _disposed = true;
             }
 
             internal IByteBuffer GetBuffer()
@@ -336,7 +338,7 @@ namespace FellowOakDicom.Imaging.Codec
                 {
                     _buffer[n] = _buffer[i];
                 }
-                _bufferPos = _bufferPos - count;
+                _bufferPos -= count;
             }
 
             private void AppendBytes(byte[] bytes, int offset, int count)

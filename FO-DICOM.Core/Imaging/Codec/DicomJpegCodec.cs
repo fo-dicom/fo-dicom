@@ -74,12 +74,8 @@ namespace FellowOakDicom.Imaging.Codec
             public static int ScanJpegForBitDepth(DicomPixelData pixelData)
             {
                 DicomItem item = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
-                IByteBuffer buffer;
-                if (item is DicomFragmentSequence)
-                    buffer = (item as DicomFragmentSequence).Fragments[0];
-                else
-                    buffer = (item as DicomElement).Buffer;
-                MemoryStream ms = new MemoryStream(buffer.Data);
+                IByteBuffer buffer = item is DicomFragmentSequence fragmentSequence ? fragmentSequence.Fragments[0] : (item as DicomElement).Buffer;
+                var ms = new MemoryStream(buffer.Data);
                 BinaryReader br = EndianBinaryReader.Create(ms, Endian.Big);
 
                 long length = ms.Length;
@@ -168,8 +164,13 @@ namespace FellowOakDicom.Imaging.Codec
                             int b1 = br.ReadByte();
                             int b2 = br.ReadByte();
                             if (b1 == 0xff && b2 > 2 && b2 <= 0xbf) // RES reserved markers
+                            {
                                 break;
-                            else throw new DicomCodecException("Unable to determine bit depth: JPEG syntax error!");
+                            }
+                            else
+                            {
+                                throw new DicomCodecException("Unable to determine bit depth: JPEG syntax error!");
+                            }
                     }
                 }
                 throw new DicomCodecException("Unable to determine bit depth: no JPEG SOF marker found!");

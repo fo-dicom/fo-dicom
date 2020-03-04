@@ -74,12 +74,18 @@ namespace FellowOakDicom.Imaging.Codec
 
         public static DicomDataset ExtractOverlays(DicomDataset dataset)
         {
-            if (!DicomOverlayData.HasEmbeddedOverlays(dataset)) return dataset;
+            if (!DicomOverlayData.HasEmbeddedOverlays(dataset))
+            {
+                return dataset;
+            }
 
             dataset = dataset.Clone();
 
             var input = dataset;
-            if (input.InternalTransferSyntax.IsEncapsulated) input = input.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
+            if (input.InternalTransferSyntax.IsEncapsulated)
+            {
+                input = input.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
+            }
 
             ProcessOverlays(input, dataset);
 
@@ -152,10 +158,7 @@ namespace FellowOakDicom.Imaging.Codec
                 return Encode(dataset, OutputSyntax, OutputCodec, OutputCodecParams);
             }
 
-            throw new DicomCodecException(
-                "Unable to find transcoding solution for {0} to {1}",
-                InputSyntax.UID.Name,
-                OutputSyntax.UID.Name);
+            throw new DicomCodecException($"Unable to find transcoding solution for {InputSyntax.UID.Name} to {OutputSyntax.UID.Name}");
         }
 
         /// <inheritdoc />
@@ -165,7 +168,10 @@ namespace FellowOakDicom.Imaging.Codec
             var buffer = pixelData.GetFrame(frame);
 
             // is pixel data already uncompressed?
-            if (!dataset.InternalTransferSyntax.IsEncapsulated) return buffer;
+            if (!dataset.InternalTransferSyntax.IsEncapsulated)
+            {
+                return buffer;
+            }
 
             // clone dataset to prevent changes to source
             var cloneDataset = dataset.Clone();
@@ -185,7 +191,10 @@ namespace FellowOakDicom.Imaging.Codec
             var pixelData = DicomPixelData.Create(dataset);
 
             // is pixel data already uncompressed?
-            if (!dataset.InternalTransferSyntax.IsEncapsulated) return PixelDataFactory.Create(pixelData, frame);
+            if (!dataset.InternalTransferSyntax.IsEncapsulated)
+            {
+                return PixelDataFactory.Create(pixelData, frame);
+            }
 
             var buffer = pixelData.GetFrame(frame);
 
@@ -223,8 +232,9 @@ namespace FellowOakDicom.Imaging.Codec
             DicomCodecParams parameters)
         {
             if (codec == null)
-                throw new DicomCodecException("Decoding dataset with transfer syntax: {0} is not supported.",
-                    oldDataset.InternalTransferSyntax);
+            {
+                throw new DicomCodecException($"Decoding dataset with transfer syntax: {oldDataset.InternalTransferSyntax} is not supported.");
+            }
 
             var oldPixelData = DicomPixelData.Create(oldDataset);
 
@@ -248,7 +258,9 @@ namespace FellowOakDicom.Imaging.Codec
             DicomCodecParams parameters)
         {
             if (codec == null)
-                throw new DicomCodecException("Encoding dataset to transfer syntax: {0} is not supported.", outSyntax);
+            {
+                throw new DicomCodecException($"Encoding dataset to transfer syntax {outSyntax} is not supported.");
+            }
 
             var oldPixelData = DicomPixelData.Create(oldDataset);
 
@@ -264,7 +276,10 @@ namespace FellowOakDicom.Imaging.Codec
 
                 var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
+                {
                     methods.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionMethod));
+                }
+
                 methods.Add(outSyntax.LossyCompressionMethod);
                 newDataset.AddOrUpdate(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
 
@@ -290,15 +305,24 @@ namespace FellowOakDicom.Imaging.Codec
                 var dataTag = new DicomTag(overlay.Group, DicomTag.OverlayData.Element);
 
                 // Don't run conversion on non-embedded overlays.
-                if (output.Contains(dataTag)) continue;
+                if (output.Contains(dataTag))
+                {
+                    continue;
+                }
 
                 // If embedded overlay, Overlay Bits Allocated should equal Bits Allocated (#110).
                 var bitsAlloc = output.GetSingleValueOrDefault(DicomTag.BitsAllocated, (ushort)0);
                 output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
 
                 var data = overlay.Data;
-                if (output.InternalTransferSyntax.IsExplicitVR) output.AddOrUpdate(new DicomOtherByte(dataTag, data));
-                else output.AddOrUpdate(new DicomOtherWord(dataTag, data));
+                if (output.InternalTransferSyntax.IsExplicitVR)
+                {
+                    output.AddOrUpdate(new DicomOtherByte(dataTag, data));
+                }
+                else
+                {
+                    output.AddOrUpdate(new DicomOtherWord(dataTag, data));
+                }
             }
         }
 

@@ -7,26 +7,11 @@ namespace FellowOakDicom.Imaging.Codec
     public abstract class DicomRleCodec : IDicomCodec
     {
 
-        public string Name
-        {
-            get
-            {
-                return DicomTransferSyntax.RLELossless.UID.Name;
-            }
-        }
+        public string Name => DicomTransferSyntax.RLELossless.UID.Name;
 
-        public DicomTransferSyntax TransferSyntax
-        {
-            get
-            {
-                return DicomTransferSyntax.RLELossless;
-            }
-        }
+        public DicomTransferSyntax TransferSyntax => DicomTransferSyntax.RLELossless;
 
-        public DicomCodecParams GetDefaultParameters()
-        {
-            return null;
-        }
+        public DicomCodecParams GetDefaultParameters() => null;
 
         public abstract void Encode(
             DicomPixelData oldPixelData,
