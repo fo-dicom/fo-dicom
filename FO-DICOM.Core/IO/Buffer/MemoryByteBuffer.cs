@@ -8,11 +8,14 @@ namespace FellowOakDicom.IO.Buffer
 
     public sealed class MemoryByteBuffer : IByteBuffer
     {
+
+        /// <summary>
+        /// Creates a new MemoryByteBuffer based on a byte-array. This class takes over ownersip of the array, so only pass an array that will not be used/manipulated by other classes, or pass a new instance of byte array
+        /// </summary>
+        /// <param name="Data"></param>
         public MemoryByteBuffer(byte[] Data)
         {
-            int len = Data.Length;
-            this.Data = new byte[len];
-            System.Buffer.BlockCopy(Data, 0, this.Data, 0, len);
+            this.Data = Data;
         }
 
         public bool IsMemory => true;
