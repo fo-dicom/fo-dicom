@@ -74,7 +74,10 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] GetByteRange(long offset, int count)
         {
             var pos = 0;
-            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++) offset -= Buffers[pos].Size;
+            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
+            {
+                offset -= Buffers[pos].Size;
+            }
 
             var offset2 = 0;
             var data = new byte[count];
@@ -103,7 +106,10 @@ namespace FellowOakDicom.IO.Buffer
 
                 count -= remain;
                 offset2 += remain;
-                if (offset > 0) offset = 0;
+                if (offset > 0)
+                {
+                    offset = 0;
+                }
             }
 
             return data;

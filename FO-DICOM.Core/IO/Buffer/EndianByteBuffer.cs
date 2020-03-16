@@ -62,7 +62,10 @@ namespace FellowOakDicom.IO.Buffer
                     data = Internal.Data;
                 }
 
-                if (Endian != Endian.LocalMachine) Endian.SwapBytes(UnitSize, data);
+                if (Endian != Endian.LocalMachine)
+                {
+                    Endian.SwapBytes(UnitSize, data);
+                }
 
                 return data;
             }
@@ -82,14 +85,10 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         public void CopyToStream(Stream s, long offset, int count)
-        {
-            s.Write(GetByteRange(offset, count), 0, count);
-        }
+            => s.Write(GetByteRange(offset, count), 0, count);
 
         public Task CopyToStreamAsync(Stream s, long offset, int count)
-        {
-            return s.WriteAsync(GetByteRange(offset, count), 0, count);
-        }
+            => s.WriteAsync(GetByteRange(offset, count), 0, count);
 
         /// <summary>
         /// Creates a <see cref="IByteBuffer"/> accounting for endianness and unit size.
@@ -101,9 +100,8 @@ namespace FellowOakDicom.IO.Buffer
         /// byte buffer <paramref name="unitSize">component size</paramref>, creates an instance of the 
         /// <see cref="EndianByteBuffer"/> class, otherwise returns the original <paramref name="buffer"/>.</returns>
         public static IByteBuffer Create(IByteBuffer buffer, Endian endian, int unitSize)
-        {
-            if (endian == Endian.LocalMachine || unitSize == 1) return buffer;
-            return new EndianByteBuffer(buffer, endian, unitSize);
-        }
+            => endian == Endian.LocalMachine || unitSize == 1 
+            ? buffer 
+            : new EndianByteBuffer(buffer, endian, unitSize);
     }
 }

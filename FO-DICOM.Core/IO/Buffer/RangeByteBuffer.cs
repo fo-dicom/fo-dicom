@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -31,19 +30,13 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] Data => Internal.GetByteRange(Offset, Length);
 
         public byte[] GetByteRange(long offset, int count)
-        {
-            return Internal.GetByteRange(Offset + offset, count);
-        }
+            => Internal.GetByteRange(Offset + offset, count);
 
         public void CopyToStream(Stream s, long offset, int count)
-        {
-            Internal.CopyToStream(s, Offset + offset, count);
-        }
+            => Internal.CopyToStream(s, Offset + offset, count);
 
         public Task CopyToStreamAsync(Stream s, long offset, int count)
-        {
-            return Internal.CopyToStreamAsync(s, Offset + offset, count);
-        }
+            => Internal.CopyToStreamAsync(s, Offset + offset, count);
 
     }
 }

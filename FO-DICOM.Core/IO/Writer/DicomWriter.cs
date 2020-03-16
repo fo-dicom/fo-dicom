@@ -14,7 +14,7 @@ namespace FellowOakDicom.IO.Writer
     public class DicomWriter : IDicomDatasetWalker
     {
 
-        private const uint UndefinedLength = 0xffffffff;
+        private const uint _undefinedLength = 0xffffffff;
 
         private readonly DicomWriteOptions _options;
 
@@ -67,12 +67,9 @@ namespace FellowOakDicom.IO.Writer
                     buffer = ebb.Internal;
                 }
             }
-            else if (_target.Endian != Endian.LocalMachine)
+            else if (_target.Endian != Endian.LocalMachine && element.ValueRepresentation.UnitSize > 1)
             {
-                if (element.ValueRepresentation.UnitSize > 1)
-                {
-                    buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
-                }
+                buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
             WriteBuffer(_target, buffer, _options.LargeObjectSize);
@@ -97,12 +94,9 @@ namespace FellowOakDicom.IO.Writer
                     buffer = ebb.Internal;
                 }
             }
-            else if (_target.Endian != Endian.LocalMachine)
+            else if (_target.Endian != Endian.LocalMachine && element.ValueRepresentation.UnitSize > 1)
             {
-                if (element.ValueRepresentation.UnitSize > 1)
-                {
-                    buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
-                }
+                buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
             await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
@@ -117,7 +111,7 @@ namespace FellowOakDicom.IO.Writer
         /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequence(DicomSequence sequence)
         {
-            uint length = UndefinedLength;
+            uint length = _undefinedLength;
 
             if (_options.ExplicitLengthSequences || sequence.Tag.IsPrivate)
             {
@@ -139,7 +133,7 @@ namespace FellowOakDicom.IO.Writer
         /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
-            uint length = UndefinedLength;
+            uint length = _undefinedLength;
 
             if (_options.ExplicitLengthSequenceItems)
             {
@@ -191,7 +185,7 @@ namespace FellowOakDicom.IO.Writer
         /// <remarks>On false return value, the method will invoke the callback method passed in <see cref="IDicomDatasetWalker.OnBeginWalk"/> before returning.</remarks>
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
-            WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, UndefinedLength);
+            WriteTagHeader(fragment.Tag, fragment.ValueRepresentation, _undefinedLength);
             WriteTagHeader(DicomTag.Item, DicomVR.NONE, (uint)(fragment.OffsetTable.Count * 4));
             foreach (uint offset in fragment.OffsetTable)
             {

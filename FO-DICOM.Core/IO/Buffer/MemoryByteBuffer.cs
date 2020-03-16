@@ -34,14 +34,10 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         public void CopyToStream(Stream s, long offset, int count)
-        {
-            s.Write(Data, (int)offset, count);
-        }
+            => s.Write(Data, (int)offset, count);
 
         public Task CopyToStreamAsync(Stream s, long offset, int count)
-        {
-            return s.WriteAsync(Data, (int)offset, count);
-        }
+            => s.WriteAsync(Data, (int)offset, count);
 
     }
 }

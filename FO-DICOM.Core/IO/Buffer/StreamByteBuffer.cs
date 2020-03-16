@@ -29,7 +29,11 @@ namespace FellowOakDicom.IO.Buffer
         {
             get
             {
-                if (!Stream.CanRead) throw new DicomIoException("cannot read from stream - maybe closed");
+                if (!Stream.CanRead)
+                {
+                    throw new DicomIoException("cannot read from stream - maybe closed");
+                }
+
                 byte[] data = new byte[Size];
                 Stream.Position = Position;
                 Stream.Read(data, 0, (int)Size);
@@ -39,7 +43,11 @@ namespace FellowOakDicom.IO.Buffer
 
         public byte[] GetByteRange(long offset, int count)
         {
-            if (!Stream.CanRead) throw new DicomIoException("cannot read from stream - maybe closed");
+            if (!Stream.CanRead)
+            {
+                throw new DicomIoException("cannot read from stream - maybe closed");
+            }
+
             byte[] buffer = new byte[count];
             Stream.Position = Position + offset;
             Stream.Read(buffer, 0, count);
@@ -47,14 +55,10 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         public void CopyToStream(Stream s, long offset, int count)
-        {
-            s.Write(GetByteRange(offset, count), 0, count);
-        }
+            => s.Write(GetByteRange(offset, count), 0, count);
 
         public Task CopyToStreamAsync(Stream s, long offset, int count)
-        {
-            return s.WriteAsync(GetByteRange(offset, count), 0, count);
-        }
+            => s.WriteAsync(GetByteRange(offset, count), 0, count);
 
     }
 }

@@ -99,9 +99,8 @@ namespace FellowOakDicom.IO.Buffer
         /// otherwise returns the buffer itself.
         /// </returns>
         public static IByteBuffer Create(IByteBuffer buffer)
-        {
-            if ((buffer.Size & 1) == 1) return new EvenLengthBuffer(buffer);
-            return buffer;
-        }
+            => (buffer.Size & 1) == 1
+            ? new EvenLengthBuffer(buffer)
+            : buffer;
     }
 }

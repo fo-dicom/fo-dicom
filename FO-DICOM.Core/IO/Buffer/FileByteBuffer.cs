@@ -28,19 +28,13 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] Data => File.GetByteRange(Position, (int)Size);
 
         public byte[] GetByteRange(long offset, int count)
-        {
-            return File.GetByteRange(Position + offset, count);
-        }
+            => File.GetByteRange(Position + offset, count);
 
         public void CopyToStream(Stream s, long offset, int count)
-        {
-            s.Write(File.GetByteRange(Position + offset, count), 0, count);
-        }
+            => s.Write(File.GetByteRange(Position + offset, count), 0, count);
 
         public Task CopyToStreamAsync(Stream s, long offset, int count)
-        {
-            return s.WriteAsync(File.GetByteRange(Position + offset, count), 0, count);
-        }
+            => s.WriteAsync(File.GetByteRange(Position + offset, count), 0, count);
 
     }
 }

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.IO.Buffer;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,6 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using FellowOakDicom.IO.Buffer;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FellowOakDicom.Serialization
 {

@@ -1,13 +1,11 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 using System;
-using System.Collections;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using FellowOakDicom.IO.Buffer;
-using FellowOakDicom.Imaging.Mathematics;
 
 namespace FellowOakDicom.IO
 {
@@ -17,7 +15,7 @@ namespace FellowOakDicom.IO
 
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            encoding = encoding ?? Encoding.UTF8;
 
             byte[] bytes = encoding.GetBytes(value);
 
@@ -26,7 +24,7 @@ namespace FellowOakDicom.IO
 
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding, byte padding)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            encoding = encoding ?? Encoding.UTF8;
 
             byte[] bytes = encoding.GetBytes(value);
 
@@ -52,7 +50,7 @@ namespace FellowOakDicom.IO
             uint size = (uint)Marshal.SizeOf<T>();
             uint padding = (uint)(buffer.Size % size);
             uint count = (uint)(buffer.Size / size);
-            T[] values = new T[count];
+            var values = new T[count];
             System.Buffer.BlockCopy(buffer.Data, 0, values, 0, (int)(buffer.Size - padding));
             return values;
         }
@@ -94,8 +92,11 @@ namespace FellowOakDicom.IO
         public static T Get<T>(IByteBuffer buffer, int n)
         {
             int size = Marshal.SizeOf<T>();
-            T[] values = new T[1];
-            if (buffer.IsMemory) System.Buffer.BlockCopy(buffer.Data, size * n, values, 0, size);
+            var values = new T[1];
+            if (buffer.IsMemory)
+            {
+                System.Buffer.BlockCopy(buffer.Data, size * n, values, 0, size);
+            }
             else
             {
                 byte[] temp = buffer.GetByteRange(size * n, size);

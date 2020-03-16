@@ -15,7 +15,7 @@ namespace FellowOakDicom.IO.Writer
     {
         #region FIELDS
 
-        private readonly DicomWriteOptions options;
+        private readonly DicomWriteOptions _options;
 
         #endregion
 
@@ -27,7 +27,7 @@ namespace FellowOakDicom.IO.Writer
         /// <param name="options">Writer options.</param>
         public DicomFileWriter(DicomWriteOptions options)
         {
-            this.options = options ?? DicomWriteOptions.Default;
+            _options = options ?? DicomWriteOptions.Default;
         }
 
         #endregion
@@ -43,8 +43,8 @@ namespace FellowOakDicom.IO.Writer
         public void Write(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             WritePreamble(target);
-            WriteFileMetaInfo(target, fileMetaInfo, this.options);
-            WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, this.options);
+            WriteFileMetaInfo(target, fileMetaInfo, _options);
+            WriteDataset(target, fileMetaInfo.TransferSyntax, dataset, _options);
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace FellowOakDicom.IO.Writer
         public async Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             await WritePreambleAsync(target).ConfigureAwait(false);
-            await WriteFileMetaInfoAsync(target, fileMetaInfo, this.options).ConfigureAwait(false);
-            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, this.options).ConfigureAwait(false);
+            await WriteFileMetaInfoAsync(target, fileMetaInfo, _options).ConfigureAwait(false);
+            await WriteDatasetAsync(target, fileMetaInfo.TransferSyntax, dataset, _options).ConfigureAwait(false);
         }
 
         /// <summary>
