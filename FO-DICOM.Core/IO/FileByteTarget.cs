@@ -161,6 +161,11 @@ namespace FellowOakDicom.IO
             _stream.Write(buffer, (int)offset, (int)count);
         }
 
+        public void ApplyToStream(Action<Stream> action)
+        {
+            action(_stream);
+        }
+
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -171,6 +176,11 @@ namespace FellowOakDicom.IO
         public Task WriteAsync(byte[] buffer, uint offset, uint count)
         {
             return _stream.WriteAsync(buffer, (int)offset, (int)count);
+        }
+
+        public Task ApplyToStreamAsync(Func<Stream, Task> action)
+        {
+            return action(_stream);
         }
 
         /// <summary>

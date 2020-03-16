@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.IO;
+using System.Threading.Tasks;
+
 namespace FellowOakDicom.IO.Buffer
 {
 
@@ -70,9 +73,22 @@ namespace FellowOakDicom.IO.Buffer
         {
             var data = Internal.GetByteRange(offset, count);
 
-            if (Endian != Endian.LocalMachine) Endian.SwapBytes(UnitSize, data);
+            if (Endian != Endian.LocalMachine)
+            {
+                Endian.SwapBytes(UnitSize, data);
+            }
 
             return data;
+        }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            s.Write(GetByteRange(offset, count), 0, count);
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            return s.WriteAsync(GetByteRange(offset, count), 0, count);
         }
 
         /// <summary>

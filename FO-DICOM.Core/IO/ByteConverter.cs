@@ -78,7 +78,10 @@ namespace FellowOakDicom.IO
             {
                 for (int i = 0, dij = j * bitsRequested; i < bitsAllocated; ++i, ++sij, ++dij)
                 {
-                    if ((src[sij / 8] & (1 << (sij % 8))) != 0) dst[dij / 8] |= (byte)(1 << (dij % 8));
+                    if ((src[sij / 8] & (1 << (sij % 8))) != 0)
+                    {
+                        dst[dij / 8] |= (byte)(1 << (dij % 8));
+                    }
                 }
             }
 

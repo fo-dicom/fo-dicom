@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -24,10 +26,35 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] GetByteRange(long offset, int count)
         {
             if (offset != 0 || count != 0)
+            {
                 throw new ArgumentOutOfRangeException(
                     nameof(offset),
                     "Offset and count cannot be greater than 0 in EmptyBuffer");
+            }
+
             return Data;
         }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            if (offset != 0 || count != 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(offset),
+                    "Offset and count cannot be greater than 0 in EmptyBuffer");
+            }
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            if (offset != 0 || count != 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(offset),
+                    "Offset and count cannot be greater than 0 in EmptyBuffer");
+            }
+            return Task.CompletedTask;
+        }
+
     }
 }

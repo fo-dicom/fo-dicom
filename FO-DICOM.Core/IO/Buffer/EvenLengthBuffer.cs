@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -62,6 +64,30 @@ namespace FellowOakDicom.IO.Buffer
             var data = new byte[count];
             System.Buffer.BlockCopy(Buffer.Data, (int)offset, data, 0, (int)Math.Min(Buffer.Size - offset, count));
             return data;
+        }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            s.Write(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
+            if (count > Buffer.Size - offset)
+            {
+                for (var i = 0; i < count - (Buffer.Size - offset); i++)
+                {
+                    s.WriteByte(0);
+                }
+            }
+        }
+
+        public async Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            await s.WriteAsync(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
+            if (count > Buffer.Size - offset)
+            {
+                for (var i = 0; i < count - (Buffer.Size - offset); i++)
+                {
+                    s.WriteByte(0);
+                }
+            }
         }
 
         /// <summary>

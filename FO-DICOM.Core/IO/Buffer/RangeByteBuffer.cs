@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -32,5 +34,16 @@ namespace FellowOakDicom.IO.Buffer
         {
             return Internal.GetByteRange(Offset + offset, count);
         }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            Internal.CopyToStream(s, Offset + offset, count);
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            return Internal.CopyToStreamAsync(s, Offset + offset, count);
+        }
+
     }
 }

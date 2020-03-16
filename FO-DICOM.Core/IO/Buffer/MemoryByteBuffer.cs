@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -13,9 +15,9 @@ namespace FellowOakDicom.IO.Buffer
         /// Creates a new MemoryByteBuffer based on a byte-array. This class takes over ownersip of the array, so only pass an array that will not be used/manipulated by other classes, or pass a new instance of byte array
         /// </summary>
         /// <param name="Data"></param>
-        public MemoryByteBuffer(byte[] Data)
+        public MemoryByteBuffer(byte[] data)
         {
-            this.Data = Data;
+            Data = data;
         }
 
         public bool IsMemory => true;
@@ -30,5 +32,16 @@ namespace FellowOakDicom.IO.Buffer
             Array.Copy(Data, (int)offset, buffer, 0, count);
             return buffer;
         }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            s.Write(Data, (int)offset, count);
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            return s.WriteAsync(Data, (int)offset, count);
+        }
+
     }
 }

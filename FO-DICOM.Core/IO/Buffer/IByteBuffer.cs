@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.IO;
+using System.Threading.Tasks;
+
 namespace FellowOakDicom.IO.Buffer
 {
 
@@ -31,5 +34,10 @@ namespace FellowOakDicom.IO.Buffer
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
         byte[] GetByteRange(long offset, int count);
+
+        void CopyToStream(Stream s, long offset, int count);
+
+        Task CopyToStreamAsync(Stream s, long offset, int count);
+
     }
 }

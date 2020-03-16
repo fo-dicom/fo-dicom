@@ -311,14 +311,13 @@ namespace FellowOakDicom.IO.Writer
 
             while (remainingSize > largeObjectSize)
             {
-                var range = buffer.GetByteRange(offset, (int)largeObjectSize);
-                target.Write(range, 0, largeObjectSize);
+                target.ApplyToStream(s => buffer.CopyToStream(s, offset, (int)largeObjectSize));
 
                 offset += (int)largeObjectSize;
                 remainingSize -= largeObjectSize;
             }
 
-            target.Write(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize);
+            target.ApplyToStream(s => buffer.CopyToStream(s, offset, (int)remainingSize));
         }
 
         private static async Task WriteBufferAsync(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
@@ -328,14 +327,13 @@ namespace FellowOakDicom.IO.Writer
 
             while (remainingSize > largeObjectSize)
             {
-                var range = buffer.GetByteRange(offset, (int)largeObjectSize);
-                await target.WriteAsync(range, 0, largeObjectSize).ConfigureAwait(false);
+                await target.ApplyToStreamAsync(s => buffer.CopyToStreamAsync(s, offset, (int)largeObjectSize));
 
                 offset += (int)largeObjectSize;
                 remainingSize -= largeObjectSize;
             }
 
-            await target.WriteAsync(buffer.GetByteRange(offset, (int)remainingSize), 0, (uint)remainingSize).ConfigureAwait(false);
+            await target.ApplyToStreamAsync(s => buffer.CopyToStreamAsync(s, offset, (int)remainingSize));
         }
 
     }

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.IO;
+using System.Threading.Tasks;
+
 namespace FellowOakDicom.IO.Buffer
 {
 
@@ -27,6 +30,16 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] GetByteRange(long offset, int count)
         {
             return File.GetByteRange(Position + offset, count);
+        }
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            s.Write(File.GetByteRange(Position + offset, count), 0, count);
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            return s.WriteAsync(File.GetByteRange(Position + offset, count), 0, count);
         }
 
     }

@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -105,6 +107,51 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             return data;
+        }
+
+
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            var pos = 0;
+            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
+            {
+                offset -= Buffers[pos].Size;
+            }
+
+            for (; pos < Buffers.Count && count > 0; pos++)
+            {
+                var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
+
+                Buffers[pos].CopyToStream(s, offset, remain);
+
+                count -= remain;
+                if (offset > 0)
+                {
+                    offset = 0;
+                }
+            }
+        }
+
+        public async Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            var pos = 0;
+            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
+            {
+                offset -= Buffers[pos].Size;
+            }
+
+            for (; pos < Buffers.Count && count > 0; pos++)
+            {
+                var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
+
+                await Buffers[pos].CopyToStreamAsync(s, offset, remain);
+
+                count -= remain;
+                if (offset > 0)
+                {
+                    offset = 0;
+                }
+            }
         }
 
         #endregion

@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -51,22 +53,41 @@ namespace FellowOakDicom.IO.Buffer
         public virtual byte[] GetByteRange(long offset, int count)
         {
             if (_buffer == null)
-                throw new InvalidOperationException(
-                    "BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+            {
+                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+            }
 
             var range = new byte[count];
             Array.Copy(Data, (int)offset, range, 0, count);
             return range;
         }
 
+        public void CopyToStream(Stream s, long offset, int count)
+        {
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+            }
+
+            s.Write(Data, (int)offset, count);
+        }
+
+        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        {
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+            }
+
+            return s.WriteAsync(Data, (int)offset, count);
+        }
+
         /// <summary>
         /// Gets the size of the buffered data. Throws an InvalidOperationException if the Data has not been set.
         /// </summary>
         public virtual long Size
-        {
-            get => _buffer?.Length
+            => _buffer?.Length
                 ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
-        }
 
     }
 }
