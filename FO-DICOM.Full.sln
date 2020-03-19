@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.Benchmark", "Tests
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC1ED43B-3359-4F4F-9E5D-4037A524809E}"
 	ProjectSection(SolutionItems) = preProject
+		ChangeLog.md = ChangeLog.md
+		ChangeLog5.md = ChangeLog5.md
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject

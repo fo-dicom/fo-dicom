@@ -191,7 +191,7 @@ namespace FellowOakDicom.Tests
             Assert.NotEqual(DicomEncoding.GetEncoding(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet)), DicomEncoding.Default);
 
             // Ensure DICOM encoding same as original.
-            Assert.Equal(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
+            Assert.Equal(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), anonymizedDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
             Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
