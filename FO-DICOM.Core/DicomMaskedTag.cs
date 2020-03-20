@@ -109,7 +109,7 @@ namespace FellowOakDicom
         {
             try
             {
-                if (s.Length < 8) throw new ArgumentOutOfRangeException("s", "Expected a string of 8 or more characters");
+                if (s.Length < 8) throw new ArgumentOutOfRangeException(nameof(s), "Expected a string of 8 or more characters");
 
                 int pos = 0;
                 if (s[pos] == '(') pos++;

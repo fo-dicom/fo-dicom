@@ -34,18 +34,10 @@ namespace FellowOakDicom.Imaging.Mathematics
         /// <param name="height">The height.</param>
         public RectF(float x, float y, float width, float height)
         {
-            if (width < 0f)
-            {
-                throw new ArgumentOutOfRangeException("width", "Negative width not supported.");
-            }
-            if (height < 0f)
-            {
-                throw new ArgumentOutOfRangeException("height", "Negative height not supported.");
-            }
             this.x = x;
             this.y = y;
-            this.width = width;
-            this.height = height;
+            this.width = (width >= 0f) ? width : throw new ArgumentOutOfRangeException(nameof(width), "Negative width not supported.");
+            this.height = (height >= 0f) ? height : throw new ArgumentOutOfRangeException(nameof(height), "Negative height not supported.");
         }
 
         #endregion

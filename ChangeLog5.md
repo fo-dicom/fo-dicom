@@ -40,5 +40,6 @@
   * `DicomUID.Generate(name)`: use `DicomUID.Generate()` instead.
   * `DicomUID.IsValid(uid)`: use `DicomUID.IsValidUid(uid)` instead.
   * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
-  * 
+  * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
+
    

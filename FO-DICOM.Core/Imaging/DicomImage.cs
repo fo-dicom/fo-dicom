@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO.Buffer;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FellowOakDicom.Imaging
 {
@@ -20,8 +19,6 @@ namespace FellowOakDicom.Imaging
         #region FIELDS
 
         private readonly object _lock = new object();
-
-        private int _currentFrame;
 
         private double _scale;
 
@@ -60,7 +57,7 @@ namespace FellowOakDicom.Imaging
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelData = CreateDicomPixelData(_dataset);
-            _currentFrame = frame;
+            CurrentFrame = frame;
         }
 
         /// <summary>Creates DICOM image object from file</summary>
@@ -74,21 +71,6 @@ namespace FellowOakDicom.Imaging
         #endregion
 
         #region PROPERTIES
-
-        /// <summary>
-        /// Gets the dataset constituting the DICOM image.
-        /// </summary>
-        [Obsolete("Dataset should not be publicly accessible from DicomImage object.")]
-        public DicomDataset Dataset => _dataset;
-
-        /// <summary>
-        /// Gets the pixel data header object associated with the image.
-        /// </summary>
-        [Obsolete("PixelData should not be publicly accessible from the DicomImage object.")]
-        public DicomPixelData PixelData => _pixelData;
-
-        [Obsolete("Use IsGrayscale to determine whether DicomImage object is grayscale or color.")]
-        public PhotometricInterpretation PhotometricInterpretation => _pixelData.PhotometricInterpretation;
 
         /// <summary>Width of image in pixels</summary>
         public int Width => _pixelData.Width;
@@ -217,7 +199,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets the index of the current frame.
         /// </summary>
-        public int CurrentFrame => _currentFrame;
+        public int CurrentFrame { get; private set; }
 
         #endregion
 
@@ -232,7 +214,7 @@ namespace FellowOakDicom.Imaging
             lock (_lock)
             {
                 load = frame >= 0 && (frame != CurrentFrame || _rerender);
-                _currentFrame = frame;
+                CurrentFrame = frame;
                 _rerender = false;
             }
 

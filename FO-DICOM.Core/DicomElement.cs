@@ -214,7 +214,7 @@ namespace FellowOakDicom
             {
                 if (item == -1) return (T)((object)StringValue);
 
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 return (T)((object)_values[item]);
             }
@@ -222,7 +222,7 @@ namespace FellowOakDicom
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)_values;
 
             if (item == -1) item = 0;
-            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
             if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return DicomParseable.Parse<T>(_values[item]);
 
@@ -374,7 +374,7 @@ namespace FellowOakDicom
             {
                 if (item == -1) return (T)((object)_values[0]);
 
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 return (T)((object)_values[item]);
             }
@@ -423,7 +423,7 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(object))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 return (T)(object)ByteConverter.Get<Tv>(Buffer, item);
             }
@@ -435,7 +435,7 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(Tv))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 return ByteConverter.Get<T>(Buffer, item);
             }
@@ -448,7 +448,7 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(string))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
             }
@@ -460,7 +460,7 @@ namespace FellowOakDicom
 
             if (typeof(T).GetTypeInfo().IsValueType)
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
@@ -783,7 +783,7 @@ namespace FellowOakDicom
             else if (typeof(T).GetTypeInfo().IsValueType || typeof(T) == typeof(object))
             {
                 if (item == -1) item = 0;
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
@@ -1007,7 +1007,7 @@ namespace FellowOakDicom
             }
             else if (typeof(T).GetTypeInfo().IsValueType)
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException("item", "Index is outside the range of available value items");
+                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);

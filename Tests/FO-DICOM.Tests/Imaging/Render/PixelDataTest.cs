@@ -20,16 +20,17 @@ namespace FellowOakDicom.Tests.Imaging.Render
         public void DicomPixelData_TestDefaultWindowing()
         {
             // an image, that contains several values in 0028,1050 and 0028,1051
-            var img = new DicomImage(TestData.Resolve("IM-0001-0001-0001.dcm"));
+            var df = DicomFile.Open(TestData.Resolve("IM-0001-0001-0001.dcm"));
+            var img = new DicomImage(df.Dataset);
             img.RenderImage(0);
-            Assert.Equal(img.Dataset.GetValue<double>(DicomTag.WindowWidth, 0), img.WindowWidth);
-            Assert.Equal(img.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
+            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowWidth, 0), img.WindowWidth);
+            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
 
             // an image, that contains one windowing-setting
             img = new DicomImage(TestData.Resolve("CR-MONO1-10-chest"));
             img.RenderImage(0);
-            Assert.Equal(img.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
-            Assert.Equal(img.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
+            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
+            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
 
             // an image with no windowing-setting
             img = new DicomImage(TestData.Resolve("GH227.dcm"));
