@@ -124,7 +124,7 @@ namespace FellowOakDicom.Tests.IO.Reader
 
                 Assert.Equal(expected, actual);
 
-                var modality = dataset.Get<string>(DicomTag.Modality);
+                var modality = dataset.GetString(DicomTag.Modality);
                 Assert.Equal("CT", modality);
             }
         }

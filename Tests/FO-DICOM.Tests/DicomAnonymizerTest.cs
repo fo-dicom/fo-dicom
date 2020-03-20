@@ -152,7 +152,7 @@ namespace FellowOakDicom.Tests
 
             Assert.True(dataset.Contains(tag));
 
-            var sequence = dataset.Get<DicomSequence>(tag);
+            var sequence = dataset.GetSequence(tag);
             Assert.Equal(0, sequence.Items.Count);
         }
 

@@ -62,7 +62,7 @@ namespace FellowOakDicom.Tests.IO.Writer
 
                 var expected = Comment;
                 var readFile = DicomFile.Open(fileName);
-                var actual = readFile.Dataset.Get<string>(DoseCommentTag);
+                var actual = readFile.Dataset.GetSingleValue<string>(DoseCommentTag);
                 Assert.Equal(expected, actual);
 
                 var syntax = readFile.FileMetaInfo.TransferSyntax;

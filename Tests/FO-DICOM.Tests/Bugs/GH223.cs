@@ -15,7 +15,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = await DicomFile.OpenAsync(TestData.Resolve("GH223.dcm")).ConfigureAwait(false);
 
-            var seq = file.Dataset.Get<DicomSequence>(new DicomTag(0x01f3, 0x1011, "ELSCINT1"));
+            var seq = file.Dataset.GetSequence(new DicomTag(0x01f3, 0x1011, "ELSCINT1"));
 
             Assert.Equal(2, seq.Items.Count);
             Assert.Empty(seq.Items[0]);

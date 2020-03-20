@@ -42,9 +42,11 @@ namespace FellowOakDicom
             ImplementationClassUID = DicomImplementation.ClassUID;
             ImplementationVersionName = DicomImplementation.Version;
 
-            var aet = dataset.Contains(DicomTag.SourceApplicationEntityTitle) ?
-                dataset.Get<string>(DicomTag.SourceApplicationEntityTitle) : null;
-            if (aet != null) SourceApplicationEntityTitle = aet;
+            dataset.TryGetString(DicomTag.SourceApplicationEntityTitle, out var aet);
+            if (aet != null)
+            {
+                SourceApplicationEntityTitle = aet;
+            }
 
             if (dataset.TryGetSingleValue(DicomTag.SendingApplicationEntityTitle, out string sendingAETVal))
             {

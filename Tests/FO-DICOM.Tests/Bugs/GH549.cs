@@ -38,10 +38,10 @@ namespace FellowOakDicom.Tests.Bugs
                 }));
             Assert.Null(exception);
 
-            var refPixelData = originalTranscoded.Get<DicomFragmentSequence>(DicomTag.PixelData);
+            var refPixelData = originalTranscoded.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
             foreach (var dataset in bag)
             {
-                var pixelData = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+                var pixelData = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
                 Assert.Equal(refPixelData, pixelData);
             }
         }
@@ -54,7 +54,6 @@ namespace FellowOakDicom.Tests.Bugs
             var original = DicomFile.Open(TestData.Resolve("D_CLUNIE_CT1_RLE_FRAGS.dcm")).Dataset;
 
             var datasets = Enumerable.Repeat(original.Clone(), filesToTranscode).ToList();
-            //var transcoder = new DicomTranscoder(original.InternalTransferSyntax, syntax);
 
             var originalTranscoded = original.Clone(syntax);
 
@@ -68,10 +67,10 @@ namespace FellowOakDicom.Tests.Bugs
                 }));
             Assert.Null(exception);
 
-            var refPixelData = originalTranscoded.Get<DicomFragmentSequence>(DicomTag.PixelData);
+            var refPixelData = originalTranscoded.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
             foreach (var dataset in bag)
             {
-                var pixelData = dataset.Get<DicomFragmentSequence>(DicomTag.PixelData);
+                var pixelData = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
                 Assert.Equal(refPixelData, pixelData);
             }
         }

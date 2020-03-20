@@ -42,7 +42,7 @@ namespace FellowOakDicom.Tests.Media
         public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
         {
             var dir = DicomDirectory.Open(TestData.Resolve("DICOMDIR"));
-            var expected = dir.FileMetaInfo.Get<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
+            var expected = dir.FileMetaInfo.GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
             var actual = dir.MediaStorageSOPInstanceUID.UID;
             Assert.Equal(expected, actual);
         }

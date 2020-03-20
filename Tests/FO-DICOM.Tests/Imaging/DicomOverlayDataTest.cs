@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.Imaging
             var dataset = new DicomDataset();
             var od = new DicomOverlayData(dataset, group) { Description = expected };
 
-            var actual = dataset.Get<string>(new DicomTag(group, 0x0022));
+            var actual = dataset.GetString(new DicomTag(group, 0x0022));
             Assert.Equal(expected, actual);
         }
 
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Imaging
             var dataset = new DicomDataset();
             var od = new DicomOverlayData(dataset, group) { Subtype = expected };
 
-            var actual = dataset.Get<string>(new DicomTag(group, 0x0045));
+            var actual = dataset.GetString(new DicomTag(group, 0x0045));
             Assert.Equal(expected, actual);
         }
 
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Tests.Imaging
             var dataset = new DicomDataset();
             var od = new DicomOverlayData(dataset, group) { Label = expected };
 
-            var actual = dataset.Get<string>(new DicomTag(group, 0x1500));
+            var actual = dataset.GetString(new DicomTag(group, 0x1500));
             Assert.Equal(expected, actual);
         }
 
@@ -58,7 +58,7 @@ namespace FellowOakDicom.Tests.Imaging
             var dataset = new DicomDataset();
             var od = new DicomOverlayData(dataset, group) { Type = DicomOverlayType.Graphics };
 
-            var actual = dataset.Get<string>(new DicomTag(group, 0x0040));
+            var actual = dataset.GetString(new DicomTag(group, 0x0040));
             Assert.Equal(expected, actual);
         }
 
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Imaging
             var dataset = new DicomDataset();
             var od = new DicomOverlayData(dataset, group) { Type = DicomOverlayType.ROI };
 
-            var actual = dataset.Get<string>(new DicomTag(group, 0x0040));
+            var actual = dataset.GetString(new DicomTag(group, 0x0040));
             Assert.Equal(expected, actual);
         }
 

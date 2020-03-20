@@ -70,7 +70,7 @@ namespace FellowOakDicom.Tests.Network
                              "Refused: The UPS may only become SCHEDULED via N-CREATE, not N-SET or N-ACTION",
                              comment);
             x.Status = status;
-            Assert.Equal(x.Command.Get<string>(DicomTag.ErrorComment), comment);
+            Assert.Equal(x.Command.GetString(DicomTag.ErrorComment), comment);
 
             x.Status = DicomStatus.Success;
             Assert.False(x.Command.Contains(DicomTag.ErrorComment));

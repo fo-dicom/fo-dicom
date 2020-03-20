@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests
                     new DicomDateTime(DicomTag.AcquisitionDateTime, new DateTime(2016, 4, 20, 10, 20, 30)));
             
             var expected = $"20160420102030";
-            var actual = dataset.Get<string>(DicomTag.AcquisitionDateTime);
+            var actual = dataset.GetString(DicomTag.AcquisitionDateTime);
 
             Assert.Equal(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace FellowOakDicom.Tests
             Assert.Null(exception);
 
             var expected = new DateTime(2016, 4, 20, 10, 20, 30);
-            var actual = dataset.Get<DateTime>(DicomTag.AcquisitionDateTime);
+            var actual = dataset.GetSingleValue<DateTime>(DicomTag.AcquisitionDateTime);
 
             Assert.Equal(expected, actual);
         }

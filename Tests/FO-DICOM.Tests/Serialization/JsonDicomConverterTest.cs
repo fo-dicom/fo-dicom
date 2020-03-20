@@ -263,7 +263,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.PixelData);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -283,7 +283,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorDSValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorDSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -303,7 +303,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorFDValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorFDValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -323,7 +323,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorFLValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorFLValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -343,7 +343,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorISValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorISValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -363,7 +363,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorLTValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorLTValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -383,7 +383,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSLValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSLValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -403,7 +403,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSSValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -423,7 +423,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorSTValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSTValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -443,7 +443,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUCValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorUCValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -463,7 +463,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorULValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorULValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -483,7 +483,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUSValue);
+            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorUSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -503,7 +503,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.Get<IBulkDataUriByteBuffer>(DicomTag.SelectorUTValue);
+            var buffer = reconstituated.GetSingleValue<IBulkDataUriByteBuffer>(DicomTag.SelectorUTValue);
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }
@@ -531,8 +531,8 @@ namespace FellowOakDicom.Tests.Serialization
 ]";
 
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
-            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
-            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
         /// <summary>
@@ -558,8 +558,8 @@ namespace FellowOakDicom.Tests.Serialization
 ]";
 
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
-            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].Get<DicomUID>(0x0020000d).UID);
-            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].Get<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
+            Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
         /// <summary>
@@ -619,7 +619,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
             Assert.Equal(json, json2);
 
-            DownloadBulkData(reconstituated.Get<BulkDataUriByteBuffer>(DicomTag.PixelData));
+            DownloadBulkData(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
             DownloadBulkData(bulkData);
 
             Assert.True(ValueEquals(target, reconstituated));
@@ -628,10 +628,10 @@ namespace FellowOakDicom.Tests.Serialization
 
             File.Delete("test.txt");
 
-            Assert.Equal(target.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
-            Assert.True(target.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
-            Assert.Equal(reconstituated.Get<IByteBuffer>(DicomTag.PixelData).Size, (uint)expectedPixelData.Length);
-            Assert.True(reconstituated.Get<byte[]>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.Equal(target.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer.Size, (uint)expectedPixelData.Length);
+            Assert.True(target.GetValues<byte>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.Equal(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer.Size, (uint)expectedPixelData.Length);
+            Assert.True(reconstituated.GetValues<byte>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
         }
 
         private static bool ValueEquals(DicomDataset a, DicomDataset b)
@@ -921,8 +921,8 @@ namespace FellowOakDicom.Tests.Serialization
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             var ds2 = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
 
-            Assert.Equal(ds.Get<string>(privTag1), ds2.Get<string>(privTag1));
-            Assert.Equal(ds.Get<string>(privTag2), ds2.Get<string>(privTag2));
+            Assert.Equal(ds.GetString(privTag1), ds2.GetString(privTag1));
+            Assert.Equal(ds.GetString(privTag2), ds2.GetString(privTag2));
         }
 
     }

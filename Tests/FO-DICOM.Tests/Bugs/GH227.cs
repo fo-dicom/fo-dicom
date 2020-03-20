@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = DicomFile.Open(TestData.Resolve("GH227.dcm"));
             const int expected = 512;
-            var actual = file.Dataset.Get<int>(DicomTag.Rows);
+            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Rows);
             Assert.Equal(expected, actual);
         }
 
@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = await DicomFile.OpenAsync(TestData.Resolve("GH227.dcm")).ConfigureAwait(false);
             const int expected = 512;
-            var actual = file.Dataset.Get<int>(DicomTag.Columns);
+            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
             Assert.Equal(expected, actual);
         }
 
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Tests.Bugs
                 Assert.Equal(DicomTransferSyntax.DeflatedExplicitVRLittleEndian, file.Dataset.InternalTransferSyntax);
 
                 const int expected = 16;
-                var actual = file.Dataset.Get<int>(DicomTag.BitsAllocated);
+                var actual = file.Dataset.GetSingleValue<int>(DicomTag.BitsAllocated);
                 Assert.Equal(expected, actual);
             }
         }
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Bugs
                 Assert.Equal(DicomTransferSyntax.DeflatedExplicitVRLittleEndian, file.Dataset.InternalTransferSyntax);
 
                 const int expected = 16;
-                var actual = file.Dataset.Get<int>(DicomTag.BitsAllocated);
+                var actual = file.Dataset.GetSingleValue<int>(DicomTag.BitsAllocated);
                 Assert.Equal(expected, actual);
             }
         }
@@ -89,7 +89,7 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = DicomFile.Open(stream);
                 const int expected = 512;
-                var actual = file.Dataset.Get<int>(DicomTag.Columns);
+                var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
                 Assert.Equal(expected, actual);
             }
         }
@@ -107,7 +107,7 @@ namespace FellowOakDicom.Tests.Bugs
 
                 var file = await DicomFile.OpenAsync(stream);
                 const int expected = 512;
-                var actual = file.Dataset.Get<int>(DicomTag.Columns);
+                var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
                 Assert.Equal(expected, actual);
             }
         }

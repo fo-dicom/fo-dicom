@@ -24,7 +24,7 @@ namespace FellowOakDicom.Tests.Bugs
             }
             var dataset = new DicomDataset { new DicomDateTime(DicomTag.ScheduledProcedureStepStartDateTime, dt) };
 
-            var exception = Record.Exception(() => dataset.Get<DicomDateRange>(DicomTag.ScheduledProcedureStepStartDateTime));
+            var exception = Record.Exception(() => dataset.GetSingleValue<DicomDateRange>(DicomTag.ScheduledProcedureStepStartDateTime));
             Assert.Null(exception);
         }
 

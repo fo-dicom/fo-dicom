@@ -42,7 +42,7 @@ namespace FellowOakDicom.Tests
 
             stream.Seek(0, SeekOrigin.Begin);
             var inFile = DicomFile.Open(stream);
-            var actual = inFile.Dataset.Get<string>(tag);
+            var actual = inFile.Dataset.GetString(tag);
 
             Assert.NotEqual(expected, actual);
         }
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Tests
 
             stream.Seek(0, SeekOrigin.Begin);
             var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
-            var actual = inFile.Dataset.Get<string>(tag);
+            var actual = inFile.Dataset.GetString(tag);
 
             Assert.Equal(expected, actual);
         }
@@ -94,7 +94,7 @@ namespace FellowOakDicom.Tests
 
             var openFile = DicomFile.Open(fileName);
             var expected = MinimumDatasetInstanceUid;
-            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
 
@@ -107,7 +107,7 @@ namespace FellowOakDicom.Tests
 
             var openFile = await DicomFile.OpenAsync(fileName);
             var expected = MinimumDatasetInstanceUid;
-            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
 
@@ -121,7 +121,7 @@ namespace FellowOakDicom.Tests
             var file = MemoryMappedFile.CreateFromFile(fileName);
             var openFile = DicomFile.Open(file.CreateViewStream());
             var expected = MinimumDatasetInstanceUid;
-            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
 

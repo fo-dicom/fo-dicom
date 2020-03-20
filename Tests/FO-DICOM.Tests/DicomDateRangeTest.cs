@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests
                 new DicomDateRange(new DateTime(2016, 4, 20), new DateTime(2016, 4, 21)));
 
             const string expected = "20160420-20160421";
-            var actual = dataset.Get<string>(DicomTag.AcquisitionDate);
+            var actual = dataset.GetSingleValue<string>(DicomTag.AcquisitionDate);
 
             Assert.Equal(expected, actual);
         }
@@ -38,7 +38,7 @@ namespace FellowOakDicom.Tests
             var expected = new DicomDateRange(new DateTime(2016, 4, 20), new DateTime(2016, 4, 21));
             dataset.Add(DicomTag.AcquisitionDate, expected);
 
-            var actual = dataset.Get<DicomDateRange>(DicomTag.AcquisitionDate);
+            var actual = dataset.GetSingleValue<DicomDateRange>(DicomTag.AcquisitionDate);
             Assert.Equal(expected.Minimum, actual.Minimum);
             Assert.Equal(expected.Maximum, actual.Maximum);
         }
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Tests
                 new DicomDateRange(new DateTime(1, 1, 1, 5, 10, 5), new DateTime(1, 1, 1, 19, 0, 20)));
 
             const string expected = "051005-190020";
-            var actual = dataset.Get<string>(DicomTag.AcquisitionTime);
+            var actual = dataset.GetSingleValue<string>(DicomTag.AcquisitionTime);
 
             Assert.Equal(expected, actual);
         }
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests
             var expected = new DicomDateRange(new DateTime(1, 1, 1, 5, 10, 5), new DateTime(1, 1, 1, 19, 0, 20));
             dataset.Add(DicomTag.AcquisitionTime, expected);
 
-            var actual = dataset.Get<DicomDateRange>(DicomTag.AcquisitionTime);
+            var actual = dataset.GetSingleValue<DicomDateRange>(DicomTag.AcquisitionTime);
             Assert.Equal(expected.Minimum, actual.Minimum);
             Assert.Equal(expected.Maximum, actual.Maximum);
         }
@@ -88,7 +88,7 @@ namespace FellowOakDicom.Tests
                 new DicomDateRange(new DateTime(2016, 4, 20, 10, 20, 30), new DateTime(2016, 4, 21, 8, 50, 5)));
 
             var expected = $"20160420102030-20160421085005";
-            var actual = dataset.Get<string>(DicomTag.AcquisitionDateTime);
+            var actual = dataset.GetString(DicomTag.AcquisitionDateTime);
 
             Assert.Equal(expected, actual);
         }
@@ -106,7 +106,7 @@ namespace FellowOakDicom.Tests
                 new DateTime(2016, 4, 21, 8, 50, 5));
             dataset.Add(DicomTag.AcquisitionDateTime, expected);
 
-            var actual = dataset.Get<DicomDateRange>(DicomTag.AcquisitionDateTime);
+            var actual = dataset.GetSingleValue<DicomDateRange>(DicomTag.AcquisitionDateTime);
             Assert.Equal(expected.Minimum, actual.Minimum);
             Assert.Equal(expected.Maximum, actual.Maximum);
         }

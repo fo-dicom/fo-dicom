@@ -3,7 +3,6 @@
 ##### Changes:
 
 * There is only one library built in NetStandard 2.0 *fo-dicom.core*.*
-* Run SSL authentication in a task with timeout, merge PR #926
 * Use `Microsoft.Extensions.DependencyInjection`. There is an extension method to `IServiceCollection.AddDefaultDicomServices()` to add all default implementations for the required interfaces.
   * *IFileReferenceFactory:* creates a `IFileReference` instance. Is used internally whenever a Reference to a file is created.
   * *IImageManager:* creates a `IImage` instance. Default is `RawImageManager`, that returns a byte array. call  `IServiceCollection.UseImageManager<MyImageManager>()` to register an other implementation.
@@ -36,3 +35,5 @@
   * `Dicom.Network.DicomClient`: use `FellowOakDicom.Network.Client.DicomClient` instead.
   * `Dicom.Network.IDicomServiceUser`: use `IDicomClientConnection` instead.
   * `ChangeTransferSyntax(..)` extension methods for `DicomFile` and `DicomDataset`: use the method `Clone(..)` instead.
+  * `DicomDataset.Get<T>`: use `GetValue`, `GetValues`, `GetSingleValue` or `GetSequence` instead.
+  * 

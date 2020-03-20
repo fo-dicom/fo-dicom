@@ -49,7 +49,7 @@ namespace FellowOakDicom.Tests.Network
             await client.SendAsync().ConfigureAwait(false);
             handle.Wait();
 
-            Assert.Equal("RT ANKLE", dataset.Get<string>(DicomTag.StudyDescription));
+            Assert.Equal("RT ANKLE", dataset.GetString(DicomTag.StudyDescription));
         }
 
 
