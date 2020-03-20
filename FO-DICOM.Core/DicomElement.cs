@@ -1767,7 +1767,7 @@ namespace FellowOakDicom
         {
             if (_values == null)
             {
-                _values = base.Get<string[]>().Select(DicomUID.Parse).ToArray();
+                _values = base.Get<string[]>().Select(s => DicomUID.Parse(s)).ToArray();
             }
 
             if (typeof(T) == typeof(DicomTransferSyntax))
