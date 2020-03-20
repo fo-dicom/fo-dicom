@@ -825,6 +825,8 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
+            private TimeSpan Delay => (UserState is TimeSpan span) ? span : TimeSpan.FromSeconds(4);
+
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
             {
             }
@@ -859,7 +861,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
                 {
                     yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(3000);
+                    Thread.Sleep(Delay);
                     yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
                 }
             }
@@ -871,7 +873,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 IEnumerable<Task<DicomCMoveResponse>> InternalOnCMoveRequestAsync()
                 {
                     yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(3000);
+                    Thread.Sleep(Delay);
                     yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Success));
                 }
             }
