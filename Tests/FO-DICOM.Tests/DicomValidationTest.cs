@@ -37,7 +37,7 @@ namespace FellowOakDicom.Tests
 
             var tmpFile = Path.GetTempFileName();
             ds.Add(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage);
-            ds.Add(DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateNew().UID);
+            ds.Add(DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID().UID);
             // save this invalid dicomdataset
             (new DicomFile(ds)).Save(tmpFile);
 

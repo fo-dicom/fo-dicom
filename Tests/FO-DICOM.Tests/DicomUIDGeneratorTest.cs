@@ -69,14 +69,14 @@ namespace FellowOakDicom.Tests
         {
             const int n = 100000;
             var uids = new string[n];
-            Parallel.For(0, n, i => { uids[i] = DicomUIDGenerator.GenerateNew().UID; });
+            Parallel.For(0, n, i => { uids[i] = DicomUIDGenerator.GenerateDerivedFromUUID().UID; });
             Assert.Equal(n, uids.Distinct().Count());
         }
 
         [Fact]
         public void Generate_SourceUidKnown_ReturnsMappedDestinationUid()
         {
-            var source = DicomUIDGenerator.GenerateNew();
+            var source = DicomUIDGenerator.GenerateDerivedFromUUID();
 
             var generator = new DicomUIDGenerator();
             var expected = generator.Generate(source);

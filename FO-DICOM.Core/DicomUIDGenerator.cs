@@ -6,10 +6,6 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-
-using FellowOakDicom.Network;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
@@ -21,50 +17,11 @@ namespace FellowOakDicom
     {
         #region FIELDS
 
-        private static volatile DicomUID _instanceRootUid;
-
-        private static long _lastTicks;
-
-        private static readonly object _lock = new object();
-
-        private static readonly DateTime Y2K = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        private readonly ConcurrentDictionary<string, DicomUID> _sourceUidMap =
-            new ConcurrentDictionary<string, DicomUID>();
-
-        #endregion
-
-        #region PROPERTIES
-
-        private static DicomUID InstanceRootUID
-        {
-            get
-            {
-                if (_instanceRootUid != null) return _instanceRootUid;
-
-                lock (_lock)
-                {
-                    if (_instanceRootUid != null) return _instanceRootUid;
-
-                    DicomUID dicomUid;
-                    _instanceRootUid = Setup.ServiceProvider.GetRequiredService<INetworkManager>().TryGetNetworkIdentifier(out dicomUid)
-                        ? dicomUid
-                        : DicomUID.Append(DicomImplementation.ClassUID, Environment.TickCount);
-                }
-
-                return _instanceRootUid;
-            }
-        }
+        private readonly ConcurrentDictionary<string, DicomUID> _sourceUidMap = new ConcurrentDictionary<string, DicomUID>();
 
         #endregion
 
         #region METHODS
-
-        [Obsolete("Will be deprecated. Use static method GenerateNew or GenerateFromDerivedUUID instead.")]
-        public DicomUID Generate()
-        {
-            return GenerateNew();
-        }
 
         /// <summary>
         /// If <paramref name="sourceUid"/> is known, return associated destination UID, otherwise generate and return
@@ -74,8 +31,8 @@ namespace FellowOakDicom
         /// <returns>Known or generated UID.</returns>
         public DicomUID Generate(DicomUID sourceUid)
         {
-            if (sourceUid == null) throw new ArgumentNullException(nameof(sourceUid));
-            return _sourceUidMap.GetOrAdd(sourceUid.UID, uid => GenerateNew());
+            if (sourceUid == null) { throw new ArgumentNullException(nameof(sourceUid)); }
+            return _sourceUidMap.GetOrAdd(sourceUid.UID, uid => GenerateDerivedFromUUID());
         }
 
         /// <summary>
@@ -87,7 +44,10 @@ namespace FellowOakDicom
             foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray())
             {
                 var uid = dataset.GetSingleValue<DicomUID>(ui.Tag);
-                if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown) dataset.AddOrUpdate(ui.Tag, Generate(uid));
+                if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown)
+                {
+                    dataset.AddOrUpdate(ui.Tag, Generate(uid));
+                }
             }
 
             foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>().ToArray())
@@ -96,29 +56,6 @@ namespace FellowOakDicom
                 {
                     RegenerateAll(item);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Generate a new DICOM UID.
-        /// </summary>
-        /// <returns>Generated UID.</returns>
-        [Obsolete("This method may return statistically non-unique UIDs and is deprecated, use the method GenerateDerivedFromUUID()")]
-        public static DicomUID GenerateNew()
-        {
-            lock (_lock)
-            {
-                var ticks = DateTime.UtcNow.Subtract(Y2K).Ticks;
-                if (ticks <= _lastTicks) ticks = _lastTicks + 1;
-                _lastTicks = ticks;
-
-                var str = ticks.ToString();
-                if (str.EndsWith("0000")) str = str.Substring(0, str.Length - 4);
-
-                var uid = new StringBuilder();
-                uid.Append(InstanceRootUID.UID).Append('.').Append(str);
-
-                return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
             }
         }
 

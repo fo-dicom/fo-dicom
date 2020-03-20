@@ -846,8 +846,8 @@ namespace FellowOakDicom.Tests.Serialization
                            {
                              new DicomPersonName(DicomTag.PatientName, new[] { "Anna^Pelle", null, "Olle^Jöns^Pyjamas" }),
                              { DicomTag.SOPClassUID, DicomUID.RTPlanStorage },
-                             { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateNew() },
-                             { DicomTag.SeriesInstanceUID, new DicomUID[] { } },
+                             { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
+                             { DicomTag.SeriesInstanceUID, Array.Empty<DicomUID>() },
                              { DicomTag.DoseType, new[] { "HEJ" } },
                            };
 

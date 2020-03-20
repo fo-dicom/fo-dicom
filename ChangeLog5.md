@@ -39,5 +39,6 @@
   * `DicomDataset.AddOrUpdatePixelData`:  use `DicomPixelData.AddFrame(IByteBuffer)` to add pixel data to underlying dataset.
   * `DicomUID.Generate(name)`: use `DicomUID.Generate()` instead.
   * `DicomUID.IsValid(uid)`: use `DicomUID.IsValidUid(uid)` instead.
+  * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
   * 
    

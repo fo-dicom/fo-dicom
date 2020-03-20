@@ -91,6 +91,8 @@ namespace FellowOakDicom
             }
         }
 
+        public static DicomUID Parse(string s) => Parse(s, "Unknown", DicomUidType.Unknown);
+
         public static DicomUID Parse(string s, string name = "Unknown", DicomUidType type = DicomUidType.Unknown)
         {
             string u = s.TrimEnd(' ', '\0');
