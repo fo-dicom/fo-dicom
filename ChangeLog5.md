@@ -36,4 +36,5 @@
   * `Dicom.Network.IDicomServiceUser`: use `IDicomClientConnection` instead.
   * `ChangeTransferSyntax(..)` extension methods for `DicomFile` and `DicomDataset`: use the method `Clone(..)` instead.
   * `DicomDataset.Get<T>`: use `GetValue`, `GetValues`, `GetSingleValue` or `GetSequence` instead.
-  * 
+  * `DicomDataset.AddOrUpdatePixelData`:  use `DicomPixelData.AddFrame(IByteBuffer)` to add pixel data to underlying dataset.
+   

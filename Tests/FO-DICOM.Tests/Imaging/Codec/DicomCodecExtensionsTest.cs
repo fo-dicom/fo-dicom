@@ -187,8 +187,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         private void CheckData(int w, int h, byte[] data, DicomTransferSyntax syntax)
         {
             var memoryBB = new MemoryByteBuffer(data);
-            var ds = new DicomDataset();
-            ds.AddOrUpdatePixelData(DicomVR.OW, memoryBB, DicomTransferSyntax.ExplicitVRLittleEndian);
+            var ds = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             ds.AddOrUpdate(DicomVR.IS, DicomTag.Rows, h);
             ds.AddOrUpdate(DicomVR.IS, DicomTag.Columns, w);
             ds.AddOrUpdate(DicomVR.IS, DicomTag.BitsAllocated, 16);
@@ -197,6 +196,8 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             ds.AddOrUpdate(DicomVR.IS, DicomTag.PixelRepresentation, 1);
             ds.AddOrUpdate(DicomVR.CS, DicomTag.PhotometricInterpretation, "MONOCHROME2");
             ds.AddOrUpdate(DicomVR.IS, DicomTag.SamplesPerPixel, 1);
+            var pixelData = DicomPixelData.Create(ds, true);
+            pixelData.AddFrame(memoryBB);
 
             var ds2 = ds.Clone(syntax);
             var dsOrig = ds2.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);

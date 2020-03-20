@@ -151,14 +151,7 @@ namespace FellowOakDicom
         public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
         {
             tag = ValidatePrivate(tag);
-            if (_items.TryGetValue(tag, out DicomItem dummyItem))
-            {
-                return dummyItem as T;
-            }
-            else
-            {
-                return null;
-            }
+            return _items.TryGetValue(tag, out DicomItem dummyItem) ? dummyItem as T : null;
         }
 
 
@@ -896,29 +889,6 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Add or update the image pixel data element in the dataset
-        /// </summary>
-        /// <param name="vr">DICOM vr of the image pixel. For a PixelData element this value should be either DicomVR.OB or DicomVR.OW DICOM VR.</param>
-        /// <param name="pixelData">An <see cref="IByteBuffer"/> that holds the image pixel data </param>
-        /// <param name="transferSyntax">A DicomTransferSyntax object of the <paramref name="pixelData"/> parameter.
-        /// If parameter is not provided (null), then the default TransferSyntax "ExplicitVRLittleEndian" will be applied to the dataset</param>
-        /// <remarks>Use this method whenever you are attaching an external image pixel data to the dataset and provide the proper TransferSyntax</remarks>
-        /// <returns>The dataset instance.</returns>
-        [Obsolete("Use DicomPixelData.AddFrame(IByteBuffer) to add pixel data to underlying dataset.")]
-        public DicomDataset AddOrUpdatePixelData(DicomVR vr, IByteBuffer pixelData,
-            DicomTransferSyntax transferSyntax = null)
-        {
-            this.AddOrUpdate(vr, DicomTag.PixelData, pixelData);
-
-            if (null != transferSyntax)
-            {
-                InternalTransferSyntax = transferSyntax;
-            }
-
-            return this;
-        }
-
-        /// <summary>
         /// Checks the DICOM dataset to determine if the dataset already contains an item with the specified tag.
         /// </summary>
         /// <param name="tag">DICOM tag to test</param>
@@ -928,8 +898,7 @@ namespace FellowOakDicom
             if (tag.IsPrivate)
             {
                 var privateTag = GetPrivateTag(tag, false);
-                if (privateTag == null) return false;
-                return _items.Any(kv => kv.Key.Equals(privateTag));
+                return (privateTag != null) && _items.Any(kv => kv.Key.Equals(privateTag));
             }
             return _items.ContainsKey(tag);
         }
@@ -946,7 +915,11 @@ namespace FellowOakDicom
                 if (tag.IsPrivate)
                 {
                     var privateTag = GetPrivateTag(tag);
-                    if (privateTag == null) continue;
+                    if (privateTag == null)
+                    {
+                        continue;
+                    }
+
                     _items.Remove(privateTag);
                 }
                 else
@@ -964,7 +937,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset Remove(Func<DicomItem, bool> selector)
         {
-            foreach (DicomItem item in _items.Values.Where(selector).ToArray()) _items.Remove(item.Tag);
+            _items.Values.Where(selector).ToList().Each(item => _items.Remove(item.Tag));
             return this;
         }
 
@@ -985,7 +958,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination)
         {
-            if (destination != null) destination.AddOrUpdate(this);
+            destination?.AddOrUpdate(this);
             return this;
         }
 
@@ -999,7 +972,10 @@ namespace FellowOakDicom
         {
             if (destination != null)
             {
-                foreach (var tag in tags) destination.AddOrUpdate(GetDicomItem<DicomItem>(tag));
+                foreach (var tag in tags)
+                {
+                    destination.AddOrUpdate(GetDicomItem<DicomItem>(tag));
+                }
             }
             return this;
         }

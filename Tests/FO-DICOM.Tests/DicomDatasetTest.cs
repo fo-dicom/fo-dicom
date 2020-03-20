@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2019 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
@@ -382,16 +383,12 @@ namespace FellowOakDicom.Tests
         {
             var ds        = new DicomDataset ( );
             var data      = new MemoryByteBuffer ( new byte[] { 255 } ); //dummy data
-            var newSyntax = DicomTransferSyntax.DeflatedExplicitVRLittleEndian;
 
-            ds.AddOrUpdatePixelData ( DicomVR.OB, data );
+            ds.AddOrUpdate(DicomTag.BitsAllocated, (ushort)8);
+            var pixelData = DicomPixelData.Create(ds, true);
+            pixelData.AddFrame(data);
 
             Assert.Equal(DicomTransferSyntax.ExplicitVRLittleEndian, ds.InternalTransferSyntax);
-
-            ds.AddOrUpdatePixelData ( DicomVR.OB, data, newSyntax );
-
-            Assert.Equal(newSyntax, ds.InternalTransferSyntax);
-
         }
 
         [Fact]
