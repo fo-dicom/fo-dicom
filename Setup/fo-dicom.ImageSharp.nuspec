@@ -13,7 +13,7 @@
         <language>en-US</language>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="fo-dicom.NetCore" version="$version$" />
+        <dependency id="Dicom.Core" version="$version$" />
         <dependency id="SixLabors.ImageSharp" version="1.0.0-beta0007" exclude="Build,Analyzers" />
         <dependency id="SixLabors.ImageSharp.Drawing" version="1.0.0-beta0007" exclude="Build,Analyzers" />
       </group>
