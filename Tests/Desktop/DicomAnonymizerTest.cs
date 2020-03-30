@@ -235,7 +235,7 @@ namespace Dicom
             Assert.NotEqual(DicomEncoding.GetEncoding(originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet)), DicomEncoding.Default);
 
             // Ensure DICOM encoding same as original.
-            Assert.Equal(originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), anonymizedDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
+            Assert.Equal(originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
             Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
