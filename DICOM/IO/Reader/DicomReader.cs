@@ -600,6 +600,7 @@ namespace Dicom.IO.Reader
                         }
                         break;
                     }
+                    long NowIndex = source.Position;
                     // Fix to handle sequence items not associated with any sequence (#364)
                     if (_tag.Equals(DicomTag.Item))
                     {
