@@ -242,6 +242,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Test Data\10200904.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
