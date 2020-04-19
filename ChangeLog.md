@@ -1,5 +1,6 @@
 #### v.4.0.5 (TBD)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.
+* Bug fix: Unawaited task throws unhandled exception caught in finalizer thread when stopping Dicom Server. (#1013)
 * Bug fix: dependency of fo-dicom.ImageSharp nuget package was wrong. Now it also requires only netStandard1.3 (#1017)
 * Bug fix: Fixed freeze when reading SQ of length 0 (#1009)
 
