@@ -1,0 +1,12 @@
+<Project>
+    <PropertyGroup>
+        <Product>fo-dicom</Product>
+        <Company>fo-dicom</Company>
+        <Copyright>Copyright © fo-dicom contributors 2012-2020</Copyright>
+        <Description>fo-dicom</Description>
+
+        <AssemblyVersion>5.0.0</AssemblyVersion>
+        <FileVersion>5.0.0.0</FileVersion>
+        <InformationalVersion>5.0.0</InformationalVersion>
+    </PropertyGroup>
+</Project>

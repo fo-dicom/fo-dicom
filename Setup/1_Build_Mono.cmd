@@ -20,7 +20,7 @@ timeout /T 5
 
 @cd ..
 @.\Setup\nuget.exe restore Dicom.Mono.sln -source https://www.nuget.org/api/v2
-@xbuild Platform\Mono\Dicom.Mono.csproj /target:Rebuild /property:Configuration=Release;Platform=AnyCPU
+@msbuild Platform\Mono\Dicom.Mono.csproj /target:Rebuild /property:Configuration=Release;Platform=AnyCPU
 
 @goto end
 

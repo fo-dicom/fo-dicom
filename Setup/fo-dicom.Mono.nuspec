@@ -19,7 +19,6 @@
     </metadata>
     <files>
         <file src="..\Platform\Mono\bin\Release\Dicom.Core.dll" target="lib\net45" />
-        <file src="..\Platform\Mono\bin\Release\Dicom.Core.dll.mdb" target="lib\net45" />
         <file src="..\Platform\Mono\bin\Release\Dicom.Core.xml" target="lib\net45" />
     </files>
 </package>
