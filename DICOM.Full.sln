@@ -113,6 +113,7 @@ Global
 		DICOM\DICOM.Shared.projitems*{59b38770-d2e7-40b9-8d27-a20691f1caa9}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a0edd6f1-a4b7-41d1-b609-b050f0a7b40d}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{a661d347-cf7d-4f36-8101-0544ae85eeec}*SharedItemsImports = 4
+		DICOM\DICOM.Shared.projitems*{bbdc8264-1e12-4ee0-9c23-4ed6243bd06d}*SharedItemsImports = 5
 		DICOM\DICOM.Shared.projitems*{f3120ac1-b538-4a30-b4a8-835376737ef5}*SharedItemsImports = 4
 		DICOM\DICOM.Shared.projitems*{f9539369-1ad0-43b0-a35c-b82f6755c247}*SharedItemsImports = 13
 	EndGlobalSection
@@ -520,8 +521,8 @@ Global
 		{F6F7D659-6C91-440E-8C77-DFB8DDE2D045} = {620C62DE-243D-4FDC-B856-FE9C486C7712}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 		BuildVersion_UseGlobalSettings = True
+		SolutionGuid = {67DE7737-8A68-479C-870E-B5B5B87291CF}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DICOM.vsmdi

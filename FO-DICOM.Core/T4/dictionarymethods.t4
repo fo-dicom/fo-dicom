@@ -1,0 +1,443 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml"#>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Xml" #>
+<# #if DEBUG #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+<# #endif #><#+
+private const string DocbookNamespace = "http://docbook.org/ns/docbook";
+
+#if DEBUG
+private static XmlDocument Part6Document = null;
+private static XmlDocument Part7Document = null;
+private static XmlDocument Part15Document = null;
+private static XmlNamespaceManager NsManager = null;
+private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary = null;
+
+private void Init()
+{
+	if (NsManager != null) return;
+
+	var provider = this.Host as IServiceProvider;
+	var env = provider.GetService(typeof(DTE)) as DTE;
+	var directory = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(env.Solution.FullName), "DICOM", "T4");
+
+	var part6Path = System.IO.Path.Combine(directory, "part06.xml");
+	var part7Path = System.IO.Path.Combine(directory, "part07.xml");
+	var part15Path = System.IO.Path.Combine(directory, "part15.xml");
+	var part16Path = System.IO.Path.Combine(directory, "part16.xml");
+
+	Part6Document = LoadDocument(part6Path);
+	Part7Document = LoadDocument(part7Path);
+	Part15Document = LoadDocument(part15Path);
+	NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
+	ContextGroupDictionary = GetContextGroupDictionary(part16Path);
+}
+#else
+private static readonly XmlDocument Part6Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part06/part06.xml");
+
+private static readonly XmlDocument Part7Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part07/part07.xml");
+
+private static readonly XmlDocument Part15Document = 
+	LoadDocument(@"http://medical.nema.org/medical/dicom/current/source/docbook/part15/part15.xml");
+
+private static readonly XmlNamespaceManager NsManager = GetNamespaceManager(Part6Document, DocbookNamespace);
+
+private static readonly Dictionary<string, Tuple<string, string>> ContextGroupDictionary = 
+	GetContextGroupDictionary(@"http://medical.nema.org/medical/dicom/current/source/docbook/part16/part16.xml");
+#endif
+
+private static XmlDocument LoadDocument(string path)
+{
+	var document = new XmlDocument();
+	document.Load(path);
+	return document;
+}
+
+private static XmlNamespaceManager GetNamespaceManager(XmlDocument document, string ns)
+{
+	var manager = new XmlNamespaceManager(document.NameTable);
+	manager.AddNamespace("d", ns);
+	return manager;
+}
+
+// Creates a mapping from link references made in the Part 6 document to context group descriptions 
+// from Part 16, including the context group identifiers (CIDs).
+// Dictionary is organized with a key equal to the xml:id of the referenced section/table, and a tuple
+// value containing the decription and CID of the corresponding context group
+private static Dictionary<string, Tuple<string, string>> GetContextGroupDictionary(string path)
+{
+	var document = new XmlDocument();
+	document.Load(path);
+
+	var dict = new Dictionary<string, Tuple<string, string>>();
+
+	// Identify all document sections containing a CID label
+	var sections =
+		document.DocumentElement.SelectNodes(
+			"//d:section[contains(@label, 'CID') and @xml:id]",
+			NsManager).OfType<XmlNode>();
+
+	foreach (var section in sections)
+	{
+		// xml:id of the section is used as key
+		var id = section.Attributes["xml:id"].InnerText;
+
+		// Context group identifier (number value) is obtained by removing CID text from the value of the label attribute
+		var cid = section.Attributes["label"].InnerText.Replace("CID", string.Empty).Trim();
+
+		// Context group description is obtained from the inner text of the title node
+		var titleNode = section.SelectSingleNode("./d:title", NsManager);
+		if (titleNode == null) continue;
+		dict.Add(id, Tuple.Create(cid, titleNode.InnerText));
+	}
+
+	// Tables may also be referenced from Part 6; therefore, also identify all table instances containing a CID label
+	var tables =
+		document.DocumentElement.SelectNodes(
+			"//d:table[contains(@label, 'CID') and @xml:id]",
+			NsManager).OfType<XmlNode>();
+
+	foreach (var table in tables)
+	{
+		var id = table.Attributes["xml:id"].InnerText;
+		var cid = table.Attributes["label"].InnerText.Replace("CID", string.Empty).Trim();
+
+		// Context group description is obtained from the inner text of the caption node
+		var titleNode = table.SelectSingleNode("./d:caption", NsManager);
+		if (titleNode == null) continue;
+		dict.Add(id, Tuple.Create(cid, titleNode.InnerText));
+	}
+
+	return dict;
+}
+
+// DICOM version is obtained by selecting the relevant part from the inner text of the subtitle node.
+// The subtitle is assumed to be on the format "DICOM PS3.X VERSION - XXX"
+private string GetVersion()
+{
+#if DEBUG
+	Init();
+#endif
+	var subtitle = Part6Document.DocumentElement.SelectSingleNode("//d:subtitle", NsManager).InnerText;
+	return subtitle.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2];
+}
+
+// Get DICOM tags from Part 6 and Part 7 documents
+// Tags are stored in a dictionary with a key formed by the group and element number of the tag, and a
+// tuple value containing (1) tag group, (2) tag element, (3) keyword, (4) description, (5) value representation,
+// (6) value multiplicity, and (7) "is retired" flag
+private Dictionary<string, Tuple<string, string, string, string, string, string, bool>> GetTags()
+{
+#if DEBUG
+	Init();
+#endif
+	var tags = new Dictionary<string, Tuple<string, string, string, string, string, string, bool>>();
+
+	// Part 7, Table E.1-1 contains active command fields (group 0000 tags)
+	var tableE11Items = Part7Document.DocumentElement.SelectNodes(
+		"//d:table[@label='E.1-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	// Part 7, Table E.2-1 contains retired command fields (group 0000 tags)
+	var tableE21Items = Part7Document.DocumentElement.SelectNodes(
+		"//d:table[@label='E.2-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	// Part 6, Table 6-1 contains main part of DICOM elements
+	var table61Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='6-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	// Part 6, Table 7-1 contains DICOM file meta elements (group 0002 tags)
+	var table71Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='7-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	// Part 6, Table 8-1 contains DICOM directory structuring elements (group 0004 tags)
+	var table81Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='8-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	foreach (var item in tableE11Items.Concat(tableE21Items).Concat(table71Items).Concat(table81Items).Concat(table61Items))
+	{
+		var tagData = GetTagData(item, NsManager);
+		if (tagData == null) continue;
+
+		var key = tagData.Item1 + tagData.Item2;
+		if (!tags.ContainsKey(key))
+		{
+			tags.Add(key, tagData);
+		}
+	}
+
+	return tags;
+}
+
+// Identify tag data from a single <tr> node
+private static Tuple<string, string, string, string, string, string, bool> GetTagData(XmlNode item, XmlNamespaceManager manager)
+{
+	// Pick inner text from each <td> node; remove all control and non-ASCII characters
+	// If no description is provided (list[2] empty) ignore this entire <tr> node
+	var list = item.SelectNodes("./d:td/d:para", manager)
+					.OfType<XmlNode>()
+					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u00FF]", string.Empty))
+					.ToList();
+	if (list.Count < 5 || string.IsNullOrWhiteSpace(list[2])) return null;
+
+	// Split tag into group and element parts
+	var parts = list[0].Split(new[] { ' ', '(', ')', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+	// If value representation item contains text "See note", it is assumed that VR is undefined for this tag
+	// Also, make sure that multiple VRs are separated with / instead of "or"
+	var vr = list[3].StartsWith("See note", StringComparison.OrdinalIgnoreCase) ? "NONE" : list[3].Replace(" or ", "/");
+
+	// A table row in Part 6 documents is 6 items long, and the sixth item indicates whether a tag is retired
+	// or not through the existence of the "RET" text.
+	// Part 7, Table E.1-1 is also 6 items long and no tag is retired. The sixth item contains a comment, and
+	// it is implicitly assumed that this comment never starts with "RET".
+	// Part 7, Table E.2-1 is 5 items long, and all tags in this table are retired; hence the isRetired condition based
+	// on item count.
+	var isRetired = list.Count < 6 || list[5].StartsWith("RET", StringComparison.Ordinal);
+
+	return Tuple.Create(parts[0], parts[1], list[2], list[1], vr, list[4], isRetired);
+}
+
+// Get UIDs from the Part 6 document
+// Dictionary is organized with a UID number key and a tuple containing (1) the UID number, (2) UID description,
+// (3) UID type, and (4) "is retired" flag.
+private Dictionary<string, Tuple<string, string, string, bool>> GetUids()
+{
+#if DEBUG
+	Init();
+#endif
+	var uids = new Dictionary<string, Tuple<string, string, string, bool>>();
+
+	// Part 6, Table A-1 contains the main list of DICOM Unique Identifiers
+	var tableA1Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='A-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	foreach (var item in tableA1Items)
+	{
+		var uidData = GetUidData(item, NsManager);
+		if (uidData == null) continue;
+
+		if (!uids.ContainsKey(uidData.Item1))
+		{
+			uids.Add(uidData.Item1, uidData);
+		}
+	}
+
+	// Part 6, Table A-3 contains the UIDs for the context groups
+	var tableA3Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='A-3']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	foreach (var item in tableA3Items)
+	{
+		var uidData = GetContextGroupNameData(item, NsManager);
+		if (uidData == null) continue;
+
+		if (!uids.ContainsKey(uidData.Item1))
+		{
+			uids.Add(uidData.Item1, uidData);
+		}
+	}
+
+	return uids;
+}
+
+// Get UID data from one row in the Part 6, A-1 table
+private static Tuple<string, string, string, bool> GetUidData(XmlNode item, XmlNamespaceManager manager)
+{
+	// Pick inner text from each <td> node; remove all control and non-ASCII characters
+	// If no UID type is provided (list[2] empty) ignore this entire <tr> node
+	var list = item.SelectNodes("./d:td/d:para", manager)
+					.OfType<XmlNode>()
+					.Select(x => Regex.Replace(x.InnerText, @"[^\u0020-\u00FF]", string.Empty))
+					.ToList();
+	if (list.Count < 4 || string.IsNullOrWhiteSpace(list[2])) return null;
+
+	// Is retired status is determined from the existence of the "(Retired)" text in the description
+	var isRetired = list[1].IndexOf("(Retired)", StringComparison.OrdinalIgnoreCase) >= 0;
+
+	return Tuple.Create(list[0], list[1], list[2], isRetired);
+}
+
+// Get UID data from one row in the Part 6, A-3 table (context groups)
+private static Tuple<string, string, string, bool> GetContextGroupNameData(XmlNode item, XmlNamespaceManager manager)
+{
+	// Pick inner text from each <td> node; remove all control and non-ASCII characters
+	// If no forward link is provided (list[1] empty) ignore this entire <tr> node
+	var list = item.SelectNodes("./d:td/d:para", manager).OfType<XmlNode>().ToList();
+	if (list.Count < 3 || !list[1].HasChildNodes) return null;
+
+	// UID is obtained by stripping the first item from all characters except digits and .
+	var uid = Regex.Replace(list[0].InnerText, @"[^0-9.]", string.Empty);
+
+	// Get the forward link from the XML of the second item, by identifying the "targetptr" attribute
+	// and isolating the corresponding attribute value in the string
+	// (Ideally, this parsing should have been done via the XML API, but for some reason the
+	// "targetptr" attribute value is incorrectly assigned on some (all?) VS 2013 installations.)
+	var olinkXml = Regex.Replace(list[1].InnerXml, @"[^\u0020-\u00FF]", string.Empty);
+	var startIdx = olinkXml.IndexOf("targetptr=") + 11;
+	var length = olinkXml.IndexOf('"', startIdx) - startIdx;
+	var reference = olinkXml.Substring(startIdx, length);
+
+	// Context group identifier and title are now obtained from the global context group dictionary via
+	// the link reference
+	var cid = ContextGroupDictionary[reference].Item1;
+	var title = ContextGroupDictionary[reference].Item2;
+
+	// "Is retired" status is determined from the existence of the "(Retired)" text in the title
+	var isRetired = title.IndexOf("(Retired)", StringComparison.OrdinalIgnoreCase) >= 0;
+
+	// UID description is given by a combination of the contect group title and CID number;
+	// UID type is always "Context Group Name" for the items in the context group table.
+	return Tuple.Create(uid, string.Format("{0} ({1})", title, cid), "Context Group Name", isRetired);
+}
+
+private static string ToTagKeyword(string keyword, bool isRetired)
+{
+	return keyword + (isRetired ? "RETIRED" : string.Empty);
+}
+
+// DicomTag object should have numeric group and element values; therefore, replace 'x' characters with '0'
+private static string ToStrictNumeric(string groupOrElement)
+{
+	return groupOrElement.Replace("x", "0");
+}
+
+// VR attribute in DICOM dictionary is optional; if VR code is NONE, do not include VR value in dictionary.
+private static string ToVrAttribute(string vr)
+{
+	return vr == "NONE" ? string.Empty : string.Format(" vr=\"{0}\"", vr);
+}
+
+private static string ToUidKeyword(string uid, string description)
+{
+	// "Retired", "Process" and "Image Compression" should not be part of UID keywords, so strip.
+	// Keyword cannot start with a digit, so convert known digit-starter with corresponding text.
+	var raw = description.Replace("(Retired)", string.Empty).Replace(" (Process ", string.Empty)
+				.Replace("Image Compression", string.Empty).Replace("12-", "Twelve-");
+
+	// Text in description after : should not be included in keyword
+	if (raw.Contains(':')) raw = raw.Substring(0, raw.IndexOf(':'));
+
+	// If raw keyword is empty, return UID based keyword.
+	if (raw.Length == 0) return "UID_" + uid.Replace('.', '_');
+
+	// Check each individual character in remains of description. Letter following - or whitespace
+	// should be upper case. Only letters and digits should be included in keyword.
+	var ret = char.IsLetterOrDigit(raw[0]) ? raw.Substring(0, 1) : "";
+	for (var i = 1; i < raw.Length - 1; ++i)
+	{
+		if ((raw[i] == '-' || char.IsWhiteSpace(raw[i])) && char.IsLower(raw[i + 1]))
+		{
+			ret += char.ToUpper(raw[++i]);
+		}
+		else if (char.IsLetterOrDigit(raw[i]))
+		{
+			ret += raw[i];
+		}
+	}
+	if (char.IsLetterOrDigit(raw[raw.Length - 1])) ret += raw[raw.Length - 1];
+
+	// Some keywords need to be shortened for backwards compatibility
+	var shorten = new Dictionary<string, string> 
+	{ 
+		{ "VerificationSOPClass", "Verification" },
+		{ "JPEGLosslessNonHierarchicalFirstOrderPrediction14SelectionValue1", "JPEGLossless" },
+		{ "MPEG2MainProfileMainLevel", "MPEG2" }
+	};
+	
+	string shortened;
+	if (shorten.TryGetValue(ret, out shortened))
+	{
+		return shortened;
+	}
+
+	return ret;
+}
+
+private static string ToUidKeyword(string uid, string description, bool isRetired)
+{
+	return ToUidKeyword(uid, description) + (isRetired ? "RETIRED" : string.Empty);
+}
+
+// When description may be used in XML comments, convert ampersand to control character
+private static string ToXmlValidDescription(string description)
+{
+	return description.Replace("&", "&amp;");
+}
+
+// Enum string for DicomUidType is constructed from the original UID type description using
+// a few exception rules.
+private static string ToDicomUidTypeString(string uidType)
+{
+	// Remove "OID" text from original string, and maintain only alphanumeric characters.
+	var raw = Regex.Replace(uidType.Replace(" OID", string.Empty), @"[^A-Za-z0-9]", string.Empty);
+
+	// Original UID type description may contain additional text; use common enum string in those cases.
+	if (raw.IndexOf("frameofreference", StringComparison.OrdinalIgnoreCase) >= 0)
+	{
+		return "FrameOfReference";
+	}
+	if (raw.IndexOf("sopinstance", StringComparison.OrdinalIgnoreCase) >= 0)
+	{
+		return "SOPInstance";
+	}
+	if (raw.IndexOf("codingscheme", StringComparison.OrdinalIgnoreCase) >= 0)
+	{
+		return "CodingScheme";
+	}
+	if (raw.IndexOf("queryretrieve", StringComparison.OrdinalIgnoreCase) >= 0)
+	{
+		return "SOPClass";
+	}
+	if (raw.Equals("transfer", StringComparison.OrdinalIgnoreCase))
+	{
+		return "TransferSyntax";
+	}
+
+	return raw;
+}
+
+// Extract data from Table E-1.1 in Part 15 document and format each row to confidentiality profile format.
+private static List<string> GetConfidentialityProfileData()
+{
+#if DEBUG
+	Init();
+#endif
+
+	const int TableColumns = 15;
+
+	// Part 15, Table E.1-1 contains confidentiality profile attributes
+	var tableE11Items = Part15Document.DocumentElement.SelectNodes(
+		"//d:table[@label='E.1-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	var rows = new List<string>();
+
+	foreach (var item in tableE11Items)
+	{
+		var list = item.SelectNodes("./d:td", NsManager)
+			.OfType<XmlNode>().Select(node => node.InnerText).ToList();
+
+		// Exclude lines with invalid number of columns, or that contains masked or private tags
+		if (list.Count != TableColumns || list[1].Contains("x") || list[1].Contains("g")) continue;
+
+		rows.Add($"{list[1].Replace("(", "").Replace(")", "").Replace(" ", "")};" + 
+			string.Join(";", Enumerable.Range(4, 10).Select(i => $"{list[i]}")));
+	}
+
+	return rows;
+}
+#>
