@@ -402,6 +402,32 @@ namespace FellowOakDicom.Tests.Network
             }
         }
 
+
+        private void TestFoDicomUnhandledException(int port)
+        {
+            var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
+            Thread.Sleep(500);
+            server.Stop();
+        }
+
+        [Fact]
+        public void StopServerWithoutException()
+        {
+            object ue = null;
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) => ue = args.ExceptionObject;
+            TaskScheduler.UnobservedTaskException += (sender, args) => ue = args.Exception;
+
+            var port = Ports.GetNext();
+
+            Task.Factory.StartNew(() => TestFoDicomUnhandledException(port));
+
+            Thread.Sleep(2000);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Assert.Null(ue);
+        }
+
         #endregion
 
         #region Support Types
