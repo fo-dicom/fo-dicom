@@ -3,10 +3,10 @@ name: build
 on:
   push:
     branches:
-    - netstandard
+    - development
   pull_request:
     branches:
-    - netstandard
+    - development
 
 jobs:
   build:
