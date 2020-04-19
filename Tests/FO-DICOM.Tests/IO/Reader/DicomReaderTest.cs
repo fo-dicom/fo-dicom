@@ -48,6 +48,15 @@ namespace FellowOakDicom.Tests.IO.Reader
             Assert.Equal(DicomReaderResult.Success, result);
         }
 
+        [Fact]
+        public void FreezeReadingZeroLengthSequence()
+        {
+            string filename = TestData.Resolve("FreezePattern.dcm");
+            var file = DicomFile.Open(filename);
+
+            Assert.NotNull(file);
+        }
+
         #endregion
 
         #region Support data
