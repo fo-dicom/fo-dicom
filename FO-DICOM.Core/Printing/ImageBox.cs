@@ -1,14 +1,14 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System.IO;
+using FellowOakDicom.IO;
+using FellowOakDicom.Log;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Printing
 {
-    using System.IO;
-
-    using FellowOakDicom.IO;
-    using FellowOakDicom.Log;
-    using System.Linq;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Color or gray scale basic image box

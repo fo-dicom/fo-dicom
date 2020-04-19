@@ -1,12 +1,12 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Text;
+using FellowOakDicom.Log;
 
 namespace FellowOakDicom.Network
 {
-    using System.Text;
-    using FellowOakDicom.Log;
 
     /// <summary>
     /// Base class for DIMSE-C and DIMSE-N message items.

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if NET462
@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection("General")]
     public class WPFImageTest
     {
-        #region Unit tests
+#region Unit tests
 
         [Fact]
         public void As_BitmapSource_ReturnsBitmapSource()
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Throws<DicomImagingException>(() => image.As<Bitmap>());
         }
 
-        #endregion
+#endregion
     }
 }
 

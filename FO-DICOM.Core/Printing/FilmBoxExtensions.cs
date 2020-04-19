@@ -1,12 +1,12 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.Drawing;
+using Dicom.Imaging.Mathematics;
 
 namespace Dicom.Printing
 {
-    using System;
-    using System.Drawing;
-
-    using Dicom.Imaging.Mathematics;
 
     /// <summary>
     /// Extension methods on instance of the <see cref="FilmBox"/> class.

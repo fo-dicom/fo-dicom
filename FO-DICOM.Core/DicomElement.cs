@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -85,7 +85,7 @@ namespace FellowOakDicom
             : base(tag, EmptyBuffer.Value)
         {
             Encoding = encoding;
-            Buffer = ByteConverter.ToByteBuffer(value ?? String.Empty, encoding, ValueRepresentation.PaddingValue);
+            Buffer = ByteConverter.ToByteBuffer(value ?? string.Empty, encoding, ValueRepresentation.PaddingValue);
         }
 
         protected DicomStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer)
@@ -282,7 +282,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params string[] values)
-            : base(tag, DicomEncoding.Default, String.Join("\\", values))
+            : base(tag, DicomEncoding.Default, string.Join("\\", values))
         {
             DateFormats = dateFormats;
         }
@@ -329,13 +329,13 @@ namespace FellowOakDicom
                 var range = new DicomDateRange();
                 if (vals.Length >= 2)
                 {
-                    if (!String.IsNullOrEmpty(vals[0]))
+                    if (!string.IsNullOrEmpty(vals[0]))
                         range.Minimum = DateTime.ParseExact(
                             vals[0],
                             DateFormats,
                             DicomDateElementFormat,
                             DicomDateElementStyle);
-                    if (!String.IsNullOrEmpty(vals[1]))
+                    if (!string.IsNullOrEmpty(vals[1]))
                         range.Maximum = DateTime.ParseExact(
                             vals[1],
                             DateFormats,
@@ -357,7 +357,7 @@ namespace FellowOakDicom
             if (_values == null)
             {
                 string[] vals = base.Get<string[]>();
-                if (vals.Length == 1 && String.IsNullOrEmpty(vals[0])) _values = new DateTime[0];
+                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0])) _values = new DateTime[0];
                 else
                 {
                     _values = new DateTime[vals.Length];

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -39,7 +39,11 @@ namespace FellowOakDicom
         /// value greater than zero if this item's tag is greater than <paramref name="other"/>'s.</returns>
         public int CompareTo(DicomItem other)
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
             return Tag.CompareTo(other.Tag);
         }
 
@@ -53,8 +57,16 @@ namespace FellowOakDicom
         /// <paramref name="obj"/>'s.</returns>
         public int CompareTo(object obj)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (!(obj is DicomItem)) throw new ArgumentException("Only comparison with DICOM items is supported.", nameof(obj));
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            if (!(obj is DicomItem))
+            {
+                throw new ArgumentException("Only comparison with DICOM items is supported.", nameof(obj));
+            }
+
             return CompareTo((DicomItem)obj);
         }
 
@@ -63,11 +75,9 @@ namespace FellowOakDicom
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-        {
-            return Tag.DictionaryEntry != null
+            => Tag.DictionaryEntry != null
                 ? $"{Tag} {ValueRepresentation} {Tag.DictionaryEntry.Name}"
                 : $"{Tag} {ValueRepresentation} Unknown";
-        }
 
         public virtual void Validate()
         { }

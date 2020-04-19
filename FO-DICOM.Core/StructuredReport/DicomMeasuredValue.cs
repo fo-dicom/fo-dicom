@@ -1,7 +1,5 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-
-using System;
 
 namespace FellowOakDicom.StructuredReport
 {
@@ -24,20 +22,11 @@ namespace FellowOakDicom.StructuredReport
             Add(new DicomSequence(DicomTag.MeasurementUnitsCodeSequence, units));
         }
 
-        public DicomCodeItem Code
-        {
-            get => GetCodeItem(DicomTag.MeasurementUnitsCodeSequence);
-        }
+        public DicomCodeItem Code => GetCodeItem(DicomTag.MeasurementUnitsCodeSequence);
 
-        public decimal Value
-        {
-            get => GetSingleValue<decimal>(DicomTag.NumericValue);
-        }
+        public decimal Value => GetSingleValue<decimal>(DicomTag.NumericValue);
 
-        public override string ToString()
-        {
-            return $"{Value} {Code.Value}";
-        }
+        public override string ToString() => $"{Value} {Code.Value}";
 
     }
 }

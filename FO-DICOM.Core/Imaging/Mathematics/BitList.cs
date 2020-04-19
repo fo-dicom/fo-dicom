@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -8,42 +8,33 @@ namespace FellowOakDicom.Imaging.Mathematics
 
     public class BitList
     {
-        private List<byte> _bytes;
 
         public BitList()
         {
-            _bytes = new List<byte>();
+            List = new List<byte>();
         }
 
         public int Capacity
         {
-            get
-            {
-                return _bytes.Count * 8;
-            }
+            get => List.Count * 8;
             set
             {
                 int count = value / 8;
-                if (value % 8 > 0) count++;
-                while (_bytes.Count < count) _bytes.Add(0);
+                if (value % 8 > 0)
+                {
+                    count++;
+                }
+
+                while (List.Count < count)
+                {
+                    List.Add(0);
+                }
             }
         }
 
-        public List<byte> List
-        {
-            get
-            {
-                return _bytes;
-            }
-        }
+        public List<byte> List { get; }
 
-        public byte[] Array
-        {
-            get
-            {
-                return _bytes.ToArray();
-            }
-        }
+        public byte[] Array => List.ToArray();
 
         public bool this[int pos]
         {
@@ -52,9 +43,12 @@ namespace FellowOakDicom.Imaging.Mathematics
                 int p = pos / 8;
                 int m = pos % 8;
 
-                if (p >= _bytes.Count) return false;
+                if (p >= List.Count)
+                {
+                    return false;
+                }
 
-                var b = _bytes[p];
+                var b = List[p];
 
                 return (b & (1 << m)) != 0;
             }
@@ -63,10 +57,19 @@ namespace FellowOakDicom.Imaging.Mathematics
                 int p = pos / 8;
                 int m = pos % 8;
 
-                if (p >= _bytes.Count) Capacity = pos + 1;
+                if (p >= List.Count)
+                {
+                    Capacity = pos + 1;
+                }
 
-                if (value) _bytes[p] |= (byte)(1 << m);
-                else _bytes[p] -= (byte)(1 << m);
+                if (value)
+                {
+                    List[p] |= (byte)(1 << m);
+                }
+                else
+                {
+                    List[p] -= (byte)(1 << m);
+                }
             }
         }
     }

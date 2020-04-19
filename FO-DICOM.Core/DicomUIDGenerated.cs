@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -82,6 +82,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.ICBM452T1FrameOfReference.UID, DicomUID.ICBM452T1FrameOfReference);
             _uids.Add(DicomUID.ICBMSingleSubjectMRIFrameOfReference.UID, DicomUID.ICBMSingleSubjectMRIFrameOfReference);
             _uids.Add(DicomUID.IEC61217FixedCoordinateSystemFrameOfReference.UID, DicomUID.IEC61217FixedCoordinateSystemFrameOfReference);
+            _uids.Add(DicomUID.StandardRoboticArmCoordinateSystemFrameOfReference.UID, DicomUID.StandardRoboticArmCoordinateSystemFrameOfReference);
             _uids.Add(DicomUID.HotIronColorPaletteSOPInstance.UID, DicomUID.HotIronColorPaletteSOPInstance);
             _uids.Add(DicomUID.PETColorPaletteSOPInstance.UID, DicomUID.PETColorPaletteSOPInstance);
             _uids.Add(DicomUID.HotMetalBlueColorPaletteSOPInstance.UID, DicomUID.HotMetalBlueColorPaletteSOPInstance);
@@ -112,6 +113,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide.UID, DicomUID.MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide);
             _uids.Add(DicomUID.ImageBiomarkerStandardisationInitiative.UID, DicomUID.ImageBiomarkerStandardisationInitiative);
             _uids.Add(DicomUID.RadiomicsOntology.UID, DicomUID.RadiomicsOntology);
+            _uids.Add(DicomUID.RadElement.UID, DicomUID.RadElement);
             _uids.Add(DicomUID.DICOMApplicationContextName.UID, DicomUID.DICOMApplicationContextName);
             _uids.Add(DicomUID.DetachedPatientManagementSOPClassRETIRED.UID, DicomUID.DetachedPatientManagementSOPClassRETIRED);
             _uids.Add(DicomUID.DetachedPatientManagementMetaSOPClassRETIRED.UID, DicomUID.DetachedPatientManagementMetaSOPClassRETIRED);
@@ -288,6 +290,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
             _uids.Add(DicomUID.EncapsulatedSTLStorage.UID, DicomUID.EncapsulatedSTLStorage);
+            _uids.Add(DicomUID.EncapsulatedOBJStorage.UID, DicomUID.EncapsulatedOBJStorage);
+            _uids.Add(DicomUID.EncapsulatedMTLStorage.UID, DicomUID.EncapsulatedMTLStorage);
             _uids.Add(DicomUID.PositronEmissionTomographyImageStorage.UID, DicomUID.PositronEmissionTomographyImageStorage);
             _uids.Add(DicomUID.LegacyConvertedEnhancedPETImageStorage.UID, DicomUID.LegacyConvertedEnhancedPETImageStorage);
             _uids.Add(DicomUID.StandalonePETCurveStorageRETIRED.UID, DicomUID.StandalonePETCurveStorageRETIRED);
@@ -312,6 +316,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.RTSegmentAnnotationStorage.UID, DicomUID.RTSegmentAnnotationStorage);
             _uids.Add(DicomUID.RTRadiationSetStorage.UID, DicomUID.RTRadiationSetStorage);
             _uids.Add(DicomUID.CArmPhotonElectronRadiationStorage.UID, DicomUID.CArmPhotonElectronRadiationStorage);
+            _uids.Add(DicomUID.TomotherapeuticRadiationStorage.UID, DicomUID.TomotherapeuticRadiationStorage);
+            _uids.Add(DicomUID.RoboticArmRadiationStorage.UID, DicomUID.RoboticArmRadiationStorage);
             _uids.Add(DicomUID.DICOSCTImageStorage.UID, DicomUID.DICOSCTImageStorage);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForPresentation.UID, DicomUID.DICOSDigitalXRayImageStorageForPresentation);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForProcessing.UID, DicomUID.DICOSDigitalXRayImageStorageForProcessing);
@@ -357,6 +363,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.UnifiedProcedureStepWatchSOPClass.UID, DicomUID.UnifiedProcedureStepWatchSOPClass);
             _uids.Add(DicomUID.UnifiedProcedureStepPullSOPClass.UID, DicomUID.UnifiedProcedureStepPullSOPClass);
             _uids.Add(DicomUID.UnifiedProcedureStepEventSOPClass.UID, DicomUID.UnifiedProcedureStepEventSOPClass);
+            _uids.Add(DicomUID.UnifiedProcedureStepQuerySOPClass.UID, DicomUID.UnifiedProcedureStepQuerySOPClass);
             _uids.Add(DicomUID.RTBeamsDeliveryInstructionStorage.UID, DicomUID.RTBeamsDeliveryInstructionStorage);
             _uids.Add(DicomUID.RTConventionalMachineVerification.UID, DicomUID.RTConventionalMachineVerification);
             _uids.Add(DicomUID.RTIonMachineVerification.UID, DicomUID.RTIonMachineVerification);
@@ -1010,10 +1017,10 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.UpperExtremityVeins12108.UID, DicomUID.UpperExtremityVeins12108);
             _uids.Add(DicomUID.LowerExtremityArteries12109.UID, DicomUID.LowerExtremityArteries12109);
             _uids.Add(DicomUID.LowerExtremityVeins12110.UID, DicomUID.LowerExtremityVeins12110);
-            _uids.Add(DicomUID.AbdominalArteriesLateral12111.UID, DicomUID.AbdominalArteriesLateral12111);
-            _uids.Add(DicomUID.AbdominalArteriesUnilateral12112.UID, DicomUID.AbdominalArteriesUnilateral12112);
-            _uids.Add(DicomUID.AbdominalVeinsLateral12113.UID, DicomUID.AbdominalVeinsLateral12113);
-            _uids.Add(DicomUID.AbdominalVeinsUnilateral12114.UID, DicomUID.AbdominalVeinsUnilateral12114);
+            _uids.Add(DicomUID.AbdominalArteriesPaired12111.UID, DicomUID.AbdominalArteriesPaired12111);
+            _uids.Add(DicomUID.AbdominopelvicArteriesUnpaired12112.UID, DicomUID.AbdominopelvicArteriesUnpaired12112);
+            _uids.Add(DicomUID.AbdominopelvicVeinsPaired12113.UID, DicomUID.AbdominopelvicVeinsPaired12113);
+            _uids.Add(DicomUID.AbdominopelvicVeinsUnpaired12114.UID, DicomUID.AbdominopelvicVeinsUnpaired12114);
             _uids.Add(DicomUID.RenalVessels12115.UID, DicomUID.RenalVessels12115);
             _uids.Add(DicomUID.VesselSegmentModifiers12116.UID, DicomUID.VesselSegmentModifiers12116);
             _uids.Add(DicomUID.VesselBranchModifiers12117.UID, DicomUID.VesselBranchModifiers12117);
@@ -1630,6 +1637,20 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.EquipmentReferencePoints9554.UID, DicomUID.EquipmentReferencePoints9554);
             _uids.Add(DicomUID.RadiotherapyTreatmentPlanningPersonRoles9555.UID, DicomUID.RadiotherapyTreatmentPlanningPersonRoles9555);
             _uids.Add(DicomUID.RealTimeVideoRenditionTitles7070.UID, DicomUID.RealTimeVideoRenditionTitles7070);
+            _uids.Add(DicomUID.GeometryGraphicalRepresentation219.UID, DicomUID.GeometryGraphicalRepresentation219);
+            _uids.Add(DicomUID.VisualExplanation217.UID, DicomUID.VisualExplanation217);
+            _uids.Add(DicomUID.ProstateSectorAnatomyFromPIRADSV216304.UID, DicomUID.ProstateSectorAnatomyFromPIRADSV216304);
+            _uids.Add(DicomUID.RadiotherapyRoboticNodeSets9556.UID, DicomUID.RadiotherapyRoboticNodeSets9556);
+            _uids.Add(DicomUID.TomotherapeuticDosimeterUnits9557.UID, DicomUID.TomotherapeuticDosimeterUnits9557);
+            _uids.Add(DicomUID.TomotherapeuticDoseRateUnits9558.UID, DicomUID.TomotherapeuticDoseRateUnits9558);
+            _uids.Add(DicomUID.RoboticDeliveryDeviceDosimeterUnits9559.UID, DicomUID.RoboticDeliveryDeviceDosimeterUnits9559);
+            _uids.Add(DicomUID.RoboticDeliveryDeviceDoseRateUnits9560.UID, DicomUID.RoboticDeliveryDeviceDoseRateUnits9560);
+            _uids.Add(DicomUID.AnatomicStructuresForAnatomicPathology8134.UID, DicomUID.AnatomicStructuresForAnatomicPathology8134);
+            _uids.Add(DicomUID.MediastinumFindingOrFeature6148.UID, DicomUID.MediastinumFindingOrFeature6148);
+            _uids.Add(DicomUID.MediastinumAnatomy6149.UID, DicomUID.MediastinumAnatomy6149);
+            _uids.Add(DicomUID.VascularUltrasoundReportDocumentTitles12100.UID, DicomUID.VascularUltrasoundReportDocumentTitles12100);
+            _uids.Add(DicomUID.PartsOfOrgansNonLateralized12130.UID, DicomUID.PartsOfOrgansNonLateralized12130);
+            _uids.Add(DicomUID.PartsOfOrgansLateralized12131.UID, DicomUID.PartsOfOrgansLateralized12131);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1836,6 +1857,9 @@ namespace FellowOakDicom
         ///<summary>Well-known frame of reference: IEC 61217 Fixed Coordinate System Frame of Reference</summary>
         public static readonly DicomUID IEC61217FixedCoordinateSystemFrameOfReference = new DicomUID("1.2.840.10008.1.4.3.1", "IEC 61217 Fixed Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
 
+        ///<summary>Well-known frame of reference: Standard Robotic-Arm Coordinate System Frame of Reference</summary>
+        public static readonly DicomUID StandardRoboticArmCoordinateSystemFrameOfReference = new DicomUID("1.2.840.10008.1.4.3.2", "Standard Robotic-Arm Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
+
         ///<summary>Well-known SOP Instance: Hot Iron Color Palette SOP Instance</summary>
         public static readonly DicomUID HotIronColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.1", "Hot Iron Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
@@ -1925,6 +1949,9 @@ namespace FellowOakDicom
 
         ///<summary>Coding Scheme: Radiomics Ontology</summary>
         public static readonly DicomUID RadiomicsOntology = new DicomUID("1.2.840.10008.2.16.14", "Radiomics Ontology", DicomUidType.CodingScheme, false);
+
+        ///<summary>Coding Scheme: RadElement</summary>
+        public static readonly DicomUID RadElement = new DicomUID("1.2.840.10008.2.16.15", "RadElement", DicomUidType.CodingScheme, false);
 
         ///<summary>Application Context Name: DICOM Application Context Name</summary>
         public static readonly DicomUID DICOMApplicationContextName = new DicomUID("1.2.840.10008.3.1.1.1", "DICOM Application Context Name", DicomUidType.ApplicationContextName, false);
@@ -2454,6 +2481,12 @@ namespace FellowOakDicom
         ///<summary>SOP Class: Encapsulated STL Storage</summary>
         public static readonly DicomUID EncapsulatedSTLStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.3", "Encapsulated STL Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Encapsulated OBJ Storage</summary>
+        public static readonly DicomUID EncapsulatedOBJStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.4", "Encapsulated OBJ Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Encapsulated MTL Storage</summary>
+        public static readonly DicomUID EncapsulatedMTLStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.5", "Encapsulated MTL Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: Positron Emission Tomography Image Storage</summary>
         public static readonly DicomUID PositronEmissionTomographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.128", "Positron Emission Tomography Image Storage", DicomUidType.SOPClass, false);
 
@@ -2525,6 +2558,12 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: C-Arm Photon-Electron Radiation Storage</summary>
         public static readonly DicomUID CArmPhotonElectronRadiationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.13", "C-Arm Photon-Electron Radiation Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Tomotherapeutic Radiation Storage</summary>
+        public static readonly DicomUID TomotherapeuticRadiationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.14", "Tomotherapeutic Radiation Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Robotic-Arm Radiation Storage</summary>
+        public static readonly DicomUID RoboticArmRadiationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.15", "Robotic-Arm Radiation Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: DICOS CT Image Storage</summary>
         public static readonly DicomUID DICOSCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.1", "DICOS CT Image Storage", DicomUidType.SOPClass, false);
@@ -2660,6 +2699,9 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Unified Procedure Step - Event SOP Class</summary>
         public static readonly DicomUID UnifiedProcedureStepEventSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.4", "Unified Procedure Step - Event SOP Class", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Unified Procedure Step - Query SOP Class</summary>
+        public static readonly DicomUID UnifiedProcedureStepQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.5", "Unified Procedure Step - Query SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: RT Beams Delivery Instruction Storage</summary>
         public static readonly DicomUID RTBeamsDeliveryInstructionStorage = new DicomUID("1.2.840.10008.5.1.4.34.7", "RT Beams Delivery Instruction Storage", DicomUidType.SOPClass, false);
@@ -4620,17 +4662,17 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Lower Extremity Veins (12110)</summary>
         public static readonly DicomUID LowerExtremityVeins12110 = new DicomUID("1.2.840.10008.6.1.577", "Lower Extremity Veins (12110)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Abdominal Arteries (Lateral) (12111)</summary>
-        public static readonly DicomUID AbdominalArteriesLateral12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominal Arteries (Lateral) (12111)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Abdominal Arteries (Paired) (12111)</summary>
+        public static readonly DicomUID AbdominalArteriesPaired12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominal Arteries (Paired) (12111)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Abdominal Arteries (Unilateral) (12112)</summary>
-        public static readonly DicomUID AbdominalArteriesUnilateral12112 = new DicomUID("1.2.840.10008.6.1.579", "Abdominal Arteries (Unilateral) (12112)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Abdominopelvic Arteries (Unpaired) (12112)</summary>
+        public static readonly DicomUID AbdominopelvicArteriesUnpaired12112 = new DicomUID("1.2.840.10008.6.1.579", "Abdominopelvic Arteries (Unpaired) (12112)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Abdominal Veins (Lateral) (12113)</summary>
-        public static readonly DicomUID AbdominalVeinsLateral12113 = new DicomUID("1.2.840.10008.6.1.580", "Abdominal Veins (Lateral) (12113)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Abdominopelvic Veins (Paired) (12113)</summary>
+        public static readonly DicomUID AbdominopelvicVeinsPaired12113 = new DicomUID("1.2.840.10008.6.1.580", "Abdominopelvic Veins (Paired) (12113)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Abdominal Veins (Unilateral) (12114)</summary>
-        public static readonly DicomUID AbdominalVeinsUnilateral12114 = new DicomUID("1.2.840.10008.6.1.581", "Abdominal Veins (Unilateral) (12114)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Abdominopelvic Veins (Unpaired) (12114)</summary>
+        public static readonly DicomUID AbdominopelvicVeinsUnpaired12114 = new DicomUID("1.2.840.10008.6.1.581", "Abdominopelvic Veins (Unpaired) (12114)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Renal Vessels (12115)</summary>
         public static readonly DicomUID RenalVessels12115 = new DicomUID("1.2.840.10008.6.1.582", "Renal Vessels (12115)", DicomUidType.ContextGroupName, false);
@@ -6479,6 +6521,48 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Real Time Video Rendition Titles (7070)</summary>
         public static readonly DicomUID RealTimeVideoRenditionTitles7070 = new DicomUID("1.2.840.10008.6.1.1303", "Real Time Video Rendition Titles (7070)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Geometry Graphical Representation (219)</summary>
+        public static readonly DicomUID GeometryGraphicalRepresentation219 = new DicomUID("1.2.840.10008.6.1.1304", "Geometry Graphical Representation (219)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Visual Explanation (217)</summary>
+        public static readonly DicomUID VisualExplanation217 = new DicomUID("1.2.840.10008.6.1.1305", "Visual Explanation (217)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Sector Anatomy from PI-RADS v2.1 (6304)</summary>
+        public static readonly DicomUID ProstateSectorAnatomyFromPIRADSV216304 = new DicomUID("1.2.840.10008.6.1.1306", "Prostate Sector Anatomy from PI-RADS v2.1 (6304)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Robotic Node Sets (9556)</summary>
+        public static readonly DicomUID RadiotherapyRoboticNodeSets9556 = new DicomUID("1.2.840.10008.6.1.1307", "Radiotherapy Robotic Node Sets (9556)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Tomotherapeutic Dosimeter Units (9557)</summary>
+        public static readonly DicomUID TomotherapeuticDosimeterUnits9557 = new DicomUID("1.2.840.10008.6.1.1308", "Tomotherapeutic Dosimeter Units (9557)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Tomotherapeutic Dose Rate Units (9558)</summary>
+        public static readonly DicomUID TomotherapeuticDoseRateUnits9558 = new DicomUID("1.2.840.10008.6.1.1309", "Tomotherapeutic Dose Rate Units (9558)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Robotic Delivery Device Dosimeter Units (9559)</summary>
+        public static readonly DicomUID RoboticDeliveryDeviceDosimeterUnits9559 = new DicomUID("1.2.840.10008.6.1.1310", "Robotic Delivery Device Dosimeter Units (9559)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Robotic Delivery Device Dose Rate Units (9560)</summary>
+        public static readonly DicomUID RoboticDeliveryDeviceDoseRateUnits9560 = new DicomUID("1.2.840.10008.6.1.1311", "Robotic Delivery Device Dose Rate Units (9560)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Anatomic Structures for Anatomic Pathology (8134)</summary>
+        public static readonly DicomUID AnatomicStructuresForAnatomicPathology8134 = new DicomUID("1.2.840.10008.6.1.1312", "Anatomic Structures for Anatomic Pathology (8134)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Mediastinum Finding or Feature (6148)</summary>
+        public static readonly DicomUID MediastinumFindingOrFeature6148 = new DicomUID("1.2.840.10008.6.1.1313", "Mediastinum Finding or Feature (6148)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Mediastinum Anatomy (6149)</summary>
+        public static readonly DicomUID MediastinumAnatomy6149 = new DicomUID("1.2.840.10008.6.1.1314", "Mediastinum Anatomy (6149)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Vascular Ultrasound Report Document Titles (12100)</summary>
+        public static readonly DicomUID VascularUltrasoundReportDocumentTitles12100 = new DicomUID("1.2.840.10008.6.1.1315", "Vascular Ultrasound Report Document Titles (12100)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Parts of Organs (Non-Lateralized) (12130)</summary>
+        public static readonly DicomUID PartsOfOrgansNonLateralized12130 = new DicomUID("1.2.840.10008.6.1.1316", "Parts of Organs (Non-Lateralized) (12130)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Parts of Organs (Lateralized) (12131)</summary>
+        public static readonly DicomUID PartsOfOrgansLateralized12131 = new DicomUID("1.2.840.10008.6.1.1317", "Parts of Organs (Lateralized) (12131)", DicomUidType.ContextGroupName, false);
 
     }
 }

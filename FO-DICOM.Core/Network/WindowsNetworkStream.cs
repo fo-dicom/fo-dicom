@@ -1,21 +1,20 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
+using Dicom.IO;
+using Windows.Networking;
+using Windows.Networking.Sockets;
+using Windows.Security.Cryptography.Certificates;
+using Windows.Storage.Streams;
 
 namespace Dicom.Network
 {
-    using System;
-    using System.Globalization;
-    using System.IO;
-    using System.Runtime.InteropServices.WindowsRuntime;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dicom.IO;
-
-    using Windows.Networking;
-    using Windows.Networking.Sockets;
-    using Windows.Security.Cryptography.Certificates;
-    using Windows.Storage.Streams;
 
     /// <summary>
     /// Universal Windows Platform implementation of <see cref="INetworkStream"/>.

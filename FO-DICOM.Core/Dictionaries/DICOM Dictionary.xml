@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (c) 2012-2019 fo-dicom contributors.        -->
+<!-- Copyright (c) 2012-2020 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2019d">
+<dictionary version="2020b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -60,6 +60,9 @@
     <tag group="0002" element="0016" keyword="SourceApplicationEntityTitle" vr="AE" vm="1">Source Application Entity Title</tag>
     <tag group="0002" element="0017" keyword="SendingApplicationEntityTitle" vr="AE" vm="1">Sending Application Entity Title</tag>
     <tag group="0002" element="0018" keyword="ReceivingApplicationEntityTitle" vr="AE" vm="1">Receiving Application Entity Title</tag>
+    <tag group="0002" element="0026" keyword="SourcePresentationAddress" vr="UR" vm="1">Source Presentation Address</tag>
+    <tag group="0002" element="0027" keyword="SendingPresentationAddress" vr="UR" vm="1">Sending Presentation Address</tag>
+    <tag group="0002" element="0028" keyword="ReceivingPresentationAddress" vr="UR" vm="1">Receiving Presentation Address</tag>
     <tag group="0002" element="0031" keyword="RTVMetaInformationVersion" vr="OB" vm="1" retired="true">RTV Meta Information Version</tag>
     <tag group="0002" element="0032" keyword="RTVCommunicationSOPClassUID" vr="UI" vm="1" retired="true">RTV Communication SOP Class UID</tag>
     <tag group="0002" element="0033" keyword="RTVCommunicationSOPInstanceUID" vr="UI" vm="1" retired="true">RTV Communication SOP Instance UID</tag>
@@ -282,6 +285,7 @@
     <tag group="0008" element="225A" keyword="AnatomicStructureSpaceOrRegionModifierCodeSequenceTrial" vr="SQ" vm="1" retired="true">Anatomic Structure Space Or Region Modifier Code Sequence (Trial)</tag>
     <tag group="0008" element="225C" keyword="OnAxisBackgroundAnatomicStructureCodeSequenceTrial" vr="SQ" vm="1" retired="true">On Axis Background Anatomic Structure Code Sequence (Trial)</tag>
     <tag group="0008" element="3001" keyword="AlternateRepresentationSequence" vr="SQ" vm="1">Alternate Representation Sequence</tag>
+    <tag group="0008" element="3002" keyword="AvailableTransferSyntaxUID" vr="UI" vm="1-n">Available Transfer Syntax UID</tag>
     <tag group="0008" element="3010" keyword="IrradiationEventUID" vr="UI" vm="1-n">Irradiation Event UID</tag>
     <tag group="0008" element="3011" keyword="SourceIrradiationEventSequence" vr="SQ" vm="1">Source Irradiation Event Sequence</tag>
     <tag group="0008" element="3012" keyword="RadiopharmaceuticalAdministrationEventUID" vr="UI" vm="1">Radiopharmaceutical Administration Event UID</tag>
@@ -3075,6 +3079,8 @@
     <tag group="0068" element="7001" keyword="ModelModification" vr="CS" vm="1">Model Modification</tag>
     <tag group="0068" element="7002" keyword="ModelMirroring" vr="CS" vm="1">Model Mirroring</tag>
     <tag group="0068" element="7003" keyword="ModelUsageCodeSequence" vr="SQ" vm="1">Model Usage Code Sequence</tag>
+    <tag group="0068" element="7004" keyword="ModelGroupUID" vr="UI" vm="1">Model Group UID</tag>
+    <tag group="0068" element="7005" keyword="RelativeURIReferenceWithinEncapsulatedDocument" vr="UR" vm="1">Relative URI Reference Within Encapsulated Document</tag>
     <tag group="0070" element="0001" keyword="GraphicAnnotationSequence" vr="SQ" vm="1">Graphic Annotation Sequence</tag>
     <tag group="0070" element="0002" keyword="GraphicLayer" vr="CS" vm="1">Graphic Layer</tag>
     <tag group="0070" element="0003" keyword="BoundingBoxAnnotationUnits" vr="CS" vm="1">Bounding Box Annotation Units</tag>
@@ -4270,6 +4276,7 @@
     <tag group="300A" element="0423" keyword="GeneralAccessoryType" vr="CS" vm="1">General Accessory Type</tag>
     <tag group="300A" element="0424" keyword="GeneralAccessoryNumber" vr="IS" vm="1">General Accessory Number</tag>
     <tag group="300A" element="0425" keyword="SourceToGeneralAccessoryDistance" vr="FL" vm="1">Source to General Accessory Distance</tag>
+    <tag group="300A" element="0426" keyword="IsocenterToGeneralAccessoryDistance" vr="DS" vm="1">Isocenter to General Accessory Distance</tag>
     <tag group="300A" element="0431" keyword="ApplicatorGeometrySequence" vr="SQ" vm="1">Applicator Geometry Sequence</tag>
     <tag group="300A" element="0432" keyword="ApplicatorApertureShape" vr="CS" vm="1">Applicator Aperture Shape</tag>
     <tag group="300A" element="0433" keyword="ApplicatorOpening" vr="FL" vm="1">Applicator Opening</tag>
@@ -4518,6 +4525,7 @@
     <tag group="3010" element="002C" keyword="SegmentAnnotationTypeCodeSequence" vr="SQ" vm="1">Segment Annotation Type Code Sequence</tag>
     <tag group="3010" element="002D" keyword="DeviceLabel" vr="LO" vm="1">Device Label</tag>
     <tag group="3010" element="002E" keyword="DeviceTypeCodeSequence" vr="SQ" vm="1">Device Type Code Sequence</tag>
+    <tag group="3010" element="002F" keyword="SegmentAnnotationTypeModifierCodeSequence" vr="SQ" vm="1">Segment Annotation Type Modifier Code Sequence</tag>
     <tag group="3010" element="0030" keyword="PatientEquipmentRelationshipCodeSequence" vr="SQ" vm="1">Patient Equipment Relationship Code Sequence</tag>
     <tag group="3010" element="0031" keyword="ReferencedFiducialsUID" vr="UI" vm="1">Referenced Fiducials UID</tag>
     <tag group="3010" element="0032" keyword="PatientTreatmentOrientationSequence" vr="SQ" vm="1">Patient Treatment Orientation Sequence</tag>
@@ -4606,6 +4614,18 @@
     <tag group="3010" element="0086" keyword="IntendedStartDayOfWeek" vr="LT" vm="1">Intended Start Day of Week</tag>
     <tag group="3010" element="0087" keyword="WeekdayFractionPatternSequence" vr="SQ" vm="1">Weekday Fraction Pattern Sequence</tag>
     <tag group="3010" element="0088" keyword="DeliveryTimeStructureCodeSequence" vr="SQ" vm="1">Delivery Time Structure Code Sequence</tag>
+    <tag group="3010" element="0089" keyword="TreatmentSiteModifierCodeSequence" vr="SQ" vm="1">Treatment Site Modifier Code Sequence</tag>
+    <tag group="3010" element="0090" keyword="RoboticBaseLocationIndicator" vr="CS" vm="1">Robotic Base Location Indicator</tag>
+    <tag group="3010" element="0091" keyword="RoboticPathNodeSetCodeSequence" vr="SQ" vm="1">Robotic Path Node Set Code Sequence</tag>
+    <tag group="3010" element="0092" keyword="RoboticNodeIdentifier" vr="UL" vm="1">Robotic Node Identifier</tag>
+    <tag group="3010" element="0093" keyword="RTTreatmentSourceCoordinates" vr="FD" vm="3">RT Treatment Source Coordinates</tag>
+    <tag group="3010" element="0094" keyword="RadiationSourceCoordinateSystemYawAngle" vr="FD" vm="1">Radiation Source Coordinate SystemYaw Angle</tag>
+    <tag group="3010" element="0095" keyword="RadiationSourceCoordinateSystemRollAngle" vr="FD" vm="1">Radiation Source Coordinate SystemRoll Angle</tag>
+    <tag group="3010" element="0096" keyword="RadiationSourceCoordinateSystemPitchAngle" vr="FD" vm="1">Radiation Source Coordinate System Pitch Angle</tag>
+    <tag group="3010" element="0097" keyword="RoboticPathControlPointSequence" vr="SQ" vm="1">Robotic Path Control Point Sequence</tag>
+    <tag group="3010" element="0098" keyword="TomotherapeuticControlPointSequence" vr="SQ" vm="1">Tomotherapeutic Control Point Sequence</tag>
+    <tag group="3010" element="0099" keyword="TomotherapeuticLeafOpenDurations" vr="FD" vm="1-n">Tomotherapeutic Leaf Open Durations</tag>
+    <tag group="3010" element="009A" keyword="TomotherapeuticLeafInitialClosedDurations" vr="FD" vm="1-n">Tomotherapeutic Leaf Initial Closed Durations</tag>
     <tag group="4000" element="0010" keyword="Arbitrary" vr="LT" vm="1" retired="true">Arbitrary</tag>
     <tag group="4000" element="4000" keyword="TextComments" vr="LT" vm="1" retired="true">Text Comments</tag>
     <tag group="4008" element="0040" keyword="ResultsID" vr="SH" vm="1" retired="true">Results ID</tag>
@@ -4887,6 +4907,7 @@
     <uid uid="1.2.840.10008.1.4.2.1" keyword="ICBM452T1FrameOfReference" type="Well-known frame of reference">ICBM 452 T1 Frame of Reference</uid>
     <uid uid="1.2.840.10008.1.4.2.2" keyword="ICBMSingleSubjectMRIFrameOfReference" type="Well-known frame of reference">ICBM Single Subject MRI Frame of Reference</uid>
     <uid uid="1.2.840.10008.1.4.3.1" keyword="IEC61217FixedCoordinateSystemFrameOfReference" type="Well-known frame of reference">IEC 61217 Fixed Coordinate System Frame of Reference</uid>
+    <uid uid="1.2.840.10008.1.4.3.2" keyword="StandardRoboticArmCoordinateSystemFrameOfReference" type="Well-known frame of reference">Standard Robotic-Arm Coordinate System Frame of Reference</uid>
     <uid uid="1.2.840.10008.1.5.1" keyword="HotIronColorPaletteSOPInstance" type="Well-known SOP Instance">Hot Iron Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.2" keyword="PETColorPaletteSOPInstance" type="Well-known SOP Instance">PET Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.3" keyword="HotMetalBlueColorPaletteSOPInstance" type="Well-known SOP Instance">Hot Metal Blue Color Palette SOP Instance</uid>
@@ -4917,6 +4938,7 @@
     <uid uid="1.2.840.10008.2.16.12" keyword="MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide" type="Coding Scheme">Mayo Clinic Non-radiological Images Specific Body Structure Anatomical Surface Region Guide</uid>
     <uid uid="1.2.840.10008.2.16.13" keyword="ImageBiomarkerStandardisationInitiative" type="Coding Scheme">Image Biomarker Standardisation Initiative</uid>
     <uid uid="1.2.840.10008.2.16.14" keyword="RadiomicsOntology" type="Coding Scheme">Radiomics Ontology</uid>
+    <uid uid="1.2.840.10008.2.16.15" keyword="RadElement" type="Coding Scheme">RadElement</uid>
     <uid uid="1.2.840.10008.3.1.1.1" keyword="DICOMApplicationContextName" type="Application Context Name">DICOM Application Context Name</uid>
     <uid uid="1.2.840.10008.3.1.2.1.1" keyword="DetachedPatientManagementSOPClass" type="SOP Class" retired="true">Detached Patient Management SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.3.1.2.1.4" keyword="DetachedPatientManagementMetaSOPClass" type="Meta SOP Class" retired="true">Detached Patient Management Meta SOP Class (Retired)</uid>
@@ -5093,6 +5115,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.3" keyword="EncapsulatedSTLStorage" type="SOP Class">Encapsulated STL Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.104.4" keyword="EncapsulatedOBJStorage" type="SOP Class">Encapsulated OBJ Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.104.5" keyword="EncapsulatedMTLStorage" type="SOP Class">Encapsulated MTL Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.128" keyword="PositronEmissionTomographyImageStorage" type="SOP Class">Positron Emission Tomography Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.128.1" keyword="LegacyConvertedEnhancedPETImageStorage" type="SOP Class">Legacy Converted Enhanced PET Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.129" keyword="StandalonePETCurveStorage" type="SOP Class" retired="true">Standalone PET Curve Storage (Retired)</uid>
@@ -5117,6 +5141,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.481.11" keyword="RTSegmentAnnotationStorage" type="SOP Class">RT Segment Annotation Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.12" keyword="RTRadiationSetStorage" type="SOP Class">RT Radiation Set Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.13" keyword="CArmPhotonElectronRadiationStorage" type="SOP Class">C-Arm Photon-Electron Radiation Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.14" keyword="TomotherapeuticRadiationStorage" type="SOP Class">Tomotherapeutic Radiation Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.15" keyword="RoboticArmRadiationStorage" type="SOP Class">Robotic-Arm Radiation Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.1" keyword="DICOSCTImageStorage" type="SOP Class">DICOS CT Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.1" keyword="DICOSDigitalXRayImageStorageForPresentation" type="SOP Class">DICOS Digital X-Ray Image Storage - For Presentation</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.2" keyword="DICOSDigitalXRayImageStorageForProcessing" type="SOP Class">DICOS Digital X-Ray Image Storage - For Processing</uid>
@@ -5162,6 +5188,7 @@
     <uid uid="1.2.840.10008.5.1.4.34.6.2" keyword="UnifiedProcedureStepWatchSOPClass" type="SOP Class">Unified Procedure Step - Watch SOP Class</uid>
     <uid uid="1.2.840.10008.5.1.4.34.6.3" keyword="UnifiedProcedureStepPullSOPClass" type="SOP Class">Unified Procedure Step - Pull SOP Class</uid>
     <uid uid="1.2.840.10008.5.1.4.34.6.4" keyword="UnifiedProcedureStepEventSOPClass" type="SOP Class">Unified Procedure Step - Event SOP Class</uid>
+    <uid uid="1.2.840.10008.5.1.4.34.6.5" keyword="UnifiedProcedureStepQuerySOPClass" type="SOP Class">Unified Procedure Step - Query SOP Class</uid>
     <uid uid="1.2.840.10008.5.1.4.34.7" keyword="RTBeamsDeliveryInstructionStorage" type="SOP Class">RT Beams Delivery Instruction Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.34.8" keyword="RTConventionalMachineVerification" type="SOP Class">RT Conventional Machine Verification</uid>
     <uid uid="1.2.840.10008.5.1.4.34.9" keyword="RTIonMachineVerification" type="SOP Class">RT Ion Machine Verification</uid>
@@ -5815,10 +5842,10 @@
     <uid uid="1.2.840.10008.6.1.575" keyword="UpperExtremityVeins12108" type="Context Group Name">Upper Extremity Veins (12108)</uid>
     <uid uid="1.2.840.10008.6.1.576" keyword="LowerExtremityArteries12109" type="Context Group Name">Lower Extremity Arteries (12109)</uid>
     <uid uid="1.2.840.10008.6.1.577" keyword="LowerExtremityVeins12110" type="Context Group Name">Lower Extremity Veins (12110)</uid>
-    <uid uid="1.2.840.10008.6.1.578" keyword="AbdominalArteriesLateral12111" type="Context Group Name">Abdominal Arteries (Lateral) (12111)</uid>
-    <uid uid="1.2.840.10008.6.1.579" keyword="AbdominalArteriesUnilateral12112" type="Context Group Name">Abdominal Arteries (Unilateral) (12112)</uid>
-    <uid uid="1.2.840.10008.6.1.580" keyword="AbdominalVeinsLateral12113" type="Context Group Name">Abdominal Veins (Lateral) (12113)</uid>
-    <uid uid="1.2.840.10008.6.1.581" keyword="AbdominalVeinsUnilateral12114" type="Context Group Name">Abdominal Veins (Unilateral) (12114)</uid>
+    <uid uid="1.2.840.10008.6.1.578" keyword="AbdominalArteriesPaired12111" type="Context Group Name">Abdominal Arteries (Paired) (12111)</uid>
+    <uid uid="1.2.840.10008.6.1.579" keyword="AbdominopelvicArteriesUnpaired12112" type="Context Group Name">Abdominopelvic Arteries (Unpaired) (12112)</uid>
+    <uid uid="1.2.840.10008.6.1.580" keyword="AbdominopelvicVeinsPaired12113" type="Context Group Name">Abdominopelvic Veins (Paired) (12113)</uid>
+    <uid uid="1.2.840.10008.6.1.581" keyword="AbdominopelvicVeinsUnpaired12114" type="Context Group Name">Abdominopelvic Veins (Unpaired) (12114)</uid>
     <uid uid="1.2.840.10008.6.1.582" keyword="RenalVessels12115" type="Context Group Name">Renal Vessels (12115)</uid>
     <uid uid="1.2.840.10008.6.1.583" keyword="VesselSegmentModifiers12116" type="Context Group Name">Vessel Segment Modifiers (12116)</uid>
     <uid uid="1.2.840.10008.6.1.584" keyword="VesselBranchModifiers12117" type="Context Group Name">Vessel Branch Modifiers (12117)</uid>
@@ -6435,4 +6462,18 @@
     <uid uid="1.2.840.10008.6.1.1301" keyword="EquipmentReferencePoints9554" type="Context Group Name">Equipment Reference Points (9554)</uid>
     <uid uid="1.2.840.10008.6.1.1302" keyword="RadiotherapyTreatmentPlanningPersonRoles9555" type="Context Group Name">Radiotherapy Treatment Planning Person Roles (9555)</uid>
     <uid uid="1.2.840.10008.6.1.1303" keyword="RealTimeVideoRenditionTitles7070" type="Context Group Name">Real Time Video Rendition Titles (7070)</uid>
+    <uid uid="1.2.840.10008.6.1.1304" keyword="GeometryGraphicalRepresentation219" type="Context Group Name">Geometry Graphical Representation (219)</uid>
+    <uid uid="1.2.840.10008.6.1.1305" keyword="VisualExplanation217" type="Context Group Name">Visual Explanation (217)</uid>
+    <uid uid="1.2.840.10008.6.1.1306" keyword="ProstateSectorAnatomyFromPIRADSV216304" type="Context Group Name">Prostate Sector Anatomy from PI-RADS v2.1 (6304)</uid>
+    <uid uid="1.2.840.10008.6.1.1307" keyword="RadiotherapyRoboticNodeSets9556" type="Context Group Name">Radiotherapy Robotic Node Sets (9556)</uid>
+    <uid uid="1.2.840.10008.6.1.1308" keyword="TomotherapeuticDosimeterUnits9557" type="Context Group Name">Tomotherapeutic Dosimeter Units (9557)</uid>
+    <uid uid="1.2.840.10008.6.1.1309" keyword="TomotherapeuticDoseRateUnits9558" type="Context Group Name">Tomotherapeutic Dose Rate Units (9558)</uid>
+    <uid uid="1.2.840.10008.6.1.1310" keyword="RoboticDeliveryDeviceDosimeterUnits9559" type="Context Group Name">Robotic Delivery Device Dosimeter Units (9559)</uid>
+    <uid uid="1.2.840.10008.6.1.1311" keyword="RoboticDeliveryDeviceDoseRateUnits9560" type="Context Group Name">Robotic Delivery Device Dose Rate Units (9560)</uid>
+    <uid uid="1.2.840.10008.6.1.1312" keyword="AnatomicStructuresForAnatomicPathology8134" type="Context Group Name">Anatomic Structures for Anatomic Pathology (8134)</uid>
+    <uid uid="1.2.840.10008.6.1.1313" keyword="MediastinumFindingOrFeature6148" type="Context Group Name">Mediastinum Finding or Feature (6148)</uid>
+    <uid uid="1.2.840.10008.6.1.1314" keyword="MediastinumAnatomy6149" type="Context Group Name">Mediastinum Anatomy (6149)</uid>
+    <uid uid="1.2.840.10008.6.1.1315" keyword="VascularUltrasoundReportDocumentTitles12100" type="Context Group Name">Vascular Ultrasound Report Document Titles (12100)</uid>
+    <uid uid="1.2.840.10008.6.1.1316" keyword="PartsOfOrgansNonLateralized12130" type="Context Group Name">Parts of Organs (Non-Lateralized) (12130)</uid>
+    <uid uid="1.2.840.10008.6.1.1317" keyword="PartsOfOrgansLateralized12131" type="Context Group Name">Parts of Organs (Lateralized) (12131)</uid>
 </dictionary>

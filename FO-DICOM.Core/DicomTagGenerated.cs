@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace FellowOakDicom
@@ -174,6 +174,15 @@ namespace FellowOakDicom
 
         ///<summary>(0002,0018) VR=AE VM=1 Receiving Application Entity Title</summary>
         public readonly static DicomTag ReceivingApplicationEntityTitle = new DicomTag(0x0002, 0x0018);
+
+        ///<summary>(0002,0026) VR=UR VM=1 Source Presentation Address</summary>
+        public readonly static DicomTag SourcePresentationAddress = new DicomTag(0x0002, 0x0026);
+
+        ///<summary>(0002,0027) VR=UR VM=1 Sending Presentation Address</summary>
+        public readonly static DicomTag SendingPresentationAddress = new DicomTag(0x0002, 0x0027);
+
+        ///<summary>(0002,0028) VR=UR VM=1 Receiving Presentation Address</summary>
+        public readonly static DicomTag ReceivingPresentationAddress = new DicomTag(0x0002, 0x0028);
 
         ///<summary>(0002,0031) VR=OB VM=1 RTV Meta Information Version (RETIRED)</summary>
         public readonly static DicomTag RTVMetaInformationVersionRETIRED = new DicomTag(0x0002, 0x0031);
@@ -840,6 +849,9 @@ namespace FellowOakDicom
 
         ///<summary>(0008,3001) VR=SQ VM=1 Alternate Representation Sequence</summary>
         public readonly static DicomTag AlternateRepresentationSequence = new DicomTag(0x0008, 0x3001);
+
+        ///<summary>(0008,3002) VR=UI VM=1-n Available Transfer Syntax UID</summary>
+        public readonly static DicomTag AvailableTransferSyntaxUID = new DicomTag(0x0008, 0x3002);
 
         ///<summary>(0008,3010) VR=UI VM=1-n Irradiation Event UID</summary>
         public readonly static DicomTag IrradiationEventUID = new DicomTag(0x0008, 0x3010);
@@ -9220,6 +9232,12 @@ namespace FellowOakDicom
         ///<summary>(0068,7003) VR=SQ VM=1 Model Usage Code Sequence</summary>
         public readonly static DicomTag ModelUsageCodeSequence = new DicomTag(0x0068, 0x7003);
 
+        ///<summary>(0068,7004) VR=UI VM=1 Model Group UID</summary>
+        public readonly static DicomTag ModelGroupUID = new DicomTag(0x0068, 0x7004);
+
+        ///<summary>(0068,7005) VR=UR VM=1 Relative URI Reference Within Encapsulated Document</summary>
+        public readonly static DicomTag RelativeURIReferenceWithinEncapsulatedDocument = new DicomTag(0x0068, 0x7005);
+
         ///<summary>(0070,0001) VR=SQ VM=1 Graphic Annotation Sequence</summary>
         public readonly static DicomTag GraphicAnnotationSequence = new DicomTag(0x0070, 0x0001);
 
@@ -12805,6 +12823,9 @@ namespace FellowOakDicom
         ///<summary>(300A,0425) VR=FL VM=1 Source to General Accessory Distance</summary>
         public readonly static DicomTag SourceToGeneralAccessoryDistance = new DicomTag(0x300A, 0x0425);
 
+        ///<summary>(300A,0426) VR=DS VM=1 Isocenter to General Accessory Distance</summary>
+        public readonly static DicomTag IsocenterToGeneralAccessoryDistance = new DicomTag(0x300A, 0x0426);
+
         ///<summary>(300A,0431) VR=SQ VM=1 Applicator Geometry Sequence</summary>
         public readonly static DicomTag ApplicatorGeometrySequence = new DicomTag(0x300A, 0x0431);
 
@@ -13549,6 +13570,9 @@ namespace FellowOakDicom
         ///<summary>(3010,002E) VR=SQ VM=1 Device Type Code Sequence</summary>
         public readonly static DicomTag DeviceTypeCodeSequence = new DicomTag(0x3010, 0x002E);
 
+        ///<summary>(3010,002F) VR=SQ VM=1 Segment Annotation Type Modifier Code Sequence</summary>
+        public readonly static DicomTag SegmentAnnotationTypeModifierCodeSequence = new DicomTag(0x3010, 0x002F);
+
         ///<summary>(3010,0030) VR=SQ VM=1 Patient Equipment Relationship Code Sequence</summary>
         public readonly static DicomTag PatientEquipmentRelationshipCodeSequence = new DicomTag(0x3010, 0x0030);
 
@@ -13812,6 +13836,42 @@ namespace FellowOakDicom
 
         ///<summary>(3010,0088) VR=SQ VM=1 Delivery Time Structure Code Sequence</summary>
         public readonly static DicomTag DeliveryTimeStructureCodeSequence = new DicomTag(0x3010, 0x0088);
+
+        ///<summary>(3010,0089) VR=SQ VM=1 Treatment Site Modifier Code Sequence</summary>
+        public readonly static DicomTag TreatmentSiteModifierCodeSequence = new DicomTag(0x3010, 0x0089);
+
+        ///<summary>(3010,0090) VR=CS VM=1 Robotic Base Location Indicator</summary>
+        public readonly static DicomTag RoboticBaseLocationIndicator = new DicomTag(0x3010, 0x0090);
+
+        ///<summary>(3010,0091) VR=SQ VM=1 Robotic Path Node Set Code Sequence</summary>
+        public readonly static DicomTag RoboticPathNodeSetCodeSequence = new DicomTag(0x3010, 0x0091);
+
+        ///<summary>(3010,0092) VR=UL VM=1 Robotic Node Identifier</summary>
+        public readonly static DicomTag RoboticNodeIdentifier = new DicomTag(0x3010, 0x0092);
+
+        ///<summary>(3010,0093) VR=FD VM=3 RT Treatment Source Coordinates</summary>
+        public readonly static DicomTag RTTreatmentSourceCoordinates = new DicomTag(0x3010, 0x0093);
+
+        ///<summary>(3010,0094) VR=FD VM=1 Radiation Source Coordinate SystemYaw Angle</summary>
+        public readonly static DicomTag RadiationSourceCoordinateSystemYawAngle = new DicomTag(0x3010, 0x0094);
+
+        ///<summary>(3010,0095) VR=FD VM=1 Radiation Source Coordinate SystemRoll Angle</summary>
+        public readonly static DicomTag RadiationSourceCoordinateSystemRollAngle = new DicomTag(0x3010, 0x0095);
+
+        ///<summary>(3010,0096) VR=FD VM=1 Radiation Source Coordinate System Pitch Angle</summary>
+        public readonly static DicomTag RadiationSourceCoordinateSystemPitchAngle = new DicomTag(0x3010, 0x0096);
+
+        ///<summary>(3010,0097) VR=SQ VM=1 Robotic Path Control Point Sequence</summary>
+        public readonly static DicomTag RoboticPathControlPointSequence = new DicomTag(0x3010, 0x0097);
+
+        ///<summary>(3010,0098) VR=SQ VM=1 Tomotherapeutic Control Point Sequence</summary>
+        public readonly static DicomTag TomotherapeuticControlPointSequence = new DicomTag(0x3010, 0x0098);
+
+        ///<summary>(3010,0099) VR=FD VM=1-n Tomotherapeutic Leaf Open Durations</summary>
+        public readonly static DicomTag TomotherapeuticLeafOpenDurations = new DicomTag(0x3010, 0x0099);
+
+        ///<summary>(3010,009A) VR=FD VM=1-n Tomotherapeutic Leaf Initial Closed Durations</summary>
+        public readonly static DicomTag TomotherapeuticLeafInitialClosedDurations = new DicomTag(0x3010, 0x009A);
 
         ///<summary>(4000,0010) VR=LT VM=1 Arbitrary (RETIRED)</summary>
         public readonly static DicomTag ArbitraryRETIRED = new DicomTag(0x4000, 0x0010);

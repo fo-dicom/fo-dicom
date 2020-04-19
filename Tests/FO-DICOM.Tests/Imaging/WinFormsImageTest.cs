@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if NET462
@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection("General")]
     public class WinFormsImageTest
     {
-        #region Unit tests
+#region Unit tests
 
         [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
         public void As_Image_ReturnsImage()
@@ -112,7 +112,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(100, bitmap2.Width);
         }
 
-        #endregion
+#endregion
     }
 }
 

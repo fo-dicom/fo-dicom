@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System;
+using System.IO;
 
 namespace FellowOakDicom.Network
 {
-    using System;
-    using System.IO;
-
     /// <summary>
     /// Interface representing a network stream.
     /// </summary>

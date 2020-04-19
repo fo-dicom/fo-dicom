@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -527,7 +527,7 @@ namespace FellowOakDicom.Tests
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.AbdominalArteriesLateral12111 },
+            new object[] { DicomUID.AbdominalArteriesPaired12111 },
             new object[] { DicomUID.CTImageStorage },
             new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
             new object[] { DicomUID.dicomTransferSyntax },

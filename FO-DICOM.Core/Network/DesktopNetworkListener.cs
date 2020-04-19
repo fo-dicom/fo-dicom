@@ -1,14 +1,14 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using System.Net;
+using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// .NET implementation of the <see cref="INetworkListener"/>.
     /// </summary>

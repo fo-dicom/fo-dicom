@@ -6,13 +6,23 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.core</AssemblyName>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2019</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2020</Copyright>
+    <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
+    <Product>Fellow Oak DICOM</Product>
+    <Authors>fo-dicom contributors</Authors>
+    <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
+    <Description>A NetStandard DICOM library.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Compatibility\**" />
     <EmbeddedResource Remove="Compatibility\**" />
     <None Remove="Compatibility\**" />
+    <None Include="..\FellowOakSquareTransp.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
