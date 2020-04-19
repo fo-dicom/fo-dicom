@@ -68,15 +68,15 @@ namespace FellowOakDicom.Network
             try
             {
                 Task awaiter;
+                Task<TcpClient> acceptTcpClientTask;
                 using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token))
                 {
+                    acceptTcpClientTask = _listener.AcceptTcpClientAsync();
                     awaiter =
-                        await
-                        Task.WhenAny(_listener.AcceptTcpClientAsync(), Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
+                        await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
                     cancelSource.Cancel();
                 }
-                var tcpClientTask = awaiter as Task<TcpClient>;
-                if (tcpClientTask != null)
+                if (awaiter is Task<TcpClient> tcpClientTask)
                 {
                     var tcpClient = tcpClientTask.Result;
                     tcpClient.NoDelay = noDelay;
@@ -89,6 +89,9 @@ namespace FellowOakDicom.Network
                     //  let DesktopNetworkStream to dispose tcpClient
                     return new DesktopNetworkStream(tcpClient, _certificate, true);
                 }
+
+                Stop();
+                await acceptTcpClientTask.ConfigureAwait(false);
 
                 return null;
             }
