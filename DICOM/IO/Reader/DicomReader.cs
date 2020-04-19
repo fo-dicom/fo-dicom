@@ -600,7 +600,7 @@ namespace Dicom.IO.Reader
                         }
                         break;
                     }
-
+                    long NowIndex = source.Position;
                     // Fix to handle sequence items not associated with any sequence (#364)
                     if (_tag.Equals(DicomTag.Item))
                     {
@@ -613,7 +613,12 @@ namespace Dicom.IO.Reader
                         // start of sequence
                         _observer.OnBeginSequence(source, _tag, _length);
                         _parseStage = ParseStage.Tag;
-                        if (_length != UndefinedLength)
+                        if (_length == 0)
+                        {
+                            _implicit = false;
+                            source.PushMilestone((uint)(source.Position-NowIndex));
+                        }
+                        else if (_length != UndefinedLength)
                         {
                             _implicit = false;
                             source.PushMilestone(_length);
