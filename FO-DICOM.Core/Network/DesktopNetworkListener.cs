@@ -33,8 +33,7 @@ namespace FellowOakDicom.Network
         /// </param>
         internal DesktopNetworkListener(string ipAddress, int port)
         {
-            IPAddress addr;
-            if (!IPAddress.TryParse(ipAddress, out addr))
+            if (!IPAddress.TryParse(ipAddress, out IPAddress addr))
             {
                 addr = IPAddress.Any;
             }
@@ -54,10 +53,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public void Stop()
-        {
-            _listener.Stop();
-        }
+        public void Stop() => _listener.Stop();
 
         /// <inheritdoc />
         public async Task<INetworkStream> AcceptNetworkStreamAsync(

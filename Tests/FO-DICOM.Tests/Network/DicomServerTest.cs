@@ -85,7 +85,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"))) { }
+            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"))) { /* do nothing here */ }
 
             var server = DicomServerRegistry.Get(port)?.DicomServer;
             Assert.Null(server);
@@ -98,6 +98,7 @@ namespace FellowOakDicom.Tests.Network
 
             using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
+                /* do nothing here */
             }
 
             var e = Record.Exception(

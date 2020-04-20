@@ -20,12 +20,10 @@ namespace FellowOakDicom
         /// <param name="dataset">Dataset to be cloned.</param>
         /// <returns>Clone of dataset.</returns>
         public static DicomDataset Clone(this DicomDataset dataset)
-        {
-            return new DicomDataset(dataset, false)
+            => new DicomDataset(dataset, false)
             {
                 InternalTransferSyntax = dataset.InternalTransferSyntax
             };
-        }
 
         /// <summary>
         /// Get a composite <see cref="DateTime"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
@@ -52,9 +50,7 @@ namespace FellowOakDicom
         /// <param name="mask">Requested mask.</param>
         /// <returns>Enumeration of masked DICOM items.</returns>
         public static IEnumerable<DicomItem> EnumerateMasked(this DicomDataset dataset, DicomMaskedTag mask)
-        {
-            return dataset.Where(x => mask.IsMatch(x.Tag));
-        }
+            => dataset.Where(x => mask.IsMatch(x.Tag));
 
         /// <summary>
         /// Enumerates DICOM items for specified group.
@@ -63,9 +59,7 @@ namespace FellowOakDicom
         /// <param name="group">Requested group.</param>
         /// <returns>Enumeration of DICOM items for specified <paramref name="group"/>.</returns>
         public static IEnumerable<DicomItem> EnumerateGroup(this DicomDataset dataset, ushort group)
-        {
-            return dataset.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
-        }
+            => dataset.Where(x => x.Tag.Group == group && x.Tag.Element != 0x0000);
 
 
         /// <summary>

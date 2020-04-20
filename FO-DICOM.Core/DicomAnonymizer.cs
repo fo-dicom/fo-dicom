@@ -121,10 +121,10 @@ namespace FellowOakDicom
                 string line;
                 while ((line = source.ReadLine()) != null)
                 {
-                    if (string.IsNullOrEmpty(line.Trim())) continue;
+                    if (string.IsNullOrWhiteSpace(line)) { continue; }
 
                     var parts = line.Trim().Split(';');
-                    if (parts.Length == 0) continue;
+                    if (parts.Length == 0) { continue; }
 
                     var tag = new Regex(parts[0], RegexOptions.IgnoreCase | RegexOptions.Singleline);
                     var empty = default(char).ToString();
@@ -216,7 +216,7 @@ namespace FellowOakDicom
                             BlankItem(dataset, item, false);
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(action));
+                            throw new InvalidOperationException($"Unknown action {action.Value}");
                     }
                 }
 
@@ -273,7 +273,10 @@ namespace FellowOakDicom
         /// <param name="item"></param>
         private void ReplaceUID(DicomDataset dataset, DicomItem item)
         {
-            if (!(item is DicomElement)) return;
+            if (!(item is DicomElement))
+            {
+                return;
+            }
 
             string rep;
             DicomUID uid;
@@ -314,26 +317,25 @@ namespace FellowOakDicom
             {
                 dataset.AddOrUpdate(nonZeroLength
                     ? new DicomDateTime(tag, DateTime.MinValue)
-                    : new DicomDateTime(tag, new string[0]));
+                    : new DicomDateTime(tag, Array.Empty<string>()));
                 return;
             }
             if (item is DicomDate)
             {
                 dataset.AddOrUpdate(nonZeroLength
                     ? new DicomDate(tag, DateTime.MinValue)
-                    : new DicomDate(tag, new string[0]));
+                    : new DicomDate(tag, Array.Empty<string>()));
                 return;
             }
             if (item is DicomTime)
             {
                 dataset.AddOrUpdate(nonZeroLength
                     ? new DicomTime(tag, DateTime.MinValue)
-                    : new DicomTime(tag, new string[0]));
+                    : new DicomTime(tag, Array.Empty<string>()));
                 return;
             }
 
-            var stringElement = item as DicomStringElement;
-            if (stringElement != null)
+            if (item is DicomStringElement _)
             {
                 dataset.AddOrUpdate(tag, string.Empty);
                 return;
@@ -372,7 +374,11 @@ namespace FellowOakDicom
         private static Type ElementValueType(DicomItem item)
         {
             var t = item.GetType();
-            if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>)) return t.GenericTypeArguments[0];
+            if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>))
+            {
+                return t.GenericTypeArguments[0];
+            }
+
             return null;
         }
 

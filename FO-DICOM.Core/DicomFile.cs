@@ -198,9 +198,7 @@ namespace FellowOakDicom
         /// <param name="readOption">An option how to deal with large dicom tags like pixel data.</param>
         /// <returns>DicomFile instance</returns>
         public static DicomFile Open(string fileName, FileReadOption readOption = FileReadOption.Default)
-        {
-            return Open(fileName, DicomEncoding.Default, readOption: readOption);
-        }
+            => Open(fileName, DicomEncoding.Default, readOption: readOption);
 
         /// <summary>
         /// Reads the specified filename and returns a DicomFile object.  Note that the values for large
@@ -263,9 +261,7 @@ namespace FellowOakDicom
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
         public static DicomFile Open(Stream stream, FileReadOption readOption = FileReadOption.Default)
-        {
-            return Open(stream, DicomEncoding.Default, readOption: readOption);
-        }
+            => Open(stream, DicomEncoding.Default, readOption: readOption);
 
         /// <summary>
         /// Read a DICOM file from stream.
@@ -328,9 +324,7 @@ namespace FellowOakDicom
         /// <param name="readOption">The option how to deal with large dicom tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
         public static Task<DicomFile> OpenAsync(string fileName, FileReadOption readOption = FileReadOption.Default)
-        {
-            return OpenAsync(fileName, DicomEncoding.Default, readOption: readOption);
-        }
+            => OpenAsync(fileName, DicomEncoding.Default, readOption: readOption);
 
         /// <summary>
         /// Asynchronously reads the specified filename and returns a DicomFile object.  Note that the values for large
@@ -394,9 +388,7 @@ namespace FellowOakDicom
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <returns>Awaitable <see cref="DicomFile"/> instance.</returns>
         public static Task<DicomFile> OpenAsync(Stream stream, FileReadOption readOption = FileReadOption.Default)
-        {
-            return OpenAsync(stream, DicomEncoding.Default, readOption: readOption);
-        }
+            => OpenAsync(stream, DicomEncoding.Default, readOption: readOption);
 
         /// <summary>
         /// Asynchronously read a DICOM file from stream.
@@ -478,10 +470,7 @@ namespace FellowOakDicom
         /// <returns>
         /// A string that represents the current object.
         /// </returns>
-        public override string ToString()
-        {
-            return string.Format("DICOM File [{0}]", this.Format);
-        }
+        public override string ToString() => $"DICOM File [{Format}]";
 
         /// <summary>
         /// Reads the specified file and returns a DicomFile object.  Note that the values for large
@@ -497,7 +486,7 @@ namespace FellowOakDicom
             {
                 throw new ArgumentNullException(nameof(fallbackEncoding));
             }
-            DicomFile df = new DicomFile();
+            var df = new DicomFile();
 
             try
             {
@@ -506,7 +495,7 @@ namespace FellowOakDicom
                 using (var source = new FileByteSource(file, readOption))
                 using (var unvalidated = new UnvalidatedScope(df.Dataset))
                 {
-                    DicomFileReader reader = new DicomFileReader();
+                    var reader = new DicomFileReader();
                     var result = reader.Read(
                         source,
                         new DicomDatasetReaderObserver(df.FileMetaInfo),
@@ -548,15 +537,15 @@ namespace FellowOakDicom
         /// <exception cref="DicomFileException">If file format is ACR-NEMA version 2 or 3.</exception>
         private void PreprocessFileMetaInformation()
         {
-            if (this.Format == DicomFileFormat.ACRNEMA1 || this.Format == DicomFileFormat.ACRNEMA2)
+            if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
             {
                 throw new DicomFileException(this, "Unable to save ACR-NEMA file");
             }
 
             // create file meta information from dataset or update existing file meta information.
-            this.FileMetaInfo = this.Format == DicomFileFormat.DICOM3NoFileMetaInfo
-                                    ? new DicomFileMetaInformation(this.Dataset)
-                                    : new DicomFileMetaInformation(this.FileMetaInfo);
+            FileMetaInfo = Format == DicomFileFormat.DICOM3NoFileMetaInfo
+                                    ? new DicomFileMetaInformation(Dataset)
+                                    : new DicomFileMetaInformation(FileMetaInfo);
         }
 
         #endregion
