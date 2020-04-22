@@ -229,7 +229,7 @@ namespace Dicom.Serialization
                     }
                     break;
                 case "LO":
-                    item = new DicomLongString(tag, (string[])data);
+                    item = new DicomLongString(tag, Encoding.Default, (string[])data);
                     break;
                 case "LT":
                     if (data is IByteBuffer dataBufferLT)
@@ -260,10 +260,10 @@ namespace Dicom.Serialization
                     item = new DicomOtherVeryLong(tag, (IByteBuffer)data);
                     break;
                 case "PN":
-                    item = new DicomPersonName(tag, (string[])data);
+                    item = new DicomPersonName(tag, Encoding.Default, (string[])data);
                     break;
                 case "SH":
-                    item = new DicomShortString(tag, (string[])data);
+                    item = new DicomShortString(tag, Encoding.Default, (string[])data);
                     break;
                 case "SL":
                     if (data is IByteBuffer dataBufferSL)
