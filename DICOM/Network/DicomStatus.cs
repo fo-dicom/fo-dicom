@@ -42,7 +42,8 @@ namespace Dicom.Network
 
         public readonly string ErrorComment = null;
 
-        private readonly ushort Mask;
+
+        private readonly ushort _mask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomStatus"/> class.
@@ -57,7 +58,7 @@ namespace Dicom.Network
                 NumberStyles.HexNumber,
                 CultureInfo.InvariantCulture);
 
-            StringBuilder msb = new StringBuilder();
+            var msb = new StringBuilder();
             msb.Append(code.ToLower());
             msb.Replace('0', 'F')
                 .Replace('1', 'F')
@@ -75,9 +76,9 @@ namespace Dicom.Network
                 .Replace('d', 'F')
                 .Replace('e', 'F')
                 .Replace('x', '0');
-            Mask = ushort.Parse(
+            _mask = ushort.Parse(
                 msb.ToString(),
-                System.Globalization.NumberStyles.HexNumber,
+                NumberStyles.HexNumber,
                 CultureInfo.InvariantCulture);
 
             State = status;
@@ -103,7 +104,7 @@ namespace Dicom.Network
         /// <param name="status">The status.</param>
         /// <param name="comment">The comment.</param>
         public DicomStatus(DicomStatus status, string comment)
-            : this(String.Format("{0:x4}", status.Code), status.State, status.Description, comment)
+            : this(string.Format("{0:x4}", status.Code), status.State, status.Description, comment)
         {
         }
 
@@ -118,7 +119,7 @@ namespace Dicom.Network
             // ... and copy all other values from baseStatus 
             Description = baseStatus.Description;
             ErrorComment = baseStatus.ErrorComment;
-            Mask = baseStatus.Mask;
+            _mask = baseStatus._mask;
             State = baseStatus.State;
         }
 
@@ -133,8 +134,9 @@ namespace Dicom.Network
         {
             if (State == DicomState.Warning || State == DicomState.Failure)
             {
-                if (!String.IsNullOrEmpty(ErrorComment)) return String.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment);
-                return String.Format("{0} [{1:x4}: {2}]", State, Code, Description);
+                return !string.IsNullOrEmpty(ErrorComment)
+                    ? string.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment)
+                    : string.Format("{0} [{1:x4}: {2}]", State, Code, Description);
             }
             return Description;
         }
@@ -148,7 +150,7 @@ namespace Dicom.Network
         public static bool operator ==(DicomStatus s1, DicomStatus s2)
         {
             if (s1 is null || s2 is null) { return s1 is null && s2 is null; }
-            return (s1.Code & s2.Mask) == (s2.Code & s1.Mask);
+            return (s1.Code & s2._mask) == (s2.Code & s1._mask);
         }
 
         /// <summary>
@@ -191,7 +193,7 @@ namespace Dicom.Network
 
         #region Static
 
-        private static List<DicomStatus> Entries = new List<DicomStatus>();
+        private static List<DicomStatus> _entries = new List<DicomStatus>();
 
         static DicomStatus()
         {
@@ -203,70 +205,70 @@ namespace Dicom.Network
         /// </summary>
         internal static void ResetEntries()
         {
-            Entries.Clear();
+            _entries.Clear();
             #region Load Dicom Status List
 
-            Entries.Add(Success);
-            Entries.Add(Cancel);
-            Entries.Add(Pending);
-            Entries.Add(Warning);
-            Entries.Add(WarningClass);
-            Entries.Add(AttributeListError);
-            Entries.Add(AttributeValueOutOfRange);
-            Entries.Add(SOPClassNotSupported);
-            Entries.Add(ClassInstanceConflict);
-            Entries.Add(DuplicateSOPInstance);
-            Entries.Add(DuplicateInvocation);
-            Entries.Add(InvalidArgumentValue);
-            Entries.Add(InvalidAttributeValue);
-            Entries.Add(InvalidObjectInstance);
-            Entries.Add(MissingAttribute);
-            Entries.Add(MissingAttributeValue);
-            Entries.Add(MistypedArgument);
-            Entries.Add(NoSuchArgument);
-            Entries.Add(NoSuchEventType);
-            Entries.Add(NoSuchObjectInstance);
-            Entries.Add(NoSuchSOPClass);
-            Entries.Add(ProcessingFailure);
-            Entries.Add(ResourceLimitation);
-            Entries.Add(UnrecognizedOperation);
-            Entries.Add(NoSuchActionType);
-            Entries.Add(StorageStorageOutOfResources);
-            Entries.Add(StorageDataSetDoesNotMatchSOPClassError);
-            Entries.Add(StorageCannotUnderstand);
-            Entries.Add(StorageCoercionOfDataElements);
-            Entries.Add(StorageDataSetDoesNotMatchSOPClassWarning);
-            Entries.Add(StorageElementsDiscarded);
-            Entries.Add(QueryRetrieveOutOfResources);
-            Entries.Add(QueryRetrieveUnableToCalculateNumberOfMatches);
-            Entries.Add(QueryRetrieveUnableToPerformSuboperations);
-            Entries.Add(QueryRetrieveMoveDestinationUnknown);
-            Entries.Add(QueryRetrieveIdentifierDoesNotMatchSOPClass);
-            Entries.Add(QueryRetrieveUnableToProcess);
-            Entries.Add(QueryRetrieveOptionalKeysNotSupported);
-            Entries.Add(QueryRetrieveSubOpsOneOrMoreFailures);
-            Entries.Add(PrintManagementMemoryAllocationNotSupported);
-            Entries.Add(PrintManagementFilmSessionPrintingNotSupported);
-            Entries.Add(PrintManagementFilmSessionEmptyPage);
-            Entries.Add(PrintManagementFilmBoxEmptyPage);
-            Entries.Add(PrintManagementImageDemagnified);
-            Entries.Add(PrintManagementMinMaxDensityOutOfRange);
-            Entries.Add(PrintManagementImageCropped);
-            Entries.Add(PrintManagementImageDecimated);
-            Entries.Add(PrintManagementFilmSessionEmpty);
-            Entries.Add(PrintManagementPrintQueueFull);
-            Entries.Add(PrintManagementImageLargerThanImageBox);
-            Entries.Add(PrintManagementInsufficientMemoryInPrinter);
-            Entries.Add(PrintManagementCombinedImageLargerThanImageBox);
-            Entries.Add(PrintManagementExistingFilmBoxNotPrinted);
-            Entries.Add(MediaCreationManagementDuplicateInitiateMediaCreation);
-            Entries.Add(MediaCreationManagementMediaCreationRequestAlreadyCompleted);
-            Entries.Add(MediaCreationManagementMediaCreationRequestAlreadyInProgress);
-            Entries.Add(MediaCreationManagementCancellationDeniedForUnspecifiedReason);
+            _entries.Add(Success);
+            _entries.Add(Cancel);
+            _entries.Add(Pending);
+            _entries.Add(Warning);
+            _entries.Add(WarningClass);
+            _entries.Add(AttributeListError);
+            _entries.Add(AttributeValueOutOfRange);
+            _entries.Add(SOPClassNotSupported);
+            _entries.Add(ClassInstanceConflict);
+            _entries.Add(DuplicateSOPInstance);
+            _entries.Add(DuplicateInvocation);
+            _entries.Add(InvalidArgumentValue);
+            _entries.Add(InvalidAttributeValue);
+            _entries.Add(InvalidObjectInstance);
+            _entries.Add(MissingAttribute);
+            _entries.Add(MissingAttributeValue);
+            _entries.Add(MistypedArgument);
+            _entries.Add(NoSuchArgument);
+            _entries.Add(NoSuchEventType);
+            _entries.Add(NoSuchObjectInstance);
+            _entries.Add(NoSuchSOPClass);
+            _entries.Add(ProcessingFailure);
+            _entries.Add(ResourceLimitation);
+            _entries.Add(UnrecognizedOperation);
+            _entries.Add(NoSuchActionType);
+            _entries.Add(StorageStorageOutOfResources);
+            _entries.Add(StorageDataSetDoesNotMatchSOPClassError);
+            _entries.Add(StorageCannotUnderstand);
+            _entries.Add(StorageCoercionOfDataElements);
+            _entries.Add(StorageDataSetDoesNotMatchSOPClassWarning);
+            _entries.Add(StorageElementsDiscarded);
+            _entries.Add(QueryRetrieveOutOfResources);
+            _entries.Add(QueryRetrieveUnableToCalculateNumberOfMatches);
+            _entries.Add(QueryRetrieveUnableToPerformSuboperations);
+            _entries.Add(QueryRetrieveMoveDestinationUnknown);
+            _entries.Add(QueryRetrieveIdentifierDoesNotMatchSOPClass);
+            _entries.Add(QueryRetrieveUnableToProcess);
+            _entries.Add(QueryRetrieveOptionalKeysNotSupported);
+            _entries.Add(QueryRetrieveSubOpsOneOrMoreFailures);
+            _entries.Add(PrintManagementMemoryAllocationNotSupported);
+            _entries.Add(PrintManagementFilmSessionPrintingNotSupported);
+            _entries.Add(PrintManagementFilmSessionEmptyPage);
+            _entries.Add(PrintManagementFilmBoxEmptyPage);
+            _entries.Add(PrintManagementImageDemagnified);
+            _entries.Add(PrintManagementMinMaxDensityOutOfRange);
+            _entries.Add(PrintManagementImageCropped);
+            _entries.Add(PrintManagementImageDecimated);
+            _entries.Add(PrintManagementFilmSessionEmpty);
+            _entries.Add(PrintManagementPrintQueueFull);
+            _entries.Add(PrintManagementImageLargerThanImageBox);
+            _entries.Add(PrintManagementInsufficientMemoryInPrinter);
+            _entries.Add(PrintManagementCombinedImageLargerThanImageBox);
+            _entries.Add(PrintManagementExistingFilmBoxNotPrinted);
+            _entries.Add(MediaCreationManagementDuplicateInitiateMediaCreation);
+            _entries.Add(MediaCreationManagementMediaCreationRequestAlreadyCompleted);
+            _entries.Add(MediaCreationManagementMediaCreationRequestAlreadyInProgress);
+            _entries.Add(MediaCreationManagementCancellationDeniedForUnspecifiedReason);
 
             #endregion
 
-            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
+            _entries = _entries.OrderByDescending(entry => CountBits(entry._mask)).ToList();
         }
 
         /// <summary>
@@ -276,9 +278,12 @@ namespace Dicom.Network
         /// <returns></returns>
         public static DicomStatus Lookup(ushort code)
         {
-            foreach (DicomStatus status in Entries)
+            foreach (DicomStatus status in _entries)
             {
-                if (status.Code == (code & status.Mask)) return new DicomStatus(code, status);
+                if (status.Code == (code & status._mask))
+                {
+                    return new DicomStatus(code, status);
+                }
             }
             return ProcessingFailure;
         }
@@ -288,8 +293,12 @@ namespace Dicom.Network
             int count = 0;
 
             for (int i = 0; i < 16; i++)
+            {
                 if ((value & (1 << i)) != 0)
+                {
                     count++;
+                }
+            }
 
             return count;
         }
@@ -300,8 +309,8 @@ namespace Dicom.Network
         /// <param name="statuses">The statuses to add.</param>
         public static void AddKnownDicomStatuses(IEnumerable<DicomStatus> statuses)
         {
-            Entries.AddRange(statuses);
-            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
+            _entries.AddRange(statuses);
+            _entries = _entries.OrderByDescending(entry => CountBits(entry._mask)).ToList();
         }
 
         #region Dicom Statuses
