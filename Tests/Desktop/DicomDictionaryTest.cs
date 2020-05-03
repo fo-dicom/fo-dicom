@@ -2,17 +2,16 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Dicom
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Xunit;
-    using Xunit.Abstractions;
 
     [Collection("General")]
     public class DicomDictionaryTest : IDisposable
@@ -86,8 +85,11 @@ namespace Dicom
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-
-            for (int i = 0; i < numCalls; i++) call();
+            
+            for (int i = 0; i < numCalls; i++)
+            {
+                call();
+            }
 
             stopWatch.Stop();
 
@@ -112,33 +114,37 @@ namespace Dicom
             Assert.InRange(millisecondsPerCall, 0, (1 + referenceTime) * 5);
         }
 
+        [Fact]
+        public void AccessNonExistingKeyword()
+        {
+            DicomTag tag = null;
+            var ex = Record.Exception(() => tag = DicomDictionary.Default["invalid-keyword"]);
+            Assert.Null(ex); // assert that no exception was thrown
+            Assert.Null(tag); // assert that the dictionary returns a null tag for invalid keyword
+        }
+
 
 #if !NETSTANDARD
 
         [Fact]
         public void Throws_If_Already_Loaded()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
-                var dict = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
+                _ = DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
             });
-        }
 
         [Fact]
         public void Throw_If_Already_Loaded_Implicitly_Via_Getter()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
-                var dict = DicomDictionary.Default;
+                _ = DicomDictionary.Default;
                 Assert.Throws<DicomDataException>(() => DicomDictionary.Default = new DicomDictionary());
             });
-        }
 
         [Fact]
         public void Ensure_MultiThreaded_Init_Runs_Once()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 var release = new ManualResetEvent(initialState: false);
 
@@ -156,58 +162,48 @@ namespace Dicom
                 var firstResolvedDict = multipleSimultaneousCallsToDefault.First();
                 Assert.All(multipleSimultaneousCallsToDefault, dicomDict => Assert.Equal(dicomDict, firstResolvedDict));
             });
-        }
 
 
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Including_Private()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
                 DicomDictionary.EnsureDefaultDictionariesLoaded();
             });
-        }
 
 
         [Fact]
         public void Can_Call_EnsureLoaded_Multiple_Times_Excluding_Private()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 DicomDictionary.EnsureDefaultDictionariesLoaded();
             });
-        }
 
 
         [Fact]
         public void Throws_If_EnsureLoaded_Called_With_And_Without_Private()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(true);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(false));
             });
-        }
 
 
         [Fact]
         public void Throws_If_EnsureLoaded_Called_Without_And_With_Private()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
             });
-        }
 
         [Fact]
         public void EnsureLoaded_Assumes_Loading_Private_Dictionary_Data_By_Default()
-        {
-            _testDomain.DoCallBack(() =>
+            => _testDomain.DoCallBack(() =>
             {
                 var dict = DicomDictionary.EnsureDefaultDictionariesLoaded();
                 var secondEnsurCall = DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: true);
@@ -215,7 +211,6 @@ namespace Dicom
                 Assert.Throws<DicomDataException>(
                     () => DicomDictionary.EnsureDefaultDictionariesLoaded(loadPrivateDictionary: false));
             });
-        }
 
         [Fact]
         public void Add_PrivateTag_GetsCorrectVR()
@@ -241,8 +236,10 @@ namespace Dicom
                                 DicomVR.CS);
             privDict1.Add(dictEntry);
 
-            var ds = new DicomDataset();
-            ds.Add(dictEntry.Tag, "VAL1");
+            var ds = new DicomDataset
+            {
+                { dictEntry.Tag, "VAL1" }
+            };
 
             Assert.Equal(DicomVR.CS, ds.Get<DicomVR>(ds.GetPrivateTag(dictEntry.Tag)));
         }
@@ -283,9 +280,9 @@ namespace Dicom
             privDict.Add(dictEntry2);
             dict.Add(dictEntry1);
 
-            Assert.True(dict.Contains(dictEntry1));
-            Assert.True(dict.Contains(privCreatorDictEntry));
-            Assert.True(dict[dictEntry2.Tag.PrivateCreator].Contains(dictEntry2));
+            Assert.Contains(dictEntry1, dict);
+            Assert.Contains(privCreatorDictEntry, dict);
+            Assert.Contains(dictEntry2, dict[dictEntry2.Tag.PrivateCreator]);
         }
 #endif
 
