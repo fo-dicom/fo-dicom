@@ -12,14 +12,10 @@ namespace FellowOakDicom.Tests
 {
 
     [Collection("General")]
-    public class DicomDictionaryTest : IDisposable
+    public class DicomDictionaryTest
     {
         #region Fields
 
-#if !NETSTANDARD
-        private static int _index = 0;
-        private readonly AppDomain _testDomain;
-#endif
         private readonly ITestOutputHelper _output;
 
         #endregion
@@ -134,19 +130,5 @@ namespace FellowOakDicom.Tests
 
         #endregion
 
-        #region IDisposable implementation
-
-        public void Dispose()
-        {
-#if !NETSTANDARD
-            if (_testDomain != null)
-            {
-                Trace.WriteLine($"[{_testDomain.FriendlyName}] unloading.");
-                AppDomain.Unload(_testDomain);
-            }
-#endif
-        }
-
-        #endregion
     }
 }
