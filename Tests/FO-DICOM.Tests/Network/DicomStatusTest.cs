@@ -12,12 +12,12 @@ namespace FellowOakDicom.Tests.Network
     {
         #region Unit tests
 
-        private DicomStatus UPSIsAlreadyCompleted = new DicomStatus(
+        private readonly DicomStatus _stateUPSIsAlreadyCompleted = new DicomStatus(
                                                       "B306",
                                                       DicomState.Warning,
                                                       "The UPS is already in the requested state of COMPLETED");
 
-        private DicomStatus SOPInstanceDoesNotExist = new DicomStatus(
+        private readonly DicomStatus _stateSOPInstanceDoesNotExist = new DicomStatus(
                                                         "C307",
                                                         DicomState.Failure,
                                                         "Specified SOP Instance UID does not exist or is not a UPS Instance managed by this SCP");
@@ -25,13 +25,13 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void EqualsMethod_StatusWithDifferentCodes_AreNotEqual()
         {
-            Assert.NotEqual(UPSIsAlreadyCompleted, SOPInstanceDoesNotExist);
+            Assert.NotEqual(_stateUPSIsAlreadyCompleted, _stateSOPInstanceDoesNotExist);
         }
 
         [Fact]
         public void EqualsMethod_RandomFailure_EqualsStorageCannotUnderstand()
         {
-            Assert.Equal(SOPInstanceDoesNotExist, DicomStatus.StorageCannotUnderstand);
+            Assert.Equal(_stateSOPInstanceDoesNotExist, DicomStatus.StorageCannotUnderstand);
         }
 
         [Fact]
@@ -45,13 +45,13 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void Lookup_WithWarning_ReturnsCorrectStatusClass()
         {
-            var statusTest = DicomStatus.Lookup(UPSIsAlreadyCompleted.Code);
+            var statusTest = DicomStatus.Lookup(_stateUPSIsAlreadyCompleted.Code);
             // Code B306 is not in the known list. So the DicomStatus.Lookup shall return
             // the original code, but a status and Description that matches best one of
             // the known states.
-            Assert.Equal(UPSIsAlreadyCompleted.State, statusTest.State);
-            Assert.Equal(UPSIsAlreadyCompleted.Code, statusTest.Code);
-            Assert.NotEqual(UPSIsAlreadyCompleted.Description, statusTest.Description);
+            Assert.Equal(_stateUPSIsAlreadyCompleted.State, statusTest.State);
+            Assert.Equal(_stateUPSIsAlreadyCompleted.Code, statusTest.Code);
+            Assert.NotEqual(_stateUPSIsAlreadyCompleted.Description, statusTest.Description);
         }
 
         [Fact]
@@ -59,21 +59,31 @@ namespace FellowOakDicom.Tests.Network
         {
             try
             {
-                DicomStatus.AddKnownDicomStatuses(new[] { UPSIsAlreadyCompleted, SOPInstanceDoesNotExist });
-                var upsCompleteTest = DicomStatus.Lookup(UPSIsAlreadyCompleted.Code);
-                Assert.Equal(UPSIsAlreadyCompleted, upsCompleteTest);
-                Assert.Equal(UPSIsAlreadyCompleted.Code, upsCompleteTest.Code);
-                Assert.Equal(UPSIsAlreadyCompleted.Description, upsCompleteTest.Description);
-                var sopDoesNotExistTest = DicomStatus.Lookup(UPSIsAlreadyCompleted.Code);
-                Assert.Equal(UPSIsAlreadyCompleted, sopDoesNotExistTest);
-                Assert.Equal(UPSIsAlreadyCompleted.Code, sopDoesNotExistTest.Code);
-                Assert.Equal(UPSIsAlreadyCompleted.Description, sopDoesNotExistTest.Description);
+                DicomStatus.AddKnownDicomStatuses(new[] { _stateUPSIsAlreadyCompleted, _stateSOPInstanceDoesNotExist });
+                var upsCompleteTest = DicomStatus.Lookup(_stateUPSIsAlreadyCompleted.Code);
+                Assert.Equal(_stateUPSIsAlreadyCompleted, upsCompleteTest);
+                Assert.Equal(_stateUPSIsAlreadyCompleted.Code, upsCompleteTest.Code);
+                Assert.Equal(_stateUPSIsAlreadyCompleted.Description, upsCompleteTest.Description);
+                var sopDoesNotExistTest = DicomStatus.Lookup(_stateUPSIsAlreadyCompleted.Code);
+                Assert.Equal(_stateUPSIsAlreadyCompleted, sopDoesNotExistTest);
+                Assert.Equal(_stateUPSIsAlreadyCompleted.Code, sopDoesNotExistTest.Code);
+                Assert.Equal(_stateUPSIsAlreadyCompleted.Description, sopDoesNotExistTest.Description);
             }
             finally
             {
                 DicomStatus.ResetEntries();
             }
         }
+
+        [Fact]
+        public void NullComparrison()
+        {
+            Assert.True(DicomStatus.Success != null);
+            Assert.True(((DicomStatus)null) == null);
+            Assert.False(DicomStatus.Success == null);
+            Assert.False(((DicomStatus)null) != null);
+        }
+
         #endregion
     }
 }

@@ -42,7 +42,7 @@ namespace FellowOakDicom.Network
 
         public readonly string ErrorComment = null;
 
-        private readonly ushort Mask;
+        private readonly ushort _mask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DicomStatus"/> class.
@@ -54,10 +54,10 @@ namespace FellowOakDicom.Network
         {
             Code = ushort.Parse(
                 code.Replace('x', '0'),
-                System.Globalization.NumberStyles.HexNumber,
+                NumberStyles.HexNumber,
                 CultureInfo.InvariantCulture);
 
-            StringBuilder msb = new StringBuilder();
+            var msb = new StringBuilder();
             msb.Append(code.ToLower());
             msb.Replace('0', 'F')
                 .Replace('1', 'F')
@@ -75,9 +75,9 @@ namespace FellowOakDicom.Network
                 .Replace('d', 'F')
                 .Replace('e', 'F')
                 .Replace('x', '0');
-            Mask = ushort.Parse(
+            _mask = ushort.Parse(
                 msb.ToString(),
-                System.Globalization.NumberStyles.HexNumber,
+                NumberStyles.HexNumber,
                 CultureInfo.InvariantCulture);
 
             State = status;
@@ -103,7 +103,7 @@ namespace FellowOakDicom.Network
         /// <param name="status">The status.</param>
         /// <param name="comment">The comment.</param>
         public DicomStatus(DicomStatus status, string comment)
-            : this(String.Format("{0:x4}", status.Code), status.State, status.Description, comment)
+            : this(string.Format("{0:x4}", status.Code), status.State, status.Description, comment)
         {
         }
 
@@ -118,7 +118,7 @@ namespace FellowOakDicom.Network
             // ... and copy all other values from baseStatus 
             Description = baseStatus.Description;
             ErrorComment = baseStatus.ErrorComment;
-            Mask = baseStatus.Mask;
+            _mask = baseStatus._mask;
             State = baseStatus.State;
         }
 
@@ -133,12 +133,9 @@ namespace FellowOakDicom.Network
         {
             if (State == DicomState.Warning || State == DicomState.Failure)
             {
-                if (!String.IsNullOrEmpty(ErrorComment))
-                {
-                    return String.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment);
-                }
-
-                return String.Format("{0} [{1:x4}: {2}]", State, Code, Description);
+                return !string.IsNullOrEmpty(ErrorComment)
+                    ? string.Format("{0} [{1:x4}: {2}] -> {3}", State, Code, Description, ErrorComment)
+                    : string.Format("{0} [{1:x4}: {2}]", State, Code, Description);
             }
             return Description;
         }
@@ -151,12 +148,12 @@ namespace FellowOakDicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null)
+            if (s1 is null || s2 is null)
             {
-                return false;
+                return s1 is null && s2 is null;
             }
 
-            return (s1.Code & s2.Mask) == (s2.Code & s1.Mask);
+            return (s1.Code & s2._mask) == (s2.Code & s1._mask);
         }
 
         /// <summary>
@@ -167,9 +164,9 @@ namespace FellowOakDicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null)
+            if (s1 is null || s2 is null)
             {
-                return false;
+                return s1 is null ^ s2 is null;
             }
 
             return !(s1 == s2);
@@ -190,20 +187,9 @@ namespace FellowOakDicom.Network
         }
 
 
-        /// <summary>
-        /// Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        /// A hash code for the current <see cref="T:System.Object"/>.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         #region Static
 
-        private static List<DicomStatus> Entries = new List<DicomStatus>();
+        private static List<DicomStatus> _entries = new List<DicomStatus>();
 
         static DicomStatus()
         {
@@ -215,70 +201,70 @@ namespace FellowOakDicom.Network
         /// </summary>
         internal static void ResetEntries()
         {
-            Entries.Clear();
+            _entries.Clear();
             #region Load Dicom Status List
 
-            Entries.Add(Success);
-            Entries.Add(Cancel);
-            Entries.Add(Pending);
-            Entries.Add(Warning);
-            Entries.Add(WarningClass);
-            Entries.Add(AttributeListError);
-            Entries.Add(AttributeValueOutOfRange);
-            Entries.Add(SOPClassNotSupported);
-            Entries.Add(ClassInstanceConflict);
-            Entries.Add(DuplicateSOPInstance);
-            Entries.Add(DuplicateInvocation);
-            Entries.Add(InvalidArgumentValue);
-            Entries.Add(InvalidAttributeValue);
-            Entries.Add(InvalidObjectInstance);
-            Entries.Add(MissingAttribute);
-            Entries.Add(MissingAttributeValue);
-            Entries.Add(MistypedArgument);
-            Entries.Add(NoSuchArgument);
-            Entries.Add(NoSuchEventType);
-            Entries.Add(NoSuchObjectInstance);
-            Entries.Add(NoSuchSOPClass);
-            Entries.Add(ProcessingFailure);
-            Entries.Add(ResourceLimitation);
-            Entries.Add(UnrecognizedOperation);
-            Entries.Add(NoSuchActionType);
-            Entries.Add(StorageStorageOutOfResources);
-            Entries.Add(StorageDataSetDoesNotMatchSOPClassError);
-            Entries.Add(StorageCannotUnderstand);
-            Entries.Add(StorageCoercionOfDataElements);
-            Entries.Add(StorageDataSetDoesNotMatchSOPClassWarning);
-            Entries.Add(StorageElementsDiscarded);
-            Entries.Add(QueryRetrieveOutOfResources);
-            Entries.Add(QueryRetrieveUnableToCalculateNumberOfMatches);
-            Entries.Add(QueryRetrieveUnableToPerformSuboperations);
-            Entries.Add(QueryRetrieveMoveDestinationUnknown);
-            Entries.Add(QueryRetrieveIdentifierDoesNotMatchSOPClass);
-            Entries.Add(QueryRetrieveUnableToProcess);
-            Entries.Add(QueryRetrieveOptionalKeysNotSupported);
-            Entries.Add(QueryRetrieveSubOpsOneOrMoreFailures);
-            Entries.Add(PrintManagementMemoryAllocationNotSupported);
-            Entries.Add(PrintManagementFilmSessionPrintingNotSupported);
-            Entries.Add(PrintManagementFilmSessionEmptyPage);
-            Entries.Add(PrintManagementFilmBoxEmptyPage);
-            Entries.Add(PrintManagementImageDemagnified);
-            Entries.Add(PrintManagementMinMaxDensityOutOfRange);
-            Entries.Add(PrintManagementImageCropped);
-            Entries.Add(PrintManagementImageDecimated);
-            Entries.Add(PrintManagementFilmSessionEmpty);
-            Entries.Add(PrintManagementPrintQueueFull);
-            Entries.Add(PrintManagementImageLargerThanImageBox);
-            Entries.Add(PrintManagementInsufficientMemoryInPrinter);
-            Entries.Add(PrintManagementCombinedImageLargerThanImageBox);
-            Entries.Add(PrintManagementExistingFilmBoxNotPrinted);
-            Entries.Add(MediaCreationManagementDuplicateInitiateMediaCreation);
-            Entries.Add(MediaCreationManagementMediaCreationRequestAlreadyCompleted);
-            Entries.Add(MediaCreationManagementMediaCreationRequestAlreadyInProgress);
-            Entries.Add(MediaCreationManagementCancellationDeniedForUnspecifiedReason);
+            _entries.Add(Success);
+            _entries.Add(Cancel);
+            _entries.Add(Pending);
+            _entries.Add(Warning);
+            _entries.Add(WarningClass);
+            _entries.Add(AttributeListError);
+            _entries.Add(AttributeValueOutOfRange);
+            _entries.Add(SOPClassNotSupported);
+            _entries.Add(ClassInstanceConflict);
+            _entries.Add(DuplicateSOPInstance);
+            _entries.Add(DuplicateInvocation);
+            _entries.Add(InvalidArgumentValue);
+            _entries.Add(InvalidAttributeValue);
+            _entries.Add(InvalidObjectInstance);
+            _entries.Add(MissingAttribute);
+            _entries.Add(MissingAttributeValue);
+            _entries.Add(MistypedArgument);
+            _entries.Add(NoSuchArgument);
+            _entries.Add(NoSuchEventType);
+            _entries.Add(NoSuchObjectInstance);
+            _entries.Add(NoSuchSOPClass);
+            _entries.Add(ProcessingFailure);
+            _entries.Add(ResourceLimitation);
+            _entries.Add(UnrecognizedOperation);
+            _entries.Add(NoSuchActionType);
+            _entries.Add(StorageStorageOutOfResources);
+            _entries.Add(StorageDataSetDoesNotMatchSOPClassError);
+            _entries.Add(StorageCannotUnderstand);
+            _entries.Add(StorageCoercionOfDataElements);
+            _entries.Add(StorageDataSetDoesNotMatchSOPClassWarning);
+            _entries.Add(StorageElementsDiscarded);
+            _entries.Add(QueryRetrieveOutOfResources);
+            _entries.Add(QueryRetrieveUnableToCalculateNumberOfMatches);
+            _entries.Add(QueryRetrieveUnableToPerformSuboperations);
+            _entries.Add(QueryRetrieveMoveDestinationUnknown);
+            _entries.Add(QueryRetrieveIdentifierDoesNotMatchSOPClass);
+            _entries.Add(QueryRetrieveUnableToProcess);
+            _entries.Add(QueryRetrieveOptionalKeysNotSupported);
+            _entries.Add(QueryRetrieveSubOpsOneOrMoreFailures);
+            _entries.Add(PrintManagementMemoryAllocationNotSupported);
+            _entries.Add(PrintManagementFilmSessionPrintingNotSupported);
+            _entries.Add(PrintManagementFilmSessionEmptyPage);
+            _entries.Add(PrintManagementFilmBoxEmptyPage);
+            _entries.Add(PrintManagementImageDemagnified);
+            _entries.Add(PrintManagementMinMaxDensityOutOfRange);
+            _entries.Add(PrintManagementImageCropped);
+            _entries.Add(PrintManagementImageDecimated);
+            _entries.Add(PrintManagementFilmSessionEmpty);
+            _entries.Add(PrintManagementPrintQueueFull);
+            _entries.Add(PrintManagementImageLargerThanImageBox);
+            _entries.Add(PrintManagementInsufficientMemoryInPrinter);
+            _entries.Add(PrintManagementCombinedImageLargerThanImageBox);
+            _entries.Add(PrintManagementExistingFilmBoxNotPrinted);
+            _entries.Add(MediaCreationManagementDuplicateInitiateMediaCreation);
+            _entries.Add(MediaCreationManagementMediaCreationRequestAlreadyCompleted);
+            _entries.Add(MediaCreationManagementMediaCreationRequestAlreadyInProgress);
+            _entries.Add(MediaCreationManagementCancellationDeniedForUnspecifiedReason);
 
             #endregion
 
-            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
+            _entries = _entries.OrderByDescending(entry => CountBits(entry._mask)).ToList();
         }
 
         /// <summary>
@@ -288,9 +274,9 @@ namespace FellowOakDicom.Network
         /// <returns></returns>
         public static DicomStatus Lookup(ushort code)
         {
-            foreach (DicomStatus status in Entries)
+            foreach (DicomStatus status in _entries)
             {
-                if (status.Code == (code & status.Mask))
+                if (status.Code == (code & status._mask))
                 {
                     return new DicomStatus(code, status);
                 }
@@ -319,314 +305,314 @@ namespace FellowOakDicom.Network
         /// <param name="statuses">The statuses to add.</param>
         public static void AddKnownDicomStatuses(IEnumerable<DicomStatus> statuses)
         {
-            Entries.AddRange(statuses);
-            Entries = Entries.OrderByDescending(entry => CountBits(entry.Mask)).ToList();
+            _entries.AddRange(statuses);
+            _entries = _entries.OrderByDescending(entry => CountBits(entry._mask)).ToList();
         }
 
         #region Dicom Statuses
 
         /// <summary>Success: Success</summary>
-        public static DicomStatus Success = new DicomStatus("0000", DicomState.Success, "Success");
+        public static readonly DicomStatus Success = new DicomStatus("0000", DicomState.Success, "Success");
 
         /// <summary>Cancel: Cancel</summary>
-        public static DicomStatus Cancel = new DicomStatus("FE00", DicomState.Cancel, "Cancel");
+        public static readonly DicomStatus Cancel = new DicomStatus("FE00", DicomState.Cancel, "Cancel");
 
         /// <summary>Pending: Pending</summary>
-        public static DicomStatus Pending = new DicomStatus("FF00", DicomState.Pending, "Pending");
+        public static readonly DicomStatus Pending = new DicomStatus("FF00", DicomState.Pending, "Pending");
 
         /// <summary>Warning: Warning</summary>
-        public static DicomStatus Warning = new DicomStatus("0001", DicomState.Warning, "Warning");
+        public static readonly DicomStatus Warning = new DicomStatus("0001", DicomState.Warning, "Warning");
 
         /// <summary>Warning: Warning Class</summary>
-        public static DicomStatus WarningClass = new DicomStatus("Bxxx", DicomState.Warning, "Warning Class");
+        public static readonly DicomStatus WarningClass = new DicomStatus("Bxxx", DicomState.Warning, "Warning Class");
 
         /// <summary>Warning: Attribute list error</summary>
-        public static DicomStatus AttributeListError = new DicomStatus(
+        public static readonly DicomStatus AttributeListError = new DicomStatus(
             "0107",
             DicomState.Warning,
             "Attribute list error");
 
         /// <summary>Warning: Attribute Value Out of Range</summary>
-        public static DicomStatus AttributeValueOutOfRange = new DicomStatus(
+        public static readonly DicomStatus AttributeValueOutOfRange = new DicomStatus(
             "0116",
             DicomState.Warning,
             "Attribute Value Out of Range");
 
         /// <summary>Failure: Refused: SOP class not supported</summary>
-        public static DicomStatus SOPClassNotSupported = new DicomStatus(
+        public static readonly DicomStatus SOPClassNotSupported = new DicomStatus(
             "0122",
             DicomState.Failure,
             "Refused: SOP class not supported");
 
         /// <summary>Failure: Class-instance conflict</summary>
-        public static DicomStatus ClassInstanceConflict = new DicomStatus(
+        public static readonly DicomStatus ClassInstanceConflict = new DicomStatus(
             "0119",
             DicomState.Failure,
             "Class-instance conflict");
 
         /// <summary>Failure: Duplicate SOP instance</summary>
-        public static DicomStatus DuplicateSOPInstance = new DicomStatus(
+        public static readonly DicomStatus DuplicateSOPInstance = new DicomStatus(
             "0111",
             DicomState.Failure,
             "Duplicate SOP instance");
 
         /// <summary>Failure: Duplicate invocation</summary>
-        public static DicomStatus DuplicateInvocation = new DicomStatus(
+        public static readonly DicomStatus DuplicateInvocation = new DicomStatus(
             "0210",
             DicomState.Failure,
             "Duplicate invocation");
 
         /// <summary>Failure: Invalid argument value</summary>
-        public static DicomStatus InvalidArgumentValue = new DicomStatus(
+        public static readonly DicomStatus InvalidArgumentValue = new DicomStatus(
             "0115",
             DicomState.Failure,
             "Invalid argument value");
 
         /// <summary>Failure: Invalid attribute value</summary>
-        public static DicomStatus InvalidAttributeValue = new DicomStatus(
+        public static readonly DicomStatus InvalidAttributeValue = new DicomStatus(
             "0106",
             DicomState.Failure,
             "Invalid attribute value");
 
         /// <summary>Failure: Invalid object instance</summary>
-        public static DicomStatus InvalidObjectInstance = new DicomStatus(
+        public static readonly DicomStatus InvalidObjectInstance = new DicomStatus(
             "0117",
             DicomState.Failure,
             "Invalid object instance");
 
         /// <summary>Failure: Missing attribute</summary>
-        public static DicomStatus MissingAttribute = new DicomStatus("0120", DicomState.Failure, "Missing attribute");
+        public static readonly DicomStatus MissingAttribute = new DicomStatus("0120", DicomState.Failure, "Missing attribute");
 
         /// <summary>Failure: Missing attribute value</summary>
-        public static DicomStatus MissingAttributeValue = new DicomStatus(
+        public static readonly DicomStatus MissingAttributeValue = new DicomStatus(
             "0121",
             DicomState.Failure,
             "Missing attribute value");
 
         /// <summary>Failure: Mistyped argument</summary>
-        public static DicomStatus MistypedArgument = new DicomStatus("0212", DicomState.Failure, "Mistyped argument");
+        public static readonly DicomStatus MistypedArgument = new DicomStatus("0212", DicomState.Failure, "Mistyped argument");
 
         /// <summary>Failure: No such argument</summary>
-        public static DicomStatus NoSuchArgument = new DicomStatus("0114", DicomState.Failure, "No such argument");
+        public static readonly DicomStatus NoSuchArgument = new DicomStatus("0114", DicomState.Failure, "No such argument");
 
         /// <summary>Failure: No such event type</summary>
-        public static DicomStatus NoSuchEventType = new DicomStatus("0113", DicomState.Failure, "No such event type");
+        public static readonly DicomStatus NoSuchEventType = new DicomStatus("0113", DicomState.Failure, "No such event type");
 
         /// <summary>Failure: No Such object instance</summary>
-        public static DicomStatus NoSuchObjectInstance = new DicomStatus(
+        public static readonly DicomStatus NoSuchObjectInstance = new DicomStatus(
             "0112",
             DicomState.Failure,
             "No Such object instance");
 
         /// <summary>Failure: No Such SOP class</summary>
-        public static DicomStatus NoSuchSOPClass = new DicomStatus("0118", DicomState.Failure, "No Such SOP class");
+        public static readonly DicomStatus NoSuchSOPClass = new DicomStatus("0118", DicomState.Failure, "No Such SOP class");
 
         /// <summary>Failure: Processing failure</summary>
-        public static DicomStatus ProcessingFailure = new DicomStatus("0110", DicomState.Failure, "Processing failure");
+        public static readonly DicomStatus ProcessingFailure = new DicomStatus("0110", DicomState.Failure, "Processing failure");
 
         /// <summary>Failure: Resource limitation</summary>
-        public static DicomStatus ResourceLimitation = new DicomStatus(
+        public static readonly DicomStatus ResourceLimitation = new DicomStatus(
             "0213",
             DicomState.Failure,
             "Resource limitation");
 
         /// <summary>Failure: Unrecognized operation</summary>
-        public static DicomStatus UnrecognizedOperation = new DicomStatus(
+        public static readonly DicomStatus UnrecognizedOperation = new DicomStatus(
             "0211",
             DicomState.Failure,
             "Unrecognized operation");
 
         /// <summary>Failure: No such action type</summary>
-        public static DicomStatus NoSuchActionType = new DicomStatus("0123", DicomState.Failure, "No such action type");
+        public static readonly DicomStatus NoSuchActionType = new DicomStatus("0123", DicomState.Failure, "No such action type");
 
         /// <summary>Storage Failure: Out of Resources</summary>
-        public static DicomStatus StorageStorageOutOfResources = new DicomStatus(
+        public static readonly DicomStatus StorageStorageOutOfResources = new DicomStatus(
             "A7xx",
             DicomState.Failure,
             "Out of Resources");
 
         /// <summary>Storage Failure: Data Set does not match SOP Class (Error)</summary>
-        public static DicomStatus StorageDataSetDoesNotMatchSOPClassError = new DicomStatus(
+        public static readonly DicomStatus StorageDataSetDoesNotMatchSOPClassError = new DicomStatus(
             "A9xx",
             DicomState.Failure,
             "Data Set does not match SOP Class (Error)");
 
         /// <summary>Storage Failure: Cannot understand</summary>
-        public static DicomStatus StorageCannotUnderstand = new DicomStatus(
+        public static readonly DicomStatus StorageCannotUnderstand = new DicomStatus(
             "Cxxx",
             DicomState.Failure,
             "Cannot understand");
 
         /// <summary>Storage Warning: Coercion of Data Elements</summary>
-        public static DicomStatus StorageCoercionOfDataElements = new DicomStatus(
+        public static readonly DicomStatus StorageCoercionOfDataElements = new DicomStatus(
             "B000",
             DicomState.Warning,
             "Coercion of Data Elements");
 
         /// <summary>Storage Warning: Data Set does not match SOP Class (Warning)</summary>
-        public static DicomStatus StorageDataSetDoesNotMatchSOPClassWarning = new DicomStatus(
+        public static readonly DicomStatus StorageDataSetDoesNotMatchSOPClassWarning = new DicomStatus(
             "B007",
             DicomState.Warning,
             "Data Set does not match SOP Class (Warning)");
 
         /// <summary>Storage Warning: Elements Discarded</summary>
-        public static DicomStatus StorageElementsDiscarded = new DicomStatus(
+        public static readonly DicomStatus StorageElementsDiscarded = new DicomStatus(
             "B006",
             DicomState.Warning,
             "Elements Discarded");
 
         /// <summary>QueryRetrieve Failure: Out of Resources</summary>
-        public static DicomStatus QueryRetrieveOutOfResources = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveOutOfResources = new DicomStatus(
             "A700",
             DicomState.Failure,
             "Out of Resources");
 
         /// <summary>QueryRetrieve Failure: Unable to calculate number of matches</summary>
-        public static DicomStatus QueryRetrieveUnableToCalculateNumberOfMatches = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveUnableToCalculateNumberOfMatches = new DicomStatus(
             "A701",
             DicomState.Failure,
             "Unable to calculate number of matches");
 
         /// <summary>QueryRetrieve Failure: Unable to perform suboperations</summary>
-        public static DicomStatus QueryRetrieveUnableToPerformSuboperations = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveUnableToPerformSuboperations = new DicomStatus(
             "A702",
             DicomState.Failure,
             "Unable to perform suboperations");
 
         /// <summary>QueryRetrieve Failure: Move Destination unknown</summary>
-        public static DicomStatus QueryRetrieveMoveDestinationUnknown = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveMoveDestinationUnknown = new DicomStatus(
             "A801",
             DicomState.Failure,
             "Move Destination unknown");
 
         /// <summary>QueryRetrieve Failure: Identifier does not match SOP Class</summary>
-        public static DicomStatus QueryRetrieveIdentifierDoesNotMatchSOPClass = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveIdentifierDoesNotMatchSOPClass = new DicomStatus(
             "A900",
             DicomState.Failure,
             "Identifier does not match SOP Class");
 
         /// <summary>QueryRetrieve Failure: Unable to process</summary>
-        public static DicomStatus QueryRetrieveUnableToProcess = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveUnableToProcess = new DicomStatus(
             "Cxxx",
             DicomState.Failure,
             "Unable to process");
 
         /// <summary>QueryRetrieve Pending: Optional Keys Not Supported</summary>
-        public static DicomStatus QueryRetrieveOptionalKeysNotSupported = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveOptionalKeysNotSupported = new DicomStatus(
             "FF01",
             DicomState.Pending,
             "Optional Keys Not Supported");
 
         /// <summary>QueryRetrieve Warning: Sub-operations Complete - One or more Failures</summary>
-        public static DicomStatus QueryRetrieveSubOpsOneOrMoreFailures = new DicomStatus(
+        public static readonly DicomStatus QueryRetrieveSubOpsOneOrMoreFailures = new DicomStatus(
             "B000",
             DicomState.Warning,
             "Sub-operations Complete - One or more Failures");
 
         /// <summary>PrintManagement Warning: Memory allocation not supported</summary>
-        public static DicomStatus PrintManagementMemoryAllocationNotSupported = new DicomStatus(
+        public static readonly DicomStatus PrintManagementMemoryAllocationNotSupported = new DicomStatus(
             "B000",
             DicomState.Warning,
             "Memory allocation not supported");
 
         /// <summary>PrintManagement Warning: Film session printing (collation) is not supported</summary>
-        public static DicomStatus PrintManagementFilmSessionPrintingNotSupported = new DicomStatus(
+        public static readonly DicomStatus PrintManagementFilmSessionPrintingNotSupported = new DicomStatus(
             "B601",
             DicomState.Warning,
             "Film session printing (collation) is not supported");
 
         /// <summary>PrintManagement Warning: Film session SOP instance hierarchy does not contain image box SOP instances (empty page)</summary>
-        public static DicomStatus PrintManagementFilmSessionEmptyPage = new DicomStatus(
+        public static readonly DicomStatus PrintManagementFilmSessionEmptyPage = new DicomStatus(
             "B602",
             DicomState.Warning,
             "Film session SOP instance hierarchy does not contain image box SOP instances (empty page)");
 
         /// <summary>PrintManagement Warning: Film box SOP instance hierarchy does not contain image box SOP instances (empty page)</summary>
-        public static DicomStatus PrintManagementFilmBoxEmptyPage = new DicomStatus(
+        public static readonly DicomStatus PrintManagementFilmBoxEmptyPage = new DicomStatus(
             "B603",
             DicomState.Warning,
             "Film box SOP instance hierarchy does not contain image box SOP instances (empty page)");
 
         /// <summary>PrintManagement Warning: Image size is larger than image box size, the image has been demagnified</summary>
-        public static DicomStatus PrintManagementImageDemagnified = new DicomStatus(
+        public static readonly DicomStatus PrintManagementImageDemagnified = new DicomStatus(
             "B604",
             DicomState.Warning,
             "Image size is larger than image box size, the image has been demagnified");
 
         /// <summary>PrintManagement Warning: Requested min density or max density outside of printer's operating range</summary>
-        public static DicomStatus PrintManagementMinMaxDensityOutOfRange = new DicomStatus(
+        public static readonly DicomStatus PrintManagementMinMaxDensityOutOfRange = new DicomStatus(
             "B605",
             DicomState.Warning,
             "Requested min density or max density outside of printer's operating range");
 
         /// <summary>PrintManagement Warning: Image size is larger than the image box size, the Image has been cropped to fit</summary>
-        public static DicomStatus PrintManagementImageCropped = new DicomStatus(
+        public static readonly DicomStatus PrintManagementImageCropped = new DicomStatus(
             "B609",
             DicomState.Warning,
             "Image size is larger than the image box size, the Image has been cropped to fit");
 
         /// <summary>PrintManagement Warning: Image size or combined print image size is larger than the image box size, image or combined print image has been decimated to fit</summary>
-        public static DicomStatus PrintManagementImageDecimated = new DicomStatus(
+        public static readonly DicomStatus PrintManagementImageDecimated = new DicomStatus(
             "B60A",
             DicomState.Warning,
             "Image size or combined print image size is larger than the image box size, image or combined print image has been decimated to fit");
 
         /// <summary>PrintManagement Failure: Film session SOP instance hierarchy does not contain film box SOP instances</summary>
-        public static DicomStatus PrintManagementFilmSessionEmpty = new DicomStatus(
+        public static readonly DicomStatus PrintManagementFilmSessionEmpty = new DicomStatus(
             "C600",
             DicomState.Failure,
             "Film session SOP instance hierarchy does not contain film box SOP instances");
 
         /// <summary>PrintManagement Failure: Unable to create Print Job SOP Instance; print queue is full</summary>
-        public static DicomStatus PrintManagementPrintQueueFull = new DicomStatus(
+        public static readonly DicomStatus PrintManagementPrintQueueFull = new DicomStatus(
             "C601",
             DicomState.Failure,
             "Unable to create Print Job SOP Instance; print queue is full");
 
         /// <summary>PrintManagement Failure: Image size is larger than image box size</summary>
-        public static DicomStatus PrintManagementImageLargerThanImageBox = new DicomStatus(
+        public static readonly DicomStatus PrintManagementImageLargerThanImageBox = new DicomStatus(
             "C603",
             DicomState.Failure,
             "Image size is larger than image box size");
 
         /// <summary>PrintManagement Failure: Insufficient memory in printer to store the image</summary>
-        public static DicomStatus PrintManagementInsufficientMemoryInPrinter = new DicomStatus(
+        public static readonly DicomStatus PrintManagementInsufficientMemoryInPrinter = new DicomStatus(
             "C605",
             DicomState.Failure,
             "Insufficient memory in printer to store the image");
 
         /// <summary>PrintManagement Failure: Combined Print Image size is larger than the Image Box size</summary>
-        public static DicomStatus PrintManagementCombinedImageLargerThanImageBox = new DicomStatus(
+        public static readonly DicomStatus PrintManagementCombinedImageLargerThanImageBox = new DicomStatus(
             "C613",
             DicomState.Failure,
             "Combined Print Image size is larger than the Image Box size");
 
         /// <summary>PrintManagement Failure: There is an existing film box that has not been printed and N-ACTION at the Film Session level is not supported.</summary>
-        public static DicomStatus PrintManagementExistingFilmBoxNotPrinted = new DicomStatus(
+        public static readonly DicomStatus PrintManagementExistingFilmBoxNotPrinted = new DicomStatus(
             "C616",
             DicomState.Failure,
             "There is an existing film box that has not been printed and N-ACTION at the Film Session level is not supported.");
 
         /// <summary>MediaCreationManagement Failure: Refused because an Initiate Media Creation action has already been received for this SOP Instance</summary>
-        public static DicomStatus MediaCreationManagementDuplicateInitiateMediaCreation = new DicomStatus(
+        public static readonly DicomStatus MediaCreationManagementDuplicateInitiateMediaCreation = new DicomStatus(
             "A510",
             DicomState.Failure,
             "Refused because an Initiate Media Creation action has already been received for this SOP Instance");
 
         /// <summary>MediaCreationManagement Failure: Media creation request already completed</summary>
-        public static DicomStatus MediaCreationManagementMediaCreationRequestAlreadyCompleted = new DicomStatus(
+        public static readonly DicomStatus MediaCreationManagementMediaCreationRequestAlreadyCompleted = new DicomStatus(
             "C201",
             DicomState.Failure,
             "Media creation request already completed");
 
         /// <summary>MediaCreationManagement Failure: Media creation request already in progress and cannot be interrupted</summary>
-        public static DicomStatus MediaCreationManagementMediaCreationRequestAlreadyInProgress = new DicomStatus(
+        public static readonly DicomStatus MediaCreationManagementMediaCreationRequestAlreadyInProgress = new DicomStatus(
             "C202",
             DicomState.Failure,
             "Media creation request already in progress and cannot be interrupted");
 
         /// <summary>MediaCreationManagement Failure: Cancellation denied for unspecified reason</summary>
-        public static DicomStatus MediaCreationManagementCancellationDeniedForUnspecifiedReason = new DicomStatus(
+        public static readonly DicomStatus MediaCreationManagementCancellationDeniedForUnspecifiedReason = new DicomStatus(
             "C203",
             DicomState.Failure,
             "Cancellation denied for unspecified reason");
