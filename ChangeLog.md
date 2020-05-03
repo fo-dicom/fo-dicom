@@ -4,6 +4,7 @@
 * Bug fix: dependency of fo-dicom.ImageSharp nuget package was wrong. Now it also requires only netStandard1.3 (#1017)
 * Bug fix: Fixed freeze when reading SQ of length 0 (#1009)
 * Bug fix: DicomDictionary accessor thew exception on unknown keyword instead of returning null (#996)
+* Update version of ImageSharp to rc1
 
 #### v.4.0.4 (1/17/2020)
 * New feature: asynchronous counterparts to IDicomCEchoProvider, IDicomCFindProvider, IDicomCStoreProvider, IDicomCMoveProvider, IDicomCGetProvider and IDicomNServiceProvider

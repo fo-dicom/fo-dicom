@@ -76,36 +76,47 @@ namespace Dicom.Imaging
             var data = new byte[pixels.ByteSize];
             Marshal.Copy(pixels.Pointer, data, 0, pixels.ByteSize);
             image = Image.LoadPixelData<Bgra32>(data, width, height);
-            if (rotation != 0 || flipX || flipY)
+            var (flipMode, rotationMode) = GetFlipAndRotateMode(flipX, flipY, rotation);
+            if (flipMode != FlipMode.None && rotationMode != RotateMode.None)
             {
-                image.Mutate(x => x.RotateFlip(GetRotateMode(rotation), GetFlipMode(flipX, flipY)));
+                image.Mutate(x => x.RotateFlip(rotationMode, flipMode));
             }
         }
 
-        private FlipMode GetFlipMode(bool flipX, bool flipY)
+        private (FlipMode, RotateMode) GetFlipAndRotateMode(bool flipX, bool flipY, int rotation)
         {
-            var flipMode = FlipMode.None;
-            if (flipX)
+            FlipMode flipMode;
+            if (flipX && flipY)
             {
-                flipMode |= FlipMode.Horizontal;
+                // flipping both horizontally and vertically is equal to rotating 180 degrees
+                rotation += 180;
+                flipMode = FlipMode.None;
             }
-            if (flipY)
+            else if (flipX)
             {
-                flipMode |= FlipMode.Vertical;
+                flipMode = FlipMode.Horizontal;
             }
-            return flipMode;
+            else if (flipY)
+            {
+                flipMode = FlipMode.Vertical;
+            }
+            else
+            {
+                flipMode = FlipMode.None;
+            }
+
+            RotateMode rotationMode;
+            switch (rotation % 360)
+            {
+                case 90: rotationMode = RotateMode.Rotate90; break;
+                case 180: rotationMode = RotateMode.Rotate180; break;
+                case 270: rotationMode = RotateMode.Rotate270; break;
+                default: rotationMode = RotateMode.None; break;
+            }
+
+            return (flipMode, rotationMode);
         }
 
-        private RotateMode GetRotateMode(int rotation)
-        {
-            switch (rotation)
-            {
-                case 90: return RotateMode.Rotate90;
-                case 180: return RotateMode.Rotate180;
-                case 270: return RotateMode.Rotate270;
-                default: return RotateMode.None;
-            }
-        }
 
         /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
@@ -114,7 +125,7 @@ namespace Dicom.Imaging
             {
                 var layer = (graphic.RenderImage(null) as ImageSharpImage).image;
                 image.Mutate(ctx => ctx
-                    .DrawImage(layer, new SixLabors.Primitives.Point(graphic.ScaledOffsetX, graphic.ScaledOffsetY), 1));
+                    .DrawImage(layer, new Point(graphic.ScaledOffsetX, graphic.ScaledOffsetY), 1));
             }
         }
  
