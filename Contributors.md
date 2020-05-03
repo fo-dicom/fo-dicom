@@ -20,7 +20,6 @@
 * [Chris Hafey](https://github.com/chafey)
 * [Johannes Liegert](https://github.com/0xLigety)
 * [Aerik Sylvan](https://github.com/aerik)
-* [Maher Jendoubi](https://github.com/maherjendoubi)
 * [Michael Pavlovsky](https://github.com/michaelp)
 * [lste](https://github.com/lste)
 * [captainstark](https://github.com/captainstark)
