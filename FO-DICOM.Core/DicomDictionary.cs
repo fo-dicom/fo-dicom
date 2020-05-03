@@ -269,12 +269,15 @@ namespace FellowOakDicom
                     return result;
                 }
 
-                foreach (var privDict in _private.Values)
+                if (_private != null)
                 {
-                    var r = privDict[keyword];
-                    if (r != null)
+                    foreach (var privDict in _private.Values)
                     {
-                        return r;
+                        var r = privDict[keyword];
+                        if (r != null)
+                        {
+                            return r;
+                        }
                     }
                 }
 
