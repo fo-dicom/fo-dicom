@@ -6298,8 +6298,8 @@
     <uid uid="1.2.840.10008.6.1.1137" keyword="RTProcessInputUsed7025" type="Context Group Name">RT Process Input Used (7025)</uid>
     <uid uid="1.2.840.10008.6.1.1138" keyword="ProstateSectorAnatomy6300" type="Context Group Name">Prostate Sector Anatomy (6300)</uid>
     <uid uid="1.2.840.10008.6.1.1139" keyword="ProstateSectorAnatomyFromPIRADSV26301" type="Context Group Name">Prostate Sector Anatomy from PI-RADS v2 (6301)</uid>
-    <uid uid="1.2.840.10008.6.1.1140" keyword="ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302" type="Context Group Name">Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)</uid>
-    <uid uid="1.2.840.10008.6.1.1141" keyword="ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303" type="Context Group Name">Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)</uid>
+    <uid uid="1.2.840.10008.6.1.1140" keyword="ProstateSectorAnatomyFromEuropeanConsensus16SectorMinimalModel6302" type="Context Group Name">Prostate Sector Anatomy from European Consensus 16 Sector (Minimal) Model (6302)</uid>
+    <uid uid="1.2.840.10008.6.1.1141" keyword="ProstateSectorAnatomyFromEuropeanConsensus27SectorOptimalModel6303" type="Context Group Name">Prostate Sector Anatomy from European Consensus 27 Sector (Optimal) Model (6303)</uid>
     <uid uid="1.2.840.10008.6.1.1142" keyword="MeasurementSelectionReasons12301" type="Context Group Name">Measurement Selection Reasons (12301)</uid>
     <uid uid="1.2.840.10008.6.1.1143" keyword="EchoFindingObservationTypes12302" type="Context Group Name">Echo Finding Observation Types (12302)</uid>
     <uid uid="1.2.840.10008.6.1.1144" keyword="EchoMeasurementTypes12303" type="Context Group Name">Echo Measurement Types (12303)</uid>
