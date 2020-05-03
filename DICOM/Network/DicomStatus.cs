@@ -54,7 +54,7 @@ namespace Dicom.Network
         {
             Code = ushort.Parse(
                 code.Replace('x', '0'),
-                System.Globalization.NumberStyles.HexNumber,
+                NumberStyles.HexNumber,
                 CultureInfo.InvariantCulture);
 
             StringBuilder msb = new StringBuilder();
@@ -147,7 +147,7 @@ namespace Dicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null) return false;
+            if (s1 is null || s2 is null) { return s1 is null && s2 is null; }
             return (s1.Code & s2.Mask) == (s2.Code & s1.Mask);
         }
 
@@ -159,7 +159,7 @@ namespace Dicom.Network
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(DicomStatus s1, DicomStatus s2)
         {
-            if ((object)s1 == null || (object)s2 == null) return false;
+            if (s1 is null || s2 is null) { return s1 is null ^ s2 is null; }
             return !(s1 == s2);
         }
 
