@@ -79,7 +79,7 @@ namespace FellowOakDicom.Tests
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            for (int i = 0; i < numCalls; i++) call();
+            for (int i = 0; i < numCalls; i++) { call(); }
 
             stopWatch.Stop();
 
@@ -102,6 +102,15 @@ namespace FellowOakDicom.Tests
             _output.WriteLine($"GetEnumerator: {millisecondsPerCall} ms per call, reference time: {referenceTime} ms per call");
 
             Assert.InRange(millisecondsPerCall, 0, (1 + referenceTime) * 5);
+        }
+
+        [Fact]
+        public void AccessNonExistingKeyword()
+        {
+            DicomTag tag = null;
+            var ex = Record.Exception(() => tag = DicomDictionary.Default["invalid-keyword"]);
+            Assert.Null(ex); // assert that no exception was thrown
+            Assert.Null(tag); // assert that the dictionary returns a null tag for invalid keyword
         }
 
         #endregion
@@ -140,4 +149,4 @@ namespace FellowOakDicom.Tests
 
         #endregion
     }
-    }
+}
