@@ -8,12 +8,12 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public class DicomReaderCallbackObserver : IDicomReaderObserver
+    internal class DicomReaderCallbackObserver : IDicomReaderObserver
     {
 
-        private Stack<DicomReaderEventArgs> _stack;
+        private readonly Stack<DicomReaderEventArgs> _stack;
 
-        private IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
+        private readonly IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
 
         public DicomReaderCallbackObserver()
         {
@@ -28,8 +28,10 @@ namespace FellowOakDicom.IO.Reader
 
         public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
-            EventHandler<DicomReaderEventArgs> handler;
-            if (_callbacks.TryGetValue(tag, out handler)) handler(this, new DicomReaderEventArgs(source.Marker, tag, vr, data));
+            if (_callbacks.TryGetValue(tag, out EventHandler<DicomReaderEventArgs> handler))
+            {
+                handler(this, new DicomReaderEventArgs(source.Marker, tag, vr, data));
+            }
         }
 
         public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
@@ -48,8 +50,10 @@ namespace FellowOakDicom.IO.Reader
         public void OnEndSequence()
         {
             DicomReaderEventArgs args = _stack.Pop();
-            EventHandler<DicomReaderEventArgs> handler;
-            if (_callbacks.TryGetValue(args.Tag, out handler)) handler(this, args);
+            if (_callbacks.TryGetValue(args.Tag, out EventHandler<DicomReaderEventArgs> handler))
+            {
+                handler(this, args);
+            }
         }
 
         public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
@@ -64,8 +68,10 @@ namespace FellowOakDicom.IO.Reader
         public void OnEndFragmentSequence()
         {
             DicomReaderEventArgs args = _stack.Pop();
-            EventHandler<DicomReaderEventArgs> handler;
-            if (_callbacks.TryGetValue(args.Tag, out handler)) handler(this, args);
+            if (_callbacks.TryGetValue(args.Tag, out EventHandler<DicomReaderEventArgs> handler))
+            {
+                handler(this, args);
+            }
         }
     }
 }

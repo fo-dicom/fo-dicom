@@ -6,7 +6,7 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public interface IDicomReaderObserver
+    internal interface IDicomReaderObserver
     {
 
         void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data);

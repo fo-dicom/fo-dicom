@@ -17,7 +17,7 @@ namespace FellowOakDicom.IO.Reader
     /// <summary>
     /// DICOM reader implementation.
     /// </summary>
-    public class DicomReader : IDicomReader
+    internal class DicomReader : IDicomReader
     {
         #region FIELDS
 
@@ -107,7 +107,7 @@ namespace FellowOakDicom.IO.Reader
             /// <summary>
             /// Defined value for undefined length.
             /// </summary>
-            private const uint UndefinedLength = 0xffffffff;
+            private const uint _undefinedLength = 0xffffffff;
 
             private readonly IDicomReaderObserver _observer;
 
@@ -483,7 +483,7 @@ namespace FellowOakDicom.IO.Reader
                             _length = source.GetUInt32();
 
                             // assume that undefined length in implicit VR element is SQ
-                            if (_length == UndefinedLength)
+                            if (_length == _undefinedLength)
                             {
                                 _vr = DicomVR.SQ;
                             }
@@ -513,7 +513,7 @@ namespace FellowOakDicom.IO.Reader
                             // assume that Undefined Length in explicit datasets with VR UN are sequences 
                             // According to CP-246 the sequence shall be handled as ILE, but this will be handled later...
                             // in the current code this needs to be restricted to privates 
-                            if (_length == UndefinedLength && _vr == DicomVR.UN && _tag.IsPrivate)
+                            if (_length == _undefinedLength && _vr == DicomVR.UN && _tag.IsPrivate)
                             {
                                 _vr = DicomVR.SQ;
                             }
@@ -530,7 +530,7 @@ namespace FellowOakDicom.IO.Reader
                         _length = source.GetUInt32();
 
                         // assume that undefined length in implicit dataset is SQ
-                        if (_length == UndefinedLength && _vr == DicomVR.UN)
+                        if (_length == _undefinedLength && _vr == DicomVR.UN)
                         {
                             _vr = DicomVR.SQ;
                         }
@@ -608,7 +608,7 @@ namespace FellowOakDicom.IO.Reader
                             _implicit = false;
                             source.PushMilestone((uint)(source.Position - curIndex));
                         }
-                        else if (_length != UndefinedLength)
+                        else if (_length != _undefinedLength)
                         {
                             _implicit = false;
                             source.PushMilestone(_length);
@@ -649,7 +649,7 @@ namespace FellowOakDicom.IO.Reader
                         _vr = parsedVR;
                     }
 
-                    if (_length == UndefinedLength)
+                    if (_length == _undefinedLength)
                     {
                         _observer.OnBeginFragmentSequence(source, _tag, _vr);
                         _parseStage = ParseStage.Tag;
@@ -760,7 +760,7 @@ namespace FellowOakDicom.IO.Reader
                             _implicit = false;
                             source.PushMilestone((uint)(source.Position - curIndex));
                         }
-                        else if (_length != UndefinedLength)
+                        else if (_length != _undefinedLength)
                         {
                             _implicit = false;
                             source.PushMilestone(_length);
@@ -801,7 +801,7 @@ namespace FellowOakDicom.IO.Reader
                         _vr = parsedVR;
                     }
 
-                    if (_length == UndefinedLength)
+                    if (_length == _undefinedLength)
                     {
                         _observer.OnBeginFragmentSequence(source, _tag, _vr);
                         _parseStage = ParseStage.Tag;
@@ -949,7 +949,7 @@ namespace FellowOakDicom.IO.Reader
             {
                 if (_parseStage == ParseStage.Value)
                 {
-                    if (_length != UndefinedLength)
+                    if (_length != _undefinedLength)
                     {
                         if (!source.Require(_length))
                         {
@@ -994,7 +994,7 @@ namespace FellowOakDicom.IO.Reader
             {
                 if (_parseStage == ParseStage.Value)
                 {
-                    if (_length != UndefinedLength)
+                    if (_length != _undefinedLength)
                     {
                         if (!source.Require(_length))
                         {

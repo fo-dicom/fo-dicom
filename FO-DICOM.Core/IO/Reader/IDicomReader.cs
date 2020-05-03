@@ -41,7 +41,7 @@ namespace FellowOakDicom.IO.Reader
     /// <summary>
     /// Interface representing a DICOM reader.
     /// </summary>
-    public interface IDicomReader
+    internal interface IDicomReader
     {
         /// <summary>
         /// Gets or sets whether value representation is explicit or not.

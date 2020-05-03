@@ -7,7 +7,7 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public class DicomReaderEventArgs : EventArgs
+    internal class DicomReaderEventArgs : EventArgs
     {
 
         public readonly long Position;

@@ -6,10 +6,10 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public class DicomReaderMultiObserver : IDicomReaderObserver
+    internal class DicomReaderMultiObserver : IDicomReaderObserver
     {
 
-        private IDicomReaderObserver[] _observers;
+        private readonly IDicomReaderObserver[] _observers;
 
         public DicomReaderMultiObserver(params IDicomReaderObserver[] observers)
         {
@@ -17,43 +17,28 @@ namespace FellowOakDicom.IO.Reader
         }
 
         public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnElement(source, tag, vr, data);
-        }
+            => _observers.Each(observer => observer.OnElement(source, tag, vr, data));
 
         public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnBeginSequence(source, tag, length);
-        }
+            => _observers.Each(observer => observer.OnBeginSequence(source, tag, length));
 
         public void OnBeginSequenceItem(IByteSource source, uint length)
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnBeginSequenceItem(source, length);
-        }
+            => _observers.Each(observer => observer.OnBeginSequenceItem(source, length));
 
         public void OnEndSequenceItem()
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnEndSequenceItem();
-        }
+            => _observers.Each(observer => observer.OnEndSequenceItem());
 
         public void OnEndSequence()
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnEndSequence();
-        }
+            => _observers.Each(observer => observer.OnEndSequence());
 
         public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnBeginFragmentSequence(source, tag, vr);
-        }
+            => _observers.Each(observer => observer.OnBeginFragmentSequence(source, tag, vr));
 
         public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnFragmentSequenceItem(source, data);
-        }
+            => _observers.Each(observer => observer.OnFragmentSequenceItem(source, data));
 
         public void OnEndFragmentSequence()
-        {
-            foreach (IDicomReaderObserver observer in _observers) observer.OnEndFragmentSequence();
-        }
+            => _observers.Each(observer => observer.OnEndFragmentSequence());
+
     }
 }

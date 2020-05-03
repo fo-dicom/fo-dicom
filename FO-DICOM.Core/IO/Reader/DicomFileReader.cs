@@ -9,9 +9,9 @@ namespace FellowOakDicom.IO.Reader
 {
 
     /// <summary>
-    /// Class for reading DICOM file objects.
+    /// Internal helperclass for reading DICOM file objects.
     /// </summary>
-    public class DicomFileReader
+    internal class DicomFileReader
     {
 
         #region INNER TYPES

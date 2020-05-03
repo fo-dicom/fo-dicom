@@ -9,7 +9,7 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public class DicomDatasetReaderObserver : IDicomReaderObserver
+    internal class DicomDatasetReaderObserver : IDicomReaderObserver
     {
 
         private readonly Stack<DicomDataset> _datasets;
