@@ -6,6 +6,7 @@
 * [Ian Yates](http://github.com/IanYates)
 * [Hesham Desouky](https://github.com/hdesouky), Nebras Technology
 * [Chris Horn](https://github.com/GMZ)
+* [Maher Jendoubi](https://github.com/maherjendoubi)
 * [Mahesh Dubey](https://github.com/mdubey82)
 * [Rickard Holmberg](https://github.com/rickardraysearch)
 * [Reinhard Gruber](https://github.com/gofal)
