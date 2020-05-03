@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
+using Dicom.IO;
 
 namespace Dicom
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Reflection;
-
-    using Dicom.IO;
 
     /// <summary>
     /// Class for managing DICOM dictionaries.
@@ -69,17 +68,15 @@ namespace Dicom
                 false,
                 DicomVR.LO);
 
-        private DicomPrivateCreator _privateCreator;
+        private readonly ConcurrentDictionary<string, DicomPrivateCreator> _creators;
 
-        private ConcurrentDictionary<string, DicomPrivateCreator> _creators;
+        private readonly ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
 
-        private ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
+        private readonly ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
 
-        private ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
+        private readonly ConcurrentDictionary<string, DicomTag> _keywords;
 
-        private ConcurrentDictionary<string, DicomTag> _keywords;
-
-        private ConcurrentBag<DicomDictionaryEntry> _masked;
+        private readonly ConcurrentBag<DicomDictionaryEntry> _masked;
 
         #endregion
 
@@ -96,7 +93,7 @@ namespace Dicom
 
         private DicomDictionary(DicomPrivateCreator creator)
         {
-            _privateCreator = creator;
+            PrivateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentBag<DicomDictionaryEntry>();
@@ -136,15 +133,16 @@ namespace Dicom
             {
                 if (_default == null)
                 {
-                    var dict = new DicomDictionary();
-                    dict.Add(
+                    var dict = new DicomDictionary
+                    {
                         new DicomDictionaryEntry(
                             DicomMaskedTag.Parse("xxxx", "0000"),
                             "Group Length",
                             "GroupLength",
                             DicomVM.VM_1,
                             false,
-                            DicomVR.UL));
+                            DicomVR.UL)
+                    };
                     try
                     {
 #if NET35 || HOLOLENS
@@ -230,10 +228,7 @@ namespace Dicom
 
         public static DicomDictionary Default
         {
-            get
-            {
-                return EnsureDefaultDictionariesLoaded(loadPrivateDictionary: null);
-            }
+            get => EnsureDefaultDictionariesLoaded(loadPrivateDictionary: null);
             set
             {
                 lock (_lock)
@@ -248,51 +243,43 @@ namespace Dicom
             }
         }
 
-        public DicomPrivateCreator PrivateCreator
-        {
-            get
-            {
-                return _privateCreator;
-            }
-            internal set
-            {
-                _privateCreator = value;
-            }
-        }
+        public DicomPrivateCreator PrivateCreator { get; internal set; }
 
         public DicomDictionaryEntry this[DicomTag tag]
         {
             get
             {
-                if (_private != null && tag.PrivateCreator != null)
+                if (_private != null && tag.PrivateCreator != null
+                    && _private.TryGetValue(tag.PrivateCreator, out DicomDictionary pvt))
                 {
-                    DicomDictionary pvt = null;
-                    if (_private.TryGetValue(tag.PrivateCreator, out pvt)) return pvt[tag];
+                    return pvt[tag];
                 }
 
                 // special case for private creator tag
-                if (tag.IsPrivate && tag.Element != 0x0000 && tag.Element <= 0x00ff) return PrivateCreatorTag;
+                if (tag.IsPrivate && tag.Element != 0x0000 && tag.Element <= 0x00ff)
+                {
+                    return PrivateCreatorTag;
+                }
 
-                DicomDictionaryEntry entry = null;
-                if (_entries.TryGetValue(tag, out entry)) return entry;
+                if (_entries.TryGetValue(tag, out DicomDictionaryEntry entry))
+                {
+                    return entry;
+                }
 
                 // this is faster than LINQ query
                 foreach (var x in _masked)
                 {
-                    if (x.MaskTag.IsMatch(tag)) return x;
+                    if (x.MaskTag.IsMatch(tag))
+                    {
+                        return x;
+                    }
                 }
 
                 return UnknownTag;
             }
         }
 
-        public DicomDictionary this[DicomPrivateCreator creator]
-        {
-            get
-            {
-                return _private.GetOrAdd(creator, _ => new DicomDictionary(creator));
-            }
-        }
+        public DicomDictionary this[DicomPrivateCreator creator] => _private.GetOrAdd(creator, _ => new DicomDictionary(creator));
 
         /// <summary>
         /// Gets the DIcomTag for a given keyword.
@@ -303,14 +290,21 @@ namespace Dicom
         {
             get
             {
-                DicomTag result;
-                if (_keywords.TryGetValue(keyword, out result)) return result;
-
-                foreach (var privDict in _private.Values)
+                if (_keywords.TryGetValue(keyword, out DicomTag result))
                 {
-                    var r = privDict[keyword];
-                    if (r != null)
-                        return r;
+                    return result;
+                }
+
+                if (_private != null)
+                {
+                    foreach (var privDict in _private.Values)
+                    {
+                        var r = privDict[keyword];
+                        if (r != null)
+                        {
+                            return r;
+                        }
+                    }
                 }
 
                 return null;
@@ -325,10 +319,13 @@ namespace Dicom
 
         public void Add(DicomDictionaryEntry entry)
         {
-            if (_privateCreator != null)
+            if (PrivateCreator != null)
             {
-                entry.Tag = new DicomTag(entry.Tag.Group, entry.Tag.Element, _privateCreator);
-                if (entry.MaskTag != null) entry.MaskTag.Tag = entry.Tag;
+                entry.Tag = new DicomTag(entry.Tag.Group, entry.Tag.Element, PrivateCreator);
+                if (entry.MaskTag != null)
+                {
+                    entry.MaskTag.Tag = entry.Tag;
+                }
             }
 
             if (entry.MaskTag == null)
@@ -373,15 +370,9 @@ namespace Dicom
 
         #region IEnumerable Members
 
-        public IEnumerator<DicomDictionaryEntry> GetEnumerator()
-        {
-            return _entries.Values.Concat(_masked).GetEnumerator();
-        }
+        public IEnumerator<DicomDictionaryEntry> GetEnumerator() => _entries.Values.Concat(_masked).GetEnumerator();
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         #endregion
     }
