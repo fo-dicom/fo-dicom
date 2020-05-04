@@ -137,7 +137,7 @@ namespace FellowOakDicom.Imaging
             }
         }
 
-        /// <summary>Gets or sets wether to use VOI LUT.</summary>
+        /// <summary>Gets or sets whether to use VOI LUT.</summary>
         public virtual bool UseVOILUT
         {
             get

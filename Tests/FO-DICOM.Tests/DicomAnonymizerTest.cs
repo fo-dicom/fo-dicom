@@ -178,20 +178,20 @@ namespace FellowOakDicom.Tests
         {
             const string fileName = "GH064.dcm";
 
-            var orignalDicom = DicomFile.Open($"./Test Data/{fileName}");
+            var originalDicom = DicomFile.Open($"./Test Data/{fileName}");
 
             var securityProfile = DicomAnonymizer.SecurityProfile.LoadProfile(null, DicomAnonymizer.SecurityProfileOptions.BasicProfile);
             securityProfile.PatientName = "kökö";
 
             var dicomAnonymizer = new DicomAnonymizer(securityProfile);
-            var anonymizedDicom = dicomAnonymizer.Anonymize(orignalDicom);
+            var anonymizedDicom = dicomAnonymizer.Anonymize(originalDicom);
 
             // Ensure that we are using valid input data for test.
             Assert.Equal(Encoding.ASCII, DicomEncoding.Default);
-            Assert.NotEqual(DicomEncoding.GetEncoding(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet)), DicomEncoding.Default);
+            Assert.NotEqual(DicomEncoding.GetEncoding(originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet)), DicomEncoding.Default);
 
             // Ensure DICOM encoding same as original.
-            Assert.Equal(orignalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), anonymizedDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
+            Assert.Equal(originalDicom.Dataset.GetString(DicomTag.SpecificCharacterSet), anonymizedDicom.Dataset.GetString(DicomTag.SpecificCharacterSet));
             Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
