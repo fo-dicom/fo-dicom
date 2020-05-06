@@ -4,7 +4,7 @@ nuget:
   project_feed: true
 before_build:
 - ps: Write-Host -Object "This CI is working by appveyor.yml..."
-- cmd: nuget restore FO-DICOM.Full.sln -source https://www.nuget.org/api/v2
+- cmd: dotnet restore FO-DICOM.Full.sln -source https://www.nuget.org/api/v2
 build:
   project: FO-DICOM.Full.sln
   verbosity: normal
