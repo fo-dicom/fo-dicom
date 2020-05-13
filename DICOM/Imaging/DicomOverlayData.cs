@@ -163,7 +163,7 @@ namespace Dicom.Imaging
         public int OriginX
         {
             get => Dataset.GetValueOrDefault<short>(OverlayTag(DicomTag.OverlayOrigin), 1, 1);
-            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginY);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)OriginY, (short)value);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Dicom.Imaging
         public int OriginY
         {
             get => Dataset.GetValueOrDefault<short>(OverlayTag(DicomTag.OverlayOrigin), 0, 1);
-            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)OriginX, (short)value);
+            set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayOrigin), (short)value, (short)OriginX);
         }
 
         /// <summary>
