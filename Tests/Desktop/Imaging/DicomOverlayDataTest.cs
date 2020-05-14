@@ -164,7 +164,7 @@ namespace Dicom.Imaging
             DicomOverlayData overlayData = new DicomOverlayData(dataset, group);
             overlayData.OriginX = expected;
 
-            int originX = dataset.GetValueOrDefault<ushort>(new DicomTag(group, 0x0050), 1, 1);
+            int originX = dataset.GetValueOrDefault<short>(new DicomTag(group, 0x0050), 1, 1);
             Assert.Equal(expected, originX);
         }
 
@@ -178,7 +178,7 @@ namespace Dicom.Imaging
             DicomOverlayData overlayData = new DicomOverlayData(dataset, group);
             overlayData.OriginY = expected;
 
-            int originY = dataset.GetValueOrDefault<ushort>(new DicomTag(group, 0x0050), 0, 1);
+            int originY = dataset.GetValueOrDefault<short>(new DicomTag(group, 0x0050), 0, 1);
             Assert.Equal(expected, originY);
         }
     }
