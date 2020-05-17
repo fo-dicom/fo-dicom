@@ -54,3 +54,4 @@
 * [Paul Watt](https://github.com/paul81)
 * [sfb13](https://github.com/sfb13)
 * [Zhenghan Yang](https://github.com/kira-96)
+* [Denny Spiegelberg](https://github.com/nutzlastfan)
