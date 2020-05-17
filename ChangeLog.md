@@ -6,6 +6,7 @@
 * Bug fix: DicomDictionary accessor thew exception on unknown keyword instead of returning null (#996)
 * Update version of ImageSharp to rc1
 * Bug fix: Comparing instance of class DicomStatus with null returned wrong value (#975)
+* Bug fix: Overlay origin cannot be set correctly. (#1028)
 * Add encoding to JsonDicomConverter on LO, SH and PN (#1020)
 
 #### v.4.0.4 (1/17/2020)
