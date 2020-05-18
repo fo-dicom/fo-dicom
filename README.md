@@ -59,6 +59,7 @@ Package | Description
 [fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
 [fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
 [fo-dicom.Drawing](https://www.nuget.org/packages/fo-dicom.Drawing/) | .NET Core library providing *System.Drawing* based image rendering and printing
+[fo-dicom.ImageSharp](https://www.nuget.org/packages/fo-dicom.ImageSharp/) | .NET Standard library providing *SixLabors.ImageSharp* based image rendering
 
 ### API Documentation
 The API documentation for the core library (represented by *fo-dicom.Desktop*) and the *log4net*, *NLog* and *Serilog* connectors is available [here](https://fo-dicom.github.io/).
