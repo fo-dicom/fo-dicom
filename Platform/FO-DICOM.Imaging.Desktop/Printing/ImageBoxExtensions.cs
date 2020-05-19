@@ -3,10 +3,10 @@
 
 using System;
 using System.Drawing;
-using Dicom.Imaging;
-using Dicom.Imaging.Mathematics;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Mathematics;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
 
     /// <summary>
@@ -17,7 +17,7 @@ namespace Dicom.Printing
         #region FIELDS
 
         //border in 100th of inches
-        private const float BORDER = (float)(100 * 2 / 25.4);
+        private const float _border = (float)(100 * 2 / 25.4);
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace Dicom.Printing
             var boxCopy = box;
             if (imageBox.FilmBox.Trim == "YES")
             {
-                boxCopy.Inflate(-BORDER, -BORDER);
+                boxCopy.Inflate(-_border, -_border);
             }
 
             if (imageBox.ImageSequence != null && imageBox.ImageSequence.Contains(DicomTag.PixelData))
@@ -79,7 +79,7 @@ namespace Dicom.Printing
                 RectF fillBox = box;
                 if (filmBox.BorderDensity == "WHITE" && filmBox.Trim == "YES")
                 {
-                    fillBox.Inflate(-BORDER, -BORDER);
+                    fillBox.Inflate(-_border, -_border);
                 }
                 using (var brush = new SolidBrush(Color.Black))
                 {

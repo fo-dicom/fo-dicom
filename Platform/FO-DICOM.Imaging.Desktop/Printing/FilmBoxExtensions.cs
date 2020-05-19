@@ -3,9 +3,9 @@
 
 using System;
 using System.Drawing;
-using Dicom.Imaging.Mathematics;
+using FellowOakDicom.Imaging.Mathematics;
 
-namespace Dicom.Printing
+namespace FellowOakDicom.Printing
 {
 
     /// <summary>
@@ -34,7 +34,7 @@ namespace Dicom.Printing
                     var width = parts[0].Replace('_', '.');
                     var height = parts[1].TrimStart('X').Replace('_', '.');
 
-                    return new SizeF(Single.Parse(width), Single.Parse(height));
+                    return new SizeF(float.Parse(width), float.Parse(height));
                 }
             }
             else if (filmSizeId.Contains("CM"))
@@ -45,7 +45,7 @@ namespace Dicom.Printing
                     var width = parts[0].Replace('_', '.');
                     var height = parts[1].TrimStart('X').Replace('_', '.');
 
-                    return new SizeF(Single.Parse(width) / CM_PER_INCH, Single.Parse(height) / CM_PER_INCH);
+                    return new SizeF(float.Parse(width) / CM_PER_INCH, float.Parse(height) / CM_PER_INCH);
                 }
             }
             else if (filmSizeId == "A3")
@@ -85,8 +85,7 @@ namespace Dicom.Printing
 
                 if (boxes == null)
                 {
-                    throw new InvalidOperationException(
-                        string.Format("ImageDisplayFormat {0} invalid", filmBox.ImageDisplayFormat));
+                    throw new InvalidOperationException($"ImageDisplayFormat {filmBox.ImageDisplayFormat} invalid");
                 }
 
                 for (var i = 0; i < filmBox.BasicImageBoxes.Count; i++)
@@ -101,10 +100,7 @@ namespace Dicom.Printing
         /// </summary>
         /// <param name="rectangle">Rectangle to convert.</param>
         /// <returns>Rectangle expressed as <see cref="RectF"/>.</returns>
-        private static RectF ToRectF(Rectangle rectangle)
-        {
-            return new RectF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-        }
+        private static RectF ToRectF(Rectangle rectangle) => new RectF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 
         #endregion
     }

@@ -54,6 +54,8 @@
     <Compile Include="Imaging\WinFormsImageManager.cs" />
     <Compile Include="Imaging\WPFImage.cs" />
     <Compile Include="Imaging\WPFImageManager.cs" />
+    <Compile Include="Printing\FilmBoxExtensions.cs" />
+    <Compile Include="Printing\ImageBoxExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
