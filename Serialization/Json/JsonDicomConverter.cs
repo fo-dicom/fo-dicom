@@ -512,6 +512,12 @@ namespace Dicom.Serialization
             if (string.IsNullOrWhiteSpace(val)) { return null; }
 
             val = val.Trim();
+            
+            // Strip trailing superfluous dots
+            if (val.Length > 1 && val[val.Length - 1] == '.')
+            {
+                val = val.Remove(val.Length - 1);
+            }
 
             var negative = false;
             // Strip leading superfluous plus signs
