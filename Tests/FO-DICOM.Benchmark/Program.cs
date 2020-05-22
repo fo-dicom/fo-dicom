@@ -11,11 +11,14 @@ namespace FellowOakDicom.Benchmark
     {
         static void Main(string[] args)
         {
-            var summary2 = BenchmarkRunner.Run<ServerBenchmarks>();
-            var summary = BenchmarkRunner.Run<OpenFileBenchmarks>();
+            //var summary2 = BenchmarkRunner.Run<ServerBenchmarks>();
+            //var summary = BenchmarkRunner.Run<OpenFileBenchmarks>();
 
-            Console.Write(summary.Table.ToString());
-            Console.Write(summary2.Table.ToString());
+            //Console.Write(summary.Table.ToString());
+            //Console.Write(summary2.Table.ToString());
+
+            var summary3 = BenchmarkRunner.Run<JsonBenchmarks>();
+            Console.Write(summary3.Table.ToString());
         }
     }
 }

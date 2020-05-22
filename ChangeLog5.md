@@ -20,6 +20,7 @@
 * `DicomServerRegistration` manages the started servers per IP/Port.
 * Some little memory consumption emprovements in IByteBuffer classes.
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
+* Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
 
 ##### Breaking changes:
 
