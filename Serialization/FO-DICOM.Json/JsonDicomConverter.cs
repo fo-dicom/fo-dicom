@@ -40,7 +40,7 @@ namespace FellowOakDicom.Serialization
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer _)
         {
             if (value == null)
             {
@@ -74,7 +74,7 @@ namespace FellowOakDicom.Serialization
                     writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
                 }
 
-                WriteJsonDicomItem(writer, item, serializer);
+                WriteJsonDicomItem(writer, item);
             }
             writer.WriteEndObject();
         }
@@ -380,7 +380,7 @@ namespace FellowOakDicom.Serialization
 
         #region WriteJson helpers
 
-        private void WriteJsonDicomItem(JsonWriter writer, DicomItem item, JsonSerializer serializer)
+        private void WriteJsonDicomItem(JsonWriter writer, DicomItem item)
         {
             writer.WriteStartObject();
             writer.WritePropertyName("vr");
@@ -392,7 +392,7 @@ namespace FellowOakDicom.Serialization
                     WriteJsonPersonName(writer, (DicomPersonName)item);
                     break;
                 case "SQ":
-                    WriteJsonSequence(writer, (DicomSequence)item, serializer);
+                    WriteJsonSequence(writer, (DicomSequence)item);
                     break;
                 case "OB":
                 case "OD":
@@ -599,14 +599,14 @@ namespace FellowOakDicom.Serialization
             }
         }
 
-        private void WriteJsonSequence(JsonWriter writer, DicomSequence seq, JsonSerializer serializer)
+        private void WriteJsonSequence(JsonWriter writer, DicomSequence seq)
         {
             if (seq.Items.Count != 0)
             {
                 writer.WritePropertyName("Value");
                 writer.WriteStartArray();
 
-                foreach (var child in seq.Items) { WriteJson(writer, child, serializer); }
+                foreach (var child in seq.Items) { WriteJson(writer, child, null); }
 
                 writer.WriteEndArray();
             }
@@ -831,6 +831,10 @@ namespace FellowOakDicom.Serialization
 
         private static IByteBuffer ReadJsonInlineBinary(JToken token)
         {
+            if (token is JArray array)
+            {
+                token = array.First();
+            }
             if (token.Type != JTokenType.String) { throw new JsonReaderException("Malformed DICOM json"); }
             var data = new MemoryByteBuffer(Convert.FromBase64String(token.Value<string>()));
             return data;
