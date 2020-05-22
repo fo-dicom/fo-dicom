@@ -3,8 +3,6 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,11 +21,11 @@ namespace FellowOakDicom.Tests.Serialization
     /// The json dicom converter test.
     /// </summary>
     [Collection("General")]
-    public class JsonDicomConverterTest
+    public class JsonDicomCoreConverterTest
     {
         private readonly ITestOutputHelper _output;
 
-        public JsonDicomConverterTest(ITestOutputHelper output)
+        public JsonDicomCoreConverterTest(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -65,7 +64,7 @@ namespace FellowOakDicom.Tests.Serialization
                     ""vr"": ""ST""
                  }
             } ";
-            var header = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var header = DicomJson.ConvertJsonToDicom(json);
             Assert.NotNull(header.GetDicomItem<DicomShortText>(DicomTag.DerivationDescription));
         }
 
@@ -159,8 +158,8 @@ namespace FellowOakDicom.Tests.Serialization
                 { DicomTag.ImageOrientationPatient, new[] { "1e-3096", "1", "0.0000000", ".03", "-.03", "-0" } }
             };
 
-            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
-            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var json = DicomJson.ConvertDicomToJson(originalDataset);
+            var reconstituatedDataset = DicomJson.ConvertJsonToDicom(json);
 
             Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
             /* This test only verifies the DicomDatasets and not the serialized json strings, because
@@ -181,8 +180,8 @@ namespace FellowOakDicom.Tests.Serialization
 
             ValidatePrivateCreatorsExist_(originalDataset);
 
-            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
-            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var json = DicomJson.ConvertDicomToJson(originalDataset);
+            var reconstituatedDataset = DicomJson.ConvertJsonToDicom(json);
 
             ValidatePrivateCreatorsExist_(reconstituatedDataset);
         }
@@ -208,12 +207,13 @@ namespace FellowOakDicom.Tests.Serialization
             var ds = new DicomDataset { ValidateItems = false };
             // have to turn off validation, since we want to add invalid DS values
             ds.Add( new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } ));
-            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
-            dynamic obj = JObject.Parse(json);
+            var json = DicomJson.ConvertDicomToJson(ds);
+            var obj = JsonDocument.Parse(json);
+            var arr = obj.RootElement.GetProperty("00200032").GetProperty("Value").EnumerateArray().ToArray();
 
-            Assert.Equal("1", (string)obj["00200032"].Value[0]);
-            Assert.Equal("13", (string)obj["00200032"].Value[1]);
-            Assert.Equal("0", (string)obj["00200032"].Value[2]);
+            Assert.Equal(1, arr[0].GetDecimal());
+            Assert.Equal(13, arr[1].GetDecimal());
+            Assert.Equal(0, arr[2].GetDecimal());
 
             // Would be nice, but Json.NET mangles the parsed json. Verify string instead:
             Assert.Equal("{\"00200032\":{\"vr\":\"DS\",\"Value\":[1,13,0.0000,0.0000]}}", json);
@@ -229,12 +229,12 @@ namespace FellowOakDicom.Tests.Serialization
             // have to turn off validation, since DicomTag.PatientAge has Value Multiplicity 1, so
             // this dataset cannot be constructed without validation exception
             ds.Add( new DicomAgeString( DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
-            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
-            dynamic obj = JObject.Parse(json);
-            Assert.Equal("1Y", (string)obj["00101010"].Value[0]);
-            Assert.Null((string)obj["00101010"].Value[1]);
-            Assert.NotEqual("", (string)obj["00101010"].Value[1]);
-            Assert.Equal("3Y", (string)obj["00101010"].Value[2]);
+            var json = DicomJson.ConvertDicomToJson(ds);
+            var obj = JsonDocument.Parse(json);
+            var arr = obj.RootElement.GetProperty("00101010").GetProperty("Value").EnumerateArray().ToArray();
+            Assert.Equal("1Y", arr[0].GetString());
+            Assert.Equal(JsonValueKind.Null, arr[1].ValueKind);
+            Assert.Equal("3Y", arr[2].GetString());
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace FellowOakDicom.Tests.Serialization
         public void TestKeywordDeserialization()
         {
             const string json = "{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\" }] } }";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             Assert.Equal("Kalle", reconstituated.GetString(DicomTag.PatientName));
         }
 
@@ -262,7 +262,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -282,7 +282,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorDSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -302,7 +302,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorFDValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -322,7 +322,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorFLValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -342,7 +342,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorISValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -362,7 +362,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorLTValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -382,7 +382,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSLValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -402,7 +402,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -422,7 +422,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSTValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -442,7 +442,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorUCValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -462,7 +462,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorULValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -482,7 +482,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorUSValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -502,7 +502,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 }
 ";
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
             var buffer = reconstituated.GetSingleValue<IBulkDataUriByteBuffer>(DicomTag.SelectorUTValue);
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
@@ -530,7 +530,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 ]";
 
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
@@ -539,7 +539,7 @@ namespace FellowOakDicom.Tests.Serialization
         public void ParseExampleJsonFromDicomNemaOrg()
         {
             var json = _jsonExampleFromDicomNemaOrg;
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal(new DateTime(2013, 4, 9), reconstituated[0].GetSingleValue<DateTime>(DicomTag.StudyDate));
             Assert.Equal("^Bob^^Dr.", reconstituated[0].GetSingleValue<string>(DicomTag.ReferringPhysicianName));
         }
@@ -566,7 +566,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 ]";
 
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
@@ -623,9 +623,9 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Throws<InvalidOperationException>(() => bulkData.Size);
 
             var target = new DicomDataset { new DicomOtherWord(DicomTag.PixelData, bulkData) };
-            var json = JsonConvert.SerializeObject(target, Formatting.Indented, new JsonDicomConverter());
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
+            var json = DicomJson.ConvertDicomToJson(target, formatIndented: true);
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
+            var json2 = DicomJson.ConvertDicomToJson(reconstituated, formatIndented: true);
             Assert.Equal(json, json2);
 
             DownloadBulkData(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
@@ -881,9 +881,9 @@ namespace FellowOakDicom.Tests.Serialization
         /// </summary>
         private static void VerifyJsonTripleTrip(DicomDataset originalDataset)
         {
-            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
-            var reconstituatedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var json2 = JsonConvert.SerializeObject(reconstituatedDataset, new JsonDicomConverter());
+            var json = DicomJson.ConvertDicomToJson(originalDataset);
+            var reconstituatedDataset = DicomJson.ConvertJsonToDicom(json);
+            var json2 = DicomJson.ConvertDicomToJson(reconstituatedDataset);
 
             Assert.True(ValueEquals(originalDataset, reconstituatedDataset));
             Assert.Equal(json, json2);
@@ -900,8 +900,8 @@ namespace FellowOakDicom.Tests.Serialization
                          new DicomUnknown(new DicomTag(3, 0x1003, privateCreator), Encoding.ASCII.GetBytes("WHATISTHIS")),
                          new DicomDecimalString(DicomTag.GantryAngle, 36)
                      };
-            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter(writeTagsAsKeywords: true));
-            Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":\"V0hBVElTVEhJUw==\"},\"00031010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36]}}",
+            var json = DicomJson.ConvertDicomToJson(ds, writeTagsAsKeywords: true);
+            Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":[\"V0hBVElTVEhJUw==\"]},\"00031010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36]}}",
                 json);
         }
 
@@ -927,8 +927,8 @@ namespace FellowOakDicom.Tests.Serialization
                 { privTag2, "TESTB" },
             };
 
-            var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
-            var ds2 = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var json = DicomJson.ConvertDicomToJson(ds);
+            var ds2 = DicomJson.ConvertJsonToDicom(json);
 
             Assert.Equal(ds.GetString(privTag1), ds2.GetString(privTag1));
             Assert.Equal(ds.GetString(privTag2), ds2.GetString(privTag2));
@@ -937,20 +937,20 @@ namespace FellowOakDicom.Tests.Serialization
 
         #region Sample Data
 
+        // The following example is a QIDO-RS SearchForStudies response consisting 
+        // of two matching studies, corresponding to the example QIDO-RS request:
+        // GET http://qido.nema.org/studies?PatientID=12345&includefield=all&limit=2
         private string _jsonExampleFromDicomNemaOrg = @"
-// The following example is a QIDO-RS SearchForStudies response consisting 
-// of two matching studies, corresponding to the example QIDO-RS request:
-// GET http://qido.nema.org/studies?PatientID=12345&includefield=all&limit=2
 [
-    {   // Result 1
+    { // Result 1
         ""00080005"": {
             ""vr"": ""CS"",
             ""Value"": [ ""ISO_IR 192"" ]
-    },
+        },
         ""00080020"": {
             ""vr"": ""DT"",
             ""Value"": [ ""20130409"" ]
-},
+        },
         ""00080030"": {
             ""vr"": ""TM"",
             ""Value"": [ ""131600.0000"" ]
@@ -1057,7 +1057,7 @@ namespace FellowOakDicom.Tests.Serialization
             ""Value"": [ 942 ]
         }
     },
-    {   // Result 2
+    { // Result 2
         ""00080005"": {
             ""vr"": ""CS"",
             ""Value"": [ ""ISO_IR 192"" ]
