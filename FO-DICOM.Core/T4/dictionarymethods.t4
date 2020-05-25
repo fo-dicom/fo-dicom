@@ -5,10 +5,7 @@
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Xml" #>
-<# #if DEBUG #>
-<#@ assembly name="EnvDTE" #>
-<#@ import namespace="EnvDTE" #>
-<# #endif #><#+
+<#+
 private const string DocbookNamespace = "http://docbook.org/ns/docbook";
 
 #if DEBUG
