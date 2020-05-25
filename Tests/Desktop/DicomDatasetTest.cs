@@ -265,7 +265,7 @@ namespace Dicom
         {
             ushort[] testValues = new ushort[] { 1, 2, 3, 4, 5 };
 
-            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbers, testValues);
+            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbersRETIRED, testValues);
 
             TestAddElementToDatasetAsString<ushort>(element, testValues);
         }

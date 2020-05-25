@@ -73,14 +73,14 @@ namespace Dicom
         [Fact]
         public void DicomUnsignedShort_Array_ExplicitMinus1InterpretAs0()
         {
-            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbers, 1, 2, 3, 4, 5);
+            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbersRETIRED, 1, 2, 3, 4, 5);
             Assert.Equal(element.Get<ushort>(-1), element.Get<ushort>(0));
         }
 
         [Fact]
         public void DicomUnsignedShort_Array_ExplicitMinus2Throws()
         {
-            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbers, 1, 2, 3, 4, 5);
+            var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumbersRETIRED, 1, 2, 3, 4, 5);
             Assert.Throws<ArgumentOutOfRangeException>(() => element.Get<ushort>(-2));
         }
 
@@ -529,7 +529,7 @@ namespace Dicom
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.AbdominalArteriesLateral12111 },
+            new object[] { DicomUID.AbdominalArteriesPaired12111 },
             new object[] { DicomUID.CTImageStorage },
             new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
             new object[] { DicomUID.dicomTransferSyntax },
