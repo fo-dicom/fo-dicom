@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging.Render
     {
         #region Unit tests
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact()]
         public void DicomPixelData_TestDefaultWindowing()
         {
             // an image, that contains several values in 0028,1050 and 0028,1051
@@ -27,13 +27,15 @@ namespace FellowOakDicom.Tests.Imaging.Render
             Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
 
             // an image, that contains one windowing-setting
-            img = new DicomImage(TestData.Resolve("CR-MONO1-10-chest"));
+            df = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
+            img = new DicomImage(df.Dataset);
             img.RenderImage(0);
             Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
             Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
 
             // an image with no windowing-setting
-            img = new DicomImage(TestData.Resolve("GH227.dcm"));
+            df = DicomFile.Open(TestData.Resolve("GH227.dcm"));
+            img = new DicomImage(df.Dataset);
             img.RenderImage(0);
             Assert.Equal(255, img.WindowWidth);
             Assert.Equal(127.5, img.WindowCenter);

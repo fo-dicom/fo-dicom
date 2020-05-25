@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+namespace FellowOakDicom.Imaging.Codec.JpegLossless
+{
+
+    internal class ScanComponent
+    {
+        public int AcTabSel { get; set; }
+
+        public int DcTabSel { get; set; }
+
+        public int ScanCompSel { get; set; }
+
+    }
+}

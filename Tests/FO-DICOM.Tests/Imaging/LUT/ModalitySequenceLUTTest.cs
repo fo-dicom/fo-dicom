@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
     {
         #region Unit tests
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public void ModalitySequenceLutReturnsCorrectMinimumValue()
         {
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
             Assert.Equal(0, lut.MinimumOutputValue);
         }
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public void ModalitySequenceLutReturnsCorrectMaximumValue()
         {
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));

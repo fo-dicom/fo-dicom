@@ -82,10 +82,10 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public void EncodeDecodeRLE16()
         {
-            var files = Directory.GetFiles(@"Test Data");
+            var files = Directory.GetFiles(TestData.Resolve(""));
             foreach (var testFile in files)
             {
                 try
@@ -147,7 +147,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         /// Uses the RLELossless Transfer Syntax to encode and decode an image and makes sure
         /// that this is idempotent with respect to the pixel data.
         /// </summary>
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public void EncodeDecodeTestRLE()
         {
             var bytes = new byte[] { 0, 0, 1, 0, 1, 0, 1, 0 };
@@ -157,7 +157,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         /// <summary>
         /// White box testing of the RLELossless TS codec.
         /// </summary>
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public void EncodeDecodeTestRLE2()
         {
             var r = new Random();

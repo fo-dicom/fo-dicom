@@ -68,7 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSJ2K" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />

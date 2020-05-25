@@ -66,7 +66,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
 
-        [Fact]
+        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
         public async Task CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
             string file = TestData.Resolve("GH538-jpeg14sv1.dcm");
