@@ -154,3 +154,43 @@ await client.AddRequestAsync(cmove);
 await client.SendAsync(); 
 ```
 
+#### N-Action SCU
+```csharp
+var dicomClient = new Dicom.Network.Client.DicomClient("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE");
+var txnUid = DicomUIDGenerator.GenerateDerivedFromUUID().UID;
+var nActionDicomDataSet = new DicomDataset
+{
+    { DicomTag.TransactionUID,  txnUid }
+};
+var dicomRefSopSequence = new DicomSequence(DicomTag.ReferencedSOPSequence);
+var seqItem = new DicomDataset()
+{
+    { DicomTag.ReferencedSOPClassUID, "1.2.840.10008.5.1.4.1.1.1" },
+    { DicomTag.ReferencedSOPInstanceUID, "1.3.46.670589.30.2273540226.4.54" }
+};
+dicomRefSopSequence.Items.Add(seqItem);
+nActionDicomDataSet.Add(dicomRefSopSequence);
+var nActionRequest = new DicomNActionRequest(DicomUID.StorageCommitmentPushModelSOPClass,
+                DicomUID.StorageCommitmentPushModelSOPInstance, 1)
+{
+    Dataset = nActionDicomDataSet,
+    OnResponseReceived = (DicomNActionRequest request, DicomNActionResponse response) => 
+    {
+        Console.WriteLine("NActionResponseHandler, response status:{0}", response.Status);
+    },
+};
+await dicomClient.AddRequestAsync(nActionRequest);
+dicomClient.OnNEventReportRequest = OnNEventReportRequest;
+await dicomClient.SendAsync();
+
+private static Task<DicomNEventReportResponse> OnNEventReportRequest(DicomNEventReportRequest request)
+{
+    var refSopSequence = request.Dataset.GetSequence(DicomTag.ReferencedSOPSequence);
+    foreach(var item in refSopSequence.Items)
+    {
+        Console.WriteLine("SOP Class UID: {0}", item.GetString(DicomTag.ReferencedSOPClassUID));
+        Console.WriteLine("SOP Instance UID: {0}", item.GetString(DicomTag.ReferencedSOPInstanceUID));
+    }
+    return Task.FromResult(new DicomNEventReportResponse(request, DicomStatus.Success));
+}
+```
