@@ -1012,7 +1012,7 @@ namespace Dicom.Network
                             response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
                             break;
                     }
-
+                    
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -1043,6 +1043,18 @@ namespace Dicom.Network
                     }
 
                     await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
+                }
+
+                if (this is IDicomClientConnection connection)
+                {
+                    switch (dimse.Type)
+                    {
+                        case DicomCommandField.NEventReportRequest:
+                            var response = await connection.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
+                            await SendResponseAsync(response).ConfigureAwait(false);
+                            break;
+                    }
                     return;
                 }
 
