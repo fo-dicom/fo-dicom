@@ -54,39 +54,39 @@ namespace FellowOakDicom
         public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
         public override string ToString()
-        {
-            return ToString("G", null);
-        }
+            => ToString("G", null);
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (formatProvider != null)
+            if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)
             {
-                ICustomFormatter fmt = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
-                if (fmt != null) return fmt.Format(format, this, formatProvider);
+                return fmt.Format(format, this, formatProvider);
             }
 
             switch (format)
             {
                 case "X":
                     {
-                        if (PrivateCreator != null) return String.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator);
-                        else return String.Format("({0:x4},{1:x4})", Group, Element);
+                        return PrivateCreator != null
+                            ? string.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator)
+                            : string.Format("({0:x4},{1:x4})", Group, Element);
                     }
                 case "g":
                     {
-                        if (PrivateCreator != null) return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
-                        else return String.Format("{0:x4},{1:x4}", Group, Element);
+                        return PrivateCreator != null
+                            ? string.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator)
+                            : string.Format("{0:x4},{1:x4}", Group, Element);
                     }
                 case "J":
                     {
-                        return String.Format("{0:X4}{1:X4}", Group, Element);
+                        return string.Format("{0:X4}{1:X4}", Group, Element);
                     }
                 case "G":
                 default:
                     {
-                        if (PrivateCreator != null) return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
-                        else return String.Format("({0:x4},{1:x4})", Group, Element);
+                        return PrivateCreator != null
+                            ? string.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator)
+                            : string.Format("({0:x4},{1:x4})", Group, Element);
                     }
             }
         }
@@ -167,15 +167,18 @@ namespace FellowOakDicom
         {
             try
             {
-                if (s.Length < 8) throw new ArgumentOutOfRangeException(nameof(s), "Expected a string of 8 or more characters");
+                if (s.Length < 8)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(s), "Expected a string of 8 or more characters");
+                }
 
                 int pos = 0;
-                if (s[pos] == '(') pos++;
+                if (s[pos] == '(') { pos++; }
 
                 ushort group = ushort.Parse(s.Substring(pos, 4), NumberStyles.HexNumber);
                 pos += 4;
 
-                if (s[pos] == ',') pos++;
+                if (s[pos] == ',') { pos++; }
 
                 ushort element = ushort.Parse(s.Substring(pos, 4), NumberStyles.HexNumber);
                 pos += 4;
@@ -186,8 +189,14 @@ namespace FellowOakDicom
                     pos++;
 
                     string c = null;
-                    if (s[s.Length - 1] == ')') c = s.Substring(pos, s.Length - pos - 1);
-                    else c = s.Substring(pos);
+                    if (s[s.Length - 1] == ')')
+                    {
+                        c = s.Substring(pos, s.Length - pos - 1);
+                    }
+                    else
+                    {
+                        c = s.Substring(pos);
+                    }
 
                     creator = DicomDictionary.Default.GetPrivateCreator(c);
                 }
@@ -198,8 +207,9 @@ namespace FellowOakDicom
             }
             catch (Exception e)
             {
-                throw new DicomDataException("Error parsing DICOM tag ['" + s + "']", e);
+                throw new DicomDataException($"Error parsing DICOM tag ['{s}']", e);
             }
         }
+
     }
 }
