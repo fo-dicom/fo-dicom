@@ -59,6 +59,7 @@ using Dicom.IO.Reader;
 using Dicom.IO.Writer;
 using Dicom.Log;
 using Dicom.Network.Client;
+using Dicom.Network.Client.Tasks;
 
 namespace Dicom.Network
 {
@@ -1066,6 +1067,11 @@ namespace Dicom.Network
 
         private Task SendMessageAsync(DicomMessage message)
         {
+            if (message == null)
+            {
+                return CompletedTaskProvider.CompletedTask;
+            }
+
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
@@ -1095,7 +1101,7 @@ namespace Dicom.Network
                     }
 
                     if (Association.MaxAsyncOpsInvoked > 0
-                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
+                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest && req.Type != DicomCommandField.NActionRequest)
                         >= Association.MaxAsyncOpsInvoked)
                     {
                         break;
