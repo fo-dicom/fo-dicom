@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Collections.Generic;
 using System.Text;
 
 namespace FellowOakDicom.Log
@@ -10,7 +9,7 @@ namespace FellowOakDicom.Log
     public static class Extensions
     {
 
-        public static void WriteToLog(this IEnumerable<DicomItem> dataset, Logger log, LogLevel level)
+        public static void WriteToLog(this DicomDataset dataset, Logger log, LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);
             new DicomDatasetWalker(dataset).Walk(logger);
@@ -23,7 +22,7 @@ namespace FellowOakDicom.Log
             new DicomDatasetWalker(file.Dataset).Walk(logger);
         }
 
-        public static string WriteToString(this IEnumerable<DicomItem> dataset)
+        public static string WriteToString(this DicomDataset dataset)
         {
             var log = new StringBuilder();
             var dumper = new DicomDatasetDumper(log);

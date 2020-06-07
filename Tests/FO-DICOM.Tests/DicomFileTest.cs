@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
 using System;
 using System.IO;
@@ -28,13 +29,53 @@ namespace FellowOakDicom.Tests
         #region Unit tests
 
         [Fact]
-        public void DicomFile_OpenDefaultEncoding_SwedishCharactersNotMaintained()
+        public void DicomFile_NoDefaultEncoding_SwedishCharactersNotMaintained()
         {
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
             var dataset = new DicomDataset(MinimumDatatset);
-            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            dataset.Add(new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected))));
+
+            var outFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            outFile.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream);
+            var actual = inFile.Dataset.GetString(tag);
+
+            Assert.NotEqual(expected, actual);
+        }
+
+        [Fact]
+        public void DicomFile_OpenDefaultEncoding_SwedishCharactersMaintained()
+        {
+            var expected = "Händer Å Fötter";
+            var tag = DicomTag.DoseComment;
+
+            var dataset = new DicomDataset(MinimumDatatset);
+            dataset.Add(new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected))));
+
+            var outFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            outFile.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
+            var actual = inFile.Dataset.GetString(tag);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomFile_NoEncoding_SwedishCharactersNotMaintained()
+        {
+            var expected = "Händer Å Fötter";
+            var tag = DicomTag.DoseComment;
+
+            var dataset = new DicomDataset(MinimumDatatset);
+            dataset.Add(new DicomLongString(tag, expected));
 
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
@@ -54,14 +95,15 @@ namespace FellowOakDicom.Tests
             var tag = DicomTag.DoseComment;
 
             var dataset = new DicomDataset(MinimumDatatset);
-            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            dataset.Add(new DicomLongString(tag, expected));
+            dataset.AddOrUpdate(DicomTag.SpecificCharacterSet, "ISO IR 192");
 
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
+            var inFile = DicomFile.Open(stream);
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.Equal(expected, actual);

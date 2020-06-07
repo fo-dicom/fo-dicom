@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 
@@ -72,33 +73,47 @@ namespace FellowOakDicom
 
         private string _value = null;
 
+        private readonly Encoding _bufferEncoding;
+        private Encoding _targetEncoding = DicomEncoding.Default;
+
         #endregion
 
         #region Constructors
 
         protected DicomStringElement(DicomTag tag, string value)
-            : this(tag, DicomEncoding.Default, value)
-        {
-        }
-
-        protected DicomStringElement(DicomTag tag, Encoding encoding, string value)
             : base(tag, EmptyBuffer.Value)
         {
-            Encoding = encoding;
-            Buffer = ByteConverter.ToByteBuffer(value ?? string.Empty, encoding, ValueRepresentation.PaddingValue);
+            _value = value ?? string.Empty;
+            if (!string.IsNullOrEmpty(_value))
+            {
+                Buffer = new LazyByteBuffer(StringToBytes);
+            }
         }
 
         protected DicomStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer)
             : base(tag, buffer)
         {
-            Encoding = encoding;
+            _bufferEncoding = encoding;
+            TargetEncoding = encoding;
         }
 
         #endregion
 
         #region Public Properties
 
-        public Encoding Encoding { get; protected set; }
+        public Encoding TargetEncoding
+        {
+            get => _targetEncoding;
+            set
+            {
+                if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) && value != _bufferEncoding)
+                {
+                    _value = StringValue;
+                    Buffer = new LazyByteBuffer(StringToBytes);
+                }
+                _targetEncoding = value;
+            }
+        }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
         /// <value>Number of value items</value>
@@ -108,9 +123,9 @@ namespace FellowOakDicom
         {
             get
             {
-                if (_value == null && Buffer != null)
+                if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
                 {
-                    _value = Encoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
+                    _value = _bufferEncoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
                             .TrimEnd((char)ValueRepresentation.PaddingValue);
                 }
                 return _value;
@@ -148,6 +163,26 @@ namespace FellowOakDicom
 
         #endregion
 
+        private byte[] StringToBytes()
+        {
+            if (_value is null)
+            {
+                return Array.Empty<byte>();
+            }
+
+            var encoding = TargetEncoding ?? DicomEncoding.Default;
+
+            byte[] bytes = encoding.GetBytes(_value);
+
+            if (bytes.Length.IsOdd())
+            {
+                Array.Resize(ref bytes, bytes.Length + 1);
+                bytes[bytes.Length - 1] = ValueRepresentation.PaddingValue;
+            }
+
+            return bytes;
+        }
+
         protected override void ValidateString()
         {
             ValueRepresentation?.ValidateString(_value);
@@ -167,12 +202,7 @@ namespace FellowOakDicom
         #region Constructors
 
         protected DicomMultiStringElement(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, string.Join("\\", values))
-        {
-        }
-
-        protected DicomMultiStringElement(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, string.Join("\\", values))
+            : base(tag, string.Join("\\", values))
         {
         }
 
@@ -286,7 +316,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params DateTime[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
+            : base(tag, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
         {
             DateFormats = dateFormats;
         }
@@ -298,7 +328,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="range">Date/time range.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, DicomDateRange range)
-            : base(tag, DicomEncoding.Default, range.ToString(dateFormats[0]).Replace(":", string.Empty))
+            : base(tag, range.ToString(dateFormats[0]).Replace(":", string.Empty))
         {
             DateFormats = dateFormats;
         }
@@ -310,7 +340,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params string[] values)
-            : base(tag, DicomEncoding.Default, string.Join("\\", values))
+            : base(tag, string.Join("\\", values))
         {
             DateFormats = dateFormats;
         }
@@ -526,7 +556,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomApplicationEntity(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -552,7 +582,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomAgeString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -665,7 +695,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomCodeString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -759,12 +789,12 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
         public DicomDecimalString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -965,12 +995,12 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
         public DicomIntegerString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -1074,11 +1104,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomLongString(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
-        {
-        }
-
         public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1100,11 +1125,6 @@ namespace FellowOakDicom
 
         public DicomLongText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomLongText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
         {
         }
 
@@ -1329,11 +1349,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
-        {
-        }
-
         public DicomPersonName(
             DicomTag tag,
             string Last,
@@ -1342,18 +1357,6 @@ namespace FellowOakDicom
             string Prefix = null,
             string Suffix = null)
             : base(tag, ConcatName(Last, First, Middle, Prefix, Suffix))
-        {
-        }
-
-        public DicomPersonName(
-            DicomTag tag,
-            Encoding encoding,
-            string Last,
-            string First,
-            string Middle = null,
-            string Prefix = null,
-            string Suffix = null)
-            : base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix))
         {
         }
 
@@ -1494,11 +1497,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomShortString(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
-        {
-        }
-
         public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1579,11 +1577,6 @@ namespace FellowOakDicom
 
         public DicomShortText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomShortText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
         {
         }
 
@@ -1719,11 +1712,6 @@ namespace FellowOakDicom
 
         public DicomUnlimitedCharacters(DicomTag tag, params string[] values)
             : base(tag, values)
-        {
-        }
-
-        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
         {
         }
 
@@ -1886,11 +1874,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUniversalResource(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
-        {
-        }
-
         public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1947,11 +1930,6 @@ namespace FellowOakDicom
 
         public DicomUnlimitedText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomUnlimitedText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
         {
         }
 

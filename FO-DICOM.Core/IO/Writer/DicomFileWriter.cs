@@ -142,6 +142,7 @@ namespace FellowOakDicom.IO.Writer
             DicomDataset dataset,
             DicomWriteOptions options)
         {
+            dataset.OnBeforeSerializing();
             UpdateDatasetGroupLengths(syntax, dataset, options);
 
             if (syntax.IsDeflate)
@@ -193,6 +194,7 @@ namespace FellowOakDicom.IO.Writer
             DicomDataset dataset,
             DicomWriteOptions options)
         {
+            dataset.OnBeforeSerializing();
             UpdateDatasetGroupLengths(syntax, dataset, options);
 
             if (syntax.IsDeflate)

@@ -21,6 +21,7 @@
 * Some little memory consumption emprovements in IByteBuffer classes.
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
 * Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
+* Text encoding is now handled when a string is written into a network- or file-stream.
 
 ##### Breaking changes:
 
@@ -43,5 +44,8 @@
   * `DicomUID.IsValid(uid)`: use `DicomUID.IsValidUid(uid)` instead.
   * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
   * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
+* DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
+* DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncoding`, that is applied to all string-based tags.
+
 
    

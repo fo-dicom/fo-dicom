@@ -38,12 +38,14 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomPersonNameConstructorTest1()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, DicomEncoding.GetEncoding("ISO IR 144"), "Тарковский", "Андрей", "Арсеньевич");
+            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей", "Арсеньевич");
+            target.TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144");
             byte[] b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             byte[] c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей^Арсеньевич");
             Assert.Equal(c, b);
             // foloowing test checks also padding with space!
-            target = new DicomPersonName(DicomTag.PatientName, DicomEncoding.GetEncoding("ISO IR 144"), "Тарковский", "Андрей");
+            target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей");
+            target.TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144");
             b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей ");
             Assert.Equal(c, b);

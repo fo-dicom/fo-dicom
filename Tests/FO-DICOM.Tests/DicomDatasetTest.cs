@@ -524,8 +524,9 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset
             {
-                new DicomLongText(tag, encoding, expected)
+                new DicomLongText(tag, expected)
             };
+            dataset.TextEncoding = encoding;
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);
@@ -539,7 +540,8 @@ namespace FellowOakDicom.Tests
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 
             var dataset = new DicomDataset();
-            dataset.AddOrUpdate(tag, encoding, expected);
+            dataset.TextEncoding = encoding;
+            dataset.AddOrUpdate(tag, expected);
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);

@@ -183,12 +183,6 @@ namespace FellowOakDicom
             var toRemove = new List<DicomItem>();
             var itemList = dataset.ToArray();
 
-            var encoding = DicomEncoding.Default;
-            if (dataset.TryGetSingleValue<string>(DicomTag.SpecificCharacterSet, out var characterSet))
-            {
-                encoding = DicomEncoding.GetEncoding(characterSet);
-            }
-
             foreach (var item in itemList)
             {
                 var parenthesis = new[] { '(', ')' };
@@ -204,7 +198,7 @@ namespace FellowOakDicom
                         case SecurityProfileActions.C: // Clean
                         case SecurityProfileActions.D: // Dummy
                             if (vr == DicomVR.UI) ReplaceUID(dataset, item);
-                            else if (vr.ValueType == typeof(string)) ReplaceString(dataset, encoding, item, "ANONYMOUS");
+                            else if (vr.ValueType == typeof(string)) ReplaceString(dataset, item, "ANONYMOUS");
                             else BlankItem(dataset, item, true);
                             break;
                         case SecurityProfileActions.K: // Keep
@@ -222,11 +216,11 @@ namespace FellowOakDicom
 
                 if (item.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
                 {
-                    ReplaceString(dataset, encoding, item, Profile.PatientName);
+                    ReplaceString(dataset, item, Profile.PatientName);
                 }
                 else if (item.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
                 {
-                    ReplaceString(dataset, encoding, item, Profile.PatientID);
+                    ReplaceString(dataset, item, Profile.PatientID);
                 }
             }
 
@@ -384,12 +378,11 @@ namespace FellowOakDicom
 
         /// <string>Replaces the content of an item.</string>
         /// <param name="dataset">Reference to the dataset</param>
-        /// <param name="encoding">Identifies the character set should be used for encoding.</param>
         /// <param name="item">DICOM item for which the string value should be replaced.</param>
         /// <param name="newString">The replacement string.</param>
-        private static void ReplaceString(DicomDataset dataset, Encoding encoding, DicomItem item, string newString)
+        private static void ReplaceString(DicomDataset dataset, DicomItem item, string newString)
         {
-            dataset.AddOrUpdate(item.Tag, encoding, newString);
+            dataset.AddOrUpdate(item.Tag, newString);
         }
 
         /// <summary>

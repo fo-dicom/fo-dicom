@@ -593,7 +593,7 @@ namespace FellowOakDicom.Tests.Serialization
             var target = new DicomDataset
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO_IR 192"),
-                new DicomLongText(DicomTag.StudyDescription, Encoding.UTF8, "Label®")
+                new DicomLongText(DicomTag.StudyDescription, "Label®")
             };
             VerifyJsonTripleTrip(target);
         }
