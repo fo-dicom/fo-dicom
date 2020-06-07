@@ -78,7 +78,10 @@ namespace FellowOakDicom
                     if (item.ValueRepresentation.Equals(DicomVR.SQ))
                     {
                         var tag = item.Tag;
-                        if (tag.IsPrivate) tag = GetPrivateTag(tag);
+                        if (tag.IsPrivate)
+                        {
+                            tag = GetPrivateTag(tag);
+                        }
                         var sequenceItems =
                             ((DicomSequence)item).Items.Where(dataset => dataset != null)
                                 .Select(dataset => new DicomDataset(dataset, validate))
@@ -87,7 +90,10 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        if (ValidateItems) item.Validate();
+                        if (ValidateItems)
+                        {
+                            item.Validate();
+                        }
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FellowOakDicom
@@ -20,7 +19,7 @@ namespace FellowOakDicom
     {
         #region Fields
 
-        private static readonly int OptionsCount = Enum.GetValues(typeof(SecurityProfileOptions)).Length;
+        private static readonly int _optionsCount = Enum.GetValues(typeof(SecurityProfileOptions)).Length;
 
         #endregion
 
@@ -94,11 +93,12 @@ namespace FellowOakDicom
         /// <summary>Security profile container</summary>
         public partial class SecurityProfile : Dictionary<Regex, SecurityProfileActions>
         {
+
             /// <summary>Optional. Replacement patient name (random or alias)</summary>
-            public string PatientName = null;
+            public string PatientName { get; set; } = null;
 
             /// <summary>Optional. Replacement patient ID</summary>
-            public string PatientID = null;
+            public string PatientID { get; set; } = null;
 
             /// <summary>
             /// Loads a security profile with the specified options
@@ -129,7 +129,7 @@ namespace FellowOakDicom
                     var tag = new Regex(parts[0], RegexOptions.IgnoreCase | RegexOptions.Singleline);
                     var empty = default(char).ToString();
 
-                    for (var i = 0; i < OptionsCount; i++)
+                    for (var i = 0; i < _optionsCount; i++)
                     {
                         var flag = (SecurityProfileOptions)(1 << i);
 

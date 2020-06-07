@@ -201,9 +201,9 @@ namespace FellowOakDicom.Serialization
         /// <returns>
         /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type typeToConvert)
         {
-            return typeof(DicomDataset).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+            return typeof(DicomDataset).GetTypeInfo().IsAssignableFrom(typeToConvert.GetTypeInfo());
         }
 
         #endregion
