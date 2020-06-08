@@ -124,6 +124,12 @@ namespace Dicom.Network
         {
         }
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
+        {
+            yield return new DicomCFindResponse(request, DicomStatus.Success);
+        }
+#else
         public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
         {
             return InnerOnCFindRequestAsync();
@@ -133,6 +139,7 @@ namespace Dicom.Network
                 yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
             }
         }
+#endif
     }
 
     public class PendingAsyncDicomCFindProvider : DicomService, IDicomServiceProvider, IAsyncDicomCFindProvider
@@ -169,6 +176,14 @@ namespace Dicom.Network
         {
         }
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
+        {
+            yield return new DicomCFindResponse(request, DicomStatus.Pending);
+            yield return new DicomCFindResponse(request, DicomStatus.Pending);
+            yield return new DicomCFindResponse(request, DicomStatus.Success);
+        }
+#else
         public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
         {
             return InnerOnCFindRequestAsync();
@@ -180,6 +195,7 @@ namespace Dicom.Network
                 yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
             }
         }
+#endif
     }
 
 

@@ -911,12 +911,20 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCFindProvider = this as IDicomCFindProvider ?? throw new DicomNetworkException("C-Find SCP not implemented");
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                var asyncResponses = thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest);
+                await foreach (var response in asyncResponses.ConfigureAwait(false))
+                {
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+#else
                 var asyncResponses = await thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest).ConfigureAwait(false);
                 foreach (var asyncResponse in asyncResponses)
                 {
                     var response = await asyncResponse.ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
+#endif
 
                 return;
             }
@@ -925,12 +933,20 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCGetProvider = this as IDicomCGetProvider ?? throw new DicomNetworkException("C-GET SCP not implemented");
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                var asyncResponses = thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest);
+                await foreach (var response in asyncResponses.ConfigureAwait(false))
+                {
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+#else
                 var asyncResponses = await thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest).ConfigureAwait(false);
                 foreach (var asyncResponse in asyncResponses)
                 {
                     var response = await asyncResponse.ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
+#endif
 
                 return;
             }
@@ -939,12 +955,20 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCMoveProvider = this as IDicomCMoveProvider ?? throw new DicomNetworkException("C-Move SCP not implemented");
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                var asyncResponses = thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest);
+                await foreach (var response in asyncResponses.ConfigureAwait(false))
+                {
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                }
+#else
                 var asyncResponses = await thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest).ConfigureAwait(false);
                 foreach (var asyncResponse in asyncResponses)
                 {
                     var response = await asyncResponse.ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
+#endif
 
                 return;
             }

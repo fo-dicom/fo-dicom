@@ -1601,6 +1601,32 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+            public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
+            {
+                _requests.Add(request);
+                yield return new DicomCGetResponse(request, DicomStatus.Pending);
+
+                DicomCGetResponse result;
+                try
+                {
+                    var file = await DicomFile.OpenAsync(TestData.Resolve("10200904.dcm")).ConfigureAwait(false);
+
+                    var cStoreRequest = new DicomCStoreRequest(file);
+
+                    await SendRequestAsync(cStoreRequest).ConfigureAwait(false);
+
+                    result = new DicomCGetResponse(request, DicomStatus.Success);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Could not send file via C-Store request: {error}", e);
+                    result = new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
+                }
+
+                yield return result;
+            }
+#else
             public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
             {
                 _requests.Add(request);
@@ -1633,6 +1659,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     yield return nextAsyncResponse();
                 }
             }
+#endif
         }
 
         public class RecordingDicomCGetProviderServer : DicomServer<RecordingDicomCGetProvider>

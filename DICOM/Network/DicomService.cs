@@ -904,12 +904,20 @@ namespace Dicom.Network
 
                 if (this is IAsyncDicomCFindProvider thisAsAsyncCFindProvider)
                 {
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                    var asyncResponses = thisAsAsyncCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest);
+                    await foreach (var response in asyncResponses.ConfigureAwait(false))
+                    {
+                        await SendResponseAsync(response).ConfigureAwait(false);
+                    }
+#else
                     var asyncResponses = await thisAsAsyncCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest).ConfigureAwait(false);
                     foreach (var asyncResponse in asyncResponses)
                     {
                         var response = await asyncResponse.ConfigureAwait(false);
                         await SendResponseAsync(response).ConfigureAwait(false);
                     }
+#endif
                     return;
                 }
 
@@ -927,12 +935,20 @@ namespace Dicom.Network
 
                 if(this is IAsyncDicomCGetProvider thisAsAsyncCGetProvider)
                 {
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                    var asyncResponses = thisAsAsyncCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest);
+                    await foreach (var response in asyncResponses.ConfigureAwait(false))
+                    {
+                        await SendResponseAsync(response).ConfigureAwait(false);
+                    }
+#else
                     var asyncResponses = await thisAsAsyncCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest).ConfigureAwait(false);
                     foreach (var asyncResponse in asyncResponses)
                     {
                         var response = await asyncResponse.ConfigureAwait(false);
                         await SendResponseAsync(response).ConfigureAwait(false);
                     }
+#endif
                     return;
                 }
 
@@ -950,12 +966,20 @@ namespace Dicom.Network
 
                 if (this is IAsyncDicomCMoveProvider thisAsAsyncCMoveProvider)
                 {
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+                    var asyncResponses = thisAsAsyncCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest);
+                    await foreach (var response in asyncResponses.ConfigureAwait(false))
+                    {
+                        await SendResponseAsync(response).ConfigureAwait(false);
+                    }
+#else
                     var asyncResponses = await thisAsAsyncCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest).ConfigureAwait(false);
                     foreach (var asyncResponse in asyncResponses)
                     {
                         var response = await asyncResponse.ConfigureAwait(false);
                         await SendResponseAsync(response).ConfigureAwait(false);
                     }
+#endif
                     return;
                 }
 
