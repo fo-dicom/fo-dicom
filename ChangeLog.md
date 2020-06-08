@@ -1,5 +1,6 @@
 #### v.4.0.6 (TBD)
 * Update to DICOM Standard 2020b.
+* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
 
 #### v.4.0.5 (5/18/2020)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.
